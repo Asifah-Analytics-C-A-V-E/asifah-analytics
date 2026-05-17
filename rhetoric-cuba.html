@@ -23,8 +23,13 @@
         --accent-glow:    rgba(14,165,233,0.2);
         --card-glow:      none;
         --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
-        --watermark-opacity: 0.07;
+        /* Gold Standard watermark + grid + scanlines (light theme) */
+        --watermark-opacity: 0.5;
+        --watermark-size: 500px;
         --watermark-filter:  none;
+        --grid-color: transparent;
+        --scanline-opacity: 0;
+        --glow-opacity: 0;
     }
     [data-theme="dark"] {
         --bg-color:       #060d1a;
@@ -39,8 +44,13 @@
         --accent-glow:    rgba(56,189,248,0.18);
         --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
         --card-hover-glow: 0 0 22px rgba(56,189,248,0.2), 0 8px 25px rgba(0,0,0,0.5);
-        --watermark-opacity: 0.18;
+        /* Gold Standard watermark + grid + scanlines (dark theme defaults — this is a dark-only page) */
+        --watermark-opacity: 1.0;
+        --watermark-size: 800px;
         --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
+        --grid-color: rgba(56,189,248,0.04);
+        --scanline-opacity: 0.03;
+        --glow-opacity: 1;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,21 +59,97 @@
         background-color: var(--bg-color);
         color: var(--text-primary);
         min-height: 100vh;
+        overflow-x: hidden;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
+
+    /* ── Gold Standard: grid overlay + scanlines + watermark ── */
     body::before {
         content: '';
-        position: fixed; top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: 110vmin; height: 110vmin;
-        min-width: 800px; min-height: 800px;
-        max-width: 1400px; max-height: 1400px;
-        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-        background-size: contain; background-repeat: no-repeat; background-position: center;
-        opacity: var(--watermark-opacity); filter: var(--watermark-filter);
-        z-index: 0; pointer-events: none; user-select: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+                          linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
     }
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(56,189,248,var(--scanline-opacity)) 2px, rgba(56,189,248,var(--scanline-opacity)) 4px);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .watermark {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: var(--watermark-size);
+        height: var(--watermark-size);
+        opacity: var(--watermark-opacity);
+        pointer-events: none;
+        z-index: 0;
+        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-size: 135%;
+        background-repeat: no-repeat;
+        background-position: center;
+        border-radius: 50%;
+        transition: all 0.4s ease;
+        filter: var(--watermark-filter);
+    }
+
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+    /* ── Gold Standard: hamburger button + drawer-backdrop ── */
+    .hamburger-btn {
+        display: none;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-primary);
+        width: 44px; height: 44px;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 16px; left: 16px;
+        z-index: 110;
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .drawer-backdrop {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(2px);
+        z-index: 90;
+    }
+    .drawer-backdrop.open { display: block; }
+    .drawer-close-btn {
+        display: none;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        width: 36px; height: 36px;
+        align-items: center; justify-content: center;
+        cursor: pointer;
+        font-size: 18px;
+        color: var(--text-primary);
+        position: absolute;
+        top: 12px; right: 12px;
+    }
+    .drawer-title {
+        display: none;
+        font-size: 11px; font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: absolute;
+        top: 18px; left: 16px;
+    }
 
     /* ── HEADER ── */
     header {
@@ -134,7 +220,37 @@
     .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
     .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
     .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
-    @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+    /* ── Gold Standard mobile drawer (<768px) ── */
+    @media (max-width: 768px) {
+        .container { padding: 16px 12px; }
+        .hamburger-btn { display: flex; }
+
+        .nav-sidebar {
+            position: fixed !important;
+            top: 0; left: -260px;
+            width: 240px; height: 100vh; max-height: 100vh;
+            z-index: 100;
+            border-radius: 0;
+            border-right: 2px solid var(--accent);
+            background: var(--card-bg);
+            padding: 60px 16px 20px 16px;
+            overflow-y: auto;
+            transition: left 0.25s ease;
+            display: flex !important;
+        }
+        .nav-sidebar.open { left: 0; }
+        .drawer-close-btn { display: flex; }
+        .drawer-title { display: block; }
+
+        .page-with-sidebar { display: block; }
+    }
+    @media (min-width: 769px) and (max-width: 1199px) {
+        .nav-sidebar { display: none; }
+        .page-with-sidebar { display: block; }
+    }
+    @media (min-width: 769px) {
+        .drawer-close-btn, .drawer-title { display: none; }
+    }
 
     /* ── SECTION CARDS ── */
     .section-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
@@ -429,6 +545,11 @@
 </style>
 </head>
 <body>
+
+<!-- Gold Standard: watermark layer + mobile hamburger + drawer backdrop -->
+<div class="watermark"></div>
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="Open navigation" onclick="openMobileDrawer()">☰</button>
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeMobileDrawer()"></div>
 <div class="container">
 
 <!-- HEADER -->
@@ -464,7 +585,9 @@
 <div class="page-with-sidebar">
 
 <!-- NAV SIDEBAR -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
+    <span class="drawer-title" data-i18n="navDrawerTitle">Navigation</span>
+    <button class="drawer-close-btn" onclick="closeMobileDrawer()" aria-label="Close navigation">✕</button>
     <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
     <div class="nav-btn inactive-nav">
         <span class="nav-btn-label">🌍 <span data-i18n="navAfrica">Africa</span></span>
@@ -483,7 +606,7 @@
         <span class="nav-btn-status" data-i18n="navLive">● Live</span>
     </a>
     <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 <span data-i18n="navWHA">W. Hemisphere</span></span>
+        <span class="nav-btn-label">🌎 <span data-i18n="navWHA">Western Hemisphere</span></span>
         <span class="nav-btn-status" data-i18n="navLive">● Live</span>
     </a>
     <div class="nav-divider"></div>
@@ -495,7 +618,7 @@
     <div class="nav-sidebar-label" data-i18n="navRhetoricTrackers">Rhetoric Trackers</div>
 
     <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 <span data-i18n="navMERhetoric">ME Rhetoric</span></span>
+        <span class="nav-btn-label">📡 <span data-i18n="navMERhetoric">Middle East Rhetoric</span></span>
         <span class="nav-btn-status" data-i18n="navLive">● Live</span>
     </a>
 
@@ -509,9 +632,21 @@
         <span class="nav-btn-status" data-i18n="navLive">● Live</span>
     </a>
 
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">📡 <span data-i18n="navWHARhetoric">WHA Rhetoric</span></span>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">📡 <span data-i18n="navWHARhetoric">Western Hemisphere Rhetoric</span></span>
+        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <!-- Country-specific Tracker + Stability pair (canonical sidebar pattern) -->
+    <a href="rhetoric-cuba.html" class="nav-btn rhetoric-btn current-page">
+        <span class="nav-btn-label">🇨🇺 <span data-i18n="navCubaTracker">Cuba Tracker</span></span>
         <span class="nav-btn-status" data-i18n="navYouAreHere">◉ You are here</span>
+    </a>
+    <a href="cuba-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🇨🇺 <span data-i18n="navCubaStability">Cuba Stability</span></span>
+        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
     </a>
 </nav>
 
@@ -790,14 +925,17 @@ const T = {
         navAsia:               'Asia & Pacific',
         navEurope:             'Europe',
         navMideast:            'Middle East',
-        navWHA:                'W. Hemisphere',
+        navWHA:                'Western Hemisphere',
         navMilitary:           'Military Tracker',
+        navDrawerTitle:        'Navigation',
         // Sidebar — Rhetoric Trackers
         navRhetoricTrackers:   'Rhetoric Trackers',
-        navMERhetoric:         'ME Rhetoric',
+        navMERhetoric:         'Middle East Rhetoric',
         navAsiaRhetoric:       'Asia Rhetoric',
         navEuropeRhetoric:     'Europe Rhetoric',
-        navWHARhetoric:        'WHA Rhetoric',
+        navWHARhetoric:        'Western Hemisphere Rhetoric',
+        navCubaTracker:        'Cuba Tracker',
+        navCubaStability:      'Cuba Stability',
         navLive:               '● Live',
         navFuture:             '🔒 Future',
         navYouAreHere:         '◉ You are here',
@@ -878,14 +1016,17 @@ const T = {
         navAsia:               'Asia y Pacífico',
         navEurope:             'Europa',
         navMideast:            'Oriente Medio',
-        navWHA:                'Hemisferio Occ.',
+        navWHA:                'Hemisferio Occidental',
+        navDrawerTitle:        'Navegación',
         navMilitary:           'Rastreador Militar',
         // Sidebar — Rastreadores de Retórica
         navRhetoricTrackers:   'Rastreadores de Retórica',
-        navMERhetoric:         'Retórica OM',
+        navMERhetoric:         'Retórica Oriente Medio',
         navAsiaRhetoric:       'Retórica Asia',
         navEuropeRhetoric:     'Retórica Europa',
-        navWHARhetoric:        'Retórica HO',
+        navWHARhetoric:        'Retórica Hemisferio Occidental',
+        navCubaTracker:        'Rastreador Cuba',
+        navCubaStability:      'Estabilidad Cuba',
         navLive:               '● En Vivo',
         navFuture:             '🔒 Futuro',
         navYouAreHere:         '◉ Estás aquí',
@@ -966,14 +1107,17 @@ const T = {
         navAsia:               'Ásia e Pacífico',
         navEurope:             'Europa',
         navMideast:            'Oriente Médio',
-        navWHA:                'Hemisfério Oc.',
+        navWHA:                'Hemisfério Ocidental',
+        navDrawerTitle:        'Navegação',
         navMilitary:           'Rastreador Militar',
         // Sidebar — Rastreadores de Retórica
         navRhetoricTrackers:   'Rastreadores de Retórica',
-        navMERhetoric:         'Retórica OM',
+        navMERhetoric:         'Retórica Oriente Médio',
         navAsiaRhetoric:       'Retórica Ásia',
         navEuropeRhetoric:     'Retórica Europa',
-        navWHARhetoric:        'Retórica HO',
+        navWHARhetoric:        'Retórica Hemisfério Ocidental',
+        navCubaTracker:        'Rastreador Cuba',
+        navCubaStability:      'Estabilidade Cuba',
         navLive:               '● Ao Vivo',
         navFuture:             '🔒 Futuro',
         navYouAreHere:         '◉ Você está aqui',
@@ -1437,6 +1581,25 @@ async function loadCuba(forceRefresh = false) {
 }
 
 function forceScan() { loadCuba(true); }
+
+// ════════════════════════════════════════════════════════
+// MOBILE DRAWER (gold standard hamburger pattern)
+// ════════════════════════════════════════════════════════
+function openMobileDrawer() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('drawerBackdrop');
+    if (sb) sb.classList.add('open');
+    if (bd) bd.classList.add('open');
+}
+function closeMobileDrawer() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('drawerBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('open');
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMobileDrawer();
+});
 
 // ════════════════════════════════════════════════════════
 // INIT
