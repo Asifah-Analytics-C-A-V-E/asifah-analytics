@@ -28,7 +28,12 @@
     --metric-hover-shadow: rgba(0,0,0,0.12);
     --article-bg:     #f8fafc;
     --article-hover:  #e0ecf8;
-    --watermark-opacity: 0.03;
+    /* Gold Standard watermark + grid + scanlines (light theme) */
+    --watermark-opacity: 0.5;
+    --watermark-size: 500px;
+    --grid-color: transparent;
+    --scanline-opacity: 0;
+    --glow-opacity: 0;
     --loading-overlay-bg: rgba(232, 240, 248, 0.98);
     --loading-spinner-bg: rgba(14, 165, 233, 0.2);
     --accent: #0ea5e9;
@@ -51,7 +56,12 @@
     --metric-hover-shadow: rgba(56,189,248,0.18);
     --article-bg:     #0a1628;
     --article-hover:  #142540;
-    --watermark-opacity: 0.02;
+    /* Gold Standard watermark + grid + scanlines (dark theme) */
+    --watermark-opacity: 1.0;
+    --watermark-size: 800px;
+    --grid-color: rgba(56,189,248,0.04);
+    --scanline-opacity: 0.03;
+    --glow-opacity: 1;
     --loading-overlay-bg: rgba(6, 13, 26, 0.98);
     --loading-spinner-bg: rgba(56, 189, 248, 0.25);
     --accent: #38bdf8;
@@ -66,12 +76,102 @@ body {
     color: var(--text-primary);
     line-height: 1.5;
     transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
 }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-.container { max-width: 1400px; margin: 0 auto; padding: 18px; display: flex; gap: 20px; align-items: flex-start; }
+/* ── Gold Standard: grid overlay + scanlines + watermark ── */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(56,189,248,var(--scanline-opacity)) 2px, rgba(56,189,248,var(--scanline-opacity)) 4px);
+    pointer-events: none;
+    z-index: 0;
+}
+.watermark {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--watermark-size);
+    height: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    pointer-events: none;
+    z-index: 0;
+    background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: 135%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    transition: all 0.4s ease;
+}
+[data-theme="dark"] .watermark {
+    filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 18px; display: flex; gap: 20px; align-items: flex-start; position: relative; z-index: 1; }
 .main-content { flex: 1; min-width: 0; }
+
+/* ── Gold Standard: hamburger button + drawer-backdrop ── */
+.hamburger-btn {
+    display: none;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    width: 44px; height: 44px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 16px; left: 16px;
+    z-index: 110;
+    font-family: 'Times New Roman', Times, serif;
+}
+.drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+}
+.drawer-backdrop.open { display: block; }
+.drawer-close-btn {
+    display: none;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    width: 36px; height: 36px;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-primary);
+    position: absolute;
+    top: 12px; right: 12px;
+    z-index: 105;
+}
+.drawer-title {
+    display: none;
+    font-size: 11px; font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    top: 18px; left: 16px;
+}
 
 /* ── HEADER ── */
 header {
@@ -121,7 +221,39 @@ header {
 .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
 .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
 .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 6px 0; }
-@media (max-width: 1199px) { .nav-sidebar { display: none; } .container { display: block; } }
+/* ── Gold Standard mobile drawer (<768px) ── */
+@media (max-width: 768px) {
+    .container { padding: 16px 12px; }
+    .hamburger-btn { display: flex; }
+
+    /* Sidebar becomes off-canvas drawer */
+    .nav-sidebar {
+        position: fixed !important;
+        top: 0; left: -260px;
+        width: 240px; height: 100vh; max-height: 100vh;
+        z-index: 100;
+        border-radius: 0;
+        border-right: 2px solid var(--accent);
+        background: var(--card-bg);
+        padding: 60px 16px 20px 16px;
+        overflow-y: auto;
+        transition: left 0.25s ease;
+        display: flex !important;
+    }
+    .nav-sidebar.open { left: 0; }
+    .drawer-close-btn { display: flex; }
+    .drawer-title { display: block; }
+
+    .container { display: block; }
+    .main-content { width: 100%; }
+}
+@media (min-width: 769px) and (max-width: 1199px) {
+    .nav-sidebar { display: none; }
+    .container { display: block; }
+}
+@media (min-width: 769px) {
+    .drawer-close-btn, .drawer-title { display: none; }
+}
 
 /* ── ADVISORY BANNERS ── */
 .worldwide-caution-banner { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%); border: 2px solid #dc2626; border-radius: 10px; padding: 14px 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
@@ -350,9 +482,71 @@ footer {
 .loading-spinner { width: 50px; height: 50px; border: 4px solid var(--loading-spinner-bg); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { margin-top: 14px; color: var(--text-primary); font-family: 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 1px; }
+
+/* ════════════════════════════════════════════════════════════
+   COMMODITY EXPOSURE CARD (Gold Standard v2.0 — Cuba arctic)
+   ════════════════════════════════════════════════════════════ */
+.commodity-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px 28px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: box-shadow 0.3s; }
+.commodity-card:hover { box-shadow: var(--card-hover-glow); }
+[data-theme="dark"] .commodity-card { border-color: rgba(56,189,248,0.25); }
+.commodity-card-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; letter-spacing: 0.3px; }
+.commodity-prose { font-size: 13px; line-height: 1.65; color: var(--text-secondary); background: rgba(2,6,23,0.5); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; border-left: 3px solid var(--accent); }
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+.commodity-convergence-alert { display: none; background: linear-gradient(135deg, rgba(239,68,68,0.18) 0%, rgba(249,115,22,0.18) 100%); border-left: 4px solid #ef4444; border-radius: 6px; padding: 14px 18px; margin-bottom: 14px; }
+.commodity-convergence-alert.active { display: block; }
+.cca-title { font-weight: 700; font-size: 13px; color: #fca5a5; letter-spacing: 0.5px; margin-bottom: 6px; }
+[data-theme="light"] .cca-title { color: #dc2626; }
+.cca-detail { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+.commodity-alert-banner { display: none; padding: 12px 16px; border-left: 4px solid var(--text-muted); border-radius: 6px; margin-bottom: 14px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal { background: rgba(34,197,94,0.08); border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10); border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge { background: rgba(239,68,68,0.12); border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+.commodity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.commodity-pill { background: rgba(2,6,23,0.5); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s; }
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover { border-color: var(--accent); transform: translateY(-2px); }
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 20px; }
+.commodity-pill-name { font-weight: 700; font-size: 14px; color: var(--text-primary); flex: 1; }
+.commodity-pill-rank { font-size: 11px; color: var(--text-muted); }
+.commodity-pill-role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); font-weight: 700; }
+.commodity-pill-role.role-historic_reversal { color: #ef4444; }
+.commodity-pill-price-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.commodity-pill-price { font-weight: 700; color: var(--text-primary); }
+.commodity-pill-delta { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.commodity-pill-delta.up { background: rgba(34,197,94,0.15); color: #22c55e; }
+.commodity-pill-delta.down { background: rgba(239,68,68,0.15); color: #ef4444; }
+.commodity-pill-spark-svg { width: 60px; height: 18px; }
+.commodity-pill-alert { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.commodity-pill-alert.alert-normal { background: rgba(34,197,94,0.12); color: #22c55e; }
+.commodity-pill-alert.alert-elevated { background: rgba(234,179,8,0.12); color: #eab308; }
+.commodity-pill-alert.alert-high { background: rgba(249,115,22,0.12); color: #f97316; }
+.commodity-pill-alert.alert-surge { background: rgba(239,68,68,0.14); color: #ef4444; }
+.commodity-regime-flag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(239,68,68,0.14); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); text-transform: uppercase; letter-spacing: 0.4px; margin-left: 6px; }
+.commodity-top-signals { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); }
+.ts-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.commodity-top-signals a { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; color: var(--text-secondary); text-decoration: none; border-bottom: 1px solid var(--card-border); }
+.commodity-top-signals a:hover { color: var(--accent); }
+.ts-source { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.strategic-linkage { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); font-size: 12px; line-height: 1.65; color: var(--text-secondary); }
+.strategic-linkage strong { color: var(--text-primary); }
+@media (max-width: 768px) {
+    .commodity-card { padding: 16px 18px; }
+    .commodity-grid { grid-template-columns: 1fr; }
+    .commodity-prose { font-size: 12px; padding: 10px 12px; }
+}
 </style>
 </head>
 <body>
+
+<!-- Gold Standard: watermark layer + mobile hamburger + drawer backdrop -->
+<div class="watermark"></div>
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="Open navigation" onclick="openMobileDrawer()">☰</button>
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeMobileDrawer()"></div>
 
 <!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay">
@@ -362,8 +556,10 @@ footer {
 
 <div class="container">
 
-    <!-- ── NAV SIDEBAR ── -->
-    <nav class="nav-sidebar">
+    <!-- ── NAV SIDEBAR (gold standard: also serves as mobile drawer) ── -->
+    <nav class="nav-sidebar" id="navSidebar">
+        <span class="drawer-title" data-i18n="navDrawerTitle">Navigation</span>
+        <button class="drawer-close-btn" onclick="closeMobileDrawer()" aria-label="Close navigation">✕</button>
         <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
         <div class="nav-btn inactive-nav">
             <span class="nav-btn-label">🌍 <span data-i18n="navAfrica">Africa</span></span>
@@ -527,6 +723,39 @@ footer {
             </div>
             <div id="oilTankerSignalsContainer">
                 <div class="oil-tanker-empty" data-i18n="otEmpty">No tanker arrival signals in current scan window.</div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════ COMMODITY EXPOSURE CARD (Gold Standard v2.0 — Cuba arctic) ════════════════════════════════════════════════════════════ -->
+        <div class="commodity-card" id="commodityCard">
+            <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+            <div class="commodity-prose" id="commodityProse">
+                <span data-i18n="commodity_prose_loading">Loading commodity exposure profile…</span>
+            </div>
+            <!-- OIL × POWER GRID CONVERGENCE -->
+            <div class="commodity-convergence-alert active" id="commodityConvergenceOilGrid">
+                <div class="cca-title" data-i18n="cca_oilgrid_title">⚡ Oil × Power Grid Convergence — Blackout Cascade Vector</div>
+                <div class="cca-detail" data-i18n="cca_oilgrid_detail">
+                    Cuba's electrical grid runs ~70% on imported heavy fuel oil (HFO/Mazut) — distinct from crude. Eight thermoelectric plants (Antonio Guiteras, Máximo Gómez, etc.) depend entirely on Russian Rosneft + Venezuelan PDVSA cargoes. Any 30-day gap in fuel-oil arrivals → rolling blackouts → protest cycle. Historical precedent: <strong>July 11 2021, October 2022, March 2024</strong>. Each tanker arrival is a stability event tracked publicly by Cuban state media.
+                </div>
+            </div>
+            <!-- SUGAR HISTORIC REVERSAL -->
+            <div class="commodity-convergence-alert active" id="commodityConvergenceSugar" style="background: linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(139,92,246,0.15) 100%); border-left-color: #a855f7;">
+                <div class="cca-title" data-i18n="cca_sugar_title" style="color: #c084fc;">🌾 Sugar — Historic Reversal Signal</div>
+                <div class="cca-detail" data-i18n="cca_sugar_detail">
+                    Cuba was the world's <strong>#1 sugar producer for ~150 years</strong> (peak ~8.5 MMT/yr in 1989). The 2024-25 harvest collapsed to ~150-200k tonnes — a 95-98% peak-to-trough collapse. Cuba is now a <strong>NET SUGAR IMPORTER</strong>. This historic reversal signals regime-level structural economic collapse, not commodity-cycle volatility. The sugar industry was the structural anchor of the Cuban economy from the Spanish colonial period through the Soviet era. Sugar is <strong>no longer a Cuban export lever — it is a domestic vulnerability</strong>. <em>Treat as standalone regime-stress signal.</em>
+                </div>
+            </div>
+            <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+            <div class="commodity-grid" id="commodityGrid">
+                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;" data-i18n="commodity_loading">⏳ Loading commodity exposure tiles…</div>
+            </div>
+            <div class="commodity-top-signals" id="commodityTopSignals" style="display: none;">
+                <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
+                <div id="commodityTopSignalsList"></div>
+            </div>
+            <div class="strategic-linkage" data-i18n-html="strategic_linkage">
+                <strong>🎯 Strategic Linkage:</strong> Cuba is structurally exposed to commodity pressure on three reinforcing axes: <strong>(1) Oil dependency</strong> (~50% crude imported + ~70% grid runs on imported HFO — every supply shock cascades to blackouts), <strong>(2) Food import dependency</strong> (~70-80% of calories imported; wheat from Russia 50-60%, the libreta ration card is THE political-stability lever — when ration deliveries fail, protests follow), and <strong>(3) Sugar collapse</strong> (former #1 producer now domestic vulnerability, agricultural-sector structural decay). Compound failure across all three axes is the canonical late-Soviet-style economic-input collapse pattern.
             </div>
         </div>
 
@@ -1053,6 +1282,18 @@ var TRANSLATIONS = {
         mnMixed: 'Mixed Flows',
 
         pressure: 'pressure',
+
+        // ── Mobile drawer + commodity card (v1.0 — May 17, 2026) ──
+        navDrawerTitle: 'Navigation',
+        commodity_title: '🛢️ Commodity Exposure & Strategic Pressure',
+        commodity_prose_loading: 'Loading commodity exposure profile…',
+        commodity_loading: '⏳ Loading commodity exposure tiles…',
+        cca_oilgrid_title: '⚡ Oil × Power Grid Convergence — Blackout Cascade Vector',
+        cca_oilgrid_detail: "Cuba's electrical grid runs ~70% on imported heavy fuel oil (HFO/Mazut) — distinct from crude. Eight thermoelectric plants (Antonio Guiteras, Máximo Gómez, etc.) depend entirely on Russian Rosneft + Venezuelan PDVSA cargoes. Any 30-day gap in fuel-oil arrivals → rolling blackouts → protest cycle. Historical precedent: <strong>July 11 2021, October 2022, March 2024</strong>. Each tanker arrival is a stability event tracked publicly by Cuban state media.",
+        cca_sugar_title: '🌾 Sugar — Historic Reversal Signal',
+        cca_sugar_detail: "Cuba was the world's <strong>#1 sugar producer for ~150 years</strong> (peak ~8.5 MMT/yr in 1989). The 2024-25 harvest collapsed to ~150-200k tonnes — a 95-98% peak-to-trough collapse. Cuba is now a <strong>NET SUGAR IMPORTER</strong>. This historic reversal signals regime-level structural economic collapse, not commodity-cycle volatility. Sugar is <strong>no longer a Cuban export lever — it is a domestic vulnerability</strong>. <em>Treat as standalone regime-stress signal.</em>",
+        ts_title: '📰 Top signals (last 24h)',
+        strategic_linkage: "<strong>🎯 Strategic Linkage:</strong> Cuba is structurally exposed to commodity pressure on three reinforcing axes: <strong>(1) Oil dependency</strong> (~50% crude imported + ~70% grid runs on imported HFO — every supply shock cascades to blackouts), <strong>(2) Food import dependency</strong> (~70-80% of calories imported; wheat from Russia 50-60%, the libreta ration card is THE political-stability lever — when ration deliveries fail, protests follow), and <strong>(3) Sugar collapse</strong> (former #1 producer now domestic vulnerability). Compound failure across all three axes is the canonical late-Soviet-style economic-input collapse pattern.",
     },
 
     es: {
@@ -1210,6 +1451,18 @@ var TRANSLATIONS = {
         mnMixed: 'Flujos Mixtos',
 
         pressure: 'presión',
+
+        // ── Menú móvil + tarjeta de commodities (v1.0 — 17 mayo 2026) ──
+        navDrawerTitle: 'Navegación',
+        commodity_title: '🛢️ Exposición a Productos Básicos y Presión Estratégica',
+        commodity_prose_loading: 'Cargando perfil de exposición a productos básicos…',
+        commodity_loading: '⏳ Cargando casillas de exposición…',
+        cca_oilgrid_title: '⚡ Petróleo × Red Eléctrica — Vector de Cascada de Apagones',
+        cca_oilgrid_detail: "La red eléctrica de Cuba opera ~70% con fuel oil pesado importado (HFO/Mazut), distinto del crudo. Las ocho centrales termoeléctricas (Antonio Guiteras, Máximo Gómez, etc.) dependen completamente de cargamentos rusos (Rosneft) + venezolanos (PDVSA). Cualquier brecha de 30 días en arribos de fuel oil → apagones rotativos → ciclo de protesta. Precedentes históricos: <strong>11 de julio de 2021, octubre 2022, marzo 2024</strong>. Cada arribo de tanquero es un evento de estabilidad rastreado públicamente por los medios estatales cubanos.",
+        cca_sugar_title: '🌾 Azúcar — Señal de Reversión Histórica',
+        cca_sugar_detail: "Cuba fue durante <strong>~150 años el productor de azúcar #1 del mundo</strong> (pico ~8.5 MMT/año en 1989). La zafra 2024-25 colapsó a ~150-200k toneladas — un colapso del 95-98% desde el pico. Cuba es ahora un <strong>IMPORTADOR NETO DE AZÚCAR</strong>. Esta reversión histórica señala colapso económico estructural a nivel de régimen, no volatilidad cíclica de mercado. El azúcar ya <strong>no es palanca de exportación cubana — es vulnerabilidad doméstica</strong>. <em>Tratar como señal independiente de estrés del régimen.</em>",
+        ts_title: '📰 Señales principales (últimas 24h)',
+        strategic_linkage: "<strong>🎯 Enlace Estratégico:</strong> Cuba está estructuralmente expuesta a presión sobre productos básicos en tres ejes que se refuerzan mutuamente: <strong>(1) Dependencia del petróleo</strong> (~50% crudo importado + ~70% de la red eléctrica corre con HFO importado — cada choque de suministro desencadena apagones), <strong>(2) Dependencia de importación de alimentos</strong> (~70-80% de calorías importadas; trigo desde Rusia 50-60%, la libreta de abastecimiento es LA palanca de estabilidad política — cuando fallan las entregas, siguen las protestas), y <strong>(3) Colapso del azúcar</strong> (ex-productor #1 ahora vulnerabilidad doméstica). El fallo compuesto en los tres ejes es el patrón canónico de colapso de insumos económicos estilo soviético tardío.",
     },
 
     pt: {
@@ -1367,6 +1620,18 @@ var TRANSLATIONS = {
         mnMixed: 'Fluxos Mistos',
 
         pressure: 'pressão',
+
+        // ── Menu móvel + cartão de commodities (v1.0 — 17 maio 2026) ──
+        navDrawerTitle: 'Navegação',
+        commodity_title: '🛢️ Exposição a Commodities e Pressão Estratégica',
+        commodity_prose_loading: 'Carregando perfil de exposição a commodities…',
+        commodity_loading: '⏳ Carregando blocos de exposição…',
+        cca_oilgrid_title: '⚡ Petróleo × Rede Elétrica — Vetor de Cascata de Apagões',
+        cca_oilgrid_detail: "A rede elétrica de Cuba opera ~70% com óleo combustível pesado importado (HFO/Mazut), distinto do petróleo bruto. As oito centrais termoelétricas (Antonio Guiteras, Máximo Gómez, etc.) dependem totalmente de carregamentos russos (Rosneft) + venezuelanos (PDVSA). Qualquer intervalo de 30 dias em chegadas de óleo combustível → apagões rotativos → ciclo de protesto. Precedentes históricos: <strong>11 de julho de 2021, outubro de 2022, março de 2024</strong>. Cada chegada de petroleiro é um evento de estabilidade rastreado publicamente pela mídia estatal cubana.",
+        cca_sugar_title: '🌾 Açúcar — Sinal de Reversão Histórica',
+        cca_sugar_detail: "Cuba foi durante <strong>~150 anos o produtor de açúcar #1 do mundo</strong> (pico ~8.5 MMT/ano em 1989). A safra 2024-25 entrou em colapso para ~150-200k toneladas — uma queda de 95-98% desde o pico. Cuba é agora um <strong>IMPORTADOR LÍQUIDO DE AÇÚCAR</strong>. Esta reversão histórica sinaliza colapso econômico estrutural em nível de regime, não volatilidade cíclica de mercado. O açúcar <strong>não é mais alavanca de exportação cubana — é vulnerabilidade doméstica</strong>. <em>Tratar como sinal independente de estresse do regime.</em>",
+        ts_title: '📰 Principais sinais (últimas 24h)',
+        strategic_linkage: "<strong>🎯 Vínculo Estratégico:</strong> Cuba está estruturalmente exposta a pressão de commodities em três eixos que se reforçam mutuamente: <strong>(1) Dependência de petróleo</strong> (~50% bruto importado + ~70% da rede elétrica funciona com HFO importado — cada choque de oferta desencadeia apagões), <strong>(2) Dependência de importação de alimentos</strong> (~70-80% das calorias importadas; trigo da Rússia 50-60%, a libreta de abastecimento é A alavanca de estabilidade política — quando as entregas de ração falham, seguem-se protestos), e <strong>(3) Colapso do açúcar</strong> (ex-produtor #1 agora vulnerabilidade doméstica). Falha composta nos três eixos é o padrão canônico de colapso de insumos econômicos estilo soviético tardío.",
     }
 };
 
@@ -1790,6 +2055,128 @@ async function loadCubaData() {
 }
 
 // ════════════════════════════════════════════════════════════════
+// COMMODITY EXPOSURE CARD (v1.0 — May 17, 2026)
+// Redis-first: /api/wha/commodity/cuba (12hr TTL).
+// ════════════════════════════════════════════════════════════════
+async function loadCommodityCuba() {
+    try {
+        var resp = await fetch(WHA_API + '/api/wha/commodity/cuba');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var data = await resp.json();
+        if (!data || !data.success) throw new Error('endpoint returned !success');
+        renderCommodityCard(data);
+    } catch(e) {
+        console.error('[Cuba Commodity] Load error:', e);
+        var grid = document.getElementById('commodityGrid');
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">⚠️ Commodity data temporarily unavailable. Will retry on next page load.</div>';
+    }
+}
+function renderCommodityCard(data) {
+    var prose = document.getElementById('commodityProse');
+    if (prose && data.prose) prose.innerHTML = escapeHtmlCommodity(data.prose);
+    var banner = document.getElementById('commodityAlertBanner');
+    if (banner && data.alert_level) {
+        banner.className = 'commodity-alert-banner show alert-' + data.alert_level;
+        var levelLabel = (data.alert_level || 'normal').toUpperCase();
+        var pressureNum = (typeof data.commodity_pressure === 'number') ? data.commodity_pressure.toFixed(1) : '—';
+        banner.innerHTML = '<strong>' + levelLabel + '</strong><span class="ab-meta">composite pressure: ' + pressureNum + ' · ' + (data.profile_count || 0) + ' commodities tracked</span>';
+    }
+    var grid = document.getElementById('commodityGrid');
+    if (grid && Array.isArray(data.commodity_summaries)) {
+        grid.innerHTML = data.commodity_summaries.map(renderCommodityPill).join('');
+    }
+    var ts = document.getElementById('commodityTopSignals');
+    var tsList = document.getElementById('commodityTopSignalsList');
+    if (ts && tsList && Array.isArray(data.top_signals) && data.top_signals.length > 0) {
+        var recent = data.top_signals.slice(0, 5);
+        tsList.innerHTML = recent.map(function(s) {
+            return '<a href="' + escapeHtmlCommodity(s.article_url || '#') + '" target="_blank" rel="noopener">'
+                 + '<span>' + (s.commodity_icon || '📊') + ' ' + escapeHtmlCommodity((s.article_title || '').slice(0, 110)) + '</span>'
+                 + '<span class="ts-source">' + escapeHtmlCommodity(s.source || '') + '</span>'
+                 + '</a>';
+        }).join('');
+        ts.style.display = 'block';
+    }
+}
+function renderCommodityPill(c) {
+    var role = c.role || 'consumer';
+    var roleClass = 'role-' + role;
+    var rank = c.rank ? '#' + c.rank : '';
+    var sp = c.sparkline || null;
+    var price = (sp && typeof sp.price === 'number') ? sp.price.toFixed(2) : '';
+    var deltaPct = (sp && typeof sp.change_pct_1d === 'number') ? sp.change_pct_1d : null;
+    var deltaCls = (deltaPct === null) ? '' : (deltaPct >= 0 ? 'up' : 'down');
+    var deltaTxt = (deltaPct === null) ? '' : (deltaPct >= 0 ? '+' : '') + deltaPct.toFixed(2) + '%';
+    var sparkSvg = (sp && Array.isArray(sp.spark) && sp.spark.length > 1) ? renderMiniSpark(sp.spark, deltaPct >= 0) : '';
+    var alertCls = 'alert-' + (c.global_alert_level || 'normal');
+    var signalCount = c.signal_count || 0;
+    var regimeBadge = '';
+    if (Array.isArray(c.regime_flags) && c.regime_flags.indexOf('sub_consumer_floor') !== -1) {
+        regimeBadge = '<span class="commodity-regime-flag" title="Country production fell below domestic consumption — structural import dependency">SUB-CONSUMER FLOOR</span>';
+    }
+    var roleLabel = role.replace(/_/g, ' ').toUpperCase();
+    return '<div class="commodity-pill">'
+         + '<div class="commodity-pill-header">'
+         +   '<span class="commodity-pill-icon">' + (c.icon || '📊') + '</span>'
+         +   '<span class="commodity-pill-name">' + escapeHtmlCommodity(c.name || c.commodity) + '</span>'
+         +   '<span class="commodity-pill-rank">' + rank + '</span>'
+         + '</div>'
+         + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+         +   '<span class="commodity-pill-role ' + roleClass + '">' + escapeHtmlCommodity(roleLabel) + '</span>'
+         +   regimeBadge
+         +   '<span class="commodity-pill-alert ' + alertCls + '">' + (c.global_alert_level || 'normal') + ' · ' + signalCount + ' signals</span>'
+         + '</div>'
+         + (price ? '<div class="commodity-pill-price-row">'
+             + '<span class="commodity-pill-price">$' + price + '</span>'
+             + (deltaTxt ? '<span class="commodity-pill-delta ' + deltaCls + '">' + deltaTxt + '</span>' : '')
+             + sparkSvg
+           + '</div>' : '')
+         + '</div>';
+}
+function renderMiniSpark(points, isUp) {
+    if (!points || points.length < 2) return '';
+    var min = Math.min.apply(null, points);
+    var max = Math.max.apply(null, points);
+    var range = (max - min) || 1;
+    var w = 60, h = 18;
+    var step = w / (points.length - 1);
+    var color = isUp ? '#22c55e' : '#ef4444';
+    var path = points.map(function(p, i) {
+        var x = (i * step).toFixed(1);
+        var y = (h - ((p - min) / range) * h).toFixed(1);
+        return (i === 0 ? 'M' : 'L') + x + ',' + y;
+    }).join(' ');
+    return '<svg class="commodity-pill-spark-svg" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">'
+         + '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="1.5"/>'
+         + '</svg>';
+}
+function escapeHtmlCommodity(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+}
+
+// ════════════════════════════════════════════════════════════════
+// MOBILE DRAWER (gold standard hamburger pattern)
+// ════════════════════════════════════════════════════════════════
+function openMobileDrawer() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('drawerBackdrop');
+    if (sb) sb.classList.add('open');
+    if (bd) bd.classList.add('open');
+}
+function closeMobileDrawer() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('drawerBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('open');
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMobileDrawer();
+});
+
+// ════════════════════════════════════════════════════════════════
 // BOOT
 // ════════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function(){
@@ -1803,6 +2190,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     initMap();
     loadCubaData();
+    loadCommodityCuba();  // ← Gold Standard v1.0 commodity card fetch
 });
 </script>
 
