@@ -484,6 +484,34 @@ footer {
 .loading-text { margin-top: 14px; color: var(--text-primary); font-family: 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 1px; }
 
 /* ════════════════════════════════════════════════════════════
+   QUICK STABILITY GLANCE CARD (v1.0 — May 17, 2026)
+   Consolidates Regime Control + External Pressure + Civilian Pressure
+   + Adversary Oil into ONE compact 2x2 grid card, full page width,
+   with pointer to rhetoric tracker for full details.
+   ════════════════════════════════════════════════════════════ */
+.quick-glance-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+.quick-glance-card:hover { box-shadow: var(--card-hover-glow); }
+.qg-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
+.qg-header-title { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.3px; }
+.qg-header-link { font-size: 11px; color: var(--accent); text-decoration: none; padding: 4px 10px; border: 1px solid var(--card-border); border-radius: 4px; transition: all 0.2s; }
+.qg-header-link:hover { background: var(--accent); color: var(--bg-color); border-color: var(--accent); }
+.qg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.qg-tile { background: rgba(2,6,23,0.5); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; transition: border-color 0.2s; }
+[data-theme="light"] .qg-tile { background: #f8fbfe; }
+.qg-tile:hover { border-color: var(--accent); }
+.qg-tile-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.qg-tile-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+.qg-tile-pill { font-size: 9px; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.4px; color: white; }
+.qg-tile-score { font-size: 28px; font-weight: 800; line-height: 1; margin-top: 2px; }
+.qg-tile-band { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.qg-tile-detail { font-size: 11px; color: var(--text-secondary); line-height: 1.4; margin-top: 4px; }
+.qg-tile-empty { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 6px 0; }
+@media (max-width: 768px) {
+    .qg-grid { grid-template-columns: 1fr; }
+    .qg-tile-score { font-size: 24px; }
+}
+
+/* ════════════════════════════════════════════════════════════
    COMMODITY EXPOSURE CARD (Gold Standard v2.0 — Cuba arctic)
    ════════════════════════════════════════════════════════════ */
 .commodity-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px 28px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: box-shadow 0.3s; }
@@ -670,59 +698,60 @@ footer {
             <a href="rhetoric-cuba.html" class="open-tracker-btn" data-i18n="rhBtn">Open Tracker →</a>
         </div>
 
-        <!-- ── STABILITY HEADLINE ── -->
-        <div class="stability-headline">
-            <div class="stab-block">
-                <div class="stab-block-label" data-i18n="regimeControlLabel">🏛️ Regime Control Index</div>
-                <div class="stab-score" id="regimeControlScore" style="color:#16a34a;">--</div>
-                <div class="stab-label" id="regimeControlBand" data-i18n="loading">Loading...</div>
-                <span class="stab-pill" id="regimeControlPill" style="background:#64748b;">--</span>
-                <div class="stab-detail" data-i18n="regimeControlDetail">
-                    Higher = regime maintains coercive grip. Lower = fracture risk: protests overwhelming security, mass dissent, regime split.
+        <!-- ════════════════════════════════════════════════════════════ QUICK STABILITY GLANCE (consolidated 2x2 grid — full details on rhetoric tracker) ════════════════════════════════════════════════════════════ -->
+        <div class="quick-glance-card">
+            <div class="qg-header">
+                <span class="qg-header-title" data-i18n="qgHeaderTitle">📊 Quick Stability Glance</span>
+                <a href="rhetoric-cuba.html" class="qg-header-link" data-i18n="qgHeaderLink">↗ Full details on Rhetoric Tracker</a>
+            </div>
+            <div class="qg-grid">
+                <!-- Tile 1: Regime Control Index -->
+                <div class="qg-tile">
+                    <div class="qg-tile-header">
+                        <span class="qg-tile-label" data-i18n="regimeControlLabel">🏛️ Regime Control Index</span>
+                        <span class="qg-tile-pill" id="regimeControlPill" style="background:#64748b;">--</span>
+                    </div>
+                    <div class="qg-tile-score" id="regimeControlScore" style="color:#16a34a;">--</div>
+                    <div class="qg-tile-band" id="regimeControlBand" data-i18n="loading">Loading...</div>
+                    <div class="qg-tile-detail" data-i18n="regimeControlDetail">
+                        Higher = regime maintains coercive grip. Lower = fracture risk: protests overwhelming security, mass dissent, regime split.
+                    </div>
                 </div>
-            </div>
-            <div class="stab-block">
-                <div class="stab-block-label" data-i18n="extPressureLabel">🇺🇸 External Pressure Index</div>
-                <div class="stab-score" id="externalPressureScore" style="color:#dc2626;">--</div>
-                <div class="stab-label" id="externalPressureBand" data-i18n="loading">Loading...</div>
-                <span class="stab-pill" id="externalPressurePill" style="background:#64748b;">--</span>
-                <div class="stab-detail" data-i18n="extPressureDetail">
-                    Higher = U.S. moving toward forcing regime change (Venezuela 2026 pattern). Lower = baseline diplomatic posture.
+                <!-- Tile 2: External Pressure Index -->
+                <div class="qg-tile">
+                    <div class="qg-tile-header">
+                        <span class="qg-tile-label" data-i18n="extPressureLabel">🇺🇸 External Pressure Index</span>
+                        <span class="qg-tile-pill" id="externalPressurePill" style="background:#64748b;">--</span>
+                    </div>
+                    <div class="qg-tile-score" id="externalPressureScore" style="color:#dc2626;">--</div>
+                    <div class="qg-tile-band" id="externalPressureBand" data-i18n="loading">Loading...</div>
+                    <div class="qg-tile-detail" data-i18n="extPressureDetail">
+                        Higher = U.S. moving toward forcing regime change (Venezuela 2026 pattern). Lower = baseline diplomatic posture.
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- ── CIVILIAN PRESSURE ── -->
-        <div class="civ-press-card">
-            <div class="civ-press-header">
-                <span class="civ-press-title" data-i18n="cpTitle">🔌 Civilian Pressure Index</span>
-                <span class="civ-press-badge" id="civPressBadge" style="background:#64748b;">L0 — Stable</span>
-            </div>
-            <div class="section-subhead" data-i18n="cpSubhead">
-                Tracks <em>what is actually breaking</em> on the ground — blackouts, fuel rationing, food/medicine shortages, currency collapse. Distinct from rhetoric: rhetoric measures what people <em>say</em>; civilian pressure measures what the population <em>experiences</em>. Cuba's stability is fundamentally about civilian infrastructure, and historically people respond to its collapse by leaving (the "boats not bullets" pattern) — not rising up against the regime.
-            </div>
-            <div class="civ-press-grid">
-                <div class="civ-press-score">
-                    <div class="civ-press-score-num" id="civPressScoreNum">0</div>
-                    <div class="civ-press-score-label" data-i18n="cpScoreLabel">Pressure Score / 100</div>
+                <!-- Tile 3: Civilian Pressure Index -->
+                <div class="qg-tile">
+                    <div class="qg-tile-header">
+                        <span class="qg-tile-label" data-i18n="cpTitle">🔌 Civilian Pressure Index</span>
+                        <span class="qg-tile-pill" id="civPressBadge" style="background:#64748b;">L0</span>
+                    </div>
+                    <div class="qg-tile-score" id="civPressScoreNum" style="color:#f97316;">0</div>
+                    <div class="qg-tile-band" data-i18n="cpScoreLabel">Pressure Score / 100</div>
+                    <div class="qg-tile-detail" id="civPressSignalsList">
+                        <div class="qg-tile-empty" data-i18n="cpEmpty">No active civilian pressure signals detected.</div>
+                    </div>
                 </div>
-                <div class="civ-press-signals-list" id="civPressSignalsList">
-                    <div class="civ-press-empty" data-i18n="cpEmpty">No active civilian pressure signals detected. Monitoring blackout, fuel, and scarcity keywords across English/Spanish sources.</div>
+                <!-- Tile 4: Adversary Oil Lifeline -->
+                <div class="qg-tile">
+                    <div class="qg-tile-header">
+                        <span class="qg-tile-label" data-i18n="otTitle">⛽ Adversary Oil Lifeline</span>
+                        <span class="qg-tile-pill" id="oilTankerBadge" style="background:#64748b;">L0</span>
+                    </div>
+                    <div class="qg-tile-band" data-i18n="otTileBand">Russia / Iran / Venezuela tankers</div>
+                    <div class="qg-tile-detail" id="oilTankerSignalsContainer">
+                        <div class="qg-tile-empty" data-i18n="otEmpty">No tanker arrival signals in current scan window.</div>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- ── OIL TANKER ── -->
-        <div class="oil-tanker-card">
-            <div class="oil-tanker-header">
-                <span class="oil-tanker-title" data-i18n="otTitle">⛽ Adversary Oil Lifeline — Russia / Iran / Venezuela</span>
-                <span class="oil-tanker-badge" id="oilTankerBadge">L0 — Baseline</span>
-            </div>
-            <div class="section-subhead" data-i18n="otSubhead">
-                Russian Rosneft, Iranian, and Venezuelan PDVSA tanker arrivals to Cienfuegos / Matanzas / Havana ports. Oil delivery directly mitigates blackouts (the regime's #1 stability lever) and signals adversary access depth. Active tanker traffic = regime can keep the lights on. Tanker drought = blackouts intensify.
-            </div>
-            <div id="oilTankerSignalsContainer">
-                <div class="oil-tanker-empty" data-i18n="otEmpty">No tanker arrival signals in current scan window.</div>
             </div>
         </div>
 
@@ -1283,6 +1312,11 @@ var TRANSLATIONS = {
 
         pressure: 'pressure',
 
+        // ── Quick Stability Glance consolidated card (v1.0 — May 17, 2026) ──
+        qgHeaderTitle: '📊 Quick Stability Glance',
+        qgHeaderLink: '↗ Full details on Rhetoric Tracker',
+        otTileBand: 'Russia / Iran / Venezuela tankers',
+
         // ── Mobile drawer + commodity card (v1.0 — May 17, 2026) ──
         navDrawerTitle: 'Navigation',
         commodity_title: '🛢️ Commodity Exposure & Strategic Pressure',
@@ -1452,6 +1486,11 @@ var TRANSLATIONS = {
 
         pressure: 'presión',
 
+        // ── Vistazo rápido de estabilidad (v1.0 — 17 mayo 2026) ──
+        qgHeaderTitle: '📊 Vistazo Rápido de Estabilidad',
+        qgHeaderLink: '↗ Detalles completos en el Rastreador de Retórica',
+        otTileBand: 'Tanqueros Rusia / Irán / Venezuela',
+
         // ── Menú móvil + tarjeta de commodities (v1.0 — 17 mayo 2026) ──
         navDrawerTitle: 'Navegación',
         commodity_title: '🛢️ Exposición a Productos Básicos y Presión Estratégica',
@@ -1620,6 +1659,11 @@ var TRANSLATIONS = {
         mnMixed: 'Fluxos Mistos',
 
         pressure: 'pressão',
+
+        // ── Visão rápida de estabilidade (v1.0 — 17 maio 2026) ──
+        qgHeaderTitle: '📊 Visão Rápida de Estabilidade',
+        qgHeaderLink: '↗ Detalhes completos no Rastreador de Retórica',
+        otTileBand: 'Petroleiros Rússia / Irã / Venezuela',
 
         // ── Menu móvel + cartão de commodities (v1.0 — 17 maio 2026) ──
         navDrawerTitle: 'Navegação',
