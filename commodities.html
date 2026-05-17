@@ -79,6 +79,7 @@
             --role-transit: #93c5fd;
             --role-sanctions: #ef4444;
             --role-mediator: #a78bfa;
+            --role-historic: #eab308;
             --role-none: #1e3a5f;
 
             /* Shadows */
@@ -475,6 +476,7 @@
         .exposure-cell.role-transit { background: rgba(147,197,253,0.15); color: var(--role-transit); border: 1px solid var(--role-transit); }
         .exposure-cell.role-sanctions { background: rgba(239,68,68,0.18); color: var(--role-sanctions); border: 1px solid var(--role-sanctions); }
         .exposure-cell.role-mediator { background: rgba(167,139,250,0.18); color: var(--role-mediator); border: 1px solid var(--role-mediator); }
+        .exposure-cell.role-historic { background: rgba(234,179,8,0.18); color: var(--role-historic); border: 1px solid var(--role-historic); }
         .exposure-cell.role-none { background: var(--bg-signal); color: var(--text-muted); }
         /* Multi-role cell — country has multiple roles for the same commodity (e.g. China wheat producer + consumer) */
         .exposure-cell.multi-role { background: linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(249,115,22,0.18) 100%); color: var(--text-primary); border: 1px solid var(--accent-cyan); position: relative; }
@@ -1534,10 +1536,13 @@ function renderExposureMatrix() {
                         }
                         const cellClass = isMultiRole
                             ? 'exposure-cell multi-role'
-                            : (['producer','consumer','transit','sanctions_target','mediator'].includes(role)
-                                ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions')}`
+                            : (['producer','consumer','transit','sanctions_target','mediator','historic_reversal'].includes(role)
+                                ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions').replace('historic_reversal', 'historic')}`
                                 : 'exposure-cell role-none');
-                        const initial = isMultiRole ? 'P/C' : roleLabel.charAt(0);
+                        // v1.4.1: Historic Reversal renders as 'H' (yellow) — country was once a dominant producer but has reversed to net importer (e.g., Cuba sugar post-2024)
+                        const initial = isMultiRole
+                            ? 'P/C'
+                            : (role === 'historic_reversal' ? 'H' : roleLabel.charAt(0));
                         const rankBadge = exp.rank ? `<span class="exposure-rank">#${exp.rank}</span>` : '';
                         inner += `<td><span class="${cellClass}" title="${escapeHtml(noteAttr)}">${initial}</span>${rankBadge ? '<br>' + rankBadge : ''}</td>`;
                     }
@@ -1577,6 +1582,7 @@ function renderExposureMatrix() {
         <div class="legend-item"><span class="legend-dot" style="background:rgba(147,197,253,0.6)"></span> T · Transit</div>
         <div class="legend-item"><span class="legend-dot" style="background:rgba(239,68,68,0.6)"></span> S · Sanctions Target</div>
         <div class="legend-item"><span class="legend-dot" style="background:rgba(167,139,250,0.6)"></span> M · Mediator</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(234,179,8,0.6)"></span> H · Historic Reversal</div>
         <div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg, rgba(16,185,129,0.6) 0%, rgba(249,115,22,0.6) 100%)"></span> P/C · Multi-role (producer + consumer)</div>
         <div class="legend-item"><span class="legend-dot" style="background:#1e3a5f"></span> · No Mapped Exposure</div>
     </div>`;
