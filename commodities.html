@@ -1259,6 +1259,7 @@ const COUNTRY_META = {
     canada:       { flag: '🇨🇦', name: 'Canada' },
     chile:        { flag: '🇨🇱', name: 'Chile' },
     china:        { flag: '🇨🇳', name: 'China' },
+    cuba:         { flag: '🇨🇺', name: 'Cuba' },
     drc:          { flag: '🇨🇩', name: 'DR Congo' },
     egypt:        { flag: '🇪🇬', name: 'Egypt' },
     eu:           { flag: '🇪🇺', name: 'European Union' },
@@ -1279,6 +1280,7 @@ const COUNTRY_META = {
     saudi_arabia: { flag: '🇸🇦', name: 'Saudi Arabia' },
     south_korea:  { flag: '🇰🇷', name: 'South Korea' },
     taiwan:       { flag: '🇹🇼', name: 'Taiwan' },
+    thailand:     { flag: '🇹🇭', name: 'Thailand' },
     turkey:       { flag: '🇹🇷', name: 'Türkiye' },
     turkmenistan: { flag: '🇹🇲', name: 'Turkmenistan' },
     uae:          { flag: '🇦🇪', name: 'United Arab Emirates' },
@@ -1534,13 +1536,18 @@ function renderExposureMatrix() {
                         } else {
                             noteAttr = `${roleLabel}${rankSuffix}${exp.note ? ' — ' + exp.note : ''}`;
                         }
-                        const cellClass = isMultiRole
+                        // v1.4.2: producer_consumer (string form, legacy) routes to same
+                        // P/C cyan gradient as nested is_multi_role schema. Fixes colorless P
+                        // bug on China/India/EU/US sugar where backend emits the string form
+                        // rather than the nested roles[] array.
+                        const cellClass = isMultiRole || role === 'producer_consumer'
                             ? 'exposure-cell multi-role'
                             : (['producer','consumer','transit','sanctions_target','mediator','historic_reversal'].includes(role)
                                 ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions').replace('historic_reversal', 'historic')}`
                                 : 'exposure-cell role-none');
-                        // v1.4.1: Historic Reversal renders as 'H' (yellow) — country was once a dominant producer but has reversed to net importer (e.g., Cuba sugar post-2024)
-                        const initial = isMultiRole
+                        // v1.4.1: Historic Reversal renders as 'H' (yellow).
+                        // v1.4.2: producer_consumer string form renders as 'P/C' matching nested multi-role.
+                        const initial = (isMultiRole || role === 'producer_consumer')
                             ? 'P/C'
                             : (role === 'historic_reversal' ? 'H' : roleLabel.charAt(0));
                         const rankBadge = exp.rank ? `<span class="exposure-rank">#${exp.rank}</span>` : '';
