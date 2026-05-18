@@ -557,7 +557,64 @@
             .home-button { position: static; width: 100%; max-width: 300px; justify-content: center; }
             .targets-grid { grid-template-columns: 1fr; }
             .flight-cancellations-grid { grid-template-columns: 1fr; }
-            .nav-sidebar { display: none; }
+        }
+
+        /* MOBILE HAMBURGER + DRAWER (Gold Standard v1.2 -- May 18, 2026) */
+        .mobile-hamburger { display: none; }
+        .mobile-drawer-backdrop { display: none; }
+
+        @media (max-width: 768px) {
+            .mobile-hamburger {
+                display: flex;
+                position: fixed;
+                top: 16px;
+                left: 16px;
+                width: 44px;
+                height: 44px;
+                background: var(--card-bg, #0d1b2e);
+                border: 1px solid var(--card-border, #1e3a5f);
+                border-radius: 8px;
+                cursor: pointer;
+                z-index: 1001;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                color: var(--text-primary, #e2f0fb);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                transition: transform 0.15s ease;
+                font-family: monospace;
+            }
+            .mobile-hamburger:hover { transform: scale(1.05); }
+            .mobile-hamburger:active { transform: scale(0.95); }
+
+            .nav-sidebar {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: -260px;
+                width: 240px;
+                height: 100vh;
+                background: var(--card-bg, #0d1b2e);
+                border-right: 1px solid var(--card-border, #1e3a5f);
+                padding: 70px 12px 20px 12px;
+                overflow-y: auto;
+                z-index: 1000;
+                transition: left 0.25s ease-in-out;
+                box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+            }
+            .nav-sidebar.open { left: 0; }
+
+            .mobile-drawer-backdrop {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.55);
+                z-index: 999;
+                backdrop-filter: blur(2px);
+            }
+            .mobile-drawer-backdrop.open { display: block; }
+
+            header { padding-top: 70px !important; }
         }
 
         /* ========================================
@@ -714,6 +771,9 @@
     </style>
 </head>
 <body>
+<!-- MOBILE HAMBURGER BUTTON + DRAWER BACKDROP (Gold Standard v1.2 -- May 18, 2026) -->
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
 
     <!-- ========== LOADING OVERLAY ========== -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -780,8 +840,8 @@
         <!-- Page with sidebar wrapper -->
         <div class="page-with-sidebar">
 
-        <!-- LEFT NAV SIDEBAR -->
-        <nav class="nav-sidebar">
+        <!-- LEFT NAV SIDEBAR (Gold Standard v1.2 -- May 18, 2026) -->
+        <nav class="nav-sidebar" id="navSidebar">
             <div class="nav-sidebar-label">Dashboards</div>
 
             <div class="nav-btn inactive-nav">
@@ -805,23 +865,22 @@
             </a>
 
             <a href="wha.html" class="nav-btn active-nav">
-                <span class="nav-btn-label">🌎 W. Hemisphere</span>
+                <span class="nav-btn-label">🌎 Western Hemisphere</span>
                 <span class="nav-btn-status">● Live</span>
             </a>
 
             <div class="nav-divider"></div>
-            <!-- TOOLS -->
-            <a href="commodities.html" class="nav-btn commodities-btn">
-                <span class="nav-btn-label">🛢️ Commodity Tracker</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
+
             <a href="military.html" class="nav-btn military-btn">
                 <span class="nav-btn-label">🎖️ Military Tracker</span>
                 <span class="nav-btn-status">● Live</span>
             </a>
 
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label">Regional Rhetoric</div>
+
             <a href="https://www.asifahanalytics.com/rhetoric-index.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">📡 ME Rhetoric</span>
+                <span class="nav-btn-label">📡 Middle East Rhetoric</span>
                 <span class="nav-btn-status">● Live</span>
             </a>
 
@@ -836,7 +895,14 @@
             </a>
 
             <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">📡 WHA Rhetoric</span>
+                <span class="nav-btn-label">📡 Western Hemisphere Rhetoric</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+
+            <div class="nav-divider"></div>
+
+            <a href="commodities.html" class="nav-btn commodities-btn">
+                <span class="nav-btn-label">🛢️ Commodity Tracker</span>
                 <span class="nav-btn-status">● Live</span>
             </a>
         </nav>
@@ -1847,6 +1913,31 @@
     </div><!-- end container -->
 
     <script>
+    // MOBILE DRAWER TOGGLE (Gold Standard v1.2 -- May 18, 2026)
+    function toggleMobileDrawer() {
+        const sidebar = document.getElementById('navSidebar');
+        const backdrop = document.getElementById('mobileDrawerBackdrop');
+        if (!sidebar || !backdrop) return;
+        const isOpen = sidebar.classList.contains('open');
+        if (isOpen) {
+            closeMobileDrawer();
+        } else {
+            sidebar.classList.add('open');
+            backdrop.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    function closeMobileDrawer() {
+        const sidebar = document.getElementById('navSidebar');
+        const backdrop = document.getElementById('mobileDrawerBackdrop');
+        if (sidebar) sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeMobileDrawer();
+    });
+
     /* ================================================
        ASIFAH ANALYTICS — EUROPE DASHBOARD v1.1.0
        JavaScript Engine
