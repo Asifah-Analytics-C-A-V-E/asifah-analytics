@@ -104,8 +104,8 @@ header {
 }
 .back-link:hover { color: var(--accent); border-color: var(--accent); }
 .header-center { text-align: center; flex: 1; }
-.header-flag { font-size: 36px; font-weight: bold; color: var(--accent); font-family: 'Cinzel', serif; letter-spacing: 2px; }
-.header-title { font-size: 26px; color: var(--accent); margin: 4px 0; font-family: 'Cinzel', serif; letter-spacing: 4px; }
+.header-flag { font-size: 36px; font-weight: bold; color: var(--accent); font-family: 'Times New Roman', Times, serif; letter-spacing: 2px; }
+.header-title { font-size: 26px; color: var(--accent); margin: 4px 0; font-family: 'Times New Roman', Times, serif; letter-spacing: 4px; font-weight: bold; }
 .header-subtitle { font-size: 13px; color: var(--text-2); margin-bottom: 4px; }
 .header-ts { font-size: 12px; color: var(--text-muted); font-family: 'Courier New', monospace; }
 .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
@@ -263,8 +263,22 @@ header {
 
 /* FOOTER */
 footer { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 30px; margin-top: 30px; margin-bottom: 30px; font-size: 13px; color: var(--text-2); }
-footer h3 { font-family: 'Cinzel', serif; color: var(--accent); margin-bottom: 8px; font-size: 14px; letter-spacing: 2px; }
+footer h3 { font-family: 'Times New Roman', Times, serif; color: var(--accent); margin-bottom: 8px; font-size: 14px; letter-spacing: 2px; font-weight: bold; }
 footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
+/* ── GOLD STANDARD FOOTER (Cuba-pattern arctic adaptation) ── */
+.footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 25px; }
+.footer-section { flex: 1; min-width: 250px; }
+.footer-section h4 { font-size: 13px; font-weight: bold; color: var(--text); margin-bottom: 10px; letter-spacing: 0.5px; font-family: 'Times New Roman', Times, serif; }
+.footer-section span { line-height: 1.5; color: var(--text-2); font-size: 12px; }
+.support-footer { margin-top: 30px; padding: 15px 20px; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; text-align: center; font-size: 13px; color: var(--text-2); }
+.support-footer a { color: #a78bfa; text-decoration: none; font-weight: bold; transition: all 0.2s ease; }
+.support-footer a:hover { color: #c4b5fd; text-decoration: underline; }
+.disclaimer { background-color: rgba(245, 158, 11, 0.08); border: 2px solid rgba(245, 158, 11, 0.5); padding: 18px; border-radius: 10px; margin-top: 25px; font-size: 12px; color: #fbbf24; line-height: 1.5; }
+[data-theme="light"] .disclaimer { background-color: #fff3cd; border-color: #ffc107; color: #856404; }
+.disclaimer strong { display: block; margin-bottom: 8px; font-size: 13px; }
+.copyright-footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--card-border); text-align: center; color: var(--text-muted); font-size: 11px; line-height: 1.7; }
+.copyright-footer a { color: var(--accent); text-decoration: none; }
+.copyright-footer a:hover { text-decoration: underline; }
 
 /* MOBILE HAMBURGER */
 .mobile-hamburger { display: none; }
@@ -314,7 +328,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 <header>
     <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
         <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
-        <a href="rhetoric-europe.html" class="back-link">← Back to Europe Rhetoric</a>
+        <a href="hungary-stability.html" class="back-link">← Back to Hungary Stability</a>
     </div>
     <div class="header-center">
         <div class="header-flag">🇭🇺 HUNGARY</div>
@@ -325,7 +339,9 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
     <div class="header-right">
         <div class="lang-group">
             <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
-            <button class="lang-btn" onclick="setLang('hu',this)">HU</button>
+            <button class="lang-btn" onclick="setLang('fr',this)">FR</button>
+            <button class="lang-btn" onclick="setLang('de',this)">DE</button>
+            <button class="lang-btn" onclick="setLang('ru',this)">RU</button>
         </div>
         <div class="theme-row">
             <span>THEME</span>
@@ -509,15 +525,44 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 </div><!-- /main-content -->
 </div><!-- /page-with-sidebar -->
 
+<!-- ── GOLD STANDARD FOOTER ── -->
 <footer>
-    <h3>HUNGARY PRESSURE TRACKER</h3>
-    <p>Asifah Analytics · OSINT geopolitical intelligence platform. Hungary tracker monitors post-April 2026 Tisza government's diplomatic realignment from Russia-axis dependency to EU normalization. Data sources: GDELT (English/Hungarian/Russian), NewsAPI, RSS feeds (Magyar Nemzet, Telex, Index.hu, HVG, Reuters Europe, POLITICO EU, EURACTIV, EUObserver, AP), Brave Search API tertiary fallback, Telegram (telegram_signals_europe), Bluesky (bluesky_signals_europe). 12-hour background refresh cadence with manual force scan via API.</p>
-    <p>Methodology: Five-actor analytical model (Tisza Government, Orban/Fidesz Opposition, EU Track, Russia Axis [reversing], Ukraine Track). Five red lines tagged by pressure_type ('diplomatic' or 'economic') for GPI axis routing. Three historical precedents for analytical context. Cross-theater fingerprints emitted to shared Redis (hungary_axis_reversal_active, hungary_orban_revival_signal, druzhba_pipeline_status). v1.0.0 launched May 17, 2026.</p>
-    <p style="color: var(--text-muted); font-size: 11px;">
-        <a href="privacy.html" style="color: var(--accent); text-decoration: none;">Privacy Policy</a> ·
-        <a href="contact.html" style="color: var(--accent); text-decoration: none;">Contact</a> ·
-        © 2025-2026 Asifah Analytics. All rights reserved.
-    </p>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Data Sources:</h4>
+            <span>GDELT (English/Hungarian/Russian), NewsAPI, RSS feeds (Magyar Nemzet, Telex, Index.hu, HVG, Reuters Europe, POLITICO EU, EURACTIV, EUObserver, AP), Brave Search API tertiary fallback, Telegram channels (telegram_signals_europe), Bluesky AppView (bluesky_signals_europe with govmirror handles), plus other OSINT sources. For inquiries: asifahanalytics@gmail.com</span>
+        </div>
+        <div class="footer-section">
+            <h4>Methodology:</h4>
+            <span>Five-actor analytical model (Tisza Government · Orban/Fidesz Opposition · EU Track · Russia Axis [reversing] · Ukraine Track). Five red lines tagged by pressure_type ('diplomatic' or 'economic') for GPI axis routing. Three historical precedents (1989 transition · 1956 revolution · Orban 2002-2010 wilderness) for analytical context. Cross-theater fingerprints emitted to shared Redis. 12-hour background refresh cadence.</span>
+        </div>
+        <div class="footer-section">
+            <h4>Last Updated:</h4>
+            <span id="footerLastUpdatedValue">Not yet scanned</span>
+        </div>
+    </div>
+
+    <div class="support-footer">
+        <p>
+            <span>If you find Asifah Analytics useful and want to support ongoing development, you can</span>
+            <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener noreferrer">
+                ☕ buy me a coffee
+            </a>
+        </p>
+    </div>
+
+    <div class="disclaimer">
+        <strong>⚠️ DISCLAIMER:</strong>
+        <span>This index is an analytical tool for educational and research purposes only. Pressure scores are based on open-source news aggregation and keyword analysis. Measures pressure buildup toward instability, conflict, or political rupture. This tool does not represent official U.S. government assessments or policy positions. Users should consult official intelligence sources for operational decision-making.</span>
+    </div>
+
+    <div class="copyright-footer">
+        <a href="privacy.html">Privacy Policy</a> |
+        <a href="mailto:asifahanalytics@gmail.com">Contact</a>
+        <br><br>
+        <span>© 2025-2026 RCGG. All Rights Reserved. Proprietary and Confidential.</span><br>
+        <span>Unauthorized use, reproduction, or distribution prohibited.</span>
+    </div>
 </footer>
 
 </div><!-- /container -->
