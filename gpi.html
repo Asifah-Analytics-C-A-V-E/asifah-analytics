@@ -14,7 +14,7 @@
 <title>Global Pressure Index | Asifah Analytics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -53,7 +53,7 @@
 }
 
 body {
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'Rajdhani', sans-serif;
     background: var(--bg-color);
     color: var(--text-primary);
     line-height: 1.6;
@@ -101,8 +101,6 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
 .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
 .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
-.nav-btn.commodities-btn { border-color: rgba(234,179,8,0.4); background: linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(202,138,4,0.05) 100%); }
-.nav-btn.commodities-btn .nav-btn-status { color: #facc15; }
 .nav-btn.gpi-btn { border-color: rgba(56,189,248,0.7); background: linear-gradient(135deg, rgba(56,189,248,0.20) 0%, rgba(14,165,233,0.14) 100%); box-shadow: 0 0 16px rgba(56,189,248,0.18); color: #ffffff; }
 [data-theme="light"] .nav-btn.gpi-btn, :root:not([data-theme="dark"]) .nav-btn.gpi-btn { color: var(--text-primary); }
 @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
@@ -148,188 +146,114 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .bluf-signal-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--article-bg); border-left: 4px solid var(--accent); border-radius: 6px; font-size: 13px; }
 .bluf-signal-icon { font-size: 18px; flex-shrink: 0; }
 .bluf-signal-text { font-weight: 600; }
-/* ── Region pill: shows source region for each GPI BLUF signal (down-altitude attribution) ── */
-.bluf-signal-region { display: inline-flex; align-items: center; font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: rgba(56,189,248,0.12); color: var(--accent); border: 1px solid rgba(56,189,248,0.3); flex-shrink: 0; }
-[data-theme="dark"] .bluf-signal-region { background: rgba(56,189,248,0.10); color: #38bdf8; border-color: rgba(56,189,248,0.25); }
-.bluf-timestamp { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-muted); margin-top: 12px; letter-spacing: 1px; }
 
-/* ── PRESSURE AXES STACK (v2.2 — multi-axis pressure model) ── */
-.pressure-axes-card {
-    background: var(--container-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
-}
-.pressure-axes-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--card-border);
-    flex-wrap: wrap;
-}
-.pressure-axes-title-group { display: flex; align-items: center; gap: 12px; }
-.pressure-axes-pill {
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 4px;
-    background: var(--accent);
-    color: #ffffff;
-}
+/* PRESSURE AXES SECTION (v2.5 -- May 18, 2026)
+   Renders data.pressure_axes as four axis cards: kinetic, economic,
+   diplomatic, humanitarian. Each card surfaces top signals tagged
+   with the matching pressure_type. */
+.pressure-axes-section { margin-top: 30px; }
 .pressure-axes-title {
     font-family: 'Cinzel', serif;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    color: var(--text-primary);
-}
-.pressure-axes-headline-note {
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--card-border);
 }
 .pressure-axes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
 }
-.pressure-axis-row {
+.pressure-axis-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--axis-color, var(--accent));
+    border-radius: 10px;
+    padding: 16px 18px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pressure-axis-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+.pressure-axis-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-    background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    border-left-width: 4px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--card-border);
 }
-.pressure-axis-row:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.pressure-axis-row.is-headline {
-    background: linear-gradient(135deg, var(--article-hover) 0%, var(--article-bg) 100%);
-}
-.pressure-axis-icon {
-    font-size: 28px;
-    flex-shrink: 0;
-    line-height: 1;
-}
-.pressure-axis-body { flex: 1; min-width: 0; }
-.pressure-axis-label {
+.pressure-axis-title-group { display: flex; align-items: center; gap: 10px; }
+.pressure-axis-icon { font-size: 24px; line-height: 1; }
+.pressure-axis-name {
     font-family: 'Cinzel', serif;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--text-primary);
-    line-height: 1.2;
 }
-.pressure-axis-meta {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 3px;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 0.5px;
-}
-.pressure-axis-level {
-    font-family: 'Cinzel', serif;
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    flex-shrink: 0;
-}
-.pressure-axis-headline-badge {
+.pressure-axis-level-pill {
     display: inline-block;
-    font-family: 'Courier New', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: var(--accent);
-    color: #ffffff;
-    margin-left: 8px;
-    vertical-align: middle;
-}
-
-/* Expandable detail panel — drops in below grid when an axis is clicked */
-.pressure-axis-detail {
-    margin-top: 14px;
-    padding: 14px 18px;
-    background: var(--article-bg);
-    border-radius: 8px;
-    border-left: 4px solid var(--accent);
-    display: none;
-}
-.pressure-axis-detail.is-open { display: block; }
-.pressure-axis-detail-header {
+    padding: 4px 12px;
+    border-radius: 6px;
     font-family: 'Courier New', monospace;
     font-size: 11px;
-    letter-spacing: 1.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffffff;
     text-transform: uppercase;
+}
+.pressure-axis-description {
+    font-size: 11px;
     color: var(--text-muted);
     margin-bottom: 10px;
+    font-style: italic;
+    line-height: 1.4;
 }
-.pressure-axis-detail-signals { display: flex; flex-direction: column; gap: 6px; }
-.pressure-axis-detail-signal {
+.pressure-axis-signals {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.pressure-axis-signal {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 8px 12px;
-    background: var(--container-bg);
-    border-radius: 6px;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--article-bg);
+    border-radius: 4px;
     font-size: 12px;
-    line-height: 1.5;
-    color: var(--text-secondary);
+    line-height: 1.4;
 }
-.pressure-axis-detail-signal-level {
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    color: #ffffff;
-    flex-shrink: 0;
-}
-.pressure-axis-detail-signal-region {
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    flex-shrink: 0;
-}
-.pressure-axis-detail-signal-text { flex: 1; min-width: 0; }
-.pressure-axis-detail-empty {
-    padding: 16px;
-    text-align: center;
-    color: var(--text-muted);
+.pressure-axis-signal-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.pressure-axis-signal-text { flex: 1; color: var(--text-primary); }
+.pressure-axis-empty {
     font-size: 12px;
+    color: var(--text-muted);
     font-style: italic;
+    padding: 8px 0;
+    text-align: center;
 }
-
-@media (max-width: 768px) {
-    .pressure-axes-grid { grid-template-columns: 1fr; }
-    .pressure-axis-icon { font-size: 22px; }
-    .pressure-axis-level { font-size: 20px; }
+.pressure-axis-regions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--card-border);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
 }
-/* End Pressure Axes Stack */
+.pressure-axis-card.axis-kinetic     { --axis-color: #dc2626; }
+.pressure-axis-card.axis-economic    { --axis-color: #f97316; }
+.pressure-axis-card.axis-diplomatic  { --axis-color: #0ea5e9; }
+.pressure-axis-card.axis-humanitarian{ --axis-color: #eab308; }
+.bluf-timestamp { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-muted); margin-top: 12px; letter-spacing: 1px; }
 
 .regional-cards-section { margin-top: 30px; }
 .regional-cards-title { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border); }
@@ -340,10 +264,10 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .regional-card-title-group { display: flex; align-items: center; gap: 10px; }
 .regional-card-flag { font-size: 26px; }
 .regional-card-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-.regional-card-pill { font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 6px 12px; border-radius: 6px; color: #ffffff; flex-shrink: 0; max-width: 200px; text-align: center; line-height: 1.3; word-break: break-word; }
+.regional-card-pill { font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; color: #ffffff; flex-shrink: 0; }
 .regional-card-excerpt { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 14px; flex: 1; }
 .regional-card-signals { margin: 12px 0; display: flex; flex-direction: column; gap: 4px; }
-.regional-card-signal { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #38bdf8; }
+.regional-card-signal { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted); }
 .regional-card-signal-icon { font-size: 14px; }
 .regional-card-cta { font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--card-border); }
 
@@ -407,10 +331,6 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 <span class="nav-btn-label">🎖️ Military Tracker</span>
                 <span class="nav-btn-status">● Live</span>
             </a>
-            <a href="commodities.html" class="nav-btn commodities-btn">
-                <span class="nav-btn-label">📊 Commodities Tracker</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
             <div class="nav-divider"></div>
             <div class="nav-sidebar-label">Regional Rhetoric</div>
             <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
@@ -455,24 +375,6 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 </div>
             </div>
 
-            <!-- ── PRESSURE AXES (v2.2) ── multi-axis stack BELOW headline ── -->
-            <div class="pressure-axes-card" id="pressureAxesCard" style="display:none;">
-                <div class="pressure-axes-header">
-                    <div class="pressure-axes-title-group">
-                        <span class="pressure-axes-pill">AXES</span>
-                        <span class="pressure-axes-title">Pressure Vectors</span>
-                    </div>
-                    <span class="pressure-axes-headline-note" id="pressureAxesHeadlineNote">Headline driven by — kinetic axis</span>
-                </div>
-                <div class="pressure-axes-grid" id="pressureAxesGrid">
-                    <!-- populated by JS -->
-                </div>
-                <div class="pressure-axis-detail" id="pressureAxisDetail">
-                    <div class="pressure-axis-detail-header" id="pressureAxisDetailHeader">Top signals</div>
-                    <div class="pressure-axis-detail-signals" id="pressureAxisDetailSignals"></div>
-                </div>
-            </div>
-
             <div class="bluf-card">
                 <div class="bluf-header">
                     <span class="bluf-pill" id="blufPill">SYNTHESIS</span>
@@ -483,8 +385,13 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 <div class="bluf-timestamp" id="blufTimestamp"></div>
             </div>
 
+            <div class="pressure-axes-section">
+                <div class="pressure-axes-title">Pressure Vectors · Multi-Axis Breakdown</div>
+                <div class="pressure-axes-grid" id="pressureAxesGrid"></div>
+            </div>
+
             <div class="regional-cards-section">
-                <div class="regional-cards-title">Regional Theaters</div>
+                <div class="regional-cards-title">Regional Theaters · Alphabetical</div>
                 <div class="regional-cards-grid" id="regionalCardsGrid"></div>
             </div>
 
@@ -518,7 +425,7 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
             <a href="contact.html" style="color:var(--accent);text-decoration:none;">Contact</a>
         </div>
         <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 RCGG. All Rights Reserved. Global Pressure Index v2.2.0 — Proprietary and Confidential.
+            © 2025-2026 RCGG. All Rights Reserved. Global Pressure Index v2.0.0 — Proprietary and Confidential.
         </div>
     </footer>
 
@@ -571,21 +478,6 @@ async function loadGpi() {
         proseEl.textContent = data.bluf || '';
         proseEl.classList.remove('loading-shimmer');
 
-        // ── Region pill normalization map (handles whatever region key GPI emits) ──
-        const REGION_PILL_LABELS = {
-            'me': 'ME', 'middle east': 'ME', 'middle_east': 'ME',
-            'asia': 'ASIA', 'asia_pacific': 'ASIA', 'asia pacific': 'ASIA',
-            'europe': 'EUROPE', 'eu': 'EUROPE',
-            'wha': 'WHA', 'western hemisphere': 'WHA', 'western_hemisphere': 'WHA', 'americas': 'WHA',
-            'arctic': 'ARCTIC',
-            'africa': 'AFRICA'
-        };
-        function _regionPillLabel(sig) {
-            const raw = (sig.region || sig.theatre || '').toString().toLowerCase().trim();
-            if (!raw) return '';
-            return REGION_PILL_LABELS[raw] || raw.toUpperCase().replace(/_/g, ' ');
-        }
-
         const sigsEl = document.getElementById('blufSignals');
         sigsEl.innerHTML = '';
         (data.top_signals || []).forEach(sig => {
@@ -594,11 +486,7 @@ async function loadGpi() {
             div.style.borderLeftColor = sig.color || 'var(--accent)';
             const text     = sig.short_text || sig.text || '';
             const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-            const regionLabel = _regionPillLabel(sig);
-            const regionPill  = regionLabel
-                ? `<span class="bluf-signal-region" title="Source region — click regional card below to drill down">${regionLabel}</span>`
-                : '';
-            div.innerHTML = `${regionPill}<span class="bluf-signal-icon">${sig.icon || '⚡'}</span>
+            div.innerHTML = `<span class="bluf-signal-icon">${sig.icon || '⚡'}</span>
                 <span class="bluf-signal-text" style="color:${sig.color || 'var(--text-primary)'};" title="${longText}">${text}</span>`;
             sigsEl.appendChild(div);
         });
@@ -611,8 +499,82 @@ async function loadGpi() {
             document.getElementById('lastUpdated').textContent = `Last synthesis: ${dt.toLocaleString()}`;
         }
 
-        // ── v2.2 — Pressure Axes Stack ──
-        renderPressureAxes(data.pressure_axes);
+        // PRESSURE AXES RENDERING (v2.5 -- May 18, 2026)
+        // Renders data.pressure_axes.axes as four axis cards (kinetic / economic /
+        // diplomatic / humanitarian). Each card shows axis level + top signals.
+        const axesGrid = document.getElementById('pressureAxesGrid');
+        if (axesGrid) {
+            axesGrid.innerHTML = '';
+            const axesData = (data.pressure_axes && data.pressure_axes.axes) || {};
+            const AXIS_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian'];
+            const AXIS_FALLBACK_COLORS = {
+                kinetic:      '#dc2626',
+                economic:     '#f97316',
+                diplomatic:   '#0ea5e9',
+                humanitarian: '#eab308'
+            };
+            const AXIS_FALLBACK_ICONS = {
+                kinetic:      '\u2694\ufe0f',
+                economic:     '\ud83d\udcb0',
+                diplomatic:   '\ud83d\udd4a\ufe0f',
+                humanitarian: '\ud83c\udd98'
+            };
+            const AXIS_FALLBACK_LABELS = {
+                kinetic:      'Kinetic',
+                economic:     'Economic',
+                diplomatic:   'Diplomatic',
+                humanitarian: 'Humanitarian'
+            };
+            AXIS_ORDER.forEach(axisName => {
+                const axis = axesData[axisName] || {};
+                const level = axis.level || 0;
+                const levelLabel = axis.level_label || (level === 0 ? 'BASELINE' : 'ACTIVE');
+                const axisColor = axis.color || AXIS_FALLBACK_COLORS[axisName] || 'var(--accent)';
+                const axisIcon = axis.icon || AXIS_FALLBACK_ICONS[axisName] || '\u26a1';
+                const axisLabel = axis.label || AXIS_FALLBACK_LABELS[axisName] || axisName;
+                const axisDescription = axis.description || '';
+                const topSignals = (axis.top_signals || []).slice(0, 4);
+                const regionLevels = axis.region_levels || {};
+
+                const signalsHtml = topSignals.length > 0
+                    ? topSignals.map(s => {
+                        const sigIcon = s.icon || '\u26a1';
+                        const sigText = (s.short_text || s.text || '').replace(/</g, '&lt;');
+                        const sigColor = s.color || axisColor;
+                        const longText = (s.long_text || '').replace(/"/g, '&quot;');
+                        return `<div class="pressure-axis-signal" title="${longText}">
+                            <span class="pressure-axis-signal-icon">${sigIcon}</span>
+                            <span class="pressure-axis-signal-text" style="color:${sigColor};">${sigText}</span>
+                        </div>`;
+                    }).join('')
+                    : `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
+
+                const regionsLine = Object.keys(regionLevels).length > 0
+                    ? `<div class="pressure-axis-regions">Regions contributing: ${
+                        Object.entries(regionLevels)
+                            .map(([r, lv]) => `${r.toUpperCase()} L${lv}`)
+                            .join(' \u00b7 ')
+                    }</div>`
+                    : '';
+
+                const card = document.createElement('div');
+                card.className = `pressure-axis-card axis-${axisName}`;
+                card.style.setProperty('--axis-color', axisColor);
+                card.innerHTML = `
+                    <div class="pressure-axis-header">
+                        <div class="pressure-axis-title-group">
+                            <span class="pressure-axis-icon">${axisIcon}</span>
+                            <span class="pressure-axis-name">${axisLabel}</span>
+                        </div>
+                        <span class="pressure-axis-level-pill" style="background:${axisColor};">L${level} \u00b7 ${levelLabel}</span>
+                    </div>
+                    ${axisDescription ? `<div class="pressure-axis-description">${axisDescription}</div>` : ''}
+                    <div class="pressure-axis-signals">${signalsHtml}</div>
+                    ${regionsLine}
+                `;
+                axesGrid.appendChild(card);
+            });
+        }
 
         const grid = document.getElementById('regionalCardsGrid');
         grid.innerHTML = '';
@@ -633,7 +595,7 @@ async function loadGpi() {
                         <span class="regional-card-flag">${card.flag}</span>
                         <span class="regional-card-name">${card.name}</span>
                     </div>
-                    <span class="regional-card-pill" style="background:${pillBg};">L${card.level} · ${(card.posture_label || card.level_label || '')}</span>
+                    <span class="regional-card-pill" style="background:${pillBg};">L${card.level} · ${(card.posture_label || card.level_label || '').slice(0,18)}</span>
                 </div>
                 <div class="regional-card-excerpt">${card.bluf_excerpt || ''}</div>
                 ${sigList ? `<div class="regional-card-signals">${sigList}</div>` : ''}
@@ -649,112 +611,6 @@ async function loadGpi() {
         document.getElementById('gpiLevelDisplay').classList.remove('loading-shimmer');
         document.getElementById('gpiLevelDisplay').textContent = 'L?';
     }
-}
-
-// ── v2.2 PRESSURE AXES — multi-axis stack render ──
-// Reads data.pressure_axes from the API payload (added by GPI v2.2 backend).
-// Falls back gracefully if the field is absent (older backend deploy).
-const LEVEL_COLOR_MAP = {
-    0: '#6b7280',  // gray — monitoring
-    1: '#16a34a',  // green — routine
-    2: '#facc15',  // yellow — elevated
-    3: '#f59e0b',  // amber — heightened
-    4: '#f97316',  // orange — active signaling
-    5: '#dc2626',  // red — active conflict
-};
-function _levelColor(lvl) {
-    return LEVEL_COLOR_MAP[lvl] || '#6b7280';
-}
-
-function renderPressureAxes(pressureAxes) {
-    const card = document.getElementById('pressureAxesCard');
-    if (!pressureAxes || !pressureAxes.axes || !pressureAxes.axes_ordered) {
-        // Backend hasn't deployed v2.2 yet — hide the section gracefully
-        card.style.display = 'none';
-        return;
-    }
-    card.style.display = 'block';
-
-    const headlineAxis = pressureAxes.headline_axis || 'kinetic';
-    const headlineMeta = pressureAxes.axes[headlineAxis];
-    if (headlineMeta) {
-        document.getElementById('pressureAxesHeadlineNote').textContent =
-            `Headline driven by — ${headlineMeta.label.toLowerCase()} axis`;
-    }
-
-    const grid = document.getElementById('pressureAxesGrid');
-    grid.innerHTML = '';
-
-    pressureAxes.axes_ordered.forEach(axisKey => {
-        const axis = pressureAxes.axes[axisKey];
-        if (!axis) return;
-
-        const row = document.createElement('div');
-        row.className = 'pressure-axis-row';
-        if (axisKey === headlineAxis) row.classList.add('is-headline');
-        row.style.borderLeftColor = axis.color || _levelColor(axis.level);
-        row.dataset.axis = axisKey;
-
-        const isHeadlineBadge = axisKey === headlineAxis
-            ? `<span class="pressure-axis-headline-badge">Headline</span>`
-            : '';
-
-        // signal_count — show count or "no signals" if zero
-        const sigCount = axis.signal_count || 0;
-        const sigSuffix = sigCount === 1 ? 'signal' : 'signals';
-        const metaText = sigCount > 0
-            ? `${sigCount} ${sigSuffix} · ${(axis.level_label || '').toLowerCase()}`
-            : 'no signals on this axis';
-
-        row.innerHTML = `
-            <div class="pressure-axis-icon">${axis.icon || '⚡'}</div>
-            <div class="pressure-axis-body">
-                <div class="pressure-axis-label">${axis.label}${isHeadlineBadge}</div>
-                <div class="pressure-axis-meta">${metaText}</div>
-            </div>
-            <div class="pressure-axis-level" style="color:${_levelColor(axis.level)};">L${axis.level}</div>
-        `;
-
-        row.addEventListener('click', () => showAxisDetail(axisKey, axis));
-        grid.appendChild(row);
-    });
-
-    // Auto-open the detail for the headline axis on first render
-    const firstAxis = pressureAxes.axes[headlineAxis];
-    if (firstAxis) showAxisDetail(headlineAxis, firstAxis);
-}
-
-function showAxisDetail(axisKey, axis) {
-    const detail = document.getElementById('pressureAxisDetail');
-    const header = document.getElementById('pressureAxisDetailHeader');
-    const sigs   = document.getElementById('pressureAxisDetailSignals');
-
-    detail.classList.add('is-open');
-    detail.style.borderLeftColor = axis.color || _levelColor(axis.level);
-
-    header.textContent = `${axis.icon || '⚡'} Top ${axis.label} Signals · L${axis.level} ${(axis.level_label || '').toUpperCase()}`;
-
-    sigs.innerHTML = '';
-    const topSignals = axis.top_signals || [];
-    if (topSignals.length === 0) {
-        sigs.innerHTML = `<div class="pressure-axis-detail-empty">No signals currently active on the ${axis.label.toLowerCase()} axis. ${axis.description || ''}</div>`;
-        return;
-    }
-
-    topSignals.forEach(sig => {
-        const div = document.createElement('div');
-        div.className = 'pressure-axis-detail-signal';
-        const lvlColor = _levelColor(sig.level);
-        const region = sig.region || sig.theatre || '';
-        const text = (sig.short_text || '').replace(/</g, '&lt;');
-        const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-        div.innerHTML = `
-            <span class="pressure-axis-detail-signal-level" style="background:${lvlColor};">L${sig.level}</span>
-            <span class="pressure-axis-detail-signal-region">${region.replace('_', ' ')}</span>
-            <span class="pressure-axis-detail-signal-text" title="${longText}">${text}</span>
-        `;
-        sigs.appendChild(div);
-    });
 }
 
 loadGpi();
