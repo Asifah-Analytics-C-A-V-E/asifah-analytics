@@ -147,10 +147,9 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .bluf-signal-icon { font-size: 18px; flex-shrink: 0; }
 .bluf-signal-text { font-weight: 600; }
 
-/* PRESSURE AXES SECTION (v2.5 -- May 18, 2026)
-   Renders data.pressure_axes as four axis cards: kinetic, economic,
-   diplomatic, humanitarian. Each card surfaces top signals tagged
-   with the matching pressure_type. */
+/* PRESSURE AXES SECTION (v3.1 -- May 19, 2026 -- Hero Panel Redesign)
+   The active vector card is the BLUF. Inactive cards collapse to a tab
+   row below. Click to switch perspectives. */
 .pressure-axes-section { margin-top: 30px; }
 .pressure-axes-title {
     font-family: 'Cinzel', serif;
@@ -163,23 +162,110 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
     padding-bottom: 8px;
     border-bottom: 1px solid var(--card-border);
 }
+
+/* Layout: active card = hero panel (full-width). Inactive cards = compact tab row. */
 .pressure-axes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 16px;
 }
+.pressure-axes-hero {
+    width: 100%;
+}
+.pressure-axes-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+@media (max-width: 768px) {
+    .pressure-axes-tabs { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Base card styles */
 .pressure-axis-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-left: 4px solid var(--axis-color, var(--accent));
     border-radius: 10px;
     padding: 16px 18px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
 }
 .pressure-axis-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.18);
 }
+
+/* HERO (active) card -- expanded, full-width, becomes the BLUF */
+.pressure-axis-card.axis-hero {
+    border-left-width: 6px;
+    padding: 28px 32px;
+    box-shadow: 0 0 32px var(--axis-color, var(--accent)),
+                0 8px 28px rgba(0,0,0,0.30);
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--article-bg) 100%);
+}
+.pressure-axis-card.axis-hero .pressure-axis-header {
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+}
+.pressure-axis-card.axis-hero .pressure-axis-icon { font-size: 32px; }
+.pressure-axis-card.axis-hero .pressure-axis-name { font-size: 20px; letter-spacing: 4px; }
+.pressure-axis-card.axis-hero .pressure-axis-level-pill { font-size: 13px; padding: 6px 16px; }
+
+/* BLUF prose inside the hero card */
+.pressure-axis-card.axis-hero .axis-bluf-prose {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-primary);
+    margin: 14px 0 18px 0;
+    padding: 14px 0;
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    white-space: pre-wrap;
+}
+.pressure-axis-card.axis-hero .axis-bluf-prose.loading-shimmer {
+    min-height: 60px;
+}
+
+/* COMPACT (inactive) cards -- tab strip below the hero */
+.pressure-axis-card.axis-compact {
+    padding: 12px 14px;
+    opacity: 0.7;
+    filter: saturate(0.85);
+}
+.pressure-axis-card.axis-compact:hover {
+    opacity: 1;
+    filter: saturate(1);
+}
+.pressure-axis-card.axis-compact .pressure-axis-header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.pressure-axis-card.axis-compact .pressure-axis-icon { font-size: 20px; }
+.pressure-axis-card.axis-compact .pressure-axis-name { font-size: 12px; letter-spacing: 1.5px; }
+.pressure-axis-card.axis-compact .pressure-axis-level-pill { font-size: 9px; padding: 3px 8px; }
+.pressure-axis-card.axis-compact .pressure-axis-description,
+.pressure-axis-card.axis-compact .pressure-axis-signals,
+.pressure-axis-card.axis-compact .pressure-axis-regions,
+.pressure-axis-card.axis-compact .axis-bluf-prose,
+.pressure-axis-card.axis-compact .axis-bluf-timestamp {
+    display: none;
+}
+
+/* Hide axis description by default; show only in hero */
+.pressure-axis-card .pressure-axis-description { display: none; }
+.pressure-axis-card.axis-hero .pressure-axis-description {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 6px 0 14px 0;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Header */
 .pressure-axis-header {
     display: flex;
     align-items: center;
@@ -210,82 +296,59 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
     color: #ffffff;
     text-transform: uppercase;
 }
-.pressure-axis-description {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    font-style: italic;
-    line-height: 1.4;
-}
+
+/* Signals list */
 .pressure-axis-signals {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 .pressure-axis-signal {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
-    padding: 6px 10px;
+    gap: 10px;
+    padding: 10px 14px;
     background: var(--article-bg);
-    border-radius: 4px;
-    font-size: 12px;
-    line-height: 1.4;
+    border-left: 4px solid var(--axis-color, var(--accent));
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.5;
 }
-.pressure-axis-signal-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-.pressure-axis-signal-text { flex: 1; color: var(--text-primary); }
+.pressure-axis-signal-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.pressure-axis-signal-text { flex: 1; color: var(--text-primary); font-weight: 600; }
 .pressure-axis-empty {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-muted);
     font-style: italic;
-    padding: 8px 0;
+    padding: 14px;
     text-align: center;
+    background: var(--article-bg);
+    border-radius: 6px;
 }
 .pressure-axis-regions {
-    margin-top: 8px;
-    padding-top: 8px;
+    margin-top: 14px;
+    padding-top: 10px;
     border-top: 1px dashed var(--card-border);
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-muted);
     font-family: 'Courier New', monospace;
 }
-.pressure-axis-card.axis-kinetic     { --axis-color: #dc2626; }
-.pressure-axis-card.axis-economic    { --axis-color: #f97316; }
-.pressure-axis-card.axis-diplomatic  { --axis-color: #0ea5e9; }
-.pressure-axis-card.axis-humanitarian{ --axis-color: #eab308; }
-.pressure-axis-card.axis-all         { --axis-color: #38bdf8; }
 
-/* v3.0 (May 19 2026) -- Radio-button click-through behavior */
-.pressure-axis-card { cursor: pointer; }
-.pressure-axis-card.axis-active {
-    border-left-width: 6px;
-    box-shadow: 0 0 24px var(--axis-color, var(--accent)), 0 8px 24px rgba(0,0,0,0.25);
-    transform: translateY(-2px);
-}
-.pressure-axis-card.axis-dimmed {
-    opacity: 0.45;
-    filter: saturate(0.7);
-}
-.pressure-axis-card.axis-dimmed:hover {
-    opacity: 0.85;
-    filter: saturate(1);
-}
-.bluf-axis-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 6px;
+/* Timestamp inside hero */
+.axis-bluf-timestamp {
     font-family: 'Courier New', monospace;
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #ffffff;
-    margin-left: 12px;
-    background: var(--accent);
+    color: var(--text-muted);
+    margin-top: 14px;
+    letter-spacing: 1px;
 }
-.bluf-axis-badge.hidden { display: none; }
 
-.bluf-timestamp { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-muted); margin-top: 12px; letter-spacing: 1px; }
+/* Axis colors */
+.pressure-axis-card.axis-kinetic      { --axis-color: #dc2626; }
+.pressure-axis-card.axis-economic     { --axis-color: #f97316; }
+.pressure-axis-card.axis-diplomatic   { --axis-color: #0ea5e9; }
+.pressure-axis-card.axis-humanitarian { --axis-color: #eab308; }
+.pressure-axis-card.axis-all          { --axis-color: #38bdf8; }
 
 .regional-cards-section { margin-top: 30px; }
 .regional-cards-title { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border); }
@@ -407,20 +470,12 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 </div>
             </div>
 
-            <div class="bluf-card">
-                <div class="bluf-header">
-                    <span class="bluf-pill" id="blufPill">SYNTHESIS</span>
-                    <span class="bluf-title">Bottom Line Up Front</span>
-                    <span class="bluf-axis-badge hidden" id="blufAxisBadge">All Vectors</span>
-                </div>
-                <div class="bluf-prose loading-shimmer" id="blufProse" style="min-height:60px;">Loading global synthesis...</div>
-                <div class="bluf-signals" id="blufSignals"></div>
-                <div class="bluf-timestamp" id="blufTimestamp"></div>
-            </div>
-
             <div class="pressure-axes-section">
-                <div class="pressure-axes-title">Pressure Vectors · Multi-Axis Breakdown</div>
-                <div class="pressure-axes-grid" id="pressureAxesGrid"></div>
+                <div class="pressure-axes-title">Bottom Line Up Front · Multi-Axis Breakdown</div>
+                <div class="pressure-axes-grid" id="pressureAxesGrid">
+                    <div class="pressure-axes-hero" id="pressureAxesHero"></div>
+                    <div class="pressure-axes-tabs" id="pressureAxesTabs"></div>
+                </div>
             </div>
 
             <div class="regional-cards-section">
@@ -481,65 +536,185 @@ function toggleTheme() {
 }
 initTheme();
 
-// v3.0 (May 19 2026) -- Per-axis BLUF click-through state machine
+// v3.1 (May 19 2026) -- Hero-Panel state machine.
+// Active vector card = full-width hero panel containing BLUF prose + signals.
+// Inactive cards = compact tab row below the hero. Click to swap.
 const ACTIVE_AXIS_DEFAULT = 'all';
-let _gpiState = {
-    activeAxis: ACTIVE_AXIS_DEFAULT,  // 'all' | 'kinetic' | 'economic' | 'diplomatic' | 'humanitarian'
-    apiData:    null,                  // last GPI API response (for swap logic)
+const AXIS_ORDER = ['all', 'kinetic', 'economic', 'diplomatic', 'humanitarian'];
+const AXIS_FALLBACK_COLORS = {
+    all:          '#38bdf8',
+    kinetic:      '#dc2626',
+    economic:     '#f97316',
+    diplomatic:   '#0ea5e9',
+    humanitarian: '#eab308',
+};
+const AXIS_FALLBACK_ICONS = {
+    all:          '\ud83c\udf10',   // 🌐
+    kinetic:      '\u2694\ufe0f',   // ⚔️
+    economic:     '\ud83d\udcc8',   // 📈
+    diplomatic:   '\ud83d\udd4a\ufe0f',  // 🕊️
+    humanitarian: '\ud83c\udd98',   // 🆘
+};
+const AXIS_FALLBACK_LABELS = {
+    all:          'All Vectors',
+    kinetic:      'Kinetic',
+    economic:     'Economic',
+    diplomatic:   'Diplomatic',
+    humanitarian: 'Humanitarian',
+};
+const AXIS_FALLBACK_DESCRIPTIONS = {
+    all:          'Synthesized cross-axis view -- the default BLUF combining all pressure dimensions.',
+    kinetic:      'Strikes, mobilization, ultimatums, casualties.',
+    economic:     'Commodity surges, currency stress, sanctions, supply chain.',
+    diplomatic:   'Ceasefire arithmetic, mediation tempo, alliance shifts.',
+    humanitarian: 'Displacement flows, civilian harm, famine, refugee surges.',
 };
 
+let _gpiState = {
+    activeAxis: ACTIVE_AXIS_DEFAULT,
+    apiData:    null,
+};
+
+function _buildCardData(axisName) {
+    /* Compute display fields for one axis. Returns dict ready for innerHTML rendering. */
+    const data = _gpiState.apiData || {};
+    const isAll = axisName === 'all';
+    const axesData = (data.pressure_axes && data.pressure_axes.axes) || {};
+    const axis = isAll ? {} : (axesData[axisName] || {});
+
+    const level = isAll
+        ? (data.global_level || 0)
+        : (axis.level || 0);
+    const levelLabel = isAll
+        ? (data.global_label || '')
+        : (axis.level_label || (level === 0 ? 'BASELINE' : 'ACTIVE'));
+    const axisColor = AXIS_FALLBACK_COLORS[axisName] || 'var(--accent)';
+    const axisIcon = isAll
+        ? AXIS_FALLBACK_ICONS.all
+        : (axis.icon || AXIS_FALLBACK_ICONS[axisName] || '\u26a1');
+    const axisLabel = isAll
+        ? AXIS_FALLBACK_LABELS.all
+        : (axis.label || AXIS_FALLBACK_LABELS[axisName] || axisName);
+    const axisDescription = isAll
+        ? AXIS_FALLBACK_DESCRIPTIONS.all
+        : (axis.description || AXIS_FALLBACK_DESCRIPTIONS[axisName] || '');
+
+    // BLUF prose: synthesized for 'all', per-axis for the others
+    const blufProse = isAll
+        ? (data.bluf || '')
+        : ((data.bluf_by_axis || {})[axisName] || data.bluf || '');
+
+    // Signals: top_signals (global) for 'all', axis.top_signals for the others
+    const signals = isAll
+        ? (data.top_signals || []).slice(0, 5)
+        : (axis.top_signals || []).slice(0, 5);
+
+    const regionLevels = isAll ? {} : (axis.region_levels || {});
+
+    return {
+        axisName, level, levelLabel, axisColor, axisIcon, axisLabel,
+        axisDescription, blufProse, signals, regionLevels, isAll,
+    };
+}
+
+function _renderHeroCard(axisName) {
+    /* Build the expanded hero card HTML for the active axis. */
+    const d = _buildCardData(axisName);
+
+    const signalsHtml = d.signals.length > 0
+        ? d.signals.map(s => {
+            const sigIcon  = s.icon || '\u26a1';
+            const sigText  = (s.short_text || s.text || '').replace(/</g, '&lt;');
+            const sigColor = s.color || d.axisColor;
+            const longText = (s.long_text || '').replace(/"/g, '&quot;');
+            return `<div class="pressure-axis-signal" title="${longText}">
+                <span class="pressure-axis-signal-icon">${sigIcon}</span>
+                <span class="pressure-axis-signal-text" style="color:${sigColor};">${sigText}</span>
+            </div>`;
+        }).join('')
+        : `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
+
+    const regionsLine = Object.keys(d.regionLevels).length > 0
+        ? `<div class="pressure-axis-regions">Regions contributing: ${
+            Object.entries(d.regionLevels)
+                .map(([r, lv]) => `${r.toUpperCase()} L${lv}`)
+                .join(' \u00b7 ')
+        }</div>`
+        : '';
+
+    // Timestamp
+    let timestampHtml = '';
+    const apiData = _gpiState.apiData || {};
+    if (apiData.generated_at) {
+        const dt = new Date(apiData.generated_at);
+        const fromCache = apiData.from_cache ? ' (cached)' : '';
+        const tsStr = dt.toLocaleString('en-US',
+            {month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+        timestampHtml = `<div class="axis-bluf-timestamp">Generated: ${tsStr}${fromCache}</div>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = `pressure-axis-card axis-${axisName} axis-hero`;
+    card.dataset.axis = axisName;
+    card.style.setProperty('--axis-color', d.axisColor);
+    card.addEventListener('click', () => setActiveAxis(axisName));
+    card.innerHTML = `
+        <div class="pressure-axis-header">
+            <div class="pressure-axis-title-group">
+                <span class="pressure-axis-icon">${d.axisIcon}</span>
+                <span class="pressure-axis-name">${d.axisLabel}</span>
+            </div>
+            <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level} \u00b7 ${d.levelLabel}</span>
+        </div>
+        ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
+        <div class="axis-bluf-prose">${(d.blufProse || '').replace(/</g, '&lt;')}</div>
+        <div class="pressure-axis-signals">${signalsHtml}</div>
+        ${regionsLine}
+        ${timestampHtml}
+    `;
+    return card;
+}
+
+function _renderCompactCard(axisName) {
+    /* Build a compact tab card for an inactive axis. */
+    const d = _buildCardData(axisName);
+
+    const card = document.createElement('div');
+    card.className = `pressure-axis-card axis-${axisName} axis-compact`;
+    card.dataset.axis = axisName;
+    card.style.setProperty('--axis-color', d.axisColor);
+    card.addEventListener('click', () => setActiveAxis(axisName));
+    card.innerHTML = `
+        <div class="pressure-axis-header">
+            <div class="pressure-axis-title-group">
+                <span class="pressure-axis-icon">${d.axisIcon}</span>
+                <span class="pressure-axis-name">${d.axisLabel}</span>
+            </div>
+            <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level}</span>
+        </div>
+    `;
+    return card;
+}
+
 function setActiveAxis(axisName) {
-    /* Radio-button behavior: one axis always selected. Clicking the active
-       axis returns to 'all' default. Updates BLUF prose, badge, and card highlight. */
+    /* Re-render hero + tabs based on which axis is now active. */
     if (!_gpiState.apiData) return;
     if (!axisName) axisName = ACTIVE_AXIS_DEFAULT;
     _gpiState.activeAxis = axisName;
 
-    // Swap BLUF prose
-    const proseEl = document.getElementById('blufProse');
-    if (axisName === 'all') {
-        proseEl.textContent = _gpiState.apiData.bluf || '';
-    } else {
-        const axisBlufs = _gpiState.apiData.bluf_by_axis || {};
-        proseEl.textContent = axisBlufs[axisName] || _gpiState.apiData.bluf || '';
-    }
+    const heroEl = document.getElementById('pressureAxesHero');
+    const tabsEl = document.getElementById('pressureAxesTabs');
+    if (!heroEl || !tabsEl) return;
 
-    // Toggle axis badge
-    const badge = document.getElementById('blufAxisBadge');
-    if (axisName === 'all') {
-        badge.classList.add('hidden');
-    } else {
-        badge.classList.remove('hidden');
-        const axisLabels = {
-            kinetic:      'Kinetic Lens',
-            economic:     'Economic Lens',
-            diplomatic:   'Diplomatic Lens',
-            humanitarian: 'Humanitarian Lens',
-        };
-        const axisColors = {
-            kinetic:      '#dc2626',
-            economic:     '#f97316',
-            diplomatic:   '#0ea5e9',
-            humanitarian: '#eab308',
-        };
-        badge.textContent = axisLabels[axisName] || axisName;
-        badge.style.background = axisColors[axisName] || 'var(--accent)';
-    }
+    // Render hero card
+    heroEl.innerHTML = '';
+    heroEl.appendChild(_renderHeroCard(axisName));
 
-    // Update card highlight states
-    document.querySelectorAll('.pressure-axis-card').forEach(card => {
-        const cardAxis = card.dataset.axis;
-        card.classList.remove('axis-active', 'axis-dimmed');
-        if (axisName === 'all') {
-            // Default state: nothing highlighted, nothing dimmed (or: highlight "all" if present)
-            if (cardAxis === 'all') card.classList.add('axis-active');
-        } else {
-            if (cardAxis === axisName) {
-                card.classList.add('axis-active');
-            } else {
-                card.classList.add('axis-dimmed');
-            }
-        }
+    // Render compact tabs for all OTHER axes
+    tabsEl.innerHTML = '';
+    AXIS_ORDER.forEach(other => {
+        if (other === axisName) return;
+        tabsEl.appendChild(_renderCompactCard(other));
     });
 }
 
@@ -595,111 +770,9 @@ async function loadGpi() {
             document.getElementById('lastUpdated').textContent = `Last synthesis: ${dt.toLocaleString()}`;
         }
 
-        // PRESSURE AXES RENDERING (v3.0 -- May 19, 2026)
-        // Renders 5 cards: "All Vectors" (default, shows synthesized BLUF) + 4 pressure axis cards.
-        // Each card is clickable -- click swaps BLUF prose to that axis's focused view.
-        const axesGrid = document.getElementById('pressureAxesGrid');
-        if (axesGrid) {
-            axesGrid.innerHTML = '';
-            const axesData = (data.pressure_axes && data.pressure_axes.axes) || {};
-            const AXIS_ORDER = ['all', 'kinetic', 'economic', 'diplomatic', 'humanitarian'];
-            const AXIS_FALLBACK_COLORS = {
-                all:          '#38bdf8',
-                kinetic:      '#dc2626',
-                economic:     '#f97316',
-                diplomatic:   '#0ea5e9',
-                humanitarian: '#eab308'
-            };
-            const AXIS_FALLBACK_ICONS = {
-                all:          '\ud83c\udf10',   // 🌐
-                kinetic:      '\u2694\ufe0f',
-                economic:     '\ud83d\udcb0',
-                diplomatic:   '\ud83d\udd4a\ufe0f',
-                humanitarian: '\ud83c\udd98'
-            };
-            const AXIS_FALLBACK_LABELS = {
-                all:          'All Vectors',
-                kinetic:      'Kinetic',
-                economic:     'Economic',
-                diplomatic:   'Diplomatic',
-                humanitarian: 'Humanitarian'
-            };
-            const AXIS_FALLBACK_DESCRIPTIONS = {
-                all: 'Synthesized cross-axis view -- the default BLUF combining all pressure dimensions.',
-            };
-            AXIS_ORDER.forEach(axisName => {
-                const isAll = axisName === 'all';
-                const axis = isAll ? {} : (axesData[axisName] || {});
-                const level = isAll ? (data.global_level || 0) : (axis.level || 0);
-                const levelLabel = isAll
-                    ? (data.global_label || '')
-                    : (axis.level_label || (level === 0 ? 'BASELINE' : 'ACTIVE'));
-                const axisColor = isAll
-                    ? AXIS_FALLBACK_COLORS.all
-                    : (axis.color || AXIS_FALLBACK_COLORS[axisName] || 'var(--accent)');
-                const axisIcon = isAll
-                    ? AXIS_FALLBACK_ICONS.all
-                    : (axis.icon || AXIS_FALLBACK_ICONS[axisName] || '\u26a1');
-                const axisLabel = isAll
-                    ? AXIS_FALLBACK_LABELS.all
-                    : (axis.label || AXIS_FALLBACK_LABELS[axisName] || axisName);
-                const axisDescription = isAll
-                    ? AXIS_FALLBACK_DESCRIPTIONS.all
-                    : (axis.description || '');
-                const topSignals = isAll
-                    ? (data.top_signals || []).slice(0, 4)
-                    : (axis.top_signals || []).slice(0, 4);
-                const regionLevels = isAll
-                    ? {}
-                    : (axis.region_levels || {});
-                const signalCount = isAll
-                    ? (data.top_signals || []).length
-                    : (axis.signal_count || 0);
-
-                const signalsHtml = topSignals.length > 0
-                    ? topSignals.map(s => {
-                        const sigIcon = s.icon || '\u26a1';
-                        const sigText = (s.short_text || s.text || '').replace(/</g, '&lt;');
-                        const sigColor = s.color || axisColor;
-                        const longText = (s.long_text || '').replace(/"/g, '&quot;');
-                        return `<div class="pressure-axis-signal" title="${longText}">
-                            <span class="pressure-axis-signal-icon">${sigIcon}</span>
-                            <span class="pressure-axis-signal-text" style="color:${sigColor};">${sigText}</span>
-                        </div>`;
-                    }).join('')
-                    : `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
-
-                const regionsLine = Object.keys(regionLevels).length > 0
-                    ? `<div class="pressure-axis-regions">Regions contributing: ${
-                        Object.entries(regionLevels)
-                            .map(([r, lv]) => `${r.toUpperCase()} L${lv}`)
-                            .join(' \u00b7 ')
-                    }</div>`
-                    : (isAll ? `<div class="pressure-axis-regions">Click any vector to focus the BLUF on that axis</div>` : '');
-
-                const card = document.createElement('div');
-                card.className = `pressure-axis-card axis-${axisName}`;
-                card.dataset.axis = axisName;   // v3.0 -- for state machine tracking
-                card.style.setProperty('--axis-color', axisColor);
-                card.addEventListener('click', () => setActiveAxis(axisName));
-                card.innerHTML = `
-                    <div class="pressure-axis-header">
-                        <div class="pressure-axis-title-group">
-                            <span class="pressure-axis-icon">${axisIcon}</span>
-                            <span class="pressure-axis-name">${axisLabel}</span>
-                        </div>
-                        <span class="pressure-axis-level-pill" style="background:${axisColor};">L${level} \u00b7 ${levelLabel}</span>
-                    </div>
-                    ${axisDescription ? `<div class="pressure-axis-description">${axisDescription}</div>` : ''}
-                    <div class="pressure-axis-signals">${signalsHtml}</div>
-                    ${regionsLine}
-                `;
-                axesGrid.appendChild(card);
-            });
-
-            // v3.0 -- initialize state machine to 'all' (default view)
-            setActiveAxis(ACTIVE_AXIS_DEFAULT);
-        }
+        // PRESSURE AXES RENDERING (v3.1 -- May 19, 2026)
+        // Hero-Panel: active axis is the BLUF. Renders via setActiveAxis().
+        setActiveAxis(ACTIVE_AXIS_DEFAULT);
 
         const grid = document.getElementById('regionalCardsGrid');
         grid.innerHTML = '';
