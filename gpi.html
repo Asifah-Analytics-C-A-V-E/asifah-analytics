@@ -745,28 +745,13 @@ async function loadGpi() {
         document.getElementById('gpiNarrativesCount').textContent = `Narratives: ${(data.narratives || []).length}`;
         document.getElementById('gpiSignalsCount').textContent    = `Signals: ${(data.top_signals || []).length}`;
 
-        const proseEl = document.getElementById('blufProse');
-        proseEl.textContent = data.bluf || '';
-        proseEl.classList.remove('loading-shimmer');
-
-        const sigsEl = document.getElementById('blufSignals');
-        sigsEl.innerHTML = '';
-        (data.top_signals || []).forEach(sig => {
-            const div = document.createElement('div');
-            div.className = 'bluf-signal-item';
-            div.style.borderLeftColor = sig.color || 'var(--accent)';
-            const text     = sig.short_text || sig.text || '';
-            const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-            div.innerHTML = `<span class="bluf-signal-icon">${sig.icon || '⚡'}</span>
-                <span class="bluf-signal-text" style="color:${sig.color || 'var(--text-primary)'};" title="${longText}">${text}</span>`;
-            sigsEl.appendChild(div);
-        });
+        // v3.1 -- BLUF prose, signals, and timestamp now rendered inside the
+        // active hero card via setActiveAxis(). The standalone BLUF card was
+        // killed in the Phase 3 redesign, so no separate blufProse/blufSignals/
+        // blufTimestamp elements exist anymore.
 
         if (data.generated_at) {
             const dt = new Date(data.generated_at);
-            const fromCache = data.from_cache ? ' (cached)' : '';
-            document.getElementById('blufTimestamp').textContent =
-                `Generated: ${dt.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}${fromCache}`;
             document.getElementById('lastUpdated').textContent = `Last synthesis: ${dt.toLocaleString()}`;
         }
 
@@ -804,10 +789,24 @@ async function loadGpi() {
 
     } catch (e) {
         console.error('GPI load error:', e);
-        document.getElementById('blufProse').textContent = 'GPI synthesis temporarily unavailable. Please refresh in a moment.';
-        document.getElementById('blufProse').classList.remove('loading-shimmer');
-        document.getElementById('gpiLevelDisplay').classList.remove('loading-shimmer');
-        document.getElementById('gpiLevelDisplay').textContent = 'L?';
+        const levelEl = document.getElementById('gpiLevelDisplay');
+        if (levelEl) {
+            levelEl.classList.remove('loading-shimmer');
+            levelEl.textContent = 'L?';
+        }
+        // Show an error message in the hero card placeholder
+        const heroEl = document.getElementById('pressureAxesHero');
+        if (heroEl) {
+            heroEl.innerHTML = `<div class="pressure-axis-card axis-all axis-hero" style="--axis-color: #6b7280;">
+                <div class="pressure-axis-header">
+                    <div class="pressure-axis-title-group">
+                        <span class="pressure-axis-icon">⚠️</span>
+                        <span class="pressure-axis-name">Unavailable</span>
+                    </div>
+                </div>
+                <div class="axis-bluf-prose">GPI synthesis temporarily unavailable. Please refresh in a moment.</div>
+            </div>`;
+        }
     }
 }
 
