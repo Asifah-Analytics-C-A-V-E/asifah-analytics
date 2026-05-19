@@ -253,6 +253,38 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .pressure-axis-card.axis-economic    { --axis-color: #f97316; }
 .pressure-axis-card.axis-diplomatic  { --axis-color: #0ea5e9; }
 .pressure-axis-card.axis-humanitarian{ --axis-color: #eab308; }
+.pressure-axis-card.axis-all         { --axis-color: #38bdf8; }
+
+/* v3.0 (May 19 2026) -- Radio-button click-through behavior */
+.pressure-axis-card { cursor: pointer; }
+.pressure-axis-card.axis-active {
+    border-left-width: 6px;
+    box-shadow: 0 0 24px var(--axis-color, var(--accent)), 0 8px 24px rgba(0,0,0,0.25);
+    transform: translateY(-2px);
+}
+.pressure-axis-card.axis-dimmed {
+    opacity: 0.45;
+    filter: saturate(0.7);
+}
+.pressure-axis-card.axis-dimmed:hover {
+    opacity: 0.85;
+    filter: saturate(1);
+}
+.bluf-axis-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin-left: 12px;
+    background: var(--accent);
+}
+.bluf-axis-badge.hidden { display: none; }
+
 .bluf-timestamp { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-muted); margin-top: 12px; letter-spacing: 1px; }
 
 .regional-cards-section { margin-top: 30px; }
@@ -379,6 +411,7 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 <div class="bluf-header">
                     <span class="bluf-pill" id="blufPill">SYNTHESIS</span>
                     <span class="bluf-title">Bottom Line Up Front</span>
+                    <span class="bluf-axis-badge hidden" id="blufAxisBadge">All Vectors</span>
                 </div>
                 <div class="bluf-prose loading-shimmer" id="blufProse" style="min-height:60px;">Loading global synthesis...</div>
                 <div class="bluf-signals" id="blufSignals"></div>
@@ -448,11 +481,74 @@ function toggleTheme() {
 }
 initTheme();
 
+// v3.0 (May 19 2026) -- Per-axis BLUF click-through state machine
+const ACTIVE_AXIS_DEFAULT = 'all';
+let _gpiState = {
+    activeAxis: ACTIVE_AXIS_DEFAULT,  // 'all' | 'kinetic' | 'economic' | 'diplomatic' | 'humanitarian'
+    apiData:    null,                  // last GPI API response (for swap logic)
+};
+
+function setActiveAxis(axisName) {
+    /* Radio-button behavior: one axis always selected. Clicking the active
+       axis returns to 'all' default. Updates BLUF prose, badge, and card highlight. */
+    if (!_gpiState.apiData) return;
+    if (!axisName) axisName = ACTIVE_AXIS_DEFAULT;
+    _gpiState.activeAxis = axisName;
+
+    // Swap BLUF prose
+    const proseEl = document.getElementById('blufProse');
+    if (axisName === 'all') {
+        proseEl.textContent = _gpiState.apiData.bluf || '';
+    } else {
+        const axisBlufs = _gpiState.apiData.bluf_by_axis || {};
+        proseEl.textContent = axisBlufs[axisName] || _gpiState.apiData.bluf || '';
+    }
+
+    // Toggle axis badge
+    const badge = document.getElementById('blufAxisBadge');
+    if (axisName === 'all') {
+        badge.classList.add('hidden');
+    } else {
+        badge.classList.remove('hidden');
+        const axisLabels = {
+            kinetic:      'Kinetic Lens',
+            economic:     'Economic Lens',
+            diplomatic:   'Diplomatic Lens',
+            humanitarian: 'Humanitarian Lens',
+        };
+        const axisColors = {
+            kinetic:      '#dc2626',
+            economic:     '#f97316',
+            diplomatic:   '#0ea5e9',
+            humanitarian: '#eab308',
+        };
+        badge.textContent = axisLabels[axisName] || axisName;
+        badge.style.background = axisColors[axisName] || 'var(--accent)';
+    }
+
+    // Update card highlight states
+    document.querySelectorAll('.pressure-axis-card').forEach(card => {
+        const cardAxis = card.dataset.axis;
+        card.classList.remove('axis-active', 'axis-dimmed');
+        if (axisName === 'all') {
+            // Default state: nothing highlighted, nothing dimmed (or: highlight "all" if present)
+            if (cardAxis === 'all') card.classList.add('axis-active');
+        } else {
+            if (cardAxis === axisName) {
+                card.classList.add('axis-active');
+            } else {
+                card.classList.add('axis-dimmed');
+            }
+        }
+    });
+}
+
 async function loadGpi() {
     try {
         const resp = await fetch(ME_BACKEND + '/api/gpi');
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
+        _gpiState.apiData = data;  // v3.0 -- stash for axis click handlers
 
         if (!data.success) {
             document.getElementById('blufProse').textContent = data.bluf || 'GPI temporarily unavailable.';
@@ -499,42 +595,66 @@ async function loadGpi() {
             document.getElementById('lastUpdated').textContent = `Last synthesis: ${dt.toLocaleString()}`;
         }
 
-        // PRESSURE AXES RENDERING (v2.5 -- May 18, 2026)
-        // Renders data.pressure_axes.axes as four axis cards (kinetic / economic /
-        // diplomatic / humanitarian). Each card shows axis level + top signals.
+        // PRESSURE AXES RENDERING (v3.0 -- May 19, 2026)
+        // Renders 5 cards: "All Vectors" (default, shows synthesized BLUF) + 4 pressure axis cards.
+        // Each card is clickable -- click swaps BLUF prose to that axis's focused view.
         const axesGrid = document.getElementById('pressureAxesGrid');
         if (axesGrid) {
             axesGrid.innerHTML = '';
             const axesData = (data.pressure_axes && data.pressure_axes.axes) || {};
-            const AXIS_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian'];
+            const AXIS_ORDER = ['all', 'kinetic', 'economic', 'diplomatic', 'humanitarian'];
             const AXIS_FALLBACK_COLORS = {
+                all:          '#38bdf8',
                 kinetic:      '#dc2626',
                 economic:     '#f97316',
                 diplomatic:   '#0ea5e9',
                 humanitarian: '#eab308'
             };
             const AXIS_FALLBACK_ICONS = {
+                all:          '\ud83c\udf10',   // 🌐
                 kinetic:      '\u2694\ufe0f',
                 economic:     '\ud83d\udcb0',
                 diplomatic:   '\ud83d\udd4a\ufe0f',
                 humanitarian: '\ud83c\udd98'
             };
             const AXIS_FALLBACK_LABELS = {
+                all:          'All Vectors',
                 kinetic:      'Kinetic',
                 economic:     'Economic',
                 diplomatic:   'Diplomatic',
                 humanitarian: 'Humanitarian'
             };
+            const AXIS_FALLBACK_DESCRIPTIONS = {
+                all: 'Synthesized cross-axis view -- the default BLUF combining all pressure dimensions.',
+            };
             AXIS_ORDER.forEach(axisName => {
-                const axis = axesData[axisName] || {};
-                const level = axis.level || 0;
-                const levelLabel = axis.level_label || (level === 0 ? 'BASELINE' : 'ACTIVE');
-                const axisColor = axis.color || AXIS_FALLBACK_COLORS[axisName] || 'var(--accent)';
-                const axisIcon = axis.icon || AXIS_FALLBACK_ICONS[axisName] || '\u26a1';
-                const axisLabel = axis.label || AXIS_FALLBACK_LABELS[axisName] || axisName;
-                const axisDescription = axis.description || '';
-                const topSignals = (axis.top_signals || []).slice(0, 4);
-                const regionLevels = axis.region_levels || {};
+                const isAll = axisName === 'all';
+                const axis = isAll ? {} : (axesData[axisName] || {});
+                const level = isAll ? (data.global_level || 0) : (axis.level || 0);
+                const levelLabel = isAll
+                    ? (data.global_label || '')
+                    : (axis.level_label || (level === 0 ? 'BASELINE' : 'ACTIVE'));
+                const axisColor = isAll
+                    ? AXIS_FALLBACK_COLORS.all
+                    : (axis.color || AXIS_FALLBACK_COLORS[axisName] || 'var(--accent)');
+                const axisIcon = isAll
+                    ? AXIS_FALLBACK_ICONS.all
+                    : (axis.icon || AXIS_FALLBACK_ICONS[axisName] || '\u26a1');
+                const axisLabel = isAll
+                    ? AXIS_FALLBACK_LABELS.all
+                    : (axis.label || AXIS_FALLBACK_LABELS[axisName] || axisName);
+                const axisDescription = isAll
+                    ? AXIS_FALLBACK_DESCRIPTIONS.all
+                    : (axis.description || '');
+                const topSignals = isAll
+                    ? (data.top_signals || []).slice(0, 4)
+                    : (axis.top_signals || []).slice(0, 4);
+                const regionLevels = isAll
+                    ? {}
+                    : (axis.region_levels || {});
+                const signalCount = isAll
+                    ? (data.top_signals || []).length
+                    : (axis.signal_count || 0);
 
                 const signalsHtml = topSignals.length > 0
                     ? topSignals.map(s => {
@@ -555,11 +675,13 @@ async function loadGpi() {
                             .map(([r, lv]) => `${r.toUpperCase()} L${lv}`)
                             .join(' \u00b7 ')
                     }</div>`
-                    : '';
+                    : (isAll ? `<div class="pressure-axis-regions">Click any vector to focus the BLUF on that axis</div>` : '');
 
                 const card = document.createElement('div');
                 card.className = `pressure-axis-card axis-${axisName}`;
+                card.dataset.axis = axisName;   // v3.0 -- for state machine tracking
                 card.style.setProperty('--axis-color', axisColor);
+                card.addEventListener('click', () => setActiveAxis(axisName));
                 card.innerHTML = `
                     <div class="pressure-axis-header">
                         <div class="pressure-axis-title-group">
@@ -574,6 +696,9 @@ async function loadGpi() {
                 `;
                 axesGrid.appendChild(card);
             });
+
+            // v3.0 -- initialize state machine to 'all' (default view)
+            setActiveAxis(ACTIVE_AXIS_DEFAULT);
         }
 
         const grid = document.getElementById('regionalCardsGrid');
