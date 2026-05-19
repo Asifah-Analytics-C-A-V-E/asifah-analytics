@@ -1990,7 +1990,12 @@ async function loadVenezuelaData() {
         document.getElementById('loadingOverlay').style.display = 'none';
     } catch(e) {
         console.error('[Venezuela Stability] Load error:', e);
-        setTimeout(loadVenezuelaData, 30000);
+        // Phase 4 stub: rhetoric tracker not yet built. Hide loading overlay so static page renders.
+        // When rhetoric_tracker_venezuela.py ships, this catch block will receive real data via retry.
+        var overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'none';
+        // Retry every 60 seconds in case the tracker comes online during this session
+        setTimeout(loadVenezuelaData, 60000);
     }
 }
 
