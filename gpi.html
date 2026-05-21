@@ -181,6 +181,32 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
     .pressure-axes-tabs { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* v3.2 (May 21 2026) -- Standalone tab strip between GPI banner and BLUF card */
+.pressure-axes-tabbar {
+    margin-top: 18px;
+    margin-bottom: 8px;
+}
+.pressure-axes-tabbar-label {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding-left: 2px;
+}
+.pressure-axes-tabbar-label::before { content: '▸ '; color: var(--accent); }
+.pressure-axes-tabbar .pressure-axes-tabs {
+    /* 5 buttons in standalone tabbar (not 4 like the under-hero version) */
+    grid-template-columns: repeat(5, 1fr);
+}
+@media (max-width: 768px) {
+    .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 480px) {
+    .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* Base card styles */
 .pressure-axis-card {
     background: var(--card-bg);
@@ -237,6 +263,20 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .pressure-axis-card.axis-compact:hover {
     opacity: 1;
     filter: saturate(1);
+}
+
+/* v3.2 -- Active tab visual highlight in the standalone tabbar */
+.pressure-axis-card.axis-compact.axis-active-tab {
+    opacity: 1;
+    filter: saturate(1);
+    border-left-width: 6px;
+    box-shadow: 0 0 16px var(--axis-color, var(--accent)),
+                0 4px 14px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--article-bg) 100%);
+}
+.pressure-axis-card.axis-compact.axis-active-tab .pressure-axis-name {
+    color: var(--axis-color, var(--accent));
 }
 .pressure-axis-card.axis-compact .pressure-axis-header {
     margin-bottom: 0;
@@ -470,11 +510,16 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 </div>
             </div>
 
+            <!-- v3.2 (May 21 2026) -- Standalone tab strip above BLUF, all 5 vectors visible -->
+            <div class="pressure-axes-tabbar">
+                <div class="pressure-axes-tabbar-label">Choose Your Analytical Lens · Click To Switch Perspective</div>
+                <div class="pressure-axes-tabs" id="pressureAxesTabs"></div>
+            </div>
+
             <div class="pressure-axes-section">
                 <div class="pressure-axes-title">Bottom Line Up Front · Multi-Axis Breakdown</div>
                 <div class="pressure-axes-grid" id="pressureAxesGrid">
                     <div class="pressure-axes-hero" id="pressureAxesHero"></div>
-                    <div class="pressure-axes-tabs" id="pressureAxesTabs"></div>
                 </div>
             </div>
 
@@ -710,11 +755,15 @@ function setActiveAxis(axisName) {
     heroEl.innerHTML = '';
     heroEl.appendChild(_renderHeroCard(axisName));
 
-    // Render compact tabs for all OTHER axes
+    // v3.2 -- Render ALL 5 vectors as tabs (including the active one).
+    // Active tab gets axis-active-tab class for visual highlight.
     tabsEl.innerHTML = '';
     AXIS_ORDER.forEach(other => {
-        if (other === axisName) return;
-        tabsEl.appendChild(_renderCompactCard(other));
+        const tabCard = _renderCompactCard(other);
+        if (other === axisName) {
+            tabCard.classList.add('axis-active-tab');
+        }
+        tabsEl.appendChild(tabCard);
     });
 }
 
