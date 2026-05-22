@@ -229,6 +229,9 @@
     .bluf-label { font-size:0.6rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--cyber-cyan); font-family:'Courier New',monospace; font-weight:700; }
     .bluf-posture-pill { font-size:0.6rem; font-weight:700; letter-spacing:1.5px; padding:2px 8px; border-radius:4px; text-transform:uppercase; font-family:'Courier New',monospace; color:#fff; flex-shrink:0; }
     .bluf-prose { font-size:0.82rem; line-height:1.7; font-family:'Times New Roman',Times,serif; color:var(--text-primary); margin-bottom:14px; }
+    .bluf-prose strong { font-weight: 700; color: var(--cyber-cyan); font-family: 'Courier New', monospace; font-size: 0.78rem; letter-spacing: 0.5px; }
+    .bluf-prose p { margin-bottom: 12px; }
+    .bluf-prose p:last-child { margin-bottom: 0; }
     .bluf-signals { display:flex; flex-direction:column; gap:6px; padding-top:12px; border-top:1px solid var(--card-border); }
     .bluf-signal-item { display:flex; align-items:flex-start; gap:8px; font-size:0.72rem; font-family:'Courier New',monospace; padding:5px 10px; border-radius:6px; background:rgba(0,0,0,0.05); border-left:3px solid var(--card-border); }
     [data-theme="dark"] .bluf-signal-item { background:rgba(255,255,255,0.04); }
@@ -301,11 +304,48 @@
     .delta-falling { color: #22c55e; }
     .delta-stable  { color: #9ca3af; }
 
-    /* ── LOADING DOTS ── */
+    /* ── LOADING DOTS (used in tracker banners while data populates) ── */
     .loading-dot { animation: blink 1.4s infinite both; }
     .loading-dot:nth-child(2) { animation-delay: 0.2s; }
     .loading-dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,80%,100% { opacity: 0; } 40% { opacity: 1; } }
+
+    /* ── FULL-PAGE LOADING OVERLAY (Gold Standard — matches venezuela-stability.html) ── */
+    .loading-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: var(--bg-color);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .loading-overlay.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loading-spinner {
+        width: 50px; height: 50px;
+        border: 4px solid var(--card-border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+        margin-top: 16px;
+        color: var(--text-primary);
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+    .loading-subtext {
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 0.78rem;
+        font-style: italic;
+        max-width: 400px;
+        text-align: center;
+        padding: 0 20px;
+    }
 
     /* ── FOOTER ── */
     footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 12px; line-height: 1.8; border-top: 1px solid var(--card-border); margin-top: 30px; }
@@ -320,6 +360,13 @@
 </style>
 </head>
 <body>
+
+<!-- ── FULL-PAGE LOADING OVERLAY (auto-hides when loadAll() completes) ── -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" data-i18n="loadingText">Loading WHA Rhetoric Monitor</div>
+    <div class="loading-subtext" data-i18n="loadingSubtext">Pulling cached tracker data and regional synthesis…</div>
+</div>
 
 <div class="watermark"></div>
 <div class="container">
@@ -607,6 +654,8 @@
             blufLabel:          'BLUF',
             blufLoading:        'Loading',
             blufInitial:        'Loading Western Hemisphere regional assessment...',
+            loadingText:        'Loading WHA Rhetoric Monitor',
+            loadingSubtext:     'Pulling cached tracker data and regional synthesis…',
             blufSource:         'Asifah Analytics · Western Hemisphere Regional Synthesis · Open-source signals only',
             activeTitle:        'Active Rhetoric Trackers — Western Hemisphere',
             comingSoonTitle:    'In Development',
@@ -644,6 +693,8 @@
             postureLabel:       'Postura Regional del Hemisferio Occidental',
             blufLabel:          'BLUF',
             blufLoading:        'Cargando',
+            loadingText:        'Cargando Monitor de Retórica WHA',
+            loadingSubtext:     'Obteniendo datos de rastreadores en caché y síntesis regional…',
             blufInitial:        'Cargando evaluación regional del Hemisferio Occidental...',
             blufSource:         'Asifah Analytics · Síntesis Regional del Hemisferio Occidental · Solo fuentes abiertas',
             activeTitle:        'Rastreadores de Retórica Activos — Hemisferio Occidental',
@@ -682,6 +733,8 @@
             postureLabel:       'Postura Regional do Hemisfério Ocidental',
             blufLabel:          'BLUF',
             blufLoading:        'Carregando',
+            loadingText:        'Carregando Monitor de Retórica WHA',
+            loadingSubtext:     'Buscando dados de rastreadores em cache e síntese regional…',
             blufInitial:        'Carregando avaliação regional do Hemisfério Ocidental...',
             blufSource:         'Asifah Analytics · Síntese Regional do Hemisfério Ocidental · Apenas sinais de código aberto',
             activeTitle:        'Rastreadores de Retórica Ativos — Hemisfério Ocidental',
@@ -890,6 +943,7 @@
             const loaded = resolvedTrackers.filter(r => r.data);
             if (!loaded.length) {
                 blufProseEl.textContent = T.noData;
+                hideLoadingOverlay();
                 pillEl.textContent = 'NO DATA';
                 pillEl.style.background = '#6b7280';
                 signalsEl.innerHTML = '';
@@ -922,7 +976,15 @@
         pillEl.style.background = postureColor;
 
         // Prose
-        blufProseEl.textContent = blufData.bluf || 'No BLUF prose available.';
+        // Prefer bluf_v2 (May 22 2026 richer human-language prose, with **bold** markers)
+        // Fall back to legacy bluf, then to fallback message.
+        if (blufData.bluf_v2) {
+            blufProseEl.innerHTML = renderBlufMarkdown(blufData.bluf_v2);
+        } else if (blufData.bluf) {
+            blufProseEl.textContent = blufData.bluf;
+        } else {
+            blufProseEl.textContent = 'No BLUF prose available.';
+        }
 
         // Top signals — render canonical {priority, category, theatre, level, icon, color, short_text, long_text}
         // v2.1 Three-Altitude Synthesis: GPI-flagged signals get 🌍 badge.
@@ -996,6 +1058,34 @@
             tsText = `Generated: ${new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}`;
         }
         timestampEl.textContent = tsText;
+    }
+
+    // ── MARKDOWN RENDERER (for bluf_v2 prose — May 22 2026) ──
+    // Safe-HTML: escape first, THEN convert **x** → <strong>x</strong>, then paragraph breaks
+    function renderBlufMarkdown(text) {
+        if (!text) return '';
+        // Step 1: HTML-escape everything (security)
+        const escaped = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        // Step 2: Convert **x** → <strong>x</strong> (non-greedy)
+        const bolded = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // Step 3: Split on double-newlines into paragraphs
+        const paragraphs = bolded.split(/\n\n+/).filter(p => p.trim());
+        return paragraphs.map(p => `<p>${p}</p>`).join('');
+    }
+
+    // ── HIDE LOADING OVERLAY (auto-fades when first scan-data populates) ──
+    function hideLoadingOverlay() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay && !overlay.classList.contains('fade-out')) {
+            overlay.classList.add('fade-out');
+            // Remove from DOM after fade completes (0.4s transition)
+            setTimeout(() => { if (overlay.parentNode) overlay.style.display = 'none'; }, 500);
+        }
     }
 
     // ── MAIN LOAD ──
@@ -1074,6 +1164,9 @@
         window._gpiSignalsForRegion = gpiSignals;  // read by updateBluf
         updatePosture(blufData, resolved);
         updateBluf(blufData, resolved);
+
+        // Hide loading overlay — all initial data has populated
+        hideLoadingOverlay();
     }
 
     // ── INIT ──
