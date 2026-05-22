@@ -31,8 +31,12 @@
         --bg-card:        #ffffff;
         --card-glow:      none;
         --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
-        --watermark-opacity: 0.07;
+        /* Gold Standard watermark (light theme — matches rhetoric-cuba.html / military.html) */
+        --watermark-opacity: 0.5;
+        --watermark-size: 500px;
         --watermark-filter:  none;
+        --scanline-opacity: 0.03;
+        --grid-color:        rgba(56,189,248,0.04);
 
         /* VZ-specific band colors (canonical band vocabulary) */
         --band-stable:    #6b7280;
@@ -60,8 +64,12 @@
         --bg-card:        #0d1b2e;
         --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
         --card-hover-glow: 0 0 22px rgba(56,189,248,0.2), 0 8px 25px rgba(0,0,0,0.5);
-        --watermark-opacity: 0.18;
+        /* Gold Standard watermark (dark theme — matches rhetoric-cuba.html / military.html) */
+        --watermark-opacity: 1.0;
+        --watermark-size: 800px;
         --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
+        --scanline-opacity: 0.06;
+        --grid-color:        rgba(56,189,248,0.04);
 
         --band-stable:    #6b7280;
         --band-active:    #38bdf8;
@@ -89,8 +97,8 @@
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
         background-image:
-            linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+            linear-gradient(var(--grid-color) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
         background-size: 40px 40px;
         pointer-events: none;
         z-index: 0;
@@ -99,116 +107,172 @@
         content: '';
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.04) 50%);
-        background-size: 100% 4px;
+        background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(56,189,248,var(--scanline-opacity)) 2px, rgba(56,189,248,var(--scanline-opacity)) 4px);
         pointer-events: none;
-        z-index: 1;
+        z-index: 0;
     }
 
     .watermark {
         position: fixed;
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        width: 800px;
-        height: 800px;
+        width: var(--watermark-size);
+        height: var(--watermark-size);
         background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-        background-size: contain;
+        background-size: 135%;
         background-repeat: no-repeat;
         background-position: center;
         opacity: var(--watermark-opacity);
         filter: var(--watermark-filter);
         pointer-events: none;
-        z-index: 2;
+        z-index: 0;
+        border-radius: 50%;
+        transition: all 0.4s ease;
     }
     @media (max-width: 768px) {
-        .watermark { width: 500px; height: 500px; opacity: calc(var(--watermark-opacity) * 0.6); }
+        .watermark { opacity: calc(var(--watermark-opacity) * 0.6); }
     }
 
-    /* ════════ HEADER ════════ */
-    .header {
-        background: var(--container-bg);
-        border-bottom: 1px solid var(--card-border);
-        padding: 12px 24px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
+    /* ════════ HEADER (Cuba Gold Standard pattern) ════════ */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    header.gs-header {
+        background: linear-gradient(135deg, #060d1a, #0a1628);
+        border: 1px solid #1e3a5f;
+        border-radius: 12px;
+        padding: 20px 25px;
+        margin-bottom: 20px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        gap: 20px;
-        backdrop-filter: blur(8px);
+        gap: 18px;
+        flex-wrap: wrap;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(56,189,248,0.08);
+        border-bottom: 1px solid rgba(56,189,248,0.2);
+        position: relative;
+        z-index: 10;
     }
-    .header-left { display: flex; align-items: center; gap: 16px; }
-    .home-btn {
-        font-size: 14px;
-        color: var(--accent);
-        text-decoration: none;
-        font-weight: bold;
-        letter-spacing: 1px;
-        padding: 6px 12px;
-        border: 1px solid var(--card-border);
-        border-radius: 6px;
-        transition: all 0.2s;
+    [data-theme="light"] header.gs-header {
+        background: linear-gradient(135deg, #dbeafe, #eff6ff);
+        border-color: #93c5fd;
     }
-    .home-btn:hover { background: var(--accent); color: var(--container-bg); }
-    .header-title-block { line-height: 1.2; }
+    .header-logo {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        border: 2px solid rgba(56,189,248,0.4);
+        flex-shrink: 0;
+    }
+    .header-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .back-link {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 8px;
+        border: 1px solid rgba(56,189,248,0.3);
+        color: #38bdf8;
+        font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 1px; text-decoration: none;
+        text-transform: uppercase; transition: all 0.2s;
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .back-link:hover { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+    .header-center { flex: 1; text-align: center; }
+    .header-flag {
+        font-size: 0.75rem; font-weight: 700;
+        letter-spacing: 3px; color: #38bdf8;
+        text-transform: uppercase;
+    }
     .header-title {
-        font-size: 18px;
-        font-weight: bold;
-        color: var(--text-primary);
+        font-family: 'Times New Roman', Times, serif;
+        font-size: clamp(1.3rem, 3vw, 1.9rem);
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #e2f0fb;
+        margin: 4px 0;
+    }
+    [data-theme="light"] .header-title { color: #0a1628; }
+    .header-subtitle {
+        font-size: 0.75rem; color: var(--text-muted);
         letter-spacing: 1px;
     }
-    .header-subtitle {
-        font-size: 11px;
-        color: var(--text-muted);
-        letter-spacing: 0.5px;
+    .header-timestamp {
+        font-size: 0.65rem; color: var(--text-muted);
+        margin-top: 4px;
     }
-    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-right {
+        display: flex; flex-direction: column;
+        align-items: flex-end; gap: 10px;
+    }
+    .pressure-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 6px;
+        background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.4);
+        font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; color: #38bdf8;
+        text-transform: uppercase; animation: pulse-arctic 3s ease-in-out infinite;
+    }
+    @keyframes pulse-arctic { 0%,100%{opacity:0.7;} 50%{opacity:1;} }
+
+    /* Lang button pill group */
+    .lang-group { display: flex; gap: 4px; }
+    .lang-btn {
+        font-family: 'Times New Roman', Times, serif;
+        padding: 4px 10px; border-radius: 6px;
+        border: 1px solid var(--card-border);
+        background: transparent; color: var(--text-muted);
+        font-size: 0.7rem; font-weight: 700;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .lang-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .lang-btn.active {
+        background: #0ea5e9; color: #fff; border-color: #0ea5e9;
+    }
 
     /* Theme toggle */
-    .theme-toggle { display: flex; align-items: center; gap: 8px; }
-    .toggle-switch {
-        position: relative;
-        width: 44px;
-        height: 22px;
-        background: var(--card-border);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: background 0.2s;
+    .theme-row { display: flex; align-items: center; gap: 8px; }
+    .theme-label {
+        font-size: 0.6rem; color: var(--text-muted);
+        letter-spacing: 1.5px; text-transform: uppercase;
     }
-    .toggle-switch::before {
-        content: '';
+    .theme-toggle {
+        position: relative; width: 48px; height: 24px;
+        cursor: pointer;
+        background: #ccc;
+        border-radius: 12px;
+        transition: background 0.3s;
+    }
+    [data-theme="dark"] .theme-toggle { background: #0ea5e9; }
+    .theme-toggle::before {
+        content: '☀️';
         position: absolute;
         top: 2px; left: 2px;
-        width: 18px; height: 18px;
-        background: var(--container-bg);
-        border-radius: 50%;
-        transition: transform 0.2s;
+        width: 20px; height: 20px;
+        border-radius: 50%; background: white;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; transition: all 0.3s;
     }
-    [data-theme="dark"] .toggle-switch { background: var(--accent); }
-    [data-theme="dark"] .toggle-switch::before { transform: translateX(22px); }
-    .toggle-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
-
-    .lang-select {
-        font-family: 'Times New Roman', serif;
-        font-size: 12px;
-        padding: 4px 8px;
-        background: var(--container-bg);
-        color: var(--text-primary);
-        border: 1px solid var(--card-border);
-        border-radius: 4px;
-        cursor: pointer;
+    [data-theme="dark"] .theme-toggle::before {
+        content: '🌙';
+        transform: translateX(24px);
     }
 
     .refresh-btn {
         background: var(--accent);
-        color: var(--container-bg);
+        color: #ffffff;
         border: none;
-        padding: 8px 16px;
-        font-family: 'Times New Roman', serif;
-        font-size: 12px;
-        font-weight: bold;
-        letter-spacing: 1px;
+        padding: 6px 14px;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s;
@@ -222,7 +286,7 @@
         flex-direction: column;
         gap: 4px;
         background: none;
-        border: 1px solid var(--card-border);
+        border: 1px solid rgba(56,189,248,0.3);
         padding: 8px 10px;
         border-radius: 6px;
         cursor: pointer;
@@ -230,7 +294,7 @@
     .hamburger span {
         width: 22px;
         height: 2px;
-        background: var(--text-primary);
+        background: #38bdf8;
         transition: 0.2s;
     }
 
@@ -305,7 +369,7 @@
     .content {
         flex: 1;
         padding: 24px;
-        max-width: 1400px;
+        max-width: 1200px;
         margin: 0 auto;
         min-width: 0;
     }
@@ -798,31 +862,47 @@
 
 <div class="watermark"></div>
 
-<!-- HEADER -->
-<header class="header">
+<!-- HEADER (Cuba Gold Standard 3-zone pattern) -->
+<div class="container">
+<header class="gs-header">
+    <img class="header-logo"
+         src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+         alt="Asifah Analytics"/>
+
     <div class="header-left">
         <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
-        <a href="index.html" class="home-btn" data-i18n="home">🏠 HOME</a>
-        <div class="header-title-block">
-            <div class="header-title" data-i18n="page_title">VENEZUELA RHETORIC TRACKER</div>
-            <div class="header-subtitle" data-i18n="page_subtitle">16-Actor · 6-Vector · Hybrid Command-Node + Absorber · L5 Reservation Contract</div>
-        </div>
+        <a href="venezuela-stability.html" class="back-link" data-i18n="back_to_vz_stability">
+            ← <span data-i18n="back_label">VZ STABILITY</span>
+        </a>
+        <a href="wha.html" class="back-link" data-i18n="back_to_wha">
+            ← <span data-i18n="back_wha_label">WHA DASHBOARD</span>
+        </a>
     </div>
+
+    <div class="header-center">
+        <div class="header-flag">🇻🇪 <span data-i18n="header_country">VENEZUELA</span></div>
+        <h1 class="header-title" data-i18n="page_title">Rhetoric &amp; Pressure Tracker</h1>
+        <div class="header-subtitle" data-i18n="page_subtitle">16-Actor · 6-Vector · Hybrid Command-Node + Absorber · L5 Reservation Contract</div>
+        <div class="header-timestamp" id="headerTimestamp" data-i18n="initializing">Initializing...</div>
+    </div>
+
     <div class="header-right">
-        <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
-            <option value="en">🇺🇸 EN</option>
-            <option value="es">🇪🇸 ES</option>
-            <option value="pt">🇧🇷 PT</option>
-        </select>
-        <div class="theme-toggle">
-            <div class="toggle-switch" onclick="toggleTheme()"></div>
-            <span class="toggle-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+        <div class="pressure-badge" id="headerPressureBadge" data-i18n="loading">Loading…</div>
+        <div class="lang-group">
+            <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+            <button class="lang-btn" data-lang="pt" onclick="setLang('pt')">PT</button>
+        </div>
+        <div class="theme-row">
+            <span class="theme-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+            <div class="theme-toggle" onclick="toggleTheme()" role="button" aria-label="Toggle theme"></div>
         </div>
         <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" data-i18n="refresh">⟳ REFRESH</button>
     </div>
 </header>
+</div>
 
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
@@ -1062,8 +1142,14 @@ const T = {
     en: {
         // Header / chrome
         home: '🏠 HOME',
-        page_title: 'VENEZUELA RHETORIC TRACKER',
+        page_title: 'Rhetoric & Pressure Tracker',
         page_subtitle: '16-Actor · 6-Vector · Hybrid Command-Node + Absorber · L5 Reservation Contract',
+        header_country: 'VENEZUELA',
+        back_to_vz_stability: '← VZ Stability',
+        back_label: 'VZ STABILITY',
+        back_to_wha: '← WHA Dashboard',
+        back_wha_label: 'WHA DASHBOARD',
+        loading: 'Loading…',
         theme_toggle: 'DARK / LIGHT',
         refresh: '⟳ REFRESH',
         loading: 'Loading...',
@@ -1162,8 +1248,14 @@ const T = {
 
     es: {
         home: '🏠 INICIO',
-        page_title: 'RASTREADOR DE RETÓRICA — VENEZUELA',
+        page_title: 'Rastreador de Retórica y Presión',
         page_subtitle: '16 Actores · 6 Vectores · Híbrido Nodo de Mando + Absorbedor · Contrato de Reserva L5',
+        header_country: 'VENEZUELA',
+        back_to_vz_stability: '← Estabilidad VE',
+        back_label: 'ESTABILIDAD VE',
+        back_to_wha: '← Panel WHA',
+        back_wha_label: 'PANEL WHA',
+        loading: 'Cargando…',
         theme_toggle: 'OSCURO / CLARO',
         refresh: '⟳ ACTUALIZAR',
         loading: 'Cargando...',
@@ -1253,8 +1345,14 @@ const T = {
 
     pt: {
         home: '🏠 INÍCIO',
-        page_title: 'RASTREADOR DE RETÓRICA — VENEZUELA',
+        page_title: 'Rastreador de Retórica e Pressão',
         page_subtitle: '16 Atores · 6 Vetores · Híbrido Nó de Comando + Absorvedor · Contrato de Reserva L5',
+        header_country: 'VENEZUELA',
+        back_to_vz_stability: '← Estabilidade VE',
+        back_label: 'ESTABILIDADE VE',
+        back_to_wha: '← Painel WHA',
+        back_wha_label: 'PAINEL WHA',
+        loading: 'Carregando…',
         theme_toggle: 'ESCURO / CLARO',
         refresh: '⟳ ATUALIZAR',
         loading: 'Carregando...',
@@ -1350,7 +1448,10 @@ function setLang(lang) {
     currentLang = lang;
     localStorage.setItem('asifah_lang', lang);
     document.documentElement.lang = lang;
-    document.getElementById('langSelect').value = lang;
+    // Sync lang button .active state
+    document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (T[lang][key]) el.textContent = T[lang][key];
@@ -1447,6 +1548,23 @@ function renderData(d) {
 
     document.getElementById('bandBadge').textContent = band;
     document.getElementById('heroScore').textContent = score;
+
+    // Update header pressure badge (lives in the new Gold Standard header)
+    const headerBadge = document.getElementById('headerPressureBadge');
+    if (headerBadge) {
+        headerBadge.textContent = `L${level} · ${band}`;
+        headerBadge.style.background = `${bandColor}22`;
+        headerBadge.style.borderColor = bandColor;
+        headerBadge.style.color = bandColor;
+    }
+    // Update header timestamp
+    const headerTs = document.getElementById('headerTimestamp');
+    if (headerTs && scannedAt) {
+        const dt = new Date(scannedAt);
+        const localeMap = { en: 'en-US', es: 'es-ES', pt: 'pt-BR' };
+        const locale = localeMap[currentLang] || 'en-US';
+        headerTs.textContent = `${t.last_scan}: ${dt.toLocaleString(locale)}`;
+    }
 
     // Détente badge (subtle)
     const heroBadges = document.getElementById('heroBadges');
