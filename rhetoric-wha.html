@@ -432,6 +432,14 @@
         <span class="nav-btn-label">📊 Chile Stability</span>
         <span class="nav-btn-status" data-i18n="navLive">● Live</span>
     </a>
+    <a href="rhetoric-venezuela.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🇻🇪 Venezuela Rhetoric Tracker</span>
+        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
+    </a>
+    <a href="venezuela-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">📊 Venezuela Stability</span>
+        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
+    </a>
     <a href="rhetoric-us.html" class="nav-btn rhetoric-btn">
         <span class="nav-btn-label">🇺🇸 U.S. Rhetoric Tracker</span>
         <span class="nav-btn-status" data-i18n="navLive">● Live</span>
@@ -485,10 +493,6 @@
 <div class="trackers-list">
     <div class="coming-soon-banner">
         <div class="coming-soon-name">🇲🇽 <span data-i18n="soon_mx">Mexico Rhetoric Tracker</span></div>
-        <span class="coming-soon-badge" data-i18n="soon_badge">In Development</span>
-    </div>
-    <div class="coming-soon-banner">
-        <div class="coming-soon-name">🇻🇪 <span data-i18n="soon_ve">Venezuela Rhetoric Tracker</span></div>
         <span class="coming-soon-badge" data-i18n="soon_badge">In Development</span>
     </div>
     <div class="coming-soon-banner">
@@ -570,6 +574,15 @@
             vectors:    ['Domestic Stability', 'Resource-Sector Politics', 'US Alignment', 'China Alignment'],
             summaryUrl: WHA_BACKEND + '/api/rhetoric/chile',
             url:        'https://www.asifahanalytics.com/rhetoric-chile.html',
+        },
+        {
+            id:         'venezuela',
+            name:       'Venezuela Rhetoric & Pressure Tracker',
+            flag:       '🇻🇪',
+            actors:     'US Gov · US Sanctions · US Military · US-VZ Envoys · Delcy Rodríguez · Jorge Rodríguez · Yván Gil · Cabello · Internal Security · Opposition · Chavismo Residual · Russia/China/Iran Axes · Hezbollah Watch · Essequibo Dispute',
+            vectors:    ['U.S. Pressure', 'Regime Legitimacy', 'Adversary Access', 'Oil Extraction', 'Migration Outflow', 'Essequibo Dispute'],
+            summaryUrl: WHA_BACKEND + '/api/rhetoric/venezuela',
+            url:        'https://www.asifahanalytics.com/rhetoric-venezuela.html',
         },
         {
             id:         'us',
@@ -889,7 +902,7 @@
             const cu_color = cubaData ? (ESCALATION_LEVELS[Math.min(cu_level, 5)].color) : '#6b7280';
             pillEl.textContent = (cu_label || 'BASELINE').toUpperCase();
             pillEl.style.background = cu_color;
-            blufProseEl.textContent = `WHA Rhetoric Monitor (server BLUF unavailable, fallback view): ${loaded.length} tracker live — Cuba posture at L${cu_level} (${cu_label}). Mexico, Venezuela, Colombia, Brazil, Haiti, Panama, US trackers in development.`;
+            blufProseEl.textContent = `WHA Rhetoric Monitor (server BLUF unavailable, fallback view): ${loaded.length} tracker live — Cuba posture at L${cu_level} (${cu_label}). Mexico, Colombia, Brazil, Haiti, Panama trackers in development.`;
             signalsEl.innerHTML = '';
             timestampEl.textContent = `Generated: ${new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}`;
             return;
