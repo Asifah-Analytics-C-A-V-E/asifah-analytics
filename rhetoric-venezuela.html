@@ -1,0 +1,1786 @@
+<!-- Asifah Analytics — Venezuela Rhetoric & Pressure Tracker v1.0.0 — May 2026 -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<!-- Built on Cuba structural pattern + Chile Gold Standard polish (May 17 2026 retrofit) -->
+<!-- VZ-specific: 16 actors / 6 vectors / band-vocabulary architecture / commodity coupling-aware -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Venezuela Rhetoric &amp; Pressure Tracker — Asifah Analytics</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<style>
+    /* ════════════════════════════════════════════════════════════
+       ARCTIC THEME — canonical WHA palette
+       (matches rhetoric-cuba / rhetoric-peru / rhetoric-chile)
+       ════════════════════════════════════════════════════════════ */
+    :root {
+        --bg-color:       #e8f0f8;
+        --container-bg:   #ffffff;
+        --card-bg:        #ffffff;
+        --card-border:    #b0c8e0;
+        --text-primary:   #0a1628;
+        --text-secondary: #1e3a5f;
+        --text-muted:     #4a6080;
+        --article-bg:     #f0f6fc;
+        --accent:         #0ea5e9;
+        --accent-glow:    rgba(14,165,233,0.2);
+        --accent-cyan:    #38bdf8;
+        --border-color:   #b0c8e0;
+        --bg-card:        #ffffff;
+        --card-glow:      none;
+        --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
+        --watermark-opacity: 0.07;
+        --watermark-filter:  none;
+
+        /* VZ-specific band colors (canonical band vocabulary) */
+        --band-stable:    #6b7280;
+        --band-active:    #3b82f6;
+        --band-volatile:  #f97316;
+        --band-crisis:    #ef4444;
+
+        /* Détente / suppression overlay */
+        --detente-color:  #14b8a6;
+        --detente-glow:   rgba(20,184,166,0.2);
+    }
+    [data-theme="dark"] {
+        --bg-color:       #060d1a;
+        --container-bg:   #0d1b2e;
+        --card-bg:        #0d1b2e;
+        --card-border:    #1e3a5f;
+        --text-primary:   #e2f0fb;
+        --text-secondary: #93c5fd;
+        --text-muted:     #4a7090;
+        --article-bg:     #0a1525;
+        --accent:         #38bdf8;
+        --accent-glow:    rgba(56,189,248,0.18);
+        --accent-cyan:    #38bdf8;
+        --border-color:   #1e3a5f;
+        --bg-card:        #0d1b2e;
+        --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
+        --card-hover-glow: 0 0 22px rgba(56,189,248,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        --watermark-opacity: 0.18;
+        --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
+
+        --band-stable:    #6b7280;
+        --band-active:    #38bdf8;
+        --band-volatile:  #f97316;
+        --band-crisis:    #ef4444;
+
+        --detente-color:  #2dd4bf;
+        --detente-glow:   rgba(45,212,191,0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Canonical watermark + grid + scanlines (Gold Standard May 17 2026) */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image:
+            linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+    }
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.04) 50%);
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .watermark {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 800px;
+        height: 800px;
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: var(--watermark-opacity);
+        filter: var(--watermark-filter);
+        pointer-events: none;
+        z-index: 2;
+    }
+    @media (max-width: 768px) {
+        .watermark { width: 500px; height: 500px; opacity: calc(var(--watermark-opacity) * 0.6); }
+    }
+
+    /* ════════ HEADER ════════ */
+    .header {
+        background: var(--container-bg);
+        border-bottom: 1px solid var(--card-border);
+        padding: 12px 24px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        backdrop-filter: blur(8px);
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .home-btn {
+        font-size: 14px;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: bold;
+        letter-spacing: 1px;
+        padding: 6px 12px;
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    .home-btn:hover { background: var(--accent); color: var(--container-bg); }
+    .header-title-block { line-height: 1.2; }
+    .header-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--text-primary);
+        letter-spacing: 1px;
+    }
+    .header-subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+    }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    /* Theme toggle */
+    .theme-toggle { display: flex; align-items: center; gap: 8px; }
+    .toggle-switch {
+        position: relative;
+        width: 44px;
+        height: 22px;
+        background: var(--card-border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .toggle-switch::before {
+        content: '';
+        position: absolute;
+        top: 2px; left: 2px;
+        width: 18px; height: 18px;
+        background: var(--container-bg);
+        border-radius: 50%;
+        transition: transform 0.2s;
+    }
+    [data-theme="dark"] .toggle-switch { background: var(--accent); }
+    [data-theme="dark"] .toggle-switch::before { transform: translateX(22px); }
+    .toggle-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+
+    .lang-select {
+        font-family: 'Times New Roman', serif;
+        font-size: 12px;
+        padding: 4px 8px;
+        background: var(--container-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .refresh-btn {
+        background: var(--accent);
+        color: var(--container-bg);
+        border: none;
+        padding: 8px 16px;
+        font-family: 'Times New Roman', serif;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .refresh-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .refresh-btn:disabled { opacity: 0.4; cursor: wait; }
+
+    /* Hamburger (mobile) */
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        background: none;
+        border: 1px solid var(--card-border);
+        padding: 8px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .hamburger span {
+        width: 22px;
+        height: 2px;
+        background: var(--text-primary);
+        transition: 0.2s;
+    }
+
+    /* ════════ LAYOUT ════════ */
+    .layout {
+        display: flex;
+        position: relative;
+        z-index: 10;
+        min-height: calc(100vh - 60px);
+    }
+
+    /* ════════ SIDEBAR ════════ */
+    .sidebar {
+        width: 200px;
+        background: var(--container-bg);
+        border-right: 1px solid var(--card-border);
+        padding: 20px 16px;
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+    .sidebar-section { margin-bottom: 18px; }
+    .sidebar-header {
+        font-size: 10px;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        padding-left: 4px;
+    }
+    .sidebar-link {
+        display: block;
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 8px;
+        border-radius: 4px;
+        margin-bottom: 2px;
+        transition: all 0.15s;
+        border-left: 2px solid transparent;
+    }
+    .sidebar-link:hover {
+        background: var(--article-bg);
+        color: var(--accent);
+        border-left-color: var(--accent);
+    }
+    .sidebar-link.active {
+        background: var(--article-bg);
+        color: var(--accent);
+        border-left-color: var(--accent);
+        font-weight: bold;
+    }
+    .sidebar-link.rhetoric { color: #22c55e; }
+    .sidebar-link.rhetoric.active { color: #22c55e; border-left-color: #22c55e; background: rgba(34,197,94,0.08); }
+    .sidebar-link.crosscut { color: var(--accent-cyan); }
+    .sidebar-divider {
+        height: 1px;
+        background: var(--card-border);
+        margin: 10px 4px;
+    }
+
+    /* Mobile drawer */
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 90;
+    }
+
+    /* ════════ CONTENT ════════ */
+    .content {
+        flex: 1;
+        padding: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-width: 0;
+    }
+
+    .updated-bar {
+        background: var(--container-bg);
+        border: 1px solid var(--card-border);
+        padding: 8px 14px;
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        text-align: center;
+    }
+
+    .pending-banner {
+        background: rgba(245,158,11,0.1);
+        border: 1px solid rgba(245,158,11,0.4);
+        color: #f59e0b;
+        padding: 16px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+
+    /* ════════ HERO ════════ */
+    .hero {
+        background: var(--container-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 28px 30px;
+        margin-bottom: 20px;
+        box-shadow: var(--card-glow);
+        position: relative;
+        overflow: hidden;
+    }
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 4px;
+        background: linear-gradient(90deg, var(--band-active), var(--band-volatile), var(--band-crisis));
+    }
+    .hero-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 28px;
+        align-items: center;
+    }
+    .hero-flag {
+        font-size: 88px;
+        line-height: 1;
+        filter: drop-shadow(0 0 8px var(--accent-glow));
+    }
+    .hero-info { display: flex; flex-direction: column; gap: 10px; }
+    .hero-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--text-primary);
+        letter-spacing: 1px;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .level-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: var(--band-active);
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+    }
+    .band-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        background: var(--article-bg);
+        color: var(--text-secondary);
+        border: 1px solid var(--card-border);
+        font-size: 11px;
+        font-weight: bold;
+        border-radius: 20px;
+        letter-spacing: 2px;
+    }
+    .detente-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        background: var(--detente-color);
+        color: #042f2e;
+        font-size: 11px;
+        font-weight: bold;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        cursor: help;
+        box-shadow: 0 0 12px var(--detente-glow);
+    }
+    .hero-meta {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+    .hero-score {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 4px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    .hero-score-num { font-size: 24px; font-weight: bold; color: var(--accent); }
+
+    /* ════════ CARDS ════════ */
+    .card {
+        background: var(--container-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 22px 24px;
+        margin-bottom: 18px;
+        box-shadow: var(--card-glow);
+        transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: var(--card-hover-glow); }
+    .card-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--card-border);
+    }
+    .card-subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+        font-style: italic;
+    }
+    .card-body { font-size: 15px; color: var(--text-primary); line-height: 1.7; }
+    .card-body p { margin-bottom: 10px; }
+
+    /* Commodity coupling mini-card */
+    .commodity-strip {
+        background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(239,68,68,0.05));
+        border: 1px solid rgba(245,158,11,0.3);
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .commodity-strip.surge {
+        background: linear-gradient(90deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
+        border-color: rgba(239,68,68,0.5);
+    }
+    .commodity-strip.normal { display: none; }
+    .commodity-strip a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+    .commodity-strip a:hover { text-decoration: underline; }
+    .commodity-strip .alert-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #f59e0b;
+        margin-right: 6px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    .commodity-strip.surge .alert-dot { background: #ef4444; }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+
+    /* L5 Gate display */
+    .l5-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+    .l5-axis {
+        background: var(--article-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        font-size: 12px;
+    }
+    .l5-axis-name {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+    }
+    .l5-axis-status {
+        font-weight: bold;
+        font-size: 13px;
+    }
+    .l5-axis.armed { border-color: rgba(239,68,68,0.5); background: rgba(239,68,68,0.08); }
+    .l5-axis.armed .l5-axis-status { color: #ef4444; }
+    .l5-axis.quiet .l5-axis-status { color: #22c55e; }
+    .l5-axis.suppressed { border-color: var(--detente-color); background: rgba(20,184,166,0.05); }
+    .l5-axis.suppressed .l5-axis-status { color: var(--detente-color); }
+
+    .l5-reason {
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: var(--article-bg);
+        border-left: 3px solid var(--accent);
+        font-size: 12px;
+        color: var(--text-secondary);
+        border-radius: 4px;
+    }
+    .l5-reason.suppression {
+        border-left-color: var(--detente-color);
+        background: rgba(20,184,166,0.05);
+    }
+
+    /* Red Lines */
+    .redline-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+    }
+    .redline-item {
+        background: var(--article-bg);
+        border: 1px solid var(--card-border);
+        border-left: 3px solid var(--text-muted);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+    .redline-item.armed { border-left-color: #ef4444; background: rgba(239,68,68,0.06); }
+    .redline-name {
+        font-weight: bold;
+        color: var(--text-primary);
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+    .redline-status {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .redline-item.armed .redline-status { color: #ef4444; }
+
+    /* Vector pillars */
+    .vector-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    .vector-pillar {
+        background: var(--article-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: center;
+        cursor: help;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .vector-pillar:hover { transform: translateY(-2px); box-shadow: var(--card-hover-glow); }
+    .vector-name {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+    }
+    .vector-level {
+        font-size: 22px;
+        font-weight: bold;
+        color: var(--accent);
+        margin-bottom: 4px;
+    }
+    .vector-label {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-weight: bold;
+    }
+    .vector-pillar[data-level="0"] .vector-level { color: var(--band-stable); }
+    .vector-pillar[data-level="1"] .vector-level { color: var(--band-active); }
+    .vector-pillar[data-level="2"] .vector-level { color: var(--band-active); }
+    .vector-pillar[data-level="3"] .vector-level { color: var(--band-volatile); }
+    .vector-pillar[data-level="4"] .vector-level { color: var(--band-volatile); }
+    .vector-pillar[data-level="5"] .vector-level { color: var(--band-crisis); }
+
+    /* Tooltips */
+    [data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0a1525;
+        color: #e2f0fb;
+        padding: 8px 12px;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: normal;
+        width: 280px;
+        z-index: 100;
+        font-family: 'Times New Roman', serif;
+        line-height: 1.4;
+        text-align: left;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    /* Actors */
+    .actor-section {
+        margin-bottom: 22px;
+    }
+    .actor-section-title {
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--text-primary);
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        background: var(--article-bg);
+        border-left: 3px solid var(--accent);
+        border-radius: 4px;
+    }
+    .actor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 12px;
+    }
+    .actor-card {
+        background: var(--article-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 14px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .actor-card:hover { transform: translateY(-2px); box-shadow: var(--card-hover-glow); }
+    .actor-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    .actor-icon { font-size: 22px; }
+    .actor-name {
+        font-weight: bold;
+        font-size: 13px;
+        color: var(--text-primary);
+        flex: 1;
+    }
+    .actor-level {
+        font-size: 11px;
+        font-weight: bold;
+        padding: 3px 8px;
+        border-radius: 10px;
+        color: white;
+    }
+    .actor-role {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-bottom: 8px;
+    }
+    .actor-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-secondary);
+        padding-top: 8px;
+        border-top: 1px solid var(--card-border);
+    }
+
+    /* Source breakdown */
+    .source-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+    }
+    .source-cell {
+        background: var(--article-bg);
+        border: 1px solid var(--card-border);
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+    }
+    .source-cell-name {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+    .source-cell-count {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--accent);
+    }
+
+    /* Methodology */
+    .methodology details {
+        cursor: pointer;
+    }
+    .methodology summary {
+        font-weight: bold;
+        color: var(--accent);
+        list-style: none;
+        padding: 8px 0;
+        font-size: 13px;
+        letter-spacing: 1px;
+    }
+    .methodology summary::before {
+        content: '▶ ';
+        margin-right: 6px;
+        transition: transform 0.2s;
+    }
+    .methodology details[open] summary::before { content: '▼ '; }
+    .methodology-body {
+        padding-top: 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    /* ════════ RESPONSIVE / MOBILE ════════ */
+    @media (max-width: 768px) {
+        .header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+        .header-title { font-size: 14px; }
+        .header-subtitle { font-size: 9px; }
+        .home-btn { font-size: 11px; padding: 4px 8px; }
+        .refresh-btn { padding: 6px 10px; font-size: 10px; }
+        .theme-toggle { display: none; }
+        .lang-select { font-size: 11px; }
+
+        .hamburger { display: flex; }
+        .sidebar {
+            position: fixed;
+            top: 0; left: -240px;
+            height: 100vh;
+            z-index: 95;
+            transition: left 0.25s;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-backdrop.active { display: block; }
+
+        .content { padding: 14px; }
+        .hero { padding: 18px 16px; }
+        .hero-grid { grid-template-columns: 1fr; gap: 14px; text-align: center; }
+        .hero-flag { font-size: 64px; }
+        .hero-title { font-size: 20px; }
+        .hero-badges { justify-content: center; }
+
+        .card { padding: 16px; }
+        .card-title { font-size: 11px; }
+        .l5-grid { grid-template-columns: repeat(2, 1fr); }
+        .vector-grid { grid-template-columns: repeat(2, 1fr); }
+        .actor-grid { grid-template-columns: 1fr; }
+        .redline-grid { grid-template-columns: 1fr; }
+
+        [data-tooltip]:hover::after {
+            position: fixed;
+            bottom: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 320px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="watermark"></div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-left">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <a href="index.html" class="home-btn" data-i18n="home">🏠 HOME</a>
+        <div class="header-title-block">
+            <div class="header-title" data-i18n="page_title">VENEZUELA RHETORIC TRACKER</div>
+            <div class="header-subtitle" data-i18n="page_subtitle">16-Actor · 6-Vector · Hybrid Command-Node + Absorber · L5 Reservation Contract</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+            <option value="en">🇺🇸 EN</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="pt">🇧🇷 PT</option>
+        </select>
+        <div class="theme-toggle">
+            <div class="toggle-switch" onclick="toggleTheme()"></div>
+            <span class="toggle-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+        </div>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" data-i18n="refresh">⟳ REFRESH</button>
+    </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+
+    <!-- SIDEBAR (canonical order: ME → Asia → EU → WHA, cyan = dashboards, green = rhetoric) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
+            <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
+            <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
+            <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
+            <a href="wha.html" class="sidebar-link" data-i18n="sb_wha">🌎 Western Hemisphere</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
+            <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
+            <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
+            <a href="gpi.html" class="sidebar-link crosscut" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_rhetoric">RHETORIC LANDINGS</div>
+            <a href="rhetoric-index.html" class="sidebar-link rhetoric" data-i18n="sb_rh_me">💬 Middle East Rhetoric</a>
+            <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
+            <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
+            <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_venezuela">VENEZUELA PAGES</div>
+            <a href="rhetoric-venezuela.html" class="sidebar-link rhetoric active" data-i18n="sb_vz_rhetoric">💬 Venezuela Rhetoric</a>
+            <a href="venezuela-stability.html" class="sidebar-link" data-i18n="sb_vz_stability">📊 Venezuela Stability</a>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <div class="updated-bar" id="updatedBar" data-i18n="initializing">Initializing...</div>
+
+        <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">
+            ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.
+        </div>
+
+        <!-- HERO -->
+        <section class="hero" id="heroCard">
+            <div class="hero-grid">
+                <div class="hero-flag">🇻🇪</div>
+                <div class="hero-info">
+                    <div class="hero-title" data-i18n="hero_title">Venezuela Rhetoric Monitor</div>
+                    <div class="hero-badges" id="heroBadges">
+                        <span class="level-badge" id="levelBadge">L— Loading</span>
+                        <span class="band-badge" id="bandBadge">—</span>
+                    </div>
+                    <div class="hero-meta" id="heroMeta">
+                        <span class="hero-score" data-i18n="score_label">Composite score: </span>
+                        <span class="hero-score-num" id="heroScore">—</span> / 100
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMODITY COUPLING STRIP (its own 1-line card — surfaces only when ≥ elevated) -->
+        <div class="commodity-strip normal" id="commodityStrip">
+            <div>
+                <span class="alert-dot"></span>
+                <span data-i18n="commodity_strip_label">⚡ Commodity coupling:</span>
+                <strong id="commodityStripLevel">—</strong>
+                <span id="commodityStripCommodities" style="color: var(--text-muted); margin-left: 6px;">—</span>
+            </div>
+            <a href="commodities.html" data-i18n="commodity_strip_link">View commodity dashboard →</a>
+        </div>
+
+        <!-- EXECUTIVE SUMMARY -->
+        <section class="card" id="execSummaryCard">
+            <div class="card-title" data-i18n="exec_summary_title">📋 Executive Summary</div>
+            <div class="card-body" id="execSummaryBody">
+                <p id="execHeadline" style="font-weight:bold; font-size:16px; color:var(--accent); margin-bottom:12px;">—</p>
+                <p id="execParagraph">Loading executive summary...</p>
+            </div>
+        </section>
+
+        <!-- SO-WHAT FACTOR -->
+        <section class="card" id="soWhatCard">
+            <div class="card-title" data-i18n="so_what_title">🎯 So-What Factor</div>
+            <div class="card-body" id="soWhatBody">
+                <p><strong data-i18n="so_what_scenario_label">Scenario:</strong> <span id="soWhatScenario">—</span></p>
+                <p><strong data-i18n="so_what_factor_label">Factor:</strong> <span id="soWhatFactor">—</span></p>
+                <p id="soWhatDescription">—</p>
+                <div id="soWhatWatchForBlock" style="margin-top:12px;">
+                    <p style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;" data-i18n="so_what_watch_for">Watch for:</p>
+                    <ul id="soWhatWatchFor" style="margin-left:20px; font-size:13px; color:var(--text-secondary);"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- L5 GATE STATUS -->
+        <section class="card" id="l5GateCard">
+            <div class="card-title" data-i18n="l5_gate_title">🚦 L5 Reservation Gate</div>
+            <div class="card-subtitle" data-i18n="l5_gate_subtitle">Each axis must independently trigger to reach L5 Active Crisis. Ceasefire-aware: US-VZ détente suppresses kinetic axis when active.</div>
+            <div class="l5-grid">
+                <div class="l5-axis quiet" id="l5Kinetic">
+                    <div class="l5-axis-name" data-i18n="l5_kinetic">Kinetic</div>
+                    <div class="l5-axis-status">—</div>
+                </div>
+                <div class="l5-axis quiet" id="l5Humanitarian">
+                    <div class="l5-axis-name" data-i18n="l5_humanitarian">Humanitarian</div>
+                    <div class="l5-axis-status">—</div>
+                </div>
+                <div class="l5-axis quiet" id="l5Economic">
+                    <div class="l5-axis-name" data-i18n="l5_economic">Economic</div>
+                    <div class="l5-axis-status">—</div>
+                </div>
+                <div class="l5-axis quiet" id="l5Diplomatic">
+                    <div class="l5-axis-name" data-i18n="l5_diplomatic">Diplomatic</div>
+                    <div class="l5-axis-status">—</div>
+                </div>
+            </div>
+            <div class="l5-reason" id="l5Reason">—</div>
+        </section>
+
+        <!-- RED LINES -->
+        <section class="card" id="redLinesCard">
+            <div class="card-title" data-i18n="red_lines_title">🚨 Red Lines — Active Watch</div>
+            <div class="card-subtitle" data-i18n="red_lines_subtitle">11 high-impact tripwires monitored continuously. ARMED = condition met / breach detected.</div>
+            <div class="redline-grid" id="redLinesGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- SIX VECTOR PILLARS -->
+        <section class="card" id="vectorsCard">
+            <div class="card-title" data-i18n="vectors_title">📊 Six-Vector Composite</div>
+            <div class="card-subtitle" data-i18n="vectors_subtitle">Vector-level analytical scores driving the composite. Hover for analytical definitions.</div>
+            <div class="vector-grid" id="vectorsGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- ACTORS — 4 layered groups -->
+        <section class="card" id="actorsCard">
+            <div class="card-title" data-i18n="actors_title">🎭 Actor Layers</div>
+            <div class="card-subtitle" data-i18n="actors_subtitle">16 actors across 4 layers. Each tracker writes its own perspective on shared cross-theater fingerprints.</div>
+            <div id="actorsContainer">
+                <!-- Populated by JS — 4 sections -->
+            </div>
+        </section>
+
+        <!-- SOURCE BREAKDOWN -->
+        <section class="card" id="sourceCard">
+            <div class="card-title" data-i18n="source_title">📡 Source Breakdown</div>
+            <div class="card-subtitle" id="sourceSubtitle">—</div>
+            <div class="source-grid" id="sourceGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- METHODOLOGY -->
+        <section class="card methodology">
+            <details>
+                <summary data-i18n="methodology_title">📖 Methodology</summary>
+                <div class="methodology-body">
+                    <p data-i18n="methodology_p1">The Venezuela Rhetoric Tracker is a hybrid command-node + absorber tracker. As a command-node, it generates outbound rhetoric that other trackers read. As an absorber, it integrates pressure signals from upstream actors (US, Cuba, Iran, Russia, China).</p>
+                    <p data-i18n="methodology_p2">The L5 Reservation Contract gates the maximum theater level through four independent axes: kinetic, humanitarian, economic, and diplomatic. The kinetic axis is ceasefire-aware — when US-VZ détente is active (level ≥ 3), kinetic L5 is suppressed regardless of underlying pressure, reflecting the analytical reality that bilateral détente changes interpretation of military signaling.</p>
+                    <p data-i18n="methodology_p3">Scans complete every 12 hours. Sources include native Spanish-language outlets (TeleSur, Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS), Reuters, El País, Reddit r/vzla, Bluesky, Telegram, and Brave Search as tertiary fallback. The tracker writes its perspective to a shared Redis fingerprint that other trackers (US, Cuba, Iran, Russia, China) read back for cross-theater awareness.</p>
+                </div>
+            </details>
+        </section>
+
+    </main>
+</div>
+
+
+<!-- CANONICAL FOOTER (Gold Standard May 17 2026) -->
+<footer style="background:var(--bg-card, #0d1b2e); border:1px solid var(--border-color, #1e3a5f); border-radius:12px; padding:30px; margin:30px; font-size:13px; color:var(--text-secondary, #93c5fd);">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:20px;">
+        <div>
+            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_sources">DATA SOURCES</h4>
+            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_sources_text">TeleSur (state), Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS (native Spanish RSS); Reuters Americas, El País; Reddit r/vzla; Bluesky; Telegram; GDELT (multilingual); NewsAPI; Brave Search fallback. Cross-tracker fingerprints from US, Cuba, Iran, Russia, China + commodity tracker (oil/gold/wheat coupling).</p>
+        </div>
+        <div>
+            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_method">METHODOLOGY</h4>
+            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_method_text">16-actor frame across 4 layers (US Pressure / VZ Government / Adversary Axes / Special Watch). 6-vector composite: US Pressure, Regime Legitimacy, Adversary Access, Oil Extraction, Migration Outflow, Essequibo Dispute. L5 Reservation Contract gates maximum theater level via 4 independent axes (kinetic ceasefire-aware via US-VZ détente). 11 red lines as high-impact tripwires. Scan refreshes every 12 hours.</p>
+        </div>
+        <div>
+            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_connected">CONNECTED TRACKERS</h4>
+            <p style="font-size:12px; line-height:1.5;">
+                <a href="commodities.html" style="color:#38bdf8; text-decoration:none;">🌾 Commodities</a> ·
+                <a href="venezuela-stability.html" style="color:#38bdf8; text-decoration:none;">📊 VZ Stability</a> ·
+                <a href="rhetoric-wha.html" style="color:#38bdf8; text-decoration:none;">💬 WHA Rhetoric</a> ·
+                <a href="gpi.html" style="color:#38bdf8; text-decoration:none;">🌐 GPI</a>
+            </p>
+        </div>
+    </div>
+    <div style="margin-top:20px; padding:14px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:8px; font-size:12px; line-height:1.5;">
+        <strong style="color:#f59e0b;" data-i18n="ftr_disclaimer_label">⚠️ DISCLAIMER</strong> &mdash;
+        <span data-i18n="ftr_disclaimer_text">This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.</span>
+    </div>
+    <div style="margin-top:20px; padding:14px 18px; background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.2); border-radius:8px; text-align:center; font-size:13px;">
+        <span data-i18n="ftr_coffee">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6; text-decoration:none; font-weight:bold;" data-i18n="ftr_coffee_link">buy me a coffee</a>
+    </div>
+    <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color,#1e3a5f); font-size:12px;">
+        <a href="privacy.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_privacy">Privacy Policy</a>
+        <span style="color:var(--text-muted,#4a7090); margin:0 12px;">|</span>
+        <a href="contact.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_contact">Contact</a>
+    </div>
+    <div style="text-align:center; margin-top:15px; font-size:11px; color:var(--text-muted,#4a7090);">
+        © 2025-2026 RCGG. All Rights Reserved. Asifah Venezuela Rhetoric Tracker v1.0.0 — Proprietary and Confidential.
+    </div>
+</footer>
+
+<script>
+// =============================================
+// VENEZUELA RHETORIC TRACKER — frontend engine
+// v1.0.0 — May 2026
+// =============================================
+
+const API_BASE = 'https://asifah-wha-backend.onrender.com';
+const ENDPOINT = `${API_BASE}/api/rhetoric/venezuela`;
+const REFRESH_INTERVAL_MS = 12 * 60 * 1000; // 12 min poll
+
+let currentData = null;
+let currentLang = localStorage.getItem('asifah_lang') || 'en';
+
+// =============================================
+// I18N — English / Spanish / Portuguese
+// =============================================
+const T = {
+    en: {
+        // Header / chrome
+        home: '🏠 HOME',
+        page_title: 'VENEZUELA RHETORIC TRACKER',
+        page_subtitle: '16-Actor · 6-Vector · Hybrid Command-Node + Absorber · L5 Reservation Contract',
+        theme_toggle: 'DARK / LIGHT',
+        refresh: '⟳ REFRESH',
+        loading: 'Loading...',
+        initializing: 'Initializing...',
+        pending_banner: '⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.',
+
+        // Sidebar
+        sb_regional: 'REGIONAL LANDINGS',
+        sb_me: '🌍 Middle East',
+        sb_asia: '🌏 Asia-Pacific',
+        sb_europe: '🌍 Europe',
+        sb_wha: '🌎 Western Hemisphere',
+        sb_crosscut: 'CROSS-CUTTING TOOLS',
+        sb_commodities: '🌾 Commodities Tracker',
+        sb_military: '🪖 Military Tracker',
+        sb_gpi: '🌐 Global Pressure Index',
+        sb_rhetoric: 'RHETORIC LANDINGS',
+        sb_rh_me: '💬 Middle East Rhetoric',
+        sb_rh_asia: '💬 Asia Rhetoric',
+        sb_rh_europe: '💬 Europe Rhetoric',
+        sb_rh_wha: '💬 Western Hemisphere Rhetoric',
+        sb_venezuela: 'VENEZUELA PAGES',
+        sb_vz_rhetoric: '💬 Venezuela Rhetoric',
+        sb_vz_stability: '📊 Venezuela Stability',
+
+        // Hero
+        hero_title: 'Venezuela Rhetoric Monitor',
+        score_label: 'Composite score: ',
+
+        // Commodity strip
+        commodity_strip_label: '⚡ Commodity coupling:',
+        commodity_strip_link: 'View commodity dashboard →',
+
+        // Cards
+        exec_summary_title: '📋 EXECUTIVE SUMMARY',
+        so_what_title: '🎯 SO-WHAT FACTOR',
+        so_what_scenario_label: 'Scenario:',
+        so_what_factor_label: 'Factor:',
+        so_what_watch_for: 'Watch for:',
+        l5_gate_title: '🚦 L5 RESERVATION GATE',
+        l5_gate_subtitle: 'Each axis must independently trigger to reach L5 Active Crisis. Ceasefire-aware: US-VZ détente suppresses kinetic axis when active.',
+        l5_kinetic: 'Kinetic',
+        l5_humanitarian: 'Humanitarian',
+        l5_economic: 'Economic',
+        l5_diplomatic: 'Diplomatic',
+        red_lines_title: '🚨 RED LINES — ACTIVE WATCH',
+        red_lines_subtitle: '11 high-impact tripwires monitored continuously. ARMED = condition met / breach detected.',
+        vectors_title: '📊 SIX-VECTOR COMPOSITE',
+        vectors_subtitle: 'Vector-level analytical scores driving the composite. Hover for analytical definitions.',
+        actors_title: '🎭 ACTOR LAYERS',
+        actors_subtitle: '16 actors across 4 layers. Each tracker writes its own perspective on shared cross-theater fingerprints.',
+        source_title: '📡 SOURCE BREAKDOWN',
+        methodology_title: '📖 METHODOLOGY',
+        methodology_p1: 'The Venezuela Rhetoric Tracker is a hybrid command-node + absorber tracker. As a command-node, it generates outbound rhetoric that other trackers read. As an absorber, it integrates pressure signals from upstream actors (US, Cuba, Iran, Russia, China).',
+        methodology_p2: 'The L5 Reservation Contract gates the maximum theater level through four independent axes: kinetic, humanitarian, economic, and diplomatic. The kinetic axis is ceasefire-aware — when US-VZ détente is active (level ≥ 3), kinetic L5 is suppressed regardless of underlying pressure, reflecting the analytical reality that bilateral détente changes interpretation of military signaling.',
+        methodology_p3: 'Scans complete every 12 hours. Sources include native Spanish-language outlets (TeleSur, Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS), Reuters, El País, Reddit r/vzla, Bluesky, Telegram, and Brave Search as tertiary fallback. The tracker writes its perspective to a shared Redis fingerprint that other trackers (US, Cuba, Iran, Russia, China) read back for cross-theater awareness.',
+
+        // Actor sections
+        actor_section_us:        '🇺🇸 US Pressure',
+        actor_section_vz_govt:   '🇻🇪 VZ Government',
+        actor_section_adversary: '🤝 Adversary Axes',
+        actor_section_special:   '🔍 Special Watch',
+
+        // L5 statuses
+        armed: 'ARMED',
+        quiet: 'QUIET',
+        suppressed: 'SUPPRESSED',
+
+        // Détente / suppression
+        detente_badge: '🤝 US-VZ Détente Active',
+        detente_tooltip: 'Bilateral US-VZ détente is active (level ≥ 3). The kinetic L5 axis is suppressed regardless of underlying pressure — reflecting the analytical reality that ongoing diplomatic engagement changes interpretation of military signaling.',
+
+        // Misc
+        last_scan: 'Last scanned',
+        next_scan: 'Next scan',
+        scan_in: 'in',
+        scan_ago: 'ago',
+        min: 'min',
+        hr: 'hr',
+        no_red_lines: 'No red lines armed — baseline operational state.',
+        loading_actor: 'Loading actor data...',
+
+        // Footer
+        ftr_sources: 'DATA SOURCES',
+        ftr_sources_text: 'TeleSur (state), Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS (native Spanish RSS); Reuters Americas, El País; Reddit r/vzla; Bluesky; Telegram; GDELT (multilingual); NewsAPI; Brave Search fallback. Cross-tracker fingerprints from US, Cuba, Iran, Russia, China + commodity tracker (oil/gold/wheat coupling).',
+        ftr_method: 'METHODOLOGY',
+        ftr_method_text: '16-actor frame across 4 layers (US Pressure / VZ Government / Adversary Axes / Special Watch). 6-vector composite: US Pressure, Regime Legitimacy, Adversary Access, Oil Extraction, Migration Outflow, Essequibo Dispute. L5 Reservation Contract gates maximum theater level via 4 independent axes (kinetic ceasefire-aware via US-VZ détente). 11 red lines as high-impact tripwires. Scan refreshes every 12 hours.',
+        ftr_connected: 'CONNECTED TRACKERS',
+        ftr_disclaimer_label: '⚠️ DISCLAIMER',
+        ftr_disclaimer_text: 'This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.',
+        ftr_coffee: 'If you find Asifah Analytics useful and want to support ongoing development, you can',
+        ftr_coffee_link: 'buy me a coffee',
+        ftr_privacy: 'Privacy Policy',
+        ftr_contact: 'Contact',
+    },
+
+    es: {
+        home: '🏠 INICIO',
+        page_title: 'RASTREADOR DE RETÓRICA — VENEZUELA',
+        page_subtitle: '16 Actores · 6 Vectores · Híbrido Nodo de Mando + Absorbedor · Contrato de Reserva L5',
+        theme_toggle: 'OSCURO / CLARO',
+        refresh: '⟳ ACTUALIZAR',
+        loading: 'Cargando...',
+        initializing: 'Inicializando...',
+        pending_banner: '⏳ Escaneo inicial en curso — normalmente toma 3-5 minutos tras un despliegue nuevo. Las señales aparecerán en breve.',
+
+        sb_regional: 'PÁGINAS REGIONALES',
+        sb_me: '🌍 Medio Oriente',
+        sb_asia: '🌏 Asia-Pacífico',
+        sb_europe: '🌍 Europa',
+        sb_wha: '🌎 Hemisferio Occidental',
+        sb_crosscut: 'HERRAMIENTAS TRANSVERSALES',
+        sb_commodities: '🌾 Rastreador de Commodities',
+        sb_military: '🪖 Rastreador Militar',
+        sb_gpi: '🌐 Índice Global de Presión',
+        sb_rhetoric: 'PÁGINAS DE RETÓRICA',
+        sb_rh_me: '💬 Retórica del Medio Oriente',
+        sb_rh_asia: '💬 Retórica de Asia',
+        sb_rh_europe: '💬 Retórica de Europa',
+        sb_rh_wha: '💬 Retórica del Hemisferio Occidental',
+        sb_venezuela: 'PÁGINAS DE VENEZUELA',
+        sb_vz_rhetoric: '💬 Retórica de Venezuela',
+        sb_vz_stability: '📊 Estabilidad de Venezuela',
+
+        hero_title: 'Monitor de Retórica — Venezuela',
+        score_label: 'Puntuación compuesta: ',
+
+        commodity_strip_label: '⚡ Acoplamiento de commodities:',
+        commodity_strip_link: 'Ver panel de commodities →',
+
+        exec_summary_title: '📋 RESUMEN EJECUTIVO',
+        so_what_title: '🎯 FACTOR DE RELEVANCIA',
+        so_what_scenario_label: 'Escenario:',
+        so_what_factor_label: 'Factor:',
+        so_what_watch_for: 'Vigilar:',
+        l5_gate_title: '🚦 COMPUERTA DE RESERVA L5',
+        l5_gate_subtitle: 'Cada eje debe activarse independientemente para alcanzar L5 Crisis Activa. Sensible al alto el fuego: la distensión EE.UU.-Venezuela suprime el eje cinético cuando está activa.',
+        l5_kinetic: 'Cinético',
+        l5_humanitarian: 'Humanitario',
+        l5_economic: 'Económico',
+        l5_diplomatic: 'Diplomático',
+        red_lines_title: '🚨 LÍNEAS ROJAS — VIGILANCIA ACTIVA',
+        red_lines_subtitle: '11 disparadores de alto impacto monitoreados continuamente. ACTIVADA = condición cumplida / brecha detectada.',
+        vectors_title: '📊 COMPUESTO DE SEIS VECTORES',
+        vectors_subtitle: 'Puntuaciones analíticas a nivel vector que impulsan el compuesto. Pase el cursor sobre cada uno para ver las definiciones analíticas.',
+        actors_title: '🎭 CAPAS DE ACTORES',
+        actors_subtitle: '16 actores en 4 capas. Cada rastreador escribe su propia perspectiva sobre huellas digitales compartidas entre teatros.',
+        source_title: '📡 DESGLOSE DE FUENTES',
+        methodology_title: '📖 METODOLOGÍA',
+        methodology_p1: 'El Rastreador de Retórica de Venezuela es un rastreador híbrido de nodo de mando + absorbedor. Como nodo de mando, genera retórica saliente que otros rastreadores leen. Como absorbedor, integra señales de presión de actores aguas arriba (EE.UU., Cuba, Irán, Rusia, China).',
+        methodology_p2: 'El Contrato de Reserva L5 limita el nivel máximo del teatro a través de cuatro ejes independientes: cinético, humanitario, económico y diplomático. El eje cinético es sensible al alto el fuego — cuando la distensión EE.UU.-Venezuela está activa (nivel ≥ 3), L5 cinético se suprime independientemente de la presión subyacente, reflejando la realidad analítica de que el compromiso diplomático bilateral cambia la interpretación de las señales militares.',
+        methodology_p3: 'Los escaneos se completan cada 12 horas. Las fuentes incluyen medios nativos en español (TeleSur, Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS), Reuters, El País, Reddit r/vzla, Bluesky, Telegram, y Brave Search como respaldo terciario. El rastreador escribe su perspectiva en una huella digital Redis compartida que otros rastreadores (EE.UU., Cuba, Irán, Rusia, China) leen para conciencia entre teatros.',
+
+        actor_section_us:        '🇺🇸 Presión de EE.UU.',
+        actor_section_vz_govt:   '🇻🇪 Gobierno de Venezuela',
+        actor_section_adversary: '🤝 Ejes Adversarios',
+        actor_section_special:   '🔍 Vigilancia Especial',
+
+        armed: 'ACTIVADA',
+        quiet: 'TRANQUILO',
+        suppressed: 'SUPRIMIDO',
+
+        detente_badge: '🤝 Distensión EE.UU.-Venezuela Activa',
+        detente_tooltip: 'La distensión bilateral EE.UU.-Venezuela está activa (nivel ≥ 3). El eje L5 cinético se suprime independientemente de la presión subyacente — reflejando la realidad analítica de que el compromiso diplomático en curso cambia la interpretación de las señales militares.',
+
+        last_scan: 'Último escaneo',
+        next_scan: 'Próximo escaneo',
+        scan_in: 'en',
+        scan_ago: 'hace',
+        min: 'min',
+        hr: 'h',
+        no_red_lines: 'Sin líneas rojas activadas — estado operacional base.',
+        loading_actor: 'Cargando datos del actor...',
+
+        ftr_sources: 'FUENTES DE DATOS',
+        ftr_sources_text: 'TeleSur (estatal), Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS (RSS nativo en español); Reuters Americas, El País; Reddit r/vzla; Bluesky; Telegram; GDELT (multilingüe); NewsAPI; Brave Search como respaldo. Huellas digitales entre rastreadores de EE.UU., Cuba, Irán, Rusia, China + rastreador de commodities (acoplamiento petróleo/oro/trigo).',
+        ftr_method: 'METODOLOGÍA',
+        ftr_method_text: 'Marco de 16 actores en 4 capas (Presión de EE.UU. / Gobierno VE / Ejes Adversarios / Vigilancia Especial). Compuesto de 6 vectores: Presión de EE.UU., Legitimidad del Régimen, Acceso de Adversarios, Extracción Petrolera, Flujo Migratorio, Disputa del Esequibo. El Contrato de Reserva L5 limita el nivel máximo del teatro vía 4 ejes independientes (cinético sensible al alto el fuego vía distensión EE.UU.-Venezuela). 11 líneas rojas como disparadores de alto impacto. Los escaneos se actualizan cada 12 horas.',
+        ftr_connected: 'RASTREADORES CONECTADOS',
+        ftr_disclaimer_label: '⚠️ DESCARGO',
+        ftr_disclaimer_text: 'Esta página proporciona estimaciones analíticas basadas en agregación de inteligencia de fuentes abiertas. No constituye asesoramiento de inversión, evaluaciones de inteligencia ni recomendaciones de política. Consulte siempre fuentes autorizadas para la toma de decisiones. No para uso operacional.',
+        ftr_coffee: 'Si Asifah Analytics te resulta útil y quieres apoyar el desarrollo continuo, puedes',
+        ftr_coffee_link: 'invitarme un café',
+        ftr_privacy: 'Política de Privacidad',
+        ftr_contact: 'Contacto',
+    },
+
+    pt: {
+        home: '🏠 INÍCIO',
+        page_title: 'RASTREADOR DE RETÓRICA — VENEZUELA',
+        page_subtitle: '16 Atores · 6 Vetores · Híbrido Nó de Comando + Absorvedor · Contrato de Reserva L5',
+        theme_toggle: 'ESCURO / CLARO',
+        refresh: '⟳ ATUALIZAR',
+        loading: 'Carregando...',
+        initializing: 'Inicializando...',
+        pending_banner: '⏳ Varredura inicial em andamento — normalmente leva 3-5 minutos após uma nova implantação. Os sinais aparecerão em breve.',
+
+        sb_regional: 'PÁGINAS REGIONAIS',
+        sb_me: '🌍 Oriente Médio',
+        sb_asia: '🌏 Ásia-Pacífico',
+        sb_europe: '🌍 Europa',
+        sb_wha: '🌎 Hemisfério Ocidental',
+        sb_crosscut: 'FERRAMENTAS TRANSVERSAIS',
+        sb_commodities: '🌾 Rastreador de Commodities',
+        sb_military: '🪖 Rastreador Militar',
+        sb_gpi: '🌐 Índice Global de Pressão',
+        sb_rhetoric: 'PÁGINAS DE RETÓRICA',
+        sb_rh_me: '💬 Retórica do Oriente Médio',
+        sb_rh_asia: '💬 Retórica da Ásia',
+        sb_rh_europe: '💬 Retórica da Europa',
+        sb_rh_wha: '💬 Retórica do Hemisfério Ocidental',
+        sb_venezuela: 'PÁGINAS DA VENEZUELA',
+        sb_vz_rhetoric: '💬 Retórica da Venezuela',
+        sb_vz_stability: '📊 Estabilidade da Venezuela',
+
+        hero_title: 'Monitor de Retórica — Venezuela',
+        score_label: 'Pontuação composta: ',
+
+        commodity_strip_label: '⚡ Acoplamento de commodities:',
+        commodity_strip_link: 'Ver painel de commodities →',
+
+        exec_summary_title: '📋 RESUMO EXECUTIVO',
+        so_what_title: '🎯 FATOR DE RELEVÂNCIA',
+        so_what_scenario_label: 'Cenário:',
+        so_what_factor_label: 'Fator:',
+        so_what_watch_for: 'Observar:',
+        l5_gate_title: '🚦 PORTÃO DE RESERVA L5',
+        l5_gate_subtitle: 'Cada eixo deve disparar independentemente para atingir L5 Crise Ativa. Sensível a cessar-fogo: a distensão EUA-Venezuela suprime o eixo cinético quando ativa.',
+        l5_kinetic: 'Cinético',
+        l5_humanitarian: 'Humanitário',
+        l5_economic: 'Econômico',
+        l5_diplomatic: 'Diplomático',
+        red_lines_title: '🚨 LINHAS VERMELHAS — VIGILÂNCIA ATIVA',
+        red_lines_subtitle: '11 gatilhos de alto impacto monitorados continuamente. ARMADO = condição atendida / violação detectada.',
+        vectors_title: '📊 COMPOSTO DE SEIS VETORES',
+        vectors_subtitle: 'Pontuações analíticas em nível de vetor que impulsionam o composto. Passe o mouse para ver as definições analíticas.',
+        actors_title: '🎭 CAMADAS DE ATORES',
+        actors_subtitle: '16 atores em 4 camadas. Cada rastreador escreve sua própria perspectiva sobre impressões digitais compartilhadas entre teatros.',
+        source_title: '📡 DETALHAMENTO DE FONTES',
+        methodology_title: '📖 METODOLOGIA',
+        methodology_p1: 'O Rastreador de Retórica da Venezuela é um rastreador híbrido de nó de comando + absorvedor. Como nó de comando, gera retórica de saída que outros rastreadores leem. Como absorvedor, integra sinais de pressão de atores upstream (EUA, Cuba, Irã, Rússia, China).',
+        methodology_p2: 'O Contrato de Reserva L5 limita o nível máximo do teatro através de quatro eixos independentes: cinético, humanitário, econômico e diplomático. O eixo cinético é sensível a cessar-fogo — quando a distensão EUA-Venezuela está ativa (nível ≥ 3), L5 cinético é suprimido independentemente da pressão subjacente, refletindo a realidade analítica de que o engajamento diplomático bilateral muda a interpretação dos sinais militares.',
+        methodology_p3: 'As varreduras são concluídas a cada 12 horas. As fontes incluem veículos nativos em espanhol (TeleSur, Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS), Reuters, El País, Reddit r/vzla, Bluesky, Telegram, e Brave Search como reserva terciária. O rastreador escreve sua perspectiva em uma impressão digital Redis compartilhada que outros rastreadores (EUA, Cuba, Irã, Rússia, China) leem para consciência entre teatros.',
+
+        actor_section_us:        '🇺🇸 Pressão dos EUA',
+        actor_section_vz_govt:   '🇻🇪 Governo da Venezuela',
+        actor_section_adversary: '🤝 Eixos Adversários',
+        actor_section_special:   '🔍 Vigilância Especial',
+
+        armed: 'ARMADO',
+        quiet: 'CALMO',
+        suppressed: 'SUPRIMIDO',
+
+        detente_badge: '🤝 Distensão EUA-Venezuela Ativa',
+        detente_tooltip: 'A distensão bilateral EUA-Venezuela está ativa (nível ≥ 3). O eixo L5 cinético é suprimido independentemente da pressão subjacente — refletindo a realidade analítica de que o engajamento diplomático em curso muda a interpretação dos sinais militares.',
+
+        last_scan: 'Última varredura',
+        next_scan: 'Próxima varredura',
+        scan_in: 'em',
+        scan_ago: 'há',
+        min: 'min',
+        hr: 'h',
+        no_red_lines: 'Sem linhas vermelhas armadas — estado operacional base.',
+        loading_actor: 'Carregando dados do ator...',
+
+        ftr_sources: 'FONTES DE DADOS',
+        ftr_sources_text: 'TeleSur (estatal), Efecto Cocuyo, El Pitazo, Caracas Chronicles, Tal Cual, Provea, OVCS (RSS nativo em espanhol); Reuters Americas, El País; Reddit r/vzla; Bluesky; Telegram; GDELT (multilíngue); NewsAPI; Brave Search como reserva. Impressões digitais entre rastreadores de EUA, Cuba, Irã, Rússia, China + rastreador de commodities (acoplamento petróleo/ouro/trigo).',
+        ftr_method: 'METODOLOGIA',
+        ftr_method_text: 'Estrutura de 16 atores em 4 camadas (Pressão dos EUA / Governo VE / Eixos Adversários / Vigilância Especial). Composto de 6 vetores: Pressão dos EUA, Legitimidade do Regime, Acesso de Adversários, Extração de Petróleo, Fluxo Migratório, Disputa do Essequibo. O Contrato de Reserva L5 limita o nível máximo do teatro via 4 eixos independentes (cinético sensível a cessar-fogo via distensão EUA-Venezuela). 11 linhas vermelhas como gatilhos de alto impacto. As varreduras são atualizadas a cada 12 horas.',
+        ftr_connected: 'RASTREADORES CONECTADOS',
+        ftr_disclaimer_label: '⚠️ AVISO LEGAL',
+        ftr_disclaimer_text: 'Esta página fornece estimativas analíticas baseadas em agregação de inteligência de fontes abertas. Não constitui aconselhamento de investimento, avaliações de inteligência ou recomendações de política. Sempre consulte fontes autorizadas para a tomada de decisões. Não para uso operacional.',
+        ftr_coffee: 'Se você acha o Asifah Analytics útil e quer apoiar o desenvolvimento contínuo, você pode',
+        ftr_coffee_link: 'me pagar um café',
+        ftr_privacy: 'Política de Privacidade',
+        ftr_contact: 'Contato',
+    }
+};
+
+// =============================================
+// LANG / THEME / SIDEBAR
+// =============================================
+function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('asifah_lang', lang);
+    document.documentElement.lang = lang;
+    document.getElementById('langSelect').value = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (T[lang][key]) el.textContent = T[lang][key];
+    });
+    if (currentData) renderData(currentData);
+}
+
+function toggleTheme() {
+    const root = document.documentElement;
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('asifah_theme', next);
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarBackdrop').classList.toggle('active');
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const sb = document.getElementById('sidebar');
+        if (sb.classList.contains('open')) {
+            sb.classList.remove('open');
+            document.getElementById('sidebarBackdrop').classList.remove('active');
+        }
+    }
+});
+
+// =============================================
+// FETCH + RENDER
+// =============================================
+async function fetchData(force = false) {
+    const url = force ? `${ENDPOINT}?force=true` : ENDPOINT;
+    const btn = document.getElementById('refreshBtn');
+    btn.disabled = true;
+    try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.status === 503) {
+            document.getElementById('pendingBanner').style.display = 'block';
+            return null;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        document.getElementById('pendingBanner').style.display = 'none';
+        return data;
+    } catch (err) {
+        console.error('Fetch error:', err);
+        document.getElementById('updatedBar').textContent = `⚠️ Error loading data: ${err.message}`;
+        return null;
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function refreshData() {
+    const data = await fetchData(true);
+    if (data) {
+        currentData = data;
+        renderData(data);
+    }
+}
+
+// =============================================
+// RENDER
+// =============================================
+function renderData(d) {
+    const t = T[currentLang];
+
+    // Updated bar
+    const scannedAt = d.scanned_at || d.timestamp;
+    if (scannedAt) {
+        const dt = new Date(scannedAt);
+        const ago = Math.floor((Date.now() - dt.getTime()) / 60000);
+        document.getElementById('updatedBar').textContent =
+            `${t.last_scan}: ${dt.toLocaleString(currentLang)} · ${ago} ${t.min} ${t.scan_ago}`;
+    }
+
+    // HERO
+    const level = d.theatre_level ?? 0;
+    const label = d.theatre_label ?? 'Stable';
+    const band  = d.theatre_band  ?? 'STABLE';
+    const score = d.theatre_score ?? 0;
+    const bandColor = ({
+        STABLE:   'var(--band-stable)',
+        ACTIVE:   'var(--band-active)',
+        VOLATILE: 'var(--band-volatile)',
+        CRISIS:   'var(--band-crisis)'
+    })[band] || 'var(--band-stable)';
+
+    const levelBadge = document.getElementById('levelBadge');
+    levelBadge.textContent = `L${level} ${label}`;
+    levelBadge.style.background = bandColor;
+
+    document.getElementById('bandBadge').textContent = band;
+    document.getElementById('heroScore').textContent = score;
+
+    // Détente badge (subtle)
+    const heroBadges = document.getElementById('heroBadges');
+    const existingDetente = document.getElementById('detenteBadge');
+    if (existingDetente) existingDetente.remove();
+    if (d.diplomatic_track_active || (d.diplomatic_level ?? 0) >= 3) {
+        const lvl = d.diplomatic_level ?? 0;
+        const detente = document.createElement('span');
+        detente.className = 'detente-badge';
+        detente.id = 'detenteBadge';
+        detente.setAttribute('data-tooltip', t.detente_tooltip);
+        detente.textContent = `${t.detente_badge} (L${lvl})`;
+        heroBadges.appendChild(detente);
+    }
+
+    // COMMODITY STRIP — surfaces only when alert >= elevated
+    renderCommodityStrip(d);
+
+    // EXECUTIVE SUMMARY
+    if (d.executive_summary) {
+        document.getElementById('execHeadline').textContent = d.executive_summary.headline || '—';
+        document.getElementById('execParagraph').textContent = d.executive_summary.paragraph || '—';
+    }
+
+    // SO-WHAT
+    if (d.so_what) {
+        document.getElementById('soWhatScenario').textContent = d.so_what.scenario || '—';
+        document.getElementById('soWhatFactor').textContent = d.so_what.factor || '—';
+        document.getElementById('soWhatDescription').textContent = d.so_what.description || '—';
+        const watchUl = document.getElementById('soWhatWatchFor');
+        watchUl.innerHTML = '';
+        (d.so_what.watch_for || []).forEach(w => {
+            const li = document.createElement('li');
+            li.textContent = w;
+            watchUl.appendChild(li);
+        });
+    }
+
+    // L5 GATE
+    renderL5Gate(d.l5_gate || {}, t);
+
+    // RED LINES
+    renderRedLines(d.red_lines || [], t);
+
+    // VECTORS
+    renderVectors(d.vectors || {}, d.vector_descriptions || {}, t);
+
+    // ACTORS
+    renderActors(d.actors || {}, d.actor_display_order || [], t);
+
+    // SOURCES
+    renderSources(d.source_counts || {}, d.articles_scanned, d.articles_classified, t);
+}
+
+function renderCommodityStrip(d) {
+    const strip = document.getElementById('commodityStrip');
+    const cp = d.commodity_pressure || {};
+    const alert = cp.alert_level || 'normal';
+    if (alert === 'normal' || alert === 'low') {
+        strip.classList.add('normal');
+        return;
+    }
+    strip.classList.remove('normal');
+    strip.classList.toggle('surge', alert === 'surge' || alert === 'high');
+    document.getElementById('commodityStripLevel').textContent = alert.toUpperCase();
+    // Top 3 commodity names
+    const summaries = cp.commodity_summaries || [];
+    const top3 = summaries.slice(0, 3).map(s => `${s.icon || ''} ${s.name || ''}`.trim()).join(' · ');
+    document.getElementById('commodityStripCommodities').textContent = top3 || '';
+}
+
+function renderL5Gate(gate, t) {
+    const axes = ['kinetic', 'humanitarian', 'economic', 'diplomatic'];
+    const suppressedSources = gate.l5_ceasefire_suppressed_sources || [];
+    const suppressedNames = new Set(suppressedSources.map(s => (s.reason || '').split(' ')[0]));
+
+    axes.forEach(axis => {
+        const el = document.getElementById('l5' + axis.charAt(0).toUpperCase() + axis.slice(1));
+        if (!el) return;
+        el.classList.remove('armed', 'quiet', 'suppressed');
+        const armed = gate[axis] === true;
+        // For kinetic: check if suppressed by détente
+        if (axis === 'kinetic' && suppressedSources.length > 0) {
+            el.classList.add('suppressed');
+            el.querySelector('.l5-axis-status').textContent = t.suppressed;
+        } else if (armed) {
+            el.classList.add('armed');
+            el.querySelector('.l5-axis-status').textContent = t.armed;
+        } else {
+            el.classList.add('quiet');
+            el.querySelector('.l5-axis-status').textContent = t.quiet;
+        }
+    });
+
+    const reason = document.getElementById('l5Reason');
+    if (suppressedSources.length > 0) {
+        reason.classList.add('suppression');
+        reason.textContent = gate.reason || '—';
+    } else {
+        reason.classList.remove('suppression');
+        reason.textContent = gate.reason || '—';
+    }
+}
+
+function renderRedLines(redLines, t) {
+    const grid = document.getElementById('redLinesGrid');
+    grid.innerHTML = '';
+    if (!redLines || redLines.length === 0) {
+        const p = document.createElement('div');
+        p.style.cssText = 'grid-column: 1/-1; padding: 14px; color: var(--text-muted); font-style: italic;';
+        p.textContent = t.no_red_lines;
+        grid.appendChild(p);
+        return;
+    }
+    redLines.forEach(rl => {
+        const div = document.createElement('div');
+        div.className = 'redline-item armed';
+        const name = document.createElement('div');
+        name.className = 'redline-name';
+        name.textContent = rl.name || rl.id || '—';
+        const status = document.createElement('div');
+        status.className = 'redline-status';
+        status.textContent = `⚠ ${t.armed}`;
+        div.appendChild(name);
+        div.appendChild(status);
+        if (rl.description) {
+            const desc = document.createElement('div');
+            desc.style.cssText = 'font-size:11px; color:var(--text-muted); margin-top:4px;';
+            desc.textContent = rl.description;
+            div.appendChild(desc);
+        }
+        grid.appendChild(div);
+    });
+}
+
+function renderVectors(vectors, descriptions, t) {
+    const grid = document.getElementById('vectorsGrid');
+    grid.innerHTML = '';
+    const vectorOrder = [
+        ['us_pressure',       'U.S. Pressure'],
+        ['regime_legitimacy', 'Regime Legitimacy'],
+        ['adversary_access',  'Adversary Access'],
+        ['oil_extraction',    'Oil Extraction'],
+        ['migration_outflow', 'Migration Outflow'],
+        ['essequibo_dispute', 'Essequibo'],
+    ];
+    const levelLabels = ['Stable', 'Active', 'Active+', 'Pressure Building', 'Pressure Peak', 'Active Crisis'];
+
+    vectorOrder.forEach(([key, displayName]) => {
+        const level = vectors[key] ?? 0;
+        const desc = descriptions[key] || '';
+        const div = document.createElement('div');
+        div.className = 'vector-pillar';
+        div.setAttribute('data-level', level);
+        if (desc) div.setAttribute('data-tooltip', desc);
+        div.innerHTML = `
+            <div class="vector-name">${displayName}</div>
+            <div class="vector-level">L${level}</div>
+            <div class="vector-label">${levelLabels[level] || '—'}</div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+function renderActors(actors, displayOrder, t) {
+    const container = document.getElementById('actorsContainer');
+    container.innerHTML = '';
+
+    // 4 layer groups matching tracker architecture
+    const groups = [
+        {
+            title: t.actor_section_us,
+            keys: ['us_government', 'us_sanctions_regulatory', 'us_military_posture', 'us_vz_envoys']
+        },
+        {
+            title: t.actor_section_vz_govt,
+            keys: ['vz_delcy_rodriguez', 'vz_jorge_rodriguez', 'vz_yvan_gil',
+                   'vz_diosdado_cabello', 'vz_internal_security',
+                   'vz_opposition', 'vz_chavismo_residual']
+        },
+        {
+            title: t.actor_section_adversary,
+            keys: ['russia_vz_axis', 'china_vz_axis', 'iran_vz_axis']
+        },
+        {
+            title: t.actor_section_special,
+            keys: ['hizballah_vz_signals', 'essequibo_guyana_dispute']
+        }
+    ];
+
+    groups.forEach(group => {
+        const section = document.createElement('div');
+        section.className = 'actor-section';
+
+        const title = document.createElement('div');
+        title.className = 'actor-section-title';
+        title.textContent = group.title;
+        section.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'actor-grid';
+
+        group.keys.forEach(key => {
+            const a = actors[key];
+            if (!a) return;
+            grid.appendChild(buildActorCard(key, a));
+        });
+
+        section.appendChild(grid);
+        container.appendChild(section);
+    });
+}
+
+function buildActorCard(key, a) {
+    const card = document.createElement('div');
+    card.className = 'actor-card';
+    const level = a.escalation_level ?? 0;
+    const bandColor = ({
+        0: 'var(--band-stable)',
+        1: 'var(--band-active)',
+        2: 'var(--band-active)',
+        3: 'var(--band-volatile)',
+        4: 'var(--band-volatile)',
+        5: 'var(--band-crisis)'
+    })[level] || 'var(--band-stable)';
+    const articles = a.top_articles || [];
+
+    card.innerHTML = `
+        <div class="actor-header">
+            <span class="actor-icon">${a.icon || '•'}</span>
+            <span class="actor-name">${a.name || key}</span>
+            <span class="actor-level" style="background:${bandColor};">L${level}</span>
+        </div>
+        <div class="actor-role">${a.role || ''}</div>
+        <div class="actor-stats">
+            <span>📰 ${a.statement_count ?? 0} statements</span>
+            <span>${articles.length ? '🔗 ' + articles.length + ' sources' : ''}</span>
+        </div>
+    `;
+
+    // Click to expand articles
+    if (articles.length > 0) {
+        card.addEventListener('click', () => showArticleDrawer(a, articles));
+    }
+
+    return card;
+}
+
+function showArticleDrawer(actor, articles) {
+    // Simple modal-style overlay
+    const existing = document.getElementById('actorDrawer');
+    if (existing) existing.remove();
+    const drawer = document.createElement('div');
+    drawer.id = 'actorDrawer';
+    drawer.style.cssText = `
+        position: fixed; top: 0; right: 0; height: 100vh; width: min(420px, 92vw);
+        background: var(--container-bg); border-left: 1px solid var(--card-border);
+        box-shadow: -4px 0 24px rgba(0,0,0,0.5);
+        z-index: 200; padding: 24px; overflow-y: auto;
+        font-family: 'Times New Roman', serif;
+    `;
+    drawer.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="font-size:16px; color:var(--accent);">${actor.icon || ''} ${actor.name || ''}</h3>
+            <button onclick="document.getElementById('actorDrawer').remove()" style="background:none; border:none; color:var(--text-muted); font-size:24px; cursor:pointer;">×</button>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">${actor.description || ''}</p>
+        <div style="margin-top: 12px;">
+            ${articles.slice(0, 12).map(art => `
+                <a href="${art.url || '#'}" target="_blank" style="
+                    display:block; padding:10px; margin-bottom:8px;
+                    background: var(--article-bg); border:1px solid var(--card-border);
+                    border-radius:6px; color: var(--text-primary); text-decoration:none;
+                    font-size:13px; line-height:1.4;
+                ">
+                    <div style="font-weight:bold; margin-bottom:4px;">${(art.title || '—').replace(/<[^>]*>/g, '').slice(0, 120)}</div>
+                    <div style="font-size:10px; color:var(--text-muted);">${art.source?.name || art.source || ''} · ${art.publishedAt || ''}</div>
+                </a>
+            `).join('')}
+        </div>
+    `;
+    document.body.appendChild(drawer);
+}
+
+function renderSources(counts, totalScanned, totalClassified, t) {
+    const grid = document.getElementById('sourceGrid');
+    grid.innerHTML = '';
+    const order = ['rss', 'bluesky', 'telegram', 'gdelt', 'newsapi', 'brave', 'reddit'];
+    order.forEach(src => {
+        const count = counts[src] ?? 0;
+        const cell = document.createElement('div');
+        cell.className = 'source-cell';
+        cell.innerHTML = `
+            <div class="source-cell-name">${src}</div>
+            <div class="source-cell-count">${count}</div>
+        `;
+        grid.appendChild(cell);
+    });
+    if (totalScanned !== undefined) {
+        document.getElementById('sourceSubtitle').textContent =
+            `${totalClassified ?? 0} classified / ${totalScanned} scanned`;
+    }
+}
+
+// =============================================
+// INIT
+// =============================================
+async function init() {
+    // Restore theme
+    const savedTheme = localStorage.getItem('asifah_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Restore lang
+    setLang(currentLang);
+
+    // First fetch
+    const data = await fetchData(false);
+    if (data) {
+        currentData = data;
+        renderData(data);
+    }
+
+    // Poll every 12 min
+    setInterval(async () => {
+        const data = await fetchData(false);
+        if (data) {
+            currentData = data;
+            renderData(data);
+        }
+    }, REFRESH_INTERVAL_MS);
+}
+
+init();
+</script>
+
+</body>
+</html>
