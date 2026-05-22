@@ -537,6 +537,33 @@
             <div class="ta-section-body" id="taConvergenceBody"></div>
         </div>
 
+        <!-- IRAN KINETIC RE-HEATING (May 22 2026 — red/orange register) -->
+        <div class="ta-section convergence" id="taIranKineticSection" style="display:none;">
+            <div class="ta-section-toggle" onclick="toggleTaSection('taIranKineticSection')">
+                <div class="ta-section-title">🚨 <span data-i18n="taIranKinetic">Iran Kinetic Re-Heating</span> <span class="ta-section-count" id="taIranKineticBadge"></span></div>
+                <div class="ta-chevron">▼</div>
+            </div>
+            <div class="ta-section-body" id="taIranKineticBody"></div>
+        </div>
+
+        <!-- HUMANITARIAN CONVERGENCE (May 22 2026 — white/cyan register, hospital ship + pandemic) -->
+        <div class="ta-section convergence" id="taHumanitarianSection" style="display:none;">
+            <div class="ta-section-toggle" onclick="toggleTaSection('taHumanitarianSection')">
+                <div class="ta-section-title">⚕️ <span data-i18n="taHumanitarian">Humanitarian-Pandemic Convergence</span> <span class="ta-section-count" id="taHumanitarianBadge"></span></div>
+                <div class="ta-chevron">▼</div>
+            </div>
+            <div class="ta-section-body" id="taHumanitarianBody"></div>
+        </div>
+
+        <!-- ASSET MOVEMENT (May 22 2026 — multi-position named-ship tracking) -->
+        <div class="ta-section" id="taMovementSection" style="display:none;">
+            <div class="ta-section-toggle" onclick="toggleTaSection('taMovementSection')">
+                <div class="ta-section-title">🚢 <span data-i18n="taMovement">Named-Asset Movement</span> <span class="ta-section-count" id="taMovementCount"></span></div>
+                <div class="ta-chevron">▼</div>
+            </div>
+            <div class="ta-section-body" id="taMovementBody"></div>
+        </div>
+
         <!-- Chokepoints (cyan, expandable) -->
         <div class="ta-section" id="taChokepointSection" style="display:none;">
             <div class="ta-section-toggle" onclick="toggleTaSection('taChokepointSection')">
@@ -584,6 +611,8 @@
             <div class="naval-legend-item"><div class="naval-legend-dot" style="background:#3b82f6;"></div> Naval Redeployment</div>
             <div class="naval-legend-item"><div class="naval-legend-dot" style="background:#a855f7;"></div> Amphibious Group</div>
             <div class="naval-legend-item"><div class="naval-legend-dot" style="background:#22c55e;"></div> Air Defense / Other</div>
+            <div class="naval-legend-item"><div class="naval-legend-dot" style="background:#f0f9ff; border-color:#0ea5e9;"></div> Hospital Ship 🏥</div>
+            <div class="naval-legend-item"><div class="naval-legend-dot" style="background:transparent; border:2px dashed #38bdf8;"></div> Movement trail</div>
             <div class="naval-legend-item"><div class="naval-legend-dot" style="background:#6b7280; opacity:0.6;"></div> Circle size = signal weight</div>
         </div>
         <div class="naval-map-note">📡 Signals derived from USNI News, The War Zone, Naval News, Defense RSS feeds · <a href="https://www.marinetraffic.com/en/ais/home/centerx:43.5/centery:20/zoom:4" target="_blank" rel="noopener">Live AIS Shipping →</a></div>
@@ -640,8 +669,8 @@ var TRANSLATIONS = {
 
 var currentLang = 'en';
 var TIER_LABELS = { 1:'TIER 1 \u2014 STRIKE', 2:'TIER 2 \u2014 ADVERSARY', 3:'TIER 3 \u2014 REGIONAL', 4:'TIER 4 \u2014 ALLIANCE' };
-var ASSET_ICONS = { carrier_strike_group:'\uD83D\uDEA2', submarine:'\uD83D\uDD31', bomber_deployment:'\u2708\uFE0F', amphibious_group:'\u2693', fighter_surge:'\uD83D\uDEE9\uFE0F', air_defense:'\uD83D\uDEE1\uFE0F', isr_assets:'\uD83D\uDC41\uFE0F', ground_forces:'\uD83E\uDE96', logistics:'\uD83D\uDCE6', missile_test:'\uD83D\uDE80', naval_exercise:'\u2693', base_evacuation:'\uD83D\uDEA8', military_posturing:'\u26A0\uFE0F', drone_incursion:'\uD83D\uDEF8', unspecified:'\u26A0\uFE0F' };
-var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Submarines', bomber_deployment:'Strategic Bombers', amphibious_group:'Amphibious Groups', fighter_surge:'Fighter Surges', air_defense:'Air Defense', isr_assets:'ISR Assets', ground_forces:'Ground Forces', logistics:'Logistics', missile_test:'Missile Tests', naval_exercise:'Naval Exercises', base_evacuation:'Base Evacuations', military_posturing:'Posturing/Threats', drone_incursion:'Drone Incursions', unspecified:'General Activity' };
+var ASSET_ICONS = { carrier_strike_group:'\uD83D\uDEA2', submarine:'\uD83D\uDD31', bomber_deployment:'\u2708\uFE0F', amphibious_group:'\u2693', fighter_surge:'\uD83D\uDEE9\uFE0F', air_defense:'\uD83D\uDEE1\uFE0F', isr_assets:'\uD83D\uDC41\uFE0F', ground_forces:'\uD83E\uDE96', logistics:'\uD83D\uDCE6', missile_test:'\uD83D\uDE80', naval_exercise:'\u2693', base_evacuation:'\uD83D\uDEA8', military_posturing:'\u26A0\uFE0F', drone_incursion:'\uD83D\uDEF8', unspecified:'\u26A0\uFE0F' , hospital_ship:'\uD83C\uDFE5' };
+var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Submarines', bomber_deployment:'Strategic Bombers', amphibious_group:'Amphibious Groups', fighter_surge:'Fighter Surges', air_defense:'Air Defense', isr_assets:'ISR Assets', ground_forces:'Ground Forces', logistics:'Logistics', missile_test:'Missile Tests', naval_exercise:'Naval Exercises', base_evacuation:'Base Evacuations', military_posturing:'Posturing/Threats', drone_incursion:'Drone Incursions', unspecified:'General Activity' , hospital_ship:'Hospital Ships' };
 
 var THEATRE_ORDER = [
     { id:'global_northcom', label:'Global / NORTHCOM', icon:'\uD83C\uDF10', actors:['us'] },
@@ -901,6 +930,107 @@ function renderTheaterAnalysis(interp) {
         convBody.innerHTML = convHtml;
     }
 
+    // ── Iran Kinetic Re-Heating section (May 22 2026) ──
+    var ikSection = document.getElementById('taIranKineticSection');
+    var ikBody    = document.getElementById('taIranKineticBody');
+    var ikBadge   = document.getElementById('taIranKineticBadge');
+    var ikData    = interp.iran_kinetic_prose || {};
+
+    if (ikSection) {
+        if (ikData.active) {
+            ikSection.style.display = '';
+            var sev = ikData.severity || 'elevated';
+            ikBadge.textContent = '(' + sev.toUpperCase() + ')';
+            // Auto-expand if surge/high — analytically load-bearing
+            if (sev === 'surge' || sev === 'high') {
+                if (!ikSection.classList.contains('user-toggled')) {
+                    ikSection.classList.add('expanded');
+                }
+            }
+            var ikHtml = '<div class="ta-prose-block lvl-' + escapeHtml(sev) + '">';
+            ikHtml += '<div class="ta-prose-label">'
+                + '<span>IRAN KINETIC PATTERN: ' + escapeHtml((ikData.pattern_detected || '').replace(/_/g, ' ').toUpperCase()) + '</span>'
+                + '<span class="ta-prose-pill lvl-' + escapeHtml(sev) + '">' + escapeHtml(sev.toUpperCase()) + '</span>'
+                + '</div>';
+            ikHtml += '<div>' + escapeHtml(ikData.prose || '') + '</div>';
+            if (ikData.matched_phrases && ikData.matched_phrases.length > 0) {
+                ikHtml += '<div style="margin-top:8px; font-size:0.62rem; color:var(--text-muted); font-family:\'Courier New\',monospace; letter-spacing:1px;">'
+                    + 'MATCHED: ' + escapeHtml(ikData.matched_phrases.slice(0, 6).join(' · '))
+                    + '</div>';
+            }
+            ikHtml += '</div>';
+            ikBody.innerHTML = ikHtml;
+        } else {
+            ikSection.style.display = 'none';
+        }
+    }
+
+    // ── Humanitarian-Pandemic Convergence section (May 22 2026) ──
+    var humSection = document.getElementById('taHumanitarianSection');
+    var humBody    = document.getElementById('taHumanitarianBody');
+    var humBadge   = document.getElementById('taHumanitarianBadge');
+    var humData    = interp.humanitarian_convergence_prose || {};
+
+    if (humSection) {
+        if (humData.active && humData.convergences && humData.convergences.length > 0) {
+            humSection.style.display = '';
+            humBadge.textContent = '(' + humData.convergences.length + ')';
+            // Auto-expand — this is rare/load-bearing
+            if (!humSection.classList.contains('user-toggled')) {
+                humSection.classList.add('expanded');
+            }
+            var humHtml = '';
+            for (var hi = 0; hi < humData.convergences.length; hi++) {
+                var conv = humData.convergences[hi] || {};
+                var hsev = conv.severity || 'elevated';
+                humHtml += '<div class="ta-prose-block lvl-' + escapeHtml(hsev) + '">';
+                humHtml += '<div class="ta-prose-label">'
+                    + '<span>⚕️ ' + escapeHtml(conv.hospital_ship_name || 'US Hospital Ship') + ' + Pandemic Signal — ' + escapeHtml((conv.region || '').replace(/_/g, ' ').toUpperCase()) + '</span>'
+                    + '<span class="ta-prose-pill lvl-' + escapeHtml(hsev) + '">' + escapeHtml(hsev.toUpperCase()) + '</span>'
+                    + '</div>';
+                // Build a per-convergence prose paragraph
+                var rationale = conv.rationale || '';
+                humHtml += '<div>' + escapeHtml(rationale) + '</div>';
+                if (conv.pandemic_keywords && conv.pandemic_keywords.length > 0) {
+                    humHtml += '<div style="margin-top:8px; font-size:0.62rem; color:var(--text-muted); font-family:\'Courier New\',monospace; letter-spacing:1px;">'
+                        + 'PANDEMIC SIGNALS: ' + escapeHtml(conv.pandemic_keywords.filter(function (k) { return k; }).slice(0, 4).join(' · '))
+                        + '</div>';
+                }
+                humHtml += '</div>';
+            }
+            humBody.innerHTML = humHtml;
+        } else {
+            humSection.style.display = 'none';
+        }
+    }
+
+    // ── Named-Asset Movement section (May 22 2026) ──
+    var mvSection = document.getElementById('taMovementSection');
+    var mvBody    = document.getElementById('taMovementBody');
+    var mvCount   = document.getElementById('taMovementCount');
+    var mvData    = interp.asset_movement_prose || {};
+
+    if (mvSection) {
+        if (mvData.active && mvData.movements && mvData.movements.length > 0) {
+            mvSection.style.display = '';
+            mvCount.textContent = '(' + mvData.movements.length + ')';
+            var mvHtml = '';
+            for (var mi = 0; mi < mvData.movements.length; mi++) {
+                var mv = mvData.movements[mi] || {};
+                mvHtml += '<div class="ta-prose-block lvl-monitored">';
+                mvHtml += '<div class="ta-prose-label">'
+                    + '<span>🚢 ' + escapeHtml(mv.ship || 'Unknown') + '</span>'
+                    + '<span class="ta-prose-pill lvl-monitored">' + (mv.positions ? mv.positions.length : 0) + ' POSITIONS</span>'
+                    + '</div>';
+                mvHtml += '<div>' + escapeHtml(mv.prose || '') + '</div>';
+                mvHtml += '</div>';
+            }
+            mvBody.innerHTML = mvHtml;
+        } else {
+            mvSection.style.display = 'none';
+        }
+    }
+
     // ── Chokepoints section ──
     var cpSection = document.getElementById('taChokepointSection');
     var cpBody    = document.getElementById('taChokepointBody');
@@ -986,7 +1116,7 @@ function renderTheaterAnalysis(interp) {
 // Mark sections as user-toggled when manually clicked, so auto-expand
 // logic on subsequent renders doesn't reopen what the user closed.
 document.addEventListener('DOMContentLoaded', function () {
-    ['taConvergenceSection', 'taChokepointSection', 'taTheatreSection'].forEach(function (id) {
+    ['taConvergenceSection', 'taIranKineticSection', 'taHumanitarianSection', 'taMovementSection', 'taChokepointSection', 'taTheatreSection'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) {
             var toggle = el.querySelector('.ta-section-toggle');
@@ -1451,6 +1581,7 @@ var ASSET_COLORS = {
     'isr_assets':           '#06b6d4',
     'logistics':            '#6b7280',
     'unspecified':          '#4b5563',
+    'hospital_ship':        '#f0f9ff',   // Pale cyan-white — Red Cross adjacent
 };
 
 var _navalMap = null;
@@ -1607,6 +1738,68 @@ function initNavalMap(signals, actorSummaries) {
     }
     // If allCoords.length === 0, keep the default CENTCOM-centric view
     // (placeholder text shows below)
+
+    // ── Asset movement trails (May 22 2026) ──
+    // For named US Navy ships with multi-position history, draw dashed
+    // polylines connecting their recent positions. Fetches from
+    // /api/military/asset/<ship_id>/movement async (best-effort).
+    // Only draws if we have at least one named ship in the current signals.
+    try {
+        var trackedShips = {};
+        for (var si = 0; si < signals.length; si++) {
+            var s = signals[si];
+            var txt = ((s.article_title || '') + ' ' + (s.signal_text || '')).toLowerCase();
+            var shipMatch = txt.match(/uss\s+([a-z][a-z\s\.]{3,30})/);
+            if (shipMatch && s.hotspot_location) {
+                var shipId = ('uss_' + shipMatch[1].trim().replace(/\s+/g, '_').replace(/\./g, '')).toLowerCase();
+                trackedShips[shipId] = true;
+            }
+        }
+        var shipIds = Object.keys(trackedShips).slice(0, 5);   // Cap at 5 trails
+        var apiBase = (window.MILITARY_API || window.API_BASE || '');
+
+        for (var ti = 0; ti < shipIds.length; ti++) {
+            (function (sid) {
+                var url = apiBase + '/api/military/asset/' + sid + '/movement';
+                fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+                    if (!data || !data.movement_history || data.movement_history.length < 2) return;
+
+                    // Collect coords for trail
+                    var trailCoords = [];
+                    for (var hi = 0; hi < data.movement_history.length; hi++) {
+                        var hist = data.movement_history[hi] || {};
+                        var loc = (hist.location || '').toLowerCase();
+                        var coords = HOTSPOT_COORDS[loc];
+                        if (coords) trailCoords.push(coords);
+                    }
+                    if (trailCoords.length < 2) return;
+
+                    // Draw dashed polyline connecting positions (oldest → newest)
+                    // Movement history is newest-first; reverse for chronological draw
+                    trailCoords.reverse();
+                    var polyline = L.polyline(trailCoords, {
+                        color: '#38bdf8',
+                        weight: 2,
+                        opacity: 0.65,
+                        dashArray: '6, 8',
+                        className: 'asset-movement-trail',
+                    }).addTo(_navalMap);
+
+                    polyline.bindPopup(
+                        '<div class="naval-popup-title">🚢 ' + sid.replace(/_/g, ' ').toUpperCase() + '</div>' +
+                        '<div class="naval-popup-meta">Movement trail: ' + trailCoords.length + ' positions</div>' +
+                        '<div class="naval-popup-signal">Trail oldest→newest. Last position: ' +
+                            (data.current_position ? data.current_position.location || '' : '') +
+                        '</div>'
+                    );
+                }).catch(function (_e) {
+                    // Best effort — silently fail if endpoint not yet reachable
+                });
+            })(shipIds[ti]);
+        }
+    } catch (_err) {
+        // Don't let movement-trail errors break the map render
+    }
 
     // Update badge
     if (badge) {
