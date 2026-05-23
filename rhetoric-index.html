@@ -685,6 +685,19 @@
             ? `<span class="me-badge otp">🚀 ${data.operation_true_promise_count} OTP signals</span>`
             : '';
 
+        // ── v2.1 (May 22 2026): Strike Window badge (Iran only) ──
+        // Surfaces when strike_window severity >= elevated
+        const sw = data?.strike_window;
+        const swSeverity = sw?.severity || 'normal';
+        const swColors = {
+            'elevated': { bg: 'rgba(245,158,11,0.18)', border: '#f59e0b', text: 'ELEVATED' },
+            'high':     { bg: 'rgba(239,68,68,0.18)',  border: '#ef4444', text: 'HIGH' },
+            'critical': { bg: 'rgba(220,38,38,0.25)',  border: '#dc2626', text: 'CRITICAL' }
+        };
+        const strikeWindowBadge = (tracker.isCommandNode && swColors[swSeverity])
+            ? `<span class="me-badge" style="background:${swColors[swSeverity].bg};border:1px solid ${swColors[swSeverity].border};color:var(--text-primary);" title="Strike Window: ${sw.active_signal_count || 0} signals active. Convergence indicator, not prediction.">🌙 Strike Window — ${swColors[swSeverity].text}</span>`
+            : '';
+
         const div = document.createElement('div');
         div.className = 'tracker-banner';
         if (tracker.isCommandNode) div.style.borderColor = 'rgba(220,38,38,0.4)';
@@ -697,6 +710,7 @@
                 </div>
                 <div class="tracker-actors">${tracker.actors}</div>
                 ${otpBadge}
+                ${strikeWindowBadge}
             </div>
             <div class="tracker-middle">
                 <div class="tracker-vectors">${vectorPills}</div>
@@ -822,7 +836,21 @@
             const pill = document.getElementById('blufPosturePill');
             pill.textContent = data.posture_label || 'UNKNOWN';
             pill.style.background = data.posture_color || '#6b7280';
-            document.getElementById('blufProse').textContent = (data.bluf || '').replace(/^ME /, '');
+            // ── v2.1 (May 22 2026): Prefer bluf_v2 (markdown-bolded prose) ──
+            // Fall back to legacy `bluf` if v2 not yet emitted by backend
+            const blufRaw = data.bluf_v2 || data.bluf || '';
+            const blufClean = blufRaw.replace(/^ME /, '');
+            // Convert markdown to HTML:
+            //   **bold** → <strong>bold</strong>
+            //   double newline → paragraph break
+            const blufHtml = blufClean
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .split(/\n\n/)
+                .map(p => p.trim())
+                .filter(p => p.length > 0)
+                .map(p => '<p style="margin-bottom:10px;">' + p + '</p>')
+                .join('');
+            document.getElementById('blufProse').innerHTML = blufHtml;
             const signalsEl = document.getElementById('blufSignals');
             signalsEl.innerHTML = '';
 
