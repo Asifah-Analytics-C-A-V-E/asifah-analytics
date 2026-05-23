@@ -649,6 +649,15 @@
             <div class="ta-section-body" id="taIranKineticBody"></div>
         </div>
 
+        <!-- IRAN STRIKE WINDOW CONVERGENCE (May 22 2026 — operational-window indicators) -->
+        <div class="ta-section convergence" id="taStrikeWindowSection" style="display:none;">
+            <div class="ta-section-toggle" onclick="toggleTaSection('taStrikeWindowSection')">
+                <div class="ta-section-title">🌙 <span data-i18n="taStrikeWindow">Iran Strike Window — Operational Convergence</span> <span class="ta-section-count" id="taStrikeWindowBadge"></span></div>
+                <div class="ta-chevron">▼</div>
+            </div>
+            <div class="ta-section-body" id="taStrikeWindowBody"></div>
+        </div>
+
         <!-- HUMANITARIAN CONVERGENCE (May 22 2026 — white/cyan register, hospital ship + pandemic) -->
         <div class="ta-section convergence" id="taHumanitarianSection" style="display:none;">
             <div class="ta-section-toggle" onclick="toggleTaSection('taHumanitarianSection')">
@@ -1033,6 +1042,94 @@ function renderTheaterAnalysis(interp) {
         convBody.innerHTML = convHtml;
     }
 
+    // ── Iran Strike Window section (May 22 2026) ──
+    // Fetches /api/iran-strike-window directly (separate endpoint from
+    // the main military-posture data passed in via `interp`). Shows when
+    // severity >= elevated. Convergence framing, not prediction.
+    var swSection = document.getElementById('taStrikeWindowSection');
+    var swBody    = document.getElementById('taStrikeWindowBody');
+    var swBadge   = document.getElementById('taStrikeWindowBadge');
+
+    if (swSection) {
+        // Fetch from strike window endpoint
+        var swApiBase = (typeof window !== 'undefined' && window.API_BASE)
+            ? window.API_BASE
+            : 'https://asifah-backend.onrender.com';
+        fetch(swApiBase + '/api/iran-strike-window')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(sw) {
+                if (!sw || !sw.severity || sw.severity === 'normal' || sw.awaiting_scan) {
+                    swSection.style.display = 'none';
+                    return;
+                }
+                swSection.style.display = '';
+                var sev = sw.severity || 'elevated';
+                swBadge.textContent = '(' + sev.toUpperCase() + ')';
+                // Auto-expand if high or critical
+                if (sev === 'critical' || sev === 'high') {
+                    if (!swSection.classList.contains('user-toggled')) {
+                        swSection.classList.add('expanded');
+                    }
+                }
+
+                var SIGNAL_LABELS = {
+                    'iran_airspace':       '🛫 Iranian Airspace',
+                    'regional_notams':     '🛬 Regional NOTAMs',
+                    'pre_strike_posture':  '⚓ Pre-Strike Posture',
+                    'embassy_posture':     '🏛️ Embassy/Evac Alerts',
+                    'adversary_defensive': '🛡️ Iran Defensive Posture',
+                    'principal_friction':  '☎️ Principal Friction',
+                    'rumored':             '📡 Rumored (OSINT)'
+                };
+                var MULT_LABELS = {
+                    'us_long_weekend':   '🇺🇸 US Long Weekend',
+                    'religious_window':  '🕌 Religious Calendar',
+                    'dark_lunar_window': '🌑 Lunar Window',
+                    'potus_anomaly':     '🏛️ POTUS Location'
+                };
+
+                var html = '<div class="ta-prose-block lvl-' + escapeHtml(sev) + '">';
+                html += '<div class="ta-prose-label">'
+                    + '<span>OPERATIONAL WINDOW CONVERGENCE — ' + escapeHtml(sev.toUpperCase()) + '</span>'
+                    + '<span class="ta-prose-pill lvl-' + escapeHtml(sev) + '">Composite ' + (sw.composite_score || 0).toFixed(1) + '</span>'
+                    + '</div>';
+                html += '<div>' + escapeHtml(sw.rationale || 'Convergence pattern detected.') + '</div>';
+
+                // Signal chips inline
+                if (sw.active_signals && sw.active_signals.length > 0) {
+                    html += '<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">';
+                    sw.active_signals.forEach(function(sigKey) {
+                        var label = SIGNAL_LABELS[sigKey] || sigKey;
+                        html += '<span style="padding:4px 10px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); border-radius:6px; font-size:0.72rem;">' + escapeHtml(label) + '</span>';
+                    });
+                    html += '</div>';
+                }
+
+                // Multipliers
+                if (sw.active_multipliers && sw.active_multipliers.length > 0) {
+                    html += '<div style="margin-top:10px; font-size:0.75rem; color:var(--text-secondary);">';
+                    html += '<strong>Calendar amplifiers:</strong> ';
+                    sw.active_multipliers.forEach(function(m) {
+                        var label = MULT_LABELS[m] || m;
+                        html += '<span style="display:inline-block; padding:2px 8px; margin:0 4px 4px 0; background:rgba(56,189,248,0.12); border-radius:999px; font-size:0.7rem;">' + escapeHtml(label) + '</span>';
+                    });
+                    html += '</div>';
+                }
+
+                // Disclaimer
+                html += '<div style="margin-top:12px; padding:8px 12px; background:rgba(0,0,0,0.15); border-radius:6px; border:1px dashed var(--card-border); font-size:0.7rem; font-style:italic; color:var(--text-muted); line-height:1.5;">';
+                html += '<strong>ANALYTICAL DISCLAIMER:</strong> This composite is a CONVERGENCE indicator, NOT a probability of action. Active signals indicate operational-window <em>conditions</em>; they do not predict whether or when action will occur.';
+                html += '</div>';
+
+                html += '</div>';
+                swBody.innerHTML = html;
+            })
+            .catch(function(err) {
+                console.warn('[StrikeWindow] fetch failed:', err);
+                if (swSection) swSection.style.display = 'none';
+            });
+    }
+
     // ── Iran Kinetic Re-Heating section (May 22 2026) ──
     var ikSection = document.getElementById('taIranKineticSection');
     var ikBody    = document.getElementById('taIranKineticBody');
@@ -1219,7 +1316,7 @@ function renderTheaterAnalysis(interp) {
 // Mark sections as user-toggled when manually clicked, so auto-expand
 // logic on subsequent renders doesn't reopen what the user closed.
 document.addEventListener('DOMContentLoaded', function () {
-    ['taConvergenceSection', 'taIranKineticSection', 'taHumanitarianSection', 'taMovementSection', 'taChokepointSection', 'taTheatreSection'].forEach(function (id) {
+    ['taConvergenceSection', 'taIranKineticSection', 'taStrikeWindowSection', 'taHumanitarianSection', 'taMovementSection', 'taChokepointSection', 'taTheatreSection'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) {
             var toggle = el.querySelector('.ta-section-toggle');
