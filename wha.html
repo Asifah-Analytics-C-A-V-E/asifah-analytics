@@ -131,7 +131,68 @@
         .nav-btn.gpi-btn { border-color:rgba(139,92,246,0.4); background:linear-gradient(135deg,rgba(139,92,246,0.08) 0%,rgba(91,33,182,0.05) 100%); }
         .nav-btn.gpi-btn:hover { border-color:rgba(167,139,250,0.7); box-shadow:0 0 18px rgba(139,92,246,0.2); transform:translateY(-2px); }
         .nav-btn.gpi-btn .nav-btn-status { color:#a78bfa; }
-        @media (max-width:1199px) { .nav-sidebar { display:none; } }
+        /* MOBILE HAMBURGER + DRAWER (Gold Standard v1.2 -- May 18, 2026) */
+        .mobile-hamburger { display: none; }
+        .mobile-drawer-backdrop { display: none; }
+
+        @media (max-width:1199px) {
+            .mobile-hamburger {
+                display: flex;
+                position: fixed;
+                top: 16px;
+                left: 16px;
+                width: 44px;
+                height: 44px;
+                background: var(--card-bg, #0d1b2e);
+                border: 1px solid var(--card-border, #1e3a5f);
+                border-radius: 8px;
+                cursor: pointer;
+                z-index: 1001;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                color: var(--text-primary, #e2f0fb);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                transition: transform 0.15s ease;
+                font-family: monospace;
+            }
+            .mobile-hamburger:hover { transform: scale(1.05); }
+            .mobile-hamburger:active { transform: scale(0.95); }
+
+            .nav-sidebar {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: -260px;
+                width: 240px;
+                height: 100vh;
+                background: var(--card-bg, #0d1b2e);
+                border-right: 1px solid var(--card-border, #1e3a5f);
+                padding: 70px 12px 20px 12px;
+                overflow-y: auto;
+                z-index: 1000;
+                transition: left 0.25s ease-in-out;
+                box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-sidebar.open { left: 0; }
+
+            .mobile-drawer-backdrop {
+                display: block;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.55);
+                z-index: 999;
+                backdrop-filter: blur(2px);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.25s ease-in-out;
+            }
+            .mobile-drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+
+            header { padding-top: 70px !important; }
+        }
 
         /* ── LAYOUT ── */
         .main-content-wrapper { display:flex; flex-direction:row; align-items:flex-start; gap:20px; max-width:1800px; margin:0 auto; }
@@ -521,7 +582,10 @@
 <div class="main-content-wrapper">
 
 <!-- NAV SIDEBAR -->
-<nav class="nav-sidebar">
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
     <div class="nav-btn inactive-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">🔒 Future</span></div>
     <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
@@ -2149,6 +2213,31 @@ document.addEventListener('DOMContentLoaded',function(){
     loadAllWeather();
     loadAllMilitaryPostures();
     loadNotams();
+});
+
+// MOBILE DRAWER TOGGLE (Gold Standard v1.2 -- May 18, 2026)
+function toggleMobileDrawer() {
+    const sidebar = document.getElementById('navSidebar');
+    const backdrop = document.getElementById('mobileDrawerBackdrop');
+    if (!sidebar || !backdrop) return;
+    const isOpen = sidebar.classList.contains('open');
+    if (isOpen) {
+        closeMobileDrawer();
+    } else {
+        sidebar.classList.add('open');
+        backdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeMobileDrawer() {
+    const sidebar = document.getElementById('navSidebar');
+    const backdrop = document.getElementById('mobileDrawerBackdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMobileDrawer();
 });
 </script>
 </body>
