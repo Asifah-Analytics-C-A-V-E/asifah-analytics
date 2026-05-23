@@ -6,7 +6,2034 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/><!-- Asifah Analytics — Iran Command Node Tracker v2.0.0 — May 2026 -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<!-- v2.0.0: Gold Standard pass — Arctic cyan rebrand, 1800px container, GPI sidebar, class-based footer, REGIME SIGNALS card. -->
+<!-- Trilogy visual coherence: Iran (densest evasion node) + Russia (engine) + China (architect) -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Iran Command Node Tracker — Asifah Analytics</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    /* ── ARCTIC THEME VARIABLES (canonical for trilogy: Iran/Russia/China) ── */
+    :root {
+        --bg-color:       #e8f0f8;
+        --container-bg:   #ffffff;
+        --card-bg:        #ffffff;
+        --card-border:    #b0c8e0;
+        --text-primary:   #0a1628;
+        --text-secondary: #1e3a5f;
+        --text-muted:     #4a6080;
+        --article-bg:     #f0f6fc;
+        --article-hover:  #e2e8f0;
+        --accent:         #0ea5e9;
+        --accent-glow:    rgba(14,165,233,0.2);
+        --card-glow:      none;
+        --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
+        --watermark-opacity: 0.5;
+        --watermark-size: 500px;
+        --watermark-filter:  none;
+        --grid-color: transparent;
+        --scanline-opacity: 0;
+        --glow-opacity: 0;
+        /* Iran-specific semantic preserved (used in Proxy/Command actor cards) */
+        --command-color:  #dc2626;
+        --proxy-color:    #7c3aed;
+    }
+    [data-theme="dark"] {
+        --bg-color:       #060d1a;
+        --container-bg:   #0d1b2e;
+        --card-bg:        #0d1b2e;
+        --card-border:    #1e3a5f;
+        --text-primary:   #e2f0fb;
+        --text-secondary: #93c5fd;
+        --text-muted:     #4a7090;
+        --article-bg:     #0a1525;
+        --article-hover:  #112038;
+        --accent:         #38bdf8;
+        --accent-glow:    rgba(56,189,248,0.18);
+        --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
+        --card-hover-glow: 0 0 22px rgba(56,189,248,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        --watermark-opacity: 1;
+        --watermark-size: 800px;
+        --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
+        --grid-color: rgba(56,189,248,0.04);
+        --scanline-opacity: 0.03;
+        --glow-opacity: 1;
+        --command-color:  #dc2626;
+        --proxy-color:    #a78bfa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        min-height: 100vh;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body::before {
+        content: '';
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+                          linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none; z-index: 0;
+    }
+    body::after {
+        content: '';
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: repeating-linear-gradient(0deg,
+            transparent, transparent 2px,
+            rgba(56,189,248,var(--scanline-opacity)) 2px,
+            rgba(56,189,248,var(--scanline-opacity)) 4px);
+        pointer-events: none; z-index: 0;
+    }
+    .watermark {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: var(--watermark-size); height: var(--watermark-size);
+        opacity: var(--watermark-opacity); filter: var(--watermark-filter);
+        pointer-events: none; user-select: none; z-index: 0;
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-size: 135%; background-repeat: no-repeat; background-position: center;
+        border-radius: 50%;
+        transition: all 0.4s ease;
+    }
+    /* v2.0.0: Container width raised to 1800px (Japan canonical) */
+    .container { max-width: 1800px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+    /* ── HEADER ── */
+    header {
+        background: linear-gradient(135deg, #060d1a, #0a1628);
+        border: 1px solid #1e3a5f;
+        border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;
+        display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(56,189,248,0.08);
+        border-bottom: 1px solid rgba(56,189,248,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    header::after {
+        content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: var(--glow-opacity);
+    }
+    [data-theme="light"] header { background: linear-gradient(135deg, #dbeafe, #eff6ff); border-color: #93c5fd; }
+    .header-logo { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(56,189,248,0.4); flex-shrink: 0; }
+    .header-left { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .back-link {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3);
+        color: #38bdf8; font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: all 0.2s;
+    }
+    .back-link:hover { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+    .header-center { flex: 1; text-align: center; }
+    .header-flag { font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; color: #38bdf8; text-transform: uppercase; }
+    .header-title { font-family: 'Times New Roman', Times, serif; font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e2f0fb; margin: 4px 0; }
+    [data-theme="light"] .header-title { color: #0a1628; }
+    .header-subtitle { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; }
+    .header-timestamp { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .command-node-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 6px;
+        background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.4);
+        font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; color: #38bdf8;
+        text-transform: uppercase; animation: pulse-arctic 3s ease-in-out infinite;
+    }
+    @keyframes pulse-arctic { 0%,100%{opacity:0.7;} 50%{opacity:1;} }
+
+    /* ── LANG + THEME ── */
+    .lang-group { display: flex; gap: 4px; }
+    .lang-btn {
+        font-family: 'Times New Roman', Times, serif;
+        padding: 4px 10px; border-radius: 6px; border: 1px solid var(--card-border);
+        background: transparent; color: var(--text-muted);
+        font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .lang-btn.active { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+    .theme-row { display: flex; align-items: center; gap: 8px; }
+    .theme-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+    .theme-toggle { position: relative; width: 48px; height: 24px; cursor: pointer; }
+    .theme-toggle input { opacity: 0; width: 0; height: 0; }
+    .theme-toggle-slider { position: absolute; inset: 0; border-radius: 12px; background: #ccc; transition: 0.3s; display: flex; align-items: center; padding: 2px; }
+    [data-theme="dark"] .theme-toggle-slider { background: #0ea5e9; }
+    .theme-toggle-slider::before { content: '☀️'; width: 20px; height: 20px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.3s; }
+    [data-theme="dark"] .theme-toggle-slider::before { content: '🌙'; margin-left: 24px; }
+
+    /* ── NAV SIDEBAR (canonical pattern) ── */
+    .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+    .nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+    .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+    .nav-btn { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-family: 'Times New Roman', Times, serif; font-size: 13px; font-weight: bold; letter-spacing: 0.5px; transition: all 0.3s ease; cursor: pointer; overflow: hidden; border: 1.5px solid rgba(56,189,248,0.2); background: linear-gradient(135deg, rgba(56,189,248,0.06) 0%, rgba(14,165,233,0.04) 100%); color: rgba(255,255,255,0.7); }
+    [data-theme="light"] .nav-btn { color: var(--text-secondary); }
+    .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+    .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #38bdf8; }
+    .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); border-color: rgba(56,189,248,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(56,189,248,0.12); }
+    .nav-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); border-color: rgba(34,197,94,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+    .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+    .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+    .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+    .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+    .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+    .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+    .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+    .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+    .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+    /* ── MOBILE HAMBURGER (gold standard from india-stability.html) ── */
+    .mobile-menu-btn {
+        display: none;
+        background: rgba(56,189,248,0.10); border: 1px solid var(--card-border);
+        border-radius: 6px; padding: 6px 10px; cursor: pointer;
+        font-size: 18px; line-height: 1; color: var(--text-primary);
+        font-family: inherit;
+    }
+    .mobile-menu-btn:hover { border-color: var(--accent); background: rgba(56,189,248,0.20); }
+
+    /* Mobile drawer (sidebar substitute) + backdrop */
+    .mobile-drawer-backdrop {
+        display: none;
+        position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+        z-index: 9998; backdrop-filter: blur(2px);
+    }
+    .mobile-drawer-backdrop.open { display: block; }
+    .mobile-drawer {
+        display: none;
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: 84%; max-width: 320px;
+        background: var(--card-bg); border-right: 2px solid var(--accent);
+        z-index: 9999; padding: 18px 16px;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+    }
+    .mobile-drawer.open { display: block; transform: translateX(0); }
+    .mobile-drawer-close {
+        position: absolute; top: 10px; right: 10px;
+        background: transparent; border: 1px solid var(--card-border);
+        border-radius: 6px; width: 32px; height: 32px;
+        cursor: pointer; color: var(--text-primary); font-size: 16px;
+        line-height: 1; font-family: inherit;
+    }
+    .mobile-drawer-close:hover { border-color: var(--accent); color: var(--accent); }
+    .mobile-drawer-title {
+        font-size: 14px; font-weight: 700; color: var(--accent);
+        text-transform: uppercase; letter-spacing: 1.5px;
+        margin: 0 0 14px 4px; padding-right: 40px;
+    }
+    /* ── BREAKPOINT: 1024px (tablet flex) ── */
+    @media (max-width: 1024px) {
+        .page-with-sidebar { flex-direction: column; }
+        .nav-sidebar { width: 100%; position: static; max-height: none; }
+    }
+    /* ── BREAKPOINT: 768px (mobile — hide sidebar, show hamburger) ── */
+    @media (max-width: 768px) {
+        .nav-sidebar { display: none; }
+        .page-with-sidebar { display: block; }
+        .mobile-menu-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+
+    /* ── HISTORY CHART ── */
+    .history-chart-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .history-chart-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .history-chart-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; }
+    .history-toggle-group { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 3px; }
+    .history-toggle-btn { font-family: 'Times New Roman', Times, serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; padding: 4px 12px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; text-transform: uppercase; background: transparent; color: var(--text-muted); transition: all 0.2s; }
+    .history-toggle-btn.active { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+    .history-toggle-btn.compare.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+    .history-chart-wrap { position: relative; height: 180px; }
+    .history-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1px; }
+    .history-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+    .history-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-legend-dot { width: 10px; height: 3px; border-radius: 2px; }
+
+    /* ── SECTION CARDS ── */
+    .section-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .section-card:hover { box-shadow: var(--card-hover-glow); }
+    .section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
+
+    /* ── THEATRE BANNER ── */
+    .theatre-banner { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px 28px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--card-glow); }
+    .theatre-score-big { font-size: clamp(3rem, 8vw, 5rem); font-weight: 900; line-height: 1; color: #38bdf8; }
+    .theatre-score-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+    .theatre-badge { display: inline-block; padding: 5px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: white; margin-top: 8px; }
+    .theatre-right { text-align: right; }
+    .theatre-escalation-label-text { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+    .theatre-level-display { font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 700; margin: 4px 0; }
+    .theatre-level-desc { font-size: 0.7rem; color: var(--text-muted); }
+    .theatre-scan-info { font-size: 0.6rem; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+
+    /* ── REGIME SIGNALS CARD (v2.0.0) ── */
+    .regime-signal-card {
+        border-radius: 12px; padding: 22px; margin-bottom: 18px;
+        border: 2px solid rgba(56,189,248,0.35);
+        background: linear-gradient(135deg, rgba(56,189,248,0.06) 0%, rgba(14,165,233,0.03) 100%);
+    }
+    .regime-signal-header {
+        display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+    .regime-signal-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .regime-signal-titles { flex: 1; min-width: 200px; }
+    .regime-signal-eyebrow { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .regime-signal-title { font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text-primary); margin-top: 2px; font-family: 'Times New Roman', serif; }
+    .regime-signal-meta {
+        display: flex; gap: 12px; flex-wrap: wrap; margin-left: auto;
+    }
+    .regime-signal-stat {
+        text-align: center; padding: 6px 12px; border-radius: 6px;
+        background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2);
+        min-width: 70px;
+    }
+    .regime-signal-stat-label { font-size: 0.55rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .regime-signal-stat-value { font-size: 1.2rem; font-weight: 800; color: #38bdf8; margin-top: 1px; }
+    .regime-signal-framing {
+        font-size: 0.85rem; line-height: 1.65; color: var(--text-primary);
+        padding: 12px 16px; margin-bottom: 14px;
+        background: rgba(56,189,248,0.05); border-left: 3px solid #38bdf8;
+        border-radius: 0 6px 6px 0; font-family: 'Times New Roman', serif;
+    }
+    .regime-dimensions-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px; margin-bottom: 14px;
+    }
+    .regime-dimension {
+        padding: 10px 12px; border-radius: 8px;
+        background: var(--article-bg); border: 1px solid var(--card-border);
+        transition: all 0.2s;
+    }
+    .regime-dimension.active {
+        border-color: #38bdf8;
+        box-shadow: 0 0 12px rgba(56,189,248,0.18);
+        background: rgba(56,189,248,0.06);
+    }
+    .regime-dimension-header {
+        display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+    }
+    .regime-dimension-icon { font-size: 1rem; }
+    .regime-dimension-name {
+        flex: 1; font-size: 0.72rem; font-weight: 700;
+        color: var(--text-primary); letter-spacing: 0.3px;
+    }
+    .regime-dimension-level {
+        font-size: 0.65rem; font-weight: 800; padding: 2px 7px;
+        border-radius: 4px; font-family: 'Courier New', monospace;
+        color: white;
+    }
+    .regime-dimension-level.lvl-0 { background: #6b7280; }
+    .regime-dimension-level.lvl-1 { background: #3b82f6; }
+    .regime-dimension-level.lvl-2 { background: #f59e0b; }
+    .regime-dimension-level.lvl-3 { background: #f97316; }
+    .regime-dimension-level.lvl-4 { background: #ef4444; }
+    .regime-dimension-level.lvl-5 { background: #dc2626; }
+    .regime-dimension-desc { font-size: 0.68rem; color: var(--text-muted); line-height: 1.4; font-family: 'Times New Roman', serif; }
+    .regime-signal-caveat {
+        font-size: 0.65rem; line-height: 1.55; color: var(--text-muted);
+        font-style: italic; padding-top: 12px; margin-top: 6px;
+        border-top: 1px solid rgba(56,189,248,0.15);
+        font-family: 'Courier New', monospace;
+    }
+
+    /* ── INTERPRETATION CARDS — So What / Red Lines / Historical ── */
+    .interp-so-what {
+        border-radius: 12px; padding: 22px; margin-bottom: 16px;
+        border: 2px solid rgba(56,189,248,0.3);
+        background: linear-gradient(135deg, rgba(56,189,248,0.05) 0%, rgba(14,165,233,0.03) 100%);
+    }
+    .interp-scenario-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .interp-scenario-icon { font-size: 1.3rem; }
+    .interp-scenario-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .interp-scenario-value { font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; font-family: 'Times New Roman', serif; }
+    .interp-section-title { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; font-family: 'Courier New', monospace; margin: 12px 0 6px; border-bottom: 1px solid rgba(56,189,248,0.2); padding-bottom: 4px; }
+    .interp-text { font-size: 0.82rem; line-height: 1.65; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .interp-indicator { font-size: 0.78rem; line-height: 1.5; color: var(--text-secondary); padding: 5px 10px; border-left: 3px solid #38bdf8; background: rgba(56,189,248,0.06); border-radius: 0 6px 6px 0; margin: 5px 0; font-family: 'Times New Roman', serif; }
+    .interp-watch-item { font-size: 0.72rem; color: #38bdf8; padding: 3px 0 3px 10px; border-left: 2px solid rgba(56,189,248,0.4); margin: 3px 0; font-family: 'Courier New', monospace; }
+    .interp-confidence-note { font-size: 0.65rem; color: var(--text-muted); font-style: italic; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(56,189,248,0.15); font-family: 'Courier New', monospace; }
+    .interp-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .interp-card-title { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; font-family: 'Courier New', monospace; margin-bottom: 4px; }
+    .interp-card-subtitle { font-size: 0.85rem; font-weight: 800; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+
+    /* Red Lines card */
+    .red-lines-card { border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; border: 1px solid rgba(30,58,95,0.4); background: linear-gradient(135deg, #0a1525 0%, #0d1b2e 100%); }
+    [data-theme="light"] .red-lines-card { background: linear-gradient(135deg, #f0f6fc 0%, #e8f4ff 100%); border-color: rgba(56,189,248,0.2); }
+    .red-line-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(56,189,248,0.1); }
+    .red-line-item.breached { border-left: 3px solid #dc2626; background: rgba(220,38,38,0.06); border-top-color: rgba(220,38,38,0.12); border-right-color: rgba(220,38,38,0.12); border-bottom-color: rgba(220,38,38,0.12); }
+    .red-line-item.approaching { border-left: 3px solid #38bdf8; background: rgba(56,189,248,0.05); border-top-color: rgba(56,189,248,0.1); border-right-color: rgba(56,189,248,0.1); border-bottom-color: rgba(56,189,248,0.1); }
+    .red-line-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .red-line-status-badge { font-size: 0.55rem; font-weight: 700; letter-spacing: 1.5px; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; font-family: 'Courier New', monospace; flex-shrink: 0; }
+    .red-line-status-badge.breached { background: #dc2626; color: #fff; }
+    .red-line-status-badge.approaching { background: #0ea5e9; color: #fff; }
+    .red-line-label { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .red-line-trigger { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; font-family: 'Courier New', monospace; }
+    .red-line-source { font-size: 0.62rem; color: var(--text-muted); margin-top: 2px; font-style: italic; font-family: 'Courier New', monospace; }
+
+    /* Historical card */
+    .historical-card { border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; border: 1px solid rgba(56,189,248,0.2); background: linear-gradient(135deg, rgba(56,189,248,0.04) 0%, rgba(14,165,233,0.02) 100%); }
+    .hist-match-item { padding: 12px 14px; border-radius: 8px; margin-bottom: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(56,189,248,0.15); border-left: 3px solid #38bdf8; }
+    .hist-match-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+    .hist-similarity-badge { font-size: 0.7rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; font-family: 'Courier New', monospace; background: #0ea5e9; color: #fff; flex-shrink: 0; }
+    .hist-match-label { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .hist-match-outcome { font-size: 0.75rem; color: #93c5fd; margin: 4px 0; font-family: 'Times New Roman', serif; font-weight: 600; }
+    .hist-match-meta { font-size: 0.65rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .hist-matched-signals { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .hist-signal-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56,189,248,0.1); color: #38bdf8; border: 1px solid rgba(56,189,248,0.2); font-family: 'Courier New', monospace; }
+
+    /* ── PROXY ACTIVATION INDEX (Iran-specific) ── */
+    .proxy-activation-card {
+        background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(109,40,217,0.04));
+        border: 1px solid rgba(124,58,237,0.35);
+        border-radius: 12px; padding: 20px; margin-bottom: 18px;
+    }
+    .proxy-activation-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #a78bfa; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(124,58,237,0.2); }
+    .proxy-activation-level { font-size: 2.5rem; font-weight: 900; color: #a78bfa; line-height: 1; }
+    .proxy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+    .proxy-theater-card { background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.2); border-radius: 8px; padding: 10px; text-align: center; }
+    .proxy-theater-name { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .proxy-theater-level { font-size: 1.1rem; font-weight: 900; }
+    .proxy-theater-label { font-size: 0.55rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── OPERATION TRUE PROMISE CARD (Iran-specific) ── */
+    .otp-card { background: linear-gradient(135deg, rgba(220,38,38,0.08), rgba(185,28,28,0.04)); border: 1px solid rgba(220,38,38,0.35); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+    .otp-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(220,38,38,0.2); }
+    .otp-count { font-size: 2.5rem; font-weight: 900; color: #ef4444; line-height: 1; }
+    .otp-item { background: rgba(220,38,38,0.06); border-left: 3px solid #dc2626; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 6px; font-size: 0.7rem; }
+
+    /* ── DIPLOMATIC TRACK CARD ── */
+    .diplomatic-track-card {
+        background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.04));
+        border: 1px solid rgba(34,197,94,0.35);
+        border-radius: 12px; padding: 20px; margin-bottom: 18px;
+    }
+    .diplomatic-track-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #16a34a; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(34,197,94,0.2); }
+    [data-theme="dark"] .diplomatic-track-title { color: #4ade80; }
+    .diplomatic-track-header { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+    .diplomatic-modifier-badge { font-size: 2.5rem; font-weight: 900; color: #16a34a; line-height: 1; }
+    [data-theme="dark"] .diplomatic-modifier-badge { color: #4ade80; }
+    .diplomatic-modifier-sub { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .diplomatic-detailed-label { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .diplomatic-track-explainer { font-size: 0.78rem; color: var(--text-secondary); font-style: italic; line-height: 1.55; }
+    .diplomatic-track-note { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(34,197,94,0.25); font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-family: 'Courier New', monospace; font-style: italic; }
+
+    /* ── VECTOR TABS ── */
+    .vector-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .vector-tab { background: var(--article-bg); border: 2px solid var(--card-border); border-radius: 8px; padding: 10px 16px; cursor: pointer; transition: all 0.2s; flex: 1; min-width: 130px; text-align: center; }
+    .vector-tab:hover { box-shadow: var(--card-hover-glow); }
+    .vector-tab.active { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+    .vector-tab-icon { font-size: 1.2rem; margin-bottom: 4px; }
+    .vector-tab-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+    .vector-tab-level { font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
+
+    /* ── ESCALATION LADDER ── */
+    .ladder-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+    .ladder-step { flex: 1; min-width: 70px; text-align: center; padding: 12px 6px; border-radius: 8px; border: 2px solid var(--card-border); background: var(--article-bg); transition: all 0.3s; }
+    .ladder-step.active { background: rgba(56,189,248,0.1); box-shadow: 0 0 16px rgba(56,189,248,0.3); border-color: #38bdf8; }
+    .ladder-step-num { font-size: 1.2rem; font-weight: 900; }
+    .ladder-step-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── ACTORS GRID ── */
+    .actors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+    .actor-card { background: var(--article-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; transition: all 0.3s; }
+    .actor-card:hover { box-shadow: var(--card-hover-glow); transform: translateY(-2px); }
+    .actor-card.proxy-actor { border-color: rgba(124,58,237,0.3); border-left: 3px solid var(--proxy-color); }
+    .actor-card.command-actor { border-color: rgba(220,38,38,0.4); border-left: 3px solid var(--command-color); }
+    .actor-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .actor-flag { font-size: 1.4rem; flex-shrink: 0; }
+    .actor-name { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; }
+    .actor-role { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 1px; }
+    .actor-level-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: white; margin-left: auto; flex-shrink: 0; }
+    .actor-stats { display: flex; gap: 12px; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px; }
+    .actor-silence-alert { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; padding: 6px 10px; font-size: 0.65rem; color: #f59e0b; margin-top: 8px; }
+    .silence-pill { display: inline-flex; align-items: center; gap: 3px; background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); border-radius: 3px; padding: 1px 6px; font-size: 9px; font-weight: bold; margin-left: 4px; }
+    .vector-pills { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+    .vector-pill { font-size: 0.55rem; font-weight: 700; padding: 2px 8px; border-radius: 3px; color: white; letter-spacing: 0.5px; }
+    .proxy-tag { display: inline-flex; align-items: center; gap: 3px; background: rgba(124,58,237,0.12); color: var(--proxy-color); border: 1px solid rgba(124,58,237,0.3); border-radius: 3px; padding: 1px 6px; font-size: 9px; font-weight: bold; margin-top: 4px; }
+
+    /* ── CROSS-THEATER COORDINATION ── */
+    .coord-item { background: var(--article-bg); border-left: 3px solid #38bdf8; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.75rem; }
+    .coord-item.command-node { border-left-color: var(--proxy-color); background: rgba(124,58,237,0.06); }
+    .coord-confidence { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-left: 8px; background: rgba(124,58,237,0.2); color: var(--proxy-color); }
+
+    /* ── DELTA / SPECIFICITY (preserved from v1) ── */
+    .delta-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-left: 10px; vertical-align: middle; }
+    .delta-rising  { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+    .delta-falling { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+    .delta-stable  { background: rgba(107,114,128,0.12); color: #9ca3af; border: 1px solid rgba(107,114,128,0.25); }
+    .specificity-wrap { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .specificity-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); white-space: nowrap; }
+    .specificity-track { flex: 1; height: 4px; background: rgba(107,114,128,0.2); border-radius: 2px; overflow: hidden; }
+    .specificity-fill  { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .specificity-value { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ── ARTICLES ── */
+    .article-item { padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 0.75rem; }
+    .article-item:last-child { border-bottom: none; }
+    .article-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .article-link:hover { text-decoration: underline; }
+    .article-meta { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── SCAN BUTTON ── */
+    .scan-btn { padding: 8px 20px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.4); background: rgba(56,189,248,0.08); color: #38bdf8; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; font-family: 'Times New Roman', serif; display: inline-flex; align-items: center; gap: 6px; }
+    .scan-btn:hover { background: rgba(56,189,248,0.15); border-color: #38bdf8; }
+    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── FOOTER (v2.0.0 — class-based, Japan canonical pattern) ── */
+    footer {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 22px 28px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        line-height: 1.6;
+    }
+    footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+    @media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+    footer .footer-disclaimer {
+        padding: 12px 14px;
+        background: var(--article-bg); border-left: 3px solid #f59e0b;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        margin-bottom: 14px;
+    }
+    footer .footer-support {
+        text-align: center; padding: 10px;
+        font-size: 0.85rem;
+    }
+    footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+    footer .footer-copyright {
+        text-align: center; font-size: 0.7rem; color: var(--text-muted);
+        margin-top: 14px; padding-top: 14px;
+        border-top: 1px solid var(--card-border);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+        header { flex-direction: column; align-items: center; text-align: center; }
+        .header-right { align-items: center; }
+        .theatre-banner { flex-direction: column; text-align: center; }
+        .theatre-right { text-align: center; }
+        .vector-tabs { flex-direction: column; }
+        .actors-grid { grid-template-columns: 1fr; }
+        .regime-signal-meta { margin-left: 0; }
+    }
+
+    /* ── RTL ── */
+    [dir="rtl"] .back-link { flex-direction: row-reverse; }
+    [dir="rtl"] .coord-item { border-left: none; border-right: 3px solid #38bdf8; }
+    [dir="rtl"] .coord-item.command-node { border-right-color: var(--proxy-color); }
+</style>
+</head>
+<body>
+
+<!-- Watermark logo (gold standard, position: fixed, behind content) -->
+<div class="watermark"></div>
+
+<!-- Mobile drawer backdrop + drawer (gold standard, hidden on desktop) -->
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<aside class="mobile-drawer" id="mobileDrawer" aria-label="Navigation menu">
+    <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu">✕</button>
+    <div class="mobile-drawer-title" data-i18n="mobile_drawer_title">Navigation</div>
+    <div class="nav-sidebar-label">Dashboards</div>
+    <div class="nav-btn inactive-nav">
+        <span class="nav-btn-label">🌍 Africa</span>
+        <span class="nav-btn-status">🔒 Future</span>
+    </div>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="military.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🎖️ Military Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🌐 Global Pressure</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="commodities.html" class="nav-btn commodities-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Iran</div>
+    <a href="rhetoric-iran.html" class="nav-btn rhetoric-btn current-page">
+        <span class="nav-btn-label">🇮🇷 Command Tracker</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </a>
+    <a href="iran-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🇮🇷 Iran Stability</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+</aside>
+<div class="container">
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-left">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+            <a href="iran-stability.html" class="back-link" data-i18n="backLink">← Back to Iran</a>
+            <button class="mobile-menu-btn" onclick="openMobileDrawer()" aria-label="Open navigation menu">
+                <span style="font-size:20px;">☰</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;" data-i18n="mobile_menu">Menu</span>
+            </button>
+        </div>
+        <div class="header-center">
+            <div class="header-flag">🇮🇷 <span data-i18n="pageFlag">IRAN</span></div>
+            <div class="header-title" data-i18n="pageTitle">IRAN COMMAND NODE TRACKER</div>
+            <div class="header-subtitle" data-i18n="pageSubtitle">IRGC · Khamenei · Proxy Network · Nuclear · Hormuz · Domestic Signals</div>
+            <div class="header-timestamp"><span data-i18n="lastUpdatedLabel">Last updated</span>: <span id="lastUpdated" data-i18n="loading">Loading...</span></div>
+        </div>
+        <div class="header-right">
+            <div class="command-node-badge">⚡ <span data-i18n="commandNodeLabel">COMMAND NODE</span></div>
+            <div class="lang-group">
+                <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+                <button class="lang-btn" onclick="setLanguage('ar')">ع</button>
+                <button class="lang-btn" onclick="setLanguage('he')">עב</button>
+                <button class="lang-btn" onclick="setLanguage('fa')">ف</button>
+            </div>
+            <div class="theme-row">
+                <span class="theme-label" data-i18n="themeLabel">THEME</span>
+                <label class="theme-toggle">
+                    <input type="checkbox" id="themeToggle" onchange="toggleTheme()"/>
+                    <span class="theme-toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <!-- PAGE WITH SIDEBAR -->
+    <div class="page-with-sidebar">
+
+    <!-- LEFT NAV SIDEBAR (canonical) -->
+    <nav class="nav-sidebar">
+        <div class="nav-sidebar-label">Dashboards</div>
+        <div class="nav-btn inactive-nav">
+            <span class="nav-btn-label">🌍 Africa</span>
+            <span class="nav-btn-status">🔒 Future</span>
+        </div>
+        <a href="asia.html" class="nav-btn active-nav">
+            <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="europe.html" class="nav-btn active-nav">
+            <span class="nav-btn-label">🌍 Europe</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="middle-east.html" class="nav-btn active-nav">
+            <span class="nav-btn-label">🕌 Middle East</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="wha.html" class="nav-btn active-nav">
+            <span class="nav-btn-label">🌎 W. Hemisphere</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="military.html" class="nav-btn military-btn">
+            <span class="nav-btn-label">🎖️ Military Tracker</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="gpi.html" class="nav-btn military-btn">
+            <span class="nav-btn-label">🌐 Global Pressure</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="commodities.html" class="nav-btn commodities-btn">
+            <span class="nav-btn-label">🛢️ Commodities</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Regional Rhetoric</div>
+        <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+            <span class="nav-btn-label">🕌 Middle East</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+            <span class="nav-btn-label">🌏 Asia</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+            <span class="nav-btn-label">🌍 Europe</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+            <span class="nav-btn-label">🌎 W. Hemisphere</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Iran</div>
+        <a href="rhetoric-iran.html" class="nav-btn rhetoric-btn current-page">
+            <span class="nav-btn-label">🇮🇷 Command Tracker</span>
+            <span class="nav-btn-status">◉ You are here</span>
+        </a>
+        <a href="iran-stability.html" class="nav-btn active-nav">
+            <span class="nav-btn-label">🇮🇷 Iran Stability</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div style="flex:1;min-width:0;">
+
+    <!-- THEATRE BANNER -->
+    <div class="theatre-banner" id="theatreBanner">
+        <div>
+            <div class="theatre-score-big" id="theatreScore">--</div>
+            <div class="theatre-score-label" data-i18n="scoreLabel">RHETORIC SCORE / 100</div>
+            <div class="theatre-badge" id="theatreBadge" style="background:#6b7280;">--</div>
+        </div>
+        <div class="theatre-right">
+            <div class="theatre-escalation-label-text" data-i18n="escalationLabel">THEATRE ESCALATION LEVEL</div>
+            <div class="theatre-level-display" id="theatreLevelDisplay">--</div>
+            <div class="theatre-level-desc" id="theatreLevelDesc">--</div>
+            <div class="theatre-scan-info" id="theatreScanInfo" data-i18n="loading">Loading...</div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         REGIME SIGNALS CARD (v2.0.0 — between theatre banner and So What)
+         Hidden by default. Shows when regime_signals.active_count >= 1.
+         ════════════════════════════════════════════════════════════ -->
+    <div class="regime-signal-card" id="regimeSignalCard" style="display:none;">
+        <div class="regime-signal-header">
+            <span class="regime-signal-icon">🌐</span>
+            <div class="regime-signal-titles">
+                <div class="regime-signal-eyebrow" data-i18n="regimeEyebrow">REGIME-LEVEL SIGNALS</div>
+                <div class="regime-signal-title" data-i18n="regimeTitle">Iran as Densest Sanctions-Evasion Node</div>
+            </div>
+            <div class="regime-signal-meta">
+                <div class="regime-signal-stat">
+                    <div class="regime-signal-stat-label" data-i18n="regimeActive">Active</div>
+                    <div class="regime-signal-stat-value" id="regimeActiveCount">0</div>
+                </div>
+                <div class="regime-signal-stat">
+                    <div class="regime-signal-stat-label" data-i18n="regimeMaxLevel">Max Level</div>
+                    <div class="regime-signal-stat-value" id="regimeMaxLevel">L0</div>
+                </div>
+            </div>
+        </div>
+        <div class="regime-signal-framing" data-i18n="regimeFraming">
+            Iran is the densest sanctions-evasion node in the regime-fragmentation cluster. Where Russia is the engine that supplies fuel and arms, and China is the architect constructing the parallel system, Iran is the operator stress-testing it — gold-for-oil settlements, yuan trade, BRICS membership, and OPEC realignment all running through Tehran simultaneously. Iran tests what the alternative system can do.
+        </div>
+        <div class="regime-dimensions-grid" id="regimeDimensionsGrid">
+            <!-- Dimensions injected by renderRegimeSignals(data) -->
+        </div>
+        <div class="regime-signal-caveat" data-i18n="regimeCaveat">
+            Asifah measures these signals based on available open-source material across multiple languages and source types. Their interpretation as evidence of structural change in the international system should be weighed appropriately — these are measurements, not assertions.
+        </div>
+    </div>
+
+    <!-- SO WHAT CARD -->
+    <div class="interp-so-what" id="soWhatCard" style="display:none;">
+        <div class="interp-scenario-header">
+            <span class="interp-scenario-icon" id="soWhatIcon">🔴</span>
+            <div>
+                <div class="interp-scenario-label" data-i18n="strategicAssessmentLabel">COMMAND NODE ASSESSMENT</div>
+                <div class="interp-scenario-value" id="soWhatScenario">--</div>
+            </div>
+        </div>
+        <div class="interp-section-title" data-i18n="situationLabel">SITUATION</div>
+        <div class="interp-text" id="soWhatSituation"></div>
+        <div id="soWhatIndicators"></div>
+        <div class="interp-section-title" style="margin-top:14px;" data-i18n="assessmentLabel">ASSESSMENT</div>
+        <div class="interp-text" id="soWhatAssessment"></div>
+        <div class="interp-section-title" style="margin-top:14px;" data-i18n="watchForLabel">WATCH FOR</div>
+        <div id="soWhatWatchList"></div>
+        <div class="interp-confidence-note" id="soWhatNote"></div>
+    </div>
+
+    <!-- RED LINES CARD -->
+    <div class="red-lines-card" id="redLinesCard" style="display:none;">
+        <div class="interp-card-header">
+            <span style="font-size:1rem;">🚨</span>
+            <div style="flex:1;">
+                <div class="interp-card-title" data-i18n="redLinesTitle">RED LINE PROXIMITY</div>
+                <div class="interp-card-subtitle" data-i18n="redLinesSubtitle">Iran's Red Lines &amp; Adversary Triggers — Current Status</div>
+            </div>
+            <div style="display:flex;gap:16px;">
+                <div style="text-align:right;">
+                    <div style="font-size:1.4rem;font-weight:900;color:#dc2626;" id="redLineBreachedCount">0</div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="breachedLabel">BREACHED</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:1.4rem;font-weight:900;color:#38bdf8;" id="redLineApproachingCount">0</div>
+                    <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="approachingLabel">APPROACHING</div>
+                </div>
+            </div>
+        </div>
+        <div id="redLineItems"></div>
+    </div>
+
+    <!-- HISTORICAL PRECEDENT CARD -->
+    <div class="historical-card" id="historicalCard" style="display:none;">
+        <div class="interp-card-header">
+            <span style="font-size:1rem;">📚</span>
+            <div>
+                <div class="interp-card-title" data-i18n="historicalTitle">HISTORICAL PATTERN MATCH</div>
+                <div class="interp-card-subtitle" data-i18n="historicalSubtitle">Signal Similarity to Documented Pre-Action Conditions</div>
+            </div>
+        </div>
+        <div id="historicalItems"></div>
+        <div style="font-size:0.62rem;color:var(--text-muted);font-family:'Courier New',monospace;margin-top:10px;font-style:italic;" data-i18n="historicalFooter">
+            Sources: RAND, IISS, CSIS, ISW, INSS post-event analysis. Pattern match is analytical, not predictive.
+        </div>
+    </div>
+
+    <!-- DIPLOMATIC TRACK CARD -->
+    <div class="diplomatic-track-card" id="diplomaticTrackCard" style="display:none;">
+        <div class="diplomatic-track-title">🕊️ <span data-i18n="diplomaticTrackTitle">Diplomatic Track Active</span></div>
+        <div class="diplomatic-track-header">
+            <div>
+                <div class="diplomatic-modifier-badge" id="diplomaticModifierValue">--</div>
+                <div class="diplomatic-modifier-sub" data-i18n="diplomaticPressureLabel">Pressure</div>
+            </div>
+            <div style="flex:1;">
+                <div class="diplomatic-detailed-label" id="diplomaticLabelDetailed">--</div>
+                <div class="diplomatic-track-explainer" id="diplomaticTrackExplainer" data-i18n="diplomaticDefaultExplainer">
+                    Active negotiations are reducing the rhetoric score. Threat vectors above remain ground truth.
+                </div>
+            </div>
+        </div>
+        <div class="diplomatic-track-note" data-i18n="diplomaticNote">
+            ⓘ Diplomacy and threats coexist — IRGC posture, nuclear program, and proxy activation remain tracked independently above.
+        </div>
+    </div>
+
+    <!-- PROXY ACTIVATION INDEX (Iran-specific) -->
+    <div class="proxy-activation-card" id="proxyActivationCard">
+        <div class="proxy-activation-title">🔗 <span data-i18n="proxyTitle">PROXY NETWORK ACTIVATION INDEX</span></div>
+        <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+            <div>
+                <div class="proxy-activation-level" id="proxyActivationLevel">--</div>
+                <div style="font-size:0.65rem;color:var(--proxy-color);letter-spacing:1px;margin-top:4px;" id="proxyActivationLabel">--</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);margin-top:2px;" data-i18n="proxySubtitle">Reads live cross-theater Redis data</div>
+            </div>
+            <div style="flex:1;">
+                <div id="proxySyncSignal" style="display:none;padding:8px 12px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:6px;font-size:0.65rem;color:var(--proxy-color);margin-bottom:8px;"></div>
+                <div class="proxy-grid" id="proxyGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OPERATION TRUE PROMISE CARD -->
+    <div class="otp-card" id="otpCard" style="display:none;">
+        <div class="otp-title">🚀 <span data-i18n="otpTitle">OPERATION TRUE PROMISE — ACTIVE SIGNALS</span></div>
+        <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+            <div>
+                <div class="otp-count" id="otpCount">0</div>
+                <div style="font-size:0.65rem;color:#ef4444;letter-spacing:1px;margin-top:4px;" data-i18n="otpSubtitle">Signals in current scan window</div>
+            </div>
+            <div style="flex:1;" id="otpList"></div>
+        </div>
+    </div>
+
+    <!-- VECTOR TABS -->
+    <div class="section-card">
+        <div class="section-title" data-i18n="vectorTitle">⚡ THREAT VECTORS</div>
+        <div class="vector-tabs" id="vectorTabs">
+            <div class="vector-tab active" data-vector="irgc" onclick="setVector('irgc')">
+                <div class="vector-tab-icon">⚔️</div>
+                <div class="vector-tab-label" data-i18n="vecIRGC">IRGC Direct</div>
+                <div class="vector-tab-level" id="vecLevelIRGC">--</div>
+            </div>
+            <div class="vector-tab" data-vector="proxy" onclick="setVector('proxy')">
+                <div class="vector-tab-icon">🔗</div>
+                <div class="vector-tab-label" data-i18n="vecProxy">Proxy Activation</div>
+                <div class="vector-tab-level" id="vecLevelProxy">--</div>
+            </div>
+            <div class="vector-tab" data-vector="nuclear" onclick="setVector('nuclear')">
+                <div class="vector-tab-icon">☢️</div>
+                <div class="vector-tab-label" data-i18n="vecNuclear">Nuclear Escalation</div>
+                <div class="vector-tab-level" id="vecLevelNuclear">--</div>
+            </div>
+            <div class="vector-tab" data-vector="domestic" onclick="setVector('domestic')">
+                <div class="vector-tab-icon">✊</div>
+                <div class="vector-tab-label" data-i18n="vecDomestic">Domestic Pressure</div>
+                <div class="vector-tab-level" id="vecLevelDomestic">--</div>
+            </div>
+            <div class="vector-tab" data-vector="regional" onclick="setVector('regional')">
+                <div class="vector-tab-icon">🛢️</div>
+                <div class="vector-tab-label" data-i18n="vecRegional">Regional Retaliation</div>
+                <div class="vector-tab-level" id="vecLevelRegional">--</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESCALATION LADDER -->
+    <div class="section-card">
+        <div class="section-title" data-i18n="ladderTitle">🪜 ESCALATION LADDER</div>
+        <div class="ladder-row" id="ladderRow"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;flex-wrap:wrap;gap:10px;">
+            <div style="font-size:11px;color:var(--text-muted);" id="articlesClassified" data-i18n="articlesClassified">📰 Corresponding articles in Top Articles by Actor below</div>
+            <button onclick="triggerScan()" id="scanBtn" class="scan-btn">
+                🔄 <span data-i18n="refreshScan">Refresh Scan</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- RHETORIC HISTORY CHART -->
+    <div class="history-chart-card">
+        <div class="history-chart-header">
+            <span class="history-chart-title">📈 <span data-i18n="trendTitle">RHETORIC TREND</span></span>
+            <div class="history-toggle-group">
+                <button class="history-toggle-btn active" id="btn7d" onclick="setHistoryView('7d')" data-i18n="btn7day">7 DAY</button>
+                <button class="history-toggle-btn" id="btn30d" onclick="setHistoryView('30d')" data-i18n="btn30day">30 DAY</button>
+                <button class="history-toggle-btn compare" id="btnCompare" onclick="setHistoryView('compare')" data-i18n="btnCompare">COMPARE</button>
+            </div>
+        </div>
+        <div class="history-chart-wrap">
+            <canvas id="historyChart"></canvas>
+            <div class="history-empty" id="historyEmpty" style="display:none;">📡 <span data-i18n="chartEmpty">Collecting data — first snapshot saves on next scan cycle</span></div>
+        </div>
+        <div class="history-legend" id="historyLegend">
+            <div class="history-legend-item"><div class="history-legend-dot" style="background:#38bdf8;"></div> Iran</div>
+        </div>
+    </div>
+
+    <!-- COORDINATION / CROSS-THEATER SIGNALS -->
+    <div class="section-card" id="coordCard" style="display:none;">
+        <div class="section-title" data-i18n="coordTitle">🌐 PROXY COORDINATION SIGNALS</div>
+        <div id="coordList"></div>
+    </div>
+
+    <!-- ACTOR STATUS GRID -->
+    <div class="section-card">
+        <div class="section-title" data-i18n="actorTitle">🎯 ACTOR STATUS</div>
+        <div class="actors-grid" id="actorsGrid"></div>
+    </div>
+
+    <!-- TOP ARTICLES -->
+    <div class="section-card" id="articlesSection">
+        <div class="section-title" data-i18n="articlesTitle">📰 TOP ARTICLES BY ACTOR</div>
+        <div id="articlesList"></div>
+    </div>
+
+    </div><!-- end main content -->
+    </div><!-- end page-with-sidebar -->
+
+    <!-- ════════════════════════════════════════════════════════════
+         FOOTER (v2.0.0 — class-based, Japan canonical pattern)
+         ════════════════════════════════════════════════════════════ -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <h4 data-i18n="footerMethodology">Methodology</h4>
+                <p data-i18n="footerMethodologyBody">Multi-language OSINT (English, Farsi, Arabic, Hebrew) classified into a six-vector command-node matrix: IRGC direct, proxy activation, nuclear posture, regional pressure, domestic stress, soft power. Plus regime-level signals (Gold-for-Oil · Dedollarization · Yuan Settlement · BRICS Alignment · OPEC Realignment · Arms Exports). Operation True Promise (OTP) wave detection tracks direct retaliation signaling. Cross-theater fingerprints feed Israel, Lebanon, Iraq, Syria, Yemen, and Oman trackers. Refresh every 12 hours.</p>
+            </div>
+            <div>
+                <h4 data-i18n="footerSources">Data Sources</h4>
+                <p data-i18n="footerSourcesBody">PressTV, Tasnim, Mehr News, Fars News, IRGC-affiliated outlets, IranWire, Times of Israel, Jerusalem Post, Al-Monitor, MEMRI, Reuters, GDELT, NewsAPI, Brave Search (tertiary fallback), and curated Telegram channels covering the IRGC, Khamenei's office, the Iranian government, and Iran-aligned proxy networks (Hezbollah, Houthis, Iraqi PMF).</p>
+            </div>
+            <div>
+                <h4 data-i18n="footerContact">Contact</h4>
+                <p>Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a><br>
+                <a href="mailto:contact@asifahanalytics.com" style="color:var(--accent);">contact@asifahanalytics.com</a></p>
+            </div>
+        </div>
+        <div class="footer-disclaimer">
+            <strong style="color:#f59e0b;">⚠️ <span data-i18n="footerDisclaimerLabel">DISCLAIMER:</span></strong> <span data-i18n="footerDisclaimerBody">This dashboard provides analytical estimates based on open-source intelligence aggregation. Asifah Analytics is a personal-time open-source OSINT project. Analysis reflects open-source signal aggregation only — does NOT reflect classified intelligence and is NOT an official U.S. Government product. Asifah methodology is proprietary and should not be cited as official assessment. Not for operational use.</span>
+        </div>
+        <div class="footer-support">
+            <span data-i18n="footerSupportText">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" data-i18n="footerSupportLink">buy me a coffee</a>
+        </div>
+        <div class="footer-copyright">
+            © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v2.0.0<br>
+            <span data-i18n="footerCopyrightLine2">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span><br>
+            <a href="index.html" style="color:var(--accent);" data-i18n="footerBackToMain">← Back to Main Dashboard</a>
+        </div>
+    </footer>
+
+</div><!-- /container -->
+
+<script>
+    const API_BASE = 'https://asifah-backend.onrender.com';
+
+    // ══════════════════════════════════════════════════════════════
+    // ESCALATION LEVELS
+    // ══════════════════════════════════════════════════════════════
+    const ESCALATION_LEVELS = {
+        0: { label:'Baseline',       color:'#6b7280', description:'No significant signals' },
+        1: { label:'Rhetoric',       color:'#3b82f6', description:'Standard state/IRGC statements' },
+        2: { label:'Warning',        color:'#f59e0b', description:'Escalatory language, proxy warnings' },
+        3: { label:'Directive',      color:'#f97316', description:'Command signals, proxy activation language' },
+        4: { label:'Operational',    color:'#ef4444', description:'Strike posture, imminent action signals' },
+        5: { label:'Active Command', color:'#dc2626', description:'Confirmed operations, numbered waves' },
+    };
+
+    // ── REGIME DIMENSIONS (Iran-specific, 6 dimensions, mirrors backend) ──
+    const REGIME_DIMENSIONS_IRAN = [
+        { key: 'gold_for_oil',     icon: '🪙', i18nName: 'regimeDimGoldOil',     i18nDesc: 'regimeDimGoldOilDesc' },
+        { key: 'dedollarization',  icon: '💱', i18nName: 'regimeDimDedollar',    i18nDesc: 'regimeDimDedollarDesc' },
+        { key: 'yuan_settlement',  icon: '🇨🇳', i18nName: 'regimeDimYuan',        i18nDesc: 'regimeDimYuanDesc' },
+        { key: 'brics_alignment',  icon: '🌐', i18nName: 'regimeDimBrics',       i18nDesc: 'regimeDimBricsDesc' },
+        { key: 'opec_realignment', icon: '⛽', i18nName: 'regimeDimOpec',        i18nDesc: 'regimeDimOpecDesc' },
+        { key: 'arms_export',      icon: '🛩️', i18nName: 'regimeDimArms',        i18nDesc: 'regimeDimArmsDesc' },
+    ];
+
+    // ══════════════════════════════════════════════════════════════
+    // TRANSLATIONS (EN / AR / HE / FA) — full static text v2.0.0
+    // ══════════════════════════════════════════════════════════════
+    const T = {
+        en: {
+            backLink:'← Back to Iran', pageFlag:'IRAN', pageTitle:'IRAN COMMAND NODE TRACKER',
+            pageSubtitle:'IRGC · Khamenei · Proxy Network · Nuclear · Hormuz · Domestic Signals',
+            commandNodeLabel:'COMMAND NODE',
+            lastUpdatedLabel:'Last updated',
+            loading:'Loading...', scoreLabel:'RHETORIC SCORE / 100',
+            escalationLabel:'THEATRE ESCALATION LEVEL',
+            // Regime card
+            regimeEyebrow:'REGIME-LEVEL SIGNALS',
+            regimeTitle:'Iran as Densest Sanctions-Evasion Node',
+            regimeActive:'Active',
+            regimeMaxLevel:'Max Level',
+            regimeFraming:'Iran is the densest sanctions-evasion node in the regime-fragmentation cluster. Where Russia is the engine that supplies fuel and arms, and China is the architect constructing the parallel system, Iran is the operator stress-testing it — gold-for-oil settlements, yuan trade, BRICS membership, and OPEC realignment all running through Tehran simultaneously. Iran tests what the alternative system can do.',
+            regimeCaveat:'Asifah measures these signals based on available open-source material across multiple languages and source types. Their interpretation as evidence of structural change in the international system should be weighed appropriately — these are measurements, not assertions.',
+            regimeDimGoldOil:'Gold-for-Oil',
+            regimeDimGoldOilDesc:'Iran-Russia-Turkey gold settlement for oil/gas; physical bullion replacing dollar invoicing.',
+            regimeDimDedollar:'Dedollarization',
+            regimeDimDedollarDesc:'Anti-USD rhetoric, ruble/yuan trade architecture, calls for non-dollar regional settlement.',
+            regimeDimYuan:'Yuan Settlement',
+            regimeDimYuanDesc:'Iran oil paid in yuan via Shanghai exchange; CNY reserve accumulation; petro-yuan rhetoric.',
+            regimeDimBrics:'BRICS Alignment',
+            regimeDimBricsDesc:'BRICS+ membership and expansion; New Development Bank engagement; alternative settlement framing.',
+            regimeDimOpec:'OPEC Realignment',
+            regimeDimOpecDesc:'OPEC+ coordination shifts post-UAE departure; Saudi-Iran energy diplomacy; production decisions.',
+            regimeDimArms:'Arms Exports',
+            regimeDimArmsDesc:'Drone/missile transfers to Russia and proxies; named end-users; defense industrial cooperation.',
+            // So What card
+            strategicAssessmentLabel:'COMMAND NODE ASSESSMENT',
+            situationLabel:'SITUATION',
+            assessmentLabel:'ASSESSMENT',
+            watchForLabel:'WATCH FOR',
+            // Red Lines
+            redLinesTitle:'RED LINE PROXIMITY',
+            redLinesSubtitle:'Iran\'s Red Lines & Adversary Triggers — Current Status',
+            breachedLabel:'BREACHED',
+            approachingLabel:'APPROACHING',
+            // Historical
+            historicalTitle:'HISTORICAL PATTERN MATCH',
+            historicalSubtitle:'Signal Similarity to Documented Pre-Action Conditions',
+            historicalFooter:'Sources: RAND, IISS, CSIS, ISW, INSS post-event analysis. Pattern match is analytical, not predictive.',
+            // Diplomatic Track
+            diplomaticTrackTitle:'Diplomatic Track Active',
+            diplomaticPressureLabel:'Pressure',
+            diplomaticDefaultExplainer:'Active negotiations are reducing the rhetoric score. Threat vectors above remain ground truth.',
+            diplomaticNote:'ⓘ Diplomacy and threats coexist — IRGC posture, nuclear program, and proxy activation remain tracked independently above.',
+            // Iran-specific cards
+            proxyTitle:'PROXY NETWORK ACTIVATION INDEX',
+            proxySubtitle:'Reads live cross-theater Redis data',
+            otpTitle:'OPERATION TRUE PROMISE — ACTIVE SIGNALS',
+            otpSubtitle:'Signals in current scan window',
+            // Vectors
+            vectorTitle:'⚡ THREAT VECTORS',
+            vecIRGC:'IRGC Direct', vecProxy:'Proxy Activation',
+            vecNuclear:'Nuclear Escalation', vecDomestic:'Domestic Pressure', vecRegional:'Regional Retaliation',
+            irgcVec:'IRGC', proxyVec:'Proxy', nuclearVec:'Nuclear', domesticVec:'Domestic', regionalVec:'Regional',
+            // Other
+            ladderTitle:'🪜 ESCALATION LADDER',
+            articlesClassified:'📰 Corresponding articles in Top Articles by Actor below',
+            refreshScan:'Refresh Scan',
+            trendTitle:'RHETORIC TREND',
+            btn7day:'7 DAY', btn30day:'30 DAY', btnCompare:'COMPARE',
+            chartEmpty:'Collecting data — first snapshot saves on next scan cycle',
+            coordTitle:'🌐 PROXY COORDINATION SIGNALS',
+            actorTitle:'🎯 ACTOR STATUS',
+            articlesTitle:'📰 TOP ARTICLES BY ACTOR',
+            themeLabel:'THEME',
+            silence:'⚠️ UNUSUAL SILENCE — below baseline activity',
+            articles:'articles', maxLevel:'Max Level',
+            proxyTag:'🔗 Proxy Signal',
+            // Footer
+            footerMethodology:'Methodology',
+            footerMethodologyBody:'Multi-language OSINT (English, Farsi, Arabic, Hebrew) classified into a six-vector command-node matrix: IRGC direct, proxy activation, nuclear posture, regional pressure, domestic stress, soft power. Plus regime-level signals (Gold-for-Oil · Dedollarization · Yuan Settlement · BRICS Alignment · OPEC Realignment · Arms Exports). Operation True Promise (OTP) wave detection tracks direct retaliation signaling. Cross-theater fingerprints feed Israel, Lebanon, Iraq, Syria, Yemen, and Oman trackers. Refresh every 12 hours.',
+            footerSources:'Data Sources',
+            footerSourcesBody:'PressTV, Tasnim, Mehr News, Fars News, IRGC-affiliated outlets, IranWire, Times of Israel, Jerusalem Post, Al-Monitor, MEMRI, Reuters, GDELT, NewsAPI, Brave Search (tertiary fallback), and curated Telegram channels covering the IRGC, Khamenei\'s office, the Iranian government, and Iran-aligned proxy networks (Hezbollah, Houthis, Iraqi PMF).',
+            footerContact:'Contact',
+            footerDisclaimerLabel:'DISCLAIMER:',
+            footerDisclaimerBody:'This dashboard provides analytical estimates based on open-source intelligence aggregation. Asifah Analytics is a personal-time open-source OSINT project. Analysis reflects open-source signal aggregation only — does NOT reflect classified intelligence and is NOT an official U.S. Government product. Asifah methodology is proprietary and should not be cited as official assessment. Not for operational use.',
+            footerSupportText:'If you find Asifah Analytics useful and want to support ongoing development, you can',
+            footerSupportLink:'buy me a coffee',
+            footerCopyrightLine2:'Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.',
+            footerBackToMain:'← Back to Main Dashboard',
+        },
+        ar: {
+            backLink:'→ العودة لإيران', pageFlag:'إيران', pageTitle:'متتبع العقدة القيادية لإيران',
+            pageSubtitle:'الحرس الثوري · خامنئي · شبكة الوكلاء · النووي · هرمز · الإشارات الداخلية',
+            commandNodeLabel:'العقدة القيادية',
+            lastUpdatedLabel:'آخر تحديث',
+            loading:'جارٍ التحميل...', scoreLabel:'نقاط الخطاب / 100',
+            escalationLabel:'مستوى التصعيد المسرحي',
+            regimeEyebrow:'إشارات على مستوى النظام الدولي',
+            regimeTitle:'إيران كأكثف عقدة للتهرب من العقوبات',
+            regimeActive:'نشط',
+            regimeMaxLevel:'أعلى مستوى',
+            regimeFraming:'إيران هي أكثف عقدة للتهرب من العقوبات في عنقود تفتت النظام الدولي. حيث روسيا هي المحرك الذي يوفر الوقود والأسلحة، والصين هي المهندس الذي يبني النظام البديل، إيران هي المُشغِّل الذي يختبر قدراته — تسويات الذهب مقابل النفط، تجارة اليوان، عضوية بريكس، وإعادة تنظيم أوبك تجري عبر طهران في وقت واحد. إيران تختبر ما يمكن للنظام البديل أن يفعله.',
+            regimeCaveat:'تقيس أصيفة هذه الإشارات استنادًا إلى المواد المتاحة من المصادر المفتوحة بلغات ومصادر متعددة. ينبغي تقييم تفسيرها كدليل على تغيير هيكلي في النظام الدولي بحذر مناسب — هذه قياسات وليست تأكيدات.',
+            regimeDimGoldOil:'الذهب مقابل النفط',
+            regimeDimGoldOilDesc:'تسوية إيران-روسيا-تركيا بالذهب مقابل النفط/الغاز؛ السبائك المادية تستبدل الفواتير بالدولار.',
+            regimeDimDedollar:'إنهاء هيمنة الدولار',
+            regimeDimDedollarDesc:'خطاب مضاد للدولار، هيكلية تجارية بالروبل/اليوان، دعوات للتسوية الإقليمية بدون الدولار.',
+            regimeDimYuan:'التسوية باليوان',
+            regimeDimYuanDesc:'النفط الإيراني يُدفع باليوان عبر بورصة شنغهاي؛ تراكم احتياطيات اليوان؛ خطاب البتروليوان.',
+            regimeDimBrics:'انحياز بريكس',
+            regimeDimBricsDesc:'عضوية بريكس+ والتوسع؛ التعامل مع بنك التنمية الجديد؛ تأطير التسوية البديلة.',
+            regimeDimOpec:'إعادة تنظيم أوبك',
+            regimeDimOpecDesc:'تحولات تنسيق أوبك+ بعد خروج الإمارات؛ دبلوماسية الطاقة السعودية-الإيرانية؛ قرارات الإنتاج.',
+            regimeDimArms:'تصدير الأسلحة',
+            regimeDimArmsDesc:'نقل الطائرات بدون طيار/الصواريخ إلى روسيا والوكلاء؛ مستخدمون نهائيون مذكورون بالاسم؛ التعاون الصناعي الدفاعي.',
+            strategicAssessmentLabel:'تقييم العقدة القيادية',
+            situationLabel:'الوضع',
+            assessmentLabel:'التقييم',
+            watchForLabel:'مراقبة',
+            redLinesTitle:'قرب الخطوط الحمراء',
+            redLinesSubtitle:'الخطوط الحمراء الإيرانية ومحفزات الخصوم — الوضع الحالي',
+            breachedLabel:'مُنتَهَكة',
+            approachingLabel:'مُقترِبة',
+            historicalTitle:'مطابقة النمط التاريخي',
+            historicalSubtitle:'تشابه الإشارات مع ظروف ما قبل الإجراء الموثقة',
+            historicalFooter:'المصادر: RAND, IISS, CSIS, ISW, INSS تحليل ما بعد الأحداث. مطابقة الأنماط تحليلية، وليست تنبؤية.',
+            diplomaticTrackTitle:'المسار الدبلوماسي نشط',
+            diplomaticPressureLabel:'الضغط',
+            diplomaticDefaultExplainer:'المفاوضات النشطة تخفض درجة الخطاب. تظل محاور التهديد أعلاه هي الواقع الميداني.',
+            diplomaticNote:'ⓘ الدبلوماسية والتهديدات تتعايشان — موقف الحرس الثوري والبرنامج النووي وتفعيل الوكلاء تظل مُتَتَبَّعة بشكل مستقل أعلاه.',
+            proxyTitle:'مؤشر تفعيل شبكة الوكلاء',
+            proxySubtitle:'يقرأ بيانات Redis عبر المسارح مباشرة',
+            otpTitle:'عملية الوعد الصادق — الإشارات النشطة',
+            otpSubtitle:'الإشارات في نافذة المسح الحالية',
+            vectorTitle:'⚡ محاور التهديد',
+            vecIRGC:'الحرس الثوري المباشر', vecProxy:'تفعيل الوكلاء',
+            vecNuclear:'التصعيد النووي', vecDomestic:'الضغط الداخلي', vecRegional:'الانتقام الإقليمي',
+            irgcVec:'الحرس', proxyVec:'وكيل', nuclearVec:'نووي', domesticVec:'داخلي', regionalVec:'إقليمي',
+            ladderTitle:'🪜 سلم التصعيد',
+            articlesClassified:'📰 المقالات المقابلة في قسم المقالات أدناه',
+            refreshScan:'تحديث المسح',
+            trendTitle:'اتجاه الخطاب',
+            btn7day:'٧ أيام', btn30day:'٣٠ يوم', btnCompare:'مقارنة',
+            chartEmpty:'جمع البيانات — أول لقطة تُحفظ في دورة المسح القادمة',
+            coordTitle:'🌐 إشارات تنسيق الوكلاء',
+            actorTitle:'🎯 حالة الأطراف',
+            articlesTitle:'📰 أبرز المقالات حسب الطرف',
+            themeLabel:'المظهر',
+            silence:'⚠️ صمت غير معتاد — نشاط أقل من المعتاد',
+            articles:'مقالات', maxLevel:'أعلى مستوى',
+            proxyTag:'🔗 إشارة وكيل',
+            footerMethodology:'المنهجية',
+            footerMethodologyBody:'OSINT متعدد اللغات (الإنجليزية، الفارسية، العربية، العبرية) مُصنَّف في مصفوفة عقدة قيادية ذات ستة محاور: الحرس الثوري المباشر، تفعيل الوكلاء، الموقف النووي، الضغط الإقليمي، الإجهاد الداخلي، القوة الناعمة. بالإضافة إلى إشارات على مستوى النظام (الذهب مقابل النفط · إنهاء هيمنة الدولار · تسوية اليوان · انحياز بريكس · إعادة تنظيم أوبك · تصدير الأسلحة). كشف موجة عملية الوعد الصادق (OTP) يتتبع إشارات الانتقام المباشر. البصمات عبر المسارح تغذي تتبعات إسرائيل ولبنان والعراق وسوريا واليمن وعمان. تحديث كل ١٢ ساعة.',
+            footerSources:'مصادر البيانات',
+            footerSourcesBody:'PressTV، تسنيم، مهر نيوز، فارس نيوز، منافذ مرتبطة بالحرس الثوري، إيران واير، تايمز أوف إسرائيل، جيروزاليم بوست، المونيتور، MEMRI، رويترز، GDELT، NewsAPI، Brave Search (احتياطي ثالث)، وقنوات تيليجرام منتقاة تغطي الحرس الثوري ومكتب خامنئي والحكومة الإيرانية وشبكات الوكلاء الإيرانية (حزب الله، الحوثيون، الحشد الشعبي العراقي).',
+            footerContact:'اتصل بنا',
+            footerDisclaimerLabel:'إخلاء مسؤولية:',
+            footerDisclaimerBody:'توفر هذه اللوحة تقديرات تحليلية تستند إلى تجميع المعلومات مفتوحة المصدر. أصيفة أناليتيكس مشروع OSINT مفتوح المصدر يُنفَّذ في الوقت الشخصي. التحليل يعكس تجميع الإشارات مفتوحة المصدر فقط — لا يعكس استخبارات سرية وليس منتجًا رسميًا للحكومة الأمريكية. منهجية أصيفة ملكية ولا ينبغي الاستشهاد بها كتقييم رسمي. ليست للاستخدام التشغيلي.',
+            footerSupportText:'إذا وجدت Asifah Analytics مفيدًا وتريد دعم التطوير المستمر، يمكنك',
+            footerSupportLink:'شراء قهوة لي',
+            footerCopyrightLine2:'مملوك وسري. الاستخدام أو الإنتاج أو التوزيع غير المصرح به محظور.',
+            footerBackToMain:'← العودة إلى اللوحة الرئيسية',
+        },
+        he: {
+            backLink:'← חזרה לאיראן', pageFlag:'איראן', pageTitle:'עוקב צומת פיקוד איראן',
+            pageSubtitle:'משמרות המהפכה · חמינאי · רשת פרוקסי · גרעין · הורמוז · אותות פנימיים',
+            commandNodeLabel:'צומת פיקוד',
+            lastUpdatedLabel:'עודכן לאחרונה',
+            loading:'טוען...', scoreLabel:'ציון רטוריקה / 100',
+            escalationLabel:'רמת הסלמה מחזאית',
+            regimeEyebrow:'אותות ברמת הסדר העולמי',
+            regimeTitle:'איראן כצומת הצפופה ביותר להעלמת סנקציות',
+            regimeActive:'פעיל',
+            regimeMaxLevel:'רמה מקסימלית',
+            regimeFraming:'איראן היא הצומת הצפופה ביותר להעלמת סנקציות באשכול התפצלות הסדר הגלובלי. בעוד רוסיה היא המנוע המספק דלק ונשק, וסין היא האדריכלית הבונה את המערכת המקבילה, איראן היא המפעילה הבוחנת את יכולותיה — סליקת זהב תמורת נפט, סחר ביואן, חברות BRICS, וארגון מחדש של OPEC רצים בו זמנית דרך טהרן. איראן בוחנת מה המערכת החלופית מסוגלת לעשות.',
+            regimeCaveat:'אסיפה מודדת את האותות הללו על בסיס חומר זמין ממקורות פתוחים בשפות וסוגי מקורות מרובים. פרשנותם כעדות לשינוי מבני בסדר הבינלאומי צריכה להישקל בהתאם — אלה מדידות, לא הצהרות.',
+            regimeDimGoldOil:'זהב תמורת נפט',
+            regimeDimGoldOilDesc:'סליקת זהב איראן-רוסיה-טורקיה תמורת נפט/גז; מטילים פיזיים מחליפים חיוב בדולר.',
+            regimeDimDedollar:'דה-דולריזציה',
+            regimeDimDedollarDesc:'רטוריקה אנטי-דולרית, ארכיטקטורת סחר ברובל/יואן, קריאות לסליקה אזורית ללא דולר.',
+            regimeDimYuan:'סליקה ביואן',
+            regimeDimYuanDesc:'נפט איראני משולם ביואן דרך בורסת שנגחאי; צבירת רזרבות ב-CNY; רטוריקת פטרו-יואן.',
+            regimeDimBrics:'התיישרות BRICS',
+            regimeDimBricsDesc:'חברות והרחבת BRICS+; מעורבות בבנק הפיתוח החדש; מסגור סליקה חלופית.',
+            regimeDimOpec:'ארגון מחדש של OPEC',
+            regimeDimOpecDesc:'שינויי תיאום OPEC+ לאחר עזיבת איחוד האמירויות; דיפלומטיית אנרגיה סעודית-איראנית; החלטות ייצור.',
+            regimeDimArms:'יצוא נשק',
+            regimeDimArmsDesc:'העברות מל"טים/טילים לרוסיה ופרוקסי; משתמשי קצה נקובים בשם; שיתוף פעולה תעשייתי-ביטחוני.',
+            strategicAssessmentLabel:'הערכת צומת פיקוד',
+            situationLabel:'מצב',
+            assessmentLabel:'הערכה',
+            watchForLabel:'לעקוב',
+            redLinesTitle:'קרבה לקווים אדומים',
+            redLinesSubtitle:'קווים אדומים של איראן ומפעילי יריבים — מצב נוכחי',
+            breachedLabel:'הופר',
+            approachingLabel:'מתקרב',
+            historicalTitle:'התאמת תבנית היסטורית',
+            historicalSubtitle:'דמיון אותות לתנאי טרום-פעולה מתועדים',
+            historicalFooter:'מקורות: RAND, IISS, CSIS, ISW, INSS ניתוח לאחר אירוע. התאמת תבנית היא אנליטית, לא תחזיתית.',
+            diplomaticTrackTitle:'מסלול דיפלומטי פעיל',
+            diplomaticPressureLabel:'לחץ',
+            diplomaticDefaultExplainer:'משא ומתן פעיל מפחית את ציון הרטוריקה. וקטורי האיום למעלה נשארים אמת קרקעית.',
+            diplomaticNote:'ⓘ דיפלומטיה ואיומים מתקיימים יחד — תנוחת משמרות המהפכה, התוכנית הגרעינית, ופעולות פרוקסי נשארים מנוטרים בנפרד למעלה.',
+            proxyTitle:'מדד הפעלת רשת הפרוקסי',
+            proxySubtitle:'קורא נתוני Redis חוצי-תיאטרון',
+            otpTitle:'מבצע הבטחת אמת — אותות פעילים',
+            otpSubtitle:'אותות בחלון הסריקה הנוכחי',
+            vectorTitle:'⚡ ממדי איום',
+            vecIRGC:'משמרות מהפכה ישיר', vecProxy:'הפעלת פרוקסי',
+            vecNuclear:'הסלמה גרעינית', vecDomestic:'לחץ פנימי', vecRegional:'תגמול אזורי',
+            irgcVec:'משמרות', proxyVec:'פרוקסי', nuclearVec:'גרעין', domesticVec:'פנימי', regionalVec:'אזורי',
+            ladderTitle:'🪜 סולם ההסלמה',
+            articlesClassified:'📰 מאמרים תואמים בסעיף מאמרים מובילים למטה',
+            refreshScan:'רענן סריקה',
+            trendTitle:'מגמת רטוריקה',
+            btn7day:'7 יום', btn30day:'30 יום', btnCompare:'השוואה',
+            chartEmpty:'אוסף נתונים — תמונת מצב ראשונה נשמרת במחזור הסריקה הבא',
+            coordTitle:'🌐 אותות תיאום פרוקסי',
+            actorTitle:'🎯 סטטוס שחקנים',
+            articlesTitle:'📰 מאמרים מובילים לפי שחקן',
+            themeLabel:'ערכת נושא',
+            silence:'⚠️ שתיקה חריגה — פעילות נמוכה מהבסיס',
+            articles:'מאמרים', maxLevel:'רמה מקסימלית',
+            proxyTag:'🔗 אות פרוקסי',
+            footerMethodology:'מתודולוגיה',
+            footerMethodologyBody:'OSINT רב-לשוני (אנגלית, פרסית, ערבית, עברית) מסווג למטריצת צומת פיקוד בעלת שישה ממדים: משמרות המהפכה ישיר, הפעלת פרוקסי, תנוחה גרעינית, לחץ אזורי, מתח פנימי, כוח רך. בנוסף לאותות ברמת הסדר העולמי (זהב תמורת נפט · דה-דולריזציה · סליקה ביואן · התיישרות BRICS · ארגון מחדש של OPEC · יצוא נשק). זיהוי גל מבצע הבטחת אמת (OTP) עוקב אחר אותות תגמול ישיר. טביעות אצבע חוצות-תיאטרון מזינות עוקבי ישראל, לבנון, עיראק, סוריה, תימן ועומאן. רענון כל 12 שעות.',
+            footerSources:'מקורות נתונים',
+            footerSourcesBody:'PressTV, Tasnim, Mehr News, Fars News, אמצעי תקשורת המזוהים עם משמרות המהפכה, IranWire, טיימס אוף ישראל, ג\'רוזלם פוסט, Al-Monitor, MEMRI, רויטרס, GDELT, NewsAPI, Brave Search (גיבוי שלישוני), ערוצי טלגרם נבחרים המכסים את משמרות המהפכה, לשכת חמינאי, ממשלת איראן, ורשתות פרוקסי המזוהות עם איראן (חיזבאללה, חות\'ים, מיליציות PMF העיראקיות).',
+            footerContact:'יצירת קשר',
+            footerDisclaimerLabel:'הודעת אחריות:',
+            footerDisclaimerBody:'לוח מחוונים זה מספק הערכות אנליטיות המבוססות על איסוף מודיעין ממקורות פתוחים. Asifah Analytics הוא פרויקט OSINT אישי בקוד פתוח. הניתוח משקף איסוף אותות ממקורות פתוחים בלבד — אינו משקף מודיעין מסווג ואינו מוצר רשמי של ממשלת ארה"ב. מתודולוגיית אסיפה היא קניינית ולא צריכה להיות מצוטטת כהערכה רשמית. לא לשימוש מבצעי.',
+            footerSupportText:'אם אתה מוצא את Asifah Analytics שימושי ורוצה לתמוך בפיתוח המתמשך, אתה יכול',
+            footerSupportLink:'לקנות לי קפה',
+            footerCopyrightLine2:'קנייני וסודי. שימוש, רפרודוקציה או הפצה בלתי מורשים אסורים.',
+            footerBackToMain:'← חזרה ללוח המחוונים הראשי',
+        },
+        fa: {
+            backLink:'→ بازگشت به ایران', pageFlag:'ایران', pageTitle:'ردیاب گره فرماندهی ایران',
+            pageSubtitle:'سپاه پاسداران · خامنه‌ای · شبکه نیابتی · هسته‌ای · هرمز · سیگنال‌های داخلی',
+            commandNodeLabel:'گره فرماندهی',
+            lastUpdatedLabel:'آخرین بروزرسانی',
+            loading:'در حال بارگذاری...', scoreLabel:'امتیاز خطاب / ۱۰۰',
+            escalationLabel:'سطح تشدید تئاتر',
+            regimeEyebrow:'سیگنال‌های در سطح نظام بین‌الملل',
+            regimeTitle:'ایران به عنوان متراکم‌ترین گره دور زدن تحریم‌ها',
+            regimeActive:'فعال',
+            regimeMaxLevel:'حداکثر سطح',
+            regimeFraming:'ایران متراکم‌ترین گره دور زدن تحریم‌ها در خوشه تفتت نظام بین‌الملل است. در جایی که روسیه موتور تأمین سوخت و سلاح است و چین معمار سازنده نظام موازی، ایران اپراتوری است که توانایی‌های آن را آزمایش می‌کند — تسویه طلا در برابر نفت، تجارت یوآن، عضویت بریکس، و بازآرایی اوپک همگی به طور همزمان از طریق تهران در جریان هستند. ایران آنچه را که نظام جایگزین می‌تواند انجام دهد آزمایش می‌کند.',
+            regimeCaveat:'آصفه این سیگنال‌ها را بر اساس مواد در دسترس از منابع باز در زبان‌ها و انواع منابع مختلف اندازه‌گیری می‌کند. تفسیر آن‌ها به عنوان شواهد تغییر ساختاری در نظام بین‌الملل باید با احتیاط مناسب سنجیده شود — این‌ها اندازه‌گیری هستند، نه ادعاها.',
+            regimeDimGoldOil:'طلا در برابر نفت',
+            regimeDimGoldOilDesc:'تسویه طلای ایران-روسیه-ترکیه برای نفت/گاز؛ شمش‌های فیزیکی جایگزین صورتحساب دلاری.',
+            regimeDimDedollar:'دلارزدایی',
+            regimeDimDedollarDesc:'لفاظی ضد دلار، ساختار تجاری روبل/یوآن، فراخوان برای تسویه منطقه‌ای بدون دلار.',
+            regimeDimYuan:'تسویه به یوآن',
+            regimeDimYuanDesc:'نفت ایران به یوآن از طریق بورس شانگهای پرداخت می‌شود؛ انباشت ذخایر CNY؛ لفاظی پترو-یوآن.',
+            regimeDimBrics:'هم‌سویی با بریکس',
+            regimeDimBricsDesc:'عضویت و گسترش بریکس+؛ تعامل با بانک توسعه جدید؛ چارچوب‌بندی تسویه جایگزین.',
+            regimeDimOpec:'بازآرایی اوپک',
+            regimeDimOpecDesc:'تغییرات هماهنگی اوپک+ پس از خروج امارات؛ دیپلماسی انرژی عربستان-ایران؛ تصمیمات تولید.',
+            regimeDimArms:'صادرات تسلیحات',
+            regimeDimArmsDesc:'انتقال پهپاد/موشک به روسیه و نیروهای نیابتی؛ کاربران نهایی نام‌برده؛ همکاری صنعتی-دفاعی.',
+            strategicAssessmentLabel:'ارزیابی گره فرماندهی',
+            situationLabel:'وضعیت',
+            assessmentLabel:'ارزیابی',
+            watchForLabel:'مراقبت',
+            redLinesTitle:'نزدیکی به خطوط قرمز',
+            redLinesSubtitle:'خطوط قرمز ایران و محرک‌های دشمن — وضعیت فعلی',
+            breachedLabel:'نقض شده',
+            approachingLabel:'در حال نزدیک شدن',
+            historicalTitle:'تطابق الگوی تاریخی',
+            historicalSubtitle:'شباهت سیگنال به شرایط پیش از اقدام مستند',
+            historicalFooter:'منابع: RAND، IISS، CSIS، ISW، INSS تحلیل پس از رویداد. تطابق الگو تحلیلی است، نه پیش‌بینی‌کننده.',
+            diplomaticTrackTitle:'مسیر دیپلماتیک فعال',
+            diplomaticPressureLabel:'فشار',
+            diplomaticDefaultExplainer:'مذاکرات فعال در حال کاهش امتیاز خطاب است. بردارهای تهدید بالا واقعیت زمینی باقی می‌مانند.',
+            diplomaticNote:'ⓘ دیپلماسی و تهدیدها همزیستی دارند — موضع سپاه، برنامه هسته‌ای، و فعال‌سازی نیابتی به طور مستقل بالا ردیابی می‌شوند.',
+            proxyTitle:'شاخص فعال‌سازی شبکه نیابتی',
+            proxySubtitle:'داده‌های Redis میان‌تئاتری را در لحظه می‌خواند',
+            otpTitle:'عملیات وعده صادق — سیگنال‌های فعال',
+            otpSubtitle:'سیگنال‌ها در پنجره اسکن جاری',
+            vectorTitle:'⚡ بردارهای تهدید',
+            vecIRGC:'سپاه مستقیم', vecProxy:'فعال‌سازی نیابتی',
+            vecNuclear:'تشدید هسته‌ای', vecDomestic:'فشار داخلی', vecRegional:'تلافی منطقه‌ای',
+            irgcVec:'سپاه', proxyVec:'نیابتی', nuclearVec:'هسته‌ای', domesticVec:'داخلی', regionalVec:'منطقه‌ای',
+            ladderTitle:'🪜 نردبان تشدید',
+            articlesClassified:'📰 مقالات مرتبط در بخش مقالات برتر',
+            refreshScan:'بازخوانی اسکن',
+            trendTitle:'روند خطاب',
+            btn7day:'۷ روز', btn30day:'۳۰ روز', btnCompare:'مقایسه',
+            chartEmpty:'در حال جمع‌آوری داده‌ها — اولین اسنپ‌شات در چرخه بعدی',
+            coordTitle:'🌐 سیگنال‌های هماهنگی نیابتی',
+            actorTitle:'🎯 وضعیت بازیگران',
+            articlesTitle:'📰 مقالات برتر بر اساس بازیگر',
+            themeLabel:'تم',
+            silence:'⚠️ سکوت غیرمعمول — فعالیت کمتر از حد پایه',
+            articles:'مقالات', maxLevel:'حداکثر سطح',
+            proxyTag:'🔗 سیگنال نیابتی',
+            footerMethodology:'روش‌شناسی',
+            footerMethodologyBody:'OSINT چندزبانه (انگلیسی، فارسی، عربی، عبری) به یک ماتریس گره فرماندهی شش بُعدی طبقه‌بندی شده است: سپاه مستقیم، فعال‌سازی نیابتی، موضع هسته‌ای، فشار منطقه‌ای، استرس داخلی، قدرت نرم. علاوه بر سیگنال‌های در سطح نظام (طلا در برابر نفت · دلارزدایی · تسویه یوآن · هم‌سویی بریکس · بازآرایی اوپک · صادرات تسلیحات). تشخیص موج عملیات وعده صادق (OTP) سیگنال‌های تلافی مستقیم را ردیابی می‌کند. اثر انگشت میان‌تئاتری ردیاب‌های اسرائیل، لبنان، عراق، سوریه، یمن و عمان را تغذیه می‌کند. به‌روزرسانی هر ۱۲ ساعت.',
+            footerSources:'منابع داده',
+            footerSourcesBody:'پرس‌تی‌وی، تسنیم، مهر نیوز، فارس نیوز، رسانه‌های وابسته به سپاه، ایران وایر، تایمز اسرائیل، جروزالم پست، المانیتور، MEMRI، رویترز، GDELT، NewsAPI، Brave Search (پشتیبان سوم)، و کانال‌های تلگرام منتخب پوشش‌دهنده سپاه، دفتر خامنه‌ای، دولت ایران، و شبکه‌های نیابتی هم‌راستا با ایران (حزب‌الله، حوثی‌ها، حشد الشعبی عراق).',
+            footerContact:'تماس',
+            footerDisclaimerLabel:'سلب مسئولیت:',
+            footerDisclaimerBody:'این داشبورد تخمین‌های تحلیلی مبتنی بر تجمیع اطلاعات منبع باز ارائه می‌دهد. آصفه آنالیتیکس یک پروژه OSINT منبع باز شخصی است. تحلیل صرفاً تجمیع سیگنال‌های منبع باز را منعکس می‌کند — هیچ اطلاعات طبقه‌بندی شده‌ای را منعکس نمی‌کند و یک محصول رسمی دولت آمریکا نیست. روش‌شناسی آصفه اختصاصی است و نباید به عنوان ارزیابی رسمی نقل شود. برای استفاده عملیاتی نیست.',
+            footerSupportText:'اگر Asifah Analytics را مفید می‌یابید و می‌خواهید از توسعه مداوم حمایت کنید، می‌توانید',
+            footerSupportLink:'یک قهوه برایم بخرید',
+            footerCopyrightLine2:'اختصاصی و محرمانه. استفاده، تکثیر یا توزیع غیرمجاز ممنوع است.',
+            footerBackToMain:'← بازگشت به داشبورد اصلی',
+        },
+    };
+
+    // ══════════════════════════════════════════════════════════════
+    // STATE
+    // ══════════════════════════════════════════════════════════════
+    let currentLang = 'en';
+    let currentVector = 'irgc';
+    let currentData = null;
+    let retryInterval = null;
+    let retryCount = 0;
+    let _historyChart = null;
+    let _historyView  = '7d';
+
+    const PROXY_ACTORS = ['hezbollah_iran','houthi_iran','pmf_iran'];
+    const COMMAND_ACTORS = ['khamenei','irgc'];
+    const ACTOR_ORDER = ['khamenei','irgc','iran_gov','hezbollah_iran','houthi_iran','pmf_iran','iran_people','china_iran_axis','russia_iran_axis','israel_iran','us_iran'];
+
+    // ══════════════════════════════════════════════════════════════
+    // HISTORY CHART
+    // ══════════════════════════════════════════════════════════════
+    const HISTORY_CONFIG = {
+        theatre: 'Iran', color: '#38bdf8',
+        historyUrl: API_BASE + '/api/rhetoric/iran/history',
+        compareTheatres: [
+            { label:'Iran',    url: API_BASE + '/api/rhetoric/iran/history',    color:'#38bdf8' },
+            { label:'Lebanon', url: 'https://lebanon-stability-backend.onrender.com/api/rhetoric/lebanon/history', color:'#6495ed' },
+            { label:'Iraq',    url: API_BASE + '/api/rhetoric/iraq/history',    color:'#22c55e' },
+            { label:'Yemen',   url: API_BASE + '/api/rhetoric/yemen/history',   color:'#f97316' },
+            { label:'Syria',   url: API_BASE + '/api/rhetoric/syria/history',   color:'#a78bfa' },
+        ]
+    };
+
+    const LEVEL_ZONES = [
+        { yMin:0,  yMax:20,  color:'rgba(107,114,128,0.08)' },
+        { yMin:20, yMax:40,  color:'rgba(59,130,246,0.08)'  },
+        { yMin:40, yMax:60,  color:'rgba(245,158,11,0.10)'  },
+        { yMin:60, yMax:80,  color:'rgba(249,115,22,0.12)'  },
+        { yMin:80, yMax:100, color:'rgba(220,38,38,0.14)'   },
+    ];
+
+    const zoneBandPlugin = {
+        id:'zoneBands',
+        beforeDraw(chart) {
+            const { ctx, chartArea:{ left, right }, scales:{ y } } = chart;
+            LEVEL_ZONES.forEach(zone => {
+                const yTop = y.getPixelForValue(zone.yMax);
+                const yBot = y.getPixelForValue(zone.yMin);
+                ctx.save(); ctx.fillStyle = zone.color;
+                ctx.fillRect(left, Math.min(yTop,yBot), right-left, Math.abs(yBot-yTop));
+                ctx.restore();
+            });
+        }
+    };
+
+    function _sliceEntries(entries, view) {
+        if (!entries || !entries.length) return [];
+        return view === '7d' ? entries.slice(-28) : entries;
+    }
+    function _fmtLabel(ts) {
+        try { return new Date(ts).toLocaleDateString('en-US', {month:'short',day:'numeric'}); }
+        catch { return ts; }
+    }
+
+    function renderHistoryChart(datasets, labels) {
+        const canvas = document.getElementById('historyChart');
+        const emptyEl = document.getElementById('historyEmpty');
+        if (!canvas) return;
+        if (!datasets || !datasets.length || !datasets[0].data.length) {
+            canvas.style.display='none'; if(emptyEl) emptyEl.style.display='block'; return;
+        }
+        canvas.style.display='block'; if(emptyEl) emptyEl.style.display='none';
+        if (_historyChart) { _historyChart.destroy(); _historyChart=null; }
+        const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+        const gridColor = isDark?'rgba(56,189,248,0.05)':'rgba(0,0,0,0.06)';
+        const tickColor = isDark?'#4a7090':'#4a6080';
+        const fontFam = "'Times New Roman', Times, serif";
+        _historyChart = new Chart(canvas.getContext('2d'), {
+            type:'line', plugins:[zoneBandPlugin], data:{labels,datasets},
+            options:{
+                responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                interaction:{mode:'index',intersect:false},
+                plugins:{
+                    legend:{display:datasets.length>1,labels:{color:tickColor,font:{family:fontFam,size:10},boxWidth:20,boxHeight:2,usePointStyle:true,pointStyle:'line'}},
+                    tooltip:{
+                        backgroundColor:isDark?'#0d1b2e':'#fff',
+                        borderColor:isDark?'rgba(56,189,248,0.3)':'rgba(0,0,0,0.1)',
+                        borderWidth:1, titleColor:isDark?'#e2f0fb':'#0a1628',
+                        bodyColor:isDark?'#93c5fd':'#1e3a5f',
+                        titleFont:{family:fontFam,size:11,weight:'bold'},
+                        bodyFont:{family:fontFam,size:10},
+                        callbacks:{label:ctx=>`Score: ${ctx.parsed.y}`}
+                    }
+                },
+                scales:{
+                    x:{grid:{color:gridColor},ticks:{color:tickColor,font:{family:fontFam,size:9},maxRotation:0,maxTicksLimit:10}},
+                    y:{min:0,max:100,grid:{color:gridColor},ticks:{color:tickColor,font:{family:fontFam,size:9},stepSize:20}}
+                }
+            }
+        });
+    }
+
+    async function loadHistoryData() {
+        try {
+            const resp = await fetch(HISTORY_CONFIG.historyUrl+'?limit=120');
+            if(!resp.ok) return;
+            const data = await resp.json();
+            const entries = _sliceEntries(data.entries||[], _historyView);
+            const legendEl = document.getElementById('historyLegend');
+            if(legendEl) legendEl.innerHTML=`<div class="history-legend-item"><div class="history-legend-dot" style="background:${HISTORY_CONFIG.color};"></div> Iran (Command Node)</div>`;
+            renderHistoryChart([{
+                label:'Iran', data:entries.map(e=>e.score??0),
+                borderColor:HISTORY_CONFIG.color, backgroundColor:'rgba(56,189,248,0.07)',
+                borderWidth:2, pointRadius:entries.length<15?3:0, pointHoverRadius:4, fill:true, tension:0.35
+            }], entries.map(e=>_fmtLabel(e.ts)));
+        } catch(e){ console.warn('[HistoryChart]',e); }
+    }
+
+    async function loadCompareData() {
+        try {
+            const results = await Promise.allSettled(
+                HISTORY_CONFIG.compareTheatres.map(t=>fetch(t.url+'?limit=120').then(r=>r.ok?r.json():null))
+            );
+            let maxEntries=[];
+            results.forEach(r=>{const e=r.status==='fulfilled'&&r.value?.entries?_sliceEntries(r.value.entries,_historyView):[];if(e.length>maxEntries.length)maxEntries=e;});
+            const labels=maxEntries.map(e=>_fmtLabel(e.ts));
+            const datasets=HISTORY_CONFIG.compareTheatres.map((t,i)=>{
+                const e=results[i].status==='fulfilled'&&results[i].value?.entries?_sliceEntries(results[i].value.entries,_historyView):[];
+                return{label:t.label,data:e.map(x=>x.score??0),borderColor:t.color,backgroundColor:'transparent',borderWidth:2,pointRadius:e.length<15?3:0,pointHoverRadius:4,fill:false,tension:0.35};
+            });
+            const legendEl=document.getElementById('historyLegend');
+            if(legendEl) legendEl.innerHTML=HISTORY_CONFIG.compareTheatres.map(t=>`<div class="history-legend-item"><div class="history-legend-dot" style="background:${t.color};"></div> ${t.label}</div>`).join('');
+            renderHistoryChart(datasets,labels);
+        } catch(e){ console.warn('[HistoryChart compare]',e); }
+    }
+
+    function setHistoryView(mode) {
+        _historyView=mode;
+        document.getElementById('btn7d').classList.toggle('active',mode==='7d');
+        document.getElementById('btn30d').classList.toggle('active',mode==='30d');
+        document.getElementById('btnCompare').classList.toggle('active',mode==='compare');
+        if(mode==='compare') loadCompareData(); else loadHistoryData();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // LANGUAGE
+    // ══════════════════════════════════════════════════════════════
+    function setLanguage(lang) {
+        currentLang = lang;
+        const rtl = ['ar','fa','he'];
+        document.documentElement.dir = rtl.includes(lang) ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+        const t = T[lang] || T.en;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key] !== undefined) el.textContent = t[key];
+        });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active',
+                btn.textContent.trim() === lang.toUpperCase() ||
+                (lang==='he' && btn.textContent.trim()==='עב') ||
+                (lang==='ar' && btn.textContent.trim()==='ع') ||
+                (lang==='fa' && btn.textContent.trim()==='ف'));
+        });
+        if (currentData) renderAll(currentData);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // THEME
+    // ══════════════════════════════════════════════════════════════
+    function toggleTheme() {
+        const isDark = document.getElementById('themeToggle').checked;
+        document.documentElement.setAttribute('data-theme', isDark?'light':'dark');
+        localStorage.setItem('ir_rhetoric_theme', isDark?'light':'dark');
+        if (_historyChart) { _historyChart.destroy(); _historyChart=null;
+            if(_historyView==='compare') loadCompareData(); else loadHistoryData(); }
+    }
+    function loadTheme() {
+        const saved = localStorage.getItem('ir_rhetoric_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        document.getElementById('themeToggle').checked = saved==='light';
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // VECTOR TABS
+    // ══════════════════════════════════════════════════════════════
+    function setVector(v) {
+        currentVector = v;
+        document.querySelectorAll('.vector-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.vector === v);
+        });
+    }
+
+    function renderVectors(data) {
+        const map = {
+            irgc:     { id:'vecLevelIRGC',     level: data.irgc_direct_level     || 0 },
+            proxy:    { id:'vecLevelProxy',    level: data.proxy_activation_level || 0 },
+            nuclear:  { id:'vecLevelNuclear',  level: data.nuclear_level         || 0 },
+            domestic: { id:'vecLevelDomestic', level: data.domestic_level        || 0 },
+            regional: { id:'vecLevelRegional', level: data.regional_level        || 0 },
+        };
+        Object.entries(map).forEach(([key, cfg]) => {
+            const el = document.getElementById(cfg.id);
+            if (!el) return;
+            const lv = ESCALATION_LEVELS[cfg.level] || ESCALATION_LEVELS[0];
+            el.textContent = `L${cfg.level} — ${lv.label}`;
+            el.style.color = lv.color;
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ESCALATION LADDER
+    // ══════════════════════════════════════════════════════════════
+    function renderLadder(activeLevel) {
+        const row = document.getElementById('ladderRow');
+        if (!row) return;
+        row.innerHTML = '';
+        for (let i = 0; i <= 5; i++) {
+            const lv = ESCALATION_LEVELS[i];
+            const div = document.createElement('div');
+            div.className = 'ladder-step' + (i===activeLevel?' active':'');
+            if (i===activeLevel) { div.style.borderColor=lv.color; div.style.boxShadow=`0 0 16px ${lv.color}55`; }
+            div.innerHTML = `<div class="ladder-step-num" style="color:${lv.color}">${i}</div>
+                             <div class="ladder-step-label" style="color:${lv.color}">${lv.label}</div>`;
+            row.appendChild(div);
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // REGIME SIGNALS RENDER (v2.0.0)
+    // ══════════════════════════════════════════════════════════════
+    function renderRegimeSignals(data) {
+        const card = document.getElementById('regimeSignalCard');
+        if (!card) return;
+        const rs = data.regime_signals;
+        const activeCount = data.regime_signals_active_count !== undefined
+            ? data.regime_signals_active_count
+            : (rs ? rs.active_count : 0);
+
+        if (!rs || !activeCount) {
+            card.style.display = 'none';
+            return;
+        }
+
+        const t = T[currentLang] || T.en;
+        card.style.display = 'block';
+        document.getElementById('regimeActiveCount').textContent = activeCount;
+        document.getElementById('regimeMaxLevel').textContent = 'L' + (data.regime_signals_max_level || rs.max || 0);
+
+        const grid = document.getElementById('regimeDimensionsGrid');
+        grid.innerHTML = '';
+        REGIME_DIMENSIONS_IRAN.forEach(dim => {
+            const level = rs[dim.key] || 0;
+            const isActive = level >= 1;
+            const div = document.createElement('div');
+            div.className = 'regime-dimension' + (isActive ? ' active' : '');
+            div.innerHTML = `
+                <div class="regime-dimension-header">
+                    <span class="regime-dimension-icon">${dim.icon}</span>
+                    <span class="regime-dimension-name">${t[dim.i18nName] || dim.key}</span>
+                    <span class="regime-dimension-level lvl-${level}">L${level}</span>
+                </div>
+                <div class="regime-dimension-desc">${t[dim.i18nDesc] || ''}</div>
+            `;
+            grid.appendChild(div);
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // PROXY ACTIVATION INDEX CARD
+    // ══════════════════════════════════════════════════════════════
+    function renderProxyActivation(data) {
+        const level = data.proxy_activation_level || 0;
+        const lv = ESCALATION_LEVELS[level] || ESCALATION_LEVELS[0];
+        const detail = data.proxy_activation_detail || {};
+
+        document.getElementById('proxyActivationLevel').textContent = level;
+        document.getElementById('proxyActivationLabel').textContent = lv.label;
+
+        const syncEl = document.getElementById('proxySyncSignal');
+        if (detail.synchronized_language || detail.shared_target_convergence) {
+            syncEl.style.display = 'block';
+            syncEl.textContent = detail.synchronized_language
+                ? `⚡ Synchronized language detected across proxy theaters — narrative coordination from Iran likely`
+                : `🎯 Shared target convergence — multiple proxies referencing same targets`;
+        } else {
+            syncEl.style.display = 'none';
+        }
+
+        const grid = document.getElementById('proxyGrid');
+        if (!grid) return;
+        const elevated = detail.elevated_proxies || {};
+        const fresh = detail.fresh_proxies || [];
+        const theaters = [
+            { id:'lebanon', label:'Lebanon', icon:'🇱🇧' },
+            { id:'iraq',    label:'Iraq',    icon:'🇮🇶' },
+            { id:'yemen',   label:'Yemen',   icon:'🇾🇪' },
+            { id:'syria',   label:'Syria',   icon:'🇸🇾' },
+        ];
+        grid.innerHTML = theaters.map(theater => {
+            const lvl = elevated[theater.id] || 0;
+            const lvi = ESCALATION_LEVELS[lvl] || ESCALATION_LEVELS[0];
+            const isFresh = fresh.includes(theater.id);
+            return `<div class="proxy-theater-card" style="${isFresh?'border-color:rgba(124,58,237,0.4);':'opacity:0.5;'}">
+                <div class="proxy-theater-name">${theater.icon} ${theater.label}</div>
+                <div class="proxy-theater-level" style="color:${lvi.color};">${lvl}</div>
+                <div class="proxy-theater-label" style="color:${lvi.color};">${lvi.label}</div>
+                ${!isFresh?'<div style="font-size:0.5rem;color:var(--text-muted);margin-top:2px;">stale</div>':''}
+            </div>`;
+        }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // OPERATION TRUE PROMISE CARD
+    // ══════════════════════════════════════════════════════════════
+    function renderOTP(data) {
+        const count = data.operation_true_promise_count || 0;
+        const signals = data.operation_true_promise_signals || [];
+        const card = document.getElementById('otpCard');
+        if (count === 0) { card.style.display='none'; return; }
+        card.style.display = 'block';
+        document.getElementById('otpCount').textContent = count;
+        const list = document.getElementById('otpList');
+        list.innerHTML = signals.slice(0,4).map(s => `
+            <div class="otp-item">
+                <strong>${s.phrase}</strong>
+                <div style="font-size:0.6rem;color:var(--text-muted);margin-top:2px;">${s.article} · ${s.source||''}</div>
+            </div>`).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // THEATRE BANNER
+    // ══════════════════════════════════════════════════════════════
+    function renderTheatre(data) {
+        const level = data.theatre_escalation_level || 0;
+        const lv = ESCALATION_LEVELS[level] || ESCALATION_LEVELS[0];
+        const score = data.theatre_score || 0;
+
+        document.getElementById('theatreScore').textContent = score;
+        document.getElementById('theatreScore').style.color = lv.color;
+
+        const badge = document.getElementById('theatreBadge');
+        badge.textContent = lv.label;
+        badge.style.background = lv.color;
+
+        document.getElementById('theatreLevelDisplay').textContent = `Level ${level} — ${lv.label}`;
+        document.getElementById('theatreLevelDisplay').style.color = lv.color;
+        document.getElementById('theatreLevelDesc').textContent = lv.description;
+
+        const delta = data.delta;
+        if (delta && delta.direction !== 'insufficient_data' && !document.getElementById('irDeltaBadge')) {
+            const arrows = {rising:'▲',falling:'▼',stable:'→'};
+            const cls = {rising:'delta-rising',falling:'delta-falling',stable:'delta-stable'};
+            const sc = delta.score_change > 0 ? `+${delta.score_change}` : delta.score_change;
+            const badge2 = document.createElement('span');
+            badge2.id = 'irDeltaBadge';
+            badge2.className = `delta-badge ${cls[delta.direction]||'delta-stable'}`;
+            badge2.textContent = `${arrows[delta.direction]||'→'} ${sc} pts vs ${delta.vs_period||'prior scans'}`;
+            document.getElementById('theatreLevelDisplay').appendChild(badge2);
+        }
+
+        const spec = data.specificity_score;
+        if (spec !== undefined && !document.getElementById('irSpecWrap')) {
+            const specColor = spec<=3?'#22c55e':spec<=6?'#f97316':'#ef4444';
+            const wrap = document.createElement('div');
+            wrap.id = 'irSpecWrap';
+            wrap.className = 'specificity-wrap';
+            wrap.innerHTML = `
+                <span class="specificity-label">Signal Specificity</span>
+                <div class="specificity-track"><div class="specificity-fill" style="width:${Math.min(spec*10,100)}%;background:${specColor};"></div></div>
+                <span class="specificity-value" style="color:${specColor};">${spec}/10</span>`;
+            document.getElementById('theatreScanInfo').parentNode.insertBefore(wrap, document.getElementById('theatreScanInfo'));
+        }
+
+        if (data.scanned_at || data.timestamp) {
+            const ts = new Date(data.scanned_at || data.timestamp);
+            const ago = Math.round((Date.now() - ts.getTime()) / 60000);
+            const agoTxt = ago < 60 ? `${ago}m ago` : `${Math.round(ago/60)}h ago`;
+            document.getElementById('theatreScanInfo').textContent =
+                `Last scan: ${agoTxt} · ${data.total_articles||0} articles analyzed`;
+        }
+        document.getElementById('lastUpdated').textContent =
+            new Date(data.scanned_at || data.timestamp || Date.now()).toLocaleString();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // INTERPRETATION (So What / Red Lines / Historical)
+    // ══════════════════════════════════════════════════════════════
+    function renderInterpretation(data) {
+        const interp = data.interpretation;
+        if (!interp) return;
+
+        const sw = interp.so_what;
+        if (sw) {
+            document.getElementById('soWhatCard').style.display = 'block';
+            document.getElementById('soWhatIcon').textContent = sw.scenario_icon || '🔴';
+            const scenEl = document.getElementById('soWhatScenario');
+            scenEl.textContent = sw.scenario || '--';
+            scenEl.style.color = sw.scenario_color || '#dc2626';
+            document.getElementById('soWhatSituation').textContent = sw.situation || '';
+            const indEl = document.getElementById('soWhatIndicators');
+            indEl.innerHTML = '';
+            if (sw.key_indicators && sw.key_indicators.length) {
+                const title = document.createElement('div');
+                title.className = 'interp-section-title';
+                title.style.marginTop = '12px';
+                title.textContent = 'KEY INDICATORS';
+                indEl.appendChild(title);
+                sw.key_indicators.forEach(ind => {
+                    const d = document.createElement('div');
+                    d.className = 'interp-indicator';
+                    d.textContent = '⚡ ' + ind;
+                    indEl.appendChild(d);
+                });
+            }
+            document.getElementById('soWhatAssessment').textContent = sw.assessment || '';
+            const wlEl = document.getElementById('soWhatWatchList');
+            wlEl.innerHTML = '';
+            (sw.watch_list || []).forEach(item => {
+                const d = document.createElement('div');
+                d.className = 'interp-watch-item';
+                d.textContent = '→ ' + item;
+                wlEl.appendChild(d);
+            });
+            document.getElementById('soWhatNote').textContent = sw.confidence_note || '';
+        }
+
+        const rl = interp.red_lines;
+        if (rl && rl.triggered && rl.triggered.length) {
+            document.getElementById('redLinesCard').style.display = 'block';
+            document.getElementById('redLineBreachedCount').textContent = rl.breached_count || 0;
+            document.getElementById('redLineApproachingCount').textContent = rl.approaching_count || 0;
+            const rlEl = document.getElementById('redLineItems');
+            rlEl.innerHTML = '';
+            rl.triggered.forEach(r => {
+                const catLabel = r.category === 'adversary_trigger' ? '⚔️ ADVERSARY TRIGGER' : '🇮🇷 IRAN TRIGGER';
+                const item = document.createElement('div');
+                item.className = 'red-line-item ' + (r.status === 'BREACHED' ? 'breached' : 'approaching');
+                item.innerHTML = `
+                    <span class="red-line-icon">${r.icon || '⚠️'}</span>
+                    <div style="flex:1;">
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                            <span class="red-line-label">${r.label}</span>
+                            <span class="red-line-status-badge ${r.status === 'BREACHED' ? 'breached' : 'approaching'}">${r.status}</span>
+                            <span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">${catLabel}</span>
+                            <span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">SEV ${r.severity}/3</span>
+                        </div>
+                        <div class="red-line-trigger">${r.trigger || ''}</div>
+                        <div class="red-line-source">${r.source || ''}</div>
+                    </div>`;
+                rlEl.appendChild(item);
+            });
+        }
+
+        const hm = interp.historical_matches;
+        if (hm && hm.length) {
+            document.getElementById('historicalCard').style.display = 'block';
+            const hmEl = document.getElementById('historicalItems');
+            hmEl.innerHTML = '';
+            hm.forEach(h => {
+                const confColor = h.similarity >= 80 ? '#dc2626' : h.similarity >= 60 ? '#0ea5e9' : '#64748b';
+                const item = document.createElement('div');
+                item.className = 'hist-match-item';
+                const tags = (h.matched_signals || []).map(s =>
+                    `<span class="hist-signal-tag">✓ ${s}</span>`
+                ).join('');
+                item.innerHTML = `
+                    <div class="hist-match-header">
+                        <span class="hist-similarity-badge" style="background:${confColor};">${h.similarity}% MATCH</span>
+                        <span class="hist-match-label">${h.label}</span>
+                        <span style="font-size:0.62rem;color:var(--text-muted);font-family:'Courier New',monospace;margin-left:auto;">
+                            Confidence: ${h.confidence} · Window: ${h.window_hours}h
+                        </span>
+                    </div>
+                    <div class="hist-match-outcome">→ ${h.outcome}</div>
+                    <div class="hist-matched-signals">${tags}</div>
+                    <div class="hist-match-meta" style="margin-top:6px;">Source: ${h.source}</div>`;
+                hmEl.appendChild(item);
+            });
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // DIPLOMATIC TRACK CARD
+    // ══════════════════════════════════════════════════════════════
+    function renderDiplomaticTrack(data) {
+        const card = document.getElementById('diplomaticTrackCard');
+        if (!card) return;
+
+        const active   = data.diplomatic_track_active === true;
+        const modifier = data.diplomatic_modifier || 0;
+        const label    = data.diplomatic_label_detailed || 'Quiet';
+
+        if (!active || modifier === 0) {
+            card.style.display = 'none';
+            return;
+        }
+
+        card.style.display = 'block';
+
+        const valueEl = document.getElementById('diplomaticModifierValue');
+        if (valueEl) valueEl.textContent = (modifier > 0 ? '+' : '') + modifier;
+
+        const labelEl = document.getElementById('diplomaticLabelDetailed');
+        if (labelEl) labelEl.textContent = label;
+
+        const explainerEl = document.getElementById('diplomaticTrackExplainer');
+        if (explainerEl) {
+            let msg;
+            if (modifier <= -10) {
+                msg = 'Direct talks or active negotiations detected — Araghchi shuttle, US envoy contact, or framework discussions. Score reduced significantly. Threat vectors above remain ground truth on what IRGC and proxies are doing.';
+            } else if (modifier <= -6) {
+                msg = 'Mediator activity detected — Pakistan, Oman, or Russia brokering between Iran and the US. Pressure score is moderately reduced.';
+            } else if (modifier <= -3) {
+                msg = 'Diplomatic push detected — calls for talks, ceasefire offers, or pre-negotiation positioning. Slight downward pressure on the score.';
+            } else {
+                msg = 'Background diplomatic mentions — minimal effect on the threat score.';
+            }
+            explainerEl.textContent = msg;
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // COORDINATION SIGNALS
+    // ══════════════════════════════════════════════════════════════
+    function renderCoordination(signals) {
+        const card = document.getElementById('coordCard');
+        const list = document.getElementById('coordList');
+        if (!signals || signals.length === 0) { card.style.display='none'; return; }
+        card.style.display = 'block';
+        list.innerHTML = '';
+        signals.forEach(sig => {
+            const div = document.createElement('div');
+            const isCommandNode = sig.is_command_node || sig.type === 'proxy_activation';
+            div.className = 'coord-item' + (isCommandNode ? ' command-node' : '');
+            const conf = sig.confidence ? `<span class="coord-confidence">${sig.confidence}% confidence</span>` : '';
+            div.innerHTML = `<strong>⚡ ${sig.message}</strong>${conf}
+                ${sig.signal ? `<div style="font-size:0.65rem;color:var(--text-muted);margin-top:4px;">${sig.signal}</div>` : ''}
+                ${sig.elevated_proxies ? `<div style="font-size:0.6rem;color:var(--proxy-color);margin-top:4px;">Elevated: ${Object.entries(sig.elevated_proxies).map(([k,v])=>`${k}(L${v})`).join(', ')}</div>` : ''}`;
+            list.appendChild(div);
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ACTOR STATUS GRID
+    // ══════════════════════════════════════════════════════════════
+    function renderActors(actors, silenceAnomalies) {
+        const grid = document.getElementById('actorsGrid');
+        if (!grid || !actors) return;
+        grid.innerHTML = '';
+        const t = T[currentLang] || T.en;
+        const silenceMap = {};
+        (silenceAnomalies||[]).forEach(a => { silenceMap[a.actor_id] = a.deviation; });
+
+        ACTOR_ORDER.forEach(id => {
+            const a = actors[id];
+            if (!a) return;
+            const maxLv = a.max_level || 0;
+            const lv = ESCALATION_LEVELS[maxLv] || ESCALATION_LEVELS[0];
+            const isProxy = PROXY_ACTORS.includes(id);
+            const isCommand = COMMAND_ACTORS.includes(id);
+
+            const pills = [];
+            if ((a.irgc_direct_score||0)>0) pills.push(`<span class="vector-pill" style="background:${ESCALATION_LEVELS[a.irgc_direct_score]?.color||'#6b7280'}">${t.irgcVec} L${a.irgc_direct_score}</span>`);
+            if ((a.nuclear_score||0)>0)     pills.push(`<span class="vector-pill" style="background:${ESCALATION_LEVELS[a.nuclear_score]?.color||'#6b7280'}">${t.nuclearVec} L${a.nuclear_score}</span>`);
+            if ((a.regional_score||0)>0)    pills.push(`<span class="vector-pill" style="background:${ESCALATION_LEVELS[a.regional_score]?.color||'#6b7280'}">${t.regionalVec} L${a.regional_score}</span>`);
+            if ((a.domestic_score||0)>0)    pills.push(`<span class="vector-pill" style="background:${ESCALATION_LEVELS[a.domestic_score]?.color||'#6b7280'}">${t.domesticVec} L${a.domestic_score}</span>`);
+
+            const silenceText = silenceMap[id] || (a.silence_alert ? 'Below baseline' : null);
+            const silencePill = silenceText ? `<span class="silence-pill">🔇 ${silenceText}</span>` : '';
+            const proxyTag = isProxy ? `<div class="proxy-tag">${t.proxyTag}</div>` : '';
+
+            const card = document.createElement('div');
+            card.className = 'actor-card' + (isProxy?' proxy-actor':isCommand?' command-actor':'');
+            card.innerHTML = `
+                <div class="actor-header">
+                    <div class="actor-flag">${a.flag||''} ${a.icon||''}</div>
+                    <div style="flex:1;">
+                        <div class="actor-name">${a.name}${silencePill}</div>
+                        <div class="actor-role">${a.role||''}</div>
+                    </div>
+                    <div class="actor-level-badge" style="background:${lv.color}">${lv.label}</div>
+                </div>
+                <div class="actor-stats">
+                    <span>📰 ${a.statement_count||0} ${t.articles}</span>
+                    <span>📊 ${t.maxLevel} ${maxLv}</span>
+                </div>
+                ${pills.length ? `<div class="vector-pills">${pills.join('')}</div>` : ''}
+                ${proxyTag}
+                ${silenceText && !isProxy ? `<div class="actor-silence-alert">⚠️ ${t.silence}</div>` : ''}
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TOP ARTICLES
+    // ══════════════════════════════════════════════════════════════
+    function renderArticles(actors) {
+        const list = document.getElementById('articlesList');
+        if (!list || !actors) return;
+        list.innerHTML = '';
+
+        ACTOR_ORDER.forEach(id => {
+            const a = actors[id];
+            if (!a || !a.top_articles || a.top_articles.length===0) return;
+
+            const section = document.createElement('div');
+            section.style.marginBottom = '18px';
+            section.innerHTML = `<div style="font-size:0.7rem;font-weight:700;color:#38bdf8;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--card-border);">${a.flag||''} ${a.name}</div>`;
+
+            a.top_articles.slice(0,3).forEach(art => {
+                const item = document.createElement('div');
+                item.className = 'article-item';
+                const dt = art.published ? new Date(art.published).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+                item.innerHTML = `
+                    <a href="${art.url||'#'}" target="_blank" rel="noopener" class="article-link">${art.title||'Untitled'}</a>
+                    <div class="article-meta">${art.source||''} ${dt?'· '+dt:''} ${art.specificity_score>0?`· Specificity: ${art.specificity_score}`:''}</div>
+                `;
+                section.appendChild(item);
+            });
+            list.appendChild(section);
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // RENDER ALL
+    // ══════════════════════════════════════════════════════════════
+    function renderAll(data) {
+        currentData = data;
+        const level = data.theatre_escalation_level || 0;
+        renderTheatre(data);
+        renderRegimeSignals(data);          // v2.0.0: between banner and So What
+        renderInterpretation(data);
+        renderDiplomaticTrack(data);
+        renderProxyActivation(data);
+        renderOTP(data);
+        renderVectors(data);
+        renderLadder(level);
+        renderCoordination(data.crosstheater_coordination || []);
+        renderActors(data.actors || {}, data.silence_anomalies || []);
+        renderArticles(data.actors || {});
+
+        const artCount = document.getElementById('articlesClassified');
+        if (artCount) artCount.textContent = `📰 ${data.total_articles||0} articles analyzed · Corresponding articles below`;
+
+        loadHistoryData();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // DATA LOADING
+    // ══════════════════════════════════════════════════════════════
+    async function loadRhetoricData(forceRefresh=false) {
+        try {
+            const url = API_BASE + '/api/rhetoric/iran' + (forceRefresh?'?force=true':'');
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+
+            if (data.awaiting_scan) {
+                document.getElementById('theatreScanInfo').textContent = 'Scan in progress — first scan takes 3-4 minutes (reading all proxy theaters)...';
+                renderLadder(0);
+                if (!retryInterval) {
+                    retryInterval = setInterval(async () => {
+                        retryCount++;
+                        try {
+                            const r = await fetch(API_BASE + '/api/rhetoric/iran');
+                            const d = await r.json();
+                            if (!d.awaiting_scan) {
+                                clearInterval(retryInterval); retryInterval=null; retryCount=0;
+                                renderAll(d);
+                            } else {
+                                document.getElementById('theatreScanInfo').textContent = `Reading proxy theaters — retry ${retryCount}/8...`;
+                                if (retryCount>=8) { clearInterval(retryInterval); retryInterval=null; }
+                            }
+                        } catch(e) { if(retryCount>=8){clearInterval(retryInterval);retryInterval=null;} }
+                    }, 60000);
+                }
+                return;
+            }
+            renderAll(data);
+        } catch(err) {
+            console.error('[Iran Rhetoric] Load error:', err);
+            document.getElementById('theatreScanInfo').textContent = 'Error loading data — retrying...';
+            setTimeout(() => loadRhetoricData(), 30000);
+        }
+    }
+
+    async function triggerScan() {
+        const btn = document.getElementById('scanBtn');
+        if (btn) { btn.style.opacity='0.5'; btn.disabled=true; }
+        document.getElementById('theatreScanInfo').textContent = 'Scan triggered — reading proxy theaters (3-4 min)...';
+        try { await loadRhetoricData(true); }
+        finally { if(btn){btn.style.opacity='1';btn.disabled=false;} }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // INIT
+    // ══════════════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTheme();
+        loadRhetoricData();
+    });
+
+    // ── MOBILE DRAWER (gold standard) ──
+    function openMobileDrawer() {
+        document.getElementById('mobileDrawer')?.classList.add('open');
+        document.getElementById('mobileDrawerBackdrop')?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMobileDrawer() {
+        document.getElementById('mobileDrawer')?.classList.remove('open');
+        document.getElementById('mobileDrawerBackdrop')?.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMobileDrawer();
+    });
+</script>
+</body>
+</html>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <title>Iran Command Node Tracker — Asifah Analytics</title>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
