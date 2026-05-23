@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Military Posture Tracker | Asifah Analytics</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -76,11 +76,53 @@
         .nav-divider { height: 1px; background: rgba(0,200,255,0.15); margin: 4px 0; }
         .nav-sidebar-main { flex: 1; min-width: 0; }
         @media (max-width: 768px) { .nav-sidebar { display: none !important; } .page-with-sidebar { flex-direction: column; } }
+/* ── MOBILE DRAWER (gold standard, added May 22 2026) ── */
+.mobile-menu-btn {
+    display: none;
+    background: rgba(56,189,248,0.10); border: 1px solid var(--card-border, #1e3a5f);
+    border-radius: 6px; padding: 6px 10px; cursor: pointer;
+    font-size: 18px; line-height: 1; color: var(--text-primary, #e2f0fb);
+    font-family: inherit;
+}
+.mobile-menu-btn:hover { border-color: var(--accent, #38bdf8); background: rgba(56,189,248,0.20); }
+.mobile-drawer-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 9998; backdrop-filter: blur(2px);
+}
+.mobile-drawer-backdrop.open { display: block; }
+.mobile-drawer {
+    display: none; position: fixed; top: 0; left: 0; bottom: 0;
+    width: 84%; max-width: 320px;
+    background: var(--card-bg, #0d1b2e); border-right: 2px solid var(--accent, #38bdf8);
+    z-index: 9999; padding: 18px 16px;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+}
+.mobile-drawer.open { display: block; transform: translateX(0); }
+.mobile-drawer-close {
+    position: absolute; top: 10px; right: 10px;
+    background: transparent; border: 1px solid var(--card-border, #1e3a5f);
+    border-radius: 6px; width: 32px; height: 32px;
+    cursor: pointer; color: var(--text-primary, #e2f0fb); font-size: 16px;
+    line-height: 1; font-family: inherit;
+}
+.mobile-drawer-close:hover { border-color: var(--accent, #38bdf8); color: var(--accent, #38bdf8); }
+.mobile-drawer-title {
+    font-size: 14px; font-weight: 700; color: var(--accent, #38bdf8);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin: 0 0 14px 4px; padding-right: 40px;
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn { display: inline-flex; align-items: center; gap: 6px; }
+}
+
         body { font-family: 'Times New Roman', Times, serif; font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background-color 0.4s ease, color 0.4s ease; overflow-x: hidden; }
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
         body::after { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,var(--scanline-opacity)) 2px, rgba(0,212,255,var(--scanline-opacity)) 4px); pointer-events: none; z-index: 0; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 20px 40px; position: relative; z-index: 1; }
-        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: var(--watermark-size); height: var(--watermark-size); opacity: var(--watermark-opacity); pointer-events: none; z-index: 0; background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size: 135%; background-repeat: no-repeat; background-position: center; border-radius: 50%; transition: all 0.4s ease; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: var(--watermark-size); height: var(--watermark-size); opacity: var(--watermark-opacity); pointer-events: none; z-index: 0; background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size: 135%; background-repeat: no-repeat; background-position: center; border-radius: 50%; transition: all 0.4s ease; }
         .header { background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end)); padding: 16px 30px; margin-bottom: 24px; border-radius: 0 0 12px 12px; position: relative; overflow: hidden; }
         [data-theme="dark"] .header { border-bottom: 1px solid var(--cyber-border); box-shadow: 0 0 30px rgba(0,212,255,0.05); }
         .header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); opacity: var(--glow-opacity); }
@@ -339,9 +381,12 @@
 </div>
 <header class="header">
     <div class="header-row-1">
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
         <div class="header-right-controls">
             <a href="index.html" class="home-btn">&#127968; HOME</a>
+            <button class="mobile-menu-btn" onclick="openMobileDrawer()" aria-label="Open navigation menu" style="margin-left:8px;">
+            <span style="font-size:20px;">☰</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;">Menu</span>
+        </button>
         </div>
     </div>
     <div class="header-row-2">
@@ -357,6 +402,64 @@
     </div>
 </header>
     </header>
+<!-- Mobile drawer (gold standard, added May 22 2026) -->
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<aside class="mobile-drawer" id="mobileDrawer" aria-label="Navigation menu">
+    <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu">✕</button>
+    <div class="mobile-drawer-title">Navigation</div>
+    <div class="nav-sidebar-label">Dashboards</div>
+    <div class="nav-btn inactive-nav">
+        <span class="nav-btn-label">🌍 Africa</span>
+        <span class="nav-btn-status">🔒 Future</span>
+    </div>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="commodities.html" class="nav-btn commodities-btn">
+        <span class="nav-btn-label">🛢️ Commodity Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🌐 Global Pressure Index</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="military.html" class="nav-btn current-page">
+        <span class="nav-btn-label">🎖️ Military Tracker</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">📡 ME Rhetoric</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">📡 Asia Rhetoric</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">📡 Europe Rhetoric</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">📡 WHA Rhetoric</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+</aside>
+
 <!-- WORLDWIDE CAUTION BANNER -->
 <div style="
     background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
@@ -674,10 +777,10 @@ var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Su
 
 var THEATRE_ORDER = [
     { id:'global_northcom', label:'Global / NORTHCOM', icon:'\uD83C\uDF10', actors:['us'] },
+    { id:'africa', label:'Africa Theatre', icon:'\uD83C\uDF0D', actors:['nigeria','somalia','mali','niger','burkina_faso','drc','sudan','libya','ethiopia','kenya','djibouti','central_african_republic','wagner_africa'] },
     { id:'asia_pacific', label:'Asia & The Pacific Theatre', icon:'\uD83C\uDF0F', actors:['china','taiwan','north_korea','pakistan','afghanistan','india','south_korea','japan'] },
     { id:'europe', label:'European Theatre', icon:'\uD83C\uDF0D', actors:['armenia','azerbaijan','cyprus','denmark','greenland','nato','poland','russia','turkey','ukraine'] },
     { id:'middle_east', label:'Middle East & North Africa', icon:'\uD83D\uDD4C', actors:['bahrain','egypt','iran','iraq','israel','jordan','kuwait','oman','qatar','saudi_arabia','uae','libya'] },
-    { id:'africa', label:'Africa Theatre', icon:'\uD83C\uDF0D', actors:['nigeria','somalia','mali','niger','burkina_faso','drc','sudan','libya','ethiopia','kenya','djibouti','central_african_republic','wagner_africa'] },
     { id:'western_hemisphere', label:'Western Hemisphere', icon:'\uD83C\uDF0E', actors:['brazil','colombia','cuba','haiti','mexico','panama','venezuela'] }
 ];
 
@@ -1817,6 +1920,23 @@ document.addEventListener('DOMContentLoaded', function() {
     loadTheme();
     fetchData(false);
 });
+
+
+// ── MOBILE DRAWER (gold standard, added May 22 2026) ──
+function openMobileDrawer() {
+    document.getElementById('mobileDrawer')?.classList.add('open');
+    document.getElementById('mobileDrawerBackdrop')?.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileDrawer() {
+    document.getElementById('mobileDrawer')?.classList.remove('open');
+    document.getElementById('mobileDrawerBackdrop')?.classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMobileDrawer();
+});
+
 </script>
 </div><!-- end nav-sidebar-main -->
 </div><!-- end page-with-sidebar -->
