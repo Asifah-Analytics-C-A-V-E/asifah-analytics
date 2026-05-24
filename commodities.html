@@ -490,6 +490,273 @@
             min-width: 0;
         }
 
+        /* ========== COMMODITY ANALYSIS CARD (v1.0 — May 24 2026) ==========
+           Hybrid arctic/amber palette:
+             - Card frame & section dividers: amber/gold (wheat/gold flavor)
+             - Section headers & meta: cyan (canonical analytical voice)
+             - Butterfly convergences: deep violet (rare, cross-region)
+             - Regional rollups: canonical alert palette (matches commodity cards)
+           Designed for contrast against arctic bg-primary in BOTH light/dark
+           themes — text uses var(--text-primary) (#e2f0fb dark / #1e3a5f light)
+           on opaque var(--bg-card) so the faint watermark cannot bleed through.
+        */
+        :root {
+            --ca-accent:        #fbbf24;            /* amber-400 — "gold/wheat" */
+            --ca-accent-soft:   rgba(251,191,36,0.06);
+            --ca-accent-strong: rgba(251,191,36,0.18);
+            --ca-butterfly:     #a78bfa;            /* violet — cross-region */
+            --ca-butterfly-bg:  rgba(167,139,250,0.07);
+            --ca-butterfly-bg-strong: rgba(167,139,250,0.14);
+        }
+        [data-theme="light"] {
+            --ca-accent:        #b45309;            /* amber-700, darker for light theme contrast */
+            --ca-accent-soft:   rgba(180,83,9,0.08);
+            --ca-accent-strong: rgba(180,83,9,0.20);
+            --ca-butterfly:     #6d28d9;            /* violet-700 for light theme */
+            --ca-butterfly-bg:  rgba(109,40,217,0.06);
+            --ca-butterfly-bg-strong: rgba(109,40,217,0.12);
+        }
+
+        .ca-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--ca-accent);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 1;
+            display: none;
+        }
+        .ca-card.visible { display: block; }
+
+        .ca-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .ca-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ca-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* Executive summary — always visible, amber-flavored */
+        .ca-exec {
+            background: var(--ca-accent-soft);
+            border-left: 3px solid var(--ca-accent);
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        .ca-exec-label {
+            font-size: 0.65rem;
+            color: var(--ca-accent);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ca-exec-text {
+            font-size: 0.92rem;
+            color: var(--text-primary);
+            line-height: 1.55;
+        }
+
+        /* Sections — collapsible */
+        .ca-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+        .ca-section-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+            border-radius: 4px;
+            transition: padding 0.2s;
+        }
+        .ca-section-toggle:hover {
+            background: var(--ca-accent-soft);
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        .ca-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ca-section-count {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+        .ca-chevron {
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .ca-section.expanded .ca-chevron { transform: rotate(180deg); }
+        .ca-section-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .ca-section.expanded .ca-section-body {
+            max-height: 8000px;
+            opacity: 1;
+            padding-top: 12px;
+        }
+
+        /* Butterfly section — distinct violet register (cross-region cascades) */
+        .ca-section.butterfly {
+            background: var(--ca-butterfly-bg);
+            border: 1px solid rgba(167,139,250,0.30);
+            border-top: 1px solid rgba(167,139,250,0.30);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-top: 14px;
+        }
+        [data-theme="dark"] .ca-section.butterfly {
+            background: var(--ca-butterfly-bg-strong);
+            box-shadow: 0 0 14px rgba(167,139,250,0.10);
+        }
+        .ca-section.butterfly .ca-section-title { color: var(--ca-butterfly); }
+        .ca-section.butterfly .ca-section-count { color: var(--ca-butterfly); }
+        .ca-section.butterfly .ca-section-toggle:hover {
+            background: var(--ca-butterfly-bg-strong);
+        }
+
+        /* Prose blocks within sections */
+        .ca-prose-block {
+            font-size: 0.86rem;
+            line-height: 1.55;
+            color: var(--text-primary);
+            padding: 10px 14px;
+            background: var(--bg-signal);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--border-color);
+        }
+        .ca-prose-block.lvl-elevated { border-left-color: var(--accent-yellow); }
+        .ca-prose-block.lvl-high     { border-left-color: var(--accent-orange); }
+        .ca-prose-block.lvl-surge    { border-left-color: var(--accent-red); }
+        .ca-prose-block.lvl-normal   { border-left-color: var(--accent-green); }
+        .ca-prose-block.butterfly    { border-left-color: var(--ca-butterfly); }
+
+        .ca-prose-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .ca-prose-pill {
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border: 1px solid;
+        }
+        .ca-prose-pill.lvl-normal {
+            background: var(--alert-normal-bg);
+            color: var(--accent-green);
+            border-color: var(--alert-normal-border);
+        }
+        .ca-prose-pill.lvl-elevated {
+            background: var(--alert-elevated-bg);
+            color: var(--accent-yellow);
+            border-color: var(--alert-elevated-border);
+        }
+        .ca-prose-pill.lvl-high {
+            background: var(--alert-high-bg);
+            color: var(--accent-orange);
+            border-color: var(--alert-high-border);
+        }
+        .ca-prose-pill.lvl-surge {
+            background: var(--alert-surge-bg);
+            color: var(--accent-red);
+            border-color: var(--alert-surge-border);
+        }
+        .ca-prose-pill.butterfly {
+            background: var(--ca-butterfly-bg-strong);
+            color: var(--ca-butterfly);
+            border-color: var(--ca-butterfly);
+        }
+        .ca-region-tag {
+            font-size: 0.58rem;
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: rgba(56,189,248,0.10);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56,189,248,0.25);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .ca-empty {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 8px 0;
+        }
+        .ca-unavailable {
+            padding: 16px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .ca-unavailable code {
+            background: var(--bg-signal);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Mobile tightening — keep prose readable on narrow viewports */
+        @media (max-width: 640px) {
+            .ca-card { padding: 14px 14px; }
+            .ca-title { font-size: 0.85rem; letter-spacing: 1.5px; }
+            .ca-exec-text { font-size: 0.86rem; }
+            .ca-prose-block { font-size: 0.82rem; padding: 9px 11px; }
+            .ca-section-title { font-size: 0.72rem; letter-spacing: 1px; }
+        }
+
         /* ========== STATUS STRIP ========== */
         .status-strip {
             display: grid;
@@ -1279,6 +1546,43 @@
             ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. News signals will appear shortly. Sparklines should already be live.
         </div>
 
+        <!-- ========== COMMODITY ANALYSIS (BLUF) — v1.0 May 24 2026 ==========
+             Mirrors military.html Theater Analysis pattern.
+             Reads pressureData.interpretation produced by
+             commodity_signal_interpreter.py. No extra fetch — the
+             interpretation block flows in via /api/commodity-pressure.
+        -->
+        <div class="ca-card" id="caCard">
+            <div class="ca-header">
+                <div class="ca-title">🌾 <span>Commodity Analysis</span></div>
+                <div class="ca-meta" id="caMeta">&mdash;</div>
+            </div>
+
+            <!-- Executive summary — always visible, no toggle -->
+            <div class="ca-exec" id="caExecBlock">
+                <div class="ca-exec-label">📜 <span>Executive Summary</span></div>
+                <div class="ca-exec-text" id="caExecText">&mdash;</div>
+            </div>
+
+            <!-- Butterfly convergences — violet register, cross-region cascades -->
+            <div class="ca-section butterfly" id="caButterflySection" style="display:none;">
+                <div class="ca-section-toggle" onclick="toggleCaSection('caButterflySection')">
+                    <div class="ca-section-title">🦋 <span>Butterfly Convergences</span> <span class="ca-section-count" id="caButterflyCount"></span></div>
+                    <div class="ca-chevron">▼</div>
+                </div>
+                <div class="ca-section-body" id="caButterflyBody"></div>
+            </div>
+
+            <!-- Regional pressure — alphabetical canon: AF/AS/EU/MENA/WHA + Global/Macro -->
+            <div class="ca-section" id="caRegionalSection">
+                <div class="ca-section-toggle" onclick="toggleCaSection('caRegionalSection')">
+                    <div class="ca-section-title">🌍 <span>Regional Pressure</span> <span class="ca-section-count" id="caRegionalCount"></span></div>
+                    <div class="ca-chevron">▼</div>
+                </div>
+                <div class="ca-section-body" id="caRegionalBody"></div>
+            </div>
+        </div>
+
         <!-- ========== STATUS STRIP ========== -->
         <div class="status-strip">
             <div class="status-card">
@@ -1607,12 +1911,171 @@ function refreshData() {
 // ============================================================
 function renderEverything() {
     renderUpdatedBar();
+    renderCommodityAnalysis();   // v1.0 May 24 2026 — top-line BLUF
     renderStatusStrip();
     renderExposureMatrix();
     renderCommodityCards();
     renderNewsFilters();
     renderNewsList();
     maybeShowPendingBanner();
+}
+
+// ════════════════════════════════════════════════════════════════
+// COMMODITY ANALYSIS (BLUF) — v1.0 May 24 2026
+// Reads pressureData.interpretation produced by
+// commodity_signal_interpreter.py. Single source of truth — no extra
+// network call.
+// ════════════════════════════════════════════════════════════════
+function escapeCaHtml(s) {
+    if (s == null) return '';
+    return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+function toggleCaSection(sectionId) {
+    var sec = document.getElementById(sectionId);
+    if (sec) sec.classList.toggle('expanded');
+}
+
+function renderCommodityAnalysis() {
+    var card = document.getElementById('caCard');
+    if (!card) return;
+
+    var interp = (pressureData && pressureData.interpretation) || null;
+
+    // Graceful-degrade state: interpreter not wired (older backend version)
+    if (!interp || typeof interp !== 'object') {
+        // Hide the card entirely until backend serves an interpretation.
+        // No "unavailable" message clutter on the dashboard.
+        card.classList.remove('visible');
+        return;
+    }
+
+    card.classList.add('visible');
+
+    // ── Meta line (interpreter version) ──
+    var meta = document.getElementById('caMeta');
+    if (meta) {
+        var v = interp.interpreter_version || '?';
+        meta.textContent = 'INTERPRETER v' + v;
+    }
+
+    // ── Executive summary ──
+    var execEl = document.getElementById('caExecText');
+    if (execEl) {
+        execEl.textContent = interp.executive_summary
+            || 'No analytical summary available.';
+    }
+
+    // ── Butterfly convergences (violet register) ──
+    var butterflySection = document.getElementById('caButterflySection');
+    var butterflyBody    = document.getElementById('caButterflyBody');
+    var butterflyCount   = document.getElementById('caButterflyCount');
+    var convergences = interp.butterfly_prose || {};
+    var convKeys = Object.keys(convergences);
+
+    if (convKeys.length === 0) {
+        butterflySection.style.display = 'none';
+    } else {
+        butterflySection.style.display = '';
+        butterflyCount.textContent = '(' + convKeys.length + ')';
+        // Auto-expand butterfly section on first render — these are rare
+        // cross-region cascades and load-bearing for the dashboard.
+        if (!butterflySection.classList.contains('user-toggled')) {
+            butterflySection.classList.add('expanded');
+        }
+        // Sort by priority descending — most-severe first
+        var sortedKeys = convKeys.sort(function(a, b) {
+            var pa = (convergences[a] || {}).priority || 0;
+            var pb = (convergences[b] || {}).priority || 0;
+            return pb - pa;
+        });
+        var html = '';
+        for (var i = 0; i < sortedKeys.length; i++) {
+            var label = sortedKeys[i];
+            var c = convergences[label] || {};
+            var lvl = (c.level || 'elevated').toLowerCase();
+            var icon = c.icon || '⚡';
+            var display = c.display || label.replace(/_/g, '+').toUpperCase();
+            var regions = c.regions || [];
+
+            html += '<div class="ca-prose-block butterfly">';
+            html += '<div class="ca-prose-label">';
+            html += '<span>' + escapeCaHtml(icon) + ' ' + escapeCaHtml(display) + '</span>';
+            html += '<span class="ca-prose-pill lvl-' + escapeCaHtml(lvl) + '">'
+                 + escapeCaHtml(lvl.toUpperCase()) + '</span>';
+            for (var r = 0; r < regions.length; r++) {
+                html += '<span class="ca-region-tag">'
+                     + escapeCaHtml(String(regions[r]).toUpperCase()) + '</span>';
+            }
+            html += '</div>';
+            html += '<div>' + escapeCaHtml(c.prose || '') + '</div>';
+            html += '</div>';
+        }
+        butterflyBody.innerHTML = html;
+    }
+
+    // ── Regional pressure (canonical alert palette) ──
+    // Renders ALL 6 regions in alphabetical canon order even at baseline,
+    // so the user always sees the full regional layout. Auto-expand on
+    // first render if any region is high/surge.
+    var regionalSection = document.getElementById('caRegionalSection');
+    var regionalBody    = document.getElementById('caRegionalBody');
+    var regionalCount   = document.getElementById('caRegionalCount');
+    var regionals = interp.regional_prose || {};
+
+    // Canonical order (matches interpreter REGION_SORT_ORDER)
+    var REGION_ORDER = ['africa', 'asia', 'europe', 'me', 'wha', 'global'];
+    var presentRegions = REGION_ORDER.filter(function(r) { return regionals[r]; });
+
+    regionalCount.textContent = '(' + presentRegions.length + ')';
+
+    var anyHot = presentRegions.some(function(r) {
+        var lvl = (regionals[r].level || '').toLowerCase();
+        return (lvl === 'high' || lvl === 'surge');
+    });
+    if (anyHot && !regionalSection.classList.contains('user-toggled')) {
+        regionalSection.classList.add('expanded');
+    }
+
+    var rHtml = '';
+    for (var i = 0; i < presentRegions.length; i++) {
+        var rk = presentRegions[i];
+        var r = regionals[rk] || {};
+        var lvl = (r.level || 'normal').toLowerCase();
+        // Normalize legacy lvl names just in case
+        if (lvl === 'monitor' || lvl === 'monitored') lvl = 'elevated';
+        if (lvl === 'open') lvl = 'normal';
+
+        rHtml += '<div class="ca-prose-block lvl-' + escapeCaHtml(lvl) + '">';
+        rHtml += '<div class="ca-prose-label">';
+        rHtml += '<span>' + escapeCaHtml(r.icon || '') + ' '
+              + escapeCaHtml((r.tag || r.display || rk).toUpperCase()) + '</span>';
+        rHtml += '<span class="ca-prose-pill lvl-' + escapeCaHtml(lvl) + '">'
+              + escapeCaHtml(lvl.toUpperCase()) + '</span>';
+        rHtml += '</div>';
+        rHtml += '<div>' + escapeCaHtml(r.prose || '') + '</div>';
+        rHtml += '</div>';
+    }
+    regionalBody.innerHTML = rHtml;
+
+    // Mark sections as "user-toggled" the moment user clicks one — so we
+    // don't auto-re-expand on every refresh, only on first render.
+    [butterflySection, regionalSection].forEach(function(sec) {
+        if (sec && !sec._caClickWired) {
+            var toggle = sec.querySelector('.ca-section-toggle');
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    sec.classList.add('user-toggled');
+                }, { once: false });
+            }
+            sec._caClickWired = true;
+        }
+    });
 }
 
 function renderUpdatedBar() {
