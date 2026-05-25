@@ -166,33 +166,6 @@ header {
 .section-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 12px; }
 .subsection-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
 
-/* ── TRAVEL ADVISORY CARD ── */
-.travel-advisory-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-left-width: 4px;
-    border-radius: 10px;
-    padding: 18px 22px;
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 14px;
-    flex-wrap: wrap;
-}
-.travel-advisory-card .level-badge {
-    flex: 0 0 auto;
-    background: var(--accent);
-    color: white;
-    border-radius: 8px;
-    padding: 12px 18px;
-    text-align: center;
-    min-width: 90px;
-}
-.travel-advisory-card .level-num { font-size: 1.6rem; font-weight: 700; line-height: 1; }
-.travel-advisory-card .level-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
-.travel-advisory-card .advisory-content { flex: 1; min-width: 240px; }
-.travel-advisory-card .advisory-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
-.travel-advisory-card .advisory-summary { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
-.travel-advisory-card .advisory-link { font-size: 0.75rem; color: var(--accent); text-decoration: none; margin-top: 6px; display: inline-block; }
-
 /* ── RHETORIC TRACKER PLACEHOLDER ── */
 .rhetoric-placeholder {
     background: var(--card-bg);
@@ -229,7 +202,72 @@ header {
     margin-bottom: 22px;
 }
 .commodity-card-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 14px; }
-.commodity-prose { font-size: 0.95rem; line-height: 1.6; color: var(--text-primary); margin-bottom: 14px; }
+.commodity-prose {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    padding: 12px 16px;
+    background: rgba(56,189,248,0.06);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    margin-bottom: 14px;
+}
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+
+/* Alert banner */
+.commodity-alert-banner {
+    display: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 4px solid transparent;
+    margin-bottom: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; animation: surge-pulse 2.5s ease-in-out infinite; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+@keyframes surge-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+/* Tile grid */
+.commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+.commodity-tile {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.2s;
+}
+.commodity-tile:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--card-glow); }
+.commodity-tile-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.commodity-tile-icon { font-size: 1.6rem; flex-shrink: 0; }
+.commodity-tile-titlewrap { flex: 1; min-width: 0; }
+.commodity-tile-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+.commodity-tile-rank { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.commodity-tile-badges { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.commodity-tile-badge { font-size: 9px; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-role-producer { background: rgba(56,189,248,0.12); color: var(--accent); border: 1px solid rgba(56,189,248,0.3); }
+.commodity-role-consumer { background: rgba(139,92,246,0.12); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+.commodity-tile-signals { font-size: 0.7rem; color: var(--text-muted); }
+.commodity-tile-price { font-size: 0.88rem; color: var(--text-primary); margin-bottom: 6px; font-weight: 600; }
+.commodity-tile-price .delta-up   { color: #22c55e; }
+.commodity-tile-price .delta-down { color: #ef4444; }
+.commodity-tile-sparkline { width: 100%; height: 36px; margin-bottom: 8px; }
+.commodity-tile-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; }
+
 .commodity-link { display: inline-block; margin-top: 10px; padding: 8px 14px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; color: #f59e0b; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
 .commodity-link:hover { background: rgba(245,158,11,0.2); }
 
@@ -446,17 +484,17 @@ header {
 </div>
 <style>@keyframes caution-pulse{0%,100%{box-shadow:0 4px 15px rgba(239,68,68,0.3)}50%{box-shadow:0 4px 25px rgba(239,68,68,0.5)}}</style>
 
-<!-- ── COUNTRY-SPECIFIC TRAVEL ADVISORY (dynamic — fetches from Africa backend) ── -->
-<div class="travel-advisory-card" id="travelAdvisoryCard" style="border-left-color: var(--accent);">
-    <div class="level-badge" id="advisoryLevelBadge">
-        <div class="level-num" id="advisoryLevelNum">—</div>
-        <div class="level-label">Level</div>
+<!-- ── COUNTRY-SPECIFIC TRAVEL ADVISORY (canonical blue style — matches China) ── -->
+<div id="travelAdvisoryCard" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="font-size: 24px; flex-shrink: 0;">🇨🇩</div>
+    <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <span id="advisoryLabel" style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;">U.S. State Department — Democratic Republic of Congo Travel Advisory</span>
+            <span id="advisoryLevelBadge" style="background: #f59e0b; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LEVEL —</span>
+        </div>
+        <div id="advisoryText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;">Loading current State Department travel advisory…</div>
     </div>
-    <div class="advisory-content">
-        <div class="advisory-title" id="advisoryTitle">🇺🇸 U.S. State Dept: Democratic Republic of Congo — Loading...</div>
-        <div class="advisory-summary" id="advisorySummary">Fetching current State Department travel advisory...</div>
-        <a href="https://travel.state.gov/" target="_blank" rel="noopener" class="advisory-link" id="advisoryLink">View full advisory →</a>
-    </div>
+    <a id="advisoryLink" href="https://travel.state.gov/" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW ADVISORY →</a>
 </div>
 
 <!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
@@ -467,12 +505,12 @@ header {
     <div class="rh-status">🔒 IN DEVELOPMENT</div>
 </div>
 
-<!-- ── COMMODITY EXPOSURE CARD ── -->
-<div class="commodity-card">
-    <div class="commodity-card-title">🛢️ Democratic Republic of Congo — Commodity Exposure: Cobalt & Critical Minerals</div>
-    <div class="commodity-prose">
-        <p><strong>The DRC produces approximately 70% of global cobalt</strong> — making it the single most strategically critical country for EV battery supply chains globally. Production is dominated by Chinese-owned operators (CMOC, Sinohydro, Zijin, Huayou) controlling roughly 80% of major mines. The US-backed Lobito Corridor rail project aims to create an Atlantic export route bypassing Chinese-controlled logistics. Eastern conflict (M23/AFC) directly affects coltan/tantalum smuggling routes, and the May 2026 Ebola Bundibugyo PHEIC has prompted partial border closures with Rwanda and reduced regional logistics.</p>
-    </div>
+<!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 (live tiles) ── -->
+<div class="commodity-card" id="commodityCard">
+    <div class="commodity-card-title">📊 DEMOCRATIC REPUBLIC OF CONGO — COMMODITY EXPOSURE: COBALT & CRITICAL MINERALS</div>
+    <div class="commodity-prose" id="commodityProse">Loading commodity exposure profile…</div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"></div>
     <a href="commodities.html" class="commodity-link">View full Commodity Tracker →</a>
 </div>
 
@@ -720,8 +758,9 @@ header {
      JAVASCRIPT
      ════════════════════════════════════════════════════════════ -->
 <script>
-const COUNTRY_ID    = 'drc';
-const AFRICA_API    = 'https://asifah-africa-backend.onrender.com';
+const COUNTRY_ID      = 'drc';
+const COUNTRY_DISPLAY = 'Democratic Republic of Congo';
+const AFRICA_API      = 'https://asifah-africa-backend.onrender.com';
 
 // ── THEME TOGGLE ──
 function toggleTheme() {
@@ -762,21 +801,23 @@ async function loadTravelAdvisory() {
         const data = await resp.json();
         const adv = (data.advisories || {})[COUNTRY_ID];
         if (!adv) {
-            document.getElementById('advisoryTitle').textContent = '🇺🇸 U.S. State Dept: Democratic Republic of Congo — Advisory not found';
-            document.getElementById('advisorySummary').textContent = 'Travel advisory data not available for this country.';
+            document.getElementById('advisoryText').textContent = 'Travel advisory data not available for this country.';
             return;
         }
-        document.getElementById('advisoryLevelNum').textContent = adv.level || '—';
-        const badge = document.getElementById('advisoryLevelBadge');
-        badge.style.background = adv.level_color || 'var(--accent)';
-        document.querySelector('.travel-advisory-card').style.borderLeftColor = adv.level_color || 'var(--accent)';
-        document.getElementById('advisoryTitle').textContent = '🇺🇸 U.S. State Dept: Democratic Republic of Congo — ' + (adv.level_label || 'Level ' + (adv.level || '?'));
-        document.getElementById('advisorySummary').textContent = adv.short_summary || 'No summary available.';
+        // Level badge — keep amber/orange canonical regardless of level (visual continuity with China page)
+        document.getElementById('advisoryLevelBadge').textContent = 'LEVEL ' + (adv.level || '?');
+        // Headline text: bold colored level_label + remainder of summary
+        const txt = document.getElementById('advisoryText');
+        if (txt) {
+            const headline = adv.level_label || ('Level ' + (adv.level || '?'));
+            const summary  = (adv.short_summary || '').replace(/^<p[^>]*>|<\/p>$/g, '').replace(/<[^>]+>/g, '').trim();
+            txt.innerHTML = '<strong style="color:#f59e0b;">' + headline + '</strong>' + (summary ? ' — ' + summary : '');
+        }
         if (adv.link) document.getElementById('advisoryLink').href = adv.link;
         document.getElementById('lastUpdated').textContent = 'Travel advisory updated: ' + (adv.updated || data.timestamp || 'Unknown').slice(0, 10);
     } catch (err) {
         console.warn('Travel advisory error:', err);
-        document.getElementById('advisorySummary').textContent = 'Could not fetch advisory data. Check back later.';
+        document.getElementById('advisoryText').textContent = 'Could not fetch advisory data. Check back later.';
     }
 }
 
@@ -833,10 +874,138 @@ function filterArticles(tab, btn) {
     renderArticles();
 }
 
+// ── COMMODITY EXPOSURE — Gold Standard v2.0 (live tiles) ──
+// Mirrors china-stability.html. Fetches /api/africa/commodity/<country>
+// (which proxies through to ME backend /api/commodity-pressure/<country>).
+// Renders: prose paragraph + alert banner + tiles with sparklines + role/alert badges
+async function loadCommodity() {
+    const card = document.getElementById('commodityCard');
+    if (!card) return;   // page has no commodity card (e.g. Ethiopia, Kenya, etc.)
+
+    let data = null;
+    try {
+        const r = await fetch(AFRICA_API + '/api/africa/commodity/' + COUNTRY_ID);
+        if (!r.ok) throw new Error('Africa proxy HTTP ' + r.status);
+        data = await r.json();
+        if (!data || data.success === false) throw new Error('Africa proxy returned failure');
+    } catch (e) {
+        console.warn('[Commodity] Africa proxy failed, trying ME backend direct...', e.message);
+        try {
+            const r2 = await fetch('https://asifah-backend.onrender.com/api/commodity-pressure/' + COUNTRY_ID);
+            if (!r2.ok) throw new Error('ME backend HTTP ' + r2.status);
+            data = await r2.json();
+        } catch (e2) {
+            console.warn('[Commodity] ME backend fallback also failed:', e2.message);
+            const proseEl = document.getElementById('commodityProse');
+            if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+            return;
+        }
+    }
+
+    // Prose
+    const proseEl = document.getElementById('commodityProse');
+    const summariesCount = (data.commodity_summaries || []).length;
+    if (proseEl) {
+        proseEl.textContent = data.prose ||
+            (summariesCount > 0
+                ? COUNTRY_DISPLAY + ' tracks ' + summariesCount + ' strategic commodity exposures. See tiles below for live status.'
+                : COUNTRY_DISPLAY + '\u2019s commodity profile is being wired in. Live tiles will populate once the backend has data for this country.');
+    }
+
+    // Alert banner
+    const banner = document.getElementById('commodityAlertBanner');
+    const alertLevel = (data.alert_level || 'normal').toLowerCase();
+    const alertLabels = {
+        normal:   '\u2713 NO ACTIVE COMMODITY PRESSURE',
+        elevated: '\u25D0 ELEVATED COMMODITY PRESSURE',
+        high:     '\u25B2 HIGH COMMODITY PRESSURE',
+        surge:    '\uD83D\uDEA8 COMMODITY PRESSURE SURGE'
+    };
+    const pressure = (data.commodity_pressure || 0);
+    if (banner) {
+        banner.className = 'commodity-alert-banner alert-' + alertLevel + ' show';
+        banner.innerHTML =
+            '<strong>' + (alertLabels[alertLevel] || alertLabels.normal) + '</strong>' +
+            '<span class="ab-meta">Pressure score: ' + Number(pressure).toFixed(1) + ' \u00b7 ' +
+            summariesCount + ' exposures tracked' +
+            (data.has_live_data === false ? ' \u00b7 awaiting live signals' : '') + '</span>';
+    }
+
+    // Tiles
+    const grid = document.getElementById('commodityGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    (data.commodity_summaries || []).forEach(function(c) {
+        const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+        const role = (c.role || 'consumer').toLowerCase();
+        const rankText = c.rank ? '#' + c.rank + ' globally' : '';
+        const sigCount = c.signal_count || 0;
+        const sigText = sigCount > 0 ? sigCount + ' signal' + (sigCount !== 1 ? 's' : '') : '';
+
+        // Sparkline (SVG polyline)
+        let sparklineHtml = '';
+        let priceHtml = '';
+        if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+            const spark = c.sparkline.spark;
+            const min = Math.min.apply(null, spark);
+            const max = Math.max.apply(null, spark);
+            const range = max - min || 1;
+            const points = spark.map(function(v, i) {
+                const x = (i / (spark.length - 1)) * 100;
+                const y = 100 - ((v - min) / range) * 100;
+                return x.toFixed(1) + ',' + y.toFixed(1);
+            }).join(' ');
+            const sparkColor = (c.sparkline.delta_pct || 0) >= 0 ? '#22c55e' : '#ef4444';
+            sparklineHtml = '<svg class="commodity-tile-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+                '<polyline fill="none" stroke="' + sparkColor + '" stroke-width="1.5" vector-effect="non-scaling-stroke" points="' + points + '"/>' +
+                '</svg>';
+            const price = c.sparkline.last_price !== undefined ? c.sparkline.last_price : null;
+            const delta = c.sparkline.delta_pct !== undefined ? c.sparkline.delta_pct : null;
+            const window = c.sparkline.window_days ? c.sparkline.window_days + 'd' : '30d';
+            if (price !== null) {
+                const arrow = delta >= 0 ? '\u25B2' : '\u25BC';
+                const deltaClass = delta >= 0 ? 'delta-up' : 'delta-down';
+                const deltaStr = delta !== null ? ' <span class="' + deltaClass + '">' + arrow + ' ' + Number(delta).toFixed(2) + '%</span>' : '';
+                const priceFmt = '$' + Number(price).toFixed(2);
+                priceHtml = '<div class="commodity-tile-price">' + priceFmt + deltaStr + ' <span style="color:var(--text-muted);font-size:0.72rem;">(' + window + ')</span></div>';
+            }
+        }
+
+        const desc = c.description || c.short_description || '';
+        const icon = c.icon || '\uD83D\uDCCA';
+
+        grid.insertAdjacentHTML('beforeend',
+            '<div class="commodity-tile">' +
+                '<div class="commodity-tile-header">' +
+                    '<div class="commodity-tile-icon">' + icon + '</div>' +
+                    '<div class="commodity-tile-titlewrap">' +
+                        '<div class="commodity-tile-name">' + (c.display_name || c.commodity_id || 'Commodity') + '</div>' +
+                        (rankText ? '<div class="commodity-tile-rank">' + rankText + '</div>' : '') +
+                    '</div>' +
+                '</div>' +
+                '<div class="commodity-tile-badges">' +
+                    '<span class="commodity-tile-badge commodity-alert-' + globalAlert + '">' + globalAlert + '</span>' +
+                    '<span class="commodity-tile-badge commodity-role-' + role + '">' + role + '</span>' +
+                    (sigText ? '<span class="commodity-tile-signals">' + sigText + '</span>' : '') +
+                '</div>' +
+                priceHtml +
+                sparklineHtml +
+                (desc ? '<div class="commodity-tile-desc">' + desc.slice(0, 200) + (desc.length > 200 ? '\u2026' : '') + '</div>' : '') +
+            '</div>'
+        );
+    });
+
+    // If no tiles came back, show graceful empty-state
+    if ((data.commodity_summaries || []).length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure tiles available yet for ' + COUNTRY_DISPLAY + '. Backend may still be warming up.</div>';
+    }
+}
+
 // ── BOOT ──
 document.addEventListener('DOMContentLoaded', function() {
     loadTravelAdvisory();
     loadArticles();
+    loadCommodity();
 });
 </script>
 </body>
