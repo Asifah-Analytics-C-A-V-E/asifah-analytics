@@ -246,6 +246,9 @@ header {
     border-radius: 10px;
     padding: 14px;
     transition: all 0.2s;
+    display: block;
+    text-decoration: none;
+    color: inherit;
 }
 .commodity-tile:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--card-glow); }
 .commodity-tile-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
@@ -933,7 +936,7 @@ async function loadCommodity() {
         const sigCount = c.signal_count || 0;
         const sigText = sigCount > 0 ? sigCount + ' signal' + (sigCount !== 1 ? 's' : '') : '';
 
-        // Sparkline (SVG polyline)
+        // Sparkline (SVG polyline) — canonical China pattern
         let sparklineHtml = '';
         let priceHtml = '';
         if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
@@ -946,31 +949,34 @@ async function loadCommodity() {
                 const y = 100 - ((v - min) / range) * 100;
                 return x.toFixed(1) + ',' + y.toFixed(1);
             }).join(' ');
-            const sparkColor = (c.sparkline.delta_pct || 0) >= 0 ? '#22c55e' : '#ef4444';
+            const pctChange = c.sparkline.change_pct_30d || 0;
+            const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
             sparklineHtml = '<svg class="commodity-tile-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">' +
                 '<polyline fill="none" stroke="' + sparkColor + '" stroke-width="1.5" vector-effect="non-scaling-stroke" points="' + points + '"/>' +
                 '</svg>';
-            const price = c.sparkline.last_price !== undefined ? c.sparkline.last_price : null;
-            const delta = c.sparkline.delta_pct !== undefined ? c.sparkline.delta_pct : null;
-            const window = c.sparkline.window_days ? c.sparkline.window_days + 'd' : '30d';
+            const price = (c.sparkline.price !== undefined && c.sparkline.price !== null) ? c.sparkline.price : null;
             if (price !== null) {
-                const arrow = delta >= 0 ? '\u25B2' : '\u25BC';
-                const deltaClass = delta >= 0 ? 'delta-up' : 'delta-down';
-                const deltaStr = delta !== null ? ' <span class="' + deltaClass + '">' + arrow + ' ' + Number(delta).toFixed(2) + '%</span>' : '';
+                const arrow = pctChange >= 0 ? '\u25B2' : '\u25BC';
+                const deltaClass = pctChange >= 0 ? 'delta-up' : 'delta-down';
                 const priceFmt = '$' + Number(price).toFixed(2);
-                priceHtml = '<div class="commodity-tile-price">' + priceFmt + deltaStr + ' <span style="color:var(--text-muted);font-size:0.72rem;">(' + window + ')</span></div>';
+                priceHtml = '<div class="commodity-tile-price">' + priceFmt +
+                    ' <span class="' + deltaClass + '">' + arrow + ' ' + Number(pctChange).toFixed(2) + '%</span>' +
+                    ' <span style="color:var(--text-muted);font-size:0.72rem;">(30d)</span>' +
+                    '</div>';
             }
         }
 
-        const desc = c.description || c.short_description || '';
+        const note = c.note || '';
         const icon = c.icon || '\uD83D\uDCCA';
+        const commodityName = c.name || c.commodity || 'Commodity';
+        const commodityId = c.commodity || (c.name || '').toLowerCase();
 
         grid.insertAdjacentHTML('beforeend',
-            '<div class="commodity-tile">' +
+            '<a href="commodities.html#' + commodityId + '" class="commodity-tile">' +
                 '<div class="commodity-tile-header">' +
                     '<div class="commodity-tile-icon">' + icon + '</div>' +
                     '<div class="commodity-tile-titlewrap">' +
-                        '<div class="commodity-tile-name">' + (c.display_name || c.commodity_id || 'Commodity') + '</div>' +
+                        '<div class="commodity-tile-name">' + commodityName + '</div>' +
                         (rankText ? '<div class="commodity-tile-rank">' + rankText + '</div>' : '') +
                     '</div>' +
                 '</div>' +
@@ -981,8 +987,8 @@ async function loadCommodity() {
                 '</div>' +
                 priceHtml +
                 sparklineHtml +
-                (desc ? '<div class="commodity-tile-desc">' + desc.slice(0, 200) + (desc.length > 200 ? '\u2026' : '') + '</div>' : '') +
-            '</div>'
+                (note ? '<div class="commodity-tile-desc">' + note.slice(0, 200) + (note.length > 200 ? '\u2026' : '') + '</div>' : '') +
+            '</a>'
         );
     });
 
