@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics — Nigeria Stability Index v1.0.0 — May 2026 -->
+<!-- Gold Standard Africa shell: Arctic scheme + sidebar + rhetoric placeholder + commodity card + EN only -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Nigeria Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --watermark-opacity: 0.05;
+    --watermark-filter: none;
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --watermark-opacity: 0.18;
+    --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+body::before {
+    content: '';
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 110vmin; height: 110vmin;
+    min-width: 500px; min-height: 500px;
+    max-width: 800px; max-height: 800px;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    opacity: var(--watermark-opacity);
+    filter: var(--watermark-filter);
+    pointer-events: none;
+    z-index: 0;
+}
+body::after {
+    content: '';
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(56,189,248,0.015) 2px, rgba(56,189,248,0.015) 3px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+@media (max-width: 1024px) { .page-with-sidebar { flex-direction: column; } }
+
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    color: var(--header-text);
+    padding: 22px 30px;
+    border-radius: 14px;
+    margin: 20px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap;
+    box-shadow: var(--card-glow);
+    border: 1px solid var(--card-border);
+}
+.header-logo-wrap { display: flex; align-items: center; gap: 14px; }
+.header-logo { width: 60px; height: 60px; }
+.back-link { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 700; letter-spacing: 0.5px; padding: 6px 12px; border: 1px solid var(--accent); border-radius: 6px; transition: all 0.2s; }
+.back-link:hover { background: var(--accent); color: white; }
+.header-content { flex: 1; min-width: 280px; }
+.header-content h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: 1px; }
+.subtitle { font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+.header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.theme-toggle-label { font-size: 0.75rem; color: var(--text-muted); }
+.theme-toggle-switch { width: 44px; height: 22px; background: var(--card-border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; }
+.theme-toggle-slider { width: 18px; height: 18px; background: var(--accent); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar {
+    flex: 0 0 200px; min-width: 200px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: var(--card-glow);
+}
+.nav-sidebar-label {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted);
+    padding: 8px 4px 6px 4px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 6px;
+}
+.nav-btn {
+    display: block;
+    padding: 9px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    color: var(--text-primary);
+}
+.nav-btn-label { display: block; }
+.nav-btn-status { display: block; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.95; margin-top: 2px; }
+.nav-btn.active-nav { background: linear-gradient(135deg,rgba(30,58,95,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: var(--text-primary); }
+.nav-btn.active-nav.you-are-here { background: linear-gradient(135deg,rgba(56,189,248,0.35),rgba(56,189,248,0.15)); border-color: var(--accent); }
+.nav-btn.active-nav:hover { transform: translateX(2px); }
+.nav-btn.commodities-btn { background: linear-gradient(135deg,rgba(12,74,110,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: #fde68a; }
+.nav-btn.military-btn { background: linear-gradient(135deg,rgba(22,101,52,0.55),rgba(134,239,172,0.18)); border: 1px solid rgba(134,239,172,0.55); color: #bbf7d0; }
+.nav-btn.gpi-btn { background: linear-gradient(135deg,rgba(107,33,168,0.55),rgba(196,181,253,0.18)); border: 1px solid rgba(196,181,253,0.55); color: #ddd6fe; }
+.nav-btn.rhetoric-btn { background: linear-gradient(135deg,rgba(21,94,117,0.55),rgba(103,232,249,0.18)); border: 1px solid rgba(103,232,249,0.55); color: #a5f3fc; }
+.nav-btn.inactive-nav { opacity: 0.5; cursor: not-allowed; background: var(--article-bg); }
+
+/* ── METRIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 12px; }
+.subsection-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+
+/* ── TRAVEL ADVISORY CARD ── */
+.travel-advisory-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left-width: 4px;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px;
+    flex-wrap: wrap;
+}
+.travel-advisory-card .level-badge {
+    flex: 0 0 auto;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 90px;
+}
+.travel-advisory-card .level-num { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.travel-advisory-card .level-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+.travel-advisory-card .advisory-content { flex: 1; min-width: 240px; }
+.travel-advisory-card .advisory-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+.travel-advisory-card .advisory-summary { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+.travel-advisory-card .advisory-link { font-size: 0.75rem; color: var(--accent); text-decoration: none; margin-top: 6px; display: inline-block; }
+
+/* ── RHETORIC TRACKER PLACEHOLDER ── */
+.rhetoric-placeholder {
+    background: var(--card-bg);
+    border: 1px dashed var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 22px;
+    text-align: center;
+    opacity: 0.7;
+}
+.rhetoric-placeholder .rh-icon { font-size: 2rem; margin-bottom: 8px; }
+.rhetoric-placeholder .rh-title { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px; }
+.rhetoric-placeholder .rh-subtitle { font-size: 0.8rem; color: var(--text-muted); }
+.rhetoric-placeholder .rh-status {
+    display: inline-block;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+/* ── COMMODITY CARD ── */
+.commodity-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+.commodity-card-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 14px; }
+.commodity-prose { font-size: 0.95rem; line-height: 1.6; color: var(--text-primary); margin-bottom: 14px; }
+.commodity-link { display: inline-block; margin-top: 10px; padding: 8px 14px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; color: #f59e0b; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
+.commodity-link:hover { background: rgba(245,158,11,0.2); }
+
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; }
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
+.map-iframe-wrap { width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; }
+
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+.knowledge-library h2 { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 4px; }
+.library-icon { font-size: 1.5rem; }
+.open-source-disclaimer { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
+.knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; }
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+.knowledge-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(56,189,248,0.05), transparent);
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+.knowledge-header:hover { background: rgba(56,189,248,0.1); }
+.knowledge-header-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+.category-icon { font-size: 1.3rem; }
+.collapse-icon { font-size: 0.85rem; color: var(--accent); transition: transform 0.2s; }
+.knowledge-card:not(.collapsed) .knowledge-header { border-bottom-color: var(--card-border); }
+.knowledge-card:not(.collapsed) .collapse-icon { transform: rotate(180deg); }
+.knowledge-content {
+    padding: 16px 18px 18px 18px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    max-height: 1600px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+}
+.knowledge-card.collapsed .knowledge-content { max-height: 0; padding-top: 0; padding-bottom: 0; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content ul { margin: 6px 0 12px 22px; }
+.knowledge-content li { margin-bottom: 4px; }
+.report-links-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px; margin-top: 14px;
+}
+.report-link {
+    display: block; padding: 8px 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: var(--accent); color: white; }
+
+/* ── ARTICLES SECTION ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+.article-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+.article-tab { padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); border: 1px solid transparent; }
+.article-tab:hover { background: var(--article-hover); color: var(--text-primary); }
+.article-tab.active { background: var(--article-bg); color: var(--accent); border-color: var(--card-border); border-bottom-color: var(--article-bg); }
+.articles-list { list-style: none; padding: 0; }
+.article-item { padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 0.88rem; line-height: 1.5; }
+.article-item:last-child { border-bottom: none; }
+.article-item a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.article-item a:hover { color: var(--accent); }
+.article-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
+.article-description { font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+
+/* ── FOOTER ── */
+.footer-info {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    border-top: 1px solid var(--card-border);
+    margin-top: 30px;
+}
+.footer-info a { color: #38bdf8; text-decoration: none; }
+.footer-info a:hover { text-decoration: underline; }
+
+/* ── MOBILE ── */
+.mobile-hamburger { display: none; }
+.mobile-drawer-backdrop { display: none; }
+@media (max-width: 768px) {
+    .mobile-hamburger {
+        display: block;
+        background: var(--accent); color: white;
+        border: none; border-radius: 6px;
+        padding: 8px 14px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        position: fixed; top: 14px; left: 14px;
+        z-index: 999;
+    }
+    .mobile-drawer-backdrop.open {
+        display: block;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 998;
+    }
+    .nav-sidebar {
+        position: fixed; top: 0; left: -260px;
+        width: 240px; height: 100vh;
+        z-index: 999;
+        transition: left 0.3s;
+        overflow-y: auto;
+        border-radius: 0;
+    }
+    .nav-sidebar.mobile-open { left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════════ -->
+<header>
+    <div class="header-logo-wrap">
+        <a href="africa.html" class="back-link">← Africa</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1>🇳🇬 NIGERIA STABILITY INDEX</h1>
+        <div class="subtitle">Boko Haram & ISWAP · Lakurawa & Banditry · Plateau Crisis · Tinubu Government · Niger Delta · Oil Economy</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <span class="theme-toggle-label">Theme</span>
+            <div class="theme-toggle-switch">
+                <div class="theme-toggle-slider"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE WITH SIDEBAR
+     ════════════════════════════════════════════════════════════ -->
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+
+<div class="page-with-sidebar">
+
+<!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav you-are-here"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● You are here</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+
+    <div class="nav-sidebar-label" style="margin-top: 14px;">Cross-Cutting Tools</div>
+    <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">📊 Commodity Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">🪖 Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+
+    <div class="nav-sidebar-label" style="margin-top: 14px;">Regional Rhetoric</div>
+    <a href="rhetoric-middle-east.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-btn inactive-nav"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">🔒 In Dev</span></div>
+</nav>
+
+<div class="main-content">
+
+<!-- ── U.S. STATE DEPARTMENT WORLDWIDE CAUTION ── -->
+<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
+    <div style="font-size:28px;flex-shrink:0;">🚨</div>
+    <div style="flex:1;">
+        <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow the guidance in the latest security alerts issued by the nearest U.S. embassy or consulate. They may experience travel disruptions due to periodic airspace closures. The Department of State advises Americans worldwide to exercise increased caution.</div>
+        <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: February 28, 2026</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;">VIEW ADVISORY →</a>
+</div>
+<style>@keyframes caution-pulse{0%,100%{box-shadow:0 4px 15px rgba(239,68,68,0.3)}50%{box-shadow:0 4px 25px rgba(239,68,68,0.5)}}</style>
+
+<!-- ── COUNTRY-SPECIFIC TRAVEL ADVISORY (dynamic — fetches from Africa backend) ── -->
+<div class="travel-advisory-card" id="travelAdvisoryCard" style="border-left-color: var(--accent);">
+    <div class="level-badge" id="advisoryLevelBadge">
+        <div class="level-num" id="advisoryLevelNum">—</div>
+        <div class="level-label">Level</div>
+    </div>
+    <div class="advisory-content">
+        <div class="advisory-title" id="advisoryTitle">🇺🇸 U.S. State Dept: Nigeria — Loading...</div>
+        <div class="advisory-summary" id="advisorySummary">Fetching current State Department travel advisory...</div>
+        <a href="https://travel.state.gov/" target="_blank" rel="noopener" class="advisory-link" id="advisoryLink">View full advisory →</a>
+    </div>
+</div>
+
+<!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
+<div class="rhetoric-placeholder">
+    <div class="rh-icon">📡</div>
+    <div class="rh-title">Nigeria Rhetoric &amp; Pressure Tracker</div>
+    <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_nigeria.py</div>
+    <div class="rh-status">🔒 IN DEVELOPMENT</div>
+</div>
+
+<!-- ── COMMODITY EXPOSURE CARD ── -->
+<div class="commodity-card">
+    <div class="commodity-card-title">🛢️ Nigeria — Commodity Exposure: Oil</div>
+    <div class="commodity-prose">
+        <p><strong>Nigeria is Africa's largest oil producer by reserves</strong>, with production historically capped by OPEC+ quotas and degraded by industrial-scale oil theft (250,000-400,000 bpd estimated stolen via pipeline bunkering). The Dangote Refinery (online 2024-2026) represents a transformational shift — Nigeria can now refine domestically rather than export crude and import refined products. Niger Delta militancy remains a tail risk for export disruption, while Boko Haram/ISWAP and bandit operations create no direct hydrocarbon disruption but consume large defense allocations.</p>
+    </div>
+    <a href="commodities.html" class="commodity-link">View full Commodity Tracker →</a>
+</div>
+
+<!-- ── STRATEGIC MAP ── -->
+<div class="map-section">
+    <h2>🗺️ Nigeria — Strategic Overview</h2>
+    <div class="map-subtitle">Interactive map centered on Abuja. Pan and zoom to explore strategic geography.</div>
+    <div class="map-iframe-wrap">
+        <iframe
+            src="https://www.openstreetmap.org/export/embed.html?bbox=2.5,4,15,14&layer=mapnik&marker=9.0765,7.3986"
+            width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
+        </iframe>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     KNOWLEDGE LIBRARY
+     ════════════════════════════════════════════════════════════ -->
+<div class="knowledge-library">
+    <h2>
+        <span class="library-icon">📚</span>
+        <span>Knowledge Library</span>
+    </h2>
+    <p class="open-source-disclaimer">
+        Background information compiled from open-source research, policy briefs, and humanitarian reports. Click any card to expand. Source links provided for primary references.
+    </p>
+
+    <div class="knowledge-categories">
+        <!-- Northeast Jihadist Insurgencies — Boko Haram, ISWAP -->
+        <div class="knowledge-card" id="card-jihadist-insurgencies">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('jihadist-insurgencies')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">⚔️</span>
+                    <span>Northeast Jihadist Insurgencies — Boko Haram, ISWAP</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Northeast Nigeria has been at war with jihadist insurgencies since 2009</strong>. The original Boko Haram movement has split into two main factions, both still active across the Lake Chad Basin.</p>
+<p><strong>Key Groups:</strong></p>
+<ul>
+    <li><strong>JAS (Jama'atu Ahlis Sunna Lidda'awati wal-Jihad):</strong> Original Boko Haram, historically led by Abubakar Shekau (killed by ISWAP, May 2021). Weakened but still active in Sambisa Forest area.</li>
+    <li><strong>ISWAP (Islamic State West Africa Province):</strong> Broke from Boko Haram 2016; now dominant faction; centered in Lake Chad islands and northern Borno; led by Abu Musab al-Barnawi and successors.</li>
+    <li><strong>Ansaru:</strong> Smaller Al-Qaeda-aligned faction operating in northwestern Nigeria.</li>
+</ul>
+<p><strong>Counter-Insurgency Framework:</strong></p>
+<ul>
+    <li><strong>Operation Hadin Kai:</strong> Current Nigerian Army operation in the northeast (replaced Operation Lafiya Dole)</li>
+    <li><strong>MNJTF (Multinational Joint Task Force):</strong> Nigeria + Cameroon + Chad + Niger + Benin coalition based in N'Djamena</li>
+    <li><strong>Civilian JTF (CJTF):</strong> Local self-defense militias in Maiduguri</li>
+    <li><strong>US support:</strong> US Green Berets, ISR drones, and bilateral training programs</li>
+</ul>
+<p><strong>Key Theaters:</strong> Borno State (Maiduguri, Bama, Konduga, Damasak), Yobe State (Damaturu, Buni Yadi), Adamawa State, Lake Chad islands.</p>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Nigeria</a>
+                    <a href="https://www.acleddata.com/dashboard/" target="_blank" rel="noopener" class="report-link">📑 ACLED Nigeria conflict tracker</a>
+                    <a href="https://ctc.westpoint.edu/region/nigeria/" target="_blank" rel="noopener" class="report-link">📑 CTC West Point — Nigeria</a>
+                    <a href="https://reliefweb.int/country/nga" target="_blank" rel="noopener" class="report-link">📑 ReliefWeb Nigeria</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Northwest Banditry & Lakurawa Emergence -->
+        <div class="knowledge-card collapsed" id="card-lakurawa-bandits">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('lakurawa-bandits')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🔫</span>
+                    <span>Northwest Banditry & Lakurawa Emergence</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Northwest Nigeria is contested by armed criminal groups</strong> — collectively termed "bandits" — operating across Zamfara, Sokoto, Katsina, Kaduna, Kebbi, and Niger states.</p>
+<p><strong>Major Bandit Networks:</strong></p>
+<ul>
+    <li><strong>Bello Turji:</strong> Most-wanted bandit kingpin operating in Zamfara/Sokoto borderlands</li>
+    <li><strong>Ado Aleru:</strong> Senior bandit commander; multiple military bounties</li>
+    <li><strong>Kachalla networks:</strong> Multiple regional "kachallas" (commanders) running kidnap-for-ransom enterprises</li>
+</ul>
+<p><strong>Lakurawa — Emerging Group (2024-2025):</strong></p>
+<ul>
+    <li>New armed group identified in Sokoto, Kebbi, and parts of Borno late 2024</li>
+    <li>Reported to be ideologically jihadist with sources in Niger/Sahel</li>
+    <li>Filling vacuum left by AES military departure from regional security cooperation</li>
+    <li>Significant concern as a potential bridge between Sahel jihadism and Nigerian banditry</li>
+</ul>
+<p><strong>Counter-Operations:</strong></p>
+<ul>
+    <li><strong>Operation Hadarin Daji:</strong> Nigerian Army operation against bandits in NW</li>
+    <li><strong>Operation Fasan Yamma:</strong> Multi-state joint task force</li>
+    <li><strong>Operation Whirl Punch:</strong> Air Force-led strike operations against bandit camps</li>
+</ul>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Nigeria</a>
+                    <a href="https://www.sbmintel.com/" target="_blank" rel="noopener" class="report-link">📑 SBM Intelligence Nigeria</a>
+                    <a href="https://www.premiumtimesng.com/" target="_blank" rel="noopener" class="report-link">📑 Premium Times Nigeria</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Belt — Plateau, Kaduna, Benue -->
+        <div class="knowledge-card collapsed" id="card-middle-belt">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('middle-belt')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🌾</span>
+                    <span>Middle Belt — Plateau, Kaduna, Benue</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Nigeria's Middle Belt is the geographic seam between Muslim-majority North and Christian-majority South</strong> — and the locus of persistent farmer-herder conflict with ethnic and religious dimensions.</p>
+<p><strong>Key Dynamics:</strong></p>
+<ul>
+    <li><strong>Farmer-herder conflict:</strong> Predominantly between Fulani pastoralists (often Muslim) and settled farmers (often Christian); driven by land-use pressure, climate change, and weak governance</li>
+    <li><strong>Plateau State:</strong> Recurring massacres in Mangu, Bokkos, Bassa local government areas; deaths in the thousands across 2023-2024</li>
+    <li><strong>Kaduna State:</strong> Particularly Southern Kaduna — long history of intercommunal violence</li>
+    <li><strong>Benue State:</strong> Major farmer-herder violence; Anti-Open Grazing Law (2017) sparked herder backlash</li>
+    <li><strong>"Genocide" framing:</strong> Some Western Christian advocacy groups frame as anti-Christian genocide; reality is more complex but Christian communities have suffered disproportionately</li>
+</ul>
+<p><strong>2024 Events:</strong> December 2023 Plateau Christmas attacks (200+ killed) marked one of the worst single events; smaller attacks throughout 2024 and into 2025-26.</p>
+<p><strong>Government Response:</strong> President Tinubu has faced criticism for limited federal response; State Police debate ongoing as potential reform.</p>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Nigeria</a>
+                    <a href="https://opendoorsus.org/" target="_blank" rel="noopener" class="report-link">📑 Open Doors (faith-based)</a>
+                    <a href="https://www.hrw.org/africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 HRW Nigeria</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oil Economy & Niger Delta -->
+        <div class="knowledge-card collapsed" id="card-oil-economy">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('oil-economy')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🛢️</span>
+                    <span>Oil Economy & Niger Delta</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Nigeria is Africa's largest oil producer</strong> by reserves and historically by output, though OPEC+ quota and theft have driven production below 1.5M bpd in many recent months.</p>
+<p><strong>Key Players:</strong></p>
+<ul>
+    <li><strong>NNPCL (Nigerian National Petroleum Company Limited):</strong> National oil company; recently restructured under PIA 2021</li>
+    <li><strong>IOCs (International Oil Companies):</strong> ExxonMobil, Chevron, Shell, TotalEnergies, Eni — most divesting onshore assets to local operators</li>
+    <li><strong>Indigenous independents:</strong> Seplat, Aiteo, Heirs Holdings, Sahara Group — buying IOC onshore stakes</li>
+    <li><strong>Dangote Refinery:</strong> $20B private refinery (Lekki, Lagos); fully operational 2024-2026; massive geopolitical-economic shift</li>
+</ul>
+<p><strong>Niger Delta Militancy:</strong></p>
+<ul>
+    <li><strong>Niger Delta Avengers:</strong> Resurgent militant group threatening pipeline attacks</li>
+    <li><strong>Oil theft / bunkering:</strong> Estimated 250,000-400,000 bpd stolen via illegal pipeline taps; massive corruption + community insurgency dimension</li>
+    <li><strong>Tompolo / Tantita:</strong> Government's awarded pipeline-security contract to former militant leader Tompolo's company — controversial but somewhat effective</li>
+    <li><strong>Amnesty programs:</strong> Niger Delta amnesty payments continue 16+ years post-2009 origin</li>
+</ul>
+<p><strong>Strategic Implications:</strong> Dangote Refinery is reducing Nigeria's perverse status as crude exporter / refined fuel importer. Has implications for FX reserves, fuel subsidy politics, and regional refined product trade.</p>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.eia.gov/international/analysis/country/NGA" target="_blank" rel="noopener" class="report-link">📑 US EIA Nigeria</a>
+                    <a href="https://opec.org/" target="_blank" rel="noopener" class="report-link">📑 OPEC</a>
+                    <a href="https://www.nnpcgroup.com/" target="_blank" rel="noopener" class="report-link">📑 NNPC Limited</a>
+                    <a href="https://www.dangote.com/" target="_blank" rel="noopener" class="report-link">📑 Dangote Group</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- US–Nigeria Relations -->
+        <div class="knowledge-card collapsed" id="card-us-relations">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('us-relations')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🇺🇸</span>
+                    <span>US–Nigeria Relations</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>The US-Nigeria relationship is one of the most strategically important in Africa</strong> — based on population (Africa's largest), economy (largest in West Africa), and counter-terrorism cooperation.</p>
+<p><strong>Bilateral Framework:</strong></p>
+<ul>
+    <li><strong>US Embassy Abuja:</strong> Major diplomatic post; full bilateral agenda including security, trade, governance</li>
+    <li><strong>US Consulate Lagos:</strong> Commercial and visa hub; commercial ties heavily concentrated</li>
+    <li><strong>AGOA:</strong> Nigeria is AGOA-eligible; recent oil-export-driven trade volumes</li>
+    <li><strong>USTDA:</strong> Trade and development infrastructure financing</li>
+    <li><strong>Power Africa:</strong> Long-running initiative for electrification</li>
+</ul>
+<p><strong>Security Cooperation:</strong></p>
+<ul>
+    <li><strong>1206 / 333 authorities:</strong> Section 1206/333 funding for Nigerian military training and equipment</li>
+    <li><strong>US Special Forces:</strong> Periodic deployments; Green Berets trained Nigerian troops</li>
+    <li><strong>Super Tucano sales:</strong> 12 A-29 Super Tucano aircraft delivered 2021-2022 for counter-Boko Haram operations</li>
+    <li><strong>Christian persecution issue:</strong> US Commission on International Religious Freedom (USCIRF) recommends Nigeria for Country of Particular Concern (CPC) designation; State Department response has varied across administrations</li>
+</ul>
+<p><strong>Watch Items:</strong> AGOA renewal/expiration debates; potential CPC designation; Tinubu government engagement with Trump administration; ECOWAS standby force prospects given AES exit.</p>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.state.gov/countries-areas/nigeria/" target="_blank" rel="noopener" class="report-link">📑 US State Department Nigeria</a>
+                    <a href="https://www.uscirf.gov/countries/nigeria" target="_blank" rel="noopener" class="report-link">📑 USCIRF Nigeria</a>
+                    <a href="https://www.ustr.gov/countries-regions/africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 USTR Nigeria</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── RECENT ARTICLES (tabbed: News / Socials / NGOs) ── -->
+<div class="articles-section">
+    <div class="section-title">📰 Recent Nigeria Articles &amp; Reports</div>
+    <div class="article-tabs" id="articleTabs">
+        <div class="article-tab active" data-tab="news" onclick="filterArticles('news', this)">News</div>
+        <div class="article-tab" data-tab="socials" onclick="filterArticles('socials', this)">Socials</div>
+        <div class="article-tab" data-tab="ngos" onclick="filterArticles('ngos', this)">NGOs &amp; Reports</div>
+    </div>
+    <ul class="articles-list" id="articlesList">
+        <li class="article-item" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            ● ● ● Loading articles...
+        </li>
+    </ul>
+</div>
+
+</div> <!-- /.main-content -->
+</div> <!-- /.page-with-sidebar -->
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER (canonical, May 2026)
+     ════════════════════════════════════════════════════════════ -->
+<div class="footer-info">
+    <p><strong>ASIFAH ANALYTICS · NIGERIA STABILITY INDEX</strong></p>
+    <p>asifah-africa-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
+    <p>OSINT aggregation from GDELT (en/fr where applicable), NewsAPI, Brave Search, RSS · ReliefWeb &amp; The New Humanitarian · ISS Africa · WHO Disease Outbreak News · U.S. State Department travel advisories · FAA NOTAMs</p>
+
+    <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
+    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
+    </div>
+
+    <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT POSITION · © 2025-2026 Asifah Analytics</p>
+    <p style="margin-top:10px;">
+        <a href="mission.html">Mission Statement</a> ·
+        <a href="privacy.html">Privacy Policy</a> ·
+        <a href="https://asifahanalytics.com">Home</a>
+    </p>
+</div>
+
+</div> <!-- /.container -->
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════════════════════════ -->
+<script>
+const COUNTRY_ID    = 'nigeria';
+const AFRICA_API    = 'https://asifah-africa-backend.onrender.com';
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch(e) {}
+}
+(function loadTheme() {
+    try {
+        const saved = localStorage.getItem('asifah-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+    } catch(e) {}
+})();
+
+// ── MOBILE DRAWER ──
+function toggleMobileDrawer() {
+    document.getElementById('navSidebar').classList.add('mobile-open');
+    document.getElementById('mobileDrawerBackdrop').classList.add('open');
+}
+function closeMobileDrawer() {
+    document.getElementById('navSidebar').classList.remove('mobile-open');
+    document.getElementById('mobileDrawerBackdrop').classList.remove('open');
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
+
+// ── KNOWLEDGE LIBRARY ACCORDION ──
+function toggleKnowledgeCard(id) {
+    const card = document.getElementById('card-' + id);
+    if (card) card.classList.toggle('collapsed');
+}
+
+// ── TRAVEL ADVISORY FETCH ──
+async function loadTravelAdvisory() {
+    try {
+        const resp = await fetch(AFRICA_API + '/api/africa/travel-advisories');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        const adv = (data.advisories || {})[COUNTRY_ID];
+        if (!adv) {
+            document.getElementById('advisoryTitle').textContent = '🇺🇸 U.S. State Dept: Nigeria — Advisory not found';
+            document.getElementById('advisorySummary').textContent = 'Travel advisory data not available for this country.';
+            return;
+        }
+        document.getElementById('advisoryLevelNum').textContent = adv.level || '—';
+        const badge = document.getElementById('advisoryLevelBadge');
+        badge.style.background = adv.level_color || 'var(--accent)';
+        document.querySelector('.travel-advisory-card').style.borderLeftColor = adv.level_color || 'var(--accent)';
+        document.getElementById('advisoryTitle').textContent = '🇺🇸 U.S. State Dept: Nigeria — ' + (adv.level_label || 'Level ' + (adv.level || '?'));
+        document.getElementById('advisorySummary').textContent = adv.short_summary || 'No summary available.';
+        if (adv.link) document.getElementById('advisoryLink').href = adv.link;
+        document.getElementById('lastUpdated').textContent = 'Travel advisory updated: ' + (adv.updated || data.timestamp || 'Unknown').slice(0, 10);
+    } catch (err) {
+        console.warn('Travel advisory error:', err);
+        document.getElementById('advisorySummary').textContent = 'Could not fetch advisory data. Check back later.';
+    }
+}
+
+// ── ARTICLES FETCH ──
+let _articleBuckets = { news: [], socials: [], ngos: [] };
+let _activeTab = 'news';
+
+async function loadArticles() {
+    try {
+        const resp = await fetch(AFRICA_API + '/api/africa/articles/' + COUNTRY_ID);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        if (data && data.buckets) {
+            _articleBuckets.news    = (data.buckets.news    || {}).articles || [];
+            _articleBuckets.socials = (data.buckets.socials || {}).articles || [];
+            _articleBuckets.ngos    = (data.buckets.ngos    || {}).articles || [];
+        }
+        renderArticles();
+    } catch (err) {
+        console.warn('Articles error:', err);
+        document.getElementById('articlesList').innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">Articles loading — first scan in progress, check back shortly.</li>';
+    }
+}
+
+function renderArticles() {
+    const articles = _articleBuckets[_activeTab] || [];
+    const ul = document.getElementById('articlesList');
+    if (articles.length === 0) {
+        const empties = {
+            news:    'No recent news articles found.',
+            socials: 'Social feed integration coming in v1.1 (Bluesky + Telegram).',
+            ngos:    'No recent NGO / policy reports found.',
+        };
+        ul.innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">' + (empties[_activeTab] || 'No articles found.') + '</li>';
+        return;
+    }
+    ul.innerHTML = articles.slice(0, 25).map(function(a) {
+        const title = (a.title || '').replace(/</g, '&lt;');
+        const desc  = (a.description || '').replace(/</g, '&lt;');
+        const src   = (a.source || '').replace(/</g, '&lt;');
+        const pub   = (a.published || '').slice(0, 10);
+        return '<li class="article-item">' +
+               '<a href="' + (a.url || '#') + '" target="_blank" rel="noopener">' + title + '</a>' +
+               (desc ? '<div class="article-description">' + desc + '</div>' : '') +
+               '<div class="article-meta">' + src + (pub ? ' · ' + pub : '') + '</div>' +
+               '</li>';
+    }).join('');
+}
+
+function filterArticles(tab, btn) {
+    _activeTab = tab;
+    document.querySelectorAll('.article-tab').forEach(function(el) { el.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    renderArticles();
+}
+
+// ── BOOT ──
+document.addEventListener('DOMContentLoaded', function() {
+    loadTravelAdvisory();
+    loadArticles();
+});
+</script>
+</body>
+</html>

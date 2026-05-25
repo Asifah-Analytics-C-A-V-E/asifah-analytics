@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics — Democratic Republic of Congo Stability Index v1.0.0 — May 2026 -->
+<!-- Gold Standard Africa shell: Arctic scheme + sidebar + rhetoric placeholder + commodity card + EN only -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>DR Congo Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --watermark-opacity: 0.05;
+    --watermark-filter: none;
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --watermark-opacity: 0.18;
+    --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+body::before {
+    content: '';
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 110vmin; height: 110vmin;
+    min-width: 500px; min-height: 500px;
+    max-width: 800px; max-height: 800px;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    opacity: var(--watermark-opacity);
+    filter: var(--watermark-filter);
+    pointer-events: none;
+    z-index: 0;
+}
+body::after {
+    content: '';
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(56,189,248,0.015) 2px, rgba(56,189,248,0.015) 3px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+@media (max-width: 1024px) { .page-with-sidebar { flex-direction: column; } }
+
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    color: var(--header-text);
+    padding: 22px 30px;
+    border-radius: 14px;
+    margin: 20px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap;
+    box-shadow: var(--card-glow);
+    border: 1px solid var(--card-border);
+}
+.header-logo-wrap { display: flex; align-items: center; gap: 14px; }
+.header-logo { width: 60px; height: 60px; }
+.back-link { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 700; letter-spacing: 0.5px; padding: 6px 12px; border: 1px solid var(--accent); border-radius: 6px; transition: all 0.2s; }
+.back-link:hover { background: var(--accent); color: white; }
+.header-content { flex: 1; min-width: 280px; }
+.header-content h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: 1px; }
+.subtitle { font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+.header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.theme-toggle-label { font-size: 0.75rem; color: var(--text-muted); }
+.theme-toggle-switch { width: 44px; height: 22px; background: var(--card-border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; }
+.theme-toggle-slider { width: 18px; height: 18px; background: var(--accent); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar {
+    flex: 0 0 200px; min-width: 200px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: var(--card-glow);
+}
+.nav-sidebar-label {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted);
+    padding: 8px 4px 6px 4px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 6px;
+}
+.nav-btn {
+    display: block;
+    padding: 9px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    color: var(--text-primary);
+}
+.nav-btn-label { display: block; }
+.nav-btn-status { display: block; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.95; margin-top: 2px; }
+.nav-btn.active-nav { background: linear-gradient(135deg,rgba(30,58,95,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: var(--text-primary); }
+.nav-btn.active-nav.you-are-here { background: linear-gradient(135deg,rgba(56,189,248,0.35),rgba(56,189,248,0.15)); border-color: var(--accent); }
+.nav-btn.active-nav:hover { transform: translateX(2px); }
+.nav-btn.commodities-btn { background: linear-gradient(135deg,rgba(12,74,110,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: #fde68a; }
+.nav-btn.military-btn { background: linear-gradient(135deg,rgba(22,101,52,0.55),rgba(134,239,172,0.18)); border: 1px solid rgba(134,239,172,0.55); color: #bbf7d0; }
+.nav-btn.gpi-btn { background: linear-gradient(135deg,rgba(107,33,168,0.55),rgba(196,181,253,0.18)); border: 1px solid rgba(196,181,253,0.55); color: #ddd6fe; }
+.nav-btn.rhetoric-btn { background: linear-gradient(135deg,rgba(21,94,117,0.55),rgba(103,232,249,0.18)); border: 1px solid rgba(103,232,249,0.55); color: #a5f3fc; }
+.nav-btn.inactive-nav { opacity: 0.5; cursor: not-allowed; background: var(--article-bg); }
+
+/* ── METRIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 12px; }
+.subsection-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+
+/* ── TRAVEL ADVISORY CARD ── */
+.travel-advisory-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left-width: 4px;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px;
+    flex-wrap: wrap;
+}
+.travel-advisory-card .level-badge {
+    flex: 0 0 auto;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 90px;
+}
+.travel-advisory-card .level-num { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.travel-advisory-card .level-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+.travel-advisory-card .advisory-content { flex: 1; min-width: 240px; }
+.travel-advisory-card .advisory-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+.travel-advisory-card .advisory-summary { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+.travel-advisory-card .advisory-link { font-size: 0.75rem; color: var(--accent); text-decoration: none; margin-top: 6px; display: inline-block; }
+
+/* ── RHETORIC TRACKER PLACEHOLDER ── */
+.rhetoric-placeholder {
+    background: var(--card-bg);
+    border: 1px dashed var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 22px;
+    text-align: center;
+    opacity: 0.7;
+}
+.rhetoric-placeholder .rh-icon { font-size: 2rem; margin-bottom: 8px; }
+.rhetoric-placeholder .rh-title { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px; }
+.rhetoric-placeholder .rh-subtitle { font-size: 0.8rem; color: var(--text-muted); }
+.rhetoric-placeholder .rh-status {
+    display: inline-block;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+/* ── COMMODITY CARD ── */
+.commodity-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+.commodity-card-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 14px; }
+.commodity-prose { font-size: 0.95rem; line-height: 1.6; color: var(--text-primary); margin-bottom: 14px; }
+.commodity-link { display: inline-block; margin-top: 10px; padding: 8px 14px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; color: #f59e0b; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
+.commodity-link:hover { background: rgba(245,158,11,0.2); }
+
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; }
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
+.map-iframe-wrap { width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; }
+
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+.knowledge-library h2 { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 4px; }
+.library-icon { font-size: 1.5rem; }
+.open-source-disclaimer { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
+.knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; }
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+.knowledge-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(56,189,248,0.05), transparent);
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+.knowledge-header:hover { background: rgba(56,189,248,0.1); }
+.knowledge-header-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+.category-icon { font-size: 1.3rem; }
+.collapse-icon { font-size: 0.85rem; color: var(--accent); transition: transform 0.2s; }
+.knowledge-card:not(.collapsed) .knowledge-header { border-bottom-color: var(--card-border); }
+.knowledge-card:not(.collapsed) .collapse-icon { transform: rotate(180deg); }
+.knowledge-content {
+    padding: 16px 18px 18px 18px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    max-height: 1600px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+}
+.knowledge-card.collapsed .knowledge-content { max-height: 0; padding-top: 0; padding-bottom: 0; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content ul { margin: 6px 0 12px 22px; }
+.knowledge-content li { margin-bottom: 4px; }
+.report-links-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px; margin-top: 14px;
+}
+.report-link {
+    display: block; padding: 8px 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: var(--accent); color: white; }
+
+/* ── ARTICLES SECTION ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+.article-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+.article-tab { padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); border: 1px solid transparent; }
+.article-tab:hover { background: var(--article-hover); color: var(--text-primary); }
+.article-tab.active { background: var(--article-bg); color: var(--accent); border-color: var(--card-border); border-bottom-color: var(--article-bg); }
+.articles-list { list-style: none; padding: 0; }
+.article-item { padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 0.88rem; line-height: 1.5; }
+.article-item:last-child { border-bottom: none; }
+.article-item a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.article-item a:hover { color: var(--accent); }
+.article-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
+.article-description { font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+
+/* ── FOOTER ── */
+.footer-info {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    border-top: 1px solid var(--card-border);
+    margin-top: 30px;
+}
+.footer-info a { color: #38bdf8; text-decoration: none; }
+.footer-info a:hover { text-decoration: underline; }
+
+/* ── MOBILE ── */
+.mobile-hamburger { display: none; }
+.mobile-drawer-backdrop { display: none; }
+@media (max-width: 768px) {
+    .mobile-hamburger {
+        display: block;
+        background: var(--accent); color: white;
+        border: none; border-radius: 6px;
+        padding: 8px 14px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        position: fixed; top: 14px; left: 14px;
+        z-index: 999;
+    }
+    .mobile-drawer-backdrop.open {
+        display: block;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 998;
+    }
+    .nav-sidebar {
+        position: fixed; top: 0; left: -260px;
+        width: 240px; height: 100vh;
+        z-index: 999;
+        transition: left 0.3s;
+        overflow-y: auto;
+        border-radius: 0;
+    }
+    .nav-sidebar.mobile-open { left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════════ -->
+<header>
+    <div class="header-logo-wrap">
+        <a href="africa.html" class="back-link">← Africa</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1>🇨🇩 DEMOCRATIC REPUBLIC OF CONGO STABILITY INDEX</h1>
+        <div class="subtitle">Eastern Congo Conflict · M23/AFC & Rwanda Tension · Cobalt Supply Chain · MONUSCO Drawdown · Ebola PHEIC</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <span class="theme-toggle-label">Theme</span>
+            <div class="theme-toggle-switch">
+                <div class="theme-toggle-slider"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE WITH SIDEBAR
+     ════════════════════════════════════════════════════════════ -->
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+
+<div class="page-with-sidebar">
+
+<!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav you-are-here"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● You are here</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+
+    <div class="nav-sidebar-label" style="margin-top: 14px;">Cross-Cutting Tools</div>
+    <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">📊 Commodity Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">🪖 Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+
+    <div class="nav-sidebar-label" style="margin-top: 14px;">Regional Rhetoric</div>
+    <a href="rhetoric-middle-east.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-btn inactive-nav"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">🔒 In Dev</span></div>
+</nav>
+
+<div class="main-content">
+
+<!-- ── U.S. STATE DEPARTMENT WORLDWIDE CAUTION ── -->
+<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
+    <div style="font-size:28px;flex-shrink:0;">🚨</div>
+    <div style="flex:1;">
+        <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow the guidance in the latest security alerts issued by the nearest U.S. embassy or consulate. They may experience travel disruptions due to periodic airspace closures. The Department of State advises Americans worldwide to exercise increased caution.</div>
+        <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: February 28, 2026</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;">VIEW ADVISORY →</a>
+</div>
+<style>@keyframes caution-pulse{0%,100%{box-shadow:0 4px 15px rgba(239,68,68,0.3)}50%{box-shadow:0 4px 25px rgba(239,68,68,0.5)}}</style>
+
+<!-- ── COUNTRY-SPECIFIC TRAVEL ADVISORY (dynamic — fetches from Africa backend) ── -->
+<div class="travel-advisory-card" id="travelAdvisoryCard" style="border-left-color: var(--accent);">
+    <div class="level-badge" id="advisoryLevelBadge">
+        <div class="level-num" id="advisoryLevelNum">—</div>
+        <div class="level-label">Level</div>
+    </div>
+    <div class="advisory-content">
+        <div class="advisory-title" id="advisoryTitle">🇺🇸 U.S. State Dept: Democratic Republic of Congo — Loading...</div>
+        <div class="advisory-summary" id="advisorySummary">Fetching current State Department travel advisory...</div>
+        <a href="https://travel.state.gov/" target="_blank" rel="noopener" class="advisory-link" id="advisoryLink">View full advisory →</a>
+    </div>
+</div>
+
+<!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
+<div class="rhetoric-placeholder">
+    <div class="rh-icon">📡</div>
+    <div class="rh-title">Democratic Republic of Congo Rhetoric &amp; Pressure Tracker</div>
+    <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_drc.py</div>
+    <div class="rh-status">🔒 IN DEVELOPMENT</div>
+</div>
+
+<!-- ── COMMODITY EXPOSURE CARD ── -->
+<div class="commodity-card">
+    <div class="commodity-card-title">🛢️ Democratic Republic of Congo — Commodity Exposure: Cobalt & Critical Minerals</div>
+    <div class="commodity-prose">
+        <p><strong>The DRC produces approximately 70% of global cobalt</strong> — making it the single most strategically critical country for EV battery supply chains globally. Production is dominated by Chinese-owned operators (CMOC, Sinohydro, Zijin, Huayou) controlling roughly 80% of major mines. The US-backed Lobito Corridor rail project aims to create an Atlantic export route bypassing Chinese-controlled logistics. Eastern conflict (M23/AFC) directly affects coltan/tantalum smuggling routes, and the May 2026 Ebola Bundibugyo PHEIC has prompted partial border closures with Rwanda and reduced regional logistics.</p>
+    </div>
+    <a href="commodities.html" class="commodity-link">View full Commodity Tracker →</a>
+</div>
+
+<!-- ── STRATEGIC MAP ── -->
+<div class="map-section">
+    <h2>🗺️ Democratic Republic of Congo — Strategic Overview</h2>
+    <div class="map-subtitle">Interactive map centered on Kinshasa. Pan and zoom to explore strategic geography.</div>
+    <div class="map-iframe-wrap">
+        <iframe
+            src="https://www.openstreetmap.org/export/embed.html?bbox=12,-13,32,6&layer=mapnik&marker=-4.4419,15.2663"
+            width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
+        </iframe>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     KNOWLEDGE LIBRARY
+     ════════════════════════════════════════════════════════════ -->
+<div class="knowledge-library">
+    <h2>
+        <span class="library-icon">📚</span>
+        <span>Knowledge Library</span>
+    </h2>
+    <p class="open-source-disclaimer">
+        Background information compiled from open-source research, policy briefs, and humanitarian reports. Click any card to expand. Source links provided for primary references.
+    </p>
+
+    <div class="knowledge-categories">
+        <!-- Eastern Congo Conflict — M23/AFC, Rwanda, FARDC -->
+        <div class="knowledge-card" id="card-eastern-congo">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('eastern-congo')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">⚔️</span>
+                    <span>Eastern Congo Conflict — M23/AFC, Rwanda, FARDC</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Eastern DRC is the locus of one of Africa's most intractable conflicts</strong>, with M23/AFC (allegedly Rwanda-backed), FARDC (Congolese army), Wazalendo militias, and ADF/ISCAP all contesting territory in North and South Kivu and Ituri.</p>
+<p><strong>Key Belligerents:</strong></p>
+<ul>
+    <li><strong>M23 (March 23 Movement):</strong> Tutsi-led rebel group; the UN Group of Experts has repeatedly documented direct Rwandan military involvement, which Rwanda denies.</li>
+    <li><strong>AFC (Alliance Fleuve Congo):</strong> Political umbrella formed Dec 2023 by Corneille Nangaa joining M23, giving the rebellion a political-figurehead structure.</li>
+    <li><strong>FARDC:</strong> Congolese Armed Forces — long-troubled with desertions, salary issues, and supply problems.</li>
+    <li><strong>Wazalendo:</strong> FARDC-allied militias ("patriots"); irregular, partly drawn from former Mai-Mai factions.</li>
+    <li><strong>ADF / ISCAP:</strong> Allied Democratic Forces, now affiliated with Islamic State Central Africa Province; primary operations in Ituri and Beni territory.</li>
+    <li><strong>Romanian RALF mercenaries:</strong> Romanian private contractors fighting alongside FARDC; ~200+ surrendered to M23 during the fall of Goma (Jan 2025).</li>
+</ul>
+<p><strong>Goma Fall (January 2025):</strong> M23/AFC captured Goma, North Kivu's capital, after a swift offensive — Romanian mercenaries surrendered; FARDC partially collapsed; tens of thousands displaced; cross-border tensions with Rwanda escalated.</p>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.crisisgroup.org/africa/great-lakes/dr-congo" target="_blank" rel="noopener" class="report-link">📑 Crisis Group DRC</a>
+                    <a href="https://www.acleddata.com/dashboard/" target="_blank" rel="noopener" class="report-link">📑 ACLED DRC conflict tracker</a>
+                    <a href="https://reliefweb.int/country/cod" target="_blank" rel="noopener" class="report-link">📑 ReliefWeb DRC</a>
+                    <a href="https://monusco.unmissions.org/" target="_blank" rel="noopener" class="report-link">📑 MONUSCO mission</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cobalt & Critical Minerals -->
+        <div class="knowledge-card collapsed" id="card-cobalt-minerals">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('cobalt-minerals')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🪨</span>
+                    <span>Cobalt & Critical Minerals</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>The DRC produces ~70% of global cobalt</strong> — making it the single most strategically critical country for EV battery, smartphone, and aerospace supply chains.</p>
+<p><strong>Key Players:</strong></p>
+<ul>
+    <li><strong>Glencore:</strong> Major operator at KCC (Katanga Mining) and Mutanda mines in Lualaba province</li>
+    <li><strong>CMOC (China Molybdenum):</strong> Operates Tenke Fungurume — one of the world's largest copper-cobalt mines (Chinese-owned)</li>
+    <li><strong>Eurasian Resources Group (ERG):</strong> Major Kazakh/Luxembourg-based player in DRC copper-cobalt</li>
+    <li><strong>Gécamines:</strong> State-owned mining company; rejoint-ventures with all major operators</li>
+    <li><strong>Artisanal sector:</strong> ~20-30% of DRC cobalt comes from artisanal/small-scale miners; child labor + safety issues</li>
+</ul>
+<p><strong>Strategic Geometry:</strong></p>
+<ul>
+    <li><strong>China dominance:</strong> Chinese ownership of ~80% of DRC's largest cobalt mines through CMOC, Sinohydro, Zijin, Huayou — locks in long-term offtake</li>
+    <li><strong>US Inflation Reduction Act:</strong> Incentivizes battery materials from FTA partners; DRC is NOT an FTA partner, creating policy friction</li>
+    <li><strong>Lobito Corridor:</strong> US-backed rail project connecting Lualaba copper-cobalt belt to Angolan Atlantic port — direct counter to Chinese-built Tazara rail</li>
+    <li><strong>Eastern violence affects production:</strong> Tantalum (coltan) from M23-controlled territory is documented in M23 illicit smuggling routes</li>
+</ul>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.usgs.gov/centers/national-minerals-information-center/cobalt-statistics-and-information" target="_blank" rel="noopener" class="report-link">📑 USGS Cobalt</a>
+                    <a href="https://www.cobaltinstitute.org/" target="_blank" rel="noopener" class="report-link">📑 Cobalt Institute</a>
+                    <a href="https://www.responsiblemineralsinitiative.org/" target="_blank" rel="noopener" class="report-link">📑 Responsible Minerals Initiative</a>
+                    <a href="https://gfintegrity.org/issue/conflict-minerals/" target="_blank" rel="noopener" class="report-link">📑 Global Financial Integrity</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ebola Bundibugyo PHEIC (May 2026) -->
+        <div class="knowledge-card collapsed" id="card-ebola-pheic">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('ebola-pheic')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🦠</span>
+                    <span>Ebola Bundibugyo PHEIC (May 2026)</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>WHO declared a Public Health Emergency of International Concern (PHEIC)</strong> on May 15, 2026 for an Ebola Bundibugyo outbreak originating in DRC's Ituri province, with confirmed cases now in Goma, Bunia, and across the Rwandan border in Cyangugu.</p>
+<p><strong>Public-Health Picture:</strong></p>
+<ul>
+    <li><strong>Strain:</strong> Bundibugyo ebolavirus — historically lower mortality than Zaire ebolavirus but still 30-50% CFR</li>
+    <li><strong>Geographic spread:</strong> Ituri (origin) → North Kivu → South Kivu → Rwanda border zones</li>
+    <li><strong>WHO response:</strong> rVSV-ZEBOV vaccine deployment (limited cross-strain efficacy) + ring vaccination strategy</li>
+    <li><strong>Border closures:</strong> Rwanda-DRC border partially closed; Goma airport screening intensive; Kenya Airways suspended Goma route</li>
+</ul>
+<p><strong>Conflict Compounding:</strong> The outbreak zone overlaps with M23/AFC-controlled territory in North Kivu, complicating WHO and MSF access. Multiple ETC (Ebola Treatment Center) sites have been threatened by armed groups historically.</p>
+<p><strong>Cross-Border Tension:</strong> Rwandan blame-shifting at the DRC and DRC counter-claims add diplomatic friction to an already-tense relationship.</p>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.who.int/emergencies/disease-outbreak-news" target="_blank" rel="noopener" class="report-link">📑 WHO Disease Outbreak News</a>
+                    <a href="https://www.afro.who.int/health-topics/ebola-virus-disease" target="_blank" rel="noopener" class="report-link">📑 WHO Africa Ebola</a>
+                    <a href="https://www.cdc.gov/vhf/ebola/index.html" target="_blank" rel="noopener" class="report-link">📑 CDC Ebola</a>
+                    <a href="https://www.msf.org/ebola-virus-disease-depth" target="_blank" rel="noopener" class="report-link">📑 MSF Ebola response</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- MONUSCO Drawdown & Regional Security Vacuum -->
+        <div class="knowledge-card collapsed" id="card-monusco-drawdown">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('monusco-drawdown')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🛡️</span>
+                    <span>MONUSCO Drawdown & Regional Security Vacuum</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>MONUSCO, the UN's largest peacekeeping operation</strong>, began its drawdown in 2024 at the DRC government's request. The transition has been deeply complicated by the M23 offensive and Goma's fall.</p>
+<p><strong>Withdrawal Timeline:</strong></p>
+<ul>
+    <li><strong>2010-2024:</strong> MONUSCO at peak 20,000+ personnel; established under UN Security Council Resolution 1925</li>
+    <li><strong>2023:</strong> President Tshisekedi requested accelerated withdrawal; agreement signed for phased departure</li>
+    <li><strong>2024:</strong> South Kivu withdrawal completed; North Kivu drawdown delayed by M23 advance</li>
+    <li><strong>2025:</strong> Withdrawal paused after Goma fall; remaining force functions as protection-of-civilians corridor</li>
+    <li><strong>2026 (current):</strong> Drawdown timeline unclear; mandate renewals on shorter cycles</li>
+</ul>
+<p><strong>Regional Replacement Forces:</strong></p>
+<ul>
+    <li><strong>SAMIDRC (SADC Mission):</strong> Announced 2023 withdrawal Dec 2024 following high South African + Tanzanian + Malawian casualties</li>
+    <li><strong>EACRF (East African Community Regional Force):</strong> Withdrew Dec 2023 amid Tshisekedi government dissatisfaction</li>
+    <li><strong>Wazalendo:</strong> Informal FARDC-allied militias have partially filled the gap</li>
+    <li><strong>Romanian + private contractors:</strong> Filled tactical roles; partially collapsed at Goma</li>
+</ul>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://monusco.unmissions.org/" target="_blank" rel="noopener" class="report-link">📑 MONUSCO Mission</a>
+                    <a href="https://www.un.org/securitycouncil/" target="_blank" rel="noopener" class="report-link">📑 UN Security Council</a>
+                    <a href="https://issafrica.org/great-lakes" target="_blank" rel="noopener" class="report-link">📑 ISS Great Lakes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- US–DRC Relations & Cobalt Strategy -->
+        <div class="knowledge-card collapsed" id="card-us-relations">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('us-relations')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🇺🇸</span>
+                    <span>US–DRC Relations & Cobalt Strategy</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>US-DRC relations are shaped by the critical-minerals dependency</strong> — and the United States' awareness that China dominates the DRC mining sector.</p>
+<p><strong>Bilateral Framework:</strong></p>
+<ul>
+    <li><strong>Lobito Corridor:</strong> Flagship US-led infrastructure initiative; rail from DRC Lualaba copper-cobalt belt through Zambia to Angolan port of Lobito; ~$1B+ commitment from G7+EU</li>
+    <li><strong>Critical minerals MOU (2022):</strong> US-DRC-Zambia trilateral on EV battery value chain</li>
+    <li><strong>Special Envoy:</strong> Massad Boulos (Trump administration) named senior advisor for Africa; engagement on M23 and minerals</li>
+    <li><strong>Sanctions:</strong> Treasury OFAC sanctions on M23 individuals and Rwandan military officials (Ngoma, Kabarebe)</li>
+    <li><strong>US Embassy Kinshasa:</strong> Active diplomatic engagement on humanitarian, security, and minerals tracks</li>
+</ul>
+<p><strong>Strategic Counter-China:</strong></p>
+<ul>
+    <li><strong>FCAB / DRC FTA:</strong> No US-DRC FTA exists; IRA-eligible cobalt currently must go through partner-eligible refining (Indonesia, Korea)</li>
+    <li><strong>"Friend-shoring":</strong> Push to refine DRC cobalt outside China — though China controls ~80% of global cobalt refining capacity</li>
+    <li><strong>African Growth and Opportunity Act (AGOA):</strong> DRC eligibility status uncertain under Trump-era reviews</li>
+</ul>
+                
+                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
+                <div class="report-links-grid">
+                    <a href="https://www.state.gov/countries-areas/democratic-republic-of-the-congo/" target="_blank" rel="noopener" class="report-link">📑 US State Department DRC</a>
+                    <a href="https://www.whitehouse.gov/lobito-corridor/" target="_blank" rel="noopener" class="report-link">📑 Lobito Corridor (White House)</a>
+                    <a href="https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information/democratic-republic-of-the-congo-related-sanctions" target="_blank" rel="noopener" class="report-link">📑 OFAC DRC sanctions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── RECENT ARTICLES (tabbed: News / Socials / NGOs) ── -->
+<div class="articles-section">
+    <div class="section-title">📰 Recent Democratic Republic of Congo Articles &amp; Reports</div>
+    <div class="article-tabs" id="articleTabs">
+        <div class="article-tab active" data-tab="news" onclick="filterArticles('news', this)">News</div>
+        <div class="article-tab" data-tab="socials" onclick="filterArticles('socials', this)">Socials</div>
+        <div class="article-tab" data-tab="ngos" onclick="filterArticles('ngos', this)">NGOs &amp; Reports</div>
+    </div>
+    <ul class="articles-list" id="articlesList">
+        <li class="article-item" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            ● ● ● Loading articles...
+        </li>
+    </ul>
+</div>
+
+</div> <!-- /.main-content -->
+</div> <!-- /.page-with-sidebar -->
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER (canonical, May 2026)
+     ════════════════════════════════════════════════════════════ -->
+<div class="footer-info">
+    <p><strong>ASIFAH ANALYTICS · DEMOCRATIC REPUBLIC OF CONGO STABILITY INDEX</strong></p>
+    <p>asifah-africa-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
+    <p>OSINT aggregation from GDELT (en/fr where applicable), NewsAPI, Brave Search, RSS · ReliefWeb &amp; The New Humanitarian · ISS Africa · WHO Disease Outbreak News · U.S. State Department travel advisories · FAA NOTAMs</p>
+
+    <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
+    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
+    </div>
+
+    <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT POSITION · © 2025-2026 Asifah Analytics</p>
+    <p style="margin-top:10px;">
+        <a href="mission.html">Mission Statement</a> ·
+        <a href="privacy.html">Privacy Policy</a> ·
+        <a href="https://asifahanalytics.com">Home</a>
+    </p>
+</div>
+
+</div> <!-- /.container -->
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════════════════════════ -->
+<script>
+const COUNTRY_ID    = 'drc';
+const AFRICA_API    = 'https://asifah-africa-backend.onrender.com';
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch(e) {}
+}
+(function loadTheme() {
+    try {
+        const saved = localStorage.getItem('asifah-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+    } catch(e) {}
+})();
+
+// ── MOBILE DRAWER ──
+function toggleMobileDrawer() {
+    document.getElementById('navSidebar').classList.add('mobile-open');
+    document.getElementById('mobileDrawerBackdrop').classList.add('open');
+}
+function closeMobileDrawer() {
+    document.getElementById('navSidebar').classList.remove('mobile-open');
+    document.getElementById('mobileDrawerBackdrop').classList.remove('open');
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
+
+// ── KNOWLEDGE LIBRARY ACCORDION ──
+function toggleKnowledgeCard(id) {
+    const card = document.getElementById('card-' + id);
+    if (card) card.classList.toggle('collapsed');
+}
+
+// ── TRAVEL ADVISORY FETCH ──
+async function loadTravelAdvisory() {
+    try {
+        const resp = await fetch(AFRICA_API + '/api/africa/travel-advisories');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        const adv = (data.advisories || {})[COUNTRY_ID];
+        if (!adv) {
+            document.getElementById('advisoryTitle').textContent = '🇺🇸 U.S. State Dept: Democratic Republic of Congo — Advisory not found';
+            document.getElementById('advisorySummary').textContent = 'Travel advisory data not available for this country.';
+            return;
+        }
+        document.getElementById('advisoryLevelNum').textContent = adv.level || '—';
+        const badge = document.getElementById('advisoryLevelBadge');
+        badge.style.background = adv.level_color || 'var(--accent)';
+        document.querySelector('.travel-advisory-card').style.borderLeftColor = adv.level_color || 'var(--accent)';
+        document.getElementById('advisoryTitle').textContent = '🇺🇸 U.S. State Dept: Democratic Republic of Congo — ' + (adv.level_label || 'Level ' + (adv.level || '?'));
+        document.getElementById('advisorySummary').textContent = adv.short_summary || 'No summary available.';
+        if (adv.link) document.getElementById('advisoryLink').href = adv.link;
+        document.getElementById('lastUpdated').textContent = 'Travel advisory updated: ' + (adv.updated || data.timestamp || 'Unknown').slice(0, 10);
+    } catch (err) {
+        console.warn('Travel advisory error:', err);
+        document.getElementById('advisorySummary').textContent = 'Could not fetch advisory data. Check back later.';
+    }
+}
+
+// ── ARTICLES FETCH ──
+let _articleBuckets = { news: [], socials: [], ngos: [] };
+let _activeTab = 'news';
+
+async function loadArticles() {
+    try {
+        const resp = await fetch(AFRICA_API + '/api/africa/articles/' + COUNTRY_ID);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        if (data && data.buckets) {
+            _articleBuckets.news    = (data.buckets.news    || {}).articles || [];
+            _articleBuckets.socials = (data.buckets.socials || {}).articles || [];
+            _articleBuckets.ngos    = (data.buckets.ngos    || {}).articles || [];
+        }
+        renderArticles();
+    } catch (err) {
+        console.warn('Articles error:', err);
+        document.getElementById('articlesList').innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">Articles loading — first scan in progress, check back shortly.</li>';
+    }
+}
+
+function renderArticles() {
+    const articles = _articleBuckets[_activeTab] || [];
+    const ul = document.getElementById('articlesList');
+    if (articles.length === 0) {
+        const empties = {
+            news:    'No recent news articles found.',
+            socials: 'Social feed integration coming in v1.1 (Bluesky + Telegram).',
+            ngos:    'No recent NGO / policy reports found.',
+        };
+        ul.innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">' + (empties[_activeTab] || 'No articles found.') + '</li>';
+        return;
+    }
+    ul.innerHTML = articles.slice(0, 25).map(function(a) {
+        const title = (a.title || '').replace(/</g, '&lt;');
+        const desc  = (a.description || '').replace(/</g, '&lt;');
+        const src   = (a.source || '').replace(/</g, '&lt;');
+        const pub   = (a.published || '').slice(0, 10);
+        return '<li class="article-item">' +
+               '<a href="' + (a.url || '#') + '" target="_blank" rel="noopener">' + title + '</a>' +
+               (desc ? '<div class="article-description">' + desc + '</div>' : '') +
+               '<div class="article-meta">' + src + (pub ? ' · ' + pub : '') + '</div>' +
+               '</li>';
+    }).join('');
+}
+
+function filterArticles(tab, btn) {
+    _activeTab = tab;
+    document.querySelectorAll('.article-tab').forEach(function(el) { el.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    renderArticles();
+}
+
+// ── BOOT ──
+document.addEventListener('DOMContentLoaded', function() {
+    loadTravelAdvisory();
+    loadArticles();
+});
+</script>
+</body>
+</html>
