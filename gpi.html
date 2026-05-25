@@ -855,8 +855,10 @@ function _buildCardData(axisName) {
         : ((data.bluf_by_axis || {})[axisName] || data.bluf || '');
 
     // Signals: top_signals (global) for 'all', axis.top_signals for the others
+    // 'All Vectors' shows up to 15 globally-ranked signals (axis-diverse via backend
+    // v3.6+ distribution). Per-axis cards still show 5 to keep them focused.
     const signals = isAll
-        ? (data.top_signals || []).slice(0, 5)
+        ? (data.top_signals || []).slice(0, 15)
         : (axis.top_signals || []).slice(0, 5);
 
     const regionLevels = isAll ? {} : (axis.region_levels || {});
