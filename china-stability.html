@@ -100,6 +100,39 @@
             user-select: none;
         }
 
+        /* Canonical sparkline strip (matches israel.html pattern — small horizontal layout) */
+        .sparkline-container {
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: var(--article-bg);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+        .sparkline-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .sparkline-canvas-wrap {
+            flex-grow: 1;
+            max-width: 150px;
+            height: 32px;
+            position: relative;
+        }
+        .sparkline-canvas {
+            width: 100% !important;
+            height: 32px !important;
+            max-height: 32px !important;
+            display: block;
+        }
+
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--loading-overlay-bg);
@@ -869,16 +902,18 @@
                     </div>
                     <span id="brentStatus" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
                 </div>
-                <!-- HKEX Hang Seng (v1.0 May 25 2026 — TASE-pattern Black Swan POC) -->
+                <!-- HKEX Hang Seng (v1.1 May 25 2026 — compact sparkline strip per canonical pattern) -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--card-border);">
                     <div style="flex:1;">
                         <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">📊 <span data-i18n="hkex_label">HKEX Hang Seng</span></div>
                         <div style="font-size:22px;font-weight:700;color:var(--text-primary);" id="hkexValue">--</div>
                         <div style="font-size:10px;color:var(--text-secondary);" id="hkexChange">-- · <span data-i18n="hkex_subtitle">Hong Kong equity confidence proxy</span></div>
-                        <!-- HKEX 5-day sparkline -->
-                        <div class="sparkline-container" id="hkexSparklineContainer" style="display:none; margin-top:10px;">
+                        <!-- HKEX 5-day sparkline (compact horizontal strip) -->
+                        <div class="sparkline-container" id="hkexSparklineContainer" style="display:none;">
                             <span class="sparkline-label" data-i18n="hkex_sparkline_label">5-day:</span>
-                            <canvas id="hkexSparkline" class="sparkline-canvas" style="width:100%; height:40px;"></canvas>
+                            <div class="sparkline-canvas-wrap">
+                                <canvas id="hkexSparkline" class="sparkline-canvas"></canvas>
+                            </div>
                         </div>
                     </div>
                     <span id="hkexStatus" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;background:#6b7280;color:white; margin-left:8px;">--</span>
@@ -2116,7 +2151,7 @@
                             borderColor: lineColor,
                             backgroundColor: bgColor,
                             fill: true,
-                            borderWidth: 2,
+                            borderWidth: 1.5,
                             tension: 0.3,
                             pointRadius: 0,
                             pointHoverRadius: 3,
@@ -2125,10 +2160,11 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: { padding: 0 },
                         plugins: { legend: { display: false }, tooltip: { enabled: true } },
                         scales: {
-                            x: { display: false },
-                            y: { display: false, beginAtZero: false }
+                            x: { display: false, grid: { display: false } },
+                            y: { display: false, grid: { display: false }, beginAtZero: false }
                         }
                     }
                 });
