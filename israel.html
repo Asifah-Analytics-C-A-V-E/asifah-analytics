@@ -816,10 +816,12 @@
                         <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; font-weight:600;">📊 TASE TA-35</div>
                         <div style="font-size:20px; font-weight:bold; color:var(--text-primary);" id="taseValue">--</div>
                         <div style="font-size:12px; color:var(--text-secondary);" id="taseChange">--</div>
-                        <!-- v2.1.0 — TASE intraday sparkline (backend was already returning this; now rendered) -->
+                        <!-- v2.2.0 — TASE intraday sparkline (compact horizontal strip, constrained height) -->
                         <div class="sparkline-container" id="taseSparklineContainer" style="display:none; margin-top:10px;">
                             <span class="sparkline-label" data-i18n="taseIntradayLabel">Intraday:</span>
-                            <canvas id="taseSparkline" class="sparkline-canvas"></canvas>
+                            <div class="sparkline-canvas-wrap" style="flex-grow:1; max-width:150px; height:32px; position:relative;">
+                                <canvas id="taseSparkline" class="sparkline-canvas" style="width:100% !important; height:32px !important; max-height:32px !important; display:block;"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1666,9 +1668,10 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
+                    layout: { padding: 0 },
                     plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                    scales: { x: { display: false }, y: { display: false } },
-                    elements: { point: { radius: 0 }, line: { tension: 0.4, borderWidth: 2 } }
+                    scales: { x: { display: false, grid: { display: false } }, y: { display: false, grid: { display: false } } },
+                    elements: { point: { radius: 0 }, line: { tension: 0.4, borderWidth: 1.5 } }
                 }
             });
             const cont = document.getElementById('taseSparklineContainer');
