@@ -816,7 +816,7 @@
             </div>
         </div>
 
-        <!-- RHETORIC CARD — Gold Standard v1.0 (May 27 2026 — BLUF + top signals dynamic) -->
+        <!-- RHETORIC CARD — Gold Standard v2.0 (May 27 2026 — Strategic Assessment condensed) -->
         <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--card-border);box-shadow:0 4px 12px rgba(0,0,0,0.08);">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_title">📡 RHETORIC TRACKER</div>
             <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
@@ -825,15 +825,38 @@
             </div>
             <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Outbound coercion score · Updated every 6h</div>
 
-            <!-- BLUF prose (1-2 lines) — dynamically populated from top_signals[0] or backend bluf field -->
-            <div id="rhetoricBluf" style="display:none;font-size:13px;line-height:1.5;color:var(--text-primary);background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:6px;padding:10px 12px;margin-bottom:12px;">
-                <span style="font-style:italic;">Loading BLUF...</span>
-            </div>
+            <!-- STRATEGIC ASSESSMENT — Condensed (Gold Standard v2.0 May 27 2026) -->
+            <!-- Headline + 4-vector grid + 1-line situation. Full prose on rhetoric-china.html. -->
+            <div id="rhetoricStrategicCard" style="display:none;margin-bottom:14px;padding:12px 14px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.25);border-radius:8px;">
+                <!-- Scenario headline -->
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <span id="rhetoricScenarioIcon" style="font-size:16px;">🟠</span>
+                    <span style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);font-weight:700;" data-i18n="rhetoric_strategic_label">China Strategic Assessment</span>
+                </div>
+                <div id="rhetoricScenario" style="font-size:13px;font-weight:700;color:#f97316;margin-bottom:12px;line-height:1.35;">--</div>
 
-            <!-- Top Signals (up to 2 bullets) -->
-            <div id="rhetoricTopSignals" style="display:none;margin-bottom:12px;">
-                <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;font-weight:700;" data-i18n="rhetoric_top_signals_label">Top Signals</div>
-                <div id="rhetoricTopSignalsList" style="font-size:12px;color:var(--text-secondary);line-height:1.55;"></div>
+                <!-- 4-vector grid -->
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+                    <div style="text-align:center;padding:8px 4px;background:rgba(2,6,23,0.3);border-radius:6px;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:4px;" data-i18n="vec_kinetic">Kinetic</div>
+                        <div id="vecKinetic" style="font-size:18px;font-weight:700;color:#6b7280;">L0</div>
+                    </div>
+                    <div style="text-align:center;padding:8px 4px;background:rgba(2,6,23,0.3);border-radius:6px;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:4px;" data-i18n="vec_economic">Economic</div>
+                        <div id="vecEconomic" style="font-size:18px;font-weight:700;color:#6b7280;">L0</div>
+                    </div>
+                    <div style="text-align:center;padding:8px 4px;background:rgba(2,6,23,0.3);border-radius:6px;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:4px;" data-i18n="vec_coalition">Coalition</div>
+                        <div id="vecCoalition" style="font-size:18px;font-weight:700;color:#6b7280;">L0</div>
+                    </div>
+                    <div style="text-align:center;padding:8px 4px;background:rgba(2,6,23,0.3);border-radius:6px;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:4px;" data-i18n="vec_domestic">Domestic</div>
+                        <div id="vecDomestic" style="font-size:18px;font-weight:700;color:#6b7280;">L0</div>
+                    </div>
+                </div>
+
+                <!-- 1-line situation -->
+                <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;font-style:italic;" id="rhetoricSituation">--</div>
             </div>
 
             <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);">
@@ -841,7 +864,7 @@
             </div>
             <div id="rhetoricVectorPills" class="rhetoric-vector-pills"></div>
             <div style="margin-top:15px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
-                <a href="rhetoric-china.html" style="color:#00c8d4;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="view_full_rhetoric">View Full Rhetoric Analysis →</a>
+                <a href="rhetoric-china.html" style="color:#00c8d4;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="view_full_rhetoric">View Full Strategic Assessment →</a>
             </div>
             <div id="rhetoricScanInfo" style="margin-top:8px;font-size:10px;color:var(--text-secondary);text-align:center;">--</div>
         </div>
@@ -1464,7 +1487,8 @@
 
         async function loadRhetoricData() {
             try {
-                const r = await fetch('https://asifah-asia-backend.onrender.com/api/rhetoric/china/summary');
+                // Full endpoint (not /summary) — needed for so_what.scenario, vectors, situation
+                const r = await fetch('https://asifah-asia-backend.onrender.com/api/rhetoric/china');
                 const data = await r.json();
                 if (!data.success) return;
                 const LEVELS = { 0:'#6b7280',1:'#3b82f6',2:'#f59e0b',3:'#f97316',4:'#ef4444',5:'#dc2626' };
@@ -1502,22 +1526,43 @@
                     }
                 }
 
-                // Top Signals (up to 2 bullets, dynamically rendered)
-                const tsContainer = document.getElementById('rhetoricTopSignals');
-                const tsList = document.getElementById('rhetoricTopSignalsList');
-                if (tsContainer && tsList && topSignals.length > 0) {
-                    const itemsToShow = topSignals.slice(0, 2);
-                    tsList.innerHTML = itemsToShow.map(s => {
-                        const icon = s.icon || '•';
-                        const text = s.short_text || s.text || '';
-                        return `<div style="display:flex;gap:6px;padding:3px 0;align-items:flex-start;">
-                            <span style="flex-shrink:0;">${icon}</span>
-                            <span style="flex:1;">${text}</span>
-                        </div>`;
-                    }).join('');
-                    tsContainer.style.display = 'block';
-                } else if (tsContainer) {
-                    tsContainer.style.display = 'none';
+                // STRATEGIC ASSESSMENT — Condensed (Gold Standard v2.0 — May 27 2026)
+                // Renders so_what.scenario + 4-vector grid + situation from backend
+                // Hybrid canonical: shows Strategic Assessment when available, hidden otherwise
+                const sw = data.so_what || {};
+                const strategicCard = document.getElementById('rhetoricStrategicCard');
+                if (strategicCard && sw.scenario) {
+                    // Scenario headline
+                    const scenarioEl = document.getElementById('rhetoricScenario');
+                    if (scenarioEl) {
+                        scenarioEl.textContent = sw.scenario;
+                        if (sw.scenario_color) scenarioEl.style.color = sw.scenario_color;
+                    }
+                    const iconEl = document.getElementById('rhetoricScenarioIcon');
+                    if (iconEl && sw.scenario_icon) iconEl.textContent = sw.scenario_icon;
+
+                    // 4-vector grid
+                    const vectorMap = [
+                        { id: 'vecKinetic',   level: sw.kinetic_pressure   || 0 },
+                        { id: 'vecEconomic',  level: sw.economic_pressure  || 0 },
+                        { id: 'vecCoalition', level: sw.coalition_pushback || 0 },
+                        { id: 'vecDomestic',  level: sw.domestic_fracture  || 0 },
+                    ];
+                    vectorMap.forEach(v => {
+                        const el = document.getElementById(v.id);
+                        if (el) {
+                            el.textContent = `L${v.level}`;
+                            el.style.color = LEVELS[v.level] || '#6b7280';
+                        }
+                    });
+
+                    // 1-line situation
+                    const situationEl = document.getElementById('rhetoricSituation');
+                    if (situationEl && sw.situation) situationEl.textContent = sw.situation;
+
+                    strategicCard.style.display = 'block';
+                } else if (strategicCard) {
+                    strategicCard.style.display = 'none';
                 }
 
                 // Actor rows
