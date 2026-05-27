@@ -816,7 +816,7 @@
             </div>
         </div>
 
-        <!-- RHETORIC CARD -->
+        <!-- RHETORIC CARD — Gold Standard v1.0 (May 27 2026 — BLUF + top signals dynamic) -->
         <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--card-border);box-shadow:0 4px 12px rgba(0,0,0,0.08);">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_title">📡 RHETORIC TRACKER</div>
             <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
@@ -824,6 +824,18 @@
                 <span id="rhetoricTheatreLabel" style="font-size:13px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
             </div>
             <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Outbound coercion score · Updated every 6h</div>
+
+            <!-- BLUF prose (1-2 lines) — dynamically populated from top_signals[0] or backend bluf field -->
+            <div id="rhetoricBluf" style="display:none;font-size:13px;line-height:1.5;color:var(--text-primary);background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:6px;padding:10px 12px;margin-bottom:12px;">
+                <span style="font-style:italic;">Loading BLUF...</span>
+            </div>
+
+            <!-- Top Signals (up to 2 bullets) -->
+            <div id="rhetoricTopSignals" style="display:none;margin-bottom:12px;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;font-weight:700;" data-i18n="rhetoric_top_signals_label">Top Signals</div>
+                <div id="rhetoricTopSignalsList" style="font-size:12px;color:var(--text-secondary);line-height:1.55;"></div>
+            </div>
+
             <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);">
                 <span style="font-style:italic;">Loading...</span>
             </div>
@@ -1387,8 +1399,12 @@
                 }
             });
             const filtered = _allArticles.filter(a => {
-                const src = (a.source || a.source_name || '').toLowerCase();
-                const lng = (a.language || '').toLowerCase();
+                // Normalize source — backend sometimes returns it as {name: "..."}
+                const srcRaw = typeof a.source === 'object'
+                    ? (a.source && a.source.name) || ''
+                    : (a.source || a.source_name || '');
+                const src = String(srcRaw).toLowerCase();
+                const lng = String(a.language || '').toLowerCase();
                 if (lang === 'reddit') return src.includes('r/') || src.includes('reddit') || lng === 'reddit';
                 if (lang === 'telegram') return src.includes('telegram') || lng === 'telegram';
                 if (lang === 'zh') return lng === 'zh' || lng === 'zho';
@@ -1469,6 +1485,41 @@
                     const ago = Math.round((Date.now() - new Date(data.scanned_at)) / 60000);
                     scanEl.textContent = `Last scan: ${ago < 60 ? ago+'m' : Math.round(ago/60)+'h'} ago`;
                 }
+
+                // BLUF prose (Gold Standard v1.0 — May 27 2026)
+                // Prefers dedicated `bluf` field; falls back to top_signals[0].short_text
+                const topSignals = data.top_signals || [];
+                const blufEl = document.getElementById('rhetoricBluf');
+                if (blufEl) {
+                    const blufText = data.bluf
+                        || (topSignals[0] && topSignals[0].short_text)
+                        || '';
+                    if (blufText) {
+                        blufEl.textContent = blufText;
+                        blufEl.style.display = 'block';
+                    } else {
+                        blufEl.style.display = 'none';
+                    }
+                }
+
+                // Top Signals (up to 2 bullets, dynamically rendered)
+                const tsContainer = document.getElementById('rhetoricTopSignals');
+                const tsList = document.getElementById('rhetoricTopSignalsList');
+                if (tsContainer && tsList && topSignals.length > 0) {
+                    const itemsToShow = topSignals.slice(0, 2);
+                    tsList.innerHTML = itemsToShow.map(s => {
+                        const icon = s.icon || '•';
+                        const text = s.short_text || s.text || '';
+                        return `<div style="display:flex;gap:6px;padding:3px 0;align-items:flex-start;">
+                            <span style="flex-shrink:0;">${icon}</span>
+                            <span style="flex:1;">${text}</span>
+                        </div>`;
+                    }).join('');
+                    tsContainer.style.display = 'block';
+                } else if (tsContainer) {
+                    tsContainer.style.display = 'none';
+                }
+
                 // Actor rows
                 const actorEl = document.getElementById('rhetoricActorList');
                 if (actorEl) {
@@ -1491,7 +1542,12 @@
         // China Stability Data
         async function loadStabilityData() {
             try {
-                const r = await fetch('https://asifah-asia-backend.onrender.com/api/china/stability/summary');
+                // Endpoint is /api/china/stability (no /summary) — fixed May 27 2026
+                const r = await fetch('https://asifah-asia-backend.onrender.com/api/china/stability');
+                if (!r.ok) {
+                    console.warn('[Stability] HTTP ' + r.status);
+                    return;
+                }
                 const data = await r.json();
                 if (!data.success) return;
 
@@ -1851,6 +1907,7 @@
                 "open_tracker":          "Open Tracker →",
                 "rhetoric_card_title":   "📡 RHETORIC TRACKER",
                 "rhetoric_card_subtitle":"Outbound coercion score · Updated every 6h",
+                "rhetoric_top_signals_label":"Top Signals",
                 "view_full_rhetoric":    "View Full Rhetoric Analysis →",
                 "articles_title":        "📰 Recent China & PLA Articles",
                 "footer_methodology_title":"Methodology",
@@ -2017,6 +2074,7 @@
                 "open_tracker":          "トラッカーを開く →",
                 "rhetoric_card_title":   "📡 レトリックトラッカー",
                 "rhetoric_card_subtitle":"対外威圧スコア · 6 時間ごと更新",
+                "rhetoric_top_signals_label":"主要シグナル",
                 "view_full_rhetoric":    "完全なレトリック分析を見る →",
                 "articles_title":        "📰 中国・人民解放軍 最新記事",
                 "footer_methodology_title":"方法論",
@@ -2100,6 +2158,7 @@
                 "open_tracker":          "추적기 열기 →",
                 "rhetoric_card_title":   "📡 레토릭 추적기",
                 "rhetoric_card_subtitle":"대외 강압 점수 · 6시간마다 갱신",
+                "rhetoric_top_signals_label":"주요 신호",
                 "view_full_rhetoric":    "전체 레토릭 분석 보기 →",
                 "articles_title":        "📰 중국·인민해방군 최신 기사",
                 "footer_methodology_title":"방법론",
