@@ -394,6 +394,78 @@
         .meta-pill.cached { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid #f59e0b; }
         .meta-pill.static { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid #f59e0b; }
         .meta-pill.warning { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid #ef4444; }
+        /* ── ASIFAH CANONICAL FOOTER PILLS (africa.html v1.3 pattern) ── */
+        .footer-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .footer-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .footer-pill-coffee {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+            border: 1px solid rgba(251,191,36,0.5);
+        }
+        .footer-pill-contact {
+            background: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(14,165,233,0.10));
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.5);
+        }
+
+        /* ── WORLDWIDE CAUTION BANNER (v1.0.0 May 27 2026) ── */
+        /* Canonical implementation matches africa.html v1.3 + Israel/China pattern.
+         * Sits ABOVE UK-FCDO banner. US doesn't publish own travel warning re: itself. */
+        .ww-caution-banner {
+            background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(220,38,38,0.04));
+            border: 1.5px solid rgba(239,68,68,0.4);
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .ww-caution-banner {
+            background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06));
+            box-shadow: 0 0 18px rgba(239,68,68,0.08);
+        }
+        .ww-caution-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ww-caution-body {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .ww-caution-cta {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: #ef4444;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dashed rgba(239,68,68,0.5);
+            padding-bottom: 1px;
+        }
+        .ww-caution-cta:hover { border-bottom-style: solid; }
+
         /* ── UK-FCDO TRAVEL ADVISORY BANNER (THE INVERSION) ── */
         .fcdo-banner {
             background: linear-gradient(135deg, rgba(220,38,38,0.08), rgba(185,28,28,0.05));
@@ -1943,6 +2015,18 @@
 
 
 <!-- BODY STRUCTURE -->
+                <!-- ── WORLDWIDE CAUTION BANNER (v1.0.0 May 27 2026) ── -->
+                <!-- Canonical State Dept worldwide caution. Sits ABOVE UK-FCDO banner. -->
+                <div class="ww-caution-banner" id="wwCautionBanner">
+                    <div class="ww-caution-title">
+                        ⚠️ <span data-i18n="wwCautionTitle">U.S. Department of State — Worldwide Caution</span>
+                    </div>
+                    <div class="ww-caution-body" data-i18n="wwCautionBody">
+                        Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate. The Department of State continues to advise heightened situational awareness and review of personal security plans.
+                    </div>
+                    <a href="https://travel.state.gov/content/travel/en/international-travel/before-you-go/travelers-with-special-considerations/worldwide-caution.html" target="_blank" rel="noopener" class="ww-caution-cta" data-i18n="wwCautionCta">View Full State Department Worldwide Caution →</a>
+                </div>
+
                 <!-- ── UK-FCDO TRAVEL ADVISORY BANNER (THE INVERSION) ── -->
                 <div class="fcdo-banner" id="fcdoBanner">
                     <div class="fcdo-icon">🇬🇧</div>
@@ -2246,19 +2330,45 @@
                     <div class="news-list" id="newsList"></div>
                 </div>
 
-                <!-- ── FOOTER ── -->
-                <footer>
-                    <p>
+                <!-- ── ASIFAH CANONICAL FOOTER (v1.3 pattern — May 27 2026) ── -->
+                <!-- Bold title → backend URL + cadence → OSINT sources → pill CTAs →
+                     disclaimer → Mission/Privacy/Home links. Matches africa.html canonical. -->
+                <footer class="asifah-footer">
+                    <p style="font-weight:700; color: var(--text-primary); margin-bottom:8px;">
+                        <span data-i18n="footerTitle">Asifah Analytics — U.S. Stability Index</span>
+                    </p>
+                    <p style="font-size:0.8rem; color: var(--text-secondary); margin-bottom:8px;">
+                        <strong data-i18n="footerBackendLabel">Backend:</strong>
+                        <code style="font-family:'Courier New',monospace;">asifah-wha-backend.onrender.com</code>
+                        ·
+                        <span data-i18n="footerCadence">12-hour scan cadence · NYSE updated twice daily (7 AM & 7 PM ET)</span>
+                    </p>
+                    <p style="font-size:0.8rem; margin-bottom:14px;">
                         <strong data-i18n="footerSourcesTitle">Data Sources:</strong>
-                        <span data-i18n="footerSources">FRED (Federal Reserve Economic Data) · Yahoo Finance · Congress.gov API · UK FCDO · GDELT · NewsAPI · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.</span>
+                        <span data-i18n="footerSources">FRED (Federal Reserve Economic Data) · Yahoo Finance · Alpha Vantage · Congress.gov API · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.</span>
                     </p>
-                    <p>
-                        <strong data-i18n="footerMethodologyTitle">Methodology:</strong>
-                        <span data-i18n="footerMethodology">Apolitical six-dimension scoring framework. Same rubric scores all administrations. Election-cycle aware (auto-recalibrating after midterms). Composite weighted average of structural indicators, not rhetoric-tempo deltas — directly comparable across time periods.</span>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin: 14px 0 18px;">
+                        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="footer-pill footer-pill-coffee">
+                            ☕ <span data-i18n="footerBmc">Buy Me a Coffee</span>
+                        </a>
+                        <a href="mailto:contact@asifahanalytics.com" class="footer-pill footer-pill-contact">
+                            ✉️ <span data-i18n="footerContact">Contact Asifah</span>
+                        </a>
+                    </div>
+                    <p style="font-size:0.75rem; padding:10px 14px; background:rgba(239,68,68,0.06); border-left:3px solid #ef4444; border-radius:4px; color:var(--text-secondary); margin-bottom:14px;">
+                        <strong data-i18n="footerDisclaimerLabel">Disclaimer:</strong>
+                        <span data-i18n="footerDisclaimer">Open-source OSINT geopolitical intelligence. Apolitical six-dimension scoring framework — same rubric scores all administrations, election-cycle aware. Composite weighted average of structural indicators, not rhetoric-tempo deltas. Not investment, legal, or political advice. Not for operational use.</span>
                     </p>
-                    <p>
+                    <p style="font-size:0.7rem; color: var(--text-muted); margin-bottom:8px;">
+                        <a href="mission.html" style="color:var(--text-muted); text-decoration:none; border-bottom:1px dotted var(--text-muted);" data-i18n="footerLinkMission">Mission Statement</a>
+                        ·
+                        <a href="privacy.html" style="color:var(--text-muted); text-decoration:none; border-bottom:1px dotted var(--text-muted);" data-i18n="footerLinkPrivacy">Privacy Policy</a>
+                        ·
+                        <a href="index.html" style="color:var(--text-muted); text-decoration:none; border-bottom:1px dotted var(--text-muted);" data-i18n="footerLinkHome">Home</a>
+                    </p>
+                    <p style="font-size:0.7rem; color: var(--text-muted);">
                         <strong data-i18n="footerCopyright">© 2025-2026 Asifah Analytics.</strong>
-                        <span data-i18n="footerRights">All rights reserved. This is open-source OSINT geopolitical intelligence; not investment, legal, or political advice.</span>
+                        <span data-i18n="footerRights">All rights reserved.</span>
                     </p>
                 </footer>
             </div>
@@ -2329,6 +2439,21 @@ var TRANSLATIONS = {
         tooltipPopulation: 'Population:',
         commodityTitle: 'U.S. Commodity Exposure',
         commodityProse: 'The United States is a globally significant producer and consumer of energy (oil, natural gas), agricultural commodities (corn, wheat, soybeans), and industrial metals. Domestic price stress in these commodities translates directly to consumer wallets and political pressure regardless of which administration is in power. This card surfaces commodity-specific stress signals affecting U.S. household stability.',
+        // Worldwide Caution banner i18n (v1.0.0 May 27 2026)
+        wwCautionTitle: 'U.S. Department of State — Worldwide Caution',
+        wwCautionBody: 'Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate. The Department of State continues to advise heightened situational awareness and review of personal security plans.',
+        wwCautionCta: 'View Full State Department Worldwide Caution →',
+        // NYSE i18n (v1.0.0 May 27 2026)
+        nyseTitle: 'U.S. Equity Indices',
+        nyseProse: 'Live readings from the three major U.S. equity benchmarks. These indices serve as a financial-confidence pulse — sharp drawdowns often precede broader stability stress, while sustained rallies reflect institutional resilience. Updated twice daily (7 AM and 7 PM ET); sparklines refresh on the evening pull.',
+        nyseStatusLoading: 'Loading…',
+        nyseStatusOpen: 'Market Open',
+        nyseStatusClosed: 'Market Closed',
+        nyseStatusPremarket: 'Pre-Market',
+        nyseStatusAfterhours: 'After-Hours',
+        nyseLoading: 'Loading equity indices…',
+        nyseUnavailable: 'Equity index data temporarily unavailable.',
+        nyseLastUpdated: 'as of',
         rhetoricLiveTitle: 'U.S. Rhetoric Tracker',
         rhetoricLivePill: '● Live',
         rhetoricLiveLoading: 'Loading rhetoric data…',
@@ -2350,12 +2475,21 @@ var TRANSLATIONS = {
         newsTabOtherSocial: 'Bluesky & Telegram',
         newsTabSocial: 'Social Media',
         libraryTitle: 'Knowledge Library — U.S. Governmental Framework',
+        // Canonical footer i18n (v1.3 pattern May 27 2026)
+        footerTitle: 'Asifah Analytics — U.S. Stability Index',
+        footerBackendLabel: 'Backend:',
+        footerCadence: '12-hour scan cadence · NYSE updated twice daily (7 AM & 7 PM ET)',
         footerSourcesTitle: 'Data Sources:',
-        footerSources: 'FRED (Federal Reserve Economic Data) · Yahoo Finance · Congress.gov API · UK FCDO · GDELT · NewsAPI · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.',
-        footerMethodologyTitle: 'Methodology:',
-        footerMethodology: 'Apolitical six-dimension scoring framework. Same rubric scores all administrations. Election-cycle aware (auto-recalibrating after midterms). Composite weighted average of structural indicators, not rhetoric-tempo deltas — directly comparable across time periods.',
+        footerSources: 'FRED (Federal Reserve Economic Data) · Yahoo Finance · Alpha Vantage · Congress.gov API · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.',
+        footerBmc: 'Buy Me a Coffee',
+        footerContact: 'Contact Asifah',
+        footerDisclaimerLabel: 'Disclaimer:',
+        footerDisclaimer: 'Open-source OSINT geopolitical intelligence. Apolitical six-dimension scoring framework — same rubric scores all administrations, election-cycle aware. Composite weighted average of structural indicators, not rhetoric-tempo deltas. Not investment, legal, or political advice. Not for operational use.',
+        footerLinkMission: 'Mission Statement',
+        footerLinkPrivacy: 'Privacy Policy',
+        footerLinkHome: 'Home',
         footerCopyright: '© 2025-2026 Asifah Analytics.',
-        footerRights: 'All rights reserved. This is open-source OSINT geopolitical intelligence; not investment, legal, or political advice.',
+        footerRights: 'All rights reserved.',
         loadingText: 'SCANNING U.S. STABILITY...',
         emptySignals: 'No signals detected in this category for the current scan window.',
         coldStart: 'Initial scan in progress. Composite score will populate within 5 minutes.',
@@ -2419,6 +2553,21 @@ var TRANSLATIONS = {
         tooltipPopulation: 'Población:',
         commodityTitle: 'Exposición a Commodities de EE. UU.',
         commodityProse: 'Estados Unidos es un productor y consumidor globalmente significativo de energía (petróleo, gas natural), commodities agrícolas (maíz, trigo, soja) y metales industriales. La presión doméstica en los precios de estos commodities se traduce directamente a los bolsillos del consumidor y a la presión política, independientemente de qué administración esté en el poder.',
+        // Worldwide Caution banner i18n (v1.0.0 May 27 2026)
+        wwCautionTitle: 'Departamento de Estado de EE. UU. — Alerta Mundial',
+        wwCautionBody: 'Tras el lanzamiento de operaciones de combate estadounidenses en Irán, los estadounidenses en todo el mundo, y especialmente en el Medio Oriente, deben seguir las orientaciones de la embajada o consulado estadounidense más cercano. El Departamento de Estado continúa aconsejando mayor conciencia situacional y la revisión de los planes de seguridad personal.',
+        wwCautionCta: 'Ver Alerta Mundial Completa del Departamento de Estado →',
+        // NYSE i18n (v1.0.0 May 27 2026)
+        nyseTitle: 'Índices Bursátiles de EE. UU.',
+        nyseProse: 'Lecturas en vivo de los tres principales índices bursátiles estadounidenses. Estos índices funcionan como un pulso de confianza financiera — las caídas pronunciadas suelen preceder a un estrés de estabilidad más amplio, mientras que los rallies sostenidos reflejan resiliencia institucional. Actualizado dos veces al día (7 AM y 7 PM ET); las minigráficas se actualizan en la consulta vespertina.',
+        nyseStatusLoading: 'Cargando…',
+        nyseStatusOpen: 'Mercado Abierto',
+        nyseStatusClosed: 'Mercado Cerrado',
+        nyseStatusPremarket: 'Pre-Apertura',
+        nyseStatusAfterhours: 'Post-Cierre',
+        nyseLoading: 'Cargando índices bursátiles…',
+        nyseUnavailable: 'Datos de índices bursátiles temporalmente no disponibles.',
+        nyseLastUpdated: 'al',
         rhetoricLiveTitle: 'Rastreador de Retórica de EE. UU.',
         rhetoricLivePill: '● En Vivo',
         rhetoricLiveLoading: 'Cargando datos de retórica…',
@@ -2440,8 +2589,19 @@ var TRANSLATIONS = {
         newsTabOtherSocial: 'Bluesky y Telegram',
         newsTabSocial: 'Redes Sociales',
         libraryTitle: 'Biblioteca de Conocimiento — Marco Gubernamental de EE. UU.',
+        // Canonical footer i18n (v1.3 pattern May 27 2026)
+        footerTitle: 'Asifah Analytics — Índice de Estabilidad de EE. UU.',
+        footerBackendLabel: 'Backend:',
+        footerCadence: 'Cadencia de escaneo de 12 horas · NYSE actualizado dos veces al día (7 AM y 7 PM ET)',
         footerSourcesTitle: 'Fuentes de Datos:',
-        footerSources: 'FRED (Datos Económicos del Banco de la Reserva Federal) · Yahoo Finance · API Congress.gov · UK FCDO · GDELT · NewsAPI · Google News RSS · CISA · FEMA · Contrato de huella del Rastreador Militar de Asifah.',
+        footerSources: 'FRED (Datos Económicos del Banco de la Reserva Federal) · Yahoo Finance · Alpha Vantage · API Congress.gov · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Contrato de huella del Rastreador Militar de Asifah.',
+        footerBmc: 'Invítame un Café',
+        footerContact: 'Contactar Asifah',
+        footerDisclaimerLabel: 'Aviso:',
+        footerDisclaimer: 'Inteligencia geopolítica OSINT de código abierto. Marco apolítico de puntuación de seis dimensiones — el mismo criterio puntúa todas las administraciones, consciente del ciclo electoral. Promedio ponderado compuesto de indicadores estructurales, no de variaciones de tempo retórico. No es asesoramiento de inversión, legal o político. No para uso operacional.',
+        footerLinkMission: 'Declaración de Misión',
+        footerLinkPrivacy: 'Política de Privacidad',
+        footerLinkHome: 'Inicio',
         footerMethodologyTitle: 'Metodología:',
         footerMethodology: 'Marco de puntuación apolítico de seis dimensiones. La misma rúbrica puntúa todas las administraciones. Consciente del ciclo electoral (auto-recalibración tras elecciones de medio término). Promedio compuesto ponderado de indicadores estructurales, no deltas de tempo retórico — directamente comparable a través de períodos de tiempo.',
         footerCopyright: '© 2025-2026 Asifah Analytics.',
@@ -2509,6 +2669,21 @@ var TRANSLATIONS = {
         tooltipPopulation: 'População:',
         commodityTitle: 'Exposição dos EUA a Commodities',
         commodityProse: 'Os Estados Unidos são um produtor e consumidor globalmente significativo de energia (petróleo, gás natural), commodities agrícolas (milho, trigo, soja) e metais industriais. A pressão doméstica nos preços dessas commodities se traduz diretamente em bolsos do consumidor e pressão política, independentemente de qual administração esteja no poder.',
+        // Worldwide Caution banner i18n (v1.0.0 May 27 2026)
+        wwCautionTitle: 'Departamento de Estado dos EUA — Alerta Mundial',
+        wwCautionBody: 'Após o lançamento de operações de combate dos EUA no Irã, americanos em todo o mundo e especialmente no Oriente Médio devem seguir as orientações da embaixada ou consulado dos EUA mais próximo. O Departamento de Estado continua aconselhando maior consciência situacional e revisão dos planos de segurança pessoal.',
+        wwCautionCta: 'Ver Alerta Mundial Completa do Departamento de Estado →',
+        // NYSE i18n (v1.0.0 May 27 2026)
+        nyseTitle: 'Índices Acionários dos EUA',
+        nyseProse: 'Leituras ao vivo dos três principais índices acionários dos EUA. Esses índices servem como um pulso de confiança financeira — quedas acentuadas frequentemente precedem estresse mais amplo de estabilidade, enquanto rallies sustentados refletem resiliência institucional. Atualizado duas vezes por dia (7h e 19h ET); as minigráficas atualizam na consulta noturna.',
+        nyseStatusLoading: 'Carregando…',
+        nyseStatusOpen: 'Mercado Aberto',
+        nyseStatusClosed: 'Mercado Fechado',
+        nyseStatusPremarket: 'Pré-Mercado',
+        nyseStatusAfterhours: 'Pós-Mercado',
+        nyseLoading: 'Carregando índices acionários…',
+        nyseUnavailable: 'Dados de índices acionários temporariamente indisponíveis.',
+        nyseLastUpdated: 'em',
         rhetoricLiveTitle: 'Rastreador de Retórica dos EUA',
         rhetoricLivePill: '● Ao Vivo',
         rhetoricLiveLoading: 'Carregando dados de retórica…',
@@ -2530,8 +2705,19 @@ var TRANSLATIONS = {
         newsTabOtherSocial: 'Bluesky e Telegram',
         newsTabSocial: 'Mídias Sociais',
         libraryTitle: 'Biblioteca de Conhecimento — Estrutura Governamental dos EUA',
+        // Canonical footer i18n (v1.3 pattern May 27 2026)
+        footerTitle: 'Asifah Analytics — Índice de Estabilidade dos EUA',
+        footerBackendLabel: 'Backend:',
+        footerCadence: 'Cadência de varredura de 12 horas · NYSE atualizado duas vezes por dia (7h e 19h ET)',
         footerSourcesTitle: 'Fontes de Dados:',
-        footerSources: 'FRED (Dados Econômicos do Federal Reserve) · Yahoo Finance · API Congress.gov · UK FCDO · GDELT · NewsAPI · Google News RSS · CISA · FEMA · Contrato de impressão do Rastreador Militar Asifah.',
+        footerSources: 'FRED (Dados Econômicos do Federal Reserve) · Yahoo Finance · Alpha Vantage · API Congress.gov · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Contrato de impressão digital do Rastreador Militar Asifah.',
+        footerBmc: 'Compre-me um Café',
+        footerContact: 'Contatar Asifah',
+        footerDisclaimerLabel: 'Aviso:',
+        footerDisclaimer: 'Inteligência geopolítica OSINT de código aberto. Estrutura apolítica de pontuação de seis dimensões — a mesma rubrica pontua todas as administrações, com consciência do ciclo eleitoral. Média ponderada composta de indicadores estruturais, não de variações de ritmo retórico. Não é aconselhamento de investimento, legal ou político. Não para uso operacional.',
+        footerLinkMission: 'Declaração de Missão',
+        footerLinkPrivacy: 'Política de Privacidade',
+        footerLinkHome: 'Início',
         footerMethodologyTitle: 'Metodologia:',
         footerMethodology: 'Estrutura de pontuação apolítica de seis dimensões. A mesma rubrica pontua todas as administrações. Consciente do ciclo eleitoral (auto-recalibração após eleições de meio de mandato). Média ponderada composta de indicadores estruturais, não deltas de tempo retórico — diretamente comparável entre períodos.',
         footerCopyright: '© 2025-2026 Asifah Analytics.',
@@ -2809,8 +2995,164 @@ function renderAll(data) {
     renderKeywordDimension('cyber_infrastructure', data, t);
     renderMap(data);
     renderCommodity(data, t);
+    renderNYSE(data, t);
     renderNews(data, t);
     renderLibrary();
+}
+
+// ────────────────────────────────────────────────────────────
+// NYSE / U.S. EQUITY INDICES RENDERER (v1.0.0 May 27 2026)
+// ────────────────────────────────────────────────────────────
+// Reads data.nyse from /api/us-stability response.
+// Renders 3 equal cards (SPX / DJIA / IXIC) with Chart.js mini sparklines.
+// Tier coloring: chg <= -2 = stress, -1 to -2 = warning, +/- 1 = stable, >= +2 = rally.
+// Chart.js instances tracked in window._nyseCharts to prevent memory leaks.
+// ────────────────────────────────────────────────────────────
+window._nyseCharts = window._nyseCharts || {};
+
+function _nyseTier(chg) {
+    if (chg <= -2)  return 'stress';
+    if (chg <= -1)  return 'warning';
+    if (chg >= 2)   return 'rally';
+    return 'stable';
+}
+
+function _nyseChangeClass(chg) {
+    if (chg > 0.05)  return 'up';
+    if (chg < -0.05) return 'down';
+    return 'flat';
+}
+
+function _nyseChangeSign(chg) {
+    if (chg > 0)  return '+';
+    if (chg < 0)  return '';   // negative already has minus sign
+    return '';
+}
+
+function _nyseStatusKey(status) {
+    if (status === 'open')        return 'nyseStatusOpen';
+    if (status === 'closed')      return 'nyseStatusClosed';
+    if (status === 'pre-market')  return 'nyseStatusPremarket';
+    if (status === 'after-hours') return 'nyseStatusAfterhours';
+    return 'nyseStatusLoading';
+}
+
+function _nyseStatusPillClass(status) {
+    if (status === 'open')        return 'market-open';
+    if (status === 'closed')      return 'market-closed';
+    if (status === 'pre-market')  return 'market-premarket';
+    if (status === 'after-hours') return 'market-afterhours';
+    return '';
+}
+
+function _formatNYSEValue(val) {
+    if (typeof val !== 'number') return '—';
+    return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function _formatLastUpdated(iso, t) {
+    if (!iso) return '';
+    try {
+        var d = new Date(iso);
+        var dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        var timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        return (t.nyseLastUpdated || 'as of') + ' ' + dateStr + ', ' + timeStr;
+    } catch (e) {
+        return '';
+    }
+}
+
+function renderNYSE(data, t) {
+    var grid = document.getElementById('nyseGrid');
+    var pill = document.getElementById('nyseStatusPill');
+    if (!grid || !pill) return;
+
+    var nyse = data.nyse || {};
+    var indices = nyse.indices || {};
+    var marketStatus = nyse.market_status || 'closed';
+
+    // Status pill
+    pill.textContent = t[_nyseStatusKey(marketStatus)] || marketStatus;
+    pill.className = 'nyse-status-pill ' + _nyseStatusPillClass(marketStatus);
+
+    // If no indices loaded, show empty state
+    var keys = Object.keys(indices);
+    if (keys.length === 0) {
+        grid.innerHTML = '<div class="nyse-empty-state">' + (t.nyseUnavailable || 'Equity index data temporarily unavailable.') + '</div>';
+        return;
+    }
+
+    // Build 3 tiles (canonical order: SPX, DJIA, IXIC)
+    var canonicalOrder = ['SPX', 'DJIA', 'IXIC'];
+    var html = '';
+    canonicalOrder.forEach(function(key) {
+        var idx = indices[key];
+        if (!idx) return;
+        var chg = typeof idx.change_pct_24h === 'number' ? idx.change_pct_24h : 0;
+        var tier = _nyseTier(chg);
+        var changeClass = _nyseChangeClass(chg);
+        var sign = _nyseChangeSign(chg);
+        html += '<div class="nyse-tile tile-' + tier + '">';
+        html +=   '<div class="nyse-tile-header">';
+        html +=     '<span class="nyse-tile-name">' + (idx.name || key) + '</span>';
+        html +=     '<span class="nyse-tile-ticker">' + key + '</span>';
+        html +=   '</div>';
+        html +=   '<div class="nyse-tile-value">' + _formatNYSEValue(idx.value) + '</div>';
+        html +=   '<div class="nyse-tile-change ' + changeClass + '">' + sign + chg.toFixed(2) + '% (24h)</div>';
+        html +=   '<div class="nyse-tile-spark"><canvas id="nyseSpark_' + key + '"></canvas></div>';
+        html +=   '<div class="nyse-tile-meta">';
+        html +=     '<span>' + (idx.source || '') + '</span>';
+        html +=     '<span>' + _formatLastUpdated(idx.timestamp, t) + '</span>';
+        html +=   '</div>';
+        html += '</div>';
+    });
+    grid.innerHTML = html;
+
+    // Render Chart.js sparklines (after DOM exists)
+    canonicalOrder.forEach(function(key) {
+        var idx = indices[key];
+        if (!idx || !idx.sparkline || !idx.sparkline.length) return;
+        var canvas = document.getElementById('nyseSpark_' + key);
+        if (!canvas) return;
+        // Destroy previous chart instance if it exists (prevents Chart.js memory leak)
+        if (window._nyseCharts[key]) {
+            try { window._nyseCharts[key].destroy(); } catch (e) {}
+        }
+        var spark = idx.sparkline;
+        var values = spark.map(function(p) { return p.value; });
+        var labels = spark.map(function(p) { return p.time; });
+        var color = (idx.change_pct_24h >= 0) ? '#22c55e' : '#ef4444';
+        try {
+            window._nyseCharts[key] = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        borderColor: color,
+                        backgroundColor: color + '20',   // 12% alpha
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        tension: 0.3,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false },
+                    },
+                    elements: { line: { borderJoinStyle: 'round' } },
+                    animation: false,
+                }
+            });
+        } catch (e) {
+            console.warn('[NYSE] Chart render failed for ' + key, e);
+        }
+    });
 }
 
 function renderMeta(data, t) {
