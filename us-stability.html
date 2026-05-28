@@ -14,6 +14,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>U.S. Stability Index | Asifah Analytics</title>
+    <!-- Chart.js for NYSE index sparklines (v1.0.0 May 27 2026) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1118,6 +1120,160 @@
             font-family: 'Courier New', monospace;
         }
 
+        /* ── NYSE / U.S. EQUITY INDICES CARD (v1.0.0 May 27 2026) ── */
+        /* Three equal cards side by side: SPX / DJIA / IXIC.
+         * Mobile: stacks vertically below 768px. Mirrors TASE pattern
+         * from israel-stability.html with Chart.js mini sparklines. */
+        .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .nyse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .nyse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nyse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nyse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .nyse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+
+        .nyse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .nyse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .nyse-grid { grid-template-columns: 1fr; }
+        }
+
+        .nyse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .nyse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .nyse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .nyse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .nyse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .nyse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .nyse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+
+        .nyse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .nyse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+
+        .nyse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nyse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
         /* ── RHETORIC LIVE MINI-CARD (v1.0.0 May 2026) ── */
         /* Live mini-dashboard pulling from /api/rhetoric/us. Replaces the
          * earlier placeholder. Click-through to full rhetoric-us.html for
@@ -1835,6 +1991,25 @@
                         <span id="commodityAlertText">—</span>
                     </div>
                     <div class="commodity-tile-grid" id="commodityTileGrid"></div>
+                </div>
+
+                <!-- ── NYSE / U.S. EQUITY INDICES CARD (v1.0.0 May 27 2026) ── -->
+                <!-- Reads from data.nyse in /api/us-stability response.
+                     Three equal cards side by side: SPX / DJIA / IXIC.
+                     Cache-first: page loads NEVER trigger Alpha Vantage calls. -->
+                <div class="nyse-card" id="nyseCard">
+                    <div class="nyse-card-header">
+                        <div class="nyse-card-title">
+                            📈 <span data-i18n="nyseTitle">U.S. Equity Indices</span>
+                        </div>
+                        <span class="nyse-status-pill" id="nyseStatusPill" data-i18n="nyseStatusLoading">Loading...</span>
+                    </div>
+                    <div class="nyse-prose" data-i18n="nyseProse">
+                        Live readings from the three major U.S. equity benchmarks. These indices serve as a financial-confidence pulse — sharp drawdowns often precede broader stability stress, while sustained rallies reflect institutional resilience. Updated twice daily (7 AM and 7 PM ET); sparklines refresh on the evening pull.
+                    </div>
+                    <div class="nyse-grid" id="nyseGrid">
+                        <div class="nyse-empty-state" data-i18n="nyseLoading">Loading equity indices…</div>
+                    </div>
                 </div>
 
                 <!-- ── COMPOSITE STABILITY INDEX (HERO CARD) ── -->
