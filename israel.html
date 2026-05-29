@@ -449,6 +449,163 @@
         [dir="rtl"] .nav-btn { text-align: right; }
 
         /* Canonical footer */
+        /* ── FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── */
+        /* Canonical 3-tile equity card mirroring NYSE pattern from us-stability.html.
+         * TASE TA-35 · NIS/USD · EIS ETF. Market status pill + per-tile tier coloring. */
+        .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .financial-pulse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .financial-pulse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .financial-pulse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .financial-pulse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .financial-pulse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .financial-pulse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .financial-pulse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .financial-pulse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .financial-pulse-status-pill.market-partial   { background: rgba(96,165,250,0.18);  color: #60a5fa; border-color: rgba(96,165,250,0.4); }
+
+        .financial-pulse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .financial-pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .financial-pulse-grid { grid-template-columns: 1fr; }
+        }
+
+        .financial-pulse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .financial-pulse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .financial-pulse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .financial-pulse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .financial-pulse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .financial-pulse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .financial-pulse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .financial-pulse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .financial-pulse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .financial-pulse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .financial-pulse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .financial-pulse-tile-change.up   { color: #22c55e; }
+        .financial-pulse-tile-change.down { color: #ef4444; }
+        .financial-pulse-tile-change.flat { color: var(--text-muted); }
+        .financial-pulse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .financial-pulse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+        .financial-pulse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+        .financial-pulse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        /* RTL: flip header pill placement, keep tile content LTR (numbers) */
+        [dir="rtl"] .financial-pulse-card-header { flex-direction: row-reverse; }
+        [dir="rtl"] .financial-pulse-tile-value,
+        [dir="rtl"] .financial-pulse-tile-change,
+        [dir="rtl"] .financial-pulse-tile-ticker,
+        [dir="rtl"] .financial-pulse-tile-meta { direction: ltr; text-align: left; }
+
         .asifah-footer { margin-top: 40px; padding: 30px 24px 20px; border-top: 1px solid var(--card-border); color: var(--text-secondary); }
         .asifah-footer a { color: var(--accent); }
         .asifah-footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-bottom: 24px; max-width: 1200px; margin-left: auto; margin-right: auto; }
@@ -802,27 +959,21 @@
             <!-- Metrics Grid -->
             <div class="metrics-grid">
 
-                <!-- Economic: NIS/USD -->
-                <div class="metric-card">
-                    <div class="metric-title">💵 NIS / USD RATE</div>
-                    <div class="metric-value" id="nisRate">--</div>
-                    <div class="metric-subtitle" id="nisTrend">Loading...</div>
-                    <div class="sparkline-container" id="nisCardSparklineContainer" style="display:none; margin-top:12px;">
-                        <span class="sparkline-label">30-Day:</span>
-                        <canvas id="nisCardSparkline" class="sparkline-canvas"></canvas>
-                        <span class="sparkline-status" id="nisCardSparklineStatus">--</span>
-                    </div>
-                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--card-border);">
-                        <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; font-weight:600;">📊 TASE TA-35</div>
-                        <div style="font-size:20px; font-weight:bold; color:var(--text-primary);" id="taseValue">--</div>
-                        <div style="font-size:12px; color:var(--text-secondary);" id="taseChange">--</div>
-                        <!-- v2.2.0 — TASE intraday sparkline (compact horizontal strip, constrained height) -->
-                        <div class="sparkline-container" id="taseSparklineContainer" style="display:none; margin-top:10px;">
-                            <span class="sparkline-label" data-i18n="taseIntradayLabel">Intraday:</span>
-                            <div class="sparkline-canvas-wrap" style="flex-grow:1; max-width:150px; height:32px; position:relative;">
-                                <canvas id="taseSparkline" class="sparkline-canvas" style="width:100% !important; height:32px !important; max-height:32px !important; display:block;"></canvas>
-                            </div>
+                <!-- ── ISRAEL FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── -->
+                <!-- 3 equal tiles: TASE TA-35 · NIS/USD · EIS ETF.
+                     Reads data.financial_pulse from /api/israel-stability. -->
+                <div class="financial-pulse-card metric-card" id="israelFinancialPulseCard" style="grid-column: 1 / -1;">
+                    <div class="financial-pulse-card-header">
+                        <div class="financial-pulse-card-title">
+                            💹 <span data-i18n="financialPulseTitle">Israel Financial Pulse</span>
                         </div>
+                        <span class="financial-pulse-status-pill" id="israelFinancialPulseStatus" data-i18n="financialPulseStatusLoading">Loading…</span>
+                    </div>
+                    <div class="financial-pulse-prose" data-i18n="financialPulseProse">
+                        Live readings from Israel's primary equity benchmark, currency, and foreign-investor sentiment proxy. Together these three metrics serve as a financial-confidence pulse — sharp drawdowns often precede broader stability stress, while sustained strength reflects institutional resilience. TASE updates intraday during market hours (Sun–Thu); FX and EIS update during their respective sessions.
+                    </div>
+                    <div class="financial-pulse-grid" id="israelFinancialPulseGrid">
+                        <div class="financial-pulse-empty-state" data-i18n="financialPulseLoading">Loading financial indicators…</div>
                     </div>
                 </div>
 
@@ -1194,6 +1345,146 @@
             }, 500);
         }
 
+        // ===== FINANCIAL PULSE CARD (v1.0.0 May 29 2026) =====
+        // Canonical 3-tile equity card renderer. Mirrors NYSE pattern from us-stability.html.
+        // Reads data.financial_pulse (built by build_israel_financial_pulse in backend).
+        window._israelPulseCharts = window._israelPulseCharts || {};
+
+        function getCurrentTranslations() {
+            const lang = document.documentElement.getAttribute('data-lang') ||
+                         (document.documentElement.dir === 'rtl' ? 'he' : 'en');
+            return (translations[lang] || translations.en);
+        }
+
+        function _pulseStatusKey(status) {
+            if (status === 'open')        return 'financialPulseStatusOpen';
+            if (status === 'closed')      return 'financialPulseStatusClosed';
+            if (status === 'pre-market')  return 'financialPulseStatusPremarket';
+            if (status === 'after-hours') return 'financialPulseStatusAfterhours';
+            if (status === 'partial')     return 'financialPulseStatusPartial';
+            return 'financialPulseStatusLoading';
+        }
+        function _pulseStatusPillClass(status) {
+            if (status === 'open')        return 'market-open';
+            if (status === 'closed')      return 'market-closed';
+            if (status === 'pre-market')  return 'market-premarket';
+            if (status === 'after-hours') return 'market-afterhours';
+            if (status === 'partial')     return 'market-partial';
+            return '';
+        }
+        function _pulseChangeClass(chg) {
+            if (chg > 0.05)  return 'up';
+            if (chg < -0.05) return 'down';
+            return 'flat';
+        }
+        function _pulseFormatValue(val, ticker) {
+            if (typeof val !== 'number') return '—';
+            // NIS/USD: 4 decimals (3.7240). Indices: 2 decimals with commas.
+            if (ticker === 'ILS') return val.toFixed(4);
+            return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function _pulseFormatLastUpdated(iso, t) {
+            if (!iso) return '';
+            try {
+                const d = new Date(iso);
+                const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                return (t.financialPulseLastUpdated || 'as of') + ' ' + dateStr + ', ' + timeStr;
+            } catch (e) { return ''; }
+        }
+
+        function renderIsraelFinancialPulse(data, t) {
+            const grid = document.getElementById('israelFinancialPulseGrid');
+            const pill = document.getElementById('israelFinancialPulseStatus');
+            if (!grid || !pill) return;
+
+            const pulse = data.financial_pulse || {};
+            const tiles = pulse.tiles || {};
+            const marketStatus = pulse.market_status || 'closed';
+
+            // Card-header market status pill
+            pill.textContent = t[_pulseStatusKey(marketStatus)] || marketStatus;
+            pill.className = 'financial-pulse-status-pill ' + _pulseStatusPillClass(marketStatus);
+
+            const keys = Object.keys(tiles);
+            if (keys.length === 0) {
+                grid.innerHTML = '<div class="financial-pulse-empty-state">' +
+                                 (t.financialPulseUnavailable || 'Financial pulse data temporarily unavailable.') +
+                                 '</div>';
+                return;
+            }
+
+            // Canonical tile order: TASE, NIS_USD, EIS
+            const canonicalOrder = ['TASE', 'NIS_USD', 'EIS'];
+            const nameKeyMap = { TASE: 'financialPulseTileTASE', NIS_USD: 'financialPulseTileNIS', EIS: 'financialPulseTileEIS' };
+            let html = '';
+            canonicalOrder.forEach((key) => {
+                const tile = tiles[key];
+                if (!tile) return;
+                const chg = (typeof tile.change_pct_24h === 'number') ? tile.change_pct_24h : 0;
+                const tier = tile.tier || 'stable';
+                const changeClass = _pulseChangeClass(chg);
+                const sign = chg > 0 ? '+' : '';
+                const displayName = t[nameKeyMap[key]] || tile.name || key;
+                html += '<div class="financial-pulse-tile tile-' + tier + '">';
+                html +=   '<div class="financial-pulse-tile-header">';
+                html +=     '<span class="financial-pulse-tile-name">' + displayName + '</span>';
+                html +=     '<span class="financial-pulse-tile-ticker">' + (tile.ticker || key) + '</span>';
+                html +=   '</div>';
+                html +=   '<div class="financial-pulse-tile-value">' + _pulseFormatValue(tile.value, tile.ticker) + '</div>';
+                html +=   '<div class="financial-pulse-tile-change ' + changeClass + '">' + sign + chg.toFixed(2) + '% (24h)</div>';
+                html +=   '<div class="financial-pulse-tile-spark"><canvas id="israelPulseSpark_' + key + '"></canvas></div>';
+                html +=   '<div class="financial-pulse-tile-meta">';
+                html +=     '<span>' + (tile.source || '') + '</span>';
+                html +=     '<span>' + _pulseFormatLastUpdated(tile.timestamp, t) + '</span>';
+                html +=   '</div>';
+                html += '</div>';
+            });
+            grid.innerHTML = html;
+
+            // Render Chart.js sparklines (after DOM exists)
+            canonicalOrder.forEach((key) => {
+                const tile = tiles[key];
+                if (!tile || !tile.sparkline || !tile.sparkline.length) return;
+                const canvas = document.getElementById('israelPulseSpark_' + key);
+                if (!canvas) return;
+                if (window._israelPulseCharts[key]) {
+                    try { window._israelPulseCharts[key].destroy(); } catch (e) {}
+                }
+                const spark = tile.sparkline;
+                const values = spark.map(p => p.value);
+                const labels = spark.map(p => p.time);
+                const color = (tile.change_pct_24h >= 0) ? '#22c55e' : '#ef4444';
+                try {
+                    window._israelPulseCharts[key] = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: values,
+                                borderColor: color,
+                                backgroundColor: color + '20',
+                                borderWidth: 1.5,
+                                pointRadius: 0,
+                                tension: 0.3,
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                            scales: { x: { display: false }, y: { display: false } },
+                            elements: { line: { borderJoinStyle: 'round' } },
+                            animation: false,
+                        }
+                    });
+                } catch (e) {
+                    console.warn('[Israel Pulse] Chart render failed for ' + key, e);
+                }
+            });
+        }
+
         // ===== MAIN DATA LOAD =====
         async function loadIsraelData() {
             try {
@@ -1374,26 +1665,10 @@
                 return `<span class="score-component ${cls}">${c.icon} ${c.label}: ${sign}${val}</span>`;
             }).join('');
 
-            // Economic
-            const nis = (data.economic || {}).nis || {};
-            const tase = (data.economic || {}).tase || {};
-            if (nis.usd_to_ils) {
-                document.getElementById('nisRate').textContent = nis.usd_to_ils.toFixed(4);
-                const trendIcon = nis.trend === 'strengthening' ? '⬆️ STRENGTHENING' : nis.trend === 'weakening' ? '⬇️ WEAKENING' : '→ STABLE';
-                const trendColor = nis.trend === 'strengthening' ? '#4ade80' : nis.trend === 'weakening' ? '#f87171' : '#7a9ab8';
-                const chg = nis.change_pct_24h ? `${nis.change_pct_24h > 0 ? '+' : ''}${nis.change_pct_24h.toFixed(2)}% (24h)` : '';
-                document.getElementById('nisTrend').innerHTML = `<span style="color:${trendColor}; font-weight:600;">${trendIcon}</span> <span style="color:var(--text-secondary);">${chg}</span>`;
-            }
-            if (tase.value) {
-                document.getElementById('taseValue').textContent = tase.value.toLocaleString();
-                const tchg = tase.change_pct_24h;
-                document.getElementById('taseChange').innerHTML = tchg
-                    ? `<span style="color:${tchg >= 0 ? '#4ade80' : '#f87171'}">${tchg >= 0 ? '+' : ''}${tchg.toFixed(2)}% (24h)</span>`
-                    : 'Change unavailable';
-            } else {
-                document.getElementById('taseValue').textContent = 'N/A';
-                document.getElementById('taseChange').textContent = tase.source === 'Unavailable' ? 'Live feed unavailable' : '--';
-            }
+            // ── Financial Pulse Card (v1.0.0 May 29 2026) ──
+            // Reads data.financial_pulse from /api/israel-stability response.
+            // Renders 3-tile card (TASE · NIS/USD · EIS) with Chart.js sparklines.
+            renderIsraelFinancialPulse(data, getCurrentTranslations());
 
             // Conflict
             const conflict = data.conflict || {};
@@ -1760,6 +2035,21 @@
             nisRate: "💵 NIS / USD RATE",
             taseLabel: "📊 TASE TA-35",
             taseIntradayLabel: "Intraday:",
+            // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+            financialPulseTitle: "Israel Financial Pulse",
+            financialPulseProse: "Live readings from Israel's primary equity benchmark, currency, and foreign-investor sentiment proxy. Together these three metrics serve as a financial-confidence pulse — sharp drawdowns often precede broader stability stress, while sustained strength reflects institutional resilience. TASE updates intraday during market hours (Sun–Thu); FX and EIS update during their respective sessions.",
+            financialPulseStatusLoading: "Loading…",
+            financialPulseStatusOpen: "Market Open",
+            financialPulseStatusClosed: "Market Closed",
+            financialPulseStatusPremarket: "Pre-Market",
+            financialPulseStatusAfterhours: "After-Hours",
+            financialPulseStatusPartial: "Partial Trading",
+            financialPulseLoading: "Loading financial indicators…",
+            financialPulseUnavailable: "Financial pulse data temporarily unavailable.",
+            financialPulseLastUpdated: "as of",
+            financialPulseTileTASE: "TASE TA-35",
+            financialPulseTileNIS: "NIS / USD",
+            financialPulseTileEIS: "iShares MSCI Israel",
             warConflict: "⚔️ WAR & CONFLICT",
             conflictSubtitle: "Conflict intensity (0–100)",
             highSeverityLabel: "High-Severity Events (7d)",
@@ -1860,6 +2150,21 @@
             nisRate: "💵 שקל / דולר",
             taseLabel: "📊 ת״א 35",
             taseIntradayLabel: "תוך־יומי:",
+            // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+            financialPulseTitle: "דופק פיננסי - ישראל",
+            financialPulseProse: "קריאות בזמן אמת ממדד המניות הראשי של ישראל, מהמטבע ומסנטימנט המשקיעים הזרים. שלושת המדדים יחד משמשים כדופק של אמון פיננסי — ירידות חדות מקדימות לעיתים קרובות לחץ יציבות רחב יותר, בעוד שעוצמה מתמשכת משקפת חוסן מוסדי. בורסת ת״א מתעדכנת תוך כדי המסחר (א'–ה'); מט״ח ו-EIS מתעדכנים בשעות המסחר שלהם.",
+            financialPulseStatusLoading: "טוען…",
+            financialPulseStatusOpen: "בורסה פתוחה",
+            financialPulseStatusClosed: "בורסה סגורה",
+            financialPulseStatusPremarket: "טרום-מסחר",
+            financialPulseStatusAfterhours: "פוסט-מסחר",
+            financialPulseStatusPartial: "מסחר חלקי",
+            financialPulseLoading: "טוען נתונים פיננסיים…",
+            financialPulseUnavailable: "נתוני הדופק הפיננסי אינם זמינים זמנית.",
+            financialPulseLastUpdated: "נכון ל-",
+            financialPulseTileTASE: "ת״א 35",
+            financialPulseTileNIS: "שקל / דולר",
+            financialPulseTileEIS: "iShares MSCI Israel",
             warConflict: "⚔️ מלחמה ועימות",
             conflictSubtitle: "עוצמת העימות (0–100)",
             highSeverityLabel: "אירועים חמורים (7 ימים)",
@@ -1958,6 +2263,21 @@
             nisRate: "💵 الشيكل / الدولار",
             taseLabel: "📊 مؤشر تل أبيب 35",
             taseIntradayLabel: "خلال اليوم:",
+            // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+            financialPulseTitle: "النبض المالي الإسرائيلي",
+            financialPulseProse: "قراءات حية من المؤشر الرئيسي للأسهم الإسرائيلية والعملة ومؤشر ثقة المستثمرين الأجانب. تعمل هذه المقاييس الثلاثة معًا كنبض ثقة مالية — غالبًا ما تسبق الانخفاضات الحادة ضغوط استقرار أوسع، بينما تعكس القوة المستدامة المرونة المؤسسية. تتحدث بورصة تل أبيب خلال ساعات السوق (الأحد إلى الخميس)؛ يتم تحديث العملة و EIS خلال جلساتهما.",
+            financialPulseStatusLoading: "تحميل…",
+            financialPulseStatusOpen: "السوق مفتوح",
+            financialPulseStatusClosed: "السوق مغلق",
+            financialPulseStatusPremarket: "قبل الافتتاح",
+            financialPulseStatusAfterhours: "بعد الإغلاق",
+            financialPulseStatusPartial: "تداول جزئي",
+            financialPulseLoading: "تحميل المؤشرات المالية…",
+            financialPulseUnavailable: "بيانات النبض المالي غير متوفرة مؤقتًا.",
+            financialPulseLastUpdated: "اعتبارًا من",
+            financialPulseTileTASE: "تل أبيب 35",
+            financialPulseTileNIS: "الشيكل / الدولار",
+            financialPulseTileEIS: "iShares MSCI إسرائيل",
             warConflict: "⚔️ الحرب والصراع",
             conflictSubtitle: "شدة الصراع (0–100)",
             highSeverityLabel: "أحداث عالية الخطورة (7 أيام)",
@@ -2056,6 +2376,21 @@
             nisRate: "💵 شکل / دلار",
             taseLabel: "📊 شاخص تل‌آویو 35",
             taseIntradayLabel: "روزانه:",
+            // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+            financialPulseTitle: "نبض مالی اسرائیل",
+            financialPulseProse: "قرائت‌های زنده از شاخص اصلی سهام اسرائیل، ارز و شاخص اعتماد سرمایه‌گذاران خارجی. این سه شاخص با هم به‌عنوان نبض اعتماد مالی عمل می‌کنند — کاهش‌های شدید اغلب قبل از فشار گسترده‌تر ثبات رخ می‌دهد، در حالی که قدرت پایدار انعکاس‌دهنده انعطاف‌پذیری نهادی است. بورس تل‌آویو در ساعات بازار (یکشنبه تا پنج‌شنبه) به‌روز می‌شود؛ ارز و EIS در جلسات مربوطه به‌روز می‌شوند.",
+            financialPulseStatusLoading: "بارگذاری…",
+            financialPulseStatusOpen: "بازار باز",
+            financialPulseStatusClosed: "بازار بسته",
+            financialPulseStatusPremarket: "پیش از بازار",
+            financialPulseStatusAfterhours: "پس از بازار",
+            financialPulseStatusPartial: "معاملات جزئی",
+            financialPulseLoading: "بارگذاری شاخص‌های مالی…",
+            financialPulseUnavailable: "داده‌های نبض مالی به طور موقت در دسترس نیست.",
+            financialPulseLastUpdated: "از",
+            financialPulseTileTASE: "تل‌آویو 35",
+            financialPulseTileNIS: "شکل / دلار",
+            financialPulseTileEIS: "iShares MSCI اسرائیل",
             warConflict: "⚔️ جنگ و درگیری",
             conflictSubtitle: "شدت درگیری (0–100)",
             highSeverityLabel: "رویدادهای شدید (7 روز)",
