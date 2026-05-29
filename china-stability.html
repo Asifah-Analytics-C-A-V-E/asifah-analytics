@@ -133,6 +133,157 @@
             display: block;
         }
 
+        /* ── FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── */
+        /* Canonical 3-tile equity card mirroring NYSE/Israel pattern.
+         * HKEX Hang Seng · Shanghai Composite · CNY/USD. */
+        .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 16px 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .financial-pulse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .financial-pulse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .financial-pulse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .financial-pulse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .financial-pulse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .financial-pulse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .financial-pulse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .financial-pulse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .financial-pulse-status-pill.market-partial   { background: rgba(96,165,250,0.18);  color: #60a5fa; border-color: rgba(96,165,250,0.4); }
+
+        .financial-pulse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .financial-pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .financial-pulse-grid { grid-template-columns: 1fr; }
+        }
+
+        .financial-pulse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .financial-pulse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .financial-pulse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .financial-pulse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .financial-pulse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .financial-pulse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .financial-pulse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .financial-pulse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .financial-pulse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .financial-pulse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .financial-pulse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .financial-pulse-tile-change.up   { color: #22c55e; }
+        .financial-pulse-tile-change.down { color: #ef4444; }
+        .financial-pulse-tile-change.flat { color: var(--text-muted); }
+        .financial-pulse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .financial-pulse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+        .financial-pulse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+        .financial-pulse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--loading-overlay-bg);
@@ -937,21 +1088,22 @@
                     </div>
                     <span id="brentStatus" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
                 </div>
-                <!-- HKEX Hang Seng (v1.1 May 25 2026 — compact sparkline strip per canonical pattern) -->
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--card-border);">
-                    <div style="flex:1;">
-                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">📊 <span data-i18n="hkex_label">HKEX Hang Seng</span></div>
-                        <div style="font-size:22px;font-weight:700;color:var(--text-primary);" id="hkexValue">--</div>
-                        <div style="font-size:10px;color:var(--text-secondary);" id="hkexChange">-- · <span data-i18n="hkex_subtitle">Hong Kong equity confidence proxy</span></div>
-                        <!-- HKEX 5-day sparkline (compact horizontal strip) -->
-                        <div class="sparkline-container" id="hkexSparklineContainer" style="display:none;">
-                            <span class="sparkline-label" data-i18n="hkex_sparkline_label">5-day:</span>
-                            <div class="sparkline-canvas-wrap">
-                                <canvas id="hkexSparkline" class="sparkline-canvas"></canvas>
-                            </div>
+                <!-- ── CHINA FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── -->
+                <!-- Replaces old HKEX single-line metric with canonical 3-tile financial pulse card.
+                     HKEX Hang Seng · Shanghai Composite · CNY/USD with sparklines + market_status. -->
+                <div class="financial-pulse-card" id="chinaFinancialPulseCard">
+                    <div class="financial-pulse-card-header">
+                        <div class="financial-pulse-card-title">
+                            💹 <span data-i18n="financialPulseTitle">China Financial Pulse</span>
                         </div>
+                        <span class="financial-pulse-status-pill" id="chinaFinancialPulseStatus" data-i18n="financialPulseStatusLoading">Loading…</span>
                     </div>
-                    <span id="hkexStatus" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;background:#6b7280;color:white; margin-left:8px;">--</span>
+                    <div class="financial-pulse-prose" data-i18n="financialPulseProse">
+                        Live readings from Hong Kong's blue-chip benchmark, mainland China's primary equity index, and the yuan exchange rate. Together these three metrics serve as a financial-confidence pulse — sharp HKEX/SSE drawdowns or yuan weakening often precede broader stability stress, while sustained strength reflects institutional resilience. HKEX trades 09:30–16:00 HKT (lunch 12:00–13:00); SSE trades 09:30–15:00 China time; CNY/USD updates during global FX hours.
+                    </div>
+                    <div class="financial-pulse-grid" id="chinaFinancialPulseGrid">
+                        <div class="financial-pulse-empty-state" data-i18n="financialPulseLoading">Loading financial indicators…</div>
+                    </div>
                 </div>
                 <!-- US-China tension level -->
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
@@ -1584,6 +1736,151 @@
             } catch(e) { console.warn('[Rhetoric] Load failed:', e); }
         }
 
+        /// ===== FINANCIAL PULSE CARD (v1.0.0 May 29 2026) =====
+        // Canonical 3-tile equity card renderer for China.
+        // Mirrors Israel/NYSE pattern with HKEX, SSE, CNY/USD tiles.
+        window._chinaPulseCharts = window._chinaPulseCharts || {};
+
+        function getCurrentTranslations() {
+            const lang = document.documentElement.getAttribute('data-lang') ||
+                         document.documentElement.lang ||
+                         'en';
+            return (translations[lang] || translations.en);
+        }
+
+        function _pulseStatusKey(status) {
+            if (status === 'open')        return 'financialPulseStatusOpen';
+            if (status === 'closed')      return 'financialPulseStatusClosed';
+            if (status === 'pre-market')  return 'financialPulseStatusPremarket';
+            if (status === 'after-hours') return 'financialPulseStatusAfterhours';
+            if (status === 'partial')     return 'financialPulseStatusPartial';
+            return 'financialPulseStatusLoading';
+        }
+        function _pulseStatusPillClass(status) {
+            if (status === 'open')        return 'market-open';
+            if (status === 'closed')      return 'market-closed';
+            if (status === 'pre-market')  return 'market-premarket';
+            if (status === 'after-hours') return 'market-afterhours';
+            if (status === 'partial')     return 'market-partial';
+            return '';
+        }
+        function _pulseChangeClass(chg) {
+            if (chg > 0.05)  return 'up';
+            if (chg < -0.05) return 'down';
+            return 'flat';
+        }
+        function _pulseFormatValue(val, ticker) {
+            if (typeof val !== 'number') return '—';
+            // CNY/USD: 4 decimals (7.2401). Indices: 2 decimals with commas.
+            if (ticker === 'CNY') return val.toFixed(4);
+            return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function _pulseFormatLastUpdated(iso, t) {
+            if (!iso) return '';
+            try {
+                const d = new Date(iso);
+                const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                return (t.financialPulseLastUpdated || 'as of') + ' ' + dateStr + ', ' + timeStr;
+            } catch (e) { return ''; }
+        }
+
+        function renderChinaFinancialPulse(data, t) {
+            const grid = document.getElementById('chinaFinancialPulseGrid');
+            const pill = document.getElementById('chinaFinancialPulseStatus');
+            if (!grid || !pill) return;
+
+            const pulse = data.financial_pulse || {};
+            const tiles = pulse.tiles || {};
+            const marketStatus = pulse.market_status || 'closed';
+
+            // Card-header market status pill
+            pill.textContent = t[_pulseStatusKey(marketStatus)] || marketStatus;
+            pill.className = 'financial-pulse-status-pill ' + _pulseStatusPillClass(marketStatus);
+
+            const keys = Object.keys(tiles);
+            if (keys.length === 0) {
+                grid.innerHTML = '<div class="financial-pulse-empty-state">' +
+                                 (t.financialPulseUnavailable || 'Financial pulse data temporarily unavailable.') +
+                                 '</div>';
+                return;
+            }
+
+            // Canonical tile order: HKEX, SSE, CNY_USD
+            const canonicalOrder = ['HKEX', 'SSE', 'CNY_USD'];
+            const nameKeyMap = { HKEX: 'financialPulseTileHKEX', SSE: 'financialPulseTileSSE', CNY_USD: 'financialPulseTileCNY' };
+            let html = '';
+            canonicalOrder.forEach((key) => {
+                const tile = tiles[key];
+                if (!tile) return;
+                const chg = (typeof tile.change_pct_24h === 'number') ? tile.change_pct_24h : 0;
+                const tier = tile.tier || 'stable';
+                const changeClass = _pulseChangeClass(chg);
+                const sign = chg > 0 ? '+' : '';
+                const displayName = t[nameKeyMap[key]] || tile.name || key;
+                html += '<div class="financial-pulse-tile tile-' + tier + '">';
+                html +=   '<div class="financial-pulse-tile-header">';
+                html +=     '<span class="financial-pulse-tile-name">' + displayName + '</span>';
+                html +=     '<span class="financial-pulse-tile-ticker">' + (tile.ticker || key) + '</span>';
+                html +=   '</div>';
+                html +=   '<div class="financial-pulse-tile-value">' + _pulseFormatValue(tile.value, tile.ticker) + '</div>';
+                html +=   '<div class="financial-pulse-tile-change ' + changeClass + '">' + sign + chg.toFixed(2) + '% (24h)</div>';
+                html +=   '<div class="financial-pulse-tile-spark"><canvas id="chinaPulseSpark_' + key + '"></canvas></div>';
+                html +=   '<div class="financial-pulse-tile-meta">';
+                html +=     '<span>' + (tile.source || '') + '</span>';
+                html +=     '<span>' + _pulseFormatLastUpdated(tile.timestamp, t) + '</span>';
+                html +=   '</div>';
+                html += '</div>';
+            });
+            grid.innerHTML = html;
+
+            // Render Chart.js sparklines (after DOM exists)
+            canonicalOrder.forEach((key) => {
+                const tile = tiles[key];
+                if (!tile || !tile.sparkline || !tile.sparkline.length) return;
+                const canvas = document.getElementById('chinaPulseSpark_' + key);
+                if (!canvas) return;
+                if (window._chinaPulseCharts[key]) {
+                    try { window._chinaPulseCharts[key].destroy(); } catch (e) {}
+                }
+                const spark = tile.sparkline;
+                const values = spark.map(p => p.value);
+                const labels = spark.map(p => p.time);
+                // CNY tile: inverted polarity for color (rising = stress = red)
+                let color = (tile.change_pct_24h >= 0) ? '#22c55e' : '#ef4444';
+                if (key === 'CNY_USD') {
+                    color = (tile.change_pct_24h <= 0) ? '#22c55e' : '#ef4444';
+                }
+                try {
+                    window._chinaPulseCharts[key] = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: values,
+                                borderColor: color,
+                                backgroundColor: color + '20',
+                                borderWidth: 1.5,
+                                pointRadius: 0,
+                                tension: 0.3,
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                            scales: { x: { display: false }, y: { display: false } },
+                            elements: { line: { borderJoinStyle: 'round' } },
+                            animation: false,
+                        }
+                    });
+                } catch (e) {
+                    console.warn('[China Pulse] Chart render failed for ' + key, e);
+                }
+            });
+        }
+
         // China Stability Data
         async function loadStabilityData() {
             try {
@@ -1670,41 +1967,11 @@
                     }
                 }
 
-                // HKEX Hang Seng (v1.0 May 25 2026 — Black Swan POC, TASE-pattern mirror)
-                const hkex = data.hkex || {};
-                if (hkex.value) {
-                    const hkexValueEl = document.getElementById('hkexValue');
-                    if (hkexValueEl) hkexValueEl.textContent = hkex.value.toLocaleString();
-                    const hkexChangeEl = document.getElementById('hkexChange');
-                    if (hkexChangeEl) {
-                        const chg = hkex.change_pct_24h || 0;
-                        const marketSuffix = hkex.market_status === 'closed' ? ' (market closed)' : '';
-                        hkexChangeEl.innerHTML = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%${marketSuffix} · <span data-i18n="hkex_subtitle">Hong Kong equity confidence proxy</span>`;
-                        hkexChangeEl.style.color = chg >= 0 ? '#22c55e' : '#ef4444';
-                    }
-                    const hkexStatusEl = document.getElementById('hkexStatus');
-                    if (hkexStatusEl) {
-                        // Derive status from trend + magnitude
-                        const chg = hkex.change_pct_24h || 0;
-                        let status = 'stable';
-                        if (chg <= -2.0) status = 'stress';
-                        else if (chg <= -1.0) status = 'warning';
-                        else if (chg >= 2.0) status = 'rally';
-                        else status = 'stable';
-                        const colors = { stable:'#22c55e', warning:'#f59e0b', stress:'#ef4444', rally:'#0ea5e9', unknown:'#6b7280' };
-                        hkexStatusEl.textContent = status.toUpperCase();
-                        hkexStatusEl.style.background = colors[status] || '#6b7280';
-                    }
-                    // Build sparkline if data available
-                    if (hkex.sparkline && hkex.sparkline.length > 0) {
-                        buildHkexSparkline(hkex.sparkline);
-                    }
-                } else {
-                    const hkexValueEl = document.getElementById('hkexValue');
-                    if (hkexValueEl) hkexValueEl.textContent = 'N/A';
-                    const hkexChangeEl = document.getElementById('hkexChange');
-                    if (hkexChangeEl) hkexChangeEl.textContent = hkex.source === 'Unavailable' ? 'Live feed unavailable' : '--';
-                }
+                // ── China Financial Pulse Card (v1.0.0 May 29 2026) ──
+                // Reads data.financial_pulse from /api/china/stability response.
+                // Renders 3-tile card (HKEX · SSE · CNY/USD) with Chart.js sparklines.
+                // Replaces the old single-line HKEX rendering.
+                renderChinaFinancialPulse(data, getCurrentTranslations());
 
                 const usChinaEl = document.getElementById('usChinaLevel');
                 if (usChinaEl) {
@@ -1924,6 +2191,21 @@
                 "nav_africa":            "🌍 Africa",
                 "nav_future":            "🔒 Future",
                 "hkex_label":            "HKEX Hang Seng",
+                // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+                "financialPulseTitle":          "China Financial Pulse",
+                "financialPulseProse":          "Live readings from Hong Kong's blue-chip benchmark, mainland China's primary equity index, and the yuan exchange rate. Together these three metrics serve as a financial-confidence pulse — sharp HKEX/SSE drawdowns or yuan weakening often precede broader stability stress, while sustained strength reflects institutional resilience. HKEX trades 09:30–16:00 HKT (lunch 12:00–13:00); SSE trades 09:30–15:00 China time; CNY/USD updates during global FX hours.",
+                "financialPulseStatusLoading":   "Loading…",
+                "financialPulseStatusOpen":      "Markets Open",
+                "financialPulseStatusClosed":    "Markets Closed",
+                "financialPulseStatusPremarket": "Pre-Market",
+                "financialPulseStatusAfterhours":"After-Hours",
+                "financialPulseStatusPartial":   "Partial Trading",
+                "financialPulseLoading":         "Loading financial indicators…",
+                "financialPulseUnavailable":     "Financial pulse data temporarily unavailable.",
+                "financialPulseLastUpdated":     "as of",
+                "financialPulseTileHKEX":        "HKEX Hang Seng",
+                "financialPulseTileSSE":         "Shanghai Composite",
+                "financialPulseTileCNY":         "CNY / USD",
                 "hkex_subtitle":         "Hong Kong equity confidence proxy",
                 "hkex_sparkline_label":  "5-day:",
                 "nav_asia_pacific":      "🌏 Asia & Pacific",
@@ -2008,6 +2290,21 @@
                 "nav_africa":            "🌍 非洲",
                 "nav_future":            "🔒 未来",
                 "hkex_label":            "港交所恒生指数",
+                // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+                "financialPulseTitle":          "中国金融脉搏",
+                "financialPulseProse":          "来自香港蓝筹基准、中国大陆主要股票指数和人民币汇率的实时读数。这三项指标共同构成金融信心脉搏 — 港股/上证指数的剧烈下跌或人民币贬值通常预示着更广泛的稳定性压力,而持续的强势反映了制度韧性。港交所交易时间为香港时间 09:30–16:00(午休 12:00–13:00);上证交易时间为中国时间 09:30–15:00;人民币/美元在全球外汇时段更新。",
+                "financialPulseStatusLoading":   "加载中…",
+                "financialPulseStatusOpen":      "市场开盘",
+                "financialPulseStatusClosed":    "市场休市",
+                "financialPulseStatusPremarket": "盘前交易",
+                "financialPulseStatusAfterhours":"盘后交易",
+                "financialPulseStatusPartial":   "部分交易",
+                "financialPulseLoading":         "加载金融指标…",
+                "financialPulseUnavailable":     "金融脉搏数据暂时不可用。",
+                "financialPulseLastUpdated":     "截至",
+                "financialPulseTileHKEX":        "港交所恒生",
+                "financialPulseTileSSE":         "上证综指",
+                "financialPulseTileCNY":         "人民币 / 美元",
                 "hkex_subtitle":         "香港股市信心代理指标",
                 "hkex_sparkline_label":  "5天:",
                 "nav_asia_pacific":      "🌏 亚太",
@@ -2087,7 +2384,22 @@
                 "stabilityLegend":      "100 = 安定 · 0 = 危機リスク",
                 "nav_dashboards":        "地域ダッシュボード",
                 "nav_rhetoric":          "地域レトリック",
-                "nav_china":             "中国",
+                "nav_china":             "中国","hkex_label":            "HKEX ハンセン指数",
+                // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+                "financialPulseTitle":          "中国金融パルス",
+                "financialPulseProse":          "香港の主要株式指数、中国本土の主要株式指数、人民元レートのライブ読み取り値です。これら3つの指標は金融信頼性のパルスとして機能します — HKEX/上海総合指数の急落や人民元の弱化は、より広範な安定性ストレスの前兆となることが多く、持続的な強さは制度的回復力を反映します。HKEXは香港時間 09:30〜16:00(昼休み 12:00〜13:00)に取引;上海証券取引所は中国時間 09:30〜15:00 に取引;人民元/米ドルは世界の外国為替時間中に更新されます。",
+                "financialPulseStatusLoading":   "読込中…",
+                "financialPulseStatusOpen":      "市場開場",
+                "financialPulseStatusClosed":    "市場閉場",
+                "financialPulseStatusPremarket": "プレマーケット",
+                "financialPulseStatusAfterhours":"アフターアワーズ",
+                "financialPulseStatusPartial":   "部分的取引",
+                "financialPulseLoading":         "金融指標を読み込み中…",
+                "financialPulseUnavailable":     "金融パルスデータは一時的に利用できません。",
+                "financialPulseLastUpdated":     "時点",
+                "financialPulseTileHKEX":        "HKEXハンセン",
+                "financialPulseTileSSE":         "上海総合指数",
+                "financialPulseTileCNY":         "人民元 / 米ドル",
                 "nav_africa":            "🌍 アフリカ",
                 "nav_future":            "🔒 将来",
                 "hkex_label":            "HKEX ハンセン指数",
@@ -2175,6 +2487,21 @@
                 "nav_africa":            "🌍 아프리카",
                 "nav_future":            "🔒 향후",
                 "hkex_label":            "HKEX 항셍지수",
+                // Financial Pulse Card i18n (v1.0.0 May 29 2026)
+                "financialPulseTitle":          "중국 금융 펄스",
+                "financialPulseProse":          "홍콩의 블루칩 벤치마크, 중국 본토의 주요 주식 지수, 위안화 환율의 실시간 판독값입니다. 이 세 가지 지표는 함께 금융 신뢰도 펄스 역할을 합니다 — HKEX/상하이 종합지수의 급락이나 위안화 약세는 종종 더 광범위한 안정성 스트레스를 예고하며, 지속적인 강세는 제도적 회복력을 반영합니다. HKEX는 홍콩 시간 09:30–16:00(점심 12:00–13:00) 거래; SSE는 중국 시간 09:30–15:00 거래; CNY/USD는 글로벌 외환 시간 동안 업데이트됩니다.",
+                "financialPulseStatusLoading":   "로딩 중…",
+                "financialPulseStatusOpen":      "시장 개장",
+                "financialPulseStatusClosed":    "시장 마감",
+                "financialPulseStatusPremarket": "프리마켓",
+                "financialPulseStatusAfterhours":"애프터아워",
+                "financialPulseStatusPartial":   "부분 거래",
+                "financialPulseLoading":         "금융 지표 로딩 중…",
+                "financialPulseUnavailable":     "금융 펄스 데이터를 일시적으로 사용할 수 없습니다.",
+                "financialPulseLastUpdated":     "기준",
+                "financialPulseTileHKEX":        "HKEX 항셍",
+                "financialPulseTileSSE":         "상하이 종합",
+                "financialPulseTileCNY":         "위안 / 달러",
                 "hkex_subtitle":         "홍콩 주식 신뢰도 지표",
                 "hkex_sparkline_label":  "5일:",
                 "nav_asia_pacific":      "🌏 아시아 태평양",
