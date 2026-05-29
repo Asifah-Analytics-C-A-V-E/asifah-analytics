@@ -1045,6 +1045,23 @@
             </div>
             <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
         </div>
+<!-- ── CHINA FINANCIAL PULSE CARD (v1.0.0 May 29 2026, FULL-WIDTH) ── -->
+        <!-- Canonical 3-tile financial pulse spanning full width, placed ABOVE the stability grid
+             so it gets the canvas it needs. HKEX · Shanghai Composite · CNY/USD. -->
+        <div class="financial-pulse-card" id="chinaFinancialPulseCard">
+            <div class="financial-pulse-card-header">
+                <div class="financial-pulse-card-title">
+                    💹 <span data-i18n="financialPulseTitle">China Financial Pulse</span>
+                </div>
+                <span class="financial-pulse-status-pill" id="chinaFinancialPulseStatus" data-i18n="financialPulseStatusLoading">Loading…</span>
+            </div>
+            <div class="financial-pulse-prose" data-i18n="financialPulseProse">
+                Live readings from Hong Kong's blue-chip benchmark, mainland China's primary equity index, and the yuan exchange rate. Together these three metrics serve as a financial-confidence pulse — sharp HKEX/SSE drawdowns or yuan weakening often precede broader stability stress, while sustained strength reflects institutional resilience. HKEX trades 09:30–16:00 HKT (lunch 12:00–13:00); SSE trades 09:30–15:00 China time; CNY/USD updates during global FX hours.
+            </div>
+            <div class="financial-pulse-grid" id="chinaFinancialPulseGrid">
+                <div class="financial-pulse-empty-state" data-i18n="financialPulseLoading">Loading financial indicators…</div>
+            </div>
+        </div>
 
         <!-- STABILITY INDEX + ECONOMIC INDICATORS -->
         <div class="stability-grid">
@@ -1088,23 +1105,7 @@
                     </div>
                     <span id="brentStatus" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
                 </div>
-                <!-- ── CHINA FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── -->
-                <!-- Replaces old HKEX single-line metric with canonical 3-tile financial pulse card.
-                     HKEX Hang Seng · Shanghai Composite · CNY/USD with sparklines + market_status. -->
-                <div class="financial-pulse-card" id="chinaFinancialPulseCard">
-                    <div class="financial-pulse-card-header">
-                        <div class="financial-pulse-card-title">
-                            💹 <span data-i18n="financialPulseTitle">China Financial Pulse</span>
-                        </div>
-                        <span class="financial-pulse-status-pill" id="chinaFinancialPulseStatus" data-i18n="financialPulseStatusLoading">Loading…</span>
-                    </div>
-                    <div class="financial-pulse-prose" data-i18n="financialPulseProse">
-                        Live readings from Hong Kong's blue-chip benchmark, mainland China's primary equity index, and the yuan exchange rate. Together these three metrics serve as a financial-confidence pulse — sharp HKEX/SSE drawdowns or yuan weakening often precede broader stability stress, while sustained strength reflects institutional resilience. HKEX trades 09:30–16:00 HKT (lunch 12:00–13:00); SSE trades 09:30–15:00 China time; CNY/USD updates during global FX hours.
-                    </div>
-                    <div class="financial-pulse-grid" id="chinaFinancialPulseGrid">
-                        <div class="financial-pulse-empty-state" data-i18n="financialPulseLoading">Loading financial indicators…</div>
-                    </div>
-                </div>
+                <!-- Financial Pulse card moved to full-width position above stability-grid (May 29 2026) -->
                 <!-- US-China tension level -->
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
                     <div>
@@ -1793,6 +1794,15 @@
             const pulse = data.financial_pulse || {};
             const tiles = pulse.tiles || {};
             const marketStatus = pulse.market_status || 'closed';
+
+            // Diagnostic logging (v1.0.0 May 29 2026) — helps debug missing tiles
+            console.log('[China Pulse] financial_pulse field present:', !!data.financial_pulse);
+            console.log('[China Pulse] tiles received:', Object.keys(tiles));
+            console.log('[China Pulse] market_status:', marketStatus);
+            console.log('[China Pulse] backend version:', data.version);
+            if (!data.financial_pulse) {
+                console.warn('[China Pulse] No financial_pulse field — likely stale Redis cache. Try ?force=true on backend.');
+            }
 
             // Card-header market status pill
             pill.textContent = t[_pulseStatusKey(marketStatus)] || marketStatus;
