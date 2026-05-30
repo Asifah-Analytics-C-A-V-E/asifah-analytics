@@ -32,8 +32,9 @@
             --article-hover: #e1ecf7;
             --loading-overlay-bg: rgba(232, 240, 248, 0.98);
             --accent: #0ea5e9;
-            --watermark-opacity: 0.08;
-            --watermark-filter: none;
+            /* MIL canonical watermark + atmosphere */
+            --watermark-opacity: 0.5; --watermark-size: 500px;
+            --grid-color: transparent; --scanline-opacity: 0;
         }
 
         [data-theme="dark"] {
@@ -50,8 +51,9 @@
             --article-hover: #112038;
             --loading-overlay-bg: rgba(6, 13, 26, 0.98);
             --accent: #38bdf8;
-            --watermark-opacity: 0.22;
-            --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+            /* MIL canonical watermark + atmosphere (dark) */
+            --watermark-opacity: 1; --watermark-size: 800px;
+            --grid-color: rgba(56,189,248,0.04); --scanline-opacity: 0.03;
         }
 
         body {
@@ -66,24 +68,42 @@
             position: relative;
         }
 
+        /* MIL canonical: grid + scanlines + dedicated .watermark div */
         body::before {
             content: '';
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90vmin; height: 90vmin;
-            min-width: 600px; min-height: 600px;
-            max-width: 1000px; max-height: 1000px;
-            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: var(--watermark-opacity);
-            filter: var(--watermark-filter);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
             z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(56,189,248,var(--scanline-opacity)) 2px, rgba(56,189,248,var(--scanline-opacity)) 4px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: var(--watermark-size);
+            height: var(--watermark-size);
+            opacity: var(--watermark-opacity);
             pointer-events: none;
             user-select: none;
+            z-index: 0;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: 135%;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 50%;
+            transition: all 0.4s ease;
         }
 
         /* RTL support */
@@ -360,49 +380,86 @@
         }
         .commodity-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: rgba(2,6,23,0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        [data-theme="light"] .commodity-pill { background: #f8fbfe; }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(56,189,248,0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.25);
+        }
+        .commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+        .commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+        .commodity-alert-banner {
+            display: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             margin-bottom: 12px;
         }
-        @media (max-width: 768px) { .commodity-grid { grid-template-columns: 1fr; } }
-        .commodity-tile {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-left: 3px solid #fb923c;
-            border-radius: 8px;
-            padding: 12px 14px;
-        }
-        [data-theme="dark"] .commodity-tile {
-            background: rgba(13,27,46,0.6);
-            border-color: rgba(251,146,60,0.18);
-            border-left-color: #fb923c;
-        }
-        .commodity-tile-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
-        }
-        .commodity-tile-value {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 2px;
-        }
-        .commodity-tile-meta {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-style: italic;
-        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
         .commodity-footnote {
             font-size: 0.7rem;
             color: var(--text-muted);
             font-style: italic;
             border-top: 1px dashed var(--card-border);
             padding-top: 8px;
-            margin-top: 4px;
+            margin-top: 12px;
         }
 
         /* ── FINANCIAL PULSE CARD (canonical NYSE/TASE pattern) ── */
@@ -574,7 +631,7 @@
             display: inline-block;
         }
 
-        /* ── KNOWLEDGE LIBRARY ── */
+        /* ── KNOWLEDGE LIBRARY (Chile-style collapsible) ── */
         .knowledge-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -595,40 +652,89 @@
         }
         .knowledge-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 14px;
         }
         @media (max-width: 768px) { .knowledge-grid { grid-template-columns: 1fr; } }
+
         .kb-card {
             background: var(--article-bg);
             border: 1px solid var(--card-border);
-            border-left: 3px solid var(--accent);
-            border-radius: 8px;
-            padding: 14px 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
         }
-        .kb-card-title {
-            font-size: 0.92rem;
+        .kb-card:hover { border-color: var(--accent); }
+        .kb-header {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            user-select: none;
+        }
+        .kb-card.collapsed .kb-header { border-bottom: none; }
+        .kb-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 8px;
         }
-        .kb-card-body {
-            font-size: 0.82rem;
+        .kb-category-icon { font-size: 1.2rem; }
+        .kb-collapse-icon {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            transition: transform 0.3s;
+        }
+        .kb-card.collapsed .kb-collapse-icon { transform: rotate(-90deg); }
+        .kb-content {
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            line-height: 1.55;
             color: var(--text-secondary);
-            line-height: 1.5;
         }
-        .kb-card-body a {
+        .kb-card.collapsed .kb-content { display: none; }
+        .kb-content p { margin-bottom: 10px; }
+        .kb-content strong { color: var(--text-primary); }
+        .kb-content a {
             color: var(--accent);
             text-decoration: none;
             border-bottom: 1px dotted var(--accent);
             font-weight: 600;
         }
-        .kb-card-body a:hover { border-bottom-style: solid; }
-        .kb-card-meta {
+        .kb-content a:hover { border-bottom-style: solid; }
+        .kb-source {
             font-size: 0.68rem;
             color: var(--text-muted);
-            margin-top: 8px;
             font-style: italic;
+            margin-top: 8px;
+        }
+        .kb-report-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--card-border);
+        }
+        .kb-report-link {
+            padding: 5px 10px;
+            background: rgba(56,189,248,0.10);
+            border: 1px solid rgba(56,189,248,0.25);
+            border-radius: 5px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .kb-report-link:hover {
+            background: rgba(56,189,248,0.18);
+            transform: translateY(-1px);
         }
 
         /* ── ARTICLE TABS ── */
@@ -834,6 +940,9 @@
 
 <body data-theme="dark">
 
+    <!-- MIL canonical watermark layer -->
+    <div class="watermark"></div>
+
     <!-- Mobile menu toggle -->
     <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button>
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -930,30 +1039,17 @@
                 <div class="commodity-prose" data-i18n-html="commodityProse">
                     Saudi Arabia's stability is structurally tethered to Brent crude. Hydrocarbon revenues account for roughly <strong>70% of government income</strong> and over half of GDP. The Aramco IPO (2019) anchored ~$150B in annual dividends to the sovereign wealth pipeline that funds Vision 2030. With Brent below $95/bbl — and the IMF estimating the Kingdom's fiscal break-even at <strong>~$83/bbl for 2026</strong> — recent reports cite quiet Vision 2030 mega-project pauses. The April 2026 Iranian strikes on the East-West Pipeline and Jubail petrochemical complex demonstrated direct vulnerability of bypass infrastructure. The SAR remains pegged to the USD at 3.75 (since 1986), making FX volatility a non-factor while leaving the Kingdom fully exposed to commodity-cycle swings.
                 </div>
-                <div class="commodity-grid">
-                    <div class="commodity-tile">
-                        <div class="commodity-tile-label" data-i18n="commodityHydroLabel">Hydrocarbon share of govt revenue</div>
-                        <div class="commodity-tile-value">~70%</div>
-                        <div class="commodity-tile-meta" data-i18n="commodityHydroMeta">IMF Article IV 2025 · KSA Ministry of Finance</div>
-                    </div>
-                    <div class="commodity-tile">
-                        <div class="commodity-tile-label" data-i18n="commodityBreakLabel">Fiscal break-even oil price (2026 est.)</div>
-                        <div class="commodity-tile-value">~$83/bbl</div>
-                        <div class="commodity-tile-meta" data-i18n="commodityBreakMeta">IMF April 2026 Regional Economic Outlook</div>
-                    </div>
-                    <div class="commodity-tile">
-                        <div class="commodity-tile-label" data-i18n="commodityArmacoLabel">Aramco annual dividend (FY24)</div>
-                        <div class="commodity-tile-value">~$124B</div>
-                        <div class="commodity-tile-meta" data-i18n="commodityArmacoMeta">Aramco Q4 2024 results · partial recovery from $97B FY25</div>
-                    </div>
-                    <div class="commodity-tile">
-                        <div class="commodity-tile-label" data-i18n="commodityFXLabel">SAR/USD peg</div>
-                        <div class="commodity-tile-value">3.75 (fixed)</div>
-                        <div class="commodity-tile-meta" data-i18n="commodityFXMeta">SAMA maintained since 1986</div>
-                    </div>
+
+                <!-- Live commodity-pressure alert banner (hidden when normal) -->
+                <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+
+                <!-- Live commodity-exposure pills (populated from /api/commodity-pressure/saudi_arabia) -->
+                <div class="commodity-grid" id="commodityGrid">
+                    <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;" data-i18n="commodityLoading">Loading commodity exposure profile…</div>
                 </div>
+
                 <div class="commodity-footnote" data-i18n="commodityFootnote">
-                    Data as of May 30, 2026. Sources: IMF, KSA Ministry of Finance, SAMA, Aramco investor relations. Updated quarterly.
+                    Live commodity exposure data from Asifah Commodity Tracker. Static notes + roles + ranks from `commodity_tracker.py` registry. Alert levels and signal counts update every 6 hours.
                 </div>
             </div>
 
@@ -988,59 +1084,133 @@
                 </div>
             </div>
 
-            <!-- KNOWLEDGE LIBRARY -->
+            <!-- KNOWLEDGE LIBRARY (Chile-pattern collapsible) -->
             <div class="knowledge-card">
                 <div class="knowledge-card-title">
                     📚 <span data-i18n="kbTitle">Knowledge Library</span>
                 </div>
                 <div class="knowledge-grid">
 
-                    <div class="kb-card">
-                        <div class="kb-card-title" data-i18n="kbCard1Title">House of Saud: Monarchy & Succession</div>
-                        <div class="kb-card-body" data-i18n-html="kbCard1Body">
-                            Absolute monarchy ruled by the Al-Saud family since 1932. King Salman (b. 1935) reigns; <strong>Crown Prince Mohammed bin Salman (MbS)</strong> serves as Prime Minister and de facto ruler since 2017. The Allegiance Council (formed 2006) formally approves succession but holds little independent power. Roughly 7,000+ princes share dynastic influence; centralization under MbS has dramatically reduced their autonomy.
+                    <!-- House of Saud -->
+                    <div class="kb-card collapsed" id="kb-card-monarchy">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('monarchy')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">👑</span>
+                                <span data-i18n="kbCard1Title">House of Saud: Monarchy &amp; Succession</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
                         </div>
-                        <div class="kb-card-meta" data-i18n="kbCard1Meta">Source: Council on Foreign Relations · Britannica</div>
+                        <div class="kb-content" data-i18n-html="kbCard1Body">
+                            <p>Absolute monarchy ruled by the Al-Saud family since 1932. King Salman (b. 1935) reigns; <strong>Crown Prince Mohammed bin Salman (MbS)</strong> serves as Prime Minister and de facto ruler since 2017.</p>
+                            <p>The Allegiance Council (formed 2006) formally approves succession but holds little independent power. Roughly 7,000+ princes share dynastic influence; centralization under MbS has dramatically reduced their autonomy. Key purges include the 2017 Ritz-Carlton anti-corruption sweep and the 2020 detention of senior royals (Mohammed bin Nayef, Ahmed bin Abdulaziz).</p>
+                            <div class="kb-source">Source: Council on Foreign Relations · Britannica · Asifah cross-reference</div>
+                            <div class="kb-report-links">
+                                <a href="https://www.cfr.org/backgrounder/saudi-arabia-prince-mohammed-bin-salman" target="_blank" class="kb-report-link">📑 CFR Backgrounder</a>
+                                <a href="https://www.britannica.com/biography/Mohammed-bin-Salman" target="_blank" class="kb-report-link">📑 Britannica MbS</a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="kb-card">
-                        <div class="kb-card-title" data-i18n="kbCard2Title">Vision 2030: Diversification Plan</div>
-                        <div class="kb-card-body" data-i18n-html="kbCard2Body">
-                            Launched April 2016 by MbS to reduce oil dependency, develop tourism, mining, manufacturing, and entertainment. Flagship projects include <strong>NEOM</strong> (futuristic megacity), the Red Sea Project, Qiddiya entertainment city. As of 2026, several projects are reportedly paused or scaled back due to oil-revenue shortfalls. The PIF (Public Investment Fund) is the primary funding vehicle.
+                    <!-- Vision 2030 -->
+                    <div class="kb-card collapsed" id="kb-card-vision2030">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('vision2030')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🏗️</span>
+                                <span data-i18n="kbCard2Title">Vision 2030: Diversification Plan</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
                         </div>
-                        <div class="kb-card-meta" data-i18n="kbCard2Meta">Source: KSA Vision 2030 · Wall Street Journal · Reuters</div>
+                        <div class="kb-content" data-i18n-html="kbCard2Body">
+                            <p>Launched April 2016 by MbS to reduce oil dependency, develop tourism, mining, manufacturing, and entertainment.</p>
+                            <p>Flagship projects include <strong>NEOM</strong> (futuristic megacity, $500B), the Red Sea Project (luxury tourism), Qiddiya entertainment city, and the Diriyah Gate cultural district. As of 2026, several projects are reportedly paused or scaled back due to oil-revenue shortfalls. The <strong>Public Investment Fund (PIF)</strong> is the primary funding vehicle, with ~$925B AUM.</p>
+                            <div class="kb-source">Source: KSA Vision 2030 · Wall Street Journal · Reuters · BloombergNEF</div>
+                            <div class="kb-report-links">
+                                <a href="https://www.vision2030.gov.sa/" target="_blank" class="kb-report-link">📑 Vision 2030 Official</a>
+                                <a href="https://www.pif.gov.sa/" target="_blank" class="kb-report-link">📑 PIF Website</a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="kb-card">
-                        <div class="kb-card-title" data-i18n="kbCard3Title">Saudi Aramco: State-Anchor Equity</div>
-                        <div class="kb-card-body" data-i18n-html="kbCard3Body">
-                            World's most profitable company. State holds <strong>~90% of shares</strong> directly + indirectly via PIF; public float ~10% on Tadawul (ticker 2222.SR) since 2019 IPO. Annual dividends fund the Kingdom's fiscal budget. Saudi-Aramco production capacity: ~12M bbl/day; current quota under OPEC+ ~9M bbl/day. Abqaiq processing facility handles ~50% of national output.
+                    <!-- Aramco -->
+                    <div class="kb-card collapsed" id="kb-card-aramco">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('aramco')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🛢️</span>
+                                <span data-i18n="kbCard3Title">Saudi Aramco: State-Anchor Equity</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
                         </div>
-                        <div class="kb-card-meta" data-i18n="kbCard3Meta">Source: Aramco Investor Relations · OPEC monthly reports</div>
+                        <div class="kb-content" data-i18n-html="kbCard3Body">
+                            <p>World's most profitable company. State holds <strong>~90% of shares</strong> directly + indirectly via PIF; public float ~10% on Tadawul (ticker 2222.SR) since 2019 IPO (largest in history, $29.4B).</p>
+                            <p>Annual dividends fund the Kingdom's fiscal budget. Production capacity: ~12M bbl/day; current quota under OPEC+ ~9M bbl/day. Ghawar field (largest conventional oilfield on Earth), Khurais, and Safaniya are core operations. <strong>Abqaiq</strong> processing facility handles ~50% of national output — historically the most strategically vulnerable single point in the kingdom.</p>
+                            <div class="kb-source">Source: Aramco Investor Relations · OPEC monthly reports · EIA</div>
+                            <div class="kb-report-links">
+                                <a href="https://www.aramco.com/en/investors" target="_blank" class="kb-report-link">📑 Aramco IR</a>
+                                <a href="https://www.opec.org/opec_web/en/publications/202.htm" target="_blank" class="kb-report-link">📑 OPEC MOMR</a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="kb-card">
-                        <div class="kb-card-title" data-i18n="kbCard4Title">Houthi Threat Vector</div>
-                        <div class="kb-card-body" data-i18n-html="kbCard4Body">
-                            Yemen's Houthi (Ansar Allah) movement has launched cruise missiles, ballistic missiles, and drones at Saudi cities and oil infrastructure since 2015. Major incidents: Abqaiq/Khurais strike (Sep 2019), repeated Riyadh airport drone attacks. Riyadh-Sanaa truce (Apr 2022) held tenuously; following the Iran war launch (March 2026), Houthi rhetoric and posture toward KSA has hardened. See: <a href="rhetoric-yemen.html">Yemen Rhetoric Tracker ↗</a>.
+                    <!-- Houthi Threat -->
+                    <div class="kb-card collapsed" id="kb-card-houthi">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('houthi')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🎯</span>
+                                <span data-i18n="kbCard4Title">Houthi Threat Vector</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
                         </div>
-                        <div class="kb-card-meta" data-i18n="kbCard4Meta">Source: ACLED · Atlantic Council · Asifah cross-reference</div>
+                        <div class="kb-content" data-i18n-html="kbCard4Body">
+                            <p>Yemen's Houthi (Ansar Allah) movement has launched cruise missiles, ballistic missiles, and drones at Saudi cities and oil infrastructure since 2015.</p>
+                            <p>Major incidents: <strong>Abqaiq/Khurais strike</strong> (Sep 2019, briefly took ~5% of global supply offline), repeated Riyadh airport drone attacks, Aramco depot fires. Riyadh-Sanaa truce (Apr 2022) held tenuously; following the Iran war launch (March 2026), Houthi rhetoric and posture toward KSA has hardened. Red Sea / Bab-el-Mandeb attacks continue to threaten Saudi west-coast exports via Yanbu terminal.</p>
+                            <p>See full tracker: <a href="rhetoric-yemen.html">Yemen Rhetoric Tracker ↗</a></p>
+                            <div class="kb-source">Source: ACLED · Atlantic Council · International Crisis Group · Asifah cross-reference</div>
+                            <div class="kb-report-links">
+                                <a href="rhetoric-yemen.html" class="kb-report-link">📑 Yemen Rhetoric</a>
+                                <a href="https://acleddata.com/" target="_blank" class="kb-report-link">📑 ACLED</a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="kb-card">
-                        <div class="kb-card-title" data-i18n="kbCard5Title">Iran-Saudi Relations: Thaw to Tension</div>
-                        <div class="kb-card-body" data-i18n-html="kbCard5Body">
-                            China-brokered Iran-Saudi normalization announced March 2023 restored diplomatic ties after a 7-year break. Since the March 2026 U.S.-Iran kinetic conflict, the relationship is under pressure: NYT reports MbS has urged Trump to continue the Iran campaign; Saudi East-West Pipeline struck by Iran (April 2026); MbS's Eid call to Tehran (May 2026) signals dual-track diplomacy. See: <a href="rhetoric-iran.html">Iran Rhetoric Tracker ↗</a>.
+                    <!-- Iran-Saudi Relations -->
+                    <div class="kb-card collapsed" id="kb-card-iran-saudi">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('iran-saudi')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🤝</span>
+                                <span data-i18n="kbCard5Title">Iran-Saudi Relations: Thaw to Tension</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
                         </div>
-                        <div class="kb-card-meta" data-i18n="kbCard5Meta">Source: NYT · houseofsaud.com · Asifah analytical synthesis</div>
+                        <div class="kb-content" data-i18n-html="kbCard5Body">
+                            <p>China-brokered Iran-Saudi normalization announced March 2023 restored diplomatic ties after a 7-year break (severed 2016 over the al-Nimr execution and Tehran embassy attack).</p>
+                            <p>Since the March 2026 U.S.-Iran kinetic conflict, the relationship is under pressure: NYT reports MbS has urged Trump to continue the Iran campaign; Saudi East-West Pipeline struck by Iran (April 8, 2026); MbS's Eid call to Tehran (May 27, 2026) signals dual-track diplomacy — public hedging plus private de-escalation.</p>
+                            <p>See full tracker: <a href="rhetoric-iran.html">Iran Rhetoric Tracker ↗</a></p>
+                            <div class="kb-source">Source: NYT · houseofsaud.com · Brookings · Asifah analytical synthesis</div>
+                            <div class="kb-report-links">
+                                <a href="rhetoric-iran.html" class="kb-report-link">📑 Iran Rhetoric</a>
+                                <a href="iran-stability.html" class="kb-report-link">📑 Iran Stability</a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="kb-card">
-                        <div class="kb-card-title" data-i18n="kbCard6Title">Hormuz Bypass: East-West Pipeline</div>
-                        <div class="kb-card-body" data-i18n-html="kbCard6Body">
-                            The <strong>East-West (Petroline) Pipeline</strong> runs ~1,200km from Eastern Province to Yanbu on the Red Sea. Designed to bypass the Strait of Hormuz with ~5M bbl/day capacity. Hit by Iranian strikes April 8, 2026; back to full capacity April 12. Critical infrastructure for any Hormuz-closure scenario. The Aramco CEO has called Hormuz closure consequences <em>"catastrophic"</em>.
+                    <!-- Hormuz Bypass -->
+                    <div class="kb-card collapsed" id="kb-card-hormuz">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('hormuz')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">⚓</span>
+                                <span data-i18n="kbCard6Title">Hormuz Bypass: East-West Pipeline</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
                         </div>
-                        <div class="kb-card-meta" data-i18n="kbCard6Meta">Source: Bloomberg · CNBC · Aramco public statements</div>
+                        <div class="kb-content" data-i18n-html="kbCard6Body">
+                            <p>The <strong>East-West (Petroline) Pipeline</strong> runs ~1,200km from Eastern Province to Yanbu on the Red Sea. Designed to bypass the Strait of Hormuz with ~5M bbl/day capacity.</p>
+                            <p>Hit by Iranian strikes April 8, 2026; back to full capacity April 12. Critical infrastructure for any Hormuz-closure scenario. The Aramco CEO has called Hormuz closure consequences <em>"catastrophic"</em> for oil markets if the strait remains blocked. Of note: the parallel UAE Habshan-Fujairah pipeline provides ~1.8M bbl/day of additional Hormuz-bypass capacity for the GCC.</p>
+                            <div class="kb-source">Source: Bloomberg · CNBC · Aramco public statements · Reuters</div>
+                            <div class="kb-report-links">
+                                <a href="commodities.html" class="kb-report-link">📑 Commodities Tracker</a>
+                                <a href="military.html" class="kb-report-link">📑 Military Tracker</a>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -1598,11 +1768,93 @@
         }
     }
 
+    /* ──────────────── COMMODITY PRESSURE (Chile pattern) ──────────────── */
+    function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, function (c) {
+            return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+        });
+    }
+
+    function renderCommodityAlertBanner(data) {
+        const banner = document.getElementById('commodityAlertBanner');
+        if (!banner) return;
+        const alertLevel = (data.alert_level || 'normal').toLowerCase();
+        if (alertLevel === 'normal') {
+            banner.classList.remove('show');
+            return;
+        }
+        banner.className = 'commodity-alert-banner show alert-' + alertLevel;
+        banner.innerHTML = '<strong>' + alertLevel.toUpperCase() + '</strong> Composite commodity pressure: ' + alertLevel +
+            '<span class="ab-meta">' + ((data.commodity_pressure || 0).toFixed(1)) + ' pts · ' + (data.profile_count || 0) + ' commodities tracked</span>';
+    }
+
+    function renderCommodityTiles(data) {
+        const grid = document.getElementById('commodityGrid');
+        if (!grid) return;
+        const tiles = data.commodity_summaries || [];
+        if (!tiles.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure profile available</div>';
+            return;
+        }
+        grid.innerHTML = tiles.map(function (t) {
+            const alertCls = 'commodity-alert-' + (t.global_alert_level || 'normal').toLowerCase();
+            const role = (t.role || '').toUpperCase();
+            const rank = t.rank ? '#' + t.rank : '';
+            const sigCount = t.signal_count || 0;
+            const note = t.note || '';
+            const sp = t.sparkline;
+            let priceHtml = '';
+            if (sp && sp.price != null) {
+                const ch = sp.change_pct_1d;
+                const dir = ch > 0 ? 'price-up' : ch < 0 ? 'price-down' : '';
+                const sign = ch >= 0 ? '+' : '';
+                priceHtml = '<div class="commodity-pill-price">$' + Number(sp.price).toFixed(2) +
+                    (typeof ch === 'number' ? ' <span class="' + dir + '">' + sign + ch.toFixed(1) + '%</span>' : '') +
+                    '</div>';
+            }
+            return '<div class="commodity-pill">' +
+                '<div class="commodity-pill-header">' +
+                    '<span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+                    '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+                    (rank ? '<span class="commodity-pill-rank">' + rank + '</span>' : '') +
+                '</div>' +
+                '<div class="commodity-pill-row">' +
+                    '<span class="commodity-pill-alert ' + alertCls + '">' + (t.global_alert_level || 'normal') + '</span>' +
+                    (role ? '<span class="commodity-pill-role-badge">' + role + '</span>' : '') +
+                    (sigCount ? '<span class="commodity-pill-signal-count">' + sigCount + ' sig</span>' : '') +
+                '</div>' +
+                priceHtml +
+                (note ? '<div class="commodity-pill-note">' + escapeHtml(note) + '</div>' : '') +
+            '</div>';
+        }).join('');
+    }
+
+    async function loadCommodityPressure() {
+        try {
+            const resp = await fetch('https://asifah-backend.onrender.com/api/commodity-pressure/saudi_arabia');
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            renderCommodityAlertBanner(data);
+            renderCommodityTiles(data);
+        } catch (err) {
+            console.error('[Saudi Commodity] Load error:', err);
+            const grid = document.getElementById('commodityGrid');
+            if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">⚠️ Commodity tracker unavailable — ' + escapeHtml(err.message) + '</div>';
+        }
+    }
+
+    /* ──────────────── KNOWLEDGE LIBRARY TOGGLE ──────────────── */
+    function toggleKnowledgeCard(cardId) {
+        const card = document.getElementById('kb-card-' + cardId);
+        if (card) card.classList.toggle('collapsed');
+    }
+
     /* ──────────────── BOOT ──────────────── */
     document.addEventListener('DOMContentLoaded', () => {
         applyTranslations();
         initMap();
         loadData();
+        loadCommodityPressure();
     });
     </script>
 </body>
