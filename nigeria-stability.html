@@ -1,1028 +1,1615 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Nigeria Stability Index v1.0.0 — May 2026 -->
-<!-- Gold Standard Africa shell: Arctic scheme + sidebar + rhetoric placeholder + commodity card + EN only -->
-<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
-<html lang="en" data-theme="dark">
+<!-- Asifah Analytics — Nigeria Stability Index v1.0.0 — May 30, 2026 -->
+<!-- Gold Standard Africa: MIL watermark + canonical sidebar + Worldwide Caution + Rhetoric coming-soon + Live Commodity + Financial Pulse + Map + Collapsible KB + Tabbed Articles -->
+<!-- EN only (Africa-page convention) — Articles tabs: All / News / Social -->
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Nigeria Stability Index | Asifah Analytics v1.0.0</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<style>
-/* ════════════════════════════════════════════════════════════
-   ARCTIC SCHEME (canonical across all Asifah pages)
-   ════════════════════════════════════════════════════════════ */
-:root {
-    --bg-color:       #f8fafc;
-    --container-bg:   #ffffff;
-    --card-bg:        #ffffff;
-    --card-border:    #e2e8f0;
-    --text-primary:   #0f172a;
-    --text-secondary: #475569;
-    --text-muted:     #64748b;
-    --article-bg:     #f1f5f9;
-    --article-hover:  #e2e8f0;
-    --header-gradient-start: #f1f5f9;
-    --header-gradient-end:   #cbd5e1;
-    --header-text:    #0f172a;
-    --accent:         #0ea5e9;
-    --accent-glow:    rgba(14,165,233,0.15);
-    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
-    --watermark-opacity: 0.05;
-    --watermark-filter: none;
-}
-[data-theme="dark"] {
-    --bg-color:       #060d1a;
-    --container-bg:   #0d1b2e;
-    --card-bg:        #0d1b2e;
-    --card-border:    #1e3a5f;
-    --text-primary:   #e2f0fb;
-    --text-secondary: #93c5fd;
-    --text-muted:     #4a7090;
-    --article-bg:     #0a1525;
-    --article-hover:  #112038;
-    --header-gradient-start: #060d1a;
-    --header-gradient-end:   #1e3a5f;
-    --header-text:    #e2f0fb;
-    --accent:         #38bdf8;
-    --accent-glow:    rgba(56,189,248,0.2);
-    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
-    --watermark-opacity: 0.18;
-    --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    font-family: 'Times New Roman', Times, serif;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    min-height: 100vh;
-    transition: background-color 0.3s, color 0.3s;
-}
-body::before {
-    content: '';
-    position: fixed; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 110vmin; height: 110vmin;
-    min-width: 500px; min-height: 500px;
-    max-width: 800px; max-height: 800px;
-    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-    background-size: contain; background-repeat: no-repeat; background-position: center;
-    opacity: var(--watermark-opacity);
-    filter: var(--watermark-filter);
-    pointer-events: none;
-    z-index: 0;
-}
-body::after {
-    content: '';
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(56,189,248,0.015) 2px, rgba(56,189,248,0.015) 3px);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
-.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
-.main-content { flex: 1; min-width: 0; }
-@media (max-width: 1024px) { .page-with-sidebar { flex-direction: column; } }
-
-/* ── HEADER ── */
-header {
-    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
-    color: var(--header-text);
-    padding: 22px 30px;
-    border-radius: 14px;
-    margin: 20px 0;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 20px; flex-wrap: wrap;
-    box-shadow: var(--card-glow);
-    border: 1px solid var(--card-border);
-}
-.header-logo-wrap { display: flex; align-items: center; gap: 14px; }
-.header-logo { width: 60px; height: 60px; }
-.back-link { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 700; letter-spacing: 0.5px; padding: 6px 12px; border: 1px solid var(--accent); border-radius: 6px; transition: all 0.2s; }
-.back-link:hover { background: var(--accent); color: white; }
-.header-content { flex: 1; min-width: 280px; }
-.header-content h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: 1px; }
-.subtitle { font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
-.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
-.header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.theme-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.theme-toggle-label { font-size: 0.75rem; color: var(--text-muted); }
-.theme-toggle-switch { width: 44px; height: 22px; background: var(--card-border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; }
-.theme-toggle-slider { width: 18px; height: 18px; background: var(--accent); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
-[data-theme="dark"] .theme-toggle-slider { left: 24px; }
-
-/* ── NAV SIDEBAR (canonical Gold Standard) ── */
-.nav-sidebar {
-    flex: 0 0 200px; min-width: 200px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: var(--card-glow);
-}
-.nav-sidebar-label {
-    font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--text-muted);
-    padding: 8px 4px 6px 4px;
-    border-bottom: 1px solid var(--card-border);
-    margin-bottom: 6px;
-}
-.nav-btn {
-    display: block;
-    padding: 9px 12px;
-    margin: 4px 0;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.15s;
-    color: var(--text-primary);
-}
-.nav-btn-label { display: block; }
-.nav-btn-status { display: block; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.95; margin-top: 2px; }
-.nav-btn.active-nav { background: linear-gradient(135deg,rgba(30,58,95,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: var(--text-primary); }
-.nav-btn.active-nav.you-are-here { background: linear-gradient(135deg,rgba(56,189,248,0.35),rgba(56,189,248,0.15)); border-color: var(--accent); }
-.nav-btn.active-nav:hover { transform: translateX(2px); }
-.nav-btn.commodities-btn { background: linear-gradient(135deg,rgba(12,74,110,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: #fde68a; }
-.nav-btn.military-btn { background: linear-gradient(135deg,rgba(22,101,52,0.55),rgba(134,239,172,0.18)); border: 1px solid rgba(134,239,172,0.55); color: #bbf7d0; }
-.nav-btn.gpi-btn { background: linear-gradient(135deg,rgba(107,33,168,0.55),rgba(196,181,253,0.18)); border: 1px solid rgba(196,181,253,0.55); color: #ddd6fe; }
-.nav-btn.rhetoric-btn { background: linear-gradient(135deg,rgba(21,94,117,0.55),rgba(103,232,249,0.18)); border: 1px solid rgba(103,232,249,0.55); color: #a5f3fc; }
-.nav-btn.inactive-nav { opacity: 0.5; cursor: not-allowed; background: var(--article-bg); }
-
-/* ── METRIC CARDS ── */
-.metric-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-    box-shadow: var(--card-glow);
-}
-.section-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 12px; }
-.subsection-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
-
-/* ── RHETORIC TRACKER PLACEHOLDER ── */
-.rhetoric-placeholder {
-    background: var(--card-bg);
-    border: 1px dashed var(--card-border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 22px;
-    text-align: center;
-    opacity: 0.7;
-}
-.rhetoric-placeholder .rh-icon { font-size: 2rem; margin-bottom: 8px; }
-.rhetoric-placeholder .rh-title { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px; }
-.rhetoric-placeholder .rh-subtitle { font-size: 0.8rem; color: var(--text-muted); }
-.rhetoric-placeholder .rh-status {
-    display: inline-block;
-    background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    color: var(--text-muted);
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin-top: 10px;
-}
-
-/* ── COMMODITY CARD ── */
-.commodity-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-left: 4px solid #f59e0b;
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-}
-.commodity-card-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 14px; }
-.commodity-prose {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-    padding: 12px 16px;
-    background: rgba(56,189,248,0.06);
-    border-left: 3px solid var(--accent);
-    border-radius: 6px;
-    margin-bottom: 14px;
-}
-[data-theme="light"] .commodity-prose { background: #f8fbfe; }
-
-/* Alert banner */
-.commodity-alert-banner {
-    display: none;
-    padding: 10px 14px;
-    border-radius: 6px;
-    border-left: 4px solid transparent;
-    margin-bottom: 14px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-.commodity-alert-banner.show { display: block; }
-.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
-.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
-.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
-.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; animation: surge-pulse 2.5s ease-in-out infinite; }
-.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
-@keyframes surge-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-/* Tile grid */
-.commodity-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px;
-    margin-bottom: 14px;
-}
-.commodity-tile {
-    background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    padding: 14px;
-    transition: all 0.2s;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-.commodity-tile:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--card-glow); }
-.commodity-tile-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-.commodity-tile-icon { font-size: 1.6rem; flex-shrink: 0; }
-.commodity-tile-titlewrap { flex: 1; min-width: 0; }
-.commodity-tile-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-.commodity-tile-rank { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-.commodity-tile-badges { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-.commodity-tile-badge { font-size: 9px; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
-.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
-.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
-.commodity-role-producer { background: rgba(56,189,248,0.12); color: var(--accent); border: 1px solid rgba(56,189,248,0.3); }
-.commodity-role-consumer { background: rgba(139,92,246,0.12); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
-.commodity-tile-signals { font-size: 0.7rem; color: var(--text-muted); }
-.commodity-tile-price { font-size: 0.88rem; color: var(--text-primary); margin-bottom: 6px; font-weight: 600; }
-.commodity-tile-price .delta-up   { color: #22c55e; }
-.commodity-tile-price .delta-down { color: #ef4444; }
-.commodity-tile-sparkline { width: 100%; height: 36px; margin-bottom: 8px; }
-.commodity-tile-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; }
-
-.commodity-link { display: inline-block; margin-top: 10px; padding: 8px 14px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; color: #f59e0b; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
-.commodity-link:hover { background: rgba(245,158,11,0.2); }
-
-/* ── MAP SECTION ── */
-.map-section {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-    box-shadow: var(--card-glow);
-}
-.map-section h2 { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; }
-.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
-.map-iframe-wrap { width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; }
-
-/* ── KNOWLEDGE LIBRARY ── */
-.knowledge-library {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-}
-.knowledge-library h2 { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 4px; }
-.library-icon { font-size: 1.5rem; }
-.open-source-disclaimer { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
-.knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; }
-.knowledge-card {
-    background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.2s;
-}
-.knowledge-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 18px;
-    cursor: pointer;
-    background: linear-gradient(135deg, rgba(56,189,248,0.05), transparent);
-    border-bottom: 1px solid transparent;
-    transition: all 0.2s;
-}
-.knowledge-header:hover { background: rgba(56,189,248,0.1); }
-.knowledge-header-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
-.category-icon { font-size: 1.3rem; }
-.collapse-icon { font-size: 0.85rem; color: var(--accent); transition: transform 0.2s; }
-.knowledge-card:not(.collapsed) .knowledge-header { border-bottom-color: var(--card-border); }
-.knowledge-card:not(.collapsed) .collapse-icon { transform: rotate(180deg); }
-.knowledge-content {
-    padding: 16px 18px 18px 18px;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-    max-height: 1600px;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-}
-.knowledge-card.collapsed .knowledge-content { max-height: 0; padding-top: 0; padding-bottom: 0; }
-.knowledge-content p { margin-bottom: 10px; }
-.knowledge-content ul { margin: 6px 0 12px 22px; }
-.knowledge-content li { margin-bottom: 4px; }
-.report-links-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 8px; margin-top: 14px;
-}
-.report-link {
-    display: block; padding: 8px 12px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 6px;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.78rem;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-.report-link:hover { background: var(--accent); color: white; }
-
-/* ── ARTICLES SECTION ── */
-.articles-section {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-}
-.article-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
-.article-tab { padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); border: 1px solid transparent; }
-.article-tab:hover { background: var(--article-hover); color: var(--text-primary); }
-.article-tab.active { background: var(--article-bg); color: var(--accent); border-color: var(--card-border); border-bottom-color: var(--article-bg); }
-.articles-list { list-style: none; padding: 0; }
-.article-item { padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 0.88rem; line-height: 1.5; }
-.article-item:last-child { border-bottom: none; }
-.article-item a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
-.article-item a:hover { color: var(--accent); }
-.article-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
-.article-description { font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
-
-/* ── FOOTER ── */
-.footer-info {
-    text-align: center;
-    padding: 30px 20px;
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.7;
-    border-top: 1px solid var(--card-border);
-    margin-top: 30px;
-}
-.footer-info a { color: #38bdf8; text-decoration: none; }
-.footer-info a:hover { text-decoration: underline; }
-
-/* ── MOBILE ── */
-.mobile-hamburger { display: none; }
-.mobile-drawer-backdrop { display: none; }
-@media (max-width: 768px) {
-    .mobile-hamburger {
-        display: block;
-        background: var(--accent); color: white;
-        border: none; border-radius: 6px;
-        padding: 8px 14px;
-        font-size: 1.2rem;
-        cursor: pointer;
-        position: fixed; top: 14px; left: 14px;
-        z-index: 999;
-    }
-    .mobile-drawer-backdrop.open {
-        display: block;
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 998;
-    }
-    .nav-sidebar {
-        position: fixed; top: 0; left: -260px;
-        width: 240px; height: 100vh;
-        z-index: 999;
-        transition: left 0.3s;
-        overflow-y: auto;
-        border-radius: 0;
-    }
-    .nav-sidebar.mobile-open { left: 0; }
-}
-</style>
-</head>
-<body>
-
-<div class="container">
-
-<!-- ════════════════════════════════════════════════════════════
-     HEADER
-     ════════════════════════════════════════════════════════════ -->
-<header>
-    <div class="header-logo-wrap">
-        <a href="africa.html" class="back-link">← Africa</a>
-        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
-             alt="Asifah Analytics Logo" class="header-logo"/>
-    </div>
-    <div class="header-content">
-        <h1>🇳🇬 NIGERIA STABILITY INDEX</h1>
-        <div class="subtitle">Boko Haram & ISWAP · Lakurawa & Banditry · Plateau Crisis · Tinubu Government · Niger Delta · Oil Economy</div>
-        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
-    </div>
-    <div class="header-controls">
-        <div class="theme-toggle" onclick="toggleTheme()">
-            <span class="theme-toggle-label">Theme</span>
-            <div class="theme-toggle-switch">
-                <div class="theme-toggle-slider"></div>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- ════════════════════════════════════════════════════════════
-     PAGE WITH SIDEBAR
-     ════════════════════════════════════════════════════════════ -->
-<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
-<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
-
-<div class="page-with-sidebar">
-
-<!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
-<nav class="nav-sidebar" id="navSidebar">
-    <div class="nav-sidebar-label">Dashboards</div>
-    <a href="africa.html" class="nav-btn active-nav you-are-here"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● You are here</span></a>
-    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
-    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
-    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
-    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
-
-    <div class="nav-sidebar-label" style="margin-top: 14px;">Cross-Cutting Tools</div>
-    <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">📊 Commodity Tracker</span><span class="nav-btn-status">● Live</span></a>
-    <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">🪖 Military Tracker</span><span class="nav-btn-status">● Live</span></a>
-    <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
-
-    <div class="nav-sidebar-label" style="margin-top: 14px;">Regional Rhetoric</div>
-    <a href="rhetoric-middle-east.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
-    <div class="nav-btn inactive-nav"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">🔒 In Dev</span></div>
-</nav>
-
-<div class="main-content">
-
-<!-- ── U.S. STATE DEPARTMENT WORLDWIDE CAUTION ── -->
-<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
-    <div style="font-size:28px;flex-shrink:0;">🚨</div>
-    <div style="flex:1;">
-        <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
-        <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow the guidance in the latest security alerts issued by the nearest U.S. embassy or consulate. They may experience travel disruptions due to periodic airspace closures. The Department of State advises Americans worldwide to exercise increased caution.</div>
-        <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: February 28, 2026</div>
-    </div>
-    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;">VIEW ADVISORY →</a>
-</div>
-<style>@keyframes caution-pulse{0%,100%{box-shadow:0 4px 15px rgba(239,68,68,0.3)}50%{box-shadow:0 4px 25px rgba(239,68,68,0.5)}}</style>
-
-<!-- ── COUNTRY-SPECIFIC TRAVEL ADVISORY (canonical blue style — matches China) ── -->
-<div id="travelAdvisoryCard" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-    <div style="font-size: 24px; flex-shrink: 0;">🇳🇬</div>
-    <div style="flex: 1;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-            <span id="advisoryLabel" style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;">U.S. State Department — Nigeria Travel Advisory</span>
-            <span id="advisoryLevelBadge" style="background: #f59e0b; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LEVEL —</span>
-        </div>
-        <div id="advisoryText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;">Loading current State Department travel advisory…</div>
-    </div>
-    <a id="advisoryLink" href="https://travel.state.gov/" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW ADVISORY →</a>
-</div>
-
-<!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
-<div class="rhetoric-placeholder">
-    <div class="rh-icon">📡</div>
-    <div class="rh-title">Nigeria Rhetoric &amp; Pressure Tracker</div>
-    <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_nigeria.py</div>
-    <div class="rh-status">🔒 IN DEVELOPMENT</div>
-</div>
-
-<!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 (live tiles) ── -->
-<div class="commodity-card" id="commodityCard">
-    <div class="commodity-card-title">📊 NIGERIA — COMMODITY EXPOSURE: OIL</div>
-    <div class="commodity-prose" id="commodityProse">Loading commodity exposure profile…</div>
-    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
-    <div class="commodity-grid" id="commodityGrid"></div>
-    <a href="commodities.html" class="commodity-link">View full Commodity Tracker →</a>
-</div>
-
-<!-- ── STRATEGIC MAP ── -->
-<div class="map-section">
-    <h2>🗺️ Nigeria — Strategic Overview</h2>
-    <div class="map-subtitle">Interactive map centered on Abuja. Pan and zoom to explore strategic geography.</div>
-    <div class="map-iframe-wrap">
-        <iframe
-            src="https://www.openstreetmap.org/export/embed.html?bbox=2.5,4,15,14&layer=mapnik&marker=9.0765,7.3986"
-            width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
-        </iframe>
-    </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════════
-     KNOWLEDGE LIBRARY
-     ════════════════════════════════════════════════════════════ -->
-<div class="knowledge-library">
-    <h2>
-        <span class="library-icon">📚</span>
-        <span>Knowledge Library</span>
-    </h2>
-    <p class="open-source-disclaimer">
-        Background information compiled from open-source research, policy briefs, and humanitarian reports. Click any card to expand. Source links provided for primary references.
-    </p>
-
-    <div class="knowledge-categories">
-        <!-- Northeast Jihadist Insurgencies — Boko Haram, ISWAP -->
-        <div class="knowledge-card" id="card-jihadist-insurgencies">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('jihadist-insurgencies')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">⚔️</span>
-                    <span>Northeast Jihadist Insurgencies — Boko Haram, ISWAP</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Northeast Nigeria has been at war with jihadist insurgencies since 2009</strong>. The original Boko Haram movement has split into two main factions, both still active across the Lake Chad Basin.</p>
-<p><strong>Key Groups:</strong></p>
-<ul>
-    <li><strong>JAS (Jama'atu Ahlis Sunna Lidda'awati wal-Jihad):</strong> Original Boko Haram, historically led by Abubakar Shekau (killed by ISWAP, May 2021). Weakened but still active in Sambisa Forest area.</li>
-    <li><strong>ISWAP (Islamic State West Africa Province):</strong> Broke from Boko Haram 2016; now dominant faction; centered in Lake Chad islands and northern Borno; led by Abu Musab al-Barnawi and successors.</li>
-    <li><strong>Ansaru:</strong> Smaller Al-Qaeda-aligned faction operating in northwestern Nigeria.</li>
-</ul>
-<p><strong>Counter-Insurgency Framework:</strong></p>
-<ul>
-    <li><strong>Operation Hadin Kai:</strong> Current Nigerian Army operation in the northeast (replaced Operation Lafiya Dole)</li>
-    <li><strong>MNJTF (Multinational Joint Task Force):</strong> Nigeria + Cameroon + Chad + Niger + Benin coalition based in N'Djamena</li>
-    <li><strong>Civilian JTF (CJTF):</strong> Local self-defense militias in Maiduguri</li>
-    <li><strong>US support:</strong> US Green Berets, ISR drones, and bilateral training programs</li>
-</ul>
-<p><strong>Key Theaters:</strong> Borno State (Maiduguri, Bama, Konduga, Damasak), Yobe State (Damaturu, Buni Yadi), Adamawa State, Lake Chad islands.</p>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Nigeria</a>
-                    <a href="https://www.acleddata.com/dashboard/" target="_blank" rel="noopener" class="report-link">📑 ACLED Nigeria conflict tracker</a>
-                    <a href="https://ctc.westpoint.edu/region/nigeria/" target="_blank" rel="noopener" class="report-link">📑 CTC West Point — Nigeria</a>
-                    <a href="https://reliefweb.int/country/nga" target="_blank" rel="noopener" class="report-link">📑 ReliefWeb Nigeria</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Northwest Banditry & Lakurawa Emergence -->
-        <div class="knowledge-card collapsed" id="card-lakurawa-bandits">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('lakurawa-bandits')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🔫</span>
-                    <span>Northwest Banditry & Lakurawa Emergence</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Northwest Nigeria is contested by armed criminal groups</strong> — collectively termed "bandits" — operating across Zamfara, Sokoto, Katsina, Kaduna, Kebbi, and Niger states.</p>
-<p><strong>Major Bandit Networks:</strong></p>
-<ul>
-    <li><strong>Bello Turji:</strong> Most-wanted bandit kingpin operating in Zamfara/Sokoto borderlands</li>
-    <li><strong>Ado Aleru:</strong> Senior bandit commander; multiple military bounties</li>
-    <li><strong>Kachalla networks:</strong> Multiple regional "kachallas" (commanders) running kidnap-for-ransom enterprises</li>
-</ul>
-<p><strong>Lakurawa — Emerging Group (2024-2025):</strong></p>
-<ul>
-    <li>New armed group identified in Sokoto, Kebbi, and parts of Borno late 2024</li>
-    <li>Reported to be ideologically jihadist with sources in Niger/Sahel</li>
-    <li>Filling vacuum left by AES military departure from regional security cooperation</li>
-    <li>Significant concern as a potential bridge between Sahel jihadism and Nigerian banditry</li>
-</ul>
-<p><strong>Counter-Operations:</strong></p>
-<ul>
-    <li><strong>Operation Hadarin Daji:</strong> Nigerian Army operation against bandits in NW</li>
-    <li><strong>Operation Fasan Yamma:</strong> Multi-state joint task force</li>
-    <li><strong>Operation Whirl Punch:</strong> Air Force-led strike operations against bandit camps</li>
-</ul>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Nigeria</a>
-                    <a href="https://www.sbmintel.com/" target="_blank" rel="noopener" class="report-link">📑 SBM Intelligence Nigeria</a>
-                    <a href="https://www.premiumtimesng.com/" target="_blank" rel="noopener" class="report-link">📑 Premium Times Nigeria</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Middle Belt — Plateau, Kaduna, Benue -->
-        <div class="knowledge-card collapsed" id="card-middle-belt">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('middle-belt')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🌾</span>
-                    <span>Middle Belt — Plateau, Kaduna, Benue</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Nigeria's Middle Belt is the geographic seam between Muslim-majority North and Christian-majority South</strong> — and the locus of persistent farmer-herder conflict with ethnic and religious dimensions.</p>
-<p><strong>Key Dynamics:</strong></p>
-<ul>
-    <li><strong>Farmer-herder conflict:</strong> Predominantly between Fulani pastoralists (often Muslim) and settled farmers (often Christian); driven by land-use pressure, climate change, and weak governance</li>
-    <li><strong>Plateau State:</strong> Recurring massacres in Mangu, Bokkos, Bassa local government areas; deaths in the thousands across 2023-2024</li>
-    <li><strong>Kaduna State:</strong> Particularly Southern Kaduna — long history of intercommunal violence</li>
-    <li><strong>Benue State:</strong> Major farmer-herder violence; Anti-Open Grazing Law (2017) sparked herder backlash</li>
-    <li><strong>"Genocide" framing:</strong> Some Western Christian advocacy groups frame as anti-Christian genocide; reality is more complex but Christian communities have suffered disproportionately</li>
-</ul>
-<p><strong>2024 Events:</strong> December 2023 Plateau Christmas attacks (200+ killed) marked one of the worst single events; smaller attacks throughout 2024 and into 2025-26.</p>
-<p><strong>Government Response:</strong> President Tinubu has faced criticism for limited federal response; State Police debate ongoing as potential reform.</p>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Nigeria</a>
-                    <a href="https://opendoorsus.org/" target="_blank" rel="noopener" class="report-link">📑 Open Doors (faith-based)</a>
-                    <a href="https://www.hrw.org/africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 HRW Nigeria</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Oil Economy & Niger Delta -->
-        <div class="knowledge-card collapsed" id="card-oil-economy">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('oil-economy')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🛢️</span>
-                    <span>Oil Economy & Niger Delta</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Nigeria is Africa's largest oil producer</strong> by reserves and historically by output, though OPEC+ quota and theft have driven production below 1.5M bpd in many recent months.</p>
-<p><strong>Key Players:</strong></p>
-<ul>
-    <li><strong>NNPCL (Nigerian National Petroleum Company Limited):</strong> National oil company; recently restructured under PIA 2021</li>
-    <li><strong>IOCs (International Oil Companies):</strong> ExxonMobil, Chevron, Shell, TotalEnergies, Eni — most divesting onshore assets to local operators</li>
-    <li><strong>Indigenous independents:</strong> Seplat, Aiteo, Heirs Holdings, Sahara Group — buying IOC onshore stakes</li>
-    <li><strong>Dangote Refinery:</strong> $20B private refinery (Lekki, Lagos); fully operational 2024-2026; massive geopolitical-economic shift</li>
-</ul>
-<p><strong>Niger Delta Militancy:</strong></p>
-<ul>
-    <li><strong>Niger Delta Avengers:</strong> Resurgent militant group threatening pipeline attacks</li>
-    <li><strong>Oil theft / bunkering:</strong> Estimated 250,000-400,000 bpd stolen via illegal pipeline taps; massive corruption + community insurgency dimension</li>
-    <li><strong>Tompolo / Tantita:</strong> Government's awarded pipeline-security contract to former militant leader Tompolo's company — controversial but somewhat effective</li>
-    <li><strong>Amnesty programs:</strong> Niger Delta amnesty payments continue 16+ years post-2009 origin</li>
-</ul>
-<p><strong>Strategic Implications:</strong> Dangote Refinery is reducing Nigeria's perverse status as crude exporter / refined fuel importer. Has implications for FX reserves, fuel subsidy politics, and regional refined product trade.</p>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.eia.gov/international/analysis/country/NGA" target="_blank" rel="noopener" class="report-link">📑 US EIA Nigeria</a>
-                    <a href="https://opec.org/" target="_blank" rel="noopener" class="report-link">📑 OPEC</a>
-                    <a href="https://www.nnpcgroup.com/" target="_blank" rel="noopener" class="report-link">📑 NNPC Limited</a>
-                    <a href="https://www.dangote.com/" target="_blank" rel="noopener" class="report-link">📑 Dangote Group</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- US–Nigeria Relations -->
-        <div class="knowledge-card collapsed" id="card-us-relations">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('us-relations')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🇺🇸</span>
-                    <span>US–Nigeria Relations</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>The US-Nigeria relationship is one of the most strategically important in Africa</strong> — based on population (Africa's largest), economy (largest in West Africa), and counter-terrorism cooperation.</p>
-<p><strong>Bilateral Framework:</strong></p>
-<ul>
-    <li><strong>US Embassy Abuja:</strong> Major diplomatic post; full bilateral agenda including security, trade, governance</li>
-    <li><strong>US Consulate Lagos:</strong> Commercial and visa hub; commercial ties heavily concentrated</li>
-    <li><strong>AGOA:</strong> Nigeria is AGOA-eligible; recent oil-export-driven trade volumes</li>
-    <li><strong>USTDA:</strong> Trade and development infrastructure financing</li>
-    <li><strong>Power Africa:</strong> Long-running initiative for electrification</li>
-</ul>
-<p><strong>Security Cooperation:</strong></p>
-<ul>
-    <li><strong>1206 / 333 authorities:</strong> Section 1206/333 funding for Nigerian military training and equipment</li>
-    <li><strong>US Special Forces:</strong> Periodic deployments; Green Berets trained Nigerian troops</li>
-    <li><strong>Super Tucano sales:</strong> 12 A-29 Super Tucano aircraft delivered 2021-2022 for counter-Boko Haram operations</li>
-    <li><strong>Christian persecution issue:</strong> US Commission on International Religious Freedom (USCIRF) recommends Nigeria for Country of Particular Concern (CPC) designation; State Department response has varied across administrations</li>
-</ul>
-<p><strong>Watch Items:</strong> AGOA renewal/expiration debates; potential CPC designation; Tinubu government engagement with Trump administration; ECOWAS standby force prospects given AES exit.</p>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.state.gov/countries-areas/nigeria/" target="_blank" rel="noopener" class="report-link">📑 US State Department Nigeria</a>
-                    <a href="https://www.uscirf.gov/countries/nigeria" target="_blank" rel="noopener" class="report-link">📑 USCIRF Nigeria</a>
-                    <a href="https://www.ustr.gov/countries-regions/africa/nigeria" target="_blank" rel="noopener" class="report-link">📑 USTR Nigeria</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ── RECENT ARTICLES (tabbed: News / Socials / NGOs) ── -->
-<div class="articles-section">
-    <div class="section-title">📰 Recent Nigeria Articles &amp; Reports</div>
-    <div class="article-tabs" id="articleTabs">
-        <div class="article-tab active" data-tab="news" onclick="filterArticles('news', this)">News</div>
-        <div class="article-tab" data-tab="socials" onclick="filterArticles('socials', this)">Socials</div>
-        <div class="article-tab" data-tab="ngos" onclick="filterArticles('ngos', this)">NGOs &amp; Reports</div>
-    </div>
-    <ul class="articles-list" id="articlesList">
-        <li class="article-item" style="text-align: center; color: var(--text-muted); padding: 30px;">
-            ● ● ● Loading articles...
-        </li>
-    </ul>
-</div>
-
-</div> <!-- /.main-content -->
-</div> <!-- /.page-with-sidebar -->
-
-<!-- ════════════════════════════════════════════════════════════
-     FOOTER (canonical, May 2026)
-     ════════════════════════════════════════════════════════════ -->
-<div class="footer-info">
-    <p><strong>ASIFAH ANALYTICS · NIGERIA STABILITY INDEX</strong></p>
-    <p>asifah-africa-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
-    <p>OSINT aggregation from GDELT (en/fr where applicable), NewsAPI, Brave Search, RSS · ReliefWeb &amp; The New Humanitarian · ISS Africa · WHO Disease Outbreak News · U.S. State Department travel advisories · FAA NOTAMs</p>
-
-    <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
-    </div>
-
-    <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT POSITION · © 2025-2026 Asifah Analytics</p>
-    <p style="margin-top:10px;">
-        <a href="mission.html">Mission Statement</a> ·
-        <a href="privacy.html">Privacy Policy</a> ·
-        <a href="https://asifahanalytics.com">Home</a>
-    </p>
-</div>
-
-</div> <!-- /.container -->
-
-<!-- ════════════════════════════════════════════════════════════
-     JAVASCRIPT
-     ════════════════════════════════════════════════════════════ -->
-<script>
-const COUNTRY_ID      = 'nigeria';
-const COUNTRY_DISPLAY = 'Nigeria';
-const AFRICA_API      = 'https://asifah-africa-backend.onrender.com';
-
-// ── THEME TOGGLE ──
-function toggleTheme() {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('asifah-theme', next); } catch(e) {}
-}
-(function loadTheme() {
-    try {
-        const saved = localStorage.getItem('asifah-theme');
-        if (saved) document.documentElement.setAttribute('data-theme', saved);
-    } catch(e) {}
-})();
-
-// ── MOBILE DRAWER ──
-function toggleMobileDrawer() {
-    document.getElementById('navSidebar').classList.add('mobile-open');
-    document.getElementById('mobileDrawerBackdrop').classList.add('open');
-}
-function closeMobileDrawer() {
-    document.getElementById('navSidebar').classList.remove('mobile-open');
-    document.getElementById('mobileDrawerBackdrop').classList.remove('open');
-}
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
-
-// ── KNOWLEDGE LIBRARY ACCORDION ──
-function toggleKnowledgeCard(id) {
-    const card = document.getElementById('card-' + id);
-    if (card) card.classList.toggle('collapsed');
-}
-
-// ── TRAVEL ADVISORY FETCH ──
-async function loadTravelAdvisory() {
-    try {
-        const resp = await fetch(AFRICA_API + '/api/africa/travel-advisories');
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        const adv = (data.advisories || {})[COUNTRY_ID];
-        if (!adv) {
-            document.getElementById('advisoryText').textContent = 'Travel advisory data not available for this country.';
-            return;
+        /* ── Arctic scheme + MIL canonical watermark vars ── */
+        :root {
+            --bg-color: #e8f0f8;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #b0c8e0;
+            --text-primary: #0a1628;
+            --text-secondary: #1e3a5f;
+            --text-muted: #4a6080;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #0ea5e9;
+            --header-text: #ffffff;
+            --article-bg: #f0f6fc;
+            --article-hover: #e1ecf7;
+            --loading-overlay-bg: rgba(232, 240, 248, 0.98);
+            --accent: #0ea5e9;
+            --watermark-opacity: 0.5; --watermark-size: 500px;
+            --grid-color: transparent; --scanline-opacity: 0;
         }
-        // Level badge — keep amber/orange canonical regardless of level (visual continuity with China page)
-        document.getElementById('advisoryLevelBadge').textContent = 'LEVEL ' + (adv.level || '?');
-        // Headline text: bold colored level_label + remainder of summary
-        const txt = document.getElementById('advisoryText');
-        if (txt) {
-            const headline = adv.level_label || ('Level ' + (adv.level || '?'));
-            const summary  = (adv.short_summary || '').replace(/^<p[^>]*>|<\/p>$/g, '').replace(/<[^>]+>/g, '').trim();
-            txt.innerHTML = '<strong style="color:#f59e0b;">' + headline + '</strong>' + (summary ? ' — ' + summary : '');
+
+        [data-theme="dark"] {
+            --bg-color: #060d1a;
+            --container-bg: #0d1b2e;
+            --card-bg: #0d1b2e;
+            --card-border: #1e3a5f;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #4a7090;
+            --header-gradient-start: #060d1a;
+            --header-gradient-end: #1e3a5f;
+            --article-bg: #0a1525;
+            --article-hover: #112038;
+            --loading-overlay-bg: rgba(6, 13, 26, 0.98);
+            --accent: #38bdf8;
+            --watermark-opacity: 1; --watermark-size: 800px;
+            --grid-color: rgba(56,189,248,0.04); --scanline-opacity: 0.03;
         }
-        if (adv.link) document.getElementById('advisoryLink').href = adv.link;
-        document.getElementById('lastUpdated').textContent = 'Travel advisory updated: ' + (adv.updated || data.timestamp || 'Unknown').slice(0, 10);
-    } catch (err) {
-        console.warn('Travel advisory error:', err);
-        document.getElementById('advisoryText').textContent = 'Could not fetch advisory data. Check back later.';
-    }
-}
 
-// ── ARTICLES FETCH ──
-let _articleBuckets = { news: [], socials: [], ngos: [] };
-let _activeTab = 'news';
-
-async function loadArticles() {
-    try {
-        const resp = await fetch(AFRICA_API + '/api/africa/articles/' + COUNTRY_ID);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        if (data && data.buckets) {
-            _articleBuckets.news    = (data.buckets.news    || {}).articles || [];
-            _articleBuckets.socials = (data.buckets.socials || {}).articles || [];
-            _articleBuckets.ngos    = (data.buckets.ngos    || {}).articles || [];
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
         }
-        renderArticles();
-    } catch (err) {
-        console.warn('Articles error:', err);
-        document.getElementById('articlesList').innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">Articles loading — first scan in progress, check back shortly.</li>';
-    }
-}
 
-function renderArticles() {
-    const articles = _articleBuckets[_activeTab] || [];
-    const ul = document.getElementById('articlesList');
-    if (articles.length === 0) {
-        const empties = {
-            news:    'No recent news articles found.',
-            socials: 'Social feed integration coming in v1.1 (Bluesky + Telegram).',
-            ngos:    'No recent NGO / policy reports found.',
-        };
-        ul.innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">' + (empties[_activeTab] || 'No articles found.') + '</li>';
-        return;
-    }
-    ul.innerHTML = articles.slice(0, 25).map(function(a) {
-        const title = (a.title || '').replace(/</g, '&lt;');
-        const desc  = (a.description || '').replace(/</g, '&lt;');
-        const src   = (a.source || '').replace(/</g, '&lt;');
-        const pub   = (a.published || '').slice(0, 10);
-        return '<li class="article-item">' +
-               '<a href="' + (a.url || '#') + '" target="_blank" rel="noopener">' + title + '</a>' +
-               (desc ? '<div class="article-description">' + desc + '</div>' : '') +
-               '<div class="article-meta">' + src + (pub ? ' · ' + pub : '') + '</div>' +
-               '</li>';
-    }).join('');
-}
-
-function filterArticles(tab, btn) {
-    _activeTab = tab;
-    document.querySelectorAll('.article-tab').forEach(function(el) { el.classList.remove('active'); });
-    if (btn) btn.classList.add('active');
-    renderArticles();
-}
-
-// ── COMMODITY EXPOSURE — Gold Standard v2.0 (live tiles) ──
-// Mirrors china-stability.html. Fetches /api/africa/commodity/<country>
-// (which proxies through to ME backend /api/commodity-pressure/<country>).
-// Renders: prose paragraph + alert banner + tiles with sparklines + role/alert badges
-async function loadCommodity() {
-    const card = document.getElementById('commodityCard');
-    if (!card) return;   // page has no commodity card (e.g. Ethiopia, Kenya, etc.)
-
-    let data = null;
-    try {
-        const r = await fetch(AFRICA_API + '/api/africa/commodity/' + COUNTRY_ID);
-        if (!r.ok) throw new Error('Africa proxy HTTP ' + r.status);
-        data = await r.json();
-        if (!data || data.success === false) throw new Error('Africa proxy returned failure');
-    } catch (e) {
-        console.warn('[Commodity] Africa proxy failed, trying ME backend direct...', e.message);
-        try {
-            const r2 = await fetch('https://asifah-backend.onrender.com/api/commodity-pressure/' + COUNTRY_ID);
-            if (!r2.ok) throw new Error('ME backend HTTP ' + r2.status);
-            data = await r2.json();
-        } catch (e2) {
-            console.warn('[Commodity] ME backend fallback also failed:', e2.message);
-            const proseEl = document.getElementById('commodityProse');
-            if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
-            return;
+        /* MIL canonical: grid + scanlines + dedicated .watermark div */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
         }
-    }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(56,189,248,var(--scanline-opacity)) 2px, rgba(56,189,248,var(--scanline-opacity)) 4px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: var(--watermark-size);
+            height: var(--watermark-size);
+            opacity: var(--watermark-opacity);
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: 135%;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
 
-    // Prose
-    const proseEl = document.getElementById('commodityProse');
-    const summariesCount = (data.commodity_summaries || []).length;
-    if (proseEl) {
-        proseEl.textContent = data.prose ||
-            (summariesCount > 0
-                ? COUNTRY_DISPLAY + ' tracks ' + summariesCount + ' strategic commodity exposures. See tiles below for live status.'
-                : COUNTRY_DISPLAY + '\u2019s commodity profile is being wired in. Live tiles will populate once the backend has data for this country.');
-    }
+        /* ── LAYOUT: SIDEBAR + MAIN ── */
+        .page-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
 
-    // Alert banner
-    const banner = document.getElementById('commodityAlertBanner');
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const alertLabels = {
-        normal:   '\u2713 NO ACTIVE COMMODITY PRESSURE',
-        elevated: '\u25D0 ELEVATED COMMODITY PRESSURE',
-        high:     '\u25B2 HIGH COMMODITY PRESSURE',
-        surge:    '\uD83D\uDEA8 COMMODITY PRESSURE SURGE'
-    };
-    const pressure = (data.commodity_pressure || 0);
-    if (banner) {
-        banner.className = 'commodity-alert-banner alert-' + alertLevel + ' show';
-        banner.innerHTML =
-            '<strong>' + (alertLabels[alertLevel] || alertLabels.normal) + '</strong>' +
-            '<span class="ab-meta">Pressure score: ' + Number(pressure).toFixed(1) + ' \u00b7 ' +
-            summariesCount + ' exposures tracked' +
-            (data.has_live_data === false ? ' \u00b7 awaiting live signals' : '') + '</span>';
-    }
+        .sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            background: var(--container-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px 12px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-section:last-child { margin-bottom: 0; }
+        .sidebar-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            padding: 0 4px;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link:hover { background: var(--article-hover); color: var(--accent); }
+        .sidebar-link.regional   { border-left-color: #38bdf8; }
+        .sidebar-link.core       { border-left-color: #38bdf8; }
+        .sidebar-link.rhetoric   { border-left-color: #22c55e; }
+        .sidebar-link.future     { opacity: 0.5; cursor: not-allowed; border-left-color: #6b7280; }
+        .sidebar-link.future:hover { background: transparent; color: var(--text-secondary); }
 
-    // Tiles
-    const grid = document.getElementById('commodityGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    (data.commodity_summaries || []).forEach(function(c) {
-        const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
-        const role = (c.role || 'consumer').toLowerCase();
-        const rankText = c.rank ? '#' + c.rank + ' globally' : '';
-        const sigCount = c.signal_count || 0;
-        const sigText = sigCount > 0 ? sigCount + ' signal' + (sigCount !== 1 ? 's' : '') : '';
+        .main-content { flex: 1; min-width: 0; }
 
-        // Sparkline (SVG polyline) — canonical China pattern
-        let sparklineHtml = '';
-        let priceHtml = '';
-        if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
-            const spark = c.sparkline.spark;
-            const min = Math.min.apply(null, spark);
-            const max = Math.max.apply(null, spark);
-            const range = max - min || 1;
-            const points = spark.map(function(v, i) {
-                const x = (i / (spark.length - 1)) * 100;
-                const y = 100 - ((v - min) / range) * 100;
-                return x.toFixed(1) + ',' + y.toFixed(1);
-            }).join(' ');
-            const pctChange = c.sparkline.change_pct_30d || 0;
-            const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
-            sparklineHtml = '<svg class="commodity-tile-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">' +
-                '<polyline fill="none" stroke="' + sparkColor + '" stroke-width="1.5" vector-effect="non-scaling-stroke" points="' + points + '"/>' +
-                '</svg>';
-            const price = (c.sparkline.price !== undefined && c.sparkline.price !== null) ? c.sparkline.price : null;
-            if (price !== null) {
-                const arrow = pctChange >= 0 ? '\u25B2' : '\u25BC';
-                const deltaClass = pctChange >= 0 ? 'delta-up' : 'delta-down';
-                const priceFmt = '$' + Number(price).toFixed(2);
-                priceHtml = '<div class="commodity-tile-price">' + priceFmt +
-                    ' <span class="' + deltaClass + '">' + arrow + ' ' + Number(pctChange).toFixed(2) + '%</span>' +
-                    ' <span style="color:var(--text-muted);font-size:0.72rem;">(30d)</span>' +
-                    '</div>';
+        /* Mobile drawer */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 14px; left: 14px;
+            z-index: 200;
+            background: var(--container-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            width: 42px; height: 42px;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 150;
+        }
+        @media (max-width: 768px) {
+            .page-wrapper { flex-direction: column; }
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
+            .sidebar {
+                position: fixed;
+                top: 0; left: -260px;
+                width: 240px;
+                height: 100vh;
+                z-index: 180;
+                overflow-y: auto;
+                transition: left 0.25s ease;
+                border-radius: 0;
             }
+            .sidebar.open { left: 0; }
+            .sidebar-backdrop.open { display: block; }
+            body { padding: 14px; padding-top: 64px; }
         }
 
-        const note = c.note || '';
-        const icon = c.icon || '\uD83D\uDCCA';
-        const commodityName = c.name || c.commodity || 'Commodity';
-        const commodityId = c.commodity || (c.name || '').toLowerCase();
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+            color: var(--header-text);
+            padding: 30px 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .header .subtitle { font-size: 1rem; opacity: 0.9; max-width: 800px; margin: 0 auto; }
+        .header-controls {
+            display: flex; justify-content: center; gap: 10px;
+            margin-top: 16px; flex-wrap: wrap;
+        }
+        .theme-toggle {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 14px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .theme-toggle:hover { background: rgba(255,255,255,0.25); }
 
-        grid.insertAdjacentHTML('beforeend',
-            '<a href="commodities.html#' + commodityId + '" class="commodity-tile">' +
-                '<div class="commodity-tile-header">' +
-                    '<div class="commodity-tile-icon">' + icon + '</div>' +
-                    '<div class="commodity-tile-titlewrap">' +
-                        '<div class="commodity-tile-name">' + commodityName + '</div>' +
-                        (rankText ? '<div class="commodity-tile-rank">' + rankText + '</div>' : '') +
-                    '</div>' +
-                '</div>' +
-                '<div class="commodity-tile-badges">' +
-                    '<span class="commodity-tile-badge commodity-alert-' + globalAlert + '">' + globalAlert + '</span>' +
-                    '<span class="commodity-tile-badge commodity-role-' + role + '">' + role + '</span>' +
-                    (sigText ? '<span class="commodity-tile-signals">' + sigText + '</span>' : '') +
-                '</div>' +
-                priceHtml +
-                sparklineHtml +
-                (note ? '<div class="commodity-tile-desc">' + note.slice(0, 200) + (note.length > 200 ? '\u2026' : '') + '</div>' : '') +
-            '</a>'
-        );
+        /* ── WORLDWIDE CAUTION BANNER ── */
+        .ww-caution {
+            background: linear-gradient(135deg, rgba(220,38,38,0.10), rgba(239,68,68,0.05));
+            border: 2px solid rgba(220,38,38,0.45);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .ww-caution {
+            background: linear-gradient(135deg, rgba(220,38,38,0.20), rgba(239,68,68,0.08));
+            box-shadow: 0 0 18px rgba(220,38,38,0.16);
+        }
+        .ww-caution-header {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; color: #dc2626;
+            font-size: 0.95rem; margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        [data-theme="dark"] .ww-caution-header { color: #f87171; }
+        .ww-caution-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .ww-caution-link {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+        }
+        .ww-caution-link:hover { border-bottom-style: solid; }
+
+        /* ── RHETORIC COMING SOON ── */
+        .rhetoric-coming-soon {
+            background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(22,163,74,0.04));
+            border: 1.5px solid rgba(34,197,94,0.4);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        [data-theme="dark"] .rhetoric-coming-soon {
+            background: linear-gradient(135deg, rgba(34,197,94,0.14), rgba(22,163,74,0.06));
+            box-shadow: 0 0 18px rgba(34,197,94,0.10);
+        }
+        .rhetoric-coming-soon::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #22c55e, transparent);
+            opacity: 0.6;
+        }
+        .rcs-icon { font-size: 2rem; flex-shrink: 0; }
+        .rcs-body { flex: 1; min-width: 200px; }
+        .rcs-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #22c55e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .rcs-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .rcs-pill {
+            background: rgba(34,197,94,0.18);
+            color: #22c55e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border: 1px solid rgba(34,197,94,0.4);
+            flex-shrink: 0;
+        }
+
+        /* ── COMMODITY EXPOSURE CARD (Chile-pattern pills) ── */
+        .commodity-card {
+            background: linear-gradient(135deg, rgba(251,146,60,0.06), rgba(234,88,12,0.03));
+            border: 1.5px solid rgba(251,146,60,0.4);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .commodity-card {
+            background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(234,88,12,0.05));
+            box-shadow: 0 0 18px rgba(251,146,60,0.10);
+        }
+        .commodity-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #fb923c, transparent);
+            opacity: 0.6;
+        }
+        .commodity-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .commodity-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fb923c;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .commodity-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: rgba(2,6,23,0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        [data-theme="light"] .commodity-pill { background: #f8fbfe; }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(56,189,248,0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.25);
+        }
+        .commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+        .commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+        .commodity-alert-banner {
+            display: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+        .commodity-footnote {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-style: italic;
+            border-top: 1px dashed var(--card-border);
+            padding-top: 8px;
+            margin-top: 12px;
+        }
+
+        /* ── FINANCIAL PULSE CARD (3 tiles: NSE + NGN/USD + Brent) ── */
+        .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .nyse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .nyse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nyse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nyse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .nyse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-pre-market{ background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-after-hours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .nyse-status-pill.market-partial   { background: rgba(96,165,250,0.18); color: #60a5fa; border-color: rgba(96,165,250,0.4); }
+        .nyse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+        .nyse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) { .nyse-grid { grid-template-columns: 1fr; } }
+        .nyse-tile {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .nyse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+        .nyse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .nyse-tile-name {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .nyse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .nyse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .nyse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+        .nyse-tile-spark { height: 32px; margin-top: 4px; position: relative; }
+        .nyse-tile-spark canvas { display: block; width: 100% !important; height: 32px !important; }
+        .nyse-tile-meta {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        .nyse-empty-state {
+            text-align: center;
+            padding: 18px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ── LEAFLET MAP ── */
+        .map-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .map-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #nigeriaMap {
+            width: 100%;
+            height: 420px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+        }
+        [data-theme="dark"] #nigeriaMap { filter: invert(0.92) hue-rotate(180deg); }
+        .leaflet-popup-content { font-family: 'Times New Roman', serif; font-size: 13px; line-height: 1.4; }
+        .map-legend {
+            display: flex; flex-wrap: wrap; gap: 12px;
+            font-size: 0.78rem; color: var(--text-secondary);
+            margin-top: 12px;
+        }
+        .map-legend-item { display: flex; align-items: center; gap: 6px; }
+        .map-legend-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* ── KNOWLEDGE LIBRARY (collapsible) ── */
+        .knowledge-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .knowledge-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 14px;
+        }
+        @media (max-width: 768px) { .knowledge-grid { grid-template-columns: 1fr; } }
+        .kb-card {
+            background: var(--article-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .kb-card:hover { border-color: var(--accent); }
+        .kb-header {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            user-select: none;
+        }
+        .kb-card.collapsed .kb-header { border-bottom: none; }
+        .kb-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .kb-category-icon { font-size: 1.2rem; }
+        .kb-collapse-icon {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            transition: transform 0.3s;
+        }
+        .kb-card.collapsed .kb-collapse-icon { transform: rotate(-90deg); }
+        .kb-content {
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+        .kb-card.collapsed .kb-content { display: none; }
+        .kb-content p { margin-bottom: 10px; }
+        .kb-content strong { color: var(--text-primary); }
+        .kb-content ul { padding-left: 22px; margin-bottom: 10px; }
+        .kb-content ul li { margin-bottom: 6px; }
+        .kb-content a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+            font-weight: 600;
+        }
+        .kb-content a:hover { border-bottom-style: solid; }
+        .kb-source {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .kb-report-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--card-border);
+        }
+        .kb-report-link {
+            padding: 5px 10px;
+            background: rgba(56,189,248,0.10);
+            border: 1px solid rgba(56,189,248,0.25);
+            border-radius: 5px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .kb-report-link:hover {
+            background: rgba(56,189,248,0.18);
+            transform: translateY(-1px);
+        }
+
+        /* ── ARTICLES (TABS) ── */
+        .articles-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .articles-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .article-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 10px;
+        }
+        .article-tab {
+            background: var(--article-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .article-tab:hover { background: var(--article-hover); }
+        .article-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .article-tab-count {
+            background: rgba(255,255,255,0.3);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+        .article-tab:not(.active) .article-tab-count {
+            background: rgba(56,189,248,0.18);
+            color: var(--accent);
+        }
+        .article-list { display: flex; flex-direction: column; gap: 10px; }
+        .article-item {
+            background: var(--article-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            transition: all 0.2s ease;
+        }
+        .article-item:hover { background: var(--article-hover); transform: translateX(2px); }
+        .article-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .article-title a { color: inherit; text-decoration: none; }
+        .article-title a:hover { color: var(--accent); }
+        .article-meta {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            font-size: 0.72rem; color: var(--text-muted);
+            align-items: center;
+        }
+        .article-source-pill {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .article-source-pill.gnews   { background: rgba(56,189,248,0.18); color: var(--accent); }
+        .article-source-pill.rss     { background: rgba(34,197,94,0.18);  color: #22c55e; }
+        .article-source-pill.gdelt   { background: rgba(251,146,60,0.18); color: #fb923c; }
+        .article-source-pill.bluesky { background: rgba(167,139,250,0.18); color: #a78bfa; }
+        .article-source-pill.telegram{ background: rgba(96,165,250,0.18); color: #60a5fa; }
+        .article-source-pill.reddit  { background: rgba(251,113,133,0.18); color: #fb7185; }
+        .articles-loading, .articles-empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ── FOOTER ── */
+        .asifah-footer {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-top: 24px;
+            text-align: center;
+        }
+        .asifah-footer-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .asifah-footer-backend {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 6px;
+        }
+        .asifah-footer-cadence {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        .asifah-footer-sources {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+        .asifah-footer-pills {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .asifah-footer-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1.5px solid;
+        }
+        .asifah-footer-pill.bmc {
+            background: rgba(251,191,36,0.12);
+            color: #f59e0b;
+            border-color: rgba(251,191,36,0.5);
+        }
+        .asifah-footer-pill.bmc:hover { background: rgba(251,191,36,0.22); }
+        .asifah-footer-pill.contact {
+            background: rgba(56,189,248,0.12);
+            color: var(--accent);
+            border-color: rgba(56,189,248,0.5);
+        }
+        .asifah-footer-pill.contact:hover { background: rgba(56,189,248,0.22); }
+        .asifah-footer-disclaimer {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 10px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        .asifah-footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            font-size: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .asifah-footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--text-muted);
+        }
+        .asifah-footer-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .refresh-meta {
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+
+    <!-- MIL canonical watermark layer -->
+    <div class="watermark"></div>
+
+    <!-- Mobile menu toggle -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="page-wrapper">
+
+        <!-- ════════════════════ SIDEBAR ════════════════════ -->
+        <nav class="sidebar" id="sidebar">
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Regional Dashboards</div>
+                <a href="middle-east.html" class="sidebar-link regional">Middle East</a>
+                <a href="asia.html" class="sidebar-link regional">Asia</a>
+                <a href="europe.html" class="sidebar-link regional">Europe</a>
+                <a href="western-hemisphere.html" class="sidebar-link regional">Western Hemisphere</a>
+                <a href="africa.html" class="sidebar-link regional">Africa</a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Core Trackers</div>
+                <a href="gpi.html" class="sidebar-link core">Global Pressure Index</a>
+                <a href="military.html" class="sidebar-link core">Military Tracker</a>
+                <a href="commodities.html" class="sidebar-link core">Commodities</a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Regional Rhetoric</div>
+                <a href="rhetoric-middle-east.html" class="sidebar-link rhetoric">Middle East</a>
+                <a href="rhetoric-asia.html" class="sidebar-link rhetoric">Asia</a>
+                <a href="rhetoric-europe.html" class="sidebar-link rhetoric">Europe</a>
+                <a href="rhetoric-western-hemisphere.html" class="sidebar-link rhetoric">Western Hemisphere</a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Africa Cross-Links</div>
+                <a href="#" class="sidebar-link future">🕊️ Nigeria Rhetoric (Soon)</a>
+                <a href="sudan-stability.html" class="sidebar-link regional">Sudan Stability ↗</a>
+                <a href="mali-stability.html" class="sidebar-link regional">Mali Stability ↗</a>
+                <a href="ethiopia-stability.html" class="sidebar-link regional">Ethiopia Stability ↗</a>
+            </div>
+
+        </nav>
+
+        <!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+        <main class="main-content">
+
+            <!-- HEADER -->
+            <header class="header">
+                <h1>🇳🇬 Nigeria Stability Index</h1>
+                <div class="subtitle">Open-source intelligence: Tinubu reforms, naira currency stress, Boko Haram/ISWAP insurgency, Niger Delta oil theft, Dangote refinery dynamics, and NGX financial pulse.</div>
+                <div class="header-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">☀️ Light Mode</button>
+                </div>
+            </header>
+
+            <div class="refresh-meta" id="refreshMeta">Loading latest data…</div>
+
+            <!-- WORLDWIDE CAUTION BANNER (Nigeria-specific framing) -->
+            <div class="ww-caution">
+                <div class="ww-caution-header">
+                    🚨 U.S. Department of State — Nigeria Travel Advisory (Level 3)
+                </div>
+                <div class="ww-caution-body">
+                    The U.S. State Department advises U.S. citizens to <strong>Reconsider Travel</strong> to Nigeria due to crime, terrorism, civil unrest, kidnapping, and armed gangs. <strong>Do Not Travel (Level 4)</strong> applies to Borno, Yobe, Adamawa, and parts of Bauchi States (Boko Haram + ISWAP), the Niger Delta states (Bayelsa, Delta, Rivers — piracy + kidnap-for-ransom), and northwestern states (Zamfara, Kaduna, Katsina, Sokoto, Kebbi — bandit activity). The U.S. Embassy in Abuja and Consulate in Lagos maintain restricted-travel zones for personnel. Read the current advisory: <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/nigeria-travel-advisory.html" target="_blank" class="ww-caution-link">travel.state.gov ↗</a>
+                </div>
+            </div>
+
+            <!-- COMING SOON: NIGERIA RHETORIC TRACKER -->
+            <div class="rhetoric-coming-soon">
+                <div class="rcs-icon">🕊️</div>
+                <div class="rcs-body">
+                    <div class="rcs-title">Nigeria Rhetoric Tracker</div>
+                    <div class="rcs-text">
+                        Coming soon: actor-level escalation scoring for the Tinubu administration, Nigerian Armed Forces, NNPC leadership, IPOB/Biafran movement, Boko Haram/ISWAP communications, Niger Delta militants, and northern bandit networks — with currency-crisis, mass-kidnapping, and oil-theft tripwires. Will mirror the canonical Iraq/Iran/Lebanon rhetoric tracker pattern (0–5 escalation scale).
+                    </div>
+                </div>
+                <div class="rcs-pill">In Development</div>
+            </div>
+
+            <!-- COMMODITY EXPOSURE CARD (live from /api/africa/commodity/nigeria) -->
+            <div class="commodity-card">
+                <div class="commodity-card-header">
+                    <div class="commodity-card-title">
+                        🛢️ Nigeria Commodity Exposure Profile
+                    </div>
+                    <span class="nyse-status-pill">Analytical</span>
+                </div>
+                <div class="commodity-prose">
+                    Nigeria is structurally the largest African oil producer (~1.4-1.7M bpd, well below ~2.5M bpd capacity due to theft + pipeline sabotage). Hydrocarbon revenues account for roughly <strong>50% of government income</strong> and ~80% of foreign exchange earnings. The <strong>Dangote Refinery</strong> (Lekki, 650k bpd — world's largest single-train) operational from 2024 transforms West Africa from gasoline-importer to potential exporter. NLNG (Bonny Island) makes Nigeria Africa's #1 LNG exporter. <strong>Structural losses of 250-400k bpd</strong> to oil theft in the Niger Delta — among the highest theft rates globally — directly degrade fiscal headroom. Tinubu administration (May 2023-) removed fuel subsidies and floated the naira, dramatically reshaping domestic oil economics.
+                </div>
+
+                <!-- Live commodity-pressure alert banner (hidden when normal) -->
+                <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+
+                <!-- Live commodity-exposure pills (populated from /api/africa/commodity/nigeria) -->
+                <div class="commodity-grid" id="commodityGrid">
+                    <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">Loading commodity exposure profile…</div>
+                </div>
+
+                <div class="commodity-footnote">
+                    Live commodity exposure data from Asifah Commodity Tracker (via Africa backend proxy). Static notes + roles + ranks from `commodity_tracker.py` registry. Alert levels and signal counts update every 6 hours.
+                </div>
+            </div>
+
+            <!-- FINANCIAL PULSE CARD -->
+            <div class="nyse-card" id="financialPulseCard">
+                <div class="nyse-card-header">
+                    <div class="nyse-card-title">
+                        📊 Nigeria Financial Pulse
+                    </div>
+                    <span class="nyse-status-pill" id="pulseStatusPill">Loading…</span>
+                </div>
+                <div class="nyse-prose">
+                    Live readings from Nigeria's primary equity benchmark and the Brent crude global oil price. The <strong>NGX All-Share Index</strong> tracks ~150 listed Nigerian equities; <strong>NGN/USD</strong> shows naira value vs the dollar (rising = weaker naira — INVERTED polarity); <strong>Brent (BZ=F)</strong> is the proxy for state oil revenue. Together they form Nigeria's financial pulse. Updated every 12 hours; sparklines show 30-day movement.
+                </div>
+                <div class="nyse-grid" id="pulseGrid">
+                    <div class="nyse-empty-state">Loading market data…</div>
+                </div>
+            </div>
+
+            <!-- LEAFLET MAP -->
+            <div class="map-card">
+                <div class="map-card-title">
+                    🗺️ Nigeria Strategic Asset Map
+                </div>
+                <div id="nigeriaMap"></div>
+                <div class="map-legend">
+                    <div class="map-legend-item"><span class="map-legend-dot" style="background:#0ea5e9;"></span>Capital / Major City</div>
+                    <div class="map-legend-item"><span class="map-legend-dot" style="background:#fb923c;"></span>Oil Infrastructure</div>
+                    <div class="map-legend-item"><span class="map-legend-dot" style="background:#ef4444;"></span>Insurgent Theater</div>
+                    <div class="map-legend-item"><span class="map-legend-dot" style="background:#a78bfa;"></span>Strategic Asset</div>
+                    <div class="map-legend-item"><span class="map-legend-dot" style="background:#22c55e;"></span>Port / Logistics</div>
+                </div>
+            </div>
+
+            <!-- KNOWLEDGE LIBRARY -->
+            <div class="knowledge-card">
+                <div class="knowledge-card-title">
+                    📚 Knowledge Library
+                </div>
+                <div class="knowledge-grid">
+
+                    <!-- Tinubu & Reforms -->
+                    <div class="kb-card collapsed" id="kb-card-tinubu">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('tinubu')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🏛️</span>
+                                <span>Tinubu Administration &amp; Reforms</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
+                        </div>
+                        <div class="kb-content">
+                            <p><strong>Bola Ahmed Tinubu (APC)</strong> took office May 29, 2023, succeeding Muhammadu Buhari. His inauguration speech immediately announced fuel subsidy removal — single largest economic reform in two decades.</p>
+                            <p><strong>Two anchor shocks (mid-2023):</strong></p>
+                            <ul>
+                                <li><strong>Fuel subsidy removal:</strong> Pump prices roughly tripled overnight, eliminating ~$10B/yr in subsidies but creating acute cost-of-living stress</li>
+                                <li><strong>Naira float:</strong> CBN unified official + parallel rates, ending years of multiple-rate FX management. Naira lost ~70% vs USD in 18 months</li>
+                            </ul>
+                            <p><strong>Cabinet anchors:</strong> Wale Edun (Finance), Yemi Cardoso (CBN Governor, replaced Godwin Emefiele Sep 2023), Olu Verheijen (Special Adviser, Energy).</p>
+                            <p><strong>Political stress signals:</strong> Labour Congress strikes, organized hardship protests (#EndBadGovernance Aug 2024), state-level wage disputes, persistent inflation (~30% headline).</p>
+                            <div class="kb-source">Source: CFR · Brookings · Reuters · Punch Nigeria · Premium Times</div>
+                            <div class="kb-report-links">
+                                <a href="https://www.cfr.org/backgrounder/nigerias-battle-boko-haram" target="_blank" class="kb-report-link">📑 CFR Nigeria</a>
+                                <a href="https://www.crisisgroup.org/africa/west-africa/nigeria" target="_blank" class="kb-report-link">📑 Crisis Group</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boko Haram / ISWAP / Lakurawa -->
+                    <div class="kb-card collapsed" id="kb-card-jihadist">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('jihadist')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">⚔️</span>
+                                <span>Northeast Jihadist Insurgencies</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
+                        </div>
+                        <div class="kb-content">
+                            <p><strong>Northeast Nigeria has been at war with jihadist insurgencies since 2009.</strong> The original Boko Haram movement has split into multiple factions, all still active across the Lake Chad Basin.</p>
+                            <p><strong>Active groups:</strong></p>
+                            <ul>
+                                <li><strong>JAS (Boko Haram core):</strong> Founded by Mohammed Yusuf 2002, led by Abubakar Shekau until his death by ISWAP (May 2021). Weakened but still active in Sambisa Forest area</li>
+                                <li><strong>ISWAP (Islamic State West Africa Province):</strong> Broke from Boko Haram 2016; now dominant faction; centered in Lake Chad islands and northern Borno</li>
+                                <li><strong>Ansaru:</strong> Smaller Al-Qaeda-aligned faction in northwestern Nigeria</li>
+                                <li><strong>Lakurawa:</strong> New armed group identified late 2024 in Sokoto/Kebbi — early signs suggest external (Sahel) ideological roots</li>
+                            </ul>
+                            <p><strong>Counter-insurgency:</strong> Operation Hadin Kai (current Army op), MNJTF (Nigeria+Cameroon+Chad+Niger+Benin coalition), Civilian JTF militias, U.S. Green Beret training programs.</p>
+                            <p><strong>Key theaters:</strong> Borno (Maiduguri, Bama, Konduga, Damasak), Yobe (Damaturu, Buni Yadi), Adamawa, Lake Chad islands.</p>
+                            <div class="kb-source">Source: Crisis Group · ACLED · CTC West Point · ReliefWeb</div>
+                            <div class="kb-report-links">
+                                <a href="https://acleddata.com/dashboard/" target="_blank" class="kb-report-link">📑 ACLED Dashboard</a>
+                                <a href="https://ctc.westpoint.edu/region/nigeria/" target="_blank" class="kb-report-link">📑 CTC West Point</a>
+                                <a href="https://reliefweb.int/country/nga" target="_blank" class="kb-report-link">📑 ReliefWeb Nigeria</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Niger Delta -->
+                    <div class="kb-card collapsed" id="kb-card-delta">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('delta')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🛢️</span>
+                                <span>Niger Delta &amp; Oil Theft</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
+                        </div>
+                        <div class="kb-content">
+                            <p>The <strong>Niger Delta</strong> produces Nigeria's oil but suffers some of the worst environmental damage on Earth. <strong>Oil theft / illegal bunkering</strong> costs Nigeria an estimated <strong>250-400k bpd</strong> — among the highest theft rates globally.</p>
+                            <p><strong>Historical militancy:</strong></p>
+                            <ul>
+                                <li><strong>MEND (Movement for the Emancipation of the Niger Delta):</strong> Active 2006-2009; pipeline sabotage, hostage-taking; amnesty program 2009 demobilized most fighters</li>
+                                <li><strong>Niger Delta Avengers (NDA):</strong> Resurgent 2016 with pipeline attacks; faded but groups remain dormant capability</li>
+                                <li><strong>Tantita Security:</strong> Government Tompolo (ex-MEND commander) contracted as anti-bunkering force — controversial but reportedly effective</li>
+                            </ul>
+                            <p><strong>Operating environment:</strong> Shell (SPDC), Chevron, ExxonMobil, TotalEnergies, Eni operate offshore + onshore; major divestments to local players (Renaissance, Conoil, Seplat) ongoing. NNPC Limited (state company) commercialized 2022. Gulf of Guinea piracy is a related but maritime-specific threat.</p>
+                            <div class="kb-source">Source: NNPC · S&P Platts · Stakeholder Democracy Network · NEITI</div>
+                            <div class="kb-report-links">
+                                <a href="https://www.nnpcgroup.com/" target="_blank" class="kb-report-link">📑 NNPC</a>
+                                <a href="https://commodities.html" class="kb-report-link">📑 Commodities Tracker</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dangote Refinery -->
+                    <div class="kb-card collapsed" id="kb-card-dangote">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('dangote')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🏭</span>
+                                <span>Dangote Refinery: Regional Game-Changer</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
+                        </div>
+                        <div class="kb-content">
+                            <p>The <strong>Dangote Petroleum Refinery</strong> (Lekki Free Trade Zone, Lagos State) is the <strong>world's largest single-train refinery</strong> at 650,000 bpd capacity. Owned by Aliko Dangote (Africa's richest man, founder of Dangote Group / Dangote Cement).</p>
+                            <p><strong>Operational milestones:</strong></p>
+                            <ul>
+                                <li>Commissioned May 22, 2023 by President Buhari</li>
+                                <li>First crude received Dec 2023</li>
+                                <li>Diesel + jet fuel production from Q1 2024</li>
+                                <li>PMS (gasoline) production from Sep 2024 — historic milestone for West African downstream</li>
+                            </ul>
+                            <p><strong>Strategic implications:</strong> Transforms Nigeria + the broader region from gasoline-IMPORTER to potential exporter. Saves Nigeria ~$10B/yr in refined-product imports. Tensions with NNPC over crude supply pricing (USD vs naira) and downstream pricing are ongoing. Major potential disrupter of West African oil-trading flows historically dominated by European refineries (Rotterdam, ARA).</p>
+                            <div class="kb-source">Source: Reuters · S&P Platts · Energy Intelligence · Dangote Group press</div>
+                            <div class="kb-report-links">
+                                <a href="https://www.dangote.com/" target="_blank" class="kb-report-link">📑 Dangote Group</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ECOWAS & Sahel -->
+                    <div class="kb-card collapsed" id="kb-card-ecowas">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('ecowas')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🌍</span>
+                                <span>ECOWAS &amp; the Sahel Confederation</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
+                        </div>
+                        <div class="kb-content">
+                            <p>Nigeria is the demographic, economic, and military anchor of <strong>ECOWAS (Economic Community of West African States)</strong>. President Tinubu chaired ECOWAS 2023-2024.</p>
+                            <p><strong>The Sahel rupture (2023-2024):</strong></p>
+                            <ul>
+                                <li><strong>Coup belt:</strong> Mali (May 2021), Burkina Faso (Sep 2022), Niger (July 2023) — military juntas refused civilian transition</li>
+                                <li><strong>Niger coup standoff:</strong> Tinubu briefly threatened ECOWAS military intervention against Niamey junta (Aug 2023) — political backlash inside Nigeria forced de-escalation</li>
+                                <li><strong>Sahel Confederation (Jan 2024):</strong> Mali, Burkina Faso, Niger formed Alliance of Sahel States (AES), formally exited ECOWAS Jan 2025</li>
+                                <li><strong>Russian/Wagner pivot:</strong> All three Sahel juntas replaced French + UN missions with Russian Africa Corps presence</li>
+                            </ul>
+                            <p><strong>Implications for Nigeria:</strong> Longer northern borders with non-aligned states; intelligence-sharing reduced; cross-border insurgent flows from Burkina/Mali into northwestern Nigeria intensified.</p>
+                            <p>See: <a href="mali-stability.html">Mali Stability ↗</a></p>
+                            <div class="kb-source">Source: ECOWAS · Atlantic Council · ISS Africa · Premium Times</div>
+                            <div class="kb-report-links">
+                                <a href="mali-stability.html" class="kb-report-link">📑 Mali Stability</a>
+                                <a href="africa.html" class="kb-report-link">📑 Africa Dashboard</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Religious / Ethnic Structure -->
+                    <div class="kb-card collapsed" id="kb-card-society">
+                        <div class="kb-header" onclick="toggleKnowledgeCard('society')">
+                            <div class="kb-header-title">
+                                <span class="kb-category-icon">🕌</span>
+                                <span>Religious &amp; Ethnic Structure</span>
+                            </div>
+                            <span class="kb-collapse-icon">▼</span>
+                        </div>
+                        <div class="kb-content">
+                            <p>Nigeria has roughly <strong>220 million people</strong> across <strong>250+ ethnic groups</strong> in 36 states + FCT Abuja. Three primary ethnic blocs anchor the political system:</p>
+                            <ul>
+                                <li><strong>Hausa-Fulani (north):</strong> Predominantly Muslim; politically dominant in 12 northern states operating Sharia law (since 1999-2000)</li>
+                                <li><strong>Yoruba (southwest):</strong> Mixed Christian/Muslim; Tinubu's regional base; Lagos commercial heartland</li>
+                                <li><strong>Igbo (southeast):</strong> Predominantly Christian; epicenter of IPOB/Biafran separatist activity</li>
+                            </ul>
+                            <p><strong>Religious balance:</strong> Roughly 50/50 Muslim/Christian split, with the <strong>Middle Belt</strong> as the fault zone. Farmer-herder conflicts (Fulani pastoralists vs. Berom/Tarok/Tiv farmers in Plateau, Benue, Kaduna) have killed thousands and are increasingly weaponized along religious lines.</p>
+                            <p><strong>IPOB / Biafran movement:</strong> Indigenous People of Biafra (IPOB), led by Nnamdi Kanu (currently detained), and its armed wing ESN (Eastern Security Network) conduct sit-at-home enforcement + clashes with security forces in southeast (Anambra, Imo, Abia).</p>
+                            <div class="kb-source">Source: Pew Research · Open Doors · Brookings · Crisis Group</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ARTICLES (TABBED) -->
+            <div class="articles-card">
+                <div class="articles-card-title">
+                    📰 Nigeria Signal Stream
+                </div>
+                <div class="article-tabs" id="articleTabs">
+                    <button class="article-tab active" data-tab="all" onclick="switchArticleTab('all')">
+                        All <span class="article-tab-count" id="countAll">0</span>
+                    </button>
+                    <button class="article-tab" data-tab="news" onclick="switchArticleTab('news')">
+                        News <span class="article-tab-count" id="countNews">0</span>
+                    </button>
+                    <button class="article-tab" data-tab="social" onclick="switchArticleTab('social')">
+                        Social <span class="article-tab-count" id="countSocial">0</span>
+                    </button>
+                </div>
+                <div class="article-list" id="articleList">
+                    <div class="articles-loading">Fetching latest signals…</div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="asifah-footer">
+                <div class="asifah-footer-title">Asifah Analytics — Nigeria Module</div>
+                <div class="asifah-footer-backend">api: asifah-africa-backend.onrender.com/api/nigeria/stability</div>
+                <div class="asifah-footer-cadence">12-hour refresh cycle · Live force-scan available · Last update timestamp above</div>
+                <div class="asifah-footer-sources">
+                    Yahoo Finance (NGX · NGN/USD · Brent) · Africa Article Gatherer (GDELT + NewsAPI + RSS + Bluesky + Telegram + Reddit) · Commodity Tracker (ME backend proxy) · IMF · NNPC · CBN · ACLED · Crisis Group · CFR
+                </div>
+                <div class="asifah-footer-pills">
+                    <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" class="asifah-footer-pill bmc">☕ Buy Me a Coffee</a>
+                    <a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact">✉️ Contact Asifah</a>
+                </div>
+                <div class="asifah-footer-disclaimer">
+                    Asifah Analytics is an open-source OSINT platform. All scoring and assessments are convergence indicators based on publicly observable signals — not predictions of action. Not for operational use.
+                </div>
+                <div class="asifah-footer-links">
+                    <a href="mission.html">Mission Statement</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="index.html">Home</a>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- ════════════════════ SCRIPTS ════════════════════ -->
+    <script>
+    /* ──────────────── CONFIG ──────────────── */
+    const AFRICA_API = 'https://asifah-africa-backend.onrender.com';
+    const ME_API     = 'https://asifah-backend.onrender.com';
+    const COUNTRY_ID = 'nigeria';
+
+    let currentTheme   = 'dark';
+    let allArticles    = [];
+    let activeArticleTab = 'all';
+
+    /* ──────────────── THEME TOGGLE ──────────────── */
+    function toggleTheme() {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', currentTheme);
+        const btn = document.getElementById('themeToggleBtn');
+        btn.innerHTML = currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+
+    /* ──────────────── MOBILE SIDEBAR ──────────────── */
+    document.getElementById('menuToggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarBackdrop').classList.toggle('open');
+    });
+    document.getElementById('sidebarBackdrop').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarBackdrop').classList.remove('open');
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarBackdrop').classList.remove('open');
+        }
     });
 
-    // If no tiles came back, show graceful empty-state
-    if ((data.commodity_summaries || []).length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure tiles available yet for ' + COUNTRY_DISPLAY + '. Backend may still be warming up.</div>';
-    }
-}
+    /* ──────────────── LEAFLET MAP ──────────────── */
+    function initMap() {
+        const map = L.map('nigeriaMap').setView([9.0765, 7.3986], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap', maxZoom: 12, minZoom: 4
+        }).addTo(map);
 
-// ── BOOT ──
-document.addEventListener('DOMContentLoaded', function() {
-    loadTravelAdvisory();
-    loadArticles();
-    loadCommodity();
-});
-</script>
+        const markers = [
+            { lat: 9.0765,  lng: 7.3986,  color: '#0ea5e9', name: 'Abuja',          desc: 'Federal Capital Territory · Tinubu government · Presidential Villa' },
+            { lat: 6.5244,  lng: 3.3792,  color: '#0ea5e9', name: 'Lagos',          desc: 'Commercial capital · ~20M population · Lagos Stock Exchange / NGX HQ' },
+            { lat: 12.0022, lng: 8.5920,  color: '#0ea5e9', name: 'Kano',           desc: 'Northern commercial hub · Largest northern city · Hausa heartland' },
+            { lat: 11.8333, lng: 13.1500, color: '#ef4444', name: 'Maiduguri',      desc: 'Borno State capital · Boko Haram / ISWAP epicenter since 2009' },
+            { lat: 4.7731,  lng: 7.0085,  color: '#fb923c', name: 'Port Harcourt',  desc: 'Rivers State · Niger Delta oil capital · NLNG export hub' },
+            { lat: 6.4515,  lng: 3.5950,  color: '#a78bfa', name: 'Dangote Refinery', desc: 'Lekki FTZ · 650,000 bpd · World\'s largest single-train · Operational 2024' },
+            { lat: 4.4145,  lng: 7.1681,  color: '#22c55e', name: 'Bonny Island',   desc: 'NLNG terminal · Africa\'s #1 LNG export facility · 22 MMTPA capacity' },
+            { lat: 12.1503, lng: 14.7861, color: '#ef4444', name: 'Lake Chad',      desc: 'ISWAP island strongholds · MNJTF coalition theater' },
+            { lat: 12.1700, lng: 6.6644,  color: '#ef4444', name: 'Zamfara/Sokoto', desc: 'Northwestern bandit corridor · Lakurawa emergence zone (2024)' },
+            { lat: 6.1985,  lng: 6.6105,  color: '#a78bfa', name: 'Asaba/Onitsha',  desc: 'Igbo heartland · IPOB/ESN activity · Sit-at-home enforcement zone' },
+            { lat: 9.8965,  lng: 8.8583,  color: '#ef4444', name: 'Plateau (Jos)',  desc: 'Middle Belt · Farmer-herder conflict epicenter' }
+        ];
+
+        markers.forEach(m => {
+            L.circleMarker([m.lat, m.lng], {
+                radius: 8, fillColor: m.color, color: '#fff', weight: 2,
+                opacity: 1, fillOpacity: 0.85
+            }).addTo(map).bindPopup(`<strong>${m.name}</strong><br>${m.desc}`);
+        });
+    }
+
+    /* ──────────────── FINANCIAL PULSE RENDER ──────────────── */
+    function renderFinancialPulse(data) {
+        const fp = (data && data.financial_pulse) || {};
+        const tiles = fp.tiles || {};
+        const grid = document.getElementById('pulseGrid');
+        const pill = document.getElementById('pulseStatusPill');
+
+        const status = fp.market_status || 'closed';
+        pill.className = `nyse-status-pill market-${status}`;
+        pill.textContent = status.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+        const order = ['NGSE', 'NGNUSD', 'BRENT'];
+        const cards = [];
+        order.forEach(key => {
+            const t = tiles[key];
+            if (!t) return;
+            const tier = t.tier || 'stable';
+            const val = (t.value !== null && t.value !== undefined) ? Number(t.value).toLocaleString(undefined, {maximumFractionDigits: 2}) : 'N/A';
+            const chg = t.change_pct_24h;
+            const chgClass = (chg > 0) ? 'up' : (chg < 0) ? 'down' : 'flat';
+            const chgStr = (chg !== null && chg !== undefined) ? `${chg >= 0 ? '+' : ''}${Number(chg).toFixed(2)}%` : '--';
+            cards.push(`
+                <div class="nyse-tile tile-${tier}">
+                    <div class="nyse-tile-header">
+                        <span class="nyse-tile-name">${t.name || key}</span>
+                        <span class="nyse-tile-ticker">${t.ticker || ''}</span>
+                    </div>
+                    <div class="nyse-tile-value">${val}</div>
+                    <div class="nyse-tile-change ${chgClass}">${chgStr}</div>
+                    <div class="nyse-tile-spark"><canvas id="spark_${key}"></canvas></div>
+                    <div class="nyse-tile-meta">${t.source || ''}</div>
+                </div>
+            `);
+        });
+
+        if (cards.length === 0) {
+            grid.innerHTML = '<div class="nyse-empty-state">Market data unavailable.</div>';
+            return;
+        }
+        grid.innerHTML = cards.join('');
+
+        order.forEach(key => {
+            const t = tiles[key];
+            if (!t || !t.sparkline || t.sparkline.length === 0) return;
+            const ctx = document.getElementById(`spark_${key}`);
+            if (!ctx) return;
+            const values = t.sparkline.map(p => p.value);
+            const labels = t.sparkline.map(p => p.time);
+            // For inverted-polarity tiles (NGN/USD), reverse the green/red logic for visual semantics
+            const isInverted = (key === 'NGNUSD');
+            const lineColor = isInverted
+                ? (t.change_pct_24h <= 0 ? '#22c55e' : '#ef4444')
+                : (t.change_pct_24h >= 0 ? '#22c55e' : '#ef4444');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        borderColor: lineColor,
+                        borderWidth: 1.8,
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        });
+    }
+
+    /* ──────────────── COMMODITY PRESSURE (Chile pattern via Africa proxy) ──────────────── */
+    function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, function (c) {
+            return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+        });
+    }
+
+    function renderCommodityAlertBanner(data) {
+        const banner = document.getElementById('commodityAlertBanner');
+        if (!banner) return;
+        const alertLevel = (data.alert_level || 'normal').toLowerCase();
+        if (alertLevel === 'normal') {
+            banner.classList.remove('show');
+            return;
+        }
+        banner.className = 'commodity-alert-banner show alert-' + alertLevel;
+        banner.innerHTML = '<strong>' + alertLevel.toUpperCase() + '</strong> Composite commodity pressure: ' + alertLevel +
+            '<span class="ab-meta">' + ((data.commodity_pressure || 0).toFixed(1)) + ' pts · ' + (data.profile_count || 0) + ' commodities tracked</span>';
+    }
+
+    function renderCommodityTiles(data) {
+        const grid = document.getElementById('commodityGrid');
+        if (!grid) return;
+        const tiles = data.commodity_summaries || [];
+        if (!tiles.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure profile available</div>';
+            return;
+        }
+        grid.innerHTML = tiles.map(function (t) {
+            const alertCls = 'commodity-alert-' + (t.global_alert_level || 'normal').toLowerCase();
+            const role = (t.role || '').toUpperCase();
+            const rank = t.rank ? '#' + t.rank : '';
+            const sigCount = t.signal_count || 0;
+            const note = t.note || '';
+            const sp = t.sparkline;
+            let priceHtml = '';
+            if (sp && sp.price != null) {
+                const ch = sp.change_pct_1d;
+                const dir = ch > 0 ? 'price-up' : ch < 0 ? 'price-down' : '';
+                const sign = ch >= 0 ? '+' : '';
+                priceHtml = '<div class="commodity-pill-price">$' + Number(sp.price).toFixed(2) +
+                    (typeof ch === 'number' ? ' <span class="' + dir + '">' + sign + ch.toFixed(1) + '%</span>' : '') +
+                    '</div>';
+            }
+            return '<div class="commodity-pill">' +
+                '<div class="commodity-pill-header">' +
+                    '<span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+                    '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+                    (rank ? '<span class="commodity-pill-rank">' + rank + '</span>' : '') +
+                '</div>' +
+                '<div class="commodity-pill-row">' +
+                    '<span class="commodity-pill-alert ' + alertCls + '">' + (t.global_alert_level || 'normal') + '</span>' +
+                    (role ? '<span class="commodity-pill-role-badge">' + role + '</span>' : '') +
+                    (sigCount ? '<span class="commodity-pill-signal-count">' + sigCount + ' sig</span>' : '') +
+                '</div>' +
+                priceHtml +
+                (note ? '<div class="commodity-pill-note">' + escapeHtml(note) + '</div>' : '') +
+            '</div>';
+        }).join('');
+    }
+
+    async function loadCommodityPressure() {
+        // Primary: Africa proxy. Fallback: direct ME backend.
+        try {
+            let resp = await fetch(AFRICA_API + '/api/africa/commodity/' + COUNTRY_ID);
+            if (!resp.ok) {
+                console.warn('[Nigeria Commodity] Africa proxy failed, falling back to ME backend');
+                resp = await fetch(ME_API + '/api/commodity-pressure/' + COUNTRY_ID);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            }
+            const data = await resp.json();
+            renderCommodityAlertBanner(data);
+            renderCommodityTiles(data);
+        } catch (err) {
+            console.error('[Nigeria Commodity] Load error:', err);
+            const grid = document.getElementById('commodityGrid');
+            if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">⚠️ Commodity tracker unavailable — ' + escapeHtml(err.message) + '</div>';
+        }
+    }
+
+    /* ──────────────── KNOWLEDGE LIBRARY TOGGLE ──────────────── */
+    function toggleKnowledgeCard(cardId) {
+        const card = document.getElementById('kb-card-' + cardId);
+        if (card) card.classList.toggle('collapsed');
+    }
+
+    /* ──────────────── ARTICLES ──────────────── */
+    function classifyArticle(article) {
+        const src = ((article.source && article.source.name) || article.source_type || '').toLowerCase();
+        // Social = bluesky / telegram / reddit / twitter
+        if (src.includes('bluesky') || src.includes('telegram') || src.includes('reddit') || src.includes('twitter') || src.includes('nitter')) return 'social';
+        // Everything else (gnews, gdelt, rss, newsapi, brave) = news
+        return 'news';
+    }
+
+    function countArticles() {
+        const counts = { all: allArticles.length, news: 0, social: 0 };
+        allArticles.forEach(a => {
+            const klass = classifyArticle(a);
+            counts[klass] = (counts[klass] || 0) + 1;
+        });
+        document.getElementById('countAll').textContent    = counts.all;
+        document.getElementById('countNews').textContent   = counts.news;
+        document.getElementById('countSocial').textContent = counts.social;
+    }
+
+    function switchArticleTab(tab) {
+        activeArticleTab = tab;
+        document.querySelectorAll('.article-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        renderArticles();
+    }
+
+    function renderArticles() {
+        const list = document.getElementById('articleList');
+        if (!allArticles || allArticles.length === 0) {
+            list.innerHTML = '<div class="articles-empty">No articles available yet.</div>';
+            return;
+        }
+        let filtered = allArticles;
+        if (activeArticleTab !== 'all') {
+            filtered = allArticles.filter(a => classifyArticle(a) === activeArticleTab);
+        }
+        if (filtered.length === 0) {
+            list.innerHTML = '<div class="articles-empty">No articles in this category yet.</div>';
+            return;
+        }
+        filtered.sort((a, b) => {
+            const da = new Date(a.publishedAt || a.published_at || 0);
+            const db = new Date(b.publishedAt || b.published_at || 0);
+            return db - da;
+        });
+        const html = filtered.slice(0, 60).map(a => {
+            const src = (a.source && a.source.name) || a.source_type || 'Source';
+            const srcLower = src.toLowerCase();
+            let pillClass = 'gnews';
+            if (srcLower.includes('rss')) pillClass = 'rss';
+            else if (srcLower.includes('gdelt')) pillClass = 'gdelt';
+            else if (srcLower.includes('bluesky')) pillClass = 'bluesky';
+            else if (srcLower.includes('telegram')) pillClass = 'telegram';
+            else if (srcLower.includes('reddit')) pillClass = 'reddit';
+            const pub = a.publishedAt || a.published_at;
+            const date = pub ? new Date(pub).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+            return `
+                <div class="article-item">
+                    <div class="article-title"><a href="${a.url}" target="_blank">${escapeHtml(a.title || '(no title)')}</a></div>
+                    <div class="article-meta">
+                        <span class="article-source-pill ${pillClass}">${escapeHtml(src)}</span>
+                        <span>${date}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        list.innerHTML = html;
+    }
+
+    /* ──────────────── FINANCIAL PULSE LOADER ──────────────── */
+    async function loadFinancialPulse() {
+        try {
+            const resp = await fetch(AFRICA_API + '/api/nigeria/stability');
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+
+            const ts = data.scanned_at || (data.financial_pulse && data.financial_pulse.last_refreshed);
+            if (ts) {
+                const d = new Date(ts);
+                document.getElementById('refreshMeta').textContent =
+                    `Last updated: ${d.toLocaleString()} · backend v${data.version || '1.0.x'}`;
+            }
+            renderFinancialPulse(data);
+        } catch (err) {
+            console.error('[Nigeria FP] Load error:', err);
+            document.getElementById('refreshMeta').textContent = `⚠️ Financial Pulse unavailable: ${err.message}`;
+            document.getElementById('pulseGrid').innerHTML = '<div class="nyse-empty-state">Financial Pulse backend unavailable. Module may not yet be deployed.</div>';
+        }
+    }
+
+    /* ──────────────── ARTICLES LOADER ──────────────── */
+    async function loadArticles() {
+        try {
+            const resp = await fetch(AFRICA_API + '/api/africa/articles/' + COUNTRY_ID);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            allArticles = data.articles || data.results || [];
+            countArticles();
+            renderArticles();
+        } catch (err) {
+            console.error('[Nigeria Articles] Load error:', err);
+            document.getElementById('articleList').innerHTML =
+                '<div class="articles-empty">⚠️ Articles unavailable — ' + escapeHtml(err.message) + '</div>';
+        }
+    }
+
+    /* ──────────────── BOOT ──────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+        initMap();
+        loadFinancialPulse();
+        loadCommodityPressure();
+        loadArticles();
+    });
+    </script>
 </body>
 </html>
