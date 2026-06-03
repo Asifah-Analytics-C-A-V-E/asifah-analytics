@@ -261,8 +261,10 @@
 
         /* ARTICLES */
         .tab-row { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px; }
-        .tab-btn { padding:6px 15px; border-radius:6px; border:2px solid var(--border); background:transparent; color:var(--text-muted); font-family:'Times New Roman',serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+        .tab-btn { padding:6px 15px; border-radius:6px; border:2px solid var(--border); background:transparent; color:var(--text-muted); font-family:'Times New Roman',serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; }
         .tab-btn.active { background:var(--accent); color:#000; border-color:var(--accent); }
+        .tab-count { display:inline-block; min-width:18px; padding:1px 7px; border-radius:9px; background:rgba(56,189,248,0.20); color:var(--accent); font-family:'Courier New',monospace; font-size:11px; font-weight:700; }
+        .tab-btn.active .tab-count { background:rgba(0,0,0,0.18); color:#000; }
         .article-item { background:rgba(6,13,26,0.6); padding:13px; border-radius:8px; margin-bottom:9px; border-left:3px solid var(--accent); transition:all 0.2s; }
         [data-theme="light"] .article-item { background:#f8fbfe; }
         .article-item:hover { transform:translateX(4px); }
@@ -280,32 +282,49 @@
             .stab-banner { flex-direction:column; text-align:center; }
             .stab-right { text-align:center; }
             .war-grid, .econ-grid, .pressure-grid, .leadership-grid { grid-template-columns:1fr; }
+            /* ── v2.0 Step 2c mobile polish ── */
+            #russiaMap { height: 320px !important; }                            /* shrink map on mobile */
+            .header-title { font-size: clamp(1rem, 5vw, 1.3rem) !important; }   /* tighter heading */
+            .header-logo { width: 50px !important; height: 50px !important; }   /* smaller logo */
+            .lang-group { flex-wrap: wrap; justify-content: center; gap: 3px; }
+            .tab-row { flex-wrap: wrap; gap: 6px !important; }                  /* article tabs wrap */
+            .tab-btn { font-size: 11px !important; padding: 6px 10px !important; }
+            .knowledge-categories { grid-template-columns: 1fr !important; }    /* KB cards stack */
+            .commodity-grid { grid-template-columns: 1fr !important; }          /* commodity pills stack */
+            /* Banners breathe */
+            .banner-red, .banner-orange, .banner-blue { padding: 12px 14px; font-size: 0.78rem; }
+            /* Financial Pulse already responsive via .nyse-grid media queries */
         }
     
         /* ── CANONICAL SIDEBAR ── */
         .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
         .nav-sidebar { width: 180px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
-        /* Mobile drawer */
+        /* Mobile drawer (hamburger ☰) */
         .menu-toggle {
             display: none;
             position: fixed;
             top: 14px; left: 14px;
             z-index: 200;
             background: var(--card);
-            border: 1px solid var(--border);
+            border: 1.5px solid rgba(56,189,248,0.4);
             border-radius: 8px;
-            width: 42px; height: 42px;
+            width: 44px; height: 44px;
             font-size: 22px;
             cursor: pointer;
-            color: var(--text);
+            color: var(--accent);
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+            transition: all 0.2s ease;
         }
+        .menu-toggle:hover { background: rgba(56,189,248,0.15); transform: scale(1.05); }
+        .menu-toggle:active { transform: scale(0.95); }
         .sidebar-backdrop {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(2px);
             z-index: 150;
         }
         @media (max-width: 768px) {
@@ -313,20 +332,34 @@
             .menu-toggle { display: flex; }
             .nav-sidebar {
                 position: fixed;
-                top: 0; left: -260px;
-                width: 240px;
+                top: 0; left: -280px;
+                width: 260px;
                 height: 100vh;
                 z-index: 180;
                 overflow-y: auto;
                 transition: left 0.25s ease;
                 border-radius: 0;
                 background: var(--card);
-                padding: 20px 14px;
+                padding: 60px 14px 20px;       /* extra top padding so first link clears the X */
                 border-right: 1px solid var(--border);
+                box-shadow: 2px 0 24px rgba(0,0,0,0.4);
             }
             .nav-sidebar.open { left: 0; }
             .sidebar-backdrop.open { display: block; }
             body { padding: 14px; padding-top: 64px; }
+            /* Close ✕ button inside drawer when open */
+            .nav-sidebar::before {
+                content: '✕ Close';
+                position: absolute;
+                top: 14px; right: 14px;
+                font-size: 12px;
+                color: var(--text-muted);
+                cursor: pointer;
+                padding: 4px 10px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                background: rgba(56,189,248,0.05);
+            }
         }
         .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
         .nav-btn { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-family: 'Times New Roman', Times, serif; font-size: 13px; font-weight: bold; letter-spacing: 0.5px; transition: all 0.3s ease; cursor: pointer; overflow: hidden; border: 1.5px solid rgba(56,189,248,0.2); background: linear-gradient(135deg, rgba(56,189,248,0.06) 0%, rgba(14,165,233,0.04) 100%); color: rgba(255,255,255,0.7); }
@@ -348,6 +381,9 @@
         .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
         .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
         .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+        .nav-btn.gpi-btn { border-color: rgba(56,189,248,0.55); background: linear-gradient(135deg, rgba(56,189,248,0.16) 0%, rgba(14,165,233,0.10) 100%); box-shadow: 0 0 14px rgba(56,189,248,0.10); }
+        .nav-btn.gpi-btn .nav-btn-status { color: #38bdf8; }
+        .nav-btn.gpi-btn:hover { background: linear-gradient(135deg, rgba(56,189,248,0.22) 0%, rgba(14,165,233,0.14) 100%); }
 
         /* ═══ CANONICAL ASIFAH FOOTER (Saudi/Nigeria Gold Standard) ═══ */
         .asifah-footer {
@@ -741,6 +777,10 @@
         <span class="nav-btn-status">● Live</span>
     </a>
     <div class="nav-divider"></div>
+    <a href="gpi.html" class="nav-btn gpi-btn">
+        <span class="nav-btn-label">🌐 Global Pressure Index</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <a href="military.html" class="nav-btn military-btn">
         <span class="nav-btn-label">🎖️ Military Tracker</span>
         <span class="nav-btn-status">● Live</span>
@@ -1377,9 +1417,18 @@
     <div class="card-title">📰 <span data-i18n="articlesTitle">RECENT RUSSIA SECURITY &amp; STABILITY ARTICLES</span></div>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:11px;" data-i18n="articlesDesc">English · Russian · Reddit feeds · Last 7 days · NewsAPI + GDELT</div>
     <div class="tab-row">
-        <button class="tab-btn active" id="tab-en" onclick="switchTab('en')" data-i18n="tabEN">🇬🇧 English</button>
-        <button class="tab-btn" id="tab-ru" onclick="switchTab('ru')" data-i18n="tabRU">🇷🇺 Russian</button>
-        <button class="tab-btn" id="tab-reddit" onclick="switchTab('reddit')" data-i18n="tabReddit">💬 Reddit</button>
+        <button class="tab-btn active" id="tab-en" onclick="switchTab('en')">
+            <span data-i18n="tabEN">🇬🇧 English</span>
+            <span class="tab-count" id="count-en">0</span>
+        </button>
+        <button class="tab-btn" id="tab-ru" onclick="switchTab('ru')">
+            <span data-i18n="tabRU">🇷🇺 Russian</span>
+            <span class="tab-count" id="count-ru">0</span>
+        </button>
+        <button class="tab-btn" id="tab-reddit" onclick="switchTab('reddit')">
+            <span data-i18n="tabReddit">💬 Reddit</span>
+            <span class="tab-count" id="count-reddit">0</span>
+        </button>
     </div>
     <div id="articlesContainer">
         <div style="text-align:center;color:var(--text-muted);padding:26px;font-style:italic;" data-i18n="articlesLoading">Loading articles...</div>
@@ -1747,6 +1796,13 @@ function displayArticles(data) {
     const ru  = (data.articles_ru     || []).map(a => ({...a, language:'ru'}));
     const red = (data.articles_reddit || []).map(a => ({...a, language:'reddit'}));
     _allArticles = [...en, ...ru, ...red];
+    // v2.0 Step 2c — update tab count badges
+    const cEn  = document.getElementById('count-en');
+    const cRu  = document.getElementById('count-ru');
+    const cRd  = document.getElementById('count-reddit');
+    if (cEn) cEn.textContent = en.length;
+    if (cRu) cRu.textContent = ru.length;
+    if (cRd) cRd.textContent = red.length;
     switchTab('en');
 }
 function displayFallback() {
