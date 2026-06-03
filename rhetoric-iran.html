@@ -484,6 +484,20 @@
     .proxy-theater-level { font-size: 1.1rem; font-weight: 900; }
     .proxy-theater-label { font-size: 0.55rem; color: var(--text-muted); margin-top: 2px; }
 
+    /* ── Unity of Fronts card (وحدة الساحات) — grievance convergence ── */
+    .unity-card {
+        background: linear-gradient(135deg, rgba(20,184,166,0.09), rgba(13,148,136,0.04));
+        border: 1px solid rgba(20,184,166,0.38);
+        border-radius: 12px; padding: 20px; margin-bottom: 18px;
+    }
+    .unity-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #2dd4bf; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(20,184,166,0.2); }
+    .unity-level { font-size: 2.5rem; font-weight: 900; color: #2dd4bf; line-height: 1; }
+    .unity-grievance-label { font-size: 0.8rem; font-weight: 700; color: #2dd4bf; margin-top: 4px; }
+    .unity-directing { display:inline-block; font-size:0.58rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:2px 8px; border-radius:4px; background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.35); margin-top:6px; }
+    .unity-fronts-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+    .unity-front-chip { display:inline-flex; align-items:center; gap:5px; background:rgba(20,184,166,0.1); border:1px solid rgba(20,184,166,0.3); border-radius:20px; padding:4px 12px; font-size:0.68rem; font-weight:700; color:#2dd4bf; }
+    .unity-disclaimer { font-size:0.58rem; color:var(--text-muted); font-style:italic; margin-top:12px; line-height:1.5; border-top:1px solid rgba(20,184,166,0.15); padding-top:10px; }
+
     /* ── OPERATION TRUE PROMISE CARD (Iran-specific) ── */
     .otp-card { background: linear-gradient(135deg, rgba(220,38,38,0.08), rgba(185,28,28,0.04)); border: 1px solid rgba(220,38,38,0.35); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
     .otp-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(220,38,38,0.2); }
@@ -978,6 +992,24 @@
         </div>
     </div>
 
+    <!-- UNITY OF FRONTS CARD (وحدة الساحات) -->
+    <div class="unity-card" id="unityCard" style="display:none;">
+        <div class="unity-title">🤝 <span data-i18n="unityTitle">UNITY OF FRONTS — GRIEVANCE CONVERGENCE</span></div>
+        <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+            <div>
+                <div class="unity-level" id="unityLevel">--</div>
+                <div style="font-size:0.65rem;color:#2dd4bf;letter-spacing:1px;margin-top:4px;" id="unityLevelLabel">--</div>
+            </div>
+            <div style="flex:1;min-width:200px;">
+                <div class="unity-grievance-label" id="unityGrievance">--</div>
+                <div style="font-size:0.62rem;color:var(--text-muted);margin-top:2px;" data-i18n="unitySubtitle">Fronts converging on a shared cause (وحدة الساحات doctrine)</div>
+                <div class="unity-fronts-row" id="unityFronts"></div>
+                <div class="unity-directing" id="unityDirecting" style="display:none;">⚡ <span data-i18n="unityDirecting">Iran command node invoking same grievance</span></div>
+            </div>
+        </div>
+        <div class="unity-disclaimer" id="unityDisclaimer"></div>
+    </div>
+
     <!-- OPERATION TRUE PROMISE CARD -->
     <div class="otp-card" id="otpCard" style="display:none;">
         <div class="otp-title">🚀 <span data-i18n="otpTitle">OPERATION TRUE PROMISE — ACTIVE SIGNALS</span></div>
@@ -1185,6 +1217,9 @@
             // Iran-specific cards
             proxyTitle:'PROXY NETWORK ACTIVATION INDEX',
             proxySubtitle:'Reads live cross-theater Redis data',
+            unityTitle:'UNITY OF FRONTS — GRIEVANCE CONVERGENCE',
+            unitySubtitle:'Fronts converging on a shared cause (wahdat al-saahaat doctrine)',
+            unityDirecting:'Iran command node invoking same grievance',
             otpTitle:'OPERATION TRUE PROMISE — ACTIVE SIGNALS',
             otpSubtitle:'Signals in current scan window',
             // Vectors
@@ -1261,6 +1296,9 @@
             diplomaticNote:'ⓘ الدبلوماسية والتهديدات تتعايشان — موقف الحرس الثوري والبرنامج النووي وتفعيل الوكلاء تظل مُتَتَبَّعة بشكل مستقل أعلاه.',
             proxyTitle:'مؤشر تفعيل شبكة الوكلاء',
             proxySubtitle:'يقرأ بيانات Redis عبر المسارح مباشرة',
+            unityTitle:'وحدة الساحات — تقارب المظالم',
+            unitySubtitle:'جبهات تتقارب حول قضية مشتركة (عقيدة وحدة الساحات)',
+            unityDirecting:'العقدة القيادية الإيرانية تستحضر نفس المظلمة',
             otpTitle:'عملية الوعد الصادق — الإشارات النشطة',
             otpSubtitle:'الإشارات في نافذة المسح الحالية',
             vectorTitle:'⚡ محاور التهديد',
@@ -1334,6 +1372,9 @@
             diplomaticNote:'ⓘ דיפלומטיה ואיומים מתקיימים יחד — תנוחת משמרות המהפכה, התוכנית הגרעינית, ופעולות פרוקסי נשארים מנוטרים בנפרד למעלה.',
             proxyTitle:'מדד הפעלת רשת הפרוקסי',
             proxySubtitle:'קורא נתוני Redis חוצי-תיאטרון',
+            unityTitle:'אחדות החזיתות — התכנסות תלונות',
+            unitySubtitle:'חזיתות מתכנסות סביב מטרה משותפת (דוקטרינת אחדות הזירות)',
+            unityDirecting:'צומת הפיקוד האיראני מעלה את אותה תלונה',
             otpTitle:'מבצע הבטחת אמת — אותות פעילים',
             otpSubtitle:'אותות בחלון הסריקה הנוכחי',
             vectorTitle:'⚡ ממדי איום',
@@ -1407,6 +1448,9 @@
             diplomaticNote:'ⓘ دیپلماسی و تهدیدها همزیستی دارند — موضع سپاه، برنامه هسته‌ای، و فعال‌سازی نیابتی به طور مستقل بالا ردیابی می‌شوند.',
             proxyTitle:'شاخص فعال‌سازی شبکه نیابتی',
             proxySubtitle:'داده‌های Redis میان‌تئاتری را در لحظه می‌خواند',
+            unityTitle:'وحدت جبهه‌ها — همگرایی شکایت‌ها',
+            unitySubtitle:'جبهه‌هایی که حول یک هدف مشترک همگرا می‌شوند (دکترین وحدت ساحه‌ها)',
+            unityDirecting:'گره فرماندهی ایران همان شکایت را مطرح می‌کند',
             otpTitle:'عملیات وعده صادق — سیگنال‌های فعال',
             otpSubtitle:'سیگنال‌ها در پنجره اسکن جاری',
             vectorTitle:'⚡ بردارهای تهدید',
@@ -1822,6 +1866,48 @@
     }
 
     // ══════════════════════════════════════════════════════════════
+    // UNITY OF FRONTS CARD (وحدة الساحات) — grievance convergence
+    // ══════════════════════════════════════════════════════════════
+    function renderUnityOfFronts(data) {
+        const card = document.getElementById('unityCard');
+        if (!card) return;
+        const level = data.unity_of_fronts_level || 0;
+        const detail = data.unity_of_fronts_detail || {};
+
+        // Hide entirely when no convergence (need 2+ fronts on same cause)
+        if (level < 2 || !detail.headline_grievance) {
+            card.style.display = 'none';
+            return;
+        }
+        card.style.display = 'block';
+
+        const lv = ESCALATION_LEVELS[level] || ESCALATION_LEVELS[0];
+        document.getElementById('unityLevel').textContent = level;
+        const lblEl = document.getElementById('unityLevelLabel');
+        lblEl.textContent = lv.label;
+
+        const icon = detail.headline_icon || '🤝';
+        const label = detail.headline_label || 'Shared grievance';
+        document.getElementById('unityGrievance').textContent = `${icon} ${label}`;
+
+        // Front chips — the converging supporters
+        const supporters = detail.headline_supporters || [];
+        const flagMap = { yemen:'🇾🇪', lebanon:'🇱🇧', iraq:'🇮🇶', syria:'🇸🇾', iran:'🇮🇷' };
+        const frontsEl = document.getElementById('unityFronts');
+        frontsEl.innerHTML = supporters.map(s =>
+            `<span class="unity-front-chip">${flagMap[s] || '•'} ${s.charAt(0).toUpperCase()+s.slice(1)}</span>`
+        ).join('');
+
+        // Iran directing badge
+        const directingEl = document.getElementById('unityDirecting');
+        directingEl.style.display = detail.iran_directing ? 'inline-block' : 'none';
+
+        // Convergence disclaimer (always present per discipline)
+        document.getElementById('unityDisclaimer').textContent = detail.disclaimer ||
+            'CONVERGENCE indicator, NOT a probability of action. Multiple fronts invoking the same grievance indicate narrative convergence; this does not predict whether or when kinetic action will occur.';
+    }
+
+    // ══════════════════════════════════════════════════════════════
     // OPERATION TRUE PROMISE CARD
     // ══════════════════════════════════════════════════════════════
     function renderOTP(data) {
@@ -2146,6 +2232,7 @@
         renderInterpretation(data);
         renderDiplomaticTrack(data);
         renderProxyActivation(data);
+        renderUnityOfFronts(data);
         renderOTP(data);
         renderVectors(data);
         renderLadder(level);
