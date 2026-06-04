@@ -1684,7 +1684,7 @@
         <div class="status-strip">
             <div class="status-card">
                 <div class="status-card-label">Commodities Tracked</div>
-                <div class="status-card-value" id="statCommodities">22</div>
+                <div class="status-card-value" id="statCommodities">24</div>
                 <div class="status-card-sub">Strategic + critical minerals</div>
             </div>
             <div class="status-card">
@@ -1786,7 +1786,7 @@
         </div>
         <div>
             <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent-cyan, #38bdf8);margin-bottom:8px;">Data Sources</h4>
-            <p style="font-size:12px;line-height:1.5;">Yahoo Finance (sparklines via yfinance), GDELT (6 languages), NewsAPI, Mining.com Direct RSS, Reuters/Bloomberg/FT (Google News), USGS, USDA, Reddit, Brave Search fallback. 15 strategic commodities tracked across 32 countries in 5 regions.</p>
+            <p style="font-size:12px;line-height:1.5;">Yahoo Finance (sparklines via yfinance), GDELT (6 languages), NewsAPI, Mining.com Direct RSS, Reuters/Bloomberg/FT (Google News), USGS, USDA, Reddit, Brave Search fallback. 24 commodities tracked across 44 countries in 5 regions.</p>
         </div>
         <div>
             <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent-cyan, #38bdf8);margin-bottom:8px;">Methodology</h4>
@@ -1948,9 +1948,9 @@ const EU_BLOC_TOOLTIP = "The European Union is tracked as a single bloc-level ac
 // v1.5.0 (May 23 2026): Phase 1A added pgm, chromium, manganese, phosphate, diamonds, bauxite
 const COMMODITY_ORDER = [
     'bauxite', 'chromium', 'cobalt', 'copper', 'corn', 'diamonds',
-    'gold', 'lithium', 'manganese', 'natural_gas', 'nickel', 'oil',
+    'gold', 'lithium', 'manganese', 'natural_gas', 'nickel', 'nitrogen', 'oil',
     'pgm', 'phosphate', 'potash', 'rare_earths', 'semiconductors',
-    'silver', 'soybeans', 'sugar', 'uranium', 'wheat'
+    'silver', 'soybeans', 'sugar', 'sulfur', 'uranium', 'wheat'
 ];
 
 // ============================================================
@@ -2391,7 +2391,10 @@ function renderExposureMatrix() {
     if (!window._regionExpanded) {
         window._regionExpanded = {};
         Object.entries(regions).forEach(([rid, rdata]) => {
-            window._regionExpanded[rid] = (rdata.countries || []).length > 0;
+            // v1.6 (Jun 4 2026): default every region CLOSED to keep the page
+            // short; the user expands the region they want. rdata retained so the
+            // forEach signature stays unchanged.
+            window._regionExpanded[rid] = false;
         });
     }
 
