@@ -582,7 +582,17 @@
             color: var(--text-muted);
             font-family: 'Courier New', monospace;
             letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
         }
+        /* Freshness pill on the analysis card — keeps the So What tied to its scan time */
+        .ca-freshness {
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            padding: 3px 9px; border-radius: 999px;
+        }
+        .ca-freshness.fresh-live   { background: rgba(16,185,129,0.18); color: #10b981; border: 1px solid rgba(16,185,129,0.45); }
+        .ca-freshness.fresh-cached { background: rgba(56,189,248,0.16); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); }
+        .ca-freshness.fresh-stale  { background: rgba(245,158,11,0.16); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); }
+        .ca-meta-ver { opacity: 0.7; }
 
         /* Executive summary — always visible, amber-flavored */
         .ca-exec {
@@ -2136,6 +2146,23 @@ function toggleCaSection(sectionId) {
     if (sec) sec.classList.toggle('expanded');
 }
 
+// Freshness helpers — turn an ISO timestamp into a human age, so the analysis
+// card can show how old its scan is right next to the prose.
+function caRelativeAge(iso) {
+    var then = new Date(iso).getTime();
+    if (isNaN(then)) return null;
+    var mins = Math.max(0, Math.round((Date.now() - then) / 60000));
+    if (mins < 1)   return 'just now';
+    if (mins < 60)  return mins + 'm ago';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 48)   return hrs + 'h ago';
+    return Math.round(hrs / 24) + 'd ago';
+}
+function caAgeHours(iso) {
+    var then = new Date(iso).getTime();
+    return isNaN(then) ? Infinity : (Date.now() - then) / 3600000;
+}
+
 function renderCommodityAnalysis() {
     var card = document.getElementById('caCard');
     if (!card) return;
@@ -2152,11 +2179,31 @@ function renderCommodityAnalysis() {
 
     card.classList.add('visible');
 
-    // ── Meta line (interpreter version) ──
+    // ── Meta line: scan freshness + interpreter version ──
+    // Freshness sits with the prose so a stale read can't pose as today's.
     var meta = document.getElementById('caMeta');
     if (meta) {
         var v = interp.interpreter_version || '?';
-        meta.textContent = 'INTERPRETER v' + v;
+        var lu = pressureData && pressureData.last_updated;
+        if (lu) {
+            var STALE_AFTER_HOURS = 24;   // backstop: normal refresh is every 4-6h
+            var ageH = caAgeHours(lu);
+            var rel  = caRelativeAge(lu) || 'unknown';
+            var abs  = new Date(lu).toLocaleString('en-US',
+                { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC';
+            var state, cls;
+            if (pressureData.stale || ageH > STALE_AFTER_HOURS) { state = 'STALE';  cls = 'fresh-stale'; }
+            else if (pressureData.cached)                       { state = 'CACHED'; cls = 'fresh-cached'; }
+            else                                                { state = 'LIVE';   cls = 'fresh-live'; }
+            meta.innerHTML =
+                '<span class="ca-freshness ' + cls + '" title="' + abs + '">' + state + '</span>' +
+                '<span title="' + abs + '">Scanned ' + rel + '</span>' +
+                '<span class="ca-meta-ver">INTERPRETER v' + escapeCaHtml(String(v)) + '</span>';
+        } else {
+            meta.innerHTML =
+                '<span class="ca-freshness fresh-stale">AWAITING SCAN</span>' +
+                '<span class="ca-meta-ver">INTERPRETER v' + escapeCaHtml(String(v)) + '</span>';
+        }
     }
 
     // ── Executive summary ──
