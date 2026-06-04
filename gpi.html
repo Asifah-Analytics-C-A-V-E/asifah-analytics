@@ -456,6 +456,10 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
     background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.35);
     padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; color: var(--accent);
 }
+.narratives-subtitle {
+    font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);
+    font-family: 'Times New Roman', serif; margin: -8px 0 18px; max-width: 760px;
+}
 .narratives-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     gap: 14px;
@@ -502,6 +506,11 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 .narrative-card-detail {
     font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary);
     font-family: 'Times New Roman', serif;
+}
+.narrative-card-sowhat-label {
+    font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); font-family: 'Courier New', monospace;
+    font-weight: 700; margin-bottom: 4px;
 }
 .narrative-card-regions {
     font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase;
@@ -720,6 +729,9 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
                 <div class="narratives-title">
                     🌐 Active Cross-Theater Narratives
                     <span class="narratives-title-count" id="narrativesCardCount">0</span>
+                </div>
+                <div class="narratives-subtitle">
+                    Patterns showing up in more than one region at once. Each card names the pattern, then explains why it matters: what the convergence could mean if it holds. These describe what signals are present, not predictions of what will happen.
                 </div>
                 <div class="narratives-grid" id="narrativesGrid">
                     <!-- Narrative cards injected by renderNarratives() -->
@@ -997,7 +1009,10 @@ function renderNarratives(narratives) {
                 '</div>' +
                 '<span class="narrative-card-priority-pill">P' + pri + ' · ' + priorityLabel + '</span>' +
             '</div>' +
-            '<div class="narrative-card-detail">' + escapeHtmlGpi(narr.detail || '') + '</div>' +
+            (narr.detail
+                ? '<div class="narrative-card-sowhat-label">Why it matters</div>' +
+                  '<div class="narrative-card-detail">' + escapeHtmlGpi(narr.detail) + '</div>'
+                : '') +
             (regions ? '<div class="narrative-card-regions">Regions: ' + regions + '</div>' : '');
 
         grid.appendChild(card);
