@@ -1049,6 +1049,65 @@
         .commodity-card.tier-2 { border-top-color: var(--tier-2-color); }
         .commodity-card.tier-3 { border-top-color: var(--tier-3-color); }
 
+        /* ===== FFPI "FOOD VIX" CARD (Stage 1b) ===== */
+        .ffpi-card {
+            background: var(--bg-card, #0d1b2e);
+            border: 1px solid var(--border-color, #1e3a5f);
+            border-top: 4px solid var(--tier-1-color, #f97316);
+            border-radius: 12px;
+            padding: 22px 24px;
+            position: relative;
+            box-shadow: var(--shadow-md, 0 4px 14px rgba(0,0,0,0.35));
+            margin-bottom: 28px;
+            display: grid;
+            grid-template-columns: minmax(220px, 0.9fr) 1.6fr;
+            gap: 28px;
+            align-items: center;
+        }
+        @media (max-width: 760px) {
+            .ffpi-card { grid-template-columns: 1fr; gap: 18px; }
+        }
+        .ffpi-headline-label {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--accent-cyan, #38bdf8); margin-bottom: 6px; font-weight: 700;
+        }
+        .ffpi-value-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+        .ffpi-value {
+            font-size: 54px; font-weight: 800; line-height: 1;
+            color: var(--text-primary, #e2f0fb); font-variant-numeric: tabular-nums;
+        }
+        .ffpi-points { font-size: 14px; color: var(--text-secondary, #93c5fd); }
+        .ffpi-month { font-size: 14px; color: var(--text-secondary, #93c5fd); margin-top: 6px; }
+        .ffpi-base { font-size: 11px; color: var(--text-secondary, #93c5fd); opacity: 0.7; margin-top: 2px; }
+        .ffpi-mom-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 999px;
+            margin-top: 10px;
+        }
+        .ffpi-mom-pill.rising  { background: rgba(245,158,11,0.16); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); }
+        .ffpi-mom-pill.easing  { background: rgba(16,185,129,0.16); color: #10b981; border: 1px solid rgba(16,185,129,0.4); }
+        .ffpi-mom-pill.flat    { background: rgba(148,163,184,0.16); color: #94a3b8; border: 1px solid rgba(148,163,184,0.4); }
+        /* Status pill (mirrors Market Status Pill canonical) */
+        .ffpi-status-pill {
+            position: absolute; top: 14px; right: 16px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            padding: 3px 9px; border-radius: 999px;
+        }
+        .ffpi-status-pill.status-live      { background: rgba(16,185,129,0.18); color: #10b981; border: 1px solid rgba(16,185,129,0.45); }
+        .ffpi-status-pill.status-cached    { background: rgba(56,189,248,0.16); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); }
+        .ffpi-status-pill.status-stale     { background: rgba(245,158,11,0.16); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); }
+        .ffpi-status-pill.status-unavailable { background: rgba(148,163,184,0.16); color: #94a3b8; border: 1px solid rgba(148,163,184,0.4); }
+        /* Sub-index mini-bars */
+        .ffpi-sub-grid { display: flex; flex-direction: column; gap: 10px; }
+        .ffpi-sub-row { display: grid; grid-template-columns: 130px 1fr 52px; align-items: center; gap: 10px; }
+        .ffpi-sub-label { font-size: 12px; color: var(--text-secondary, #93c5fd); white-space: nowrap; }
+        .ffpi-sub-track { height: 8px; background: rgba(148,163,184,0.14); border-radius: 999px; overflow: hidden; }
+        .ffpi-sub-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent-cyan, #38bdf8), #7dd3fc); transition: width 0.5s ease; }
+        .ffpi-sub-val { font-size: 13px; font-weight: 700; color: var(--text-primary, #e2f0fb); text-align: right; font-variant-numeric: tabular-nums; }
+        .ffpi-source { font-size: 11px; color: var(--text-secondary, #93c5fd); opacity: 0.75; margin-top: 14px; }
+        .ffpi-source a { color: var(--accent-cyan, #38bdf8); text-decoration: none; }
+        .ffpi-unavailable { font-size: 13px; color: var(--text-secondary, #93c5fd); padding: 8px 0; }
+
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -1666,6 +1725,17 @@
             </leader-signals-card>
         </div>
 
+        <!-- ========== FAO FOOD PRICE INDEX (FFPI) — Stage 1b ========== -->
+        <div class="section-header">
+            <span class="section-icon">🍞</span>
+            <span class="section-title">FAO Food Price Index</span>
+            <span class="section-desc">The global "food VIX" — monthly headline index + five sub-indices, parsed live from FAO (2014-2016=100 base)</span>
+        </div>
+
+        <div id="ffpiCard" class="ffpi-card">
+            <div class="ffpi-unavailable">Awaiting FAO Food Price Index data…</div>
+        </div>
+
         <!-- ========== COMMODITY CARDS ========== -->
         <div class="section-header">
             <span class="section-icon">📊</span>
@@ -1782,6 +1852,7 @@ document.addEventListener('keydown', function(e) {
 const API_BASE = 'https://asifah-backend.onrender.com';
 const ENDPOINT_PRESSURE = `${API_BASE}/api/commodity-pressure`;
 const ENDPOINT_PRICES = `${API_BASE}/api/commodity-prices`;
+const ENDPOINT_FFPI = `${API_BASE}/api/food-price-index`;
 
 // ============================================================
 // STATIC METADATA — country flags + display names
@@ -1877,6 +1948,7 @@ const COMMODITY_ORDER = [
 // ============================================================
 let pressureData = null;
 let pricesData = null;
+let ffpiData = null;          // FAO Food Price Index bundle (Stage 1b)
 let allSignals = [];          // flat list of news signals (from pressureData.top_signals)
 let activeNewsFilter = 'all';
 let chartInstances = {};      // Chart.js instances keyed by commodity_id
@@ -1930,6 +2002,19 @@ async function loadAll(forceRefresh = false) {
             console.warn('Pressure fetch failed:', pressureRes.reason || pressureRes.value);
         }
 
+        // FFPI — independent, non-blocking. Force-passthrough on manual refresh.
+        try {
+            const ffpiUrl = forceRefresh ? `${ENDPOINT_FFPI}?force=true` : ENDPOINT_FFPI;
+            const ffpiRes = await fetch(ffpiUrl).then(r => r.json());
+            if (ffpiRes && ffpiRes.success) {
+                ffpiData = ffpiRes.ffpi;
+            } else {
+                console.warn('FFPI fetch returned no data:', ffpiRes);
+            }
+        } catch (e) {
+            console.warn('FFPI fetch failed:', e);
+        }
+
         renderEverything();
 
     } catch (err) {
@@ -1953,11 +2038,81 @@ function renderEverything() {
     renderUpdatedBar();
     renderCommodityAnalysis();   // v1.0 May 24 2026 — top-line BLUF
     renderStatusStrip();
+    renderFFPI();                // Stage 1b — FAO Food Price Index card
     renderExposureMatrix();
     renderCommodityCards();
     renderNewsFilters();
     renderNewsList();
     maybeShowPendingBanner();
+}
+
+// ════════════════════════════════════════════════════════════════
+// FFPI — FAO Food Price Index card (Stage 1b)
+// Reads ffpiData (from /api/food-price-index). Layered backend means
+// ffpiData carries status: live | cached | stale | unavailable.
+// ════════════════════════════════════════════════════════════════
+function renderFFPI() {
+    const el = document.getElementById('ffpiCard');
+    if (!el) return;
+
+    // No data or explicit unavailable → honest empty state (never a fake number)
+    if (!ffpiData || ffpiData.status === 'unavailable' || ffpiData.ffpi == null) {
+        el.innerHTML = '<div class="ffpi-unavailable">⚠️ FAO Food Price Index temporarily unavailable — the backend could not reach FAO and has no cached reading yet. It will populate on the next successful scan.</div>';
+        return;
+    }
+
+    const status = ffpiData.status || 'live';
+    const statusLabel = { live: 'Live', cached: 'Cached', stale: 'Stale', unavailable: 'Unavailable' }[status] || 'Live';
+
+    // MoM pill
+    let momHtml = '';
+    if (typeof ffpiData.mom_percent === 'number') {
+        const pct = ffpiData.mom_percent;
+        const cls = pct > 0 ? 'rising' : (pct < 0 ? 'easing' : 'flat');
+        const arrow = pct > 0 ? '▲' : (pct < 0 ? '▼' : '▬');
+        const sign = pct > 0 ? '+' : '';
+        const ptsTxt = (typeof ffpiData.mom_points === 'number')
+            ? ` (${ffpiData.mom_points > 0 ? '+' : ''}${ffpiData.mom_points} pts)` : '';
+        momHtml = `<span class="ffpi-mom-pill ${cls}">${arrow} ${sign}${pct}% MoM${ptsTxt}</span>`;
+    }
+
+    // Sub-index mini-bars — scaled to the max visible value for relative comparison
+    const meta = ffpiData.subindex_meta || [];
+    const subs = ffpiData.subindices || {};
+    const vals = meta.map(m => subs[m.key]).filter(v => typeof v === 'number');
+    const maxVal = vals.length ? Math.max(...vals) : 1;
+    let subHtml = '';
+    meta.forEach(m => {
+        const v = subs[m.key];
+        if (typeof v !== 'number') return;
+        const pctW = Math.max(6, Math.round((v / maxVal) * 100));
+        subHtml += `
+            <div class="ffpi-sub-row">
+                <span class="ffpi-sub-label">${m.icon} ${m.label}</span>
+                <div class="ffpi-sub-track"><div class="ffpi-sub-fill" style="width:${pctW}%"></div></div>
+                <span class="ffpi-sub-val">${v.toFixed(1)}</span>
+            </div>`;
+    });
+
+    // Source line
+    const rd = ffpiData.release_date ? ` · released ${ffpiData.release_date}` : '';
+    const srcUrl = ffpiData.source_url || 'https://www.fao.org/worldfoodsituation/foodpricesindex/en';
+
+    el.innerHTML = `
+        <span class="ffpi-status-pill status-${status}">${statusLabel}</span>
+        <div class="ffpi-headline">
+            <div class="ffpi-headline-label">FAO Food Price Index</div>
+            <div class="ffpi-value-row">
+                <span class="ffpi-value">${ffpiData.ffpi.toFixed(1)}</span>
+                <span class="ffpi-points">points</span>
+            </div>
+            <div class="ffpi-month">${ffpiData.month || ''}</div>
+            <div class="ffpi-base">Base: ${ffpiData.base || '2014-2016=100'}</div>
+            ${momHtml}
+            <div class="ffpi-source">Source: <a href="${srcUrl}" target="_blank" rel="noopener">FAO</a>${rd}</div>
+        </div>
+        <div class="ffpi-sub-grid">${subHtml || '<div class="ffpi-unavailable">Sub-indices unavailable for this release.</div>'}</div>
+    `;
 }
 
 // ════════════════════════════════════════════════════════════════
