@@ -1266,6 +1266,79 @@
                 </div>
             </div>
 
+            <div class="target-card collapsed" id="vietnam-card" data-target="vietnam">
+                <div class="card-collapsed-view">
+                    <div class="collapsed-header">
+                        <div class="collapsed-title">🇻🇳 <span data-i18n="targetVietnam">VIETNAM</span></div>
+                        <button class="collapse-toggle-btn" onclick="event.stopPropagation(); toggleCard('vietnam-card');" data-i18n="expandBtn">Expand ▼</button>
+                    </div>
+                    <a class="collapsed-travel-advisory hidden" id="vietnamCollapsedTA" href="#" target="_blank" onclick="event.stopPropagation();"></a>
+                    <div class="collapsed-metric">
+                        <div class="collapsed-metric-label" data-i18n="conflictProbability">Pressure Index</div>
+                        <div class="collapsed-metric-value">
+                            <div class="collapsed-percentage" id="vietnamCollapsedScore">--</div>
+                            <div class="collapsed-bar"><div class="collapsed-bar-fill" id="vietnamCollapsedBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="collapsed-timestamp" id="vietnamCollapsedTimestamp">Loading...</div>
+                    <div class="expand-instructions" data-i18n="expandInstructions">Click "Expand" to update data and view full analysis</div>
+                </div>
+                <div class="card-expanded-view">
+                    <h3>🇻🇳 <span data-i18n="targetVietnam">VIETNAM</span></h3>
+                    <button class="collapse-toggle-btn" onclick="toggleCard('vietnam-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
+                    <a href="vietnam-stability.html" class="country-stability-btn">🇻🇳 Vietnam Stability Index<span class="btn-subtitle">South China Sea disputes, Vanguard Bank & maritime sovereignty</span></a>
+                    <div class="card-scan-controls">
+                        <div class="card-time-window">
+                            <label><input type="radio" name="vietnam-timeWindow" value="1"> <span data-i18n="hours24">24h</span></label>
+                            <label><input type="radio" name="vietnam-timeWindow" value="2"> <span data-i18n="hours48">48h</span></label>
+                            <label><input type="radio" name="vietnam-timeWindow" value="7" checked> <span data-i18n="days7">7 Days</span></label>
+                            <label><input type="radio" name="vietnam-timeWindow" value="30"> <span data-i18n="days30">30 Days</span></label>
+                        </div>
+                        <button class="card-scan-button" onclick="scanSingleTarget('vietnam')"><span data-i18n="scanButton">Scan OSINT — Update Forecast</span></button>
+                        <div class="loading" id="vietnam-loading"><div class="loading-spinner"></div><span data-i18n="loadingText">Scanning open sources...</span></div>
+                    </div>
+                    <div class="probability-display">
+                        <div class="probability-label" data-i18n="conflictProbability">Pressure Index</div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="gauge-background" cx="100" cy="100" r="85"></circle>
+                                <circle class="gauge-progress medium" id="vietnam-gauge" cx="100" cy="100" r="85" stroke-dasharray="0 534"></circle>
+                            </svg>
+                            <div class="gauge-text medium" id="vietnam-prob">--</div>
+                        </div>
+                    </div>
+                    <div class="intel-sources" id="vietnam-intel-sources">
+                        <span class="intel-sources-label">Signals:</span>
+                        <span class="intel-pill inactive">🌐 GDELT</span>
+                        <span class="intel-pill inactive">📰 RSS</span>
+                        <span class="intel-pill inactive">🦋 Bluesky</span>
+                        <span class="intel-pill inactive">✈️ Telegram</span>
+                        <span class="intel-pill inactive">💬 Reddit</span>
+                    </div>
+                    <div class="weather-section" id="vietnam-weather">
+                        <div class="weather-title">🌤️ 7-Day Forecast — Hanoi</div>
+                        <div class="weather-forecast" id="vietnam-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
+                    </div>
+                    <div class="timeline-display">
+                        <div class="timeline-label" data-i18n="projectedTimeline">Projected Timeline</div>
+                        <div class="timeline-value" id="vietnam-timeline" data-i18n="awaitingScan">Awaiting scan...</div>
+                        <div class="timeline-bar" id="vietnam-bar">
+                            <div class="timeline-segment">0-30d</div><div class="timeline-segment">31-90d</div>
+                            <div class="timeline-segment">91-180d</div><div class="timeline-segment">180+d</div>
+                        </div>
+                    </div>
+                    <div class="travel-advisory-container" id="vietnam-travel-advisory"><div class="ta-loading">🏛️ Loading State Dept travel advisory...</div></div>
+                    <div class="mil-posture-awaiting" id="vietnam-mil-posture">
+                        🎖️ <span>Military Posture — <em>Scan OSINT to load</em></span>
+                        <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
+                    </div>
+                    <div class="headlines-section" id="vietnam-headlines">
+                        <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
+                        <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
+                    </div>
+                </div>
+            </div>
+
         </div><!-- end targets-grid -->
         </div><!-- end page-with-sidebar -->
 
@@ -1363,7 +1436,7 @@
        ================================================ */
 
     const API_BASE = 'https://asifah-asia-backend.onrender.com';
-    const TARGETS = ['afghanistan', 'china', 'india', 'japan', 'north_korea', 'pakistan', 'south_korea', 'taiwan'];
+    const TARGETS = ['afghanistan', 'china', 'india', 'japan', 'north_korea', 'pakistan', 'south_korea', 'taiwan', 'vietnam'];
     const CIRCUMFERENCE = 2 * Math.PI * 85;
 
     // ===== LOADING OVERLAY =====
@@ -1425,7 +1498,7 @@
             hours24: "24h", hours48: "48h", days7: "7 Days", days30: "30 Days",
             targetAfghanistan: "AFGHANISTAN", targetChina: "CHINA", targetIndia: "INDIA",
             targetJapan: "JAPAN", targetNorthKorea: "NORTH KOREA", targetPakistan: "PAKISTAN",
-            targetSouthKorea: "SOUTH KOREA", targetTaiwan: "TAIWAN",
+            targetSouthKorea: "SOUTH KOREA", targetTaiwan: "TAIWAN", targetVietnam: "VIETNAM",
             notamTitle: "Asia-Pacific NOTAM Monitor", flightTitle: "Asia-Pacific Flight Disruption Monitor"
         },
         zh: {
@@ -1440,7 +1513,7 @@
             hours24: "24小时", hours48: "48小时", days7: "7天", days30: "30天",
             targetAfghanistan: "阿富汗", targetChina: "中国", targetIndia: "印度",
             targetJapan: "日本", targetNorthKorea: "朝鲜", targetPakistan: "巴基斯坦",
-            targetSouthKorea: "韩国", targetTaiwan: "台湾",
+            targetSouthKorea: "韩国", targetTaiwan: "台湾", targetVietnam: "越南",
             notamTitle: "亚太地区NOTAM监控", flightTitle: "亚太地区航班中断监控"
         },
         ja: {
@@ -1455,7 +1528,7 @@
             hours24: "24時間", hours48: "48時間", days7: "7日間", days30: "30日間",
             targetAfghanistan: "アフガニスタン", targetChina: "中国", targetIndia: "インド",
             targetJapan: "日本", targetNorthKorea: "北朝鮮", targetPakistan: "パキスタン",
-            targetSouthKorea: "韓国", targetTaiwan: "台湾",
+            targetSouthKorea: "韓国", targetTaiwan: "台湾", targetVietnam: "ベトナム",
             notamTitle: "アジア太平洋NOTAMモニター", flightTitle: "アジア太平洋航空便混乱モニター"
         },
         ko: {
@@ -1470,7 +1543,7 @@
             hours24: "24시간", hours48: "48시간", days7: "7일", days30: "30일",
             targetAfghanistan: "아프가니스탄", targetChina: "중국", targetIndia: "인도",
             targetJapan: "일본", targetNorthKorea: "북한", targetPakistan: "파키스탄",
-            targetSouthKorea: "한국", targetTaiwan: "대만",
+            targetSouthKorea: "한국", targetTaiwan: "대만", targetVietnam: "베트남",
             notamTitle: "아시아태평양 NOTAM 모니터", flightTitle: "아시아태평양 항공편 장애 모니터"
         }
     };
@@ -1864,7 +1937,8 @@ async function scanSingleTarget(target) {
         'north_korea': { name: 'Pyongyang', lat: 39.02, lon: 125.75 },
         'pakistan':    { name: 'Islamabad', lat: 33.72, lon: 73.04 },
         'south_korea': { name: 'Seoul',     lat: 37.57, lon: 126.98 },
-        'taiwan':      { name: 'Taipei',    lat: 25.04, lon: 121.56 }
+        'taiwan':      { name: 'Taipei',    lat: 25.04, lon: 121.56 },
+        'vietnam':     { name: 'Hanoi',     lat: 21.03, lon: 105.85 }
     };
 
     function getWeatherEmoji(code) {
