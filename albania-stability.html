@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albania Stability Index | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+<style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-color:#f0f5fa;--container-bg:#ffffff;--card-bg:#ffffff;--card-border:#c8daea;--text-primary:#1a2a3a;--text-secondary:#2c4a6e;--text-muted:#7a9ab8;--metric-bg:#ffffff;--metric-hover-shadow:rgba(0,0,0,.15);--article-bg:#f0f5fa;--article-hover:#e0eaf5;--watermark-opacity:.5;--loading-overlay-bg:rgba(240,245,250,.98);--loading-spinner-bg:rgba(56,189,248,.2);--accent:#0284c7}
+        [data-theme="dark"]{--bg-color:#060d1a;--container-bg:#0d1b2e;--card-bg:#0d1b2e;--card-border:#1e3a5f;--text-primary:#e2f0fb;--text-secondary:#93c5fd;--text-muted:#4a7fa5;--metric-bg:#0d1b2e;--metric-hover-shadow:rgba(56,189,248,.15);--article-bg:#0a1628;--article-hover:#152740;--watermark-opacity:.5;--loading-overlay-bg:rgba(6,13,26,.98);--loading-spinner-bg:rgba(56,189,248,.3);--accent:#38bdf8}
+        body{font-family:'Times New Roman',Times,serif;font-size:14px;background-color:var(--bg-color);color:var(--text-primary);line-height:1.6;padding:20px;min-height:100vh;transition:background-color .3s,color .3s;position:relative}
+        body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');background-size:cover;background-repeat:no-repeat;background-position:center;opacity:var(--watermark-opacity);z-index:0;pointer-events:none}
+        .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--loading-overlay-bg);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s}
+        .loading-overlay.hidden{opacity:0;visibility:hidden}
+        .loading-spinner{width:60px;height:60px;border:5px solid var(--loading-spinner-bg);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:30px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loading-status{text-align:center;max-width:500px;padding:0 20px}
+        .loading-title{font-size:24px;font-weight:bold;color:var(--accent);margin-bottom:20px;letter-spacing:1px}
+        .loading-steps{margin-top:20px}
+        .loading-step{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;font-size:15px;color:var(--text-secondary);transition:all .3s}
+        .loading-step.active{color:var(--accent);font-weight:bold}.loading-step.complete{color:#4ade80}
+        .step-icon{font-size:18px;min-width:20px}
+        .loading-progress{margin-top:25px;font-size:13px;color:var(--text-secondary);font-style:italic}
+        .loading-error{color:#f87171;font-size:16px;margin-top:20px;padding:15px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px}
+        .container{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+        header{background:linear-gradient(135deg,#1e3a5f 0%,#eab308 100%);color:#fff;padding:35px;border-radius:12px;margin-bottom:30px;box-shadow:0 6px 20px rgba(0,0,0,.15);position:relative;display:flex;align-items:center;gap:30px}
+        .header-logo{width:80px;height:80px;flex-shrink:0;border-radius:50%;margin-top:48px}
+        .header-content{flex:1;text-align:center}
+        h1{font-size:28px;font-weight:bold;margin-bottom:10px;letter-spacing:2px;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+        .subtitle{font-size:16px;font-weight:normal;opacity:.95;letter-spacing:.5px}
+        .last-updated{font-size:13px;opacity:.85;margin-top:10px}
+        .header-controls{position:absolute;top:35px;right:35px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:1000}
+        .language-switcher{display:flex;gap:8px;background:rgba(255,255,255,.15);padding:8px 12px;border-radius:8px;backdrop-filter:blur(10px)}
+        .theme-toggle{display:flex;align-items:center;justify-content:center;gap:3px;background:rgba(255,255,255,.15);padding:2px 6px;border-radius:4px;backdrop-filter:blur(10px);max-width:100px}
+        .theme-toggle-label{font-size:9px;color:rgba(255,255,255,.9);margin-right:4px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+        .theme-toggle-switch{position:relative;width:28px;height:15px;background:rgba(255,255,255,.2);border-radius:8px;cursor:pointer;transition:all .3s;border:1.5px solid rgba(255,255,255,.3)}
+        .theme-toggle-switch:hover{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.5)}
+        .theme-toggle-slider{position:absolute;top:1.5px;left:1.5px;width:9px;height:9px;background:#fff;border-radius:50%;transition:transform .3s;display:flex;align-items:center;justify-content:center;font-size:6px}
+        .theme-toggle-slider::before{content:'☀️'}
+        [data-theme="dark"] .theme-toggle-slider{transform:translateX(13px)}
+        [data-theme="dark"] .theme-toggle-slider::before{content:'🌙'}
+        .lang-btn{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;font-family:'Times New Roman',serif;font-size:14px;font-weight:bold;border-radius:6px;cursor:pointer;transition:all .2s}
+        .lang-btn:hover{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.5)}
+        .lang-btn.active{background:#fff;color:#1e3a5f;border-color:#fff}
+        .back-link{display:inline-block;position:absolute;top:20px;left:20px;margin:0;padding:12px 24px;background:rgba(255,255,255,.2);color:#fff;text-decoration:none;border-radius:8px;border:2px solid rgba(255,255,255,.3);transition:all .2s;font-size:14px;font-weight:bold}
+        .back-link:hover{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.5)}
+        .map-section{background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:background .3s,border-color .3s}
+        .map-section h2{font-size:20px;margin-bottom:10px;color:var(--text-primary)}
+        .map-subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:15px;font-style:italic}
+        .knowledge-library{background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:background .3s,border-color .3s}
+        .knowledge-library h2{font-size:24px;margin-bottom:20px;color:var(--text-primary);display:flex;align-items:center;gap:10px}
+        .library-icon{font-size:28px}
+        .knowledge-categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+        .knowledge-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:10px;overflow:hidden;transition:all .3s}
+        .knowledge-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px var(--metric-hover-shadow)}
+        .knowledge-header{background:linear-gradient(135deg,rgba(56,189,248,.1) 0%,rgba(234,179,8,.1) 100%);padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .3s}
+        .knowledge-header:hover{background:linear-gradient(135deg,rgba(56,189,248,.15) 0%,rgba(234,179,8,.15) 100%)}
+        .knowledge-header-title{display:flex;align-items:center;gap:12px;font-size:16px;font-weight:bold;color:var(--text-primary)}
+        .category-icon{font-size:22px}
+        .collapse-icon{font-size:20px;color:var(--accent);transition:transform .3s}
+        .knowledge-card.collapsed .collapse-icon{transform:rotate(-90deg)}
+        .knowledge-content{padding:20px;max-height:600px;overflow-y:auto;transition:max-height .3s,padding .3s}
+        .knowledge-card.collapsed .knowledge-content{max-height:0;padding:0 20px;overflow:hidden}
+        .knowledge-content p{font-size:13px;line-height:1.6;color:var(--text-secondary);margin-bottom:12px}
+        .knowledge-content ul{margin-left:20px;margin-bottom:12px}
+        .knowledge-content li{font-size:13px;line-height:1.6;color:var(--text-secondary);margin-bottom:6px}
+        .knowledge-content strong{color:var(--text-primary)}
+        .open-source-disclaimer{font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;padding-top:12px;border-top:1px solid var(--card-border)}
+        .report-links-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:15px}
+        .report-link{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:var(--accent);color:#fff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:bold;transition:all .3s}
+        .report-link:hover{background:#0369a1;transform:translateX(3px);box-shadow:0 4px 12px rgba(56,189,248,.3)}
+        .knowledge-content::-webkit-scrollbar{width:8px}
+        .knowledge-content::-webkit-scrollbar-track{background:var(--article-bg);border-radius:4px}
+        .knowledge-content::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px}
+        .articles-section{background:var(--container-bg);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);border:2px solid var(--card-border);transition:background .3s,border-color .3s}
+        .section-title{font-size:20px;margin-bottom:20px;color:var(--text-primary);font-weight:bold;letter-spacing:.5px}
+        .article-item{background:var(--article-bg);padding:15px;border-radius:8px;margin-bottom:10px;transition:background .2s,transform .2s;border-left:4px solid var(--accent)}
+        .article-item:hover{background:var(--article-hover);transform:translateX(4px)}
+        .article-title{color:var(--text-primary);font-size:14px;margin-bottom:5px;font-weight:500}
+        .article-meta{font-size:12px;color:var(--text-secondary)}
+        .article-link{color:var(--accent);text-decoration:none;font-size:13px}
+        .article-link:hover{text-decoration:underline}
+        footer{background:var(--container-bg);padding:25px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);border:2px solid var(--card-border);font-size:12px;text-align:center;margin-top:40px;color:var(--text-secondary);transition:background .3s,border-color .3s}
+        [data-theme="dark"] header{background:linear-gradient(135deg,#0f172a 0%,#854d0e 100%);border:1px solid rgba(56,189,248,.2)}
+        [data-theme="dark"] .knowledge-header{background:linear-gradient(135deg,rgba(56,189,248,.08) 0%,rgba(234,179,8,.08) 100%)}
+        [data-theme="dark"] .article-item{border-left-color:#60a5fa}
+        #humanitarianGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}
+        #humanitarianGrid>div{overflow:hidden;word-wrap:break-word}
+        .humanitarian-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:10px;padding:18px;transition:all .3s}
+        .humanitarian-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px var(--metric-hover-shadow)}
+        .humanitarian-card h3{font-size:14px;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+        .humanitarian-card .big-number{font-size:28px;font-weight:bold;color:var(--text-primary);margin-bottom:6px}
+        .humanitarian-card .detail{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:4px}
+        .humanitarian-card .source-tag{font-size:10px;color:var(--text-muted);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--card-border)}
+        .leaflet-container{max-width:100%}
+        .news-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:15px;border-bottom:2px solid var(--card-border);padding-bottom:10px}
+        .news-tab{padding:6px 14px;background:var(--article-bg);border:1px solid var(--card-border);border-radius:6px 6px 0 0;cursor:pointer;font-size:12px;font-weight:bold;color:var(--text-secondary);transition:all .2s}
+        .news-tab:hover{background:var(--article-hover)}
+        .news-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+        [dir="rtl"] .back-link{left:auto;right:20px}
+        @media(max-width:768px){header{flex-direction:column;gap:20px;padding:25px 20px}.header-logo{width:60px;height:60px;margin-top:0}.header-controls{position:static;align-items:center}h1{font-size:22px}.back-link{position:static;display:block;width:fit-content;margin:0 auto 15px}.knowledge-categories{grid-template-columns:1fr}}
+
+        /* ── PAGE WITH SIDEBAR (canonical) ── */
+        .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+        .nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+        .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+        .nav-btn { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border-radius: 7px; background: rgba(13,27,46,0.6); border: 1px solid rgba(56,189,248,0.18); color: #e2f0fb; font-family: 'Times New Roman', serif; font-weight: 700; font-size: 11px; letter-spacing: 0.3px; text-decoration: none; transition: all 0.2s; overflow: hidden; }
+        [data-theme="light"] .nav-btn { color: var(--text-secondary); }
+        .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+        .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #38bdf8; }
+        .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); border-color: rgba(56,189,248,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(56,189,248,0.12); }
+        .nav-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); border-color: rgba(34,197,94,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+        .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+        .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+        [data-theme="light"] .nav-btn.inactive-nav { color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
+        .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+        .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+        .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+        .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+        .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+        .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+        .main-content { flex: 1; min-width: 0; }
+        @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+
+        /* ── RHETORIC TRACKER BANNER (canonical green pattern, matches Israel) ── */
+        .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+        .rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+        .rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+        .rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+
+        /* ── RHETORIC DETAIL CARD (canonical Russia pattern) ── */
+        .rhetoric-card { background: var(--card-bg); border: 2px solid rgba(56,189,248,0.35); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+        .rhetoric-actor-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); }
+        .rhetoric-actor-row:last-child { border-bottom: none; }
+        .rhetoric-signal-row { padding: 6px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .rhetoric-signal-row:last-child { border-bottom: none; }
+        .rhetoric-signal-label { font-weight: 700; color: #38bdf8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; font-family: 'Courier New', monospace; }
+    </style>
+    <style>
+        .lean-section{background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:22px;margin-bottom:18px;}
+        .lean-section h2{font-size:18px;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:9px;}
+        .context-prose{font-size:13px;line-height:1.65;color:var(--text-secondary);margin-bottom:10px;}
+        .context-prose strong{color:var(--text-primary);}
+        .source-row{font-size:11px;color:var(--text-muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--card-border);line-height:1.7;}
+        .source-row a{color:var(--accent);text-decoration:none;margin-right:10px;}
+        .article-link{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;margin-bottom:7px;background:var(--article-bg);border:1px solid var(--card-border);border-radius:8px;text-decoration:none;transition:background .2s;}
+        .article-link:hover{background:var(--article-hover);}
+        .article-title{font-size:12px;color:var(--text-primary);line-height:1.45;flex:1;}
+        .article-source{font-size:10px;color:var(--text-muted);font-style:italic;white-space:nowrap;}
+        .key-ladder{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+        .key-row{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-secondary);}
+        .key-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-status">
+            <div class="loading-title">Loading Albania Stability Data</div>
+            <div class="loading-steps" id="loadingSteps">
+                <div class="loading-step active" id="step1"><span class="step-icon">&#9203;</span><span>Contacting Europe pressure backend...</span></div>
+                <div class="loading-step" id="step2"><span class="step-icon">&#9203;</span><span>Reading Albania pressure score &amp; signals...</span></div>
+                <div class="loading-step" id="step3"><span class="step-icon">&#9203;</span><span>Rendering dashboard...</span></div>
+            </div>
+            <div class="loading-progress" id="loadingProgress">This may take a few seconds...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="europe.html" class="back-link">&#8592; Back to Europe Dashboard</a>
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Logo" class="header-logo">
+            <div class="header-content">
+                <h1>&#127462;&#127473; ALBANIA STABILITY INDEX</h1>
+                <div class="subtitle">Pressure-Index Analysis: Civil Unrest, Governance Stress, EU-Accession Risk &amp; Coastal-Development Conflict</div>
+                <div class="last-updated" id="lastUpdated">Last updated: Loading...</div>
+            </div>
+            <div class="header-controls">
+                <div class="theme-toggle">
+                    <span class="theme-toggle-label">Theme</span>
+                    <div class="theme-toggle-switch" onclick="toggleTheme()"><div class="theme-toggle-slider"></div></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-with-sidebar">
+        <nav class="nav-sidebar">
+            <div class="nav-sidebar-label">Dashboards</div>
+            <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">&#128331; Middle East</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">&#127759; Asia &amp; Pacific</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">&#127757; Europe</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">&#127758; W. Hemisphere</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">&#127757; Africa</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <div class="nav-divider"></div>
+            <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">&#127894; Military Tracker</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">&#128738; Commodities</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label">Regional Rhetoric</div>
+            <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">&#128331; Middle East</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">&#127759; Asia</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">&#127757; Europe</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">&#127758; W. Hemisphere</span><span class="nav-btn-status">&#9679; Live</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label">Albania</div>
+            <a href="albania-stability.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">&#127462;&#127473; Stability Index</span><span class="nav-btn-status">&#9673; You are here</span></a>
+        </nav>
+        <div class="main-content">
+
+        <!-- WORLDWIDE CAUTION -->
+        <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,.3);">
+            <div style="font-size:24px;flex-shrink:0;">&#128680;</div>
+            <div style="flex:1;">
+                <div style="font-size:12px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">&#9888;&#65039; U.S. State Department &#8212; Worldwide Caution</div>
+                <div style="font-size:12px;color:#fde8e8;line-height:1.4;">U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in the Smart Traveler Enrollment Program (STEP).</div>
+            </div>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">VIEW CAUTION &#8594;</a>
+        </div>
+
+        <!-- ALBANIA TRAVEL ADVISORY -->
+        <div style="background:linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%);border:2px solid #38bdf8;border-radius:10px;padding:14px 20px;margin-bottom:15px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);">
+            <div style="font-size:24px;flex-shrink:0;">&#127462;&#127473;</div>
+            <div style="flex:1;">
+                <div style="font-size:11px;font-weight:bold;color:#bae6fd;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">U.S. State Department &#8212; Albania Travel Advisory</div>
+                <div style="font-size:12px;color:#e2e8f0;line-height:1.4;">Demonstrations and occasional clashes with police have been reported in Tirana and the Vlora region. Avoid protest areas, which can turn confrontational with little warning. Check the current advisory before travel.</div>
+            </div>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/albania-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">VIEW ADVISORY &#8594;</a>
+        </div>
+
+        <!-- PRESSURE INDEX BANNER -->
+        <div class="rhetoric-banner-canonical" id="pressureBanner" style="display:none;">
+            <div style="font-size:24px;flex-shrink:0;">&#128225;</div>
+            <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                    <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;">Albania Pressure Index &#8212; Live</span>
+                    <span class="rhet-banner-badge" id="pressurePill">LOADING</span>
+                    <span class="rhet-banner-badge" id="pressureScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+                </div>
+                <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="pressureHeadline">Loading Albania pressure assessment...</div>
+                <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="pressureDetail"></div>
+            </div>
+            <a href="europe.html" class="rhet-banner-link">Open Dashboard &#8594;</a>
+        </div>
+
+        <!-- PRESSURE INDEX DETAIL CARD -->
+        <div class="rhetoric-card" id="pressureCard" style="display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">&#128225; ALBANIA PRESSURE INDEX</div>
+            <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:5px;">
+                <div style="font-size:30px;font-weight:700;color:var(--text-primary);" id="pressureScoreFull">--</div>
+                <span id="pressureLevelLabel" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:#6b7280;color:white;">--</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;">Composite pressure score (0&#8211;100). Lower = more stable, peaceful, prosperous. Higher = greater pressure toward instability, unrest, or crisis. Updated on scan.</div>
+            <div id="pressureRows" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;">Loading...</span></div>
+            <div style="margin-top:11px;padding:9px 12px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:8px;font-size:11px;color:var(--text-secondary);line-height:1.5;">
+                <strong style="color:#38bdf8;">Convergence, not prediction:</strong> this score reflects the weight and intensity of matched open-source reporting &#8212; it indicates how much pressure is present, not whether or when any specific event will occur.
+            </div>
+            <div style="margin-top:11px;text-align:center;">
+                <a href="europe.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;">Run a live scan on the Europe Dashboard &#8594;</a>
+            </div>
+        </div>
+
+        <!-- SITUATION CONTEXT: FLAMINGO REVOLUTION -->
+        <div class="lean-section">
+            <h2>&#129767; Situation Context &#8212; "The Flamingo Revolution"</h2>
+            <p class="context-prose">Mass protests have spread across Albania in opposition to a <strong>$1.6 billion luxury resort</strong> led by Jared Kushner's investment firm, Affinity Partners. Demonstrators &#8212; rallying under the slogan <strong>"Albania is not for sale"</strong> &#8212; are demanding the project's cancellation and the resignation of Prime Minister <strong>Edi Rama</strong>, who defends the development as a source of major investment, prestige, and jobs.</p>
+            <p class="context-prose">The complex would develop <strong>Sazan Island</strong> and part of the protected <strong>Vjosa-Narta delta</strong>, a wetland that conservationists say is vital habitat for nesting sea turtles, seals, and migratory flamingos. Protests &#8212; centered in the southern coastal area of <strong>Zvernec</strong> and in mass rallies in <strong>Tirana</strong> &#8212; have at times turned confrontational, with clashes between demonstrators and riot police using water cannons. The European Commission has warned that mishandling the project could violate EU environmental rules and <strong>jeopardize Albania's EU-accession negotiations</strong>.</p>
+            <div class="source-row">
+                Reported by:
+                <a href="https://www.nbcnews.com/world/europe/kushner-luxury-resort-plan-protests-albania-rcna348612" target="_blank" rel="noopener">NBC News</a>
+                <a href="https://www.theguardian.com/world/2026/jun/04/protests-in-albania-grow-over-jared-kushner-backed-luxury-resort" target="_blank" rel="noopener">The Guardian</a>
+                <a href="https://www.reuters.com/world/albania-is-not-sale-protesters-say-over-kushner-linked-luxury-resort-near-2026-06-05/" target="_blank" rel="noopener">Reuters</a>
+                <a href="https://www.dw.com/en/jared-kushner-trump-albania-luxury-resort-protests/a-77409540" target="_blank" rel="noopener">DW</a>
+                <a href="https://www.politico.eu/article/eu-warns-albania-membership-bid-jared-kushner-project-protests/" target="_blank" rel="noopener">POLITICO</a>
+                <span style="display:block;margin-top:5px;font-style:italic;">Context as of June 2026. Static reference &#8212; live signal flow appears in the pressure index and headlines below.</span>
+            </div>
+        </div>
+
+        <!-- RECENT HEADLINES -->
+        <div class="lean-section">
+            <h2>&#128240; Recent Headlines</h2>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Top scoring open-source items from the latest Albania scan (GDELT / NewsAPI / Reddit / Telegram).</p>
+            <div id="headlinesContainer"><div style="color:var(--text-muted);font-style:italic;padding:14px;">Loading headlines...</div></div>
+        </div>
+
+        <!-- PLAIN-LANGUAGE KEY -->
+        <div class="lean-section">
+            <h2>&#128161; How to Read This Page</h2>
+            <p class="context-prose"><strong>Pressure score (0&#8211;100):</strong> an unscientific composite of how much open-source pressure a country is under &#8212; toward kinetic conflict, internal instability, or humanitarian crisis. <strong>Low = stable, peaceful, prosperous. High = greater likelihood of a major event or serious instability.</strong> The score is driven by the weighted volume and severity of matched reporting (news-signal pressure), not by any forecast or probability of action.</p>
+            <div class="key-ladder">
+                <div class="key-row"><span class="key-dot" style="background:#22c55e;"></span><strong>LOW (0&#8211;19)</strong> &#8212; Stable / background noise only</div>
+                <div class="key-row"><span class="key-dot" style="background:#3b82f6;"></span><strong>GUARDED (20&#8211;39)</strong> &#8212; Mild elevated pressure</div>
+                <div class="key-row"><span class="key-dot" style="background:#f59e0b;"></span><strong>ELEVATED (40&#8211;59)</strong> &#8212; Notable pressure / active situation</div>
+                <div class="key-row"><span class="key-dot" style="background:#f97316;"></span><strong>HIGH (60&#8211;79)</strong> &#8212; Strong, sustained pressure</div>
+                <div class="key-row"><span class="key-dot" style="background:#dc2626;"></span><strong>CRITICAL (80&#8211;100)</strong> &#8212; Severe pressure / crisis conditions</div>
+            </div>
+        </div>
+
+        <!-- KNOWLEDGE LIBRARY -->
+        <div class="knowledge-library">
+            <h2><span class="library-icon">&#128218;</span> Knowledge Library</h2>
+            <div class="knowledge-categories">
+                <div class="knowledge-card collapsed" id="card-resort">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('resort')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#127960;&#65039;</span> The Sazan / Vjosa-Narta Resort Project</div>
+                        <span class="collapse-icon">&#9660;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p>A roughly $1.6B luxury-tourism development associated with Jared Kushner's Affinity Partners, sited on Sazan Island and along the Vjosa-Narta coastal delta near Vlora. The government frames it as transformational foreign investment; opponents frame it as the sale of protected public coastline to a politically connected foreign investor.</p>
+                        <ul>
+                            <li><strong>Backers:</strong> Affinity Partners (Kushner); supported by PM Edi Rama's government.</li>
+                            <li><strong>Opponents:</strong> environmental groups, local residents, opposition figures, and a broad protest movement.</li>
+                            <li><strong>Flashpoints:</strong> Zvernec (coastal site) and Tirana (capital rallies).</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="knowledge-card collapsed" id="card-eu">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('eu')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#127466;&#127482;</span> EU-Accession Path at Risk</div>
+                        <span class="collapse-icon">&#9660;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p>Albania is an active EU candidate negotiating membership. The European Commission has cautioned that approving development that breaches EU environmental protections in a protected delta could damage Albania's accession progress &#8212; turning a domestic land dispute into a strategic, EU-facing governance test.</p>
+                        <ul>
+                            <li><strong>Watch:</strong> Commission statements, accession-chapter progress, and whether Tirana adjusts the project to satisfy EU environmental conditions.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="knowledge-card collapsed" id="card-delta">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('delta')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#129767;</span> The Vjosa-Narta Delta &amp; Environmental Stakes</div>
+                        <span class="collapse-icon">&#9660;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p>The Vjosa is one of Europe's last wild rivers; its Narta-delta wetlands host nesting sea turtles, seals, and migratory flamingos &#8212; the namesake of the "Flamingo Revolution." Environmental harm to this habitat is the core grievance driving the protests and the EU's concern.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<footer style="background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-top:30px;font-size:12px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:22px;">
+                <div>
+                    <h4 style="font-size:13px;font-weight:bold;color:var(--text-primary);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;" data-i18n="footerSources">Data Sources</h4>
+                    <p style="font-size:12px;color:var(--text-secondary);line-height:1.55;" data-i18n="footerSourcesText">GDELT, NewsAPI, RSS (Exit.al, Tirana Times, Euronews Albania), Reddit, and Telegram OSINT covering civil unrest, governance, environmental policy, and EU-accession signals.</p>
+                </div>
+                <div>
+                    <h4 style="font-size:13px;font-weight:bold;color:var(--text-primary);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;" data-i18n="footerMethodology">Methodology</h4>
+                    <p style="font-size:12px;color:var(--text-secondary);line-height:1.55;" data-i18n="footerMethodologyText">Composite pressure index aggregating weighted open-source signal volume and severity across civil unrest, governance stress, and external-relations vectors. Source-weighted, time-decayed; convergence framing, not prediction.</p>
+                </div>
+                <div>
+                    <h4 style="font-size:13px;font-weight:bold;color:var(--text-primary);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;" data-i18n="footerContact">Contact</h4>
+                    <p style="font-size:12px;color:var(--text-secondary);line-height:1.55;" data-i18n="footerContactText">Built by Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a> · <a href="mailto:asifahanalytics@gmail.com" style="color:var(--accent);">asifahanalytics@gmail.com</a></p>
+                </div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);padding:14px 16px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:8px;margin-bottom:16px;line-height:1.55;">
+                <strong style="color:#f59e0b;letter-spacing:1px;display:block;margin-bottom:4px;" data-i18n="footerDisclaimerLabel">⚠️ DISCLAIMER</strong>
+                <span data-i18n="footerDisclaimerText">This dashboard provides analytical signals based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Indicators reflect media signal intensity and humanitarian reporting; they should not be interpreted as ground-truth predictions. Not for operational use. Always consult authoritative sources for decision-making.</span>
+            </div>
+            <div style="padding:14px 18px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+                If you find Asifah Analytics useful and want to support ongoing development, you can ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:bold;">buy me a coffee</a>
+            </div>
+            <div style="text-align:center;padding:12px 0;border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border);margin-bottom:12px;">
+                <a href="privacy.html" style="color:var(--accent);text-decoration:none;font-size:13px;" data-i18n="footerPrivacy">Privacy Policy</a>
+                <span style="color:var(--text-muted);margin:0 12px;">|</span>
+                <a href="contact.html" style="color:var(--accent);text-decoration:none;font-size:13px;" data-i18n="footerContactLink">Contact</a>
+            </div>
+            <div style="text-align:center;font-size:11px;color:var(--text-muted);letter-spacing:1px;line-height:1.6;">
+                © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — Albania Stability Index v1.0.0<br>
+                Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.
+            </div>
+        </footer>
+        </div><!-- /main-content -->
+        </div><!-- /page-with-sidebar -->
+    </div>
+
+    <script>
+    const API_BASE='https://asifa-europe-backend.onrender.com';
+    const COUNTRY='albania';
+    function initTheme(){const s=localStorage.getItem('asifah-theme')||'light';document.documentElement.setAttribute('data-theme',s);}
+    function toggleTheme(){const c=document.documentElement.getAttribute('data-theme');const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('asifah-theme',n);}
+    initTheme();
+    function toggleKnowledgeCard(id){const c=document.getElementById('card-'+id);if(c)c.classList.toggle('collapsed');}
+    function hideLoadingOverlay(){const o=document.getElementById('loadingOverlay');if(o)setTimeout(()=>o.classList.add('hidden'),400);}
+
+    const BANDS=[
+        {max:20,label:'LOW',color:'#22c55e',note:'Stable / low pressure'},
+        {max:40,label:'GUARDED',color:'#3b82f6',note:'Mild elevated pressure'},
+        {max:60,label:'ELEVATED',color:'#f59e0b',note:'Notable pressure / active situation'},
+        {max:80,label:'HIGH',color:'#f97316',note:'Strong, sustained pressure'},
+        {max:101,label:'CRITICAL',color:'#dc2626',note:'Severe pressure / crisis conditions'}
+    ];
+
+    async function loadPressure(){
+        try{
+            const r=await fetch(`${API_BASE}/api/europe/threat/${COUNTRY}`);
+            if(!r.ok) throw new Error('HTTP '+r.status);
+            const d=await r.json();
+            const prob = (d.probability===null||d.probability===undefined) ? null : Number(d.probability);
+            const band = prob===null ? {label:'AWAITING SCAN',color:'#6b7280',note:'No scan yet'} : BANDS.find(b=>prob<b.max);
+
+            const banner=document.getElementById('pressureBanner');
+            if(banner){
+                banner.style.display='flex';
+                const pill=document.getElementById('pressurePill');
+                pill.textContent=band.label; pill.style.background=band.color;
+                document.getElementById('pressureScore').textContent = prob===null ? '--' : ('Pressure: '+Math.round(prob)+'/100');
+                document.getElementById('pressureHeadline').textContent = (d.timeline && d.timeline!=='Unknown') ? d.timeline : band.note;
+                document.getElementById('pressureDetail').textContent =
+                    `Momentum: ${d.momentum||'unknown'} · Confidence: ${d.confidence||'n/a'} · ${d.total_articles||0} articles analyzed${d.cached?(' · cached '+(d.cache_age_human||'')):''}`;
+            }
+
+            const card=document.getElementById('pressureCard');
+            if(card){
+                card.style.display='block';
+                const sf=document.getElementById('pressureScoreFull');
+                sf.textContent = prob===null ? '--' : (Math.round(prob)+'/100'); sf.style.color=band.color;
+                const ll=document.getElementById('pressureLevelLabel');
+                ll.textContent=band.label; ll.style.background=band.color;
+                const rows=[['Momentum',d.momentum||'unknown'],['Timeline',d.timeline||'Unknown'],['Confidence',d.confidence||'n/a'],['Articles analyzed',d.total_articles||0]];
+                document.getElementById('pressureRows').innerHTML = rows.map(x=>`<div class="rhetoric-actor-row"><span>${x[0]}</span><span style="font-weight:700;color:var(--text-primary);">${x[1]}</span></div>`).join('');
+            }
+
+            const arts = d.articles || d.top_scoring_articles || d.recent_headlines || [];
+            const hc=document.getElementById('headlinesContainer');
+            if(hc){
+                if(arts.length){
+                    hc.innerHTML = arts.slice(0,12).map(a=>{
+                        const title=a.title||a.headline||a.text||'(untitled)';
+                        const url=a.url||a.link||'#';
+                        const src=(typeof a.source==='string')?a.source:((a.source&&a.source.name)||'');
+                        return `<a href="${url}" target="_blank" rel="noopener" class="article-link"><span class="article-title">${title}</span>${src?`<span class="article-source">${src}</span>`:''}</a>`;
+                    }).join('');
+                } else {
+                    hc.innerHTML='<div style="color:var(--text-muted);font-style:italic;padding:14px;">No headlines cached yet &#8212; run a scan from the Europe dashboard to populate.</div>';
+                }
+            }
+        }catch(e){
+            console.warn('[Albania] pressure fetch failed:',e.message);
+            const banner=document.getElementById('pressureBanner');
+            if(banner){banner.style.display='flex';document.getElementById('pressureHeadline').textContent='Pressure data unavailable right now — try a scan on the Europe dashboard.';}
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        document.getElementById('lastUpdated').textContent='Last updated: '+new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+        loadPressure().finally(hideLoadingOverlay);
+    });
+    </script>
+</body>
+</html>
