@@ -506,6 +506,13 @@
 .rbluf-actor { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; }
 .rbluf-actor .lvl { font-weight: 700; font-family: 'Courier New', monospace; color: #fff; padding: 0 6px; border-radius: 3px; font-size: 10px; }
 .rbluf-disclaimer { font-size: 10.5px; color: var(--text-2); opacity: 0.75; font-style: italic; margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border); line-height: 1.5; }
+
+/* ARTICLE TABS */
+.article-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.article-tab-btn { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer; transition: all 0.15s ease; }
+.article-tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+.article-tab-btn.active { background: var(--accent); border-color: var(--accent); color: #06121f; }
+.article-tab-btn .cnt { opacity: 0.7; font-weight: 400; margin-left: 3px; }
 </style>
 </head>
 <body>
@@ -688,6 +695,35 @@
     </div>
 </div>
 
+<!-- ── COMMODITY EXPOSURE CARD (Gold Standard v2.0 -- Cuba pattern) ── -->
+<div class="commodity-card-v2" id="commodityCard">
+    <div class="commodity-card-v2-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+    <div class="commodity-prose-v2" id="commodityProseV2">
+        <span data-i18n="commodity_prose_loading">Loading Hungary commodity exposure profile…</span>
+    </div>
+    <div class="commodity-alert-banner-v2" id="commodityAlertBannerV2"></div>
+    <div class="commodity-grid-v2" id="commodityGridV2">
+        <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;" data-i18n="commodity_loading">⏳ Loading commodity exposure tiles…</div>
+    </div>
+    <div class="commodity-top-signals-v2" id="commodityTopSignalsV2" style="display: none;">
+        <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
+        <div id="commodityTopSignalsListV2"></div>
+    </div>
+    <div class="strategic-linkage-v2" data-i18n-html="strategic_linkage">
+        <strong>🎯 Strategic Linkage:</strong> Hungary's structural Russia-axis dependency runs through <strong>(1) Oil via Druzhba pipeline</strong> (~65% of crude oil imports historically; sanctions-exempt status), <strong>(2) Gas via TurkStream</strong> (~80% of natural gas; Gazprom long-term contracts), and <strong>(3) Nuclear via Paks II</strong> (Rosatom-built reactor expansion under review by Tisza government). The April 2026 Tisza victory opens a multi-axis reversal window: each commodity dependency is now a politically-contested decoupling vector with EU normalization on the receiving end. <em>Watch Druzhba flow status as the canonical kinetic signal.</em>
+    </div>
+</div>
+
+<!-- MAP -->
+<div class="card">
+    <div class="card-title">🗺️ <span data-i18n="mapTitle">HUNGARY — STRATEGIC OVERVIEW</span></div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:11px;font-style:italic;" data-i18n="mapSubtitle">Hungary's strategic position at the crossroads of Central Europe — bordered by Austria, Slovakia, Ukraine, Romania, Serbia, Croatia, and Slovenia.</div>
+    <iframe class="map-frame"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=15.8%2C45.7%2C23.0%2C48.6&layer=mapnik&marker=47.49%2C19.04"
+        frameborder="0" scrolling="no">
+    </iframe>
+</div>
+
 <!-- ── QUICK STABILITY GLANCE (Gold Standard v2.0 -- consolidated 2x2 grid) ── -->
 <div class="quick-glance-card">
     <div class="qg-header">
@@ -746,33 +782,34 @@
     </div>
 </div>
 
-<!-- ── COMMODITY EXPOSURE CARD (Gold Standard v2.0 -- Cuba pattern) ── -->
-<div class="commodity-card-v2" id="commodityCard">
-    <div class="commodity-card-v2-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
-    <div class="commodity-prose-v2" id="commodityProseV2">
-        <span data-i18n="commodity_prose_loading">Loading Hungary commodity exposure profile…</span>
+<!-- HOW TO READ THE RHETORIC SIGNALS (plain-language key) -->
+<div class="card howto-card">
+    <div class="card-title">🧭 <span>HOW TO READ THE RHETORIC SIGNALS</span></div>
+    <div class="howto-intro">
+        The rhetoric levels below measure <b>what is being said and signaled</b> around Hungary's realignment &mdash; the weighted volume and severity of matched reporting across wire services, Hungarian and EU press, GDELT, and social channels (Telegram, Bluesky). They are a <b>convergence read, not a forecast</b> that conflict will occur. Social-only chatter can raise an early-warning flag but is weighted down and capped until established sources corroborate it.
     </div>
-    <div class="commodity-alert-banner-v2" id="commodityAlertBannerV2"></div>
-    <div class="commodity-grid-v2" id="commodityGridV2">
-        <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;" data-i18n="commodity_loading">⏳ Loading commodity exposure tiles…</div>
+    <div class="howto-scale">
+        <span class="howto-chip"><span class="dot" style="background:#6b7280;"></span>L0 Baseline</span>
+        <span class="howto-chip"><span class="dot" style="background:#3b82f6;"></span>L1 Watch</span>
+        <span class="howto-chip"><span class="dot" style="background:#22c55e;"></span>L2 Elevated</span>
+        <span class="howto-chip"><span class="dot" style="background:#f59e0b;"></span>L3 Tension</span>
+        <span class="howto-chip"><span class="dot" style="background:#f97316;"></span>L4 Confrontation</span>
+        <span class="howto-chip"><span class="dot" style="background:#ef4444;"></span>L5 Crisis</span>
     </div>
-    <div class="commodity-top-signals-v2" id="commodityTopSignalsV2" style="display: none;">
-        <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
-        <div id="commodityTopSignalsListV2"></div>
-    </div>
-    <div class="strategic-linkage-v2" data-i18n-html="strategic_linkage">
-        <strong>🎯 Strategic Linkage:</strong> Hungary's structural Russia-axis dependency runs through <strong>(1) Oil via Druzhba pipeline</strong> (~65% of crude oil imports historically; sanctions-exempt status), <strong>(2) Gas via TurkStream</strong> (~80% of natural gas; Gazprom long-term contracts), and <strong>(3) Nuclear via Paks II</strong> (Rosatom-built reactor expansion under review by Tisza government). The April 2026 Tisza victory opens a multi-axis reversal window: each commodity dependency is now a politically-contested decoupling vector with EU normalization on the receiving end. <em>Watch Druzhba flow status as the canonical kinetic signal.</em>
-    </div>
+    <ul class="howto-defs">
+        <li><b>L0&ndash;L1</b> &mdash; normal background political noise.</li>
+        <li><b>L2 Elevated</b> &mdash; active but routine realignment. For Hungary right now this is the expected barometer state, not an alarm.</li>
+        <li><b>L3&ndash;L4</b> &mdash; sharper coercion language (ultimatums, diplomatic ruptures, crackdowns), corroborated by reporting.</li>
+        <li><b>L5 Crisis</b> &mdash; multiple corroborated reports of genuine unrest or violence. Reserved; never triggered by political volume alone.</li>
+    </ul>
 </div>
 
-<!-- MAP -->
+<!-- RHETORIC ACTORS CARD (Hungary v1.0 May 17 2026) -->
 <div class="card">
-    <div class="card-title">🗺️ <span data-i18n="mapTitle">HUNGARY — STRATEGIC OVERVIEW</span></div>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:11px;font-style:italic;" data-i18n="mapSubtitle">Hungary's strategic position at the crossroads of Central Europe — bordered by Austria, Slovakia, Ukraine, Romania, Serbia, Croatia, and Slovenia.</div>
-    <iframe class="map-frame"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=15.8%2C45.7%2C23.0%2C48.6&layer=mapnik&marker=47.49%2C19.04"
-        frameborder="0" scrolling="no">
-    </iframe>
+    <div class="card-title">🏛️ <span data-i18n="rhetoricActorsTitle">RHETORIC ACTORS · 5 TRACKERS</span></div>
+    <div class="rhetoric-actors-grid" id="rhetoricActorsGrid">
+        <div style="grid-column: 1/-1; text-align: center; color: var(--text-2); padding: 20px; font-style: italic;">Loading rhetoric actor data from /api/rhetoric/hungary...</div>
+    </div>
 </div>
 
 <!-- KNOWLEDGE LIBRARY -->
@@ -939,40 +976,11 @@
     </div>
 </div>
 
-<!-- HOW TO READ THE RHETORIC SIGNALS (plain-language key) -->
-<div class="card howto-card">
-    <div class="card-title">🧭 <span>HOW TO READ THE RHETORIC SIGNALS</span></div>
-    <div class="howto-intro">
-        The rhetoric levels below measure <b>what is being said and signaled</b> around Hungary's realignment &mdash; the weighted volume and severity of matched reporting across wire services, Hungarian and EU press, GDELT, and social channels (Telegram, Bluesky). They are a <b>convergence read, not a forecast</b> that conflict will occur. Social-only chatter can raise an early-warning flag but is weighted down and capped until established sources corroborate it.
-    </div>
-    <div class="howto-scale">
-        <span class="howto-chip"><span class="dot" style="background:#6b7280;"></span>L0 Baseline</span>
-        <span class="howto-chip"><span class="dot" style="background:#3b82f6;"></span>L1 Watch</span>
-        <span class="howto-chip"><span class="dot" style="background:#22c55e;"></span>L2 Elevated</span>
-        <span class="howto-chip"><span class="dot" style="background:#f59e0b;"></span>L3 Tension</span>
-        <span class="howto-chip"><span class="dot" style="background:#f97316;"></span>L4 Confrontation</span>
-        <span class="howto-chip"><span class="dot" style="background:#ef4444;"></span>L5 Crisis</span>
-    </div>
-    <ul class="howto-defs">
-        <li><b>L0&ndash;L1</b> &mdash; normal background political noise.</li>
-        <li><b>L2 Elevated</b> &mdash; active but routine realignment. For Hungary right now this is the expected barometer state, not an alarm.</li>
-        <li><b>L3&ndash;L4</b> &mdash; sharper coercion language (ultimatums, diplomatic ruptures, crackdowns), corroborated by reporting.</li>
-        <li><b>L5 Crisis</b> &mdash; multiple corroborated reports of genuine unrest or violence. Reserved; never triggered by political volume alone.</li>
-    </ul>
-</div>
-
-<!-- RHETORIC ACTORS CARD (Hungary v1.0 May 17 2026) -->
-<div class="card">
-    <div class="card-title">🏛️ <span data-i18n="rhetoricActorsTitle">RHETORIC ACTORS · 5 TRACKERS</span></div>
-    <div class="rhetoric-actors-grid" id="rhetoricActorsGrid">
-        <div style="grid-column: 1/-1; text-align: center; color: var(--text-2); padding: 20px; font-style: italic;">Loading rhetoric actor data from /api/rhetoric/hungary...</div>
-    </div>
-</div>
-
 <!-- ARTICLES -->
 <div class="card">
     <div class="card-title">📰 <span data-i18n="articlesTitle">RECENT HUNGARY STABILITY & TRANSITION ARTICLES</span></div>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:11px;" data-i18n="articlesDesc">NewsAPI + GDELT · Last 7 days · English + Hungarian (hun)</div>
+    <div id="articleTabBar" class="article-tabs"></div>
     <div id="articlesContainer">
         <div style="text-align:center;color:var(--text-muted);padding:26px;font-style:italic;">Loading articles...</div>
     </div>
@@ -1064,39 +1072,80 @@ function hideLoading() {
 }
 
 // ── ARTICLES ──
+let _allArticles = [];
+let _activeArticleTab = 'all';
+
+function _articleCat(a) {
+    const srcRaw = (typeof a.source === 'object' && a.source) ? (a.source.name || '') : (a.source || '');
+    const sc = String(srcRaw).toLowerCase();
+    const lang = String(a.language || a.lang || '').toLowerCase();
+    const ft = String(a.feed_type || a.feedType || '').toLowerCase();
+    const HU = ['telex','444','index.hu','index','hvg','magyar','origo','portfolio','nepszava','24.hu','hirado','mti','nemzet'];
+    const SOCIAL = ['telegram','bluesky','reddit','twitter','x.com','nitter','mastodon'];
+    const ANALYSIS = ['ecfr','carnegie','politico','euractiv','chatham','crisis group','crisisgroup','brookings','atlantic council','cepa','visegrad','rand','foreign policy','foreign affairs','institute'];
+    if (SOCIAL.some(k => sc.includes(k) || ft.includes(k))) return 'social';
+    if (ANALYSIS.some(k => sc.includes(k))) return 'analysis';
+    if (lang === 'hu' || lang === 'hun' || HU.some(k => sc.includes(k))) return 'hungarian';
+    return 'english';
+}
+
 async function loadArticles() {
     try {
         const r = await fetch(`${API_BASE}/api/europe/articles/hungary`);
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const d = await r.json();
-        const articles = d.articles || d.recent_headlines || [];
-        if (articles.length > 0) { displayArticles(articles); } else { displayFallback(); }
+        _allArticles = d.articles || d.recent_headlines || [];
+        if (_allArticles.length > 0) { renderArticleTabs(); displayArticles(); }
+        else { displayFallback(); }
     } catch(e) {
         console.warn('[Hungary] Articles failed:', e.message);
         displayFallback();
     } finally {
         hideLoading();
-        document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        const lu = document.getElementById('lastUpdated');
+        if (lu) lu.textContent = new Date().toLocaleString();
     }
 }
-function displayArticles(articles) {
+
+function setArticleTab(cat) { _activeArticleTab = cat; renderArticleTabs(); displayArticles(); }
+
+function renderArticleTabs() {
+    const bar = document.getElementById('articleTabBar');
+    if (!bar) return;
+    const tabs = [['all','All'],['english','English'],['hungarian','Hungarian'],['social','Social'],['analysis','Analysis']];
+    const counts = { all: _allArticles.length, english:0, hungarian:0, social:0, analysis:0 };
+    _allArticles.forEach(a => { const c = _articleCat(a); counts[c] = (counts[c]||0) + 1; });
+    bar.innerHTML = tabs.map(t => {
+        const active = (_activeArticleTab === t[0]) ? ' active' : '';
+        return '<button class="article-tab-btn' + active + '" onclick="setArticleTab(\'' + t[0] + '\')">' + t[1] + '<span class="cnt">' + (counts[t[0]]||0) + '</span></button>';
+    }).join('');
+}
+
+function displayArticles() {
     const c = document.getElementById('articlesContainer');
-    c.innerHTML = articles.slice(0, 20).map(a => {
+    if (!c) return;
+    const list = (_activeArticleTab === 'all') ? _allArticles : _allArticles.filter(a => _articleCat(a) === _activeArticleTab);
+    if (!list.length) {
+        c.innerHTML = '<div style="text-align:center;padding:22px;color:var(--text-muted);font-style:italic;">No articles in this category right now.</div>';
+        return;
+    }
+    c.innerHTML = list.slice(0, 25).map(a => {
         const title = a.title || 'Untitled';
-        const source = typeof a.source === 'object' ? (a.source?.name || '') : (a.source || '');
+        const source = (typeof a.source === 'object' && a.source) ? (a.source.name || '') : (a.source || '');
         const pub = a.published || a.publishedAt || '';
         const url = a.url || '#';
         const desc = a.description || '';
         let ds = '';
         if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds = pub; } }
-        return `<div class="article-item">
-            <div class="article-title">${title}</div>
-            ${desc ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${desc.substring(0,180)}${desc.length>180?'...':''}</div>` : ''}
-            <div class="article-meta">${source}${ds?' · '+ds:''}</div>
-            ${url !== '#' ? `<a href="${url}" target="_blank" class="article-link">Read article →</a>` : ''}
-        </div>`;
+        return '<div class="article-item">' +
+            '<div class="article-title">' + title + '</div>' +
+            (desc ? '<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">' + desc.substring(0,180) + (desc.length>180?'...':'') + '</div>' : '') +
+            '<div class="article-meta">' + source + (ds ? ' \u00b7 ' + ds : '') + '</div>' +
+            (url !== '#' ? '<a href="' + url + '" target="_blank" class="article-link">Read article &rarr;</a>' : '') +
+        '</div>';
     }).join('');
 }
+
 function displayFallback() {
     document.getElementById('articlesContainer').innerHTML =
         '<div style="text-align:center;padding:22px;color:var(--text-muted);">' +
