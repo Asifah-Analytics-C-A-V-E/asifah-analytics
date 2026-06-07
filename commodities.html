@@ -80,6 +80,7 @@
             --role-sanctions: #ef4444;
             --role-mediator: #a78bfa;
             --role-historic: #eab308;
+            --role-component: #2dd4bf;
             --role-none: #1e3a5f;
 
             /* Shadows */
@@ -852,7 +853,8 @@
             box-shadow: var(--shadow-sm);
         }
         .exposure-table {
-            width: 100%;
+            width: max-content;
+            min-width: 100%;
             border-collapse: collapse;
             font-size: 0.75rem;
         }
@@ -870,6 +872,16 @@
             text-align: left;
             font-size: 0.85rem;
             color: var(--text-primary);
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: var(--bg-card);
+        }
+        .exposure-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background: var(--bg-card);
         }
         .exposure-table td {
             padding: 8px;
@@ -895,6 +907,7 @@
         .exposure-cell.role-sanctions { background: rgba(239,68,68,0.18); color: var(--role-sanctions); border: 1px solid var(--role-sanctions); }
         .exposure-cell.role-mediator { background: rgba(167,139,250,0.18); color: var(--role-mediator); border: 1px solid var(--role-mediator); }
         .exposure-cell.role-historic { background: rgba(234,179,8,0.18); color: var(--role-historic); border: 1px solid var(--role-historic); }
+        .exposure-cell.role-component { background: rgba(45,212,191,0.18); color: var(--role-component); border: 1px solid var(--role-component); }
         .exposure-cell.role-none { background: var(--bg-signal); color: var(--text-muted); }
         /* Multi-role cell — country has multiple roles for the same commodity (e.g. China wheat producer + consumer) */
         .exposure-cell.multi-role { background: linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(249,115,22,0.18) 100%); color: var(--text-primary); border: 1px solid var(--accent-cyan); position: relative; }
@@ -1939,9 +1952,9 @@ const EU_BLOC_TOOLTIP = "The European Union is tracked as a single bloc-level ac
 // Commodity display order — fully alphabetical (22 commodities as of v1.5.0)
 // v1.5.0 (May 23 2026): Phase 1A added pgm, chromium, manganese, phosphate, diamonds, bauxite
 const COMMODITY_ORDER = [
-    'bauxite', 'chromium', 'cobalt', 'copper', 'corn', 'diamonds',
+    'bauxite', 'chromium', 'cobalt', 'coffee', 'copper', 'corn', 'diamonds',
     'gold', 'lithium', 'manganese', 'natural_gas', 'nickel', 'nitrogen', 'oil',
-    'pgm', 'phosphate', 'potash', 'rare_earths', 'semiconductors',
+    'pgm', 'phosphate', 'potash', 'rare_earths', 'rice', 'semiconductors',
     'silver', 'soybeans', 'sugar', 'sulfur', 'uranium', 'wheat'
 ];
 
@@ -2427,7 +2440,7 @@ function renderExposureMatrix() {
                         inner += `<td><span class="exposure-cell role-none" title="No mapped exposure">·</span></td>`;
                     } else {
                         const role = exp.role.toLowerCase();
-                        const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
+                        const roleLabel = role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
                         const rankSuffix = exp.rank ? ` (#${exp.rank} globally)` : '';
                         // Multi-role detection: backend (Edit 1a schema) emits is_multi_role + roles[] when applicable
                         const isMultiRole = exp.is_multi_role === true && Array.isArray(exp.roles) && exp.roles.length > 1;
@@ -2448,14 +2461,15 @@ function renderExposureMatrix() {
                         // rather than the nested roles[] array.
                         const cellClass = isMultiRole || role === 'producer_consumer'
                             ? 'exposure-cell multi-role'
-                            : (['producer','consumer','transit','sanctions_target','mediator','historic_reversal'].includes(role)
-                                ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions').replace('historic_reversal', 'historic')}`
+                            : (['producer','component_producer','consumer','transit','sanctions_target','mediator','historic_reversal'].includes(role)
+                                ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions').replace('historic_reversal', 'historic').replace('component_producer', 'component')}`
                                 : 'exposure-cell role-none');
                         // v1.4.1: Historic Reversal renders as 'H' (yellow).
                         // v1.4.2: producer_consumer string form renders as 'P/C' matching nested multi-role.
                         const initial = (isMultiRole || role === 'producer_consumer')
                             ? 'P/C'
-                            : (role === 'historic_reversal' ? 'H' : roleLabel.charAt(0));
+                            : (role === 'historic_reversal' ? 'H'
+                                : (role === 'component_producer' ? 'Cp' : roleLabel.charAt(0)));
                         const rankBadge = exp.rank ? `<span class="exposure-rank">#${exp.rank}</span>` : '';
                         inner += `<td><span class="${cellClass}" title="${escapeHtml(noteAttr)}">${initial}</span>${rankBadge ? '<br>' + rankBadge : ''}</td>`;
                     }
@@ -2496,6 +2510,7 @@ function renderExposureMatrix() {
         <div class="legend-item"><span class="legend-dot" style="background:rgba(239,68,68,0.6)"></span> S · Sanctions Target</div>
         <div class="legend-item"><span class="legend-dot" style="background:rgba(167,139,250,0.6)"></span> M · Mediator</div>
         <div class="legend-item"><span class="legend-dot" style="background:rgba(234,179,8,0.6)"></span> H · Historic Reversal</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(45,212,191,0.6)"></span> Cp · Component / Assembly Producer</div>
         <div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg, rgba(16,185,129,0.6) 0%, rgba(249,115,22,0.6) 100%)"></span> P/C · Multi-role (producer + consumer)</div>
         <div class="legend-item"><span class="legend-dot" style="background:#1e3a5f"></span> · No Mapped Exposure</div>
     </div>`;
