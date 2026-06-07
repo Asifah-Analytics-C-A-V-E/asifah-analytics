@@ -398,6 +398,12 @@ header h1 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 6px; l
 }
 .pressure-axis-signal-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 .pressure-axis-signal-text { flex: 1; color: var(--text-primary); font-weight: 600; }
+.pressure-axis-signal.has-why { cursor: help; }
+.pressure-axis-signal.has-why .pressure-axis-signal-text { text-decoration: underline dotted rgba(148,197,253,0.5); text-underline-offset: 3px; }
+.signal-why-mark { flex-shrink: 0; font-size: 13px; color: var(--text-muted); opacity: 0.7; align-self: center; }
+.pressure-axis-signal.has-why:hover .signal-why-mark { color: var(--accent); opacity: 1; }
+.bluf-legend { margin-top: 14px; padding: 10px 14px; background: rgba(56,189,248,0.05); border: 1px dashed var(--card-border); border-radius: 6px; font-size: 11.5px; line-height: 1.6; color: var(--text-muted); }
+.bluf-legend strong { color: var(--text-secondary); font-weight: 700; }
 .pressure-axis-empty {
     font-size: 13px;
     color: var(--text-muted);
@@ -890,10 +896,17 @@ function _renderHeroCard(axisName) {
             const sigIcon  = s.icon || '\u26a1';
             const sigText  = (s.short_text || s.text || '').replace(/</g, '&lt;');
             const sigColor = s.color || d.axisColor;
-            const longText = (s.long_text || '').replace(/"/g, '&quot;');
-            return `<div class="pressure-axis-signal" title="${longText}">
+            const rawLong  = (s.long_text || '').trim();
+            const baseText = (s.short_text || s.text || '').trim();
+            const hasWhy   = rawLong && rawLong !== baseText;
+            const longText = rawLong.replace(/"/g, '&quot;');
+            const whyMark  = hasWhy ? '<span class="signal-why-mark" aria-hidden="true">&#9432;</span>' : '';
+            const whyCls   = hasWhy ? ' has-why' : '';
+            const whyTitle = hasWhy ? ` title="${longText}"` : '';
+            return `<div class="pressure-axis-signal${whyCls}"${whyTitle}>
                 <span class="pressure-axis-signal-icon">${sigIcon}</span>
                 <span class="pressure-axis-signal-text" style="color:${sigColor};">${sigText}</span>
+                ${whyMark}
             </div>`;
         }).join('')
         : `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
@@ -933,6 +946,14 @@ function _renderHeroCard(axisName) {
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         <div class="axis-bluf-prose">${(d.blufProse || '').replace(/</g, '&lt;')}</div>
         <div class="pressure-axis-signals">${signalsHtml}</div>
+        <div class="bluf-legend">
+            <strong>How to read this:</strong> each line is a live signal on a 0&ndash;5 escalation ladder &mdash;
+            <strong>L0</strong> baseline, <strong>L1</strong> watch, <strong>L2</strong> warning,
+            <strong>L3</strong> confrontation, <strong>L4</strong> incident, <strong>L5</strong> active conflict.
+            On the commodity axis, <strong>SURGE / HIGH / ELEVATED</strong> measure news-signal pressure
+            (weighted volume &amp; severity of matched reporting), <em>not</em> price moves. Hover any line
+            marked &#9432; for the &ldquo;so what.&rdquo;
+        </div>
         ${regionsLine}
         ${timestampHtml}
     `;
