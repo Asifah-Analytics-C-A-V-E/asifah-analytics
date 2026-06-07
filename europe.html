@@ -516,6 +516,10 @@
         [data-theme="dark"] #cyprus-card h3 { border-bottom-color: #fbbf24; color: #fbbf24; }
         #turkey-card h3 { border-bottom-color: #dc2626; }
         [data-theme="dark"] #turkey-card h3 { border-bottom-color: #f87171; color: #f87171; }
+        #albania-card h3 { border-bottom-color: #f59e0b; }
+        [data-theme="dark"] #albania-card h3 { border-bottom-color: #fbbf24; color: #fbbf24; }
+        #belgium-card h3 { border-bottom-color: #10b981; }
+        [data-theme="dark"] #belgium-card h3 { border-bottom-color: #34d399; color: #34d399; }
         #poland-card h3 { border-bottom-color: #dc2626; }
 
         /* ===== TRAVEL ADVISORY WIDGET ===== */
@@ -884,6 +888,83 @@
        <!-- ========== TARGET CARDS (ALPHABETICAL) ========== -->
         <div class="targets-grid">
 
+            <!-- ALBANIA -->
+            <div class="target-card collapsed" id="albania-card" data-target="albania">
+                <div class="card-collapsed-view">
+                    <div class="collapsed-header">
+                        <div class="collapsed-title">🇦🇱 <span data-i18n="targetAlbania">ALBANIA</span></div>
+                        <button class="collapse-toggle-btn" onclick="event.stopPropagation(); toggleCard('albania-card');" data-i18n="expandBtn">Expand ▼</button>
+                    </div>
+                    <div class="collapsed-metric">
+                        <div class="collapsed-metric-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="collapsed-metric-value">
+                            <div class="collapsed-percentage" id="albaniaCollapsedScore">--</div>
+                            <div class="collapsed-bar"><div class="collapsed-bar-fill" id="albaniaCollapsedBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="collapsed-timestamp" id="albaniaCollapsedTimestamp">Loading...</div>
+                    <a class="collapsed-travel-advisory hidden" id="albaniaCollapsedTA" href="#" target="_blank" onclick="event.stopPropagation();"></a>
+                    <div class="expand-instructions" data-i18n="expandInstructions">Click "Expand" to update data and view full analysis</div>
+                </div>
+                <div class="card-expanded-view">
+                    <h3>🇦🇱 <span data-i18n="targetAlbania">ALBANIA</span></h3>
+                    <button class="collapse-toggle-btn" onclick="toggleCard('albania-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
+                    <a href="albania-stability.html" class="country-stability-btn">
+                        🇦🇱 Albania Stability Index
+                        <span class="btn-subtitle">NATO eastern flank, defense spending & border dynamics</span>
+                    </a>
+                    <div class="card-scan-controls">
+                        <div class="card-time-window">
+                            <label><input type="radio" name="albania-timeWindow" value="1"> <span data-i18n="hours24">24h</span></label>
+                            <label><input type="radio" name="albania-timeWindow" value="2"> <span data-i18n="hours48">48h</span></label>
+                            <label><input type="radio" name="albania-timeWindow" value="7" checked> <span data-i18n="days7">7 Days</span></label>
+                            <label><input type="radio" name="albania-timeWindow" value="30"> <span data-i18n="days30">30 Days</span></label>
+                        </div>
+                        <button class="card-scan-button" onclick="scanSingleTarget('albania')"><span data-i18n="scanButton">Scan OSINT — Update Forecast</span></button>
+                        <div class="loading" id="albania-loading"><div class="loading-spinner"></div><span data-i18n="loadingText">Scanning open sources...</span></div>
+                    </div>
+                    <div class="probability-display">
+                        <div class="probability-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="gauge-background" cx="100" cy="100" r="85"></circle>
+                                <circle class="gauge-progress medium" id="albania-gauge" cx="100" cy="100" r="85" stroke-dasharray="0 534"></circle>
+                            </svg>
+                            <div class="gauge-text medium" id="albania-prob">--</div>
+                        </div>
+                    </div>
+                    <div class="intel-sources" id="albania-intel-sources">
+                        <span class="intel-sources-label">Signals:</span>
+                        <span class="intel-pill inactive">🌐 GDELT</span>
+                        <span class="intel-pill inactive">📰 RSS</span>
+                        <span class="intel-pill inactive">🦋 Bluesky</span>
+                        <span class="intel-pill inactive">✈️ Telegram</span>
+                        <span class="intel-pill inactive">💬 Reddit</span>
+                    </div>
+                    <div class="weather-section" id="albania-weather">
+                        <div class="weather-title">🌤️ 7-Day Forecast — Warsaw</div>
+                        <div class="weather-forecast" id="albania-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
+                    </div>
+                    <div class="timeline-display">
+                        <div class="timeline-label" data-i18n="projectedTimeline">Projected Timeline</div>
+                        <div class="timeline-value" id="albania-timeline" data-i18n="awaitingScan">Awaiting scan...</div>
+                        <div class="timeline-bar" id="albania-bar">
+                            <div class="timeline-segment">0-30d</div><div class="timeline-segment">31-90d</div>
+                            <div class="timeline-segment">91-180d</div><div class="timeline-segment">180+d</div>
+                        </div>
+                    </div>
+                    <div class="travel-advisory-container" id="albania-travel-advisory"><div class="ta-loading">🏛️ Loading State Dept travel advisory...</div></div>
+                    <div class="mil-posture-awaiting" id="albania-mil-posture">
+                        🎖️ <span>Military Posture — <em>Scan OSINT to load</em></span>
+                        <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
+                    </div>
+                    <div class="headlines-section" id="albania-headlines">
+                        <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
+                        <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- ARMENIA -->
             <div class="target-card collapsed" id="armenia-card" data-target="armenia">
                 <div class="card-collapsed-view">
@@ -1106,6 +1187,83 @@
                         <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
                     </div>
                     <div class="headlines-section" id="belarus-headlines">
+                        <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
+                        <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BELGIUM -->
+            <div class="target-card collapsed" id="belgium-card" data-target="belgium">
+                <div class="card-collapsed-view">
+                    <div class="collapsed-header">
+                        <div class="collapsed-title">🇧🇪 <span data-i18n="targetBelgium">BELGIUM</span></div>
+                        <button class="collapse-toggle-btn" onclick="event.stopPropagation(); toggleCard('belgium-card');" data-i18n="expandBtn">Expand ▼</button>
+                    </div>
+                    <div class="collapsed-metric">
+                        <div class="collapsed-metric-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="collapsed-metric-value">
+                            <div class="collapsed-percentage" id="belgiumCollapsedScore">--</div>
+                            <div class="collapsed-bar"><div class="collapsed-bar-fill" id="belgiumCollapsedBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="collapsed-timestamp" id="belgiumCollapsedTimestamp">Loading...</div>
+                    <a class="collapsed-travel-advisory hidden" id="belgiumCollapsedTA" href="#" target="_blank" onclick="event.stopPropagation();"></a>
+                    <div class="expand-instructions" data-i18n="expandInstructions">Click "Expand" to update data and view full analysis</div>
+                </div>
+                <div class="card-expanded-view">
+                    <h3>🇧🇪 <span data-i18n="targetBelgium">BELGIUM</span></h3>
+                    <button class="collapse-toggle-btn" onclick="toggleCard('belgium-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
+                    <a href="belgium-stability.html" class="country-stability-btn">
+                        🇧🇪 Belgium Stability Index
+                        <span class="btn-subtitle">NATO eastern flank, defense spending & border dynamics</span>
+                    </a>
+                    <div class="card-scan-controls">
+                        <div class="card-time-window">
+                            <label><input type="radio" name="belgium-timeWindow" value="1"> <span data-i18n="hours24">24h</span></label>
+                            <label><input type="radio" name="belgium-timeWindow" value="2"> <span data-i18n="hours48">48h</span></label>
+                            <label><input type="radio" name="belgium-timeWindow" value="7" checked> <span data-i18n="days7">7 Days</span></label>
+                            <label><input type="radio" name="belgium-timeWindow" value="30"> <span data-i18n="days30">30 Days</span></label>
+                        </div>
+                        <button class="card-scan-button" onclick="scanSingleTarget('belgium')"><span data-i18n="scanButton">Scan OSINT — Update Forecast</span></button>
+                        <div class="loading" id="belgium-loading"><div class="loading-spinner"></div><span data-i18n="loadingText">Scanning open sources...</span></div>
+                    </div>
+                    <div class="probability-display">
+                        <div class="probability-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="gauge-background" cx="100" cy="100" r="85"></circle>
+                                <circle class="gauge-progress medium" id="belgium-gauge" cx="100" cy="100" r="85" stroke-dasharray="0 534"></circle>
+                            </svg>
+                            <div class="gauge-text medium" id="belgium-prob">--</div>
+                        </div>
+                    </div>
+                    <div class="intel-sources" id="belgium-intel-sources">
+                        <span class="intel-sources-label">Signals:</span>
+                        <span class="intel-pill inactive">🌐 GDELT</span>
+                        <span class="intel-pill inactive">📰 RSS</span>
+                        <span class="intel-pill inactive">🦋 Bluesky</span>
+                        <span class="intel-pill inactive">✈️ Telegram</span>
+                        <span class="intel-pill inactive">💬 Reddit</span>
+                    </div>
+                    <div class="weather-section" id="belgium-weather">
+                        <div class="weather-title">🌤️ 7-Day Forecast — Warsaw</div>
+                        <div class="weather-forecast" id="belgium-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
+                    </div>
+                    <div class="timeline-display">
+                        <div class="timeline-label" data-i18n="projectedTimeline">Projected Timeline</div>
+                        <div class="timeline-value" id="belgium-timeline" data-i18n="awaitingScan">Awaiting scan...</div>
+                        <div class="timeline-bar" id="belgium-bar">
+                            <div class="timeline-segment">0-30d</div><div class="timeline-segment">31-90d</div>
+                            <div class="timeline-segment">91-180d</div><div class="timeline-segment">180+d</div>
+                        </div>
+                    </div>
+                    <div class="travel-advisory-container" id="belgium-travel-advisory"><div class="ta-loading">🏛️ Loading State Dept travel advisory...</div></div>
+                    <div class="mil-posture-awaiting" id="belgium-mil-posture">
+                        🎖️ <span>Military Posture — <em>Scan OSINT to load</em></span>
+                        <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
+                    </div>
+                    <div class="headlines-section" id="belgium-headlines">
                         <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
                         <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
                     </div>
@@ -1932,7 +2090,7 @@
        ================================================ */
 
     const API_BASE = 'https://asifa-europe-backend.onrender.com';
-    const TARGETS = ['armenia', 'azerbaijan', 'belarus', 'cyprus', 'greenland', 'hungary', 'kazakhstan', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'];
+    const TARGETS = ['albania', 'armenia', 'azerbaijan', 'belarus', 'belgium', 'cyprus', 'greenland', 'hungary', 'kazakhstan', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'];
     const CIRCUMFERENCE = 2 * Math.PI * 85; // ~534
 
     // ===== LOADING OVERLAY =====
@@ -2014,7 +2172,7 @@
             collapseBtn: "Collapse ▲",
             expandInstructions: 'Click "Expand" to update data and view full analysis',
             hours24: "24h", hours48: "48h", days7: "7 Days", days30: "30 Days",
-            targetArmenia: "ARMENIA", targetAzerbaijan: "AZERBAIJAN",
+            targetAlbania: "ALBANIA", targetBelgium: "BELGIUM", targetArmenia: "ARMENIA", targetAzerbaijan: "AZERBAIJAN",
             targetBelarus: "BELARUS",
             targetCyprus: "CYPRUS", targetGreenland: "GREENLAND",
             targetHungary: "HUNGARY",
@@ -2038,7 +2196,7 @@
             expandBtn: "Развернуть ▼", collapseBtn: "Свернуть ▲",
             expandInstructions: 'Нажмите "Развернуть" для обновления данных',
             hours24: "24ч", hours48: "48ч", days7: "7 дней", days30: "30 дней",
-            targetArmenia: "АРМЕНИЯ", targetAzerbaijan: "АЗЕРБАЙДЖАН",
+            targetAlbania: "АЛБАНИЯ", targetBelgium: "БЕЛЬГИЯ", targetArmenia: "АРМЕНИЯ", targetAzerbaijan: "АЗЕРБАЙДЖАН",
             targetBelarus: "БЕЛАРУСЬ",
             targetCyprus: "КИПР", targetGreenland: "ГРЕНЛАНДИЯ",
             targetHungary: "ВЕНГРИЯ",
@@ -2060,7 +2218,7 @@
             expandBtn: "Développer ▼", collapseBtn: "Réduire ▲",
             expandInstructions: 'Cliquez "Développer" pour actualiser les données',
             hours24: "24h", hours48: "48h", days7: "7 Jours", days30: "30 Jours",
-            targetArmenia: "ARMÉNIE", targetAzerbaijan: "AZERBAÏDJAN",
+            targetAlbania: "ALBANIE", targetBelgium: "BELGIQUE", targetArmenia: "ARMÉNIE", targetAzerbaijan: "AZERBAÏDJAN",
             targetBelarus: "BIÉLORUSSIE",
             targetCyprus: "CHYPRE", targetGreenland: "GROENLAND",
             targetHungary: "HONGRIE",
@@ -2082,7 +2240,7 @@
             expandBtn: "Erweitern ▼", collapseBtn: "Einklappen ▲",
             expandInstructions: 'Klicken Sie "Erweitern" um Daten zu aktualisieren',
             hours24: "24h", hours48: "48h", days7: "7 Tage", days30: "30 Tage",
-            targetArmenia: "ARMENIEN", targetAzerbaijan: "ASERBAIDSCHAN",
+            targetAlbania: "ALBANIEN", targetBelgium: "BELGIEN", targetArmenia: "ARMENIEN", targetAzerbaijan: "ASERBAIDSCHAN",
             targetBelarus: "BELARUS",
             targetCyprus: "ZYPERN", targetGreenland: "GRÖNLAND",
             targetHungary: "UNGARN",
