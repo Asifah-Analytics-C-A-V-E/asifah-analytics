@@ -7,17 +7,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ukraine Stability Index | Asifah Analytics v2.0.0</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
           onerror="this.onerror=null;this.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
             onerror="this.onerror=null;var s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';document.head.appendChild(s);"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        :root{--bg-color:#f0f5fa;--container-bg:#ffffff;--card-bg:#ffffff;--card-border:#c8daea;--text-primary:#1a2a3a;--text-secondary:#2c4a6e;--text-muted:#7a9ab8;--metric-bg:#ffffff;--metric-hover-shadow:rgba(0,0,0,.15);--article-bg:#f0f5fa;--article-hover:#e0eaf5;--watermark-opacity:.5;--loading-overlay-bg:rgba(240,245,250,.98);--loading-spinner-bg:rgba(56,189,248,.2);--accent:#0284c7}
-        [data-theme="dark"]{--bg-color:#060d1a;--container-bg:#0d1b2e;--card-bg:#0d1b2e;--card-border:#1e3a5f;--text-primary:#e2f0fb;--text-secondary:#93c5fd;--text-muted:#4a7fa5;--metric-bg:#0d1b2e;--metric-hover-shadow:rgba(56,189,248,.15);--article-bg:#0a1628;--article-hover:#152740;--watermark-opacity:.5;--loading-overlay-bg:rgba(6,13,26,.98);--loading-spinner-bg:rgba(56,189,248,.3);--accent:#38bdf8}
+        :root{--bg-color:#f0f5fa;--container-bg:#ffffff;--card-bg:#ffffff;--card-border:#c8daea;--text-primary:#1a2a3a;--text-secondary:#2c4a6e;--text-muted:#7a9ab8;--metric-bg:#ffffff;--metric-hover-shadow:rgba(0,0,0,.15);--article-bg:#f0f5fa;--article-hover:#e0eaf5;--watermark-opacity:.5;--loading-overlay-bg:rgba(240,245,250,.98);--loading-spinner-bg:rgba(56,189,248,.2);--accent:#0284c7;--card:#ffffff;--border:#c8daea;--text-2:#2c4a6e;--wm-filter:none}
+        [data-theme="dark"]{--bg-color:#060d1a;--container-bg:#0d1b2e;--card-bg:#0d1b2e;--card-border:#1e3a5f;--text-primary:#e2f0fb;--text-secondary:#93c5fd;--text-muted:#4a7fa5;--metric-bg:#0d1b2e;--metric-hover-shadow:rgba(56,189,248,.15);--article-bg:#0a1628;--article-hover:#152740;--watermark-opacity:.5;--loading-overlay-bg:rgba(6,13,26,.98);--loading-spinner-bg:rgba(56,189,248,.3);--accent:#38bdf8;--card:#0d1b2e;--border:#1e3a5f;--text-2:#93c5fd;--wm-filter:saturate(3) brightness(0.8) hue-rotate(185deg)}
         body{font-family:'Times New Roman',Times,serif;font-size:14px;background-color:var(--bg-color);color:var(--text-primary);line-height:1.6;padding:20px;min-height:100vh;transition:background-color .3s,color .3s;position:relative}
-        body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');background-size:cover;background-repeat:no-repeat;background-position:center;opacity:var(--watermark-opacity);z-index:0;pointer-events:none}
+        body::before { content:''; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:110vmin; height:110vmin; min-width:800px; min-height:800px; max-width:1400px; max-height:1400px; background-image:url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size:135%; background-repeat:no-repeat; background-position:center; opacity:0.22; filter:var(--wm-filter); z-index:0; pointer-events:none; border-radius:50%; }
+        [data-theme="light"] body::before { filter:none; opacity:0.06; }
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--loading-overlay-bg);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s}
         .loading-overlay.hidden{opacity:0;visibility:hidden}
         .loading-spinner{width:60px;height:60px;border:5px solid var(--loading-spinner-bg);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:30px}
@@ -130,7 +131,15 @@
         .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
         .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
         .main-content { flex: 1; min-width: 0; }
-        @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+        @media (max-width: 1199px) {
+            .page-with-sidebar { display: block; }
+            .menu-toggle { display: flex; }
+            .nav-sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100vh; z-index: 180; overflow-y: auto; transition: left 0.25s ease; border-radius: 0; background: var(--card); padding: 60px 14px 20px; border-right: 1px solid var(--border); box-shadow: 2px 0 24px rgba(0,0,0,0.4); }
+            .nav-sidebar.open { left: 0; }
+            .sidebar-backdrop.open { display: block; }
+            body { padding-top: 64px; }
+            .nav-sidebar::before { content: '\2715  Close'; position: absolute; top: 14px; right: 14px; font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: rgba(56,189,248,0.05); }
+        }
 
         /* ── RHETORIC TRACKER BANNER (canonical green pattern, matches Israel) ── */
         .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
@@ -145,6 +154,30 @@
         .rhetoric-signal-row { padding: 6px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
         .rhetoric-signal-row:last-child { border-bottom: none; }
         .rhetoric-signal-label { font-weight: 700; color: #38bdf8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; font-family: 'Courier New', monospace; }
+        /* ── Canonical chrome retrofit (Russia baseline) ── */
+        .nav-btn.gpi-btn { border-color: rgba(56,189,248,0.55); background: linear-gradient(135deg, rgba(56,189,248,0.16) 0%, rgba(14,165,233,0.10) 100%); box-shadow: 0 0 14px rgba(56,189,248,0.10); }
+        .nav-btn.gpi-btn .nav-btn-status { color: #38bdf8; }
+        .nav-btn.gpi-btn:hover { background: linear-gradient(135deg, rgba(56,189,248,0.22) 0%, rgba(14,165,233,0.14) 100%); }
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; background: var(--card); border: 1.5px solid rgba(56,189,248,0.4); border-radius: 8px; width: 44px; height: 44px; font-size: 22px; cursor: pointer; color: var(--accent); align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.25); transition: all 0.2s ease; }
+        .menu-toggle:hover { background: rgba(56,189,248,0.15); transform: scale(1.05); }
+        .menu-toggle:active { transform: scale(0.95); }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); z-index: 150; }
+        /* Canonical Asifah footer */
+        .asifah-footer { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-top: 24px; margin-bottom: 24px; text-align: center; }
+        .asifah-footer-title { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .asifah-footer-backend { font-size: 0.75rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 6px; }
+        .asifah-footer-cadence { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; }
+        .asifah-footer-sources { font-size: 0.78rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+        .asifah-footer-pills { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+        .asifah-footer-pill { padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease; border: 1.5px solid; }
+        .asifah-footer-pill.bmc { background: rgba(251,191,36,0.12); color: #f59e0b; border-color: rgba(251,191,36,0.5); }
+        .asifah-footer-pill.bmc:hover { background: rgba(251,191,36,0.22); transform: translateY(-1px); }
+        .asifah-footer-pill.contact { background: rgba(56,189,248,0.12); color: var(--accent); border-color: rgba(56,189,248,0.5); }
+        .asifah-footer-pill.contact:hover { background: rgba(56,189,248,0.22); transform: translateY(-1px); }
+        .asifah-footer-disclaimer { font-size: 0.7rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+        .asifah-footer-links { display: flex; justify-content: center; gap: 14px; font-size: 0.75rem; flex-wrap: wrap; }
+        .asifah-footer-links a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
+        .asifah-footer-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -168,7 +201,7 @@
     <div class="container">
         <header>
             <a href="europe.html" class="back-link" data-i18n="backLink">← Back to Europe Dashboard</a>
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Logo" class="header-logo">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Logo" class="header-logo">
             <div class="header-content">
                 <h1 data-i18n="pageTitle">🇺🇦 UKRAINE STABILITY INDEX</h1>
                 <div class="subtitle" data-i18n="pageSubtitle">Multi-Factor Analysis: Frontline Dynamics, Western Aid Flows, Ceasefire Prospects &amp; Reconstruction</div>
@@ -189,69 +222,35 @@
             </div>
         </header>
 
+        <!-- MOBILE DRAWER TOGGLE -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" onclick="toggleSidebar()">&#9776;</button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
         <!-- PAGE WITH SIDEBAR -->
         <div class="page-with-sidebar">
 
         <!-- NAV SIDEBAR -->
-        <nav class="nav-sidebar">
+        <nav class="nav-sidebar" id="navSidebar">
             <div class="nav-sidebar-label">Dashboards</div>
-            <div class="nav-btn inactive-nav">
-                <span class="nav-btn-label">🌍 Africa</span>
-                <span class="nav-btn-status">🔒 Future</span>
-            </div>
-            <a href="asia.html" class="nav-btn active-nav">
-                <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="europe.html" class="nav-btn active-nav">
-                <span class="nav-btn-label">🌍 Europe</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="middle-east.html" class="nav-btn active-nav">
-                <span class="nav-btn-label">🕌 Middle East</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="wha.html" class="nav-btn active-nav">
-                <span class="nav-btn-label">🌎 W. Hemisphere</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
+            <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+            <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+            <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+            <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+            <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
             <div class="nav-divider"></div>
-            <a href="military.html" class="nav-btn military-btn">
-                <span class="nav-btn-label">🎖️ Military Tracker</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="commodities.html" class="nav-btn commodities-btn">
-                <span class="nav-btn-label">🛢️ Commodities</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
+            <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+            <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+            <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
             <div class="nav-divider"></div>
             <div class="nav-sidebar-label">Regional Rhetoric</div>
-            <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">🕌 Middle East</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">🌏 Asia</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">🌍 Europe</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">🌎 W. Hemisphere</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
+            <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+            <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+            <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+            <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
             <div class="nav-divider"></div>
             <div class="nav-sidebar-label">Ukraine</div>
-            <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn">
-                <span class="nav-btn-label">🇺🇦 Pressure Tracker</span>
-                <span class="nav-btn-status">● Live</span>
-            </a>
-            <a href="ukraine.html" class="nav-btn active-nav current-page">
-                <span class="nav-btn-label">🇺🇦 Stability Index</span>
-                <span class="nav-btn-status">◉ You are here</span>
-            </a>
+            <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+            <a href="ukraine.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇺🇦 Stability Index</span><span class="nav-btn-status">◉ You are here</span></a>
         </nav>
 
         <!-- MAIN CONTENT -->
@@ -656,36 +655,20 @@
             <div id="articlesContainer"><div style="text-align:center;color:var(--text-secondary);padding:30px;">Loading articles...</div></div>
         </div>
 
-        <footer style="background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-top:30px;font-size:12px;">
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:22px;">
-                <div>
-                    <h4 style="font-size:13px;font-weight:bold;color:var(--text-primary);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;" data-i18n="footerSources">Data Sources</h4>
-                    <p style="font-size:12px;color:var(--text-secondary);line-height:1.55;" data-i18n="footerSourcesText">IOM DTM, OCHA, UNHCR, Ukrinform, Kyiv Independent, ISW, Kiel Institute, GDELT, NewsAPI, Reddit, and OSINT sources covering frontline dynamics, humanitarian flows, Western aid trackers, and reconstruction signals.</p>
-                </div>
-                <div>
-                    <h4 style="font-size:13px;font-weight:bold;color:var(--text-primary);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;" data-i18n="footerMethodology">Methodology</h4>
-                    <p style="font-size:12px;color:var(--text-secondary);line-height:1.55;" data-i18n="footerMethodologyText">Multi-factor analysis: frontline dynamics, IDP/refugee flows, Western aid pipeline, ceasefire prospects, reconstruction signals, drone/missile attack frequency, and energy infrastructure resilience. Source-weighted aggregation with time-decay scoring; no single source dominates assessment.</p>
-                </div>
-                <div>
-                    <h4 style="font-size:13px;font-weight:bold;color:var(--text-primary);margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;" data-i18n="footerContact">Contact</h4>
-                    <p style="font-size:12px;color:var(--text-secondary);line-height:1.55;" data-i18n="footerContactText">Built by Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a> · <a href="mailto:asifahanalytics@gmail.com" style="color:var(--accent);">asifahanalytics@gmail.com</a></p>
-                </div>
+        <footer class="asifah-footer">
+            <div class="asifah-footer-title">Asifah Analytics &mdash; Ukraine Module</div>
+            <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/ukraine/stability</div>
+            <div class="asifah-footer-cadence">6-hour refresh cycle &middot; Live force-scan available &middot; Last update timestamp above</div>
+            <div class="asifah-footer-sources">IOM DTM &middot; OCHA &middot; UNHCR &middot; ISW &middot; Kiel Institute &middot; Ukrinform &middot; Europe Article Gatherer (GDELT + NewsAPI + RSS + Reddit + Telegram) &middot; NATO &middot; EU Council</div>
+            <div class="asifah-footer-pills">
+                <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc">☕ Buy Me a Coffee</a>
+                <a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact">✉️ Contact Asifah</a>
             </div>
-            <div style="font-size:11px;color:var(--text-muted);padding:14px 16px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:8px;margin-bottom:16px;line-height:1.55;">
-                <strong style="color:#f59e0b;letter-spacing:1px;display:block;margin-bottom:4px;" data-i18n="footerDisclaimerLabel">⚠️ DISCLAIMER</strong>
-                <span data-i18n="footerDisclaimerText">This dashboard provides analytical signals based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Indicators reflect media signal intensity and humanitarian reporting; they should not be interpreted as ground-truth predictions. Not for operational use. Always consult authoritative sources for decision-making.</span>
-            </div>
-            <div style="padding:14px 18px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:8px;text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
-                If you find Asifah Analytics useful and want to support ongoing development, you can ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:bold;">buy me a coffee</a>
-            </div>
-            <div style="text-align:center;padding:12px 0;border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border);margin-bottom:12px;">
-                <a href="privacy.html" style="color:var(--accent);text-decoration:none;font-size:13px;" data-i18n="footerPrivacy">Privacy Policy</a>
-                <span style="color:var(--text-muted);margin:0 12px;">|</span>
-                <a href="contact.html" style="color:var(--accent);text-decoration:none;font-size:13px;" data-i18n="footerContactLink">Contact</a>
-            </div>
-            <div style="text-align:center;font-size:11px;color:var(--text-muted);letter-spacing:1px;line-height:1.6;">
-                © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — Ukraine Stability Index v2.1.0<br>
-                Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.
+            <div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. All scoring and assessments are convergence indicators based on publicly observable signals &mdash; not predictions of action. Not for operational use.</div>
+            <div class="asifah-footer-links">
+                <a href="mission.html">Mission Statement</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="index.html">Home</a>
             </div>
         </footer>
         </div><!-- /main-content -->
@@ -697,6 +680,8 @@
     function initTheme(){const s=localStorage.getItem('asifah-theme')||'light';document.documentElement.setAttribute('data-theme',s)}
     function toggleTheme(){const c=document.documentElement.getAttribute('data-theme');const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('asifah-theme',n);if(window.ukraineMap)initMap()}
     initTheme();
+    function toggleSidebar(){const sb=document.getElementById('navSidebar');const bd=document.getElementById('sidebarBackdrop');if(sb&&bd){sb.classList.toggle('open');bd.classList.toggle('open');}}
+    document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){const sb=document.getElementById('navSidebar');if(sb&&sb.classList.contains('open'))toggleSidebar();}});
     function toggleKnowledgeCard(id){const c=document.getElementById('card-'+id);if(c)c.classList.toggle('collapsed')}
     let loadingStepIndex=0,loadingInterval=null,loadingTimeout=null;
     function startLoadingProgress(){
