@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics - Vietnam Stability Index v1.0.0 -->
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Vietnam Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-color: #f5f5f5;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #e1e8ed;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --text-muted: #95a5a6;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #2c5282;
+            --header-text: #ffffff;
+            --metric-bg: #ffffff;
+            --metric-hover-shadow: rgba(0,0,0,0.15);
+            --article-bg: #f8f9fa;
+            --article-hover: #e8f4f8;
+            --watermark-opacity: 0.50;
+            --watermark-filter: grayscale(20%) brightness(0.8);
+            --watermark-size: 1800px;
+            --watermark-blend: normal;
+            --loading-overlay-bg: rgba(245, 245, 245, 0.98);
+            --loading-spinner-bg: rgba(100, 149, 237, 0.2);
+            --accent: #6495ED;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --card-bg: #2d2d2d;
+            --card-border: #404040;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #2c5282;
+            --header-text: #ffffff;
+            --metric-bg: #2d2d2d;
+            --metric-hover-shadow: rgba(255,255,255,0.1);
+            --article-bg: #353535;
+            --article-hover: #404040;
+            --watermark-opacity: 0.18;
+            --watermark-filter: drop-shadow(0 0 30px rgba(0,212,255,0.9)) drop-shadow(0 0 60px rgba(0,212,255,0.5)) drop-shadow(0 0 90px rgba(0,180,255,0.3)) saturate(2) brightness(1.4);
+            --watermark-size: 1800px;
+            --watermark-blend: screen;
+            --loading-overlay-bg: rgba(26, 26, 26, 0.98);
+            --loading-spinner-bg: rgba(100, 149, 237, 0.3);
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: var(--watermark-size, 1800px);
+            height: var(--watermark-size, 1800px);
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: var(--watermark-opacity);
+            filter: var(--watermark-filter, none);
+            mix-blend-mode: var(--watermark-blend, normal);
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--loading-overlay-bg);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; }
+        .loading-spinner {
+            width: 60px; height: 60px;
+            border: 5px solid var(--loading-spinner-bg);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-status { text-align: center; max-width: 500px; padding: 0 20px; }
+        .loading-title { font-size: 24px; font-weight: bold; color: var(--accent); margin-bottom: 20px; letter-spacing: 1px; }
+        .loading-steps { margin-top: 20px; }
+        .loading-step {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 12px; font-size: 15px; color: var(--text-secondary); transition: all 0.3s ease;
+        }
+        .loading-step.active { color: var(--accent); font-weight: bold; }
+        .loading-step.complete { color: #4ade80; }
+        .step-icon { font-size: 18px; min-width: 20px; }
+        .loading-progress { margin-top: 25px; font-size: 13px; color: var(--text-secondary); font-style: italic; }
+        .loading-error {
+            color: #f87171; font-size: 16px; margin-top: 20px; padding: 15px;
+            background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+        header {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: var(--header-text);
+            padding: 35px; border-radius: 12px; margin-bottom: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            position: relative; display: flex; align-items: center; gap: 30px;
+        }
+        .header-logo { width: 80px; height: 80px; flex-shrink: 0; border-radius: 50%; margin-top: 48px; }
+        .header-content { flex: 1; text-align: center; }
+        h1 { font-size: 28px; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .subtitle { font-size: 16px; font-weight: normal; opacity: 0.95; letter-spacing: 0.5px; }
+        .last-updated { font-size: 13px; opacity: 0.85; margin-top: 10px; }
+
+        .header-controls {
+            position: absolute; top: 35px; right: 35px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 1000;
+        }
+        [dir="rtl"] .header-controls { right: auto; left: 35px; }
+
+        .language-switcher {
+            display: flex; gap: 8px;
+            background: rgba(255,255,255,0.15); padding: 8px 12px;
+            border-radius: 8px; backdrop-filter: blur(10px);
+        }
+        .theme-toggle {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(255,255,255,0.15); padding: 8px 12px;
+            border-radius: 8px; backdrop-filter: blur(10px);
+        }
+        .theme-toggle-label {
+            font-size: 11px; color: rgba(255,255,255,0.9); margin-right: 8px;
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+        }
+        .theme-toggle-switch {
+            position: relative; width: 50px; height: 26px;
+            background: rgba(255,255,255,0.2); border-radius: 13px; cursor: pointer;
+            transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3);
+        }
+        .theme-toggle-switch:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+        .theme-toggle-slider {
+            position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+            background: white; border-radius: 50%; transition: transform 0.3s ease;
+            display: flex; align-items: center; justify-content: center; font-size: 10px;
+        }
+        .theme-toggle-slider::before { content: '\2600\FE0F'; }
+        [data-theme="dark"] .theme-toggle-slider { transform: translateX(24px); }
+        [data-theme="dark"] .theme-toggle-slider::before { content: '\1F319'; }
+
+        .lang-btn {
+            background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);
+            color: white; padding: 6px 14px; font-family: 'Times New Roman', Times, serif;
+            font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .lang-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+        .lang-btn.active { background: white; color: #1e3a5f; border-color: white; }
+
+        .back-link {
+            display: inline-block; position: absolute; top: 20px; left: 20px; margin: 0;
+            padding: 12px 24px; background: rgba(255,255,255,0.2); color: white;
+            text-decoration: none; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease; font-size: 14px; font-weight: bold;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+
+        .map-section {
+            background: var(--container-bg); border: 2px solid var(--card-border);
+            border-radius: 12px; padding: 25px; margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .map-section h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-primary); }
+        .map-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; font-style: italic; }
+
+        .knowledge-library {
+            background: var(--container-bg); border: 2px solid var(--card-border);
+            border-radius: 12px; padding: 25px; margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .knowledge-library h2 { font-size: 24px; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+        .library-icon { font-size: 28px; }
+        .knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .knowledge-card { background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; }
+        .knowledge-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px var(--metric-hover-shadow); }
+        .knowledge-header {
+            background: linear-gradient(135deg, rgba(100, 149, 237, 0.1) 0%, rgba(30, 82, 130, 0.1) 100%);
+            padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; transition: background 0.3s ease;
+        }
+        .knowledge-header:hover { background: linear-gradient(135deg, rgba(100, 149, 237, 0.15) 0%, rgba(30, 82, 130, 0.15) 100%); }
+        .knowledge-header-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: bold; color: var(--text-primary); }
+        .category-icon { font-size: 22px; }
+        .collapse-icon { font-size: 20px; color: var(--accent); transition: transform 0.3s ease; }
+        .knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+        .knowledge-content { padding: 20px; max-height: 500px; overflow-y: auto; transition: max-height 0.3s ease, padding 0.3s ease; }
+        .knowledge-card.collapsed .knowledge-content { max-height: 0; padding: 0 20px; overflow: hidden; }
+        .knowledge-content p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 12px; }
+        .knowledge-content ul { margin-left: 20px; margin-bottom: 12px; }
+        .knowledge-content li { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 6px; }
+        .knowledge-content strong { color: var(--text-primary); }
+        .open-source-disclaimer { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--card-border); }
+        .report-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; }
+        .report-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 16px; background: var(--accent); color: white;
+            text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .report-link:hover { background: #4169E1; transform: translateX(3px); box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3); }
+        [dir="rtl"] .report-link:hover { transform: translateX(-3px); }
+        .knowledge-content::-webkit-scrollbar { width: 8px; }
+        .knowledge-content::-webkit-scrollbar-track { background: var(--article-bg); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        .articles-section {
+            background: var(--container-bg); border-radius: 12px; padding: 25px; margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .section-title { font-size: 20px; margin-bottom: 20px; color: var(--text-primary); font-weight: bold; letter-spacing: 0.5px; }
+        .article-item {
+            background: var(--article-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px;
+            transition: background 0.2s ease, transform 0.2s; border-left: 4px solid #1e3a5f;
+        }
+        [dir="rtl"] .article-item { border-left: none; border-right: 4px solid #1e3a5f; }
+        .article-item:hover { background: var(--article-hover); transform: translateX(4px); }
+        [dir="rtl"] .article-item:hover { transform: translateX(-4px); }
+        .article-title { color: var(--text-primary); font-size: 14px; margin-bottom: 5px; font-weight: 500; }
+        .article-meta { font-size: 12px; color: var(--text-secondary); }
+        .article-link { color: var(--accent); text-decoration: none; font-size: 13px; }
+        .article-link:hover { text-decoration: underline; }
+
+        /* ── RHETORIC BANNER + CARD ── */
+        .rhetoric-link-banner {
+            background: linear-gradient(135deg, #052e16, #064e23);
+            border: 2px solid rgba(34,197,94,0.4);
+            border-radius: 10px; padding: 14px 20px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 15px; flex-wrap: wrap;
+        }
+        .rhetoric-vector-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+        .rhetoric-vector-pill {
+            font-size: 10px; font-weight: 700; padding: 2px 8px;
+            border-radius: 4px; color: white; letter-spacing: 0.5px;
+        }
+
+        footer {
+            background: var(--container-bg); padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border);
+            font-size: 12px; text-align: center; margin-top: 40px; color: var(--text-secondary);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; padding: 25px 20px; }
+            .header-logo { width: 60px; height: 60px; }
+            .header-content { text-align: center; }
+            .header-controls { position: static; align-items: center; }
+            h1 { font-size: 24px; }
+            .back-link { position: static; display: block; width: fit-content; margin: 0 auto 15px; }
+            .knowledge-categories { grid-template-columns: 1fr; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+           Mirrors russia.html + china-stability.html canonical pattern.
+           Always-rendered. Prose + adaptive alert banner + tiles + Strategic Linkage.
+           Vietnam: energy + Indo-Pacific partnership convergence alerts.
+           ═══════════════════════════════════════════════════════════ */
+        .commodity-card {
+            background: var(--container-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .commodity-card {
+            box-shadow: 0 0 6px rgba(56,189,248,0.15);
+        }
+        .commodity-card-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-bottom: 9px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .commodity-prose {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            margin: 10px 0 16px 0;
+            padding: 12px 14px;
+            background: rgba(2,6,23,0.5);
+            border-left: 3px solid #38bdf8;
+            border-radius: 6px;
+        }
+        [data-theme="light"] .commodity-prose { background: #f8fbfe; }
+        .commodity-convergence-alert {
+            display: none;
+            margin: 10px 0 14px 0;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+        }
+        .commodity-convergence-alert.active { display: block; }
+        .commodity-convergence-alert.alert-trilateral {
+            background: linear-gradient(135deg, rgba(56,189,248,0.18) 0%, rgba(14,165,233,0.18) 100%);
+            border-color: #0ea5e9;
+        }
+        .commodity-convergence-alert.alert-trilateral .cca-title { color: #0ea5e9; }
+        .commodity-convergence-alert.alert-trilateral .cca-detail { color: #7dd3fc; }
+        .cca-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #f59e0b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .cca-detail {
+            font-size: 11px;
+            color: #fbbf24;
+            line-height: 1.5;
+        }
+        .commodity-alert-banner {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            display: none;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: rgba(2,6,23,0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        [data-theme="light"] .commodity-pill { background: #f8fbfe; }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(56,189,248,0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.25);
+        }
+        .commodity-pill-signal-count {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .commodity-pill-price {
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+        .commodity-pill-note {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-top: 4px;
+        }
+        .commodity-top-signals {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: rgba(2,6,23,0.5);
+            border-radius: 6px;
+            border-left: 3px solid var(--text-muted);
+            font-size: 11px;
+        }
+        [data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+        .commodity-top-signals .ts-title {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        .commodity-top-signals a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            line-height: 1.45;
+        }
+        .commodity-top-signals a:hover { color: #38bdf8; }
+        .commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+    
+        /* ═══════════════════════════════════════════════════════════
+           CANONICAL ASIA SIDEBAR (Gold Standard — May 8, 2026)
+           ═══════════════════════════════════════════════════════════ */
+        .page-with-sidebar { display: flex; gap: 20px; align-items: flex-start; }
+        .nav-sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+            background: var(--container-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .nav-sidebar-label {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            padding: 8px 8px 4px 8px;
+        }
+        .nav-divider {
+            height: 1px;
+            background: var(--card-border);
+            margin: 6px 4px;
+        }
+        .nav-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.18s;
+        }
+        .nav-btn:hover {
+            background: rgba(56,189,248,0.08);
+            border-color: rgba(56,189,248,0.20);
+            color: var(--text-primary);
+        }
+        .nav-btn-label { flex: 1; }
+        .nav-btn-status {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .active-nav .nav-btn-status { color: #38bdf8; }
+        .rhetoric-btn:hover { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.20); }
+        .rhetoric-btn .nav-btn-status { color: #22c55e; }
+        .military-btn:hover { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.25); }
+        .military-btn .nav-btn-status { color: #a855f7; }
+        .commodity-btn:hover { background: rgba(250,204,21,0.08); border-color: rgba(250,204,21,0.25); }
+        .commodity-btn .nav-btn-status { color: #facc15; }
+        .inactive-nav { opacity: 0.45; cursor: not-allowed; }
+        .inactive-nav .nav-btn-status { color: var(--text-muted); }
+        .current-page {
+            background: rgba(56,189,248,0.12);
+            border-color: rgba(56,189,248,0.40);
+            color: var(--text-primary);
+            cursor: default;
+        }
+        .current-page .nav-btn-status { color: #38bdf8; font-weight: 700; }
+        .main-content { flex: 1; min-width: 0; }
+        /* ── Mobile drawer (<=1199px) ── */
+        .menu-toggle {
+            display: none;
+            position: fixed; top: 14px; left: 14px; z-index: 1600;
+            width: 44px; height: 44px; border-radius: 8px;
+            background: var(--accent); color: #fff; border: none;
+            font-size: 22px; line-height: 1; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+        .sidebar-backdrop {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 1400;
+        }
+        .sidebar-backdrop.open { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
+            .page-with-sidebar { flex-direction: column; }
+            .nav-sidebar {
+                position: fixed; top: 0; left: 0; height: 100vh; width: 260px;
+                transform: translateX(-100%); transition: transform 0.25s ease;
+                z-index: 1500; overflow-y: auto; flex-direction: column;
+                flex-wrap: nowrap; border-radius: 0; padding-top: 64px;
+            }
+            .nav-sidebar.open { transform: translateX(0); }
+            .nav-sidebar-label { width: auto; }
+            .nav-divider { display: block; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-status">
+            <div class="loading-title">Loading Vietnam Stability Data</div>
+            <div class="loading-steps" id="loadingSteps">
+                <div class="loading-step active" id="step1">
+                    <span class="step-icon">&#x23F3;</span>
+                    <span>Fetching OSINT articles on Vietnam...</span>
+                </div>
+                <div class="loading-step" id="step2">
+                    <span class="step-icon">&#x23F3;</span>
+                    <span>Scanning South China Sea maritime activity...</span>
+                </div>
+                <div class="loading-step" id="step3">
+                    <span class="step-icon">&#x23F3;</span>
+                    <span>Analyzing Vanguard Bank and Spratly tensions...</span>
+                </div>
+                <div class="loading-step" id="step4">
+                    <span class="step-icon">&#x23F3;</span>
+                    <span>Compiling U.S. partnership and trade data...</span>
+                </div>
+                <div class="loading-step" id="step5">
+                    <span class="step-icon">&#x23F3;</span>
+                    <span>Rendering dashboard...</span>
+                </div>
+            </div>
+            <div class="loading-progress" id="loadingProgress">This may take 20-40 seconds...</div>
+            <div class="loading-error" id="loadingError" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="asia.html" class="back-link" data-i18n="backLink">&#8592; Back to Dashboard</a>
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
+            <div class="header-content">
+                <h1 data-i18n="pageTitle">🇻🇳 VIETNAM STABILITY INDEX</h1>
+                <div class="subtitle" data-i18n="pageSubtitle">Multi-Factor Analysis: South China Sea Disputes, Communist Party Governance, U.S. Partnership &amp; Trade, Commodity Exposure</div>
+                <div class="last-updated" id="lastUpdated" data-i18n="lastUpdated">Last updated: Loading...</div>
+            </div>
+            <div class="header-controls" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                <div class="language-switcher">
+                    <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
+                    <button class="lang-btn" onclick="switchLanguage('zh', this)">中文</button>
+                    <button class="lang-btn" onclick="switchLanguage('ja', this)">日本語</button>
+                    <button class="lang-btn" onclick="switchLanguage('ko', this)">한국어</button>
+                </div>
+                <div class="theme-toggle" style="padding:4px 8px;">
+                    <span class="theme-toggle-label" style="font-size:9px;" data-i18n="themeToggle">Theme</span>
+                    <div class="theme-toggle-switch" onclick="toggleTheme()" style="width:36px;height:20px;">
+                        <div class="theme-toggle-slider" style="width:14px;height:14px;"></div>
+                    </div>
+                </div>
+                <a href="military.html" style="padding:4px 10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">🎖️ Mil Tracker</a>
+            </div>
+        </header>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             CANONICAL ASIA SIDEBAR (Gold Standard — May 8 2026)
+             ═══════════════════════════════════════════════════════════ -->
+        <div class="page-with-sidebar">
+        <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+        <nav class="nav-sidebar" id="navSidebar">
+            <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
+            <div class="nav-btn inactive-nav">
+                <span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span>
+                <span class="nav-btn-status" data-i18n="nav_future">🔒 Future</span>
+            </div>
+            <a href="asia.html" class="nav-btn active-nav">
+                <span class="nav-btn-label" data-i18n="nav_asia_pacific">🌏 Asia &amp; Pacific</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="europe.html" class="nav-btn active-nav">
+                <span class="nav-btn-label" data-i18n="nav_europe">🌍 Europe</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="middle-east.html" class="nav-btn active-nav">
+                <span class="nav-btn-label" data-i18n="nav_me">🕌 Middle East</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="wha.html" class="nav-btn active-nav">
+                <span class="nav-btn-label" data-i18n="nav_wha">🌎 W. Hemisphere</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="military.html" class="nav-btn military-btn">
+                <span class="nav-btn-label" data-i18n="nav_military">🎖️ Military Tracker</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="gpi.html" class="nav-btn military-btn">
+                <span class="nav-btn-label" data-i18n="nav_gpi">🌐 Global Pressure</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="commodities.html" class="nav-btn commodity-btn">
+                <span class="nav-btn-label" data-i18n="nav_commodities">🛢️ Commodities</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label" data-i18n="nav_rhetoric">Regional Rhetoric</div>
+            <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+                <span class="nav-btn-label" data-i18n="nav_rhetoric_me">🕌 Middle East</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+                <span class="nav-btn-label" data-i18n="nav_rhetoric_asia">🌏 Asia</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+                <span class="nav-btn-label" data-i18n="nav_rhetoric_europe">🌍 Europe</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+                <span class="nav-btn-label" data-i18n="nav_rhetoric_wha">🌎 W. Hemisphere</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label" data-i18n="nav_vietnam">Vietnam</div>
+            <div class="nav-btn inactive-nav">
+                <span class="nav-btn-label" data-i18n="nav_vietnam_rhetoric">🇻🇳 Vietnam Rhetoric</span>
+                <span class="nav-btn-status" data-i18n="nav_soon">🔒 Soon</span>
+            </div>
+            <a href="vietnam-stability.html" class="nav-btn current-page">
+                <span class="nav-btn-label" data-i18n="nav_vietnam_stability">🇻🇳 Vietnam Stability</span>
+                <span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span>
+            </a>
+        </nav>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             MAIN CONTENT
+             ═══════════════════════════════════════════════════════════ -->
+        <div class="main-content">
+
+
+        <!-- U.S. STATE DEPARTMENT — WORLDWIDE CAUTION -->
+        <div style="
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
+            border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        ">
+            <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+            <div style="flex: 1;">
+                <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+                <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+            </div>
+            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+        </div>
+
+        <!-- VIETNAM TRAVEL ADVISORY — Level 1 -->
+        <div style="
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            border: 2px solid #38bdf8; border-radius: 10px; padding: 14px 20px;
+            margin-bottom: 15px; display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        ">
+            <div style="font-size: 24px; flex-shrink: 0;">🇻🇳</div>
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Vietnam Travel Advisory</span>
+                    <span style="background: #2563eb; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;" data-i18n="travel_level">LEVEL 1</span>
+                </div>
+                <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n-html="travel_text"><strong style='color: #38bdf8;'>Exercise Normal Precautions in Vietnam</strong> - State's most favorable rating. Vietnam is broadly safe for travelers; be mindful of strict local laws on political activity and drugs, and watch petty theft in major cities. Monitor maritime and regional developments.</div>
+            </div>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/vietnam-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="travel_button">VIEW ADVISORY →</a>
+        </div>
+
+        <!-- RHETORIC BANNER -->
+        <div class="rhetoric-link-banner">
+            <div>
+                <div style="font-size:13px;font-weight:bold;color:white;" data-i18n="rhetoric_banner_title">📡 Vietnam Rhetoric Tracker</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:3px;" data-i18n="rhetoric_banner_actors">CPV/State · Foreign Ministry · SCS Posture · China Pressure · US Partnership</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                <span id="rhetoricLevelBadge" style="background:#6b7280;color:white;font-size:12px;font-weight:700;padding:5px 14px;border-radius:6px;letter-spacing:0.5px;">📡 Loading…</span>
+                <a href="rhetoric-vietnam.html" style="padding:8px 18px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;" data-i18n="open_tracker">Open Tracker →</a>
+            </div>
+        </div>
+
+        <!-- RHETORIC CARD -->
+        <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--card-border);box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_title">📡 RHETORIC TRACKER</div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
+                <div style="font-size:32px;font-weight:700;color:var(--text-primary);" id="rhetoricScore">--</div>
+                <span id="rhetoricTheatreLabel" style="font-size:13px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Rhetoric posture score · Updated every 6h</div>
+            <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);">
+                <span style="font-style:italic;">Loading...</span>
+            </div>
+            <div id="rhetoricVectorPills" class="rhetoric-vector-pills"></div>
+            <div style="margin-top:15px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="rhetoric-vietnam.html" style="color:#7dd3fc;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="view_full_rhetoric">View Full Rhetoric Analysis →</a>
+            </div>
+            <div id="rhetoricScanInfo" style="margin-top:8px;font-size:10px;color:var(--text-secondary);text-align:center;">--</div>
+        </div>
+
+        <!-- ═══ COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026) ═══ -->
+        <!-- Always-rendered canonical pattern. Mirrors russia.html + china-stability.html. -->
+        <!-- Vietnam: energy + Indo-Pacific partnership convergence alerts. -->
+        <div class="commodity-card" id="vietnamCommodityCard">
+            <div class="commodity-card-title">📊 <span data-i18n="commodityTitle">VIETNAM COMMODITY EXPOSURE</span></div>
+            <!-- Hormuz oil convergence alert (orange/red — surfaces when iran_hormuz_pressure active) -->
+            <div class="commodity-convergence-alert" id="commodityHormuzAlert">
+                <div class="cca-title">⚠️ Energy / oil convergence: ACTIVE</div>
+                <div class="cca-detail" id="commodityHormuzAlertDetail">
+                    Global oil/Hormuz pressure × Vietnam's energy-import and refining reliance — crude and shipping shocks raise input costs for an export-driven economy and add friction to South China Sea oil/gas operations.
+                </div>
+            </div>
+            <!-- Trilateral defense convergence alert (cyan/blue — surfaces when Japan + US active) -->
+            <div class="commodity-convergence-alert alert-trilateral" id="commodityTrilateralAlert">
+                <div class="cca-title">🤝 Indo-Pacific partnership convergence: ACTIVE</div>
+                <div class="cca-detail" id="commodityTrilateralAlertDetail">
+                    US and partners (Japan, Philippines, India) deepening maritime-security ties with Vietnam — converts South China Sea pressure into broader Indo-Pacific deterrence signaling.
+                </div>
+            </div>
+            <div class="commodity-prose" id="commodityProse" data-i18n="commodityLoading">Loading exposure profile…</div>
+            <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+            <div class="commodity-grid" id="commodityGrid"></div>
+            <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+            <!-- Strategic Linkage: Vietnam (supply-chain leverage x maritime-sovereignty risk) -->
+            <div style="margin-top:14px;padding:10px 14px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:8px;font-size:11px;color:var(--text-secondary);line-height:1.55;">
+                <strong style="color:#38bdf8;">Strategic Linkage:</strong> Vietnam sits at the intersection of <strong>maritime-sovereignty risk and supply-chain leverage</strong>. As a leading "China+1" manufacturing and semiconductor assembly/packaging hub, it is a critical node in global electronics supply chains, while sizeable rare-earth reserves and its status as a top rice and #2 coffee exporter give it commodity weight beyond its size. That leverage is counterbalanced by exposure: heavy reliance on exports (under a ~20% US tariff regime), imported energy, and South China Sea disputes over oil/gas blocks at Vanguard Bank. The tracker reads commodity surges as input-cost and supply-chain pressure, and energy/maritime signals as sovereignty-risk multipliers.
+            </div>
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="commodities.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
+            </div>
+            <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+        </div>
+
+        <!-- MAP SECTION -->
+        <div class="map-section">
+            <h2>&#x1F5FA;&#xFE0F; <span data-i18n="mapTitle">Vietnam &#8212; South China Sea Overview</span></h2>
+            <div class="map-subtitle" data-i18n="mapSubtitle">Key cities and South China Sea flashpoints. Cyan = cities; amber = disputed zones (Vanguard Bank, Paracels, Spratlys).</div>
+            <div id="vietnamMap" style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; z-index: 1;"></div>
+        </div>
+
+        <!-- KNOWLEDGE LIBRARY -->
+        <div class="knowledge-library">
+            <h2>
+                <span class="library-icon">&#x1F4DA;</span>
+                <span data-i18n="knowledgeLibraryTitle">Knowledge Library</span>
+            </h2>
+            <p class="open-source-disclaimer">
+                Note: Background information is compiled from open-source research and analysis. One-pager documents for each category are under development.
+            </p>
+
+            <div class="knowledge-categories">
+
+                <!-- South China Sea & Maritime Sovereignty -->
+                <div class="knowledge-card collapsed" id="card-scs_sovereignty">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('scs_sovereignty')">
+                        <div class="knowledge-header-title">
+                            <span class="category-icon">&#x2694;&#xFE0F;</span>
+                            <span>South China Sea &amp; Maritime Sovereignty</span>
+                        </div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The South China Sea is Vietnam&#39;s most acute external flashpoint.</strong> Hanoi&#39;s claims overlap heavily with China&#39;s expansive &quot;nine-dash line,&quot; which the 2016 Hague arbitral tribunal ruled has no legal basis. Beijing rejects that ruling and presses its claims through sustained presence.</p>
+                        <p><strong>Key Friction Points:</strong></p>
+                        <ul>
+                            <li><strong>Vanguard Bank (Bai Tu Chinh):</strong> Recurring standoffs over oil and gas blocks inside Vietnam&#39;s claimed EEZ; China Coast Guard and survey vessels pressure Vietnamese energy operations and their foreign partners</li>
+                            <li><strong>Paracel Islands (Hoang Sa):</strong> Seized by China in 1974, now militarized and fully China-controlled; Vietnam still formally claims them</li>
+                            <li><strong>Spratly Islands (Truong Sa):</strong> Multi-claimant (Vietnam, China, Philippines, Malaysia, Taiwan, Brunei); Vietnam holds the most features after China and has expanded dredging and island-building, fueling a &quot;competitive island building&quot; dynamic</li>
+                            <li><strong>HD-981 precedent (2014):</strong> China&#39;s deployment of a drilling rig in disputed waters sparked a maritime standoff and deadly anti-China riots in Vietnam - the template for escalation risk</li>
+                            <li><strong>Gray-zone pressure:</strong> Fishing-vessel rammings, boat seizures, and China&#39;s maritime militia operating in contested waters</li>
+                            <li><strong>Partnerships:</strong> Vietnam and the Philippines have deepened maritime-security cooperation, framing South China Sea stability as non-negotiable; the U.S. supports Vietnam&#39;s coast-guard and maritime domain awareness</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
+                        <div class="report-links-grid">
+                            <a href="https://amti.csis.org/" target="_blank" class="report-link">&#x1F4D1; CSIS AMTI</a>
+<a href="https://www.chathamhouse.org/" target="_blank" class="report-link">&#x1F4D1; Chatham House</a>
+<a href="https://pca-cpa.org/en/cases/7/" target="_blank" class="report-link">&#x1F4D1; 2016 PCA Ruling</a>
+<a href="https://thediplomat.com/regions/southeast-asia/" target="_blank" class="report-link">&#x1F4D1; The Diplomat - SE Asia</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Government, Party & Communism -->
+                <div class="knowledge-card collapsed" id="card-govt_party">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('govt_party')">
+                        <div class="knowledge-header-title">
+                            <span class="category-icon">&#x1F3DB;&#xFE0F;</span>
+                            <span>Government, Party &amp; Communism</span>
+                        </div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Vietnam is a one-party socialist republic</strong> led by the Communist Party of Vietnam (CPV); there is no legal opposition. Power has recently concentrated sharply under one leader.</p>
+                        <p><strong>Current Leadership:</strong></p>
+                        <ul>
+                            <li><strong>To Lam (paramount leader):</strong> CPV General Secretary since 2024 (after Nguyen Phu Trong&#39;s death), re-elected at the 14th Party Congress in January 2026 with a waiver of the 65-year retirement rule, and elected State President in April 2026 - holding both top posts at once</li>
+                            <li><strong>Break with tradition:</strong> Vietnam&#39;s &quot;four pillars&quot; (Party chief, President, PM, National Assembly Chair) were traditionally held by four people; Lam&#39;s dual role is the most concentrated power since Le Duan (d. 1986) and is widely compared to Xi Jinping&#39;s China</li>
+                            <li><strong>New lineup:</strong> Prime Minister Le Minh Hung (former central bank governor); National Assembly Chair Tran Thanh Man</li>
+                            <li><strong>&quot;Blazing furnace&quot;:</strong> A sweeping anti-corruption campaign (Trong&#39;s legacy) that has removed senior officials - and doubles as a tool of political consolidation</li>
+                            <li><strong>Reform drive:</strong> Province mergers, bureaucracy cuts, and a pivot toward the private sector to chase a 10%+ growth target</li>
+                            <li><strong>Doi Moi:</strong> Market-oriented &quot;socialist-oriented market economy&quot; reforms since 1986 - economic opening without political liberalization; dissent, press, and online speech remain tightly controlled</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports. Updated June 2026.</div>
+                        <div class="report-links-grid">
+                            <a href="https://thediplomat.com/regions/southeast-asia/" target="_blank" class="report-link">&#x1F4D1; The Diplomat</a>
+<a href="https://www.iseas.edu.sg/" target="_blank" class="report-link">&#x1F4D1; ISEAS</a>
+<a href="https://www.bbc.com/news/topics/cyd7y1znxz9t" target="_blank" class="report-link">&#x1F4D1; BBC Vietnam</a>
+<a href="https://freedomhouse.org/country/vietnam" target="_blank" class="report-link">&#x1F4D1; Freedom House</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- U.S. Relations & War Legacy -->
+                <div class="knowledge-card collapsed" id="card-us_relations">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('us_relations')">
+                        <div class="knowledge-header-title">
+                            <span class="category-icon">&#x1F1FA;&#x1F1F8;</span>
+                            <span>U.S. Relations &amp; War Legacy</span>
+                        </div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Former adversaries, now comprehensive strategic partners.</strong> The U.S.-Vietnam relationship is built on war-legacy reconciliation and a shared wariness of China - but is currently strained by trade.</p>
+                        <p><strong>Relationship Pillars:</strong></p>
+                        <ul>
+                            <li><strong>Normalization (1995):</strong> Diplomatic relations established in 1995; 2025 marked both the 30th anniversary of normalization and the 50th anniversary of the fall of Saigon</li>
+                            <li><strong>Comprehensive Strategic Partnership (Sept 2023):</strong> Vietnam&#39;s highest diplomatic tier, spanning trade, security, technology, climate, and people-to-people ties</li>
+                            <li><strong>War legacy (foundational):</strong> U.S.-funded Agent Orange/dioxin remediation, unexploded-ordnance (UXO) clearance, and POW/MIA accounting are repeatedly cited as the bedrock of trust</li>
+                            <li><strong>Security cooperation:</strong> Washington helps build Vietnam&#39;s maritime domain awareness and coast-guard capacity - but this is not a formal alliance; Hanoi guards its autonomy</li>
+                            <li><strong>Trade friction (2025-26):</strong> ~20% U.S. tariff on Vietnamese exports (40% on suspected transshipment), a ~$144B goods gap, an Oct 2025 trade framework, and March 2026 Section 301 probes; a temporary tariff provision expires July 2026</li>
+                            <li><strong>Balancing diplomacy:</strong> To Lam visited Washington (Feb 2026) and Beijing (April 2026) - hedging between the two powers</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports. Updated June 2026.</div>
+                        <div class="report-links-grid">
+                            <a href="https://www.state.gov/countries-areas/vietnam/" target="_blank" class="report-link">&#x1F4D1; U.S. State Dept</a>
+<a href="https://www.congress.gov/crs-product/IF10209" target="_blank" class="report-link">&#x1F4D1; CRS - Vietnam</a>
+<a href="https://www.csis.org/regions/asia/southeast-asia" target="_blank" class="report-link">&#x1F4D1; CSIS - SE Asia</a>
+<a href="https://www.wilsoncenter.org/" target="_blank" class="report-link">&#x1F4D1; Wilson Center</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Economy & Bamboo Diplomacy -->
+                <div class="knowledge-card collapsed" id="card-economy_bamboo">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('economy_bamboo')">
+                        <div class="knowledge-header-title">
+                            <span class="category-icon">&#x1F3ED;</span>
+                            <span>Economy &amp; &quot;Bamboo Diplomacy&quot;</span>
+                        </div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>One of Asia&#39;s fastest-growing economies</strong> and a prime &quot;China+1&quot; manufacturing hub, Vietnam hedges between great powers through flexible &quot;bamboo diplomacy&quot; - rooted, but bending with the wind.</p>
+                        <p><strong>Economic Profile:</strong></p>
+                        <ul>
+                            <li><strong>China+1 / friendshoring:</strong> Electronics and semiconductor assembly and packaging (a component-producer node), apparel, and footwear, as firms diversify supply chains out of China</li>
+                            <li><strong>Commodity weight:</strong> A top global rice exporter and the world&#39;s #2 coffee exporter, with sizeable rare-earth reserves (among the largest globally) relevant to chip and magnet supply chains</li>
+                            <li><strong>Growth ambition:</strong> A 10%+ annual growth target, private-sector-led, moving up the value chain from cheap labor toward technology and productivity</li>
+                            <li><strong>Bamboo diplomacy:</strong> Multi-alignment - Comprehensive Strategic Partnerships with the U.S., China, Russia, India, Japan, South Korea, and Australia; Hanoi refuses to pick a camp</li>
+                            <li><strong>Balancing act:</strong> China is its largest trading partner and a security rival; the U.S. is a top export market and security partner - Vietnam manages both at once</li>
+                            <li><strong>Vulnerability:</strong> Heavy export dependence leaves it exposed to U.S. tariffs and global demand swings</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
+                        <div class="report-links-grid">
+                            <a href="https://www.worldbank.org/en/country/vietnam" target="_blank" class="report-link">&#x1F4D1; World Bank - Vietnam</a>
+<a href="https://asia.nikkei.com/" target="_blank" class="report-link">&#x1F4D1; Nikkei Asia</a>
+<a href="https://www.reuters.com/world/asia-pacific/" target="_blank" class="report-link">&#x1F4D1; Reuters - Asia</a>
+<a href="https://www.iseas.edu.sg/" target="_blank" class="report-link">&#x1F4D1; ISEAS</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mekong, Regional & Environment -->
+                <div class="knowledge-card collapsed" id="card-mekong_regional">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('mekong_regional')">
+                        <div class="knowledge-header-title">
+                            <span class="category-icon">&#x1F30A;</span>
+                            <span>Mekong, Regional &amp; Environment</span>
+                        </div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Beyond the maritime east,</strong> Vietnam faces upstream and climate pressures that threaten its agricultural heartland and shape its neighborhood diplomacy.</p>
+                        <p><strong>Regional &amp; Environmental Pressures:</strong></p>
+                        <ul>
+                            <li><strong>Mekong dams:</strong> Upstream Chinese and Lao hydropower dams cut flow and sediment to the Mekong Delta - Vietnam&#39;s &quot;rice bowl&quot; - worsening drought and saltwater intrusion</li>
+                            <li><strong>Funan Techo Canal:</strong> Cambodia&#39;s China-backed canal project raises Vietnamese concerns over water diversion and growing Chinese influence on its southwestern flank</li>
+                            <li><strong>Climate vulnerability:</strong> The low-lying Mekong Delta faces subsidence, sea-level rise, and salinity; typhoons and flooding regularly hit the central coast</li>
+                            <li><strong>ASEAN:</strong> An active member balancing consensus diplomacy with its own South China Sea interests, while managing China-leaning neighbors Cambodia and Laos</li>
+                            <li><strong>Energy transition:</strong> Balancing coal and gas with renewables and offshore-wind ambitions under a Just Energy Transition Partnership</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
+                        <div class="report-links-grid">
+                            <a href="https://www.stimson.org/project/mekong-dam-monitor/" target="_blank" class="report-link">&#x1F4D1; Stimson Mekong Monitor</a>
+<a href="https://www.mrcmekong.org/" target="_blank" class="report-link">&#x1F4D1; Mekong River Commission</a>
+<a href="https://asean.org/" target="_blank" class="report-link">&#x1F4D1; ASEAN</a>
+<a href="https://www.thethirdpole.net/" target="_blank" class="report-link">&#x1F4D1; The Third Pole</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RECENT ARTICLES — TABBED -->
+        <div class="articles-section">
+            <div class="section-title" data-i18n="articles_title">📰 Recent Vietnam & South China Sea Articles</div>
+            <!-- Tab buttons -->
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <button onclick="switchArticleTab('en')" id="tab-en" style="padding:6px 16px;border-radius:6px;border:2px solid var(--accent);background:var(--accent);color:white;font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">🇺🇸 English</button>
+                <button onclick="switchArticleTab('vi')" id="tab-vi" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">🇻🇳 Tiếng Việt</button>
+                <button onclick="switchArticleTab('bluesky')" id="tab-bluesky" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">🦋 Bluesky</button>
+                <button onclick="switchArticleTab('reddit')" id="tab-reddit" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">💬 Reddit</button>
+                <button onclick="switchArticleTab('telegram')" id="tab-telegram" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">📡 Telegram</button>
+            </div>
+            <div id="articlesContainer">
+                <div style="text-align:center;color:var(--text-secondary);padding:30px;">Loading articles...</div>
+            </div>
+        </div>
+
+        </div> <!-- /main-content -->
+        </div> <!-- /page-with-sidebar -->
+
+        <footer>
+            <div class="footer-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:25px;margin-bottom:20px;">
+                <div>
+                    <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_methodology_title">Methodology</h4>
+                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n="footer_methodology_text">Multi-factor stability assessment integrating South China Sea maritime pressure (Vanguard Bank, Paracels, Spratlys, China Coast Guard activity), Communist Party governance and leadership consolidation, the U.S.-Vietnam comprehensive strategic partnership and trade friction, and commodity / supply-chain exposure. Rhetoric tracker score (theatre 0-100) drawn from /api/rhetoric/vietnam; commodity convergence alerts surface when energy or supply-chain pressure intersects Vietnam exposure.</p>
+                </div>
+                <div>
+                    <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_sources_title">Data Sources</h4>
+                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n="footer_sources_text">RSS (VnExpress, Tuoi Tre News, VietnamNet, Vietnam News, Reuters), GDELT (English + Vietnamese queries), NewsAPI, Brave Search (tertiary fallback), BlueSky Asia aggregator. Reddit r/vietnam, r/geopolitics, r/CredibleDefense. CSIS AMTI, Chatham House, CRS, U.S. State Dept reports for background.</p>
+                </div>
+                <div>
+                    <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_contact_title">Contact</h4>
+                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n-html="footer_contact_text">Built by Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a><br>Inquiries: <a href="mailto:asifahanalytics@gmail.com" style="color:var(--accent);">asifahanalytics@gmail.com</a></p>
+                </div>
+            </div>
+
+            <div style="padding:15px; background:rgba(139,0,0,0.15); border-radius:8px; font-size:0.8em; color:var(--text-secondary); line-height:1.55;" data-i18n-html="footer_disclaimer">
+                <strong>⚠️ DISCLAIMER:</strong> This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Stability indicators reflect media signal intensity and should not be interpreted as ground-truth predictions. Always consult authoritative sources for decision-making. Updated every ~12 hours · Not for operational use.
+            </div>
+
+            <div style="margin-top:18px; padding:14px; background:rgba(139,0,0,0.18); border-radius:8px; text-align:center;" data-i18n-html="footer_support">
+                If you find Asifah Analytics useful and want to support ongoing development, you can ☕ <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--accent);">buy me a coffee</a>
+            </div>
+
+            <div style="margin-top:22px; font-size:0.75em; color:var(--text-muted); text-align:center;">
+                &copy; 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v2.0.0<br>
+                Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.
+            </div>
+        </footer>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        const BACKEND_URL = 'https://asifah-asia-backend.onrender.com';
+        const RTL_LANGS = [];
+
+        // Theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('asifah-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('asifah-theme', next);
+        }
+        initTheme();
+
+        // Knowledge Library Toggle
+        function toggleKnowledgeCard(cardId) {
+            const card = document.getElementById('card-' + cardId);
+            if (card) card.classList.toggle('collapsed');
+        }
+
+        // Loading Overlay
+        let loadingStepIndex = 0;
+        let loadingInterval = null;
+        let loadingTimeout = null;
+        const STEP_COUNT = 5;
+
+        function startLoadingProgress() {
+            const steps = Array.from({length: STEP_COUNT}, (_, i) => 'step' + (i + 1));
+            loadingInterval = setInterval(() => {
+                if (loadingStepIndex < steps.length - 1) {
+                    const cur = document.getElementById(steps[loadingStepIndex]);
+                    if (cur) { cur.classList.remove('active'); cur.classList.add('complete'); cur.querySelector('.step-icon').textContent = '\u2713'; }
+                    loadingStepIndex++;
+                    const next = document.getElementById(steps[loadingStepIndex]);
+                    if (next) next.classList.add('active');
+                }
+            }, 5000);
+            loadingTimeout = setTimeout(() => {
+                document.getElementById('loadingError').style.display = 'block';
+                document.getElementById('loadingError').textContent = '\u26A0\uFE0F Loading is taking longer than expected. Please wait or refresh.';
+            }, 60000);
+        }
+
+        function hideLoadingOverlay() {
+            if (loadingInterval) clearInterval(loadingInterval);
+            if (loadingTimeout) clearTimeout(loadingTimeout);
+            document.querySelectorAll('.loading-step').forEach(step => {
+                step.classList.remove('active');
+                step.classList.add('complete');
+                step.querySelector('.step-icon').textContent = '\u2713';
+            });
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.classList.add('hidden');
+            }, 500);
+        }
+
+// Fetch articles from backend
+        async function loadArticles() {
+            try {
+                const response = await fetch(BACKEND_URL + '/api/asia/threat/vietnam');
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                // Pull from all available article sources in the cached response
+                const articles = data.articles_en || data.articles || [];
+                const articlesBsky = data.articles_bluesky || [];
+                const articlesReddit = data.articles_reddit || [];
+                const articlesTelegram = data.articles_telegram || [];
+                const articlesVi = data.articles_vi || [];
+                const combined = [
+                    ...articles.map(a => ({...a, language: a.language || 'en'})),
+                    ...articlesVi.map(a => ({...a, language: 'vi'})),
+                    ...articlesBsky.map(a => ({...a, language: 'bluesky'})),
+                    ...articlesReddit.map(a => ({...a, language: 'reddit'})),
+                    ...articlesTelegram.map(a => ({...a, language: 'telegram'})),
+                ];
+                if (combined.length > 0) {
+                    displayArticles(combined);
+                } else if (articles.length > 0) {
+                    displayArticles(articles);
+                } else {
+                    await loadArticlesFallback();
+                }
+            } catch (error) {
+                console.warn('Primary endpoint failed:', error.message);
+                await loadArticlesFallback();
+            }
+        }
+
+        async function loadArticlesFallback() {
+            try {
+                const response = await fetch(BACKEND_URL + '/api/asia/threat/vietnam');
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                const articles = data.articles_en || data.articles || [];
+                if (articles.length > 0) {
+                    displayArticles(articles);
+                } else {
+                    displayArticlesFallbackStatic();
+                }
+            } catch (error) {
+                console.warn('Fallback also failed:', error.message);
+                displayArticlesFallbackStatic();
+            }
+        }
+
+        // ── TABBED ARTICLES ──
+        let _allArticles = [];
+
+        function switchArticleTab(lang) {
+            ['en','vi','bluesky','reddit','telegram'].forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                if (!btn) return;
+                if (t === lang) {
+                    btn.style.background = 'var(--accent)';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = 'var(--accent)';
+                } else {
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'var(--text-secondary)';
+                    btn.style.borderColor = 'var(--card-border)';
+                }
+            });
+            const filtered = _allArticles.filter(a => {
+                const src = (a.source || a.source_name || '').toLowerCase();
+                const lng = (a.language || '').toLowerCase();
+                if (lang === 'reddit') return src.includes('r/') || src.includes('reddit') || lng === 'reddit';
+                if (lang === 'telegram') return src.includes('telegram') || lng === 'telegram';
+                if (lang === 'bluesky') return src.includes('bluesky') || lng === 'bluesky';
+                if (lang === 'vi') return lng === 'vi';
+                // Default EN — everything else
+                return lng === 'en' || lng === '' || lng === 'multi' ||
+                    (!src.includes('r/') && !src.includes('reddit') &&
+                     !src.includes('telegram') && !src.includes('bluesky') &&
+                     lng !== 'bluesky' && lng !== 'reddit' && lng !== 'telegram' && lng !== 'vi');
+            });
+            renderArticleList(filtered.length > 0 ? filtered : _allArticles.slice(0, 20));
+        }
+
+        function renderArticleList(articles) {
+            const container = document.getElementById('articlesContainer');
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-style:italic;">No articles in this category yet — try another tab or run a fresh scan.</div>';
+                return;
+            }
+            container.innerHTML = articles.slice(0, 20).map(article => {
+                const title = article.title || 'Untitled';
+                const source = typeof article.source === 'object'
+                    ? (article.source.name || '') : (article.source || article.source_name || '');
+                const published = article.published || article.publishedAt || article.date || '';
+                const url = article.url || article.link || '#';
+                const description = article.description || '';
+                let dateStr = '';
+                if (published) {
+                    try { dateStr = new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+                    catch(e) { dateStr = published; }
+                }
+                return '<div class="article-item">' +
+                    '<div class="article-title">' + title + '</div>' +
+                    (description ? '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;">' + description.substring(0, 200) + (description.length > 200 ? '...' : '') + '</div>' : '') +
+                    '<div class="article-meta">' + source + (dateStr ? ' · ' + dateStr : '') + '</div>' +
+                    (url !== '#' ? '<a href="' + url + '" target="_blank" class="article-link">Read article →</a>' : '') +
+                    '</div>';
+            }).join('');
+        }
+
+        function displayArticles(articles) {
+            _allArticles = articles || [];
+            switchArticleTab('en');
+        }
+
+        function displayArticlesFallbackStatic() {
+            const container = document.getElementById('articlesContainer');
+            container.innerHTML =
+                '<div style="text-align:center; padding:30px; color:var(--text-secondary);">' +
+                '<p style="font-size:16px; margin-bottom:15px;">&#x1F4E1; Live article feed loading for Vietnam.</p>' +
+                '<p style="font-size:13px; margin-bottom:20px;">Check these curated OSINT sources:</p>' +
+                '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px;">' +
+                '<a href="https://e.vnexpress.net/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">VnExpress</a>' +
+                '<a href="https://tuoitrenews.vn/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">Tuoi Tre News</a>' +
+                '<a href="https://news.usni.org/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">USNI News</a>' +
+                '<a href="https://amti.csis.org/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">CSIS AMTI</a>' +
+                '</div>' +
+                '</div>';
+        }
+        async function loadRhetoricData() {
+            try {
+                const r = await fetch('https://asifah-asia-backend.onrender.com/api/rhetoric/vietnam/summary');
+                const data = await r.json();
+                if (!data.success) return;
+                const LEVELS = { 0:'#6b7280',1:'#3b82f6',2:'#f59e0b',3:'#f97316',4:'#ef4444',5:'#dc2626' };
+                const LABELS = { 0:'Baseline',1:'Rhetoric',2:'Warning',3:'Confrontation',4:'High Alert',5:'Active Conflict' };
+                const level = data.outbound_max_level || 0;
+                const color = LEVELS[level] || '#6b7280';
+                // Banner badge
+                const badge = document.getElementById('rhetoricLevelBadge');
+                if (badge) { badge.style.background = color; badge.textContent = `⚡ Level ${level} — ${LABELS[level]}`; }
+                // Card score + label
+                const scoreEl = document.getElementById('rhetoricScore');
+                if (scoreEl) scoreEl.textContent = `${data.outbound_score || 0}/100`;
+                const labelEl = document.getElementById('rhetoricTheatreLabel');
+                if (labelEl) { labelEl.textContent = LABELS[level] || '--'; labelEl.style.background = color; }
+                // Scan info
+                const scanEl = document.getElementById('rhetoricScanInfo');
+                if (scanEl && data.scanned_at) {
+                    const ago = Math.round((Date.now() - new Date(data.scanned_at)) / 60000);
+                    scanEl.textContent = `Last scan: ${ago < 60 ? ago+'m' : Math.round(ago/60)+'h'} ago`;
+                }
+                // Actor rows
+                const actorEl = document.getElementById('rhetoricActorList');
+                if (actorEl) {
+                    const actors = [
+                        { label: '👁️ Lai / Presidential', level: data.lai_level || 0 },
+                        { label: '⚔️ ROC Defense',         level: data.defense_level || 0 },
+                        { label: '🤝 US Partnership',       level: data.us_level || 0 },
+                        { label: '🇨🇳 PLA Pressure',        level: data.china_pla_level || 0 },
+                    ];
+                    actorEl.innerHTML = actors.map(a =>
+                        `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--card-border);">
+                            <span>${a.label}</span>
+                            <span style="font-weight:700;color:${LEVELS[a.level]};">L${a.level}</span>
+                        </div>`
+                    ).join('');
+                }
+            } catch(e) { console.warn('[Rhetoric] Load failed:', e); }
+        }
+
+        // Translation system
+        const translations = {
+            en: {
+                "pageTitle":             "🇻🇳 VIETNAM STABILITY INDEX",
+                "pageSubtitle":          "Multi-Factor Analysis: South China Sea Disputes, Communist Party Governance, U.S. Partnership & Trade, Commodity Exposure",
+                "backLink":              "← Back to Dashboard",
+                "themeToggle":           "Theme",
+                "lastUpdated":           "Last updated: ",
+                "mapTitle":              "Vietnam — South China Sea Overview",
+                "mapSubtitle":           "Key cities and South China Sea flashpoints. Cyan = cities; amber = disputed zones (Vanguard Bank, Paracels, Spratlys).",
+                "knowledgeLibraryTitle": "Knowledge Library",
+                "commodityTitle":        "VIETNAM COMMODITY EXPOSURE",
+                "commodityLoading":      "⏳ Loading commodity exposure tiles…",
+                "commodityFullLink":     "View Full Commodity Dashboard →",
+                "nav_dashboards":        "Dashboards",
+                "nav_rhetoric":          "Regional Rhetoric",
+                "nav_vietnam":            "Vietnam",
+                "nav_africa":            "🌍 Africa",
+                "nav_future":            "🔒 Future",
+                "nav_asia_pacific":      "🌏 Asia & Pacific",
+                "nav_europe":            "🌍 Europe",
+                "nav_me":                "🕌 Middle East",
+                "nav_wha":               "🌎 W. Hemisphere",
+                "nav_military":          "🎖️ Military Tracker",
+                "nav_gpi":               "🌐 Global Pressure",
+                "nav_commodities":       "🛢️ Commodities",
+                "nav_rhetoric_me":       "🕌 Middle East",
+                "nav_rhetoric_asia":     "🌏 Asia",
+                "nav_rhetoric_europe":   "🌍 Europe",
+                "nav_rhetoric_wha":      "🌎 W. Hemisphere",
+                "nav_vietnam_rhetoric":   "🇻🇳 Vietnam Rhetoric",
+                "nav_vietnam_stability":  "🇻🇳 Vietnam Stability",
+                "nav_soon":            "🔒 Soon",
+                "nav_here":              "◉ You are here",
+                "ww_caution_label":      "⚠️ U.S. State Department — Worldwide Caution",
+                "ww_caution_text":       "Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.",
+                "ww_caution_button":     "VIEW CAUTION →",
+                "travel_label":          "U.S. State Department — Vietnam Travel Advisory",
+                "travel_level":         "LEVEL 1",
+                "travel_text":           "<strong style=\"color: #38bdf8;\">Exercise Normal Precautions in Vietnam</strong> - State's most favorable rating. Vietnam is broadly safe for travelers; be mindful of strict local laws on political activity and drugs, and watch petty theft in major cities. Monitor maritime and regional developments.",
+                "travel_button":         "VIEW ADVISORY →",
+                "rhetoric_banner_title": "📡 Vietnam Rhetoric Tracker",
+                "rhetoric_banner_actors":"CPV/State · Foreign Ministry · SCS Posture · China Pressure · US Partnership",
+                "open_tracker":          "Open Tracker →",
+                "rhetoric_card_title":   "📡 RHETORIC TRACKER",
+                "rhetoric_card_subtitle":"Rhetoric posture score · Updated every 6h",
+                "view_full_rhetoric":    "View Full Rhetoric Analysis →",
+                "articles_title":        "📰 Recent Vietnam & South China Sea Articles",
+                "footer_methodology_title":"Methodology",
+                "footer_methodology_text":"Multi-factor stability assessment integrating South China Sea maritime pressure (Vanguard Bank, Paracels, Spratlys, China Coast Guard activity), Communist Party governance and leadership consolidation, the U.S.-Vietnam comprehensive strategic partnership and trade friction, and commodity / supply-chain exposure. Rhetoric tracker score (theatre 0-100) drawn from /api/rhetoric/vietnam; commodity convergence alerts surface when energy or supply-chain pressure intersects Vietnam exposure.",
+                "footer_sources_title":  "Data Sources",
+                "footer_sources_text":   "RSS (VnExpress, Tuoi Tre News, VietnamNet, Vietnam News, Reuters), GDELT (English + Vietnamese queries), NewsAPI, Brave Search (tertiary fallback), BlueSky Asia aggregator. Reddit r/vietnam, r/geopolitics, r/CredibleDefense. CSIS AMTI, Chatham House, CRS, U.S. State Dept reports for background.",
+                "footer_contact_title":  "Contact",
+                "footer_contact_text":   "Built by Asifah Analytics — <a href=\"https://asifahanalytics.com\" style=\"color:var(--accent);\">asifahanalytics.com</a><br>Inquiries: <a href=\"mailto:asifahanalytics@gmail.com\" style=\"color:var(--accent);\">asifahanalytics@gmail.com</a>",
+                "footer_disclaimer":     "<strong>⚠️ DISCLAIMER:</strong> This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Stability indicators reflect media signal intensity and should not be interpreted as ground-truth predictions. Always consult authoritative sources for decision-making. Updated every ~12 hours · Not for operational use.",
+                "footer_support":        "If you find Asifah Analytics useful and want to support ongoing development, you can ☕ <a href=\"https://www.buymeacoffee.com/asifahanalytics\" target=\"_blank\" style=\"color:var(--accent);\">buy me a coffee</a>"
+            },
+            zh: {
+                "pageTitle":             "🇻🇳 越南穩定指數",
+                "pageSubtitle":          "多因素分析：南海爭端、共產黨治理、美國夥伴關係與貿易、大宗商品風險敞口",
+                "backLink":              "← 返回儀表板",
+                "themeToggle":           "主題",
+                "lastUpdated":           "最後更新：",
+                "mapTitle":              "越南 — 南海概覽",
+                "mapSubtitle":           "主要城市與南海爭議熱點。青色為城市；琥珀色為爭議區（萬安灘、西沙、南沙）。",
+                "knowledgeLibraryTitle": "知識庫",
+                "commodityTitle":        "越南大宗商品風險敞口",
+                "commodityLoading":      "⏳ 正在載入大宗商品風險敞口資訊…",
+                "commodityFullLink":     "查看完整大宗商品儀表板 →",
+                "nav_dashboards":        "區域儀表板",
+                "nav_rhetoric":          "區域言論",
+                "nav_vietnam":            "越南",
+                "nav_africa":            "🌍 非洲",
+                "nav_future":            "🔒 未來",
+                "nav_asia_pacific":      "🌏 亞太",
+                "nav_europe":            "🌍 歐洲",
+                "nav_me":                "🕌 中東",
+                "nav_wha":               "🌎 西半球",
+                "nav_military":          "🎖️ 軍事追蹤",
+                "nav_gpi":               "🌐 全球壓力",
+                "nav_commodities":       "🛢️ 大宗商品",
+                "nav_rhetoric_me":       "🕌 中東",
+                "nav_rhetoric_asia":     "🌏 亞洲",
+                "nav_rhetoric_europe":   "🌍 歐洲",
+                "nav_rhetoric_wha":      "🌎 西半球",
+                "nav_vietnam_rhetoric":   "🇻🇳 越南言論",
+                "nav_vietnam_stability":  "🇻🇳 越南穩定",
+                "nav_soon":            "🔒 即將推出",
+                "nav_here":              "◉ 當前頁面",
+                "ww_caution_label":      "⚠️ 美國國務院 — 全球警示",
+                "ww_caution_text":       "美國對伊朗發動作戰行動後，全球各地特別是中東的美國公民應遵從最近的美國大使館或領事館指引。",
+                "ww_caution_button":     "查看警示 →",
+                "travel_label":          "美國國務院 — 越南旅行警示",
+                "travel_level":         "一級",
+                "travel_text":           "<strong style=\"color: #38bdf8;\">前往越南應採取正常預防措施</strong>，這是美國國務院最有利的評級。越南對旅客大致安全；請注意當地對政治活動和毒品的嚴格法律，並在主要城市提防扒竊。請關注海事與區域動態。",
+                "travel_button":         "查看公告 →",
+                "rhetoric_banner_title": "📡 越南言論追蹤器",
+                "rhetoric_banner_actors":"越共/政府 · 外交部 · 南海態勢 · 中國壓力 · 美國夥伴",
+                "open_tracker":          "打開追蹤器 →",
+                "rhetoric_card_title":   "📡 言論追蹤器",
+                "rhetoric_card_subtitle":"言論態勢評分 · 每 6 小時更新",
+                "view_full_rhetoric":    "查看完整言論分析 →",
+                "articles_title":        "📰 最新越南與南海報道",
+                "footer_methodology_title":"方法論",
+                "footer_methodology_text":"整合南海海事壓力（萬安灘、西沙、南沙、中國海警活動）、共產黨治理與權力集中、美越全面戰略夥伴關係與貿易摩擦，以及大宗商品/供應鏈風險敞口的多因素穩定性評估。言論追蹤器評分（戰區 0-100）來自 /api/rhetoric/vietnam；當能源或供應鏈壓力與越南風險敞口交集時，會出現大宗商品收斂警報。",
+                "footer_sources_title":  "資料來源",
+                "footer_sources_text":   "RSS（VnExpress、Tuoi Tre News、VietnamNet、《越南新聞》、路透社）、GDELT（英語+越南語查詢）、NewsAPI、Brave Search（第三級備援）、BlueSky 亞洲聚合。Reddit r/vietnam、r/geopolitics、r/CredibleDefense。CSIS AMTI、Chatham House、CRS、美國國務院報告作為背景。",
+                "footer_contact_title":  "聯絡",
+                "footer_contact_text":   "由 Asifah Analytics 構建 — <a href=\"https://asifahanalytics.com\" style=\"color:var(--accent);\">asifahanalytics.com</a><br>諮詢：<a href=\"mailto:asifahanalytics@gmail.com\" style=\"color:var(--accent);\">asifahanalytics@gmail.com</a>",
+                "footer_disclaimer":     "<strong>⚠️ 免責聲明：</strong> 本儀表板基於開源情報聚合和演算法分析提供機率估計，不構成情報評估、軍事建議或政策推薦。穩定性指標反映媒體訊號強度，不應解讀為地面真相預測。決策時請始終參考權威來源。每約 12 小時更新 · 不可用於作戰目的。",
+                "footer_support":        "如果您覺得 Asifah Analytics 有用並希望支持持續開發，您可以 ☕ <a href=\"https://www.buymeacoffee.com/asifahanalytics\" target=\"_blank\" style=\"color:var(--accent);\">請我喝咖啡</a>"
+            },
+            ja: {
+                "pageTitle":             "🇻🇳 ベトナム安定指数",
+                "pageSubtitle":          "多要因分析：南シナ海紛争、共産党統治、米国とのパートナーシップと貿易、コモディティ依存度",
+                "backLink":              "← ダッシュボードに戻る",
+                "themeToggle":           "テーマ",
+                "lastUpdated":           "最終更新：",
+                "mapTitle":              "ベトナム — 南シナ海概観",
+                "mapSubtitle":           "主要都市と南シナ海のフラッシュポイント。シアン＝都市、アンバー＝係争区域（バンガード堡、西沙、南沙）。",
+                "knowledgeLibraryTitle": "ナレッジライブラリ",
+                "commodityTitle":        "ベトナム コモディティ依存度",
+                "commodityLoading":      "⏳ コモディティ依存度タイルを読み込み中…",
+                "commodityFullLink":     "完全なコモディティダッシュボードを見る →",
+                "nav_dashboards":        "地域ダッシュボード",
+                "nav_rhetoric":          "地域レトリック",
+                "nav_vietnam":            "ベトナム",
+                "nav_africa":            "🌍 アフリカ",
+                "nav_future":            "🔒 将来",
+                "nav_asia_pacific":      "🌏 アジア太平洋",
+                "nav_europe":            "🌍 欧州",
+                "nav_me":                "🕌 中東",
+                "nav_wha":               "🌎 西半球",
+                "nav_military":          "🎖️ 軍事トラッカー",
+                "nav_gpi":               "🌐 グローバル圧力",
+                "nav_commodities":       "🛢️ コモディティ",
+                "nav_rhetoric_me":       "🕌 中東",
+                "nav_rhetoric_asia":     "🌏 アジア",
+                "nav_rhetoric_europe":   "🌍 欧州",
+                "nav_rhetoric_wha":      "🌎 西半球",
+                "nav_vietnam_rhetoric":   "🇻🇳 ベトナム レトリック",
+                "nav_vietnam_stability":  "🇻🇳 ベトナム安定",
+                "nav_soon":            "🔒 近日公開",
+                "nav_here":              "◉ 現在のページ",
+                "ww_caution_label":      "⚠️ 米国務省 — 世界規模の注意喚起",
+                "ww_caution_text":       "米国のイラン作戦行動開始を受け、世界中、特に中東にいる米国民は、最寄りの米国大使館・領事館の指示に従ってください。",
+                "ww_caution_button":     "注意喚起を見る →",
+                "travel_label":          "米国務省 — ベトナム渡航勧告",
+                "travel_level":         "レベル 1",
+                "travel_text":           "<strong style=\"color: #38bdf8;\">ベトナムでは通常の注意を払ってください</strong> - 米国務省の最も良好な評価です。ベトナムは旅行者にとって概ね安全ですが、政治活動や薬物に関する厳格な現地法に注意し、主要都市ではスリに警戒してください。海事および地域の動向を監視してください。",
+                "travel_button":         "勧告を見る →",
+                "rhetoric_banner_title": "📡 ベトナム レトリック・トラッカー",
+                "rhetoric_banner_actors":"ベトナム共産党/政府 · 外務省 · 南シナ海態勢 · 中国の圧力 · 米国連携",
+                "open_tracker":          "トラッカーを開く →",
+                "rhetoric_card_title":   "📡 レトリック・トラッカー",
+                "rhetoric_card_subtitle":"レトリック態勢スコア · 6 時間ごと更新",
+                "view_full_rhetoric":    "完全なレトリック分析を見る →",
+                "articles_title":        "📰 最新のベトナム・南シナ海報道",
+                "footer_methodology_title":"方法論",
+                "footer_methodology_text":"南シナ海の海事圧力（バンガード堆、西沙、南沙、中国海警活動）、共産党統治と権力集中、米越包括的戦略パートナーシップと貿易摩擦、コモディティ/サプライチェーン依存度を統合した多要素安定性評価。レトリック・トラッカースコア（戦域 0-100）は /api/rhetoric/vietnam から取得。エネルギーまたはサプライチェーンの圧力がベトナムのエクスポージャーと交差すると、コモディティ収束アラートが発出されます。",
+                "footer_sources_title":  "データソース",
+                "footer_sources_text":   "RSS（VnExpress、Tuoi Tre News、VietnamNet、Vietnam News、ロイター）、GDELT（英語＋ベトナム語クエリ）、NewsAPI、Brave Search（第三段フォールバック）、BlueSky アジア集約。Reddit r/vietnam、r/geopolitics、r/CredibleDefense。CSIS AMTI、Chatham House、CRS、米国務省報告書を背景情報として参照。",
+                "footer_contact_title":  "連絡先",
+                "footer_contact_text":   "Asifah Analytics 構築 — <a href=\"https://asifahanalytics.com\" style=\"color:var(--accent);\">asifahanalytics.com</a><br>お問い合わせ：<a href=\"mailto:asifahanalytics@gmail.com\" style=\"color:var(--accent);\">asifahanalytics@gmail.com</a>",
+                "footer_disclaimer":     "<strong>⚠️ 免責事項：</strong> 本ダッシュボードはオープンソース情報の集約とアルゴリズム分析に基づく確率推定を提供します。情報評価・軍事助言・政策提言を構成するものではありません。安定性指標はメディアのシグナル強度を反映するもので、地上真実の予測として解釈すべきではありません。意思決定には常に権威ある情報源を参照してください。約 12 時間ごとに更新 · 作戦使用は不可。",
+                "footer_support":        "Asifah Analytics が役立つと感じ、継続的な開発を支援したい場合は、☕ <a href=\"https://www.buymeacoffee.com/asifahanalytics\" target=\"_blank\" style=\"color:var(--accent);\">コーヒーをご馳走</a>いただけます"
+            },
+            ko: {
+                "pageTitle":             "🇻🇳 베트남 안정 지수",
+                "pageSubtitle":          "다요인 분석: 남중국해 분쟁, 공산당 통치, 미국 파트너십 및 무역, 원자재 노출도",
+                "backLink":              "← 대시보드로 돌아가기",
+                "themeToggle":           "테마",
+                "lastUpdated":           "마지막 업데이트: ",
+                "mapTitle":              "베트남 — 남중국해 개요",
+                "mapSubtitle":           "주요 도시와 남중국해 분쟁 지점. 청록색=도시, 호박색=분쟁 구역(뱅가드 모래퇱, 파라셀, 스프래틀리).",
+                "knowledgeLibraryTitle": "지식 라이브러리",
+                "commodityTitle":        "베트남 원자재 노출도",
+                "commodityLoading":      "⏳ 원자재 노출 타일 로드 중…",
+                "commodityFullLink":     "전체 원자재 대시보드 보기 →",
+                "nav_dashboards":        "지역 대시보드",
+                "nav_rhetoric":          "지역 레토릭",
+                "nav_vietnam":            "베트남",
+                "nav_africa":            "🌍 아프리카",
+                "nav_future":            "🔒 향후",
+                "nav_asia_pacific":      "🌏 아시아 태평양",
+                "nav_europe":            "🌍 유럽",
+                "nav_me":                "🕌 중동",
+                "nav_wha":               "🌎 서반구",
+                "nav_military":          "🎖️ 군사 추적기",
+                "nav_gpi":               "🌐 글로벌 압력",
+                "nav_commodities":       "🛢️ 원자재",
+                "nav_rhetoric_me":       "🕌 중동",
+                "nav_rhetoric_asia":     "🌏 아시아",
+                "nav_rhetoric_europe":   "🌍 유럽",
+                "nav_rhetoric_wha":      "🌎 서반구",
+                "nav_vietnam_rhetoric":   "🇻🇳 베트남 레토릭",
+                "nav_vietnam_stability":  "🇻🇳 베트남 안정",
+                "nav_soon":            "🔒 곧 제공",
+                "nav_here":              "◉ 현재 페이지",
+                "ww_caution_label":      "⚠️ 미 국무부 — 전 세계 주의 권고",
+                "ww_caution_text":       "미국의 이란 작전 개시에 따라, 전 세계 특히 중동에 있는 미국 시민은 가장 가까운 미국 대사관·영사관의 안내를 따르십시오.",
+                "ww_caution_button":     "주의 권고 보기 →",
+                "travel_label":          "미국 국무부 — 베트남 여행 경보",
+                "travel_level":         "레벨 1",
+                "travel_text":           "<strong style=\"color: #38bdf8;\">베트남에서 평소 수준의 주의를 기울이십시오</strong> - 미국 국무부의 가장 양호한 등급입니다. 베트남은 여행자에게 대체로 안전하지만, 정치 활동과 마약에 대한 엄격한 현지 법률에 유의하고 주요 도시에서 소매치기를 조심하십시오. 해상 및 지역 동향을 주시하십시오.",
+                "travel_button":         "권고 보기 →",
+                "rhetoric_banner_title": "📡 베트남 레토릭 트래커",
+                "rhetoric_banner_actors":"베트남 공산당/정부 · 외교부 · 남중국해 태세 · 중국 압박 · 미국 파트너십",
+                "open_tracker":          "추적기 열기 →",
+                "rhetoric_card_title":   "📡 레토릭 트래커",
+                "rhetoric_card_subtitle":"레토릭 태세 점수 · 6시간마다 업데이트",
+                "view_full_rhetoric":    "전체 레토릭 분석 보기 →",
+                "articles_title":        "📰 최신 베트남 및 남중국해 보도",
+                "footer_methodology_title":"방법론",
+                "footer_methodology_text":"남중국해 해상 압력(뱅가드 모래톱, 파라셀, 스프래틀리, 중국 해경 활동), 공산당 통치와 권력 집중, 미국-베트남 포괄적 전략 동반자 관계와 무역 마찰, 원자재/공급망 노출도를 통합한 다요인 안정성 평가. 레토릭 트래커 점수(전구 0-100)는 /api/rhetoric/vietnam에서 가져옴. 에너지 또는 공급망 압력이 베트남 노출도와 교차하면 원자재 수렴 경보가 발생.",
+                "footer_sources_title":  "데이터 출처",
+                "footer_sources_text":   "RSS(VnExpress, Tuoi Tre News, VietnamNet, Vietnam News, 로이터), GDELT(영어+베트남어 쿼리), NewsAPI, Brave Search(3차 폴백), BlueSky 아시아 집계. Reddit r/vietnam, r/geopolitics, r/CredibleDefense. CSIS AMTI, Chatham House, CRS, 미 국무부 보고서를 배경으로.",
+                "footer_contact_title":  "연락처",
+                "footer_contact_text":   "Asifah Analytics 제작 — <a href=\"https://asifahanalytics.com\" style=\"color:var(--accent);\">asifahanalytics.com</a><br>문의: <a href=\"mailto:asifahanalytics@gmail.com\" style=\"color:var(--accent);\">asifahanalytics@gmail.com</a>",
+                "footer_disclaimer":     "<strong>⚠️ 면책 조항:</strong> 본 대시보드는 오픈소스 정보 집계와 알고리즘 분석에 기반한 확률 추정을 제공합니다. 정보 평가·군사 자문·정책 권고에 해당하지 않습니다. 안정성 지표는 미디어 시그널 강도를 반영하며, 지상 사실 예측으로 해석해서는 안 됩니다. 의사결정 시 권위 있는 출처를 항상 참조하십시오. 약 12시간마다 갱신 · 작전 용도 사용 불가.",
+                "footer_support":        "Asifah Analytics가 유용하다고 느끼시고 지속적 개발을 지원하고 싶으시다면, ☕ <a href=\"https://www.buymeacoffee.com/asifahanalytics\" target=\"_blank\" style=\"color:var(--accent);\">커피 한 잔 사주실 수 있습니다</a>"
+            }
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // LANGUAGE — canonical Asia i18n pattern (May 8 2026)
+        // ════════════════════════════════════════════════════════════
+        let currentLang = 'en';
+        try {
+            const saved = localStorage.getItem('asifah-vietnam-lang');
+            if (saved && translations[saved]) currentLang = saved;
+        } catch (e) {}
+
+        function applyTranslations() {
+            const t = translations[currentLang] || translations.en;
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (t[key] === undefined) return;
+                if (key === 'lastUpdated' && element.id === 'lastUpdated') {
+                    const currentText = element.textContent;
+                    if (currentText.includes(':')) {
+                        const timestamp = currentText.split(': ').slice(1).join(': ');
+                        element.textContent = t[key] + timestamp;
+                    } else {
+                        element.textContent = t[key] + 'Loading...';
+                    }
+                } else {
+                    element.textContent = t[key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-html]').forEach(element => {
+                const key = element.getAttribute('data-i18n-html');
+                if (t[key] !== undefined) element.innerHTML = t[key];
+            });
+            document.documentElement.setAttribute('lang', currentLang);
+            if (RTL_LANGS.includes(currentLang)) {
+                document.documentElement.setAttribute('dir', 'rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+        }
+
+        function switchLanguage(lang, button) {
+            currentLang = lang;
+            try { localStorage.setItem('asifah-vietnam-lang', lang); } catch (e) {}
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            if (button) button.classList.add('active');
+            applyTranslations();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTranslations();
+            const labelMap = { en: 'EN', zh: '中文', ja: '日本語', ko: '한국어' };
+            document.querySelectorAll('.lang-btn').forEach(b => {
+                b.classList.remove('active');
+                if (b.textContent === labelMap[currentLang]) b.classList.add('active');
+            });
+        });
+
+// ════════════════════════════════════════════════════════════
+        // COMMODITY EXPOSURE — Gold Standard v2.0 (May 7, 2026)
+        // Mirrors china-stability.html pattern. Resilient fetch:
+        //   1. Try Asia proxy (/api/asia/commodity/vietnam) — fast, cached
+        //   2. Fallback to ME backend direct (/api/commodity-pressure/vietnam)
+        //   3. Always render: prose + alert banner + tiles + Strategic Linkage
+        // Convergence alerts re-point to Vietnam rhetoric signal categories when that tracker ships
+        // ════════════════════════════════════════════════════════════
+        async function loadCommodity() {
+            const COUNTRY_KEY = 'vietnam';
+            const ASIA_BACKEND = 'https://asifah-asia-backend.onrender.com';
+            const ME_BACKEND   = 'https://asifah-backend.onrender.com';
+            const card = document.getElementById('vietnamCommodityCard');
+            if (!card) return;
+
+            // ── Resilient fetch: Asia proxy first, ME backend fallback ──
+            let data = null;
+            let usedFallback = false;
+            try {
+                const r = await fetch(`${ASIA_BACKEND}/api/asia/commodity/${COUNTRY_KEY}`);
+                if (!r.ok) throw new Error('Asia proxy HTTP ' + r.status);
+                data = await r.json();
+                if (!data || data.success === false) throw new Error('Asia proxy returned failure');
+            } catch (e) {
+                console.warn(`[Vietnam Commodity] Asia proxy failed (${e.message}); trying ME backend direct...`);
+                try {
+                    const r = await fetch(`${ME_BACKEND}/api/commodity-pressure/${COUNTRY_KEY}`);
+                    if (!r.ok) throw new Error('ME backend HTTP ' + r.status);
+                    data = await r.json();
+                    usedFallback = true;
+                } catch (e2) {
+                    console.warn(`[Vietnam Commodity] ME backend fallback also failed:`, e2.message);
+                    const proseEl = document.getElementById('commodityProse');
+                    if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+                    return;
+                }
+            }
+
+            // ── Prose paragraph (uses backend prose if present, else placeholder) ──
+            const proseEl = document.getElementById('commodityProse');
+            if (proseEl) {
+                proseEl.textContent = data.prose ||
+                    `Vietnam tracks ${data.commodity_summaries?.length || 0} strategic commodity exposures — a China+1 manufacturing and semiconductor-assembly hub with sizeable rare-earth reserves and top rice / #2 coffee exports, balanced against export-tariff and energy-import exposure. See tiles below for live status; Strategic Linkage at footer for analytical framing.`;
+            }
+
+            // ── Adaptive alert banner ──
+            const banner = document.getElementById('commodityAlertBanner');
+            const alertLevel = (data.alert_level || 'normal').toLowerCase();
+            const alertLabels = {
+                normal:   '✓ NO ACTIVE COMMODITY PRESSURE',
+                elevated: '◐ ELEVATED COMMODITY PRESSURE',
+                high:     '▲ HIGH COMMODITY PRESSURE',
+                surge:    '🚨 COMMODITY PRESSURE SURGE'
+            };
+            const pressure = (data.commodity_pressure || 0);
+            banner.className = `commodity-alert-banner alert-${alertLevel} show`;
+            banner.innerHTML = `
+                <strong>${alertLabels[alertLevel] || alertLabels.normal}</strong>
+                <span class="ab-meta">Pressure score: ${Number(pressure).toFixed(1)} · ${data.commodity_summaries?.length || 0} exposures tracked${data.has_live_data === false ? ' · awaiting live signals' : ''}</span>
+            `;
+
+            // ── DUAL convergence alerts: energy/oil + Indo-Pacific partnership ──
+            // Read from Vietnam rhetoric tracker's top_signals (interpreter must
+            // populate hormuz_vietnam_energy_dependency_active and
+            // vietnam_indo_pacific_convergence_active when that tracker is built).
+            try {
+                const rhetoricResp = await fetch(`${ASIA_BACKEND}/api/rhetoric/vietnam`);
+                if (rhetoricResp.ok) {
+                    const rhetoric = await rhetoricResp.json();
+                    const sigs = rhetoric.top_signals || [];
+
+                    // ── Hormuz oil convergence ──
+                    const hormuzSig = sigs.find(s => s.category === 'hormuz_vietnam_energy_dependency' || s.hormuz_vietnam_energy_dependency_active);
+                    const hormuzEl = document.getElementById('commodityHormuzAlert');
+                    const hormuzDetailEl = document.getElementById('commodityHormuzAlertDetail');
+                    if (hormuzSig && hormuzEl) {
+                        const cs = (hormuzSig.convergence_states || {}).hormuz_vietnam_energy_dependency || {};
+                        const alertLvl = (cs.alert_level || 'elevated').toUpperCase();
+                        const iranScore = cs.iran_score || 0;
+                        const iranIrgc = cs.iran_irgc || 0;
+                        hormuzEl.classList.add('active');
+                        if (hormuzDetailEl) {
+                            hormuzDetailEl.innerHTML = `Iran/Hormuz posture at <strong>${alertLvl}</strong> (Iran theatre score ${iranScore}, IRGC L${iranIrgc}) x Vietnam's net energy-import and refining reliance. Crude and shipping shocks raise input costs for an export-driven economy and add friction to South China Sea oil and gas operations. Watch Dung Quat / Nghi Son refinery runs, PetroVietnam output, fuel-import invoicing, and Vanguard Bank survey activity.`;
+                        }
+                    } else if (hormuzEl) {
+                        hormuzEl.classList.remove('active');
+                    }
+
+                    // ── Trilateral defense convergence ──
+                    const trilateralSig = sigs.find(s => s.category === 'vietnam_indo_pacific_convergence' || s.vietnam_indo_pacific_convergence_active);
+                    const trilateralEl = document.getElementById('commodityTrilateralAlert');
+                    const trilateralDetailEl = document.getElementById('commodityTrilateralAlertDetail');
+                    if (trilateralSig && trilateralEl) {
+                        const cs = (trilateralSig.convergence_states || {}).vietnam_indo_pacific_convergence || {};
+                        const alertLvl = (cs.alert_level || 'elevated').toUpperCase();
+                        const partnerLvl = cs.partner_outbound_max || 0;
+                        trilateralEl.classList.add('active');
+                        if (trilateralDetailEl) {
+                            trilateralDetailEl.innerHTML = `US and partners (Japan, Philippines, India) deepening maritime-security ties with Vietnam at <strong>${alertLvl}</strong> (partner outbound L${partnerLvl}). Converts South China Sea pressure into broader Indo-Pacific deterrence signaling without a formal alliance, consistent with Vietnam's "bamboo diplomacy." Watch coast-guard cooperation, port calls, Comprehensive Strategic Partnership upgrades, and MFA statements on "external interference."`;
+                        }
+                    } else if (trilateralEl) {
+                        trilateralEl.classList.remove('active');
+                    }
+                }
+            } catch (e) {
+                console.warn('[Vietnam Commodity] Convergence read error:', e.message);
+            }
+
+            // ── Commodity tiles ──
+            const grid = document.getElementById('commodityGrid');
+            grid.innerHTML = '';
+            (data.commodity_summaries || []).forEach(c => {
+                const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+                const role = (c.role || 'consumer').toLowerCase();
+                const rankText = c.rank ? `#${c.rank} globally` : '';
+                const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+
+                let sparklineHtml = '';
+                let priceHtml = '';
+                if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+                    const spark = c.sparkline.spark;
+                    const min = Math.min(...spark);
+                    const max = Math.max(...spark);
+                    const range = max - min || 1;
+                    const points = spark.map((v, i) => {
+                        const x = (i / (spark.length - 1)) * 100;
+                        const y = 100 - ((v - min) / range) * 100;
+                        return `${x.toFixed(1)},${y.toFixed(1)}`;
+                    }).join(' ');
+                    const pctChange = c.sparkline.change_pct_30d || 0;
+                    const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+                    sparklineHtml = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/></svg>`;
+                    const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+                    const arrow = pctChange >= 0 ? '▲' : '▼';
+                    priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+                }
+
+                const tile = document.createElement('a');
+                tile.className = 'commodity-pill';
+                tile.href = `commodities.html#${c.commodity}`;
+                tile.innerHTML = `
+                    <div class="commodity-pill-header">
+                        <div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                        <div style="flex:1;">
+                            <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                            ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="commodity-pill-row">
+                        <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                        <span class="commodity-pill-role-badge">${role}</span>
+                        ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+                    </div>
+                    ${priceHtml}
+                    ${sparklineHtml}
+                    ${c.note ? `<div class="commodity-pill-note">${c.note.slice(0, 180)}${c.note.length > 180 ? '…' : ''}</div>` : ''}
+                `;
+                grid.appendChild(tile);
+            });
+
+            // ── Top signals footer ──
+            const tsEl = document.getElementById('commodityTopSignals');
+            const topSignals = data.top_signals || [];
+            if (topSignals.length > 0) {
+                const items = topSignals.slice(0, 3).map(s => `
+                    <a href="${s.article_url}" target="_blank" rel="noopener">
+                        ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                        <span class="ts-source">— ${s.source}</span>
+                    </a>
+                `).join('');
+                tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+                tsEl.style.display = 'block';
+            } else {
+                tsEl.style.display = 'none';
+            }
+
+            // ── Cache freshness note ──
+            const cacheStatus = data.cache_status || (usedFallback ? 'me-direct' : 'unknown');
+            const cachedAt = data.proxy_cached_at || data.last_updated;
+            let cacheText = '';
+            if (cachedAt) {
+                const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
+                cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
+            } else if (usedFallback) {
+                cacheText = 'Source: ME backend (Asia proxy unavailable)';
+            }
+            const cacheEl = document.getElementById('commodityCacheNote');
+            if (cacheEl) cacheEl.textContent = cacheText;
+        }
+
+        // Initialize
+        // -- Mobile drawer --
+        function toggleSidebar() {
+            const sb = document.getElementById('navSidebar');
+            const bd = document.getElementById('sidebarBackdrop');
+            if (!sb) return;
+            const open = sb.classList.toggle('open');
+            if (bd) bd.classList.toggle('open', open);
+        }
+        function closeSidebar() {
+            const sb = document.getElementById('navSidebar');
+            const bd = document.getElementById('sidebarBackdrop');
+            if (sb) sb.classList.remove('open');
+            if (bd) bd.classList.remove('open');
+        }
+
+        // -- Vietnam map: key cities (cyan) + South China Sea flashpoints (amber) --
+        function initMap() {
+            if (typeof L === 'undefined') { console.warn('[Vietnam map] Leaflet not loaded'); return; }
+            var el = document.getElementById('vietnamMap');
+            if (!el) return;
+            var map = L.map('vietnamMap', { scrollWheelZoom: false }).setView([14.0, 111.5], 5);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: 'abcd', maxZoom: 19
+            }).addTo(map);
+            function mark(lat, lon, color, name, role) {
+                L.circleMarker([lat, lon], {
+                    radius: 7, color: color, weight: 2, fillColor: color, fillOpacity: 0.55
+                }).addTo(map).bindPopup('<strong>' + name + '</strong><br>' + role);
+            }
+            var CYAN = '#38bdf8', AMBER = '#f59e0b';
+            // Key cities
+            mark(21.0285, 105.8542, CYAN, 'Hanoi', 'Capital');
+            mark(10.8231, 106.6297, CYAN, 'Ho Chi Minh City', 'Economic hub');
+            mark(16.0544, 108.2022, CYAN, 'Da Nang', 'Central port / airbase');
+            mark(20.8449, 106.6881, CYAN, 'Haiphong', 'Northern port');
+            mark(11.9214, 109.1591, CYAN, 'Cam Ranh Bay', 'Strategic naval base');
+            // South China Sea flashpoints
+            mark(7.8, 109.7, AMBER, 'Vanguard Bank (Bai Tu Chinh)', 'Oil/gas standoff - China Coast Guard incursions');
+            mark(16.5, 112.0, AMBER, 'Paracel Islands (Hoang Sa)', 'China-controlled; Vietnam also claims');
+            mark(10.0, 114.0, AMBER, 'Spratly Islands (Truong Sa)', 'Multi-claimant disputed reefs');
+            setTimeout(function () { map.invalidateSize(); }, 250);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startLoadingProgress();
+            loadRhetoricData();
+            loadCommodity();
+            initMap();
+            document.querySelectorAll('#navSidebar a.nav-btn').forEach(a =>
+                a.addEventListener('click', () => closeSidebar()));
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+            document.getElementById('lastUpdated').textContent =
+                'Last updated: ' + new Date().toLocaleString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                    hour: 'numeric', minute: '2-digit', hour12: true
+                });
+            loadArticles().then(() => {
+                hideLoadingOverlay();
+            }).catch(err => {
+                console.error('Error loading Vietnam data:', err);
+                hideLoadingOverlay();
+            });
+        });
+    </script>
+</body>
+</html>
