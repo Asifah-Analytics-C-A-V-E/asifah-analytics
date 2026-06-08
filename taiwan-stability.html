@@ -752,10 +752,32 @@
                 <span id="rhetoricTheatreLabel" style="font-size:13px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
             </div>
             <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Outbound deterrence score · Updated every 6h</div>
+
+            <!-- ── GOLD STANDARD: BLUF (synthesized 1-2 line judgment) ── -->
+            <div id="rhetoricBlufSection" style="display:none;margin-bottom:12px;padding:10px 12px;border-left:3px solid var(--accent);background:rgba(56,189,248,0.07);border-radius:0 6px 6px 0;">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);margin-bottom:4px;" data-i18n="rhetoric_bluf_label">⚡ BLUF</div>
+                <div id="rhetoricBluf" style="font-size:12.5px;line-height:1.5;color:var(--text-primary);"></div>
+            </div>
+
+            <!-- ── GOLD STANDARD: TOP SIGNALS (top 2 by priority) ── -->
+            <div id="rhetoricTopSignalsSection" style="display:none;margin-bottom:12px;">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-secondary);margin-bottom:6px;" data-i18n="rhetoric_top_signals_label">TOP SIGNALS</div>
+                <div id="rhetoricTopSignalsList" style="font-size:12px;color:var(--text-primary);line-height:1.5;"></div>
+            </div>
+
+            <!-- ── ACTORS header (Gold Standard) + existing actor list ── -->
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-secondary);margin-bottom:6px;padding-top:10px;border-top:1px solid var(--card-border);" data-i18n="rhetoric_actors_label">ACTORS</div>
             <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);">
                 <span style="font-style:italic;">Loading...</span>
             </div>
             <div id="rhetoricVectorPills" class="rhetoric-vector-pills"></div>
+
+            <!-- ── GOLD STANDARD: WATCH (lead indicators) ── -->
+            <div id="rhetoricWatchSection" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--card-border);">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-secondary);margin-bottom:5px;" data-i18n="rhetoric_watch_label">WATCH</div>
+                <div id="rhetoricWatch" style="font-size:12px;line-height:1.5;color:var(--text-secondary);font-style:italic;"></div>
+            </div>
+
             <div style="margin-top:15px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
                 <a href="rhetoric-taiwan.html" style="color:#7dd3fc;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="view_full_rhetoric">View Full Deterrence Analysis →</a>
             </div>
@@ -1216,6 +1238,57 @@
                         </div>`
                     ).join('');
                 }
+
+                // ── GOLD STANDARD sections: BLUF + Top Signals + Watch (Phase 1) ──
+                // top_signals[] comes from the FULL endpoint; bluf/watch_indicators
+                // are optional dedicated fields (Phase 2) — fall back gracefully.
+                try {
+                    const fullResp = await fetch('https://asifah-asia-backend.onrender.com/api/rhetoric/taiwan');
+                    const full = fullResp.ok ? await fullResp.json() : {};
+                    const sigs = Array.isArray(full.top_signals) ? full.top_signals : [];
+
+                    const WATCH_FALLBACK = {
+                        0: 'Baseline — watch for shifts in posting cadence, actor alignment, and the first move from general rhetoric toward specific framing.',
+                        1: 'Low-level rhetoric — watch for rising target specificity and any cross-actor synchronization.',
+                        2: 'Elevated — watch for conditional threats, named targets, and a drop in de-escalation language.',
+                        3: 'Confrontation — watch for operational framing, force-posture signals, and tightening timelines.',
+                        4: 'High alert — watch for force movement, drill/sortie cadence, and principal-level signaling.',
+                        5: 'Active conflict — watch for escalation tempo, claim cadence, and any abrupt messaging silence.'
+                    };
+
+                    // BLUF: dedicated field > top signal short_text > band-appropriate default
+                    const blufSection = document.getElementById('rhetoricBlufSection');
+                    const blufEl = document.getElementById('rhetoricBluf');
+                    let blufText = (full.bluf || '').trim();
+                    if (!blufText && sigs[0] && sigs[0].short_text) blufText = sigs[0].short_text;
+                    if (!blufText) blufText = level >= 2
+                        ? 'Posture elevated — see actor levels below and the full analysis.'
+                        : 'No significant rhetoric signals; posture at baseline.';
+                    if (blufEl && blufSection) { blufEl.textContent = blufText; blufSection.style.display = 'block'; }
+
+                    // TOP SIGNALS: top 2 by priority (upstream already priority-sorts)
+                    const tsSection = document.getElementById('rhetoricTopSignalsSection');
+                    const tsList = document.getElementById('rhetoricTopSignalsList');
+                    const top2 = sigs.slice(0, 2).filter(x => x && x.short_text);
+                    if (tsList && tsSection && top2.length) {
+                        tsList.innerHTML = top2.map(x => {
+                            const d = document.createElement('div');
+                            d.textContent = x.short_text;
+                            return `<div style="display:flex;gap:7px;padding:2px 0;"><span style="color:var(--accent);flex-shrink:0;">&#9656;</span><span>${d.innerHTML}</span></div>`;
+                        }).join('');
+                        tsSection.style.display = 'block';
+                    } else if (tsSection) {
+                        tsSection.style.display = 'none';
+                    }
+
+                    // WATCH: dedicated field > band template fallback
+                    const watchSection = document.getElementById('rhetoricWatchSection');
+                    const watchEl = document.getElementById('rhetoricWatch');
+                    const watchText = (full.watch_indicators || '').trim() || WATCH_FALLBACK[level] || WATCH_FALLBACK[0];
+                    if (watchEl && watchSection) { watchEl.textContent = watchText; watchSection.style.display = 'block'; }
+                } catch (gsErr) {
+                    console.warn('[Rhetoric] Gold Standard sections skipped:', gsErr.message);
+                }
             } catch(e) { console.warn('[Rhetoric] Load failed:', e); }
         }
 
@@ -1264,6 +1337,10 @@
                 "open_tracker":          "Open Tracker →",
                 "rhetoric_card_title":   "📡 DETERRENCE TRACKER",
                 "rhetoric_card_subtitle":"Outbound deterrence score · Updated every 6h",
+                "rhetoric_bluf_label":   "⚡ BLUF",
+                "rhetoric_top_signals_label":"TOP SIGNALS",
+                "rhetoric_actors_label": "ACTORS",
+                "rhetoric_watch_label":  "WATCH",
                 "view_full_rhetoric":    "View Full Deterrence Analysis →",
                 "articles_title":        "📰 Recent Taiwan & Strait Articles",
                 "footer_methodology_title":"Methodology",
@@ -1318,6 +1395,10 @@
                 "open_tracker":          "打開追蹤器 →",
                 "rhetoric_card_title":   "📡 威懾追蹤器",
                 "rhetoric_card_subtitle":"對外威懾評分 · 每 6 小時更新",
+                "rhetoric_bluf_label":   "⚡ 核心研判",
+                "rhetoric_top_signals_label":"主要信號",
+                "rhetoric_actors_label": "行為者",
+                "rhetoric_watch_label":  "觀察重點",
                 "view_full_rhetoric":    "查看完整威懾分析 →",
                 "articles_title":        "📰 最新台灣與台海報道",
                 "footer_methodology_title":"方法論",
@@ -1372,6 +1453,10 @@
                 "open_tracker":          "トラッカーを開く →",
                 "rhetoric_card_title":   "📡 抑止力トラッカー",
                 "rhetoric_card_subtitle":"対外抑止スコア · 6 時間ごと更新",
+                "rhetoric_bluf_label":   "⚡ 要点 (BLUF)",
+                "rhetoric_top_signals_label":"主要シグナル",
+                "rhetoric_actors_label": "アクター",
+                "rhetoric_watch_label":  "注視点",
                 "view_full_rhetoric":    "完全な抑止力分析を見る →",
                 "articles_title":        "📰 台湾・台湾海峡 最新記事",
                 "footer_methodology_title":"方法論",
@@ -1426,6 +1511,10 @@
                 "open_tracker":          "추적기 열기 →",
                 "rhetoric_card_title":   "📡 억지력 추적기",
                 "rhetoric_card_subtitle":"대외 억지력 점수 · 6시간마다 갱신",
+                "rhetoric_bluf_label":   "⚡ 핵심 평가",
+                "rhetoric_top_signals_label":"주요 신호",
+                "rhetoric_actors_label": "행위자",
+                "rhetoric_watch_label":  "관찰 지표",
                 "view_full_rhetoric":    "전체 억지력 분석 보기 →",
                 "articles_title":        "📰 대만·대만해협 최신 기사",
                 "footer_methodology_title":"방법론",
