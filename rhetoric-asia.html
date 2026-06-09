@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <title>Asia-Pacific Rhetoric Monitor — Asifah Analytics</title>
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -70,7 +70,7 @@
         width: 110vmin; height: 110vmin;
         min-width: 800px; min-height: 800px;
         max-width: 1400px; max-height: 1400px;
-        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
         background-size: contain; background-repeat: no-repeat; background-position: center;
         opacity: var(--watermark-opacity); filter: var(--watermark-filter);
         z-index: 0; pointer-events: none; user-select: none;
@@ -167,7 +167,29 @@
     .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
     .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
     .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
-    @media (max-width: 1099px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+    .nav-btn.commodity-btn { border-color: rgba(245,158,11,0.35); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.commodity-btn .nav-btn-status { color: #f59e0b; }
+    /* -- Mobile drawer (<=1199px) -- */
+    .menu-toggle {
+        display: none; position: fixed; top: 14px; left: 14px; z-index: 1600;
+        width: 44px; height: 44px; border-radius: 8px;
+        background: #38bdf8; color: #04101e; border: none;
+        font-size: 22px; line-height: 1; cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1400; }
+    .sidebar-backdrop.open { display: block; }
+    @media (max-width: 1199px) {
+        .menu-toggle { display: flex; align-items: center; justify-content: center; }
+        .page-with-sidebar { display: block; }
+        .nav-sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 260px;
+            transform: translateX(-100%); transition: transform 0.25s ease;
+            z-index: 1500; overflow-y: auto; border-radius: 0; padding: 64px 12px 20px;
+            background: var(--card-bg); border-right: 1px solid var(--card-border);
+        }
+        .nav-sidebar.open { transform: translateX(0); }
+    }
 
     .main-content { flex: 1; min-width: 0; }
 
@@ -298,7 +320,7 @@
 <header>
     <div class="header-logo-wrap">
         <a href="asia.html" class="back-link">← Back to Asia</a>
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
              alt="Asifah Analytics Logo" class="header-logo"/>
     </div>
     <div class="header-content">
@@ -318,9 +340,11 @@
 
 <!-- PAGE WITH SIDEBAR -->
 <div class="page-with-sidebar">
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
 <!-- NAV SIDEBAR -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
     <div class="nav-btn inactive-nav">
         <span class="nav-btn-label">🌍 Africa</span>
@@ -349,6 +373,10 @@
     </a>
     <a href="gpi.html" class="nav-btn military-btn">
         <span class="nav-btn-label">🌐 Global Pressure</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="commodities.html" class="nav-btn commodity-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
         <span class="nav-btn-status">● Live</span>
     </a>
     <div class="nav-divider"></div>
@@ -427,12 +455,22 @@
 
 <!-- FOOTER -->
 <footer>
-    <div>Data Sources: RSS (EN/ZH/JA/KO), GDELT, NewsAPI, Telegram OSINT channels, Bluesky mirrors</div>
-    <div style="margin-top:6px;font-size:0.85em;">
-        Methodology: Dual-panel outbound/inbound architecture · Cross-strait fingerprinting · 12-hour background refresh
-    </div>
-    <div style="margin-top:10px;font-size:0.85em;opacity:0.7;">
-        © 2025-2026 Asifah Analytics · Research &amp; Educational Use Only. Not for operational decision-making.
+    <div style="max-width:1000px;margin:0 auto;text-align:left;">
+        <div style="font-weight:700;letter-spacing:1.5px;color:var(--text-primary);font-size:0.85rem;margin-bottom:8px;">ASIFAH ANALYTICS — ASIA-PACIFIC RHETORIC MONITOR</div>
+        <div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.55;margin-bottom:6px;">Live data: <a href="https://asifah-asia-backend.onrender.com/api/rhetoric/asia/bluf" target="_blank" style="color:#38bdf8;">asifah-asia-backend.onrender.com/api/rhetoric/asia/bluf</a> &middot; Refreshed every ~6h</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.55;margin-bottom:16px;">OSINT sources: RSS (EN/ZH/JA/KO/VI) &middot; GDELT &middot; NewsAPI &middot; CSIS ChinaPower / AMTI &middot; USNI &middot; The Diplomat &middot; Telegram &middot; Bluesky &middot; Reddit. Dual-panel outbound/inbound architecture &middot; cross-strait fingerprinting &middot; 12-hour background refresh.</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+            <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.5);color:#f59e0b;font-size:0.75rem;font-weight:700;text-decoration:none;">☕ Buy Me a Coffee</a>
+            <a href="mailto:asifahanalytics@gmail.com" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.45);color:#38bdf8;font-size:0.75rem;font-weight:700;text-decoration:none;">✉️ Contact Asifah</a>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.55;padding-top:14px;border-top:1px solid var(--card-border);">
+            This composite is a <strong>CONVERGENCE indicator, NOT a probability of action.</strong> OSINT-based pattern analysis, not certainty. Research &amp; educational use only &middot; not for operational decision-making. &copy; 2025-2026 Asifah Analytics.
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:12px;">
+            <a href="mission.html" style="color:var(--text-secondary);text-decoration:none;">Mission Statement</a> &middot;
+            <a href="privacy.html" style="color:var(--text-secondary);text-decoration:none;">Privacy Policy</a> &middot;
+            <a href="index.html" style="color:var(--text-secondary);text-decoration:none;">Home</a>
+        </div>
     </div>
 </footer>
 
@@ -501,6 +539,15 @@
             summaryUrl: API_BASE + '/api/rhetoric/india/summary',
             url:        'rhetoric-india.html',
         },
+        {
+            id:         'vietnam',
+            name:       'Vietnam South China Sea Tracker',
+            flag:       '🇻🇳',
+            actors:     'CPV/State · MOFA Diplomacy/Lawfare · Maritime Posture (CG/Navy) · US Partnership · Indo-Pacific Partners · China SCS Pressure · Beijing Coercion · Economic Pressure',
+            vectors:    ['Sovereignty', 'Maritime', 'Coalition', 'Coercion-Response', 'Economic'],
+            summaryUrl: API_BASE + '/api/rhetoric/vietnam/summary',
+            url:        'rhetoric-vietnam.html',
+        },
     ];
 
     // ── THEME ──
@@ -521,7 +568,7 @@
 
         if (data && data.success) {
             // Pakistan emits theatre_level (canonical ME naming); China/Taiwan use overall_level
-            level = data.overall_level ?? data.theatre_level ?? 0;
+            level = data.overall_level ?? data.theatre_level ?? data.outbound_max_level ?? 0;
             const lv = ESCALATION_LEVELS[Math.min(level, 5)] || ESCALATION_LEVELS[0];
             color = data.overall_color || lv.color;
             label = data.overall_label || lv.label;
@@ -553,6 +600,10 @@
                 if (data.pakistan_nuclear_signaling) axes.push('☢️');
                 const axisStr = axes.length ? ' · Axes: ' + axes.join(' ') : '';
                 scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Composite ${score}/100${axisStr}</span>`;
+            } else if (tracker.id === 'vietnam') {
+                const out = data.outbound_score ?? 0;
+                const inb = data.inbound_score ?? 0;
+                scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Outbound ${out}/100 · China SCS Pressure ${inb}/100 · ${data.total_articles ?? 0} articles</span>`;
             }
         }
 
@@ -586,7 +637,7 @@
         const loaded = resolved.filter(r => r.data && r.data.success);
         if (loaded.length === 0) return;
 
-        const levels  = loaded.map(r => r.data.overall_level ?? 0);
+        const levels  = loaded.map(r => r.data.overall_level ?? r.data.outbound_max_level ?? 0);
         const maxLevel = Math.max(...levels);
         const scores = loaded.map(r => Math.max(r.data.outbound_score || 0, r.data.inbound_score || 0));
         const avgScore = Math.round(scores.reduce((s, n) => s + n, 0) / scores.length);
@@ -770,10 +821,28 @@
         updatePosture(resolved);
     }
 
+    // ── MOBILE DRAWER ──
+    function toggleSidebar() {
+        const sb = document.getElementById('navSidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        if (!sb) return;
+        const open = sb.classList.toggle('open');
+        if (bd) bd.classList.toggle('open', open);
+    }
+    function closeSidebar() {
+        const sb = document.getElementById('navSidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        if (sb) sb.classList.remove('open');
+        if (bd) bd.classList.remove('open');
+    }
+
     // ── INIT ──
     loadTheme();
     loadAsiaBluf();
     loadAll();
+    document.querySelectorAll('#navSidebar a.nav-btn').forEach(a =>
+        a.addEventListener('click', () => closeSidebar()));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
     // Refresh BLUF every 30 minutes, tracker scores every 15 minutes (match ME pattern)
     setInterval(loadAsiaBluf, 30 * 60 * 1000);
     setInterval(loadAll,      15 * 60 * 1000);
