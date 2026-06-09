@@ -296,10 +296,10 @@
 
         <!-- UKRAINE PRESSURE TRACKER DETAIL CARD (canonical Russia pattern) -->
         <div class="rhetoric-card" id="ukraineRhetoricCard" style="display:none;">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 <span data-i18n="rhetoricCardTitle">UKRAINE PRESSURE TRACKER</span></div>
-            <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:5px;">
-                <div style="font-size:30px;font-weight:700;color:var(--text-primary);" id="ukraineRhetoricScoreFull">--</div>
-                <span id="ukraineRhetoricLevelLabel" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:#6b7280;color:white;">--</span>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 🇺🇦 <span data-i18n="rhetoricCardTitle">UKRAINE PRESSURE TRACKER</span></div>
+            <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:5px;">
+                <div style="font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--text-primary);" id="ukraineRhetoricScoreFull">--</div>
+                <span id="ukraineRhetoricLevelLabel" style="font-size:12px;font-weight:800;padding:4px 12px;border-radius:5px;background:#6b7280;color:white;letter-spacing:0.5px;">--</span>
             </div>
             <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector pressure score — Frontline · US Aid · Strikes · DIB · Ceasefire — Updated every 6h</div>
             <div id="ukraineRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;" data-i18n="loading">Loading…</span></div>
@@ -1038,6 +1038,9 @@
             const alertColor = ALERT_COLORS[alert] || '#6b7280';
             const level = ALERT_TO_LEVEL[alert] !== undefined ? ALERT_TO_LEVEL[alert] : 0;
             const levelLabel = LEVEL_LABELS[level] || 'Baseline';
+            // Calm-blue baseline (Jun 2026): gray reads as "no data". A healthy
+            // baseline renders arctic blue; L1-L5 keep the canonical palette.
+            const displayColor = (alert === 'normal') ? '#38bdf8' : alertColor;
 
             // ── Green banner (top) ──
             const card = document.getElementById('rhetoricPressureCard');
@@ -1046,7 +1049,7 @@
                 document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
                 const pill = document.getElementById('rhetoricPill');
                 pill.textContent = alert.toUpperCase();
-                pill.style.background = alertColor;
+                pill.style.background = displayColor;
                 const sw = d.so_what || {};
                 document.getElementById('rhetoricHeadline').textContent = sw.scenario || 'Ukraine Pressure Tracker — Live';
                 const rl = d.red_lines || {};
@@ -1055,7 +1058,7 @@
                 const approaching = rl.approaching_count || 0;
                 const greenActive = (d.green_lines || {}).active_count || 0;
                 document.getElementById('rhetoricDetail').textContent =
-                    `${breached} breached · ${approaching} approaching · ${greenActive} active diplomatic signals · Diplomatic momentum: ${dt.score || 0}/100. ${sw.assessment || ''}`;
+                    `${breached} breached · ${approaching} approaching · ${greenActive} active diplomatic signals · Diplomatic track: ${dt.scenario || 'No Active Track'} (${dt.score || 0} signal${(dt.score || 0) === 1 ? '' : 's'}). ${sw.assessment || ''}`;
             }
 
             // ── Ukraine pressure tracker detail card ──
@@ -1063,19 +1066,27 @@
             if (detailCard) {
                 detailCard.style.display = 'block';
                 const scoreEl = document.getElementById('ukraineRhetoricScoreFull');
-                if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = alertColor; }
+                if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = displayColor; }
                 const lvlEl = document.getElementById('ukraineRhetoricLevelLabel');
-                if (lvlEl) { lvlEl.textContent = levelLabel; lvlEl.style.background = alertColor; }
+                if (lvlEl) { lvlEl.textContent = 'L' + level + ' \u2014 ' + levelLabel; lvlEl.style.background = displayColor; }
 
                 // Body: top_signals (preferred) or fallback to so_what + counts
                 const signalEl = document.getElementById('ukraineRhetoricSignalList');
                 if (signalEl) {
                     const signals = (d.top_signals || []).slice(0, 5);
                     if (signals.length) {
+                        // Each signal carries its own temperature -- chip + left
+                        // border take the signal's level color even when the card
+                        // overall sits at baseline (SURGE glows red, diplomatic green).
+                        const LVL_COLORS = { 0:'#6b7280', 1:'#3b82f6', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444', 5:'#dc2626',
+                                             normal:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', critical:'#dc2626', surge:'#ef4444' };
                         signalEl.innerHTML = signals.map(s => {
                             const txt = s.short_text || s.text || s.long_text || '';
                             const cat = s.category ? s.category.toUpperCase().replace(/_/g, ' ') : '';
-                            return `<div class="rhetoric-signal-row">${cat ? `<span class="rhetoric-signal-label">${cat}</span>` : ''}${txt}</div>`;
+                            let sc = s.color || LVL_COLORS[s.level];
+                            if (!sc || sc === '#6b7280') sc = '#38bdf8';
+                            if (s.category === 'diplomatic') sc = '#10b981';
+                            return `<div class="rhetoric-signal-row" style="border-left:3px solid ${sc};padding-left:9px;">${cat ? `<span class="rhetoric-signal-label" style="color:${sc};">${cat}</span>` : ''}${txt}</div>`;
                         }).join('');
                     } else {
                         // Fallback: red/green/diplomatic counts as actor-row entries
@@ -1087,7 +1098,7 @@
                             { label: '🚨 Red Lines Breached',     val: rl.breached_count || 0,   color: '#dc2626' },
                             { label: '⚠️ Red Lines Approaching',  val: rl.approaching_count || 0, color: '#f59e0b' },
                             { label: '🕊️ Active Diplomatic',      val: gl.active_count || 0,     color: '#10b981' },
-                            { label: '📊 Diplomatic Momentum',    val: (dt.score || 0) + '/100', color: '#38bdf8' },
+                            { label: '📊 Diplomatic Signals',     val: (dt.score || 0), color: '#38bdf8' },
                         ];
                         let html = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
                         if (sw.scenario) html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--card-border);font-style:italic;color:var(--text-muted);font-size:11px;line-height:1.5;">${sw.scenario}</div>`;
