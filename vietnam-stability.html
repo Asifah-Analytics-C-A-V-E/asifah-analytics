@@ -707,10 +707,10 @@
             </a>
             <div class="nav-divider"></div>
             <div class="nav-sidebar-label" data-i18n="nav_vietnam">Vietnam</div>
-            <div class="nav-btn inactive-nav">
+            <a href="rhetoric-vietnam.html" class="nav-btn rhetoric-btn">
                 <span class="nav-btn-label" data-i18n="nav_vietnam_rhetoric">🇻🇳 Vietnam Rhetoric</span>
-                <span class="nav-btn-status" data-i18n="nav_soon">🔒 Soon</span>
-            </div>
+                <span class="nav-btn-status">● Live</span>
+            </a>
             <a href="vietnam-stability.html" class="nav-btn current-page">
                 <span class="nav-btn-label" data-i18n="nav_vietnam_stability">🇻🇳 Vietnam Stability</span>
                 <span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span>
@@ -776,6 +776,12 @@
                 <span id="rhetoricTheatreLabel" style="font-size:13px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
             </div>
             <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Rhetoric posture score · Updated every 6h</div>
+            <!-- Plain-language bottom line: why it matters + top headline -->
+            <div id="rhetoricBottomLine" style="display:none;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-left:3px solid #38bdf8;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">The Bottom Line</div>
+                <div style="font-size:12px;line-height:1.5;color:var(--text-primary);" id="rhetoricBottomLineText"></div>
+                <div id="rhetoricTopHeadline" style="display:none;font-size:11px;color:var(--text-secondary);margin-top:7px;padding-top:7px;border-top:1px solid var(--card-border);"></div>
+            </div>
             <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);">
                 <span style="font-style:italic;">Loading...</span>
             </div>
@@ -1255,10 +1261,11 @@
                 const actorEl = document.getElementById('rhetoricActorList');
                 if (actorEl) {
                     const actors = [
-                        { label: '👁️ Lai / Presidential', level: data.lai_level || 0 },
-                        { label: '⚔️ ROC Defense',         level: data.defense_level || 0 },
+                        { label: '🏛️ CPV / State',         level: data.cpv_level || 0 },
+                        { label: '🌐 MOFA Diplomacy',       level: data.mofa_level || 0 },
+                        { label: '⚓ Maritime Posture',     level: data.maritime_level || 0 },
                         { label: '🤝 US Partnership',       level: data.us_level || 0 },
-                        { label: '🇨🇳 PLA Pressure',        level: data.china_pla_level || 0 },
+                        { label: '🇨🇳 China SCS Pressure',  level: data.china_scs_level || 0 },
                     ];
                     actorEl.innerHTML = actors.map(a =>
                         `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--card-border);">
@@ -1267,6 +1274,25 @@
                         </div>`
                     ).join('');
                 }
+
+                // Plain-language bottom line + top headline -- independent full-endpoint fetch, never blocks the card
+                (async () => {
+                    try {
+                        const fr = await fetch('https://asifah-asia-backend.onrender.com/api/rhetoric/vietnam');
+                        const full = await fr.json();
+                        if (!full || !full.success) return;
+                        const blWrap = document.getElementById('rhetoricBottomLine');
+                        const blText = document.getElementById('rhetoricBottomLineText');
+                        const headEl = document.getElementById('rhetoricTopHeadline');
+                        if (blText && full.bluf) { blText.textContent = full.bluf; if (blWrap) blWrap.style.display = 'block'; }
+                        const sigs = full.top_signals || [];
+                        if (headEl && sigs.length) {
+                            headEl.innerHTML = '📌 ' + String(sigs[0].short_text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                            headEl.style.display = 'block';
+                            if (blWrap) blWrap.style.display = 'block';
+                        }
+                    } catch(e) { console.warn('[Rhetoric bottomline] skipped:', e); }
+                })();
             } catch(e) { console.warn('[Rhetoric] Load failed:', e); }
         }
 
