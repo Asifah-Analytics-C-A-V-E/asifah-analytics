@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Peru Rhetoric Tracker | Asifah Analytics</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
@@ -77,7 +77,7 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 700px; height: 700px;
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -682,11 +682,21 @@
             --loading-bg: rgba(240,244,247,0.95);
         }
 
-        /* Mobile */
-        @media (max-width: 1080px) {
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--bg-card, #0d1b2e); border: 1px solid var(--border-color, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
             .composite-strip { grid-template-columns: 1fr 1fr; }
             .main-layout { grid-template-columns: 1fr; }
-            .sidebar { position: static; max-height: none; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100vh; max-height: 100vh;
+                width: 264px; overflow-y: auto; margin: 0; padding: 56px 14px 24px;
+                background: var(--bg-card, #0d1b2e); border-right: 1px solid var(--border-color, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .sidebar.open { transform: translateX(0); }
         }
         @media (max-width: 600px) {
             .composite-strip { grid-template-columns: 1fr; }
@@ -694,6 +704,8 @@
     </style>
 </head>
 <body data-theme="dark">
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
 <div class="watermark"></div>
 
@@ -706,7 +718,7 @@
 <header class="header">
     <div class="header-row-1">
         <a href="index.html">
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
         </a>
         <div class="header-right-controls">
             <a href="peru-stability.html" class="home-btn" data-i18n="back_to_stability">← PERU STABILITY</a>
@@ -735,7 +747,7 @@
 <div class="main-layout">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="navSidebar">
         <div class="sidebar-section">
             <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
             <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
@@ -779,6 +791,17 @@
 
         <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">
             ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.
+        </div>
+
+        <!-- ── ELECTION RUNOFF WATCH (Jun 2026 cycle; hidden when quiet) ── -->
+        <div id="electionWatchCard" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.07), rgba(56,189,248,0.05)); border:1px solid rgba(245,158,11,0.45); border-radius:12px; padding:18px 22px; margin-bottom:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                <div style="font-weight:800; letter-spacing:1.5px; color:#f59e0b; font-size:13px; text-transform:uppercase;">🗳️ <span data-i18n="ew_title">Election Runoff Watch</span></div>
+                <span id="ewPhasePill" style="font-size:11px; font-weight:800; padding:4px 12px; border-radius:5px; background:#f59e0b; color:#1a1206; letter-spacing:0.5px;">—</span>
+            </div>
+            <div id="ewMomentum" style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--text-primary);"></div>
+            <div id="ewCandidates" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px;"></div>
+            <div id="ewDisclaimer" style="font-size:10.5px; color:var(--text-muted); font-style:italic;"></div>
         </div>
 
         <!-- COMPOSITE STRIP — Peru pressure + 4 vector cards -->
@@ -873,41 +896,16 @@
 </div>
 
 <!-- FOOTER (canonical Asifah pattern) -->
-<footer style="background:var(--bg-card, #0d1b2e); border:1px solid var(--border-color, #1e3a5f); border-radius:12px; padding:30px; margin:30px; font-size:13px; color:var(--text-secondary, #93c5fd);">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:20px;">
-        <div>
-            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_sources">DATA SOURCES</h4>
-            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_sources_text">El Comercio, La República, Gestión, Ojo Público, RPP (native Spanish RSS); Reuters Americas; GDELT (English + Spanish queries); NewsAPI; Brave Search fallback. Cross-tracker fingerprints from commodity tracker (copper + silver supply-risk).</p>
-        </div>
-        <div>
-            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_method">METHODOLOGY</h4>
-            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_method_text">8-actor frame: Presidency, Cancillería, FFAA, Mining sector, Las Bambas, VRAEM/Sendero, US-Peru bilateral, China-Peru/BRI. 4-vector composite score: Domestic Stability, Resource-Sector Politics, US Alignment, China Alignment. Tripwire system flags low-base-rate high-impact events. Scan refreshes every 12 hours.</p>
-        </div>
-        <div>
-            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_connected">CONNECTED TRACKERS</h4>
-            <p style="font-size:12px; line-height:1.5;">
-                <a href="commodities.html" style="color:#38bdf8; text-decoration:none;">🌾 Commodities</a> ·
-                <a href="peru-stability.html" style="color:#38bdf8; text-decoration:none;">📊 Peru Stability</a> ·
-                <a href="rhetoric-wha.html" style="color:#38bdf8; text-decoration:none;">💬 WHA Rhetoric</a> ·
-                <a href="gpi.html" style="color:#38bdf8; text-decoration:none;">🌐 GPI</a>
-            </p>
-        </div>
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — PERU</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Comercio, La República, Gestión, RPP, Ojo Público, Reuters) · NewsAPI · Brave</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
     </div>
-    <div style="margin-top:20px; padding:14px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:8px; font-size:12px; line-height:1.5;">
-        <strong style="color:#f59e0b;" data-i18n="ftr_disclaimer_label">⚠️ DISCLAIMER</strong> &mdash;
-        <span data-i18n="ftr_disclaimer_text">This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.</span>
-    </div>
-    <div style="margin-top:20px; padding:14px 18px; background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.2); border-radius:8px; text-align:center; font-size:13px;">
-        <span data-i18n="ftr_coffee">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6; text-decoration:none; font-weight:bold;" data-i18n="ftr_coffee_link">buy me a coffee</a>
-    </div>
-    <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color,#1e3a5f); font-size:12px;">
-        <a href="privacy.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_privacy">Privacy Policy</a>
-        <span style="color:var(--text-muted,#4a7090); margin:0 12px;">|</span>
-        <a href="contact.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_contact">Contact</a>
-    </div>
-    <div style="text-align:center; margin-top:15px; font-size:11px; color:var(--text-muted,#4a7090);">
-        © 2025-2026 RCGG. All Rights Reserved. Asifah Peru Rhetoric Tracker v1.0.0 — Proprietary and Confidential.
-    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
 </footer>
 
 <script>
@@ -963,6 +961,7 @@ const T = {
         sec_exec: 'Executive Summary',
         sec_signals: 'Top Signals',
         sec_signals_desc: 'Tripwires, convergence, commodity coupling, cross-theater',
+        ew_title: 'Election Runoff Watch',
         sec_so_what: 'So What Factor',
         sec_so_what_desc: 'Strategic implications for the next 7-14 days',
         sec_vectors: 'Vector Breakdown',
@@ -1052,6 +1051,7 @@ const T = {
         sec_exec: 'Resumen Ejecutivo',
         sec_signals: 'Señales Principales',
         sec_signals_desc: 'Disparadores, convergencia, acoplamiento de commodities, multi-teatro',
+        ew_title: 'Vigilancia de Segunda Vuelta',
         sec_so_what: 'Factor "Y Qué"',
         sec_so_what_desc: 'Implicaciones estratégicas para los próximos 7-14 días',
         sec_vectors: 'Desglose por Vector',
@@ -1136,6 +1136,7 @@ const T = {
         sec_exec: 'Resumo Executivo',
         sec_signals: 'Sinais Principais',
         sec_signals_desc: 'Gatilhos, convergência, acoplamento de commodities, multi-teatro',
+        ew_title: 'Vigilância do Segundo Turno',
         sec_so_what: 'Fator "E Daí"',
         sec_so_what_desc: 'Implicações estratégicas para os próximos 7-14 dias',
         sec_vectors: 'Detalhamento por Vetor',
@@ -1269,6 +1270,7 @@ function renderEverything() {
     renderComposite();
     renderExecSummary();
     renderTopSignals();
+    renderElectionWatch();
     renderSoWhat();
     renderVectors();
     renderCommodityCoupling();
@@ -1329,6 +1331,42 @@ function renderExecSummary() {
         return;
     }
     card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
+}
+
+function renderElectionWatch() {
+    const card = document.getElementById('electionWatchCard');
+    if (!card) return;
+    const e = scanData.election_watch;
+    if (!e || !e.active) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    const PHASE = { count_in_progress: { txt: 'COUNT IN PROGRESS', bg: '#f59e0b', fg: '#1a1206' },
+                    count_disputed:    { txt: 'COUNT DISPUTED',    bg: '#ef4444', fg: '#fff' },
+                    decided:           { txt: 'DECISION SIGNALS',  bg: '#10b981', fg: '#06281c' } };
+    const ph = PHASE[e.phase] || PHASE.count_in_progress;
+    const pill = document.getElementById('ewPhasePill');
+    pill.textContent = ph.txt; pill.style.background = ph.bg; pill.style.color = ph.fg;
+    const mom = e.momentum_signals;
+    const momEl = document.getElementById('ewMomentum');
+    if (mom === 'balanced' || !e.candidates[mom]) {
+        momEl.textContent = 'Lead-language signals balanced across both candidates this scan.';
+    } else {
+        const c = e.candidates[mom];
+        momEl.textContent = 'Current-scan lead language clusters around ' + c.display +
+            ' — implied market posture if trajectory holds: ' + c.market_read + '. A snapshot of coverage, not a result.';
+    }
+    const MR = { stabilizing: '#10b981', volatile: '#ef4444' };
+    document.getElementById('ewCandidates').innerHTML = ['fujimori', 'sanchez'].map(function (cid) {
+        const c = e.candidates[cid]; if (!c) return '';
+        const col = MR[c.market_read] || '#38bdf8';
+        return '<div style="background:rgba(13,27,46,0.5); border:1px solid var(--border-color,#1e3a5f); border-left:4px solid ' + col + '; border-radius:8px; padding:10px 14px;">' +
+            '<div style="font-weight:800; font-size:13px; margin-bottom:3px;">' + escapeHtml(c.display) + '</div>' +
+            '<div style="font-size:10.5px; color:var(--text-muted); margin-bottom:6px;">' + escapeHtml(c.party) + '</div>' +
+            '<div style="font-size:11px;">Market read: <span style="color:' + col + '; font-weight:800; text-transform:uppercase;">' + escapeHtml(c.market_read) + '</span></div>' +
+            '<div style="font-size:11px; color:var(--text-secondary);">Count base: ' + escapeHtml(c.count_base) + '</div>' +
+            '<div style="font-size:11px; color:var(--text-secondary);">Mentions: ' + (c.mention_count || 0) + ' · Lead signals: ' + (c.lead_signal_count || 0) + '</div>' +
+            '</div>';
+    }).join('');
+    document.getElementById('ewDisclaimer').textContent = e.disclaimer || '';
 }
 
 function renderTopSignals() {
@@ -1551,5 +1589,29 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 loadAll(false);
 </script>
 
+
+<script>
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
 </body>
 </html>
