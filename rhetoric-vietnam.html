@@ -1,0 +1,1302 @@
+<!-- Asifah Analytics — Vietnam Rhetoric & South China Sea Tracker v1.0.0 — June 2026 -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Vietnam Rhetoric & SCS Tracker — Asifah Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    /* ── THEME VARIABLES ── */
+    :root {
+        --bg-color: #f0f4f8;
+        --container-bg: #ffffff;
+        --card-bg: #ffffff;
+        --card-border: #d0dce8;
+        --text-primary: #0a1520;
+        --text-secondary: #204060;
+        --text-muted: #506080;
+        --article-bg: #f0f5fa;
+        --accent: #1e3a5f;
+        --accent-glow: rgba(30,58,95,0.3);
+        --card-glow: none;
+        --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
+        --watermark-opacity: 0.07;
+        --watermark-filter: none;
+    }
+    [data-theme="dark"] {
+        --bg-color: #0a0f1a;
+        --container-bg: #111827;
+        --card-bg: #111827;
+        --card-border: #1e3a5f;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --article-bg: #0f1923;
+        --accent: #7dd3fc;
+        --accent-glow: rgba(125,211,252,0.2);
+        --card-glow: 0 0 6px rgba(30,58,95,0.4), 0 0 1px rgba(125,211,252,0.15);
+        --card-hover-glow: 0 0 22px rgba(125,211,252,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        --watermark-opacity: 0.22;
+        --watermark-filter: saturate(5) brightness(0.9);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        min-height: 100vh;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body::before {
+        content: '';
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110vmin; height: 110vmin;
+        min-width: 800px; min-height: 800px;
+        max-width: 1400px; max-height: 1400px;
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-size: contain; background-repeat: no-repeat; background-position: center;
+        opacity: var(--watermark-opacity); filter: var(--watermark-filter);
+        z-index: 0; pointer-events: none; user-select: none;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+    /* ── HEADER ── */
+    header {
+        background: linear-gradient(135deg, #060d1a, #0d1e35);
+        border: 1px solid var(--card-border);
+        border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;
+        display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(125,211,252,0.1);
+        border-bottom: 1px solid rgba(125,211,252,0.2);
+    }
+    [data-theme="dark"] header { background: linear-gradient(135deg, #040a14, #0a1828); }
+    .header-logo { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(125,211,252,0.3); flex-shrink: 0; }
+    .header-left { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .back-link {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(125,211,252,0.3);
+        color: #7dd3fc; font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: all 0.2s;
+    }
+    .back-link:hover { border-color: #7dd3fc; background: rgba(125,211,252,0.08); }
+    .header-center { flex: 1; text-align: center; }
+    .header-flag { font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; color: #7dd3fc; text-transform: uppercase; }
+    .header-title { font-family: 'Times New Roman', Times, serif; font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e2e8f0; margin: 4px 0; }
+    .header-subtitle { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; }
+    .header-timestamp { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .lang-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    .lang-btn { font-family: 'Times New Roman', Times, serif; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--card-border); background: transparent; color: var(--text-muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: #1e3a5f; color: #7dd3fc; border-color: #1e3a5f; }
+    .theme-row { display: flex; align-items: center; gap: 8px; }
+    .theme-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+    .theme-toggle { position: relative; width: 48px; height: 24px; cursor: pointer; }
+    .theme-toggle input { opacity: 0; width: 0; height: 0; }
+    .theme-toggle-slider { position: absolute; inset: 0; border-radius: 12px; background: #ccc; transition: 0.3s; display: flex; align-items: center; padding: 2px; }
+    [data-theme="dark"] .theme-toggle-slider { background: #1e3a5f; }
+    .theme-toggle-slider::before { content: '☀️'; width: 20px; height: 20px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.3s; }
+    [data-theme="dark"] .theme-toggle-slider::before { content: '🌙'; margin-left: 24px; }
+
+    /* ── NAV SIDEBAR ── */
+    .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+    .nav-sidebar { width: 180px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+    .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(125,211,252,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+    .nav-btn { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-family: 'Times New Roman', Times, serif; font-size: 13px; font-weight: bold; letter-spacing: 0.5px; transition: all 0.3s ease; cursor: pointer; overflow: hidden; border: 1.5px solid rgba(0,200,255,0.2); background: linear-gradient(135deg, rgba(0,180,255,0.06) 0%, rgba(0,120,200,0.04) 100%); color: rgba(255,255,255,0.7); }
+    .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+    .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #64dcff; }
+    .nav-btn.active-nav { background: linear-gradient(135deg, rgba(0,180,255,0.15) 0%, rgba(0,120,200,0.10) 100%); border-color: rgba(0,200,255,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(0,180,255,0.15); }
+    .nav-btn.current-page { background: linear-gradient(135deg, rgba(125,211,252,0.15) 0%, rgba(30,58,95,0.12) 100%); border-color: rgba(125,211,252,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(125,211,252,0.2); }
+    .nav-btn.current-page .nav-btn-status { color: #7dd3fc; }
+    .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+    .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+    .nav-divider { height: 1px; background: rgba(125,211,252,0.1); margin: 4px 0; }
+    .nav-btn.rhetoric-btn { border-color: rgba(249,115,22,0.35); background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, rgba(220,38,38,0.05) 100%); }
+    .nav-btn.rhetoric-btn:hover { border-color: rgba(249,115,22,0.7); box-shadow: 0 0 18px rgba(249,115,22,0.2); transform: translateY(-2px); }
+    .nav-btn.rhetoric-btn .nav-btn-status { color: #f97316; }
+    .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+    .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+    .nav-btn.commodity-btn { border-color: rgba(245,158,11,0.35); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.commodity-btn .nav-btn-status { color: #f59e0b; }
+    /* -- Mobile drawer (<=1199px) -- */
+    .menu-toggle {
+        display: none; position: fixed; top: 14px; left: 14px; z-index: 1600;
+        width: 44px; height: 44px; border-radius: 8px;
+        background: var(--accent); color: #04101e; border: none;
+        font-size: 22px; line-height: 1; cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1400; }
+    .sidebar-backdrop.open { display: block; }
+    @media (max-width: 1199px) {
+        .menu-toggle { display: flex; align-items: center; justify-content: center; }
+        .page-with-sidebar { display: block; }
+        .nav-sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 260px;
+            transform: translateX(-100%); transition: transform 0.25s ease;
+            z-index: 1500; overflow-y: auto; border-radius: 0; padding: 64px 12px 20px;
+            background: var(--container-bg); border-right: 1px solid var(--card-border);
+        }
+        .nav-sidebar.open { transform: translateX(0); }
+    }
+    /* -- Plain-language So What additions -- */
+    .interp-bottomline {
+        background: rgba(56,189,248,0.10); border: 1px solid rgba(56,189,248,0.35);
+        border-left: 4px solid var(--accent); border-radius: 8px;
+        padding: 12px 16px; margin: 14px 0 4px;
+    }
+    .interp-bottomline-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; font-family: 'Courier New', monospace; }
+    .interp-bottomline-text { font-size: 0.95rem; line-height: 1.5; color: var(--text-primary); }
+    .signal-item { background: var(--article-bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+    .signal-head { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); line-height: 1.4; margin-bottom: 5px; }
+    .signal-why { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.55; }
+
+    /* ── SECTION CARDS ── */
+    .section-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .section-card:hover { box-shadow: var(--card-hover-glow); }
+    .section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #7dd3fc; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
+
+    /* ── THEATRE BANNER ── */
+    .theatre-banner { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px 28px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--card-glow); }
+    .theatre-score-big { font-size: clamp(3rem, 8vw, 5rem); font-weight: 900; line-height: 1; }
+    .theatre-score-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+    .theatre-badge { display: inline-block; padding: 5px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: white; margin-top: 8px; }
+    .theatre-right { text-align: right; }
+    .theatre-escalation-label-text { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+    .theatre-level-display { font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 700; margin: 4px 0; }
+    .theatre-level-desc { font-size: 0.7rem; color: var(--text-muted); }
+    .theatre-scan-info { font-size: 0.6rem; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+
+    /* ── CHINA FINGERPRINT CARD ── */
+    .fingerprint-card {
+        background: linear-gradient(135deg, rgba(220,38,38,0.06), rgba(185,28,28,0.03));
+        border: 1px solid rgba(220,38,38,0.3);
+        border-radius: 12px; padding: 20px; margin-bottom: 18px;
+    }
+    .fingerprint-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(220,38,38,0.2); }
+    .fingerprint-age { font-size: 0.6rem; color: var(--text-muted); font-style: italic; }
+    .fingerprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 14px; }
+    .fingerprint-item { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.15); border-radius: 8px; padding: 10px; text-align: center; }
+    .fingerprint-item-name { font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .fingerprint-item-level { font-size: 1.1rem; font-weight: 900; }
+    .fingerprint-item-label { font-size: 0.5rem; color: var(--text-muted); margin-top: 2px; }
+    .fingerprint-source-note { font-size: 0.6rem; color: #60a5fa; font-style: italic; margin-top: 8px; padding: 6px 10px; background: rgba(59,130,246,0.06); border-radius: 6px; border-left: 2px solid rgba(59,130,246,0.3); }
+
+    /* ── DUAL DASHBOARD ── */
+    .dual-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    @media (max-width: 700px) { .dual-dashboard { grid-template-columns: 1fr; } }
+    .dashboard-card { border-radius: 12px; padding: 20px; border: 2px solid; }
+    .dashboard-card.outbound { background: linear-gradient(135deg, rgba(125,211,252,0.06), rgba(30,58,95,0.03)); border-color: rgba(125,211,252,0.3); }
+    [data-theme="dark"] .dashboard-card.outbound { background: linear-gradient(135deg, rgba(125,211,252,0.08), rgba(14,35,58,0.05)); }
+    .dashboard-card.inbound { background: linear-gradient(135deg, rgba(220,38,38,0.06), rgba(185,28,28,0.03)); border-color: rgba(220,38,38,0.3); }
+    [data-theme="dark"] .dashboard-card.inbound { background: linear-gradient(135deg, rgba(220,38,38,0.08), rgba(127,29,29,0.05)); }
+    .dashboard-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid; }
+    .dashboard-card.outbound .dashboard-title { color: #7dd3fc; border-color: rgba(125,211,252,0.2); }
+    .dashboard-card.inbound .dashboard-title { color: #ef4444; border-color: rgba(220,38,38,0.2); }
+    .dashboard-q { font-size: 0.65rem; color: var(--text-muted); font-style: italic; margin-bottom: 14px; }
+    .dashboard-score { font-size: 2.2rem; font-weight: 900; line-height: 1; }
+    .dashboard-card.outbound .dashboard-score { color: #7dd3fc; }
+    .dashboard-card.inbound .dashboard-score { color: #ef4444; }
+    .dashboard-label { font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 3px; }
+    .dashboard-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.7rem; }
+    .dashboard-row:last-child { border-bottom: none; }
+    .dashboard-row-label { color: var(--text-muted); }
+    .dashboard-row-level { font-weight: 700; font-size: 0.75rem; }
+
+    /* ── ESCALATION LADDER ── */
+    .ladder-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+    .ladder-step { flex: 1; min-width: 80px; background: var(--article-bg); border: 2px solid var(--card-border); border-radius: 8px; padding: 10px 8px; text-align: center; transition: all 0.2s; }
+    .ladder-step.active { background: rgba(125,211,252,0.08); }
+    .ladder-step-num { font-size: 1.4rem; font-weight: 900; }
+    .ladder-step-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
+
+    /* ── ACTOR GRID ── */
+    .actors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .actor-card { background: var(--article-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; transition: all 0.2s; }
+    .actor-card:hover { box-shadow: var(--card-hover-glow); }
+    .actor-card.outbound-actor { border-left: 3px solid #7dd3fc; }
+    .actor-card.inbound-actor { border-left: 3px solid #ef4444; }
+    .actor-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+    .actor-flag { font-size: 1.3rem; flex-shrink: 0; }
+    .actor-name { font-size: 0.75rem; font-weight: 700; color: var(--text-primary); }
+    .actor-role { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+    .actor-level-badge { padding: 3px 10px; border-radius: 5px; font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: white; white-space: nowrap; }
+    .actor-stats { font-size: 0.65rem; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+    .direction-tag { font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 6px; }
+    .direction-tag.outbound { background: rgba(125,211,252,0.12); color: #7dd3fc; }
+    .direction-tag.inbound { background: rgba(220,38,38,0.12); color: #ef4444; }
+    .matched-triggers { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+    .trigger-pill { font-size: 0.55rem; background: rgba(125,211,252,0.08); border: 1px solid rgba(125,211,252,0.2); border-radius: 4px; padding: 2px 6px; color: var(--text-muted); }
+    .trigger-pill.tripwire { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); color: #ef4444; font-weight: 700; }
+
+    /* ── HISTORY CHART ── */
+    .history-chart-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .history-chart-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .history-chart-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #7dd3fc; }
+    .history-toggle-group { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 3px; }
+    .history-toggle-btn { font-family: 'Times New Roman', Times, serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; padding: 4px 12px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; text-transform: uppercase; background: transparent; color: var(--text-muted); transition: all 0.2s; }
+    .history-toggle-btn.active { background: #1e3a5f; color: #7dd3fc; border-color: #1e3a5f; }
+    .history-toggle-btn.compare.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+    .history-chart-wrap { position: relative; height: 180px; }
+    .history-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1px; }
+    .history-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+    .history-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-legend-dot { width: 10px; height: 3px; border-radius: 2px; }
+
+    /* ── ARTICLES ── */
+    .article-item { padding: 8px 0; border-bottom: 1px solid var(--card-border); }
+    .article-item:last-child { border-bottom: none; }
+    .article-link { color: var(--text-primary); text-decoration: none; font-size: 0.75rem; line-height: 1.4; font-weight: 600; }
+    .article-link:hover { color: #7dd3fc; }
+    .article-meta { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; }
+    .article-trigger { font-size: 0.55rem; background: rgba(125,211,252,0.1); border-radius: 3px; padding: 1px 5px; color: #7dd3fc; margin-left: 6px; }
+
+    /* ── SCAN BUTTON ── */
+    .scan-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 20px; border-radius: 8px;
+        background: linear-gradient(135deg, #1e3a5f, #0f2040);
+        border: 1px solid rgba(125,211,252,0.4); color: #7dd3fc;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+    }
+    .scan-btn:hover { background: linear-gradient(135deg, #254870, #1a2f50); box-shadow: 0 0 16px rgba(125,211,252,0.25); }
+    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scan-btn .spin { display: inline-block; animation: spin 1s linear infinite; }
+
+    /* ── PAGE FOOTER ── */
+    .page-footer { text-align: center; padding: 20px; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 10px; }
+
+    /* ── INTERPRETATION CARDS (So What / Red Lines) — v1.1.0 ── */
+    .interp-so-what {
+        border-radius: 12px; padding: 22px; margin-bottom: 16px;
+        border: 2px solid rgba(56,189,248,0.3);
+        background: linear-gradient(135deg, rgba(56,189,248,0.05) 0%, rgba(14,165,233,0.03) 100%);
+    }
+    .interp-scenario-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .interp-scenario-icon { font-size: 1.3rem; }
+    .interp-scenario-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .interp-scenario-value { font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; font-family: 'Times New Roman', serif; }
+    .interp-section-title { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; font-family: 'Courier New', monospace; margin: 12px 0 6px; border-bottom: 1px solid rgba(56,189,248,0.2); padding-bottom: 4px; }
+    .interp-text { font-size: 0.82rem; line-height: 1.65; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .interp-indicator { font-size: 0.78rem; line-height: 1.5; color: var(--text-secondary); padding: 5px 10px; border-left: 3px solid #38bdf8; background: rgba(56,189,248,0.06); border-radius: 0 6px 6px 0; margin: 5px 0; font-family: 'Times New Roman', serif; }
+    .interp-indicator.breached-ind   { color: #fca5a5; border-left-color: #dc2626; background: rgba(220,38,38,0.06); }
+    .interp-indicator.historical-ind { color: #c4b5fd; border-left-color: #7c3aed; background: rgba(124,58,237,0.06); }
+    .interp-watch-item { font-size: 0.72rem; color: #38bdf8; padding: 3px 0 3px 10px; border-left: 2px solid rgba(56,189,248,0.4); margin: 3px 0; font-family: 'Courier New', monospace; }
+    .interp-confidence-note { font-size: 0.65rem; color: var(--text-muted); font-style: italic; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(56,189,248,0.15); font-family: 'Courier New', monospace; }
+
+    .vector-readout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+    @media (max-width: 600px) { .vector-readout { grid-template-columns: repeat(2, 1fr); } }
+    .vector-stat { text-align: center; padding: 10px 8px; border-radius: 8px; background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.15); }
+    .vector-stat.gap-warning { border-color: rgba(239,68,68,0.5); background: rgba(239,68,68,0.08); }
+    .vector-stat-label { font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .vector-stat-value { font-size: 1.4rem; font-weight: 900; margin-top: 3px; }
+
+    /* ── RED LINES CARD ── */
+    .red-lines-card { border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; border: 1px solid rgba(30,58,95,0.4); background: linear-gradient(135deg, #0a1525 0%, #0d1b2e 100%); }
+    [data-theme="light"] .red-lines-card { background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-color: rgba(100,116,139,0.3); }
+    .interp-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .interp-card-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 1.5px; color: #38bdf8; text-transform: uppercase; }
+    .interp-card-subtitle { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+    .red-line-item { display: flex; gap: 10px; padding: 12px; border-radius: 8px; margin-bottom: 8px; background: rgba(56,189,248,0.04); border-left: 3px solid rgba(56,189,248,0.4); }
+    .red-line-item.breached    { border-left-color: #dc2626; background: rgba(220,38,38,0.08); }
+    .red-line-item.approaching { border-left-color: #f97316; background: rgba(249,115,22,0.06); }
+    .red-line-item.positive    { border-left-color: #22c55e; background: rgba(34,197,94,0.08); }
+    .red-line-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .red-line-label { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
+    .red-line-status-badge { font-size: 0.55rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; color: white; font-family: 'Courier New', monospace; }
+    .red-line-status-badge.breached    { background: #dc2626; }
+    .red-line-status-badge.approaching { background: #f97316; }
+    .red-line-status-badge.positive    { background: #22c55e; }
+    .red-line-trigger { font-size: 0.68rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+    .red-line-source { font-size: 0.6rem; color: var(--text-muted); margin-top: 4px; font-style: italic; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<header>
+    <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+    <div class="header-left">
+        <a href="https://www.asifahanalytics.com/vietnam-stability.html" class="back-link" data-i18n="backLink">← Back to Vietnam Stability</a>
+        <div class="theme-row">
+            <span class="theme-label" data-i18n="themeLabel">THEME</span>
+            <label class="theme-toggle">
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()"/>
+                <span class="theme-toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="header-center">
+        <div class="header-flag">🇻🇳 <span data-i18n="pageFlag">VIETNAM</span></div>
+        <div class="header-title" data-i18n="pageTitle">VIETNAM RHETORIC &amp; SCS TRACKER</div>
+        <div class="header-subtitle" data-i18n="pageSubtitle">CPV / State · MOFA Lawfare · Maritime Posture · US Partnership · China SCS Pressure</div>
+        <div class="header-timestamp">Last updated: <span id="lastUpdated">--</span></div>
+    </div>
+    <div class="header-right">
+        <div class="lang-group">
+            <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="setLanguage('zh')">中文</button>
+            <button class="lang-btn" onclick="setLanguage('ja')">日本語</button>
+            <button class="lang-btn" onclick="setLanguage('ko')">한국어</button>
+        </div>
+        <button class="scan-btn" id="scanBtn" onclick="triggerScan()">
+            <span id="scanBtnIcon">🔄</span>
+            <span data-i18n="refreshScan">Refresh Scan</span>
+        </button>
+    </div>
+</header>
+
+<!-- PAGE WITH SIDEBAR -->
+<div class="page-with-sidebar">
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- LEFT NAV SIDEBAR -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label">Dashboards</div>
+    <div class="nav-btn inactive-nav">
+        <span class="nav-btn-label">🌍 Africa</span>
+        <span class="nav-btn-status">🔒 Future</span>
+    </div>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="military.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🎖️ Military Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🌐 Global Pressure</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="commodities.html" class="nav-btn commodity-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Vietnam</div>
+    <a href="rhetoric-vietnam.html" class="nav-btn rhetoric-btn current-page" style="border-color:rgba(125,211,252,0.6);">
+        <span class="nav-btn-label">🇻🇳 Vietnam Rhetoric</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </a>
+    <a href="vietnam-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🇻🇳 Vietnam Stability</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div style="flex:1;min-width:0;">
+
+<!-- THEATRE BANNER -->
+<div class="theatre-banner" id="theatreBanner">
+    <div>
+        <div class="theatre-score-big" id="theatreScore">--</div>
+        <div class="theatre-score-label" data-i18n="scoreLabel">OVERALL LEVEL</div>
+        <div class="theatre-badge" id="theatreBadge" style="background:#6b7280;">--</div>
+    </div>
+    <div class="theatre-right">
+        <div class="theatre-escalation-label-text" data-i18n="escalationLabel">SOUTH CHINA SEA TENSION LEVEL</div>
+        <div class="theatre-level-display" id="theatreLevelDisplay">--</div>
+        <div class="theatre-level-desc" id="theatreLevelDesc">--</div>
+        <div class="theatre-scan-info" id="theatreScanInfo" data-i18n="loading">Loading...</div>
+    </div>
+</div>
+
+<!-- SO WHAT CARD (v1.1.0 — backend-synthesized via taiwan_signal_interpreter) -->
+<div class="interp-so-what" id="soWhatCard" style="display:none;">
+    <div class="interp-scenario-header">
+        <span class="interp-scenario-icon" id="soWhatIcon">⚪</span>
+        <div>
+            <div class="interp-scenario-label">VIETNAM SCS ASSESSMENT</div>
+            <div class="interp-scenario-value" id="soWhatScenario">--</div>
+        </div>
+    </div>
+
+    <!-- Plain-language bottom line (BLUF) -->
+    <div class="interp-bottomline">
+        <div class="interp-bottomline-label" data-i18n="bottomLine">THE BOTTOM LINE</div>
+        <div class="interp-bottomline-text" id="soWhatBottomLine">--</div>
+    </div>
+
+    <!-- Four-vector readout (Taiwan-specific — includes DETERRENCE GAP) -->
+    <div class="vector-readout" id="soWhatVectors">
+        <div class="vector-stat">
+            <div class="vector-stat-label">Response Strength</div>
+            <div class="vector-stat-value" id="vecDeterrence" style="color:#38bdf8;">--</div>
+        </div>
+        <div class="vector-stat">
+            <div class="vector-stat-label">Inbound Pressure</div>
+            <div class="vector-stat-value" id="vecInbound" style="color:#ef4444;">--</div>
+        </div>
+        <div class="vector-stat">
+            <div class="vector-stat-label">Partner Strength</div>
+            <div class="vector-stat-value" id="vecResolve" style="color:#10b981;">--</div>
+        </div>
+        <div class="vector-stat" id="vecGapStat">
+            <div class="vector-stat-label">⚠️ Coercion Gap</div>
+            <div class="vector-stat-value" id="vecGap" style="color:#f59e0b;">--</div>
+        </div>
+    </div>
+
+    <div class="interp-section-title">SITUATION</div>
+    <div class="interp-text" id="soWhatSituation"></div>
+    <div id="soWhatIndicators"></div>
+    <div class="interp-section-title" style="margin-top:14px;">ASSESSMENT</div>
+    <div class="interp-text" id="soWhatAssessment"></div>
+    <div class="interp-section-title" style="margin-top:14px;">WATCH FOR</div>
+    <div id="soWhatWatchList"></div>
+    <div class="interp-confidence-note" id="soWhatNote"></div>
+</div>
+
+<!-- TOP SIGNALS CARD (plain-language: headline + why it matters) -->
+<div class="section-card" id="topSignalsCard" style="display:none;">
+    <div class="section-title" data-i18n="topSignalsTitle">📌 TOP SIGNALS — WHY IT MATTERS</div>
+    <div id="topSignalsList"></div>
+</div>
+
+<!-- RED LINES CARD -->
+<div class="red-lines-card" id="redLinesCard" style="display:none;">
+    <div class="interp-card-header">
+        <span style="font-size:1rem;">🚨</span>
+        <div style="flex:1;">
+            <div class="interp-card-title">RED LINE PROXIMITY</div>
+            <div class="interp-card-subtitle">Vietnam SCS Red Lines — Maritime · Sovereignty · Coalition · Economic · China Direct</div>
+        </div>
+        <div style="display:flex;gap:16px;">
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#dc2626;" id="redLineBreachedCount">0</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;">BREACHED</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#f97316;" id="redLineApproachingCount">0</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;">APPROACHING</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#22c55e;" id="redLinePositiveCount">0</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;">POSITIVE</div>
+            </div>
+        </div>
+    </div>
+    <div id="redLineItems"></div>
+</div>
+
+<!-- CHINA FINGERPRINT CARD -->
+<div class="fingerprint-card" id="fingerprintCard">
+    <div class="fingerprint-title">🇨🇳 <span data-i18n="fingerprintTitle">CHINA PRESSURE FINGERPRINT — Live Cross-Theater Feed</span></div>
+    <div class="fingerprint-source-note" data-i18n="fingerprintNote">Inbound data sourced directly from China Rhetoric Tracker Redis fingerprint — no re-scan needed. Updates every time China tracker runs.</div>
+    <div class="fingerprint-grid" id="fingerprintGrid"></div>
+    <div class="fingerprint-age" id="fingerprintAge"></div>
+</div>
+
+<!-- DUAL DASHBOARD -->
+<div class="dual-dashboard">
+    <!-- OUTBOUND (Taiwan) -->
+    <div class="dashboard-card outbound">
+        <div class="dashboard-title">🇻🇳 <span data-i18n="outboundTitle">OUTBOUND — VIETNAM POSTURE</span></div>
+        <div class="dashboard-q" data-i18n="outboundQ">Q: Is Taiwan hardening its posture in ways that could trigger a PLA response?</div>
+        <div style="display:flex;align-items:flex-end;gap:14px;margin-bottom:16px;">
+            <div>
+                <div class="dashboard-score" id="outboundScore">--</div>
+                <div class="dashboard-label" data-i18n="outboundScoreLabel">OUTBOUND SCORE / 100</div>
+            </div>
+            <div style="flex:1;" id="outboundRows"></div>
+        </div>
+    </div>
+    <!-- INBOUND (China pressure) -->
+    <div class="dashboard-card inbound">
+        <div class="dashboard-title">🇨🇳 <span data-i18n="inboundTitle">INBOUND — CHINA PRESSURE</span></div>
+        <div class="dashboard-q" data-i18n="inboundQ">Q: What is Beijing signaling at Taiwan right now?</div>
+        <div style="display:flex;align-items:flex-end;gap:14px;margin-bottom:16px;">
+            <div>
+                <div class="dashboard-score" id="inboundScore">--</div>
+                <div class="dashboard-label" data-i18n="inboundScoreLabel">INBOUND SCORE / 100</div>
+            </div>
+            <div style="flex:1;" id="inboundRows"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ESCALATION LADDER -->
+<div class="section-card">
+    <div class="section-title" data-i18n="ladderTitle">🪜 ESCALATION LADDER</div>
+    <div class="ladder-row" id="ladderRow"></div>
+    <div style="font-size:0.65rem;color:var(--text-muted);margin-top:8px;" id="articlesClassified"></div>
+</div>
+
+<!-- HISTORY CHART -->
+<div class="history-chart-card">
+    <div class="history-chart-header">
+        <div class="history-chart-title" data-i18n="trendTitle">📈 DETERRENCE TREND</div>
+        <div class="history-toggle-group">
+            <button class="history-toggle-btn active" id="btn7d" onclick="setHistoryView('7d')">7D</button>
+            <button class="history-toggle-btn" id="btn30d" onclick="setHistoryView('30d')">30D</button>
+            <button class="history-toggle-btn compare" id="btnCompare" onclick="setHistoryView('compare')">COMPARE</button>
+        </div>
+    </div>
+    <div class="history-chart-wrap">
+        <canvas id="historyChart"></canvas>
+        <div id="historyEmpty" class="history-empty" style="display:none;" data-i18n="chartEmpty">Collecting data — first snapshot saves on next scan cycle</div>
+    </div>
+    <div class="history-legend" id="historyLegend"></div>
+</div>
+
+<!-- ACTOR STATUS -->
+<div class="section-card">
+    <div class="section-title" data-i18n="actorTitle">🎯 ACTOR STATUS</div>
+    <div class="actors-grid" id="actorsGrid"></div>
+</div>
+
+<!-- TOP ARTICLES -->
+<div class="section-card">
+    <div class="section-title" data-i18n="articlesTitle">📰 TOP ARTICLES BY ACTOR</div>
+    <div id="articlesList"></div>
+</div>
+
+<!-- GOLD STANDARD FOOTER (africa.html v1.3 canonical pattern) -->
+<footer style="background:var(--container-bg);border:1px solid var(--card-border);border-radius:12px;padding:24px 26px;margin-top:18px;box-shadow:var(--card-glow);">
+    <div style="font-weight:700;letter-spacing:1.5px;color:var(--text-primary);font-size:0.85rem;margin-bottom:8px;">ASIFAH ANALYTICS — VIETNAM RHETORIC &amp; SOUTH CHINA SEA TRACKER</div>
+    <div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.55;margin-bottom:6px;">Live data: <a href="https://asifah-asia-backend.onrender.com/api/rhetoric/vietnam" target="_blank" style="color:var(--accent);">asifah-asia-backend.onrender.com/api/rhetoric/vietnam</a> &middot; Refreshed every ~6h</div>
+    <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.55;margin-bottom:16px;">OSINT sources: VnExpress &middot; Tuoi Tre &middot; VietnamNet &middot; Vietnam News (VNA) &middot; Reuters &middot; GDELT (EN/VI) &middot; CSIS AMTI &middot; USNI &middot; The Diplomat &middot; RFA &middot; BenarNews &middot; Reddit &middot; Telegram &middot; Bluesky</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.5);color:#f59e0b;font-size:0.75rem;font-weight:700;text-decoration:none;">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.45);color:var(--accent);font-size:0.75rem;font-weight:700;text-decoration:none;">✉️ Contact Asifah</a>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.55;padding-top:14px;border-top:1px solid var(--card-border);">
+        This composite is a <strong>CONVERGENCE indicator, NOT a probability of action.</strong> OSINT-based pattern analysis, not certainty. Updated every ~6h &middot; Not for operational use. &copy; 2025-2026 Asifah Analytics — v1.0.0-vietnam.
+    </div>
+    <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:12px;">
+        <a href="mission.html" style="color:var(--text-secondary);text-decoration:none;">Mission Statement</a> &middot;
+        <a href="privacy.html" style="color:var(--text-secondary);text-decoration:none;">Privacy Policy</a> &middot;
+        <a href="index.html" style="color:var(--text-secondary);text-decoration:none;">Home</a>
+    </div>
+</footer>
+
+</div><!-- end main content -->
+</div><!-- end page-with-sidebar -->
+</div><!-- end container -->
+
+<script>
+    const API_BASE = 'https://asifah-asia-backend.onrender.com';
+
+    const ESCALATION_LEVELS = {
+        0: { label:'Baseline',        color:'#6b7280', description:'Routine SCS activity, no significant signals' },
+        1: { label:'Rhetoric',        color:'#3b82f6', description:'Standard sovereignty statements, routine patrols' },
+        2: { label:'Warning',         color:'#f59e0b', description:'Elevated CCG presence, survey activity, mild coercion' },
+        3: { label:'Confrontation',   color:'#f97316', description:'Survey/rig incursion, oil-gas standoff, sovereignty escalation' },
+        4: { label:'High Alert',      color:'#ef4444', description:'Ramming incident, feature presence change, sustained standoff' },
+        5: { label:'Active Conflict', color:'#dc2626', description:'Casualties, vessel sinking, kinetic exchange at sea' },
+    };
+
+    const OUTBOUND_ACTORS = ['cpv_state','mofa_diplomacy','maritime_posture','us_partnership','regional_partners'];
+    const INBOUND_ACTORS  = ['china_scs_pressure','beijing_coercion','economic_pressure'];
+    const ACTOR_ORDER     = [...OUTBOUND_ACTORS, ...INBOUND_ACTORS];
+
+    // ── TRANSLATIONS ──
+    const T = {
+        en: {
+            backLink:'← Back to Vietnam Stability', pageFlag:'VIETNAM',
+            pageTitle:'VIETNAM RHETORIC & SCS TRACKER',
+            pageSubtitle:'CPV / State · MOFA Lawfare · Maritime Posture · US Partnership · China SCS Pressure',
+            loading:'Loading...', scoreLabel:'OVERALL LEVEL',
+            escalationLabel:'SOUTH CHINA SEA TENSION LEVEL',
+            fingerprintTitle:'CHINA SCS PRESSURE FINGERPRINT — Live Cross-Theater Feed',
+            fingerprintNote:'Inbound context sourced directly from the China Rhetoric Tracker Redis fingerprint — no re-scan needed. Updates every time the China tracker runs.',
+            outboundTitle:'OUTBOUND — VIETNAM POSTURE',
+            outboundScoreLabel:'OUTBOUND SCORE / 100',
+            outboundQ:'Q: Is Vietnam hardening its SCS posture, and is its response keeping pace with Chinese pressure?',
+            inboundTitle:'INBOUND — CHINA SCS PRESSURE',
+            inboundScoreLabel:'INBOUND SCORE / 100',
+            inboundQ:'Q: What is Beijing signaling toward Vietnam in the South China Sea right now?',
+            ladderTitle:'🪜 ESCALATION LADDER',
+            trendTitle:'📈 COERCION–RESPONSE TREND',
+            chartEmpty:'Collecting data — first snapshot saves on next scan cycle',
+            actorTitle:'🎯 ACTOR STATUS',
+            articlesTitle:'📰 TOP ARTICLES BY ACTOR',
+            refreshScan:'Refresh Scan', themeLabel:'THEME',
+            articles:'articles', maxLevel:'Max Level',
+            outboundTag:'🇻🇳 Outbound', inboundTag:'🇨🇳 Inbound',
+            bottomLine:'THE BOTTOM LINE', topSignalsTitle:'📌 TOP SIGNALS — WHY IT MATTERS',
+        },
+        zh: {
+            backLink:'← 返回越南稳定页', pageFlag:'越南',
+            pageTitle:'越南言论与南海追踪器',
+            pageSubtitle:'越共/国家 · 外交部法律战 · 海上姿态 · 美越伙伴关系 · 中国南海压力',
+            loading:'加载中...', scoreLabel:'总体级别',
+            escalationLabel:'南海紧张程度',
+            fingerprintTitle:'中国南海压力指纹 — 实时跨战区数据',
+            fingerprintNote:'对内背景数据直接来自中国言论追踪器的Redis指纹 — 无需重新扫描。',
+            outboundTitle:'对外 — 越南姿态',
+            outboundScoreLabel:'对外评分 / 100',
+            outboundQ:'问：越南是否在强化南海姿态，其反应是否跟上中国的压力？',
+            inboundTitle:'对内 — 中国南海压力',
+            inboundScoreLabel:'对内评分 / 100',
+            inboundQ:'问：北京目前在南海向越南发出什么信号？',
+            ladderTitle:'🪜 升级阶梯',
+            trendTitle:'📈 胁迫—反应趋势',
+            chartEmpty:'正在收集数据',
+            actorTitle:'🎯 行为者状态',
+            articlesTitle:'📰 按行为者排名的顶级文章',
+            refreshScan:'刷新扫描', themeLabel:'主题',
+            articles:'文章', maxLevel:'最高级别',
+            outboundTag:'🇻🇳 对外', inboundTag:'🇨🇳 对内',
+            bottomLine:'核心结论', topSignalsTitle:'📌 重点信号 — 为何重要',
+        },
+        ja: {
+            backLink:'← ベトナム安定ページへ戻る', pageFlag:'ベトナム',
+            pageTitle:'ベトナム・南シナ海トラッカー',
+            pageSubtitle:'共産党/国家 · 外務省ローフェア · 海上姿勢 · 米越パートナーシップ · 中国南シナ海圧力',
+            loading:'読み込み中...', scoreLabel:'総合レベル',
+            escalationLabel:'南シナ海緊張レベル',
+            fingerprintTitle:'中国南シナ海圧力フィンガープリント — ライブ',
+            fingerprintNote:'対内の背景データは中国レトリックトラッカーのRedisフィンガープリントから直接取得。',
+            outboundTitle:'対外 — ベトナムの姿勢',
+            outboundScoreLabel:'対外スコア / 100',
+            outboundQ:'Q: ベトナムは南シナ海での姿勢を強化し、中国の圧力に対応できているか？',
+            inboundTitle:'対内 — 中国の南シナ海圧力',
+            inboundScoreLabel:'対内スコア / 100',
+            inboundQ:'Q: 北京は今、南シナ海でベトナムにどのようなシグナルを送っているか？',
+            ladderTitle:'🪜 エスカレーションラダー',
+            trendTitle:'📈 威圧—対応トレンド',
+            chartEmpty:'データ収集中',
+            actorTitle:'🎯 アクターステータス',
+            articlesTitle:'📰 アクター別トップ記事',
+            refreshScan:'スキャン更新', themeLabel:'テーマ',
+            articles:'記事', maxLevel:'最高レベル',
+            outboundTag:'🇻🇳 対外', inboundTag:'🇨🇳 対内',
+            bottomLine:'結論', topSignalsTitle:'📌 重要シグナル — なぜ重要か',
+        },
+        ko: {
+            backLink:'← 베트남 안정 페이지로', pageFlag:'베트남',
+            pageTitle:'베트남 남중국해 추적기',
+            pageSubtitle:'공산당/국가 · 외교부 법률전 · 해상 태세 · 미-베트남 파트너십 · 중국 남중국해 압력',
+            loading:'로딩 중...', scoreLabel:'전체 수준',
+            escalationLabel:'남중국해 긴장 수준',
+            fingerprintTitle:'중국 남중국해 압력 지문 — 실시간',
+            fingerprintNote:'대내 배경 데이터는 중국 수사학 추적기 Redis 지문에서 직접 가져옴.',
+            outboundTitle:'대외 — 베트남의 태세',
+            outboundScoreLabel:'대외 점수 / 100',
+            outboundQ:'Q: 베트남이 남중국해 태세를 강화하고 있으며, 그 대응이 중국의 압력에 보조를 맞추고 있는가?',
+            inboundTitle:'대내 — 중국 남중국해 압력',
+            inboundScoreLabel:'대내 점수 / 100',
+            inboundQ:'Q: 베이징은 지금 남중국해에서 베트남에 어떤 신호를 보내고 있는가?',
+            ladderTitle:'🪜 에스컬레이션 사다리',
+            trendTitle:'📈 강압—대응 추세',
+            chartEmpty:'데이터 수집 중',
+            actorTitle:'🎯 행위자 상태',
+            articlesTitle:'📰 행위자별 상위 기사',
+            refreshScan:'스캔 새로고침', themeLabel:'테마',
+            articles:'기사', maxLevel:'최고 레벨',
+            outboundTag:'🇻🇳 대외', inboundTag:'🇨🇳 대내',
+            bottomLine:'핵심 결론', topSignalsTitle:'📌 주요 신호 — 왜 중요한가',
+        },
+    };
+
+    // ── STATE ──
+    let currentLang = 'en';
+    let currentData = null;
+    let _historyChart = null;
+    let _historyView = '7d';
+
+    // ── HISTORY CHART ──
+    const HISTORY_CONFIG = {
+        historyUrl: API_BASE + '/api/rhetoric/vietnam/history',
+        compareTheatres: [
+            { label:'Vietnam (Outbound)', url: API_BASE + '/api/rhetoric/vietnam/history', color:'#7dd3fc', field:'outbound_score' },
+            { label:'Vietnam (Inbound)',  url: API_BASE + '/api/rhetoric/vietnam/history', color:'#ef4444', field:'inbound_score'  },
+            { label:'China (Outbound)',   url: API_BASE + '/api/rhetoric/china/history',   color:'#f97316', field:'outbound_score' },
+            { label:'China (Inbound)',    url: API_BASE + '/api/rhetoric/china/history',    color:'#a78bfa', field:'inbound_score'  },
+        ]
+    };
+
+    const LEVEL_ZONES = [
+        { yMin:0,  yMax:20,  color:'rgba(107,114,128,0.08)' },
+        { yMin:20, yMax:40,  color:'rgba(59,130,246,0.08)'  },
+        { yMin:40, yMax:60,  color:'rgba(245,158,11,0.10)'  },
+        { yMin:60, yMax:80,  color:'rgba(249,115,22,0.12)'  },
+        { yMin:80, yMax:100, color:'rgba(220,38,38,0.14)'   },
+    ];
+
+    const zoneBandPlugin = {
+        id:'zoneBands',
+        beforeDraw(chart) {
+            const { ctx, chartArea:{ left, right }, scales:{ y } } = chart;
+            LEVEL_ZONES.forEach(zone => {
+                const yTop = y.getPixelForValue(zone.yMax);
+                const yBot = y.getPixelForValue(zone.yMin);
+                ctx.save(); ctx.fillStyle = zone.color;
+                ctx.fillRect(left, Math.min(yTop,yBot), right-left, Math.abs(yBot-yTop));
+                ctx.restore();
+            });
+        }
+    };
+
+    function _sliceEntries(entries, view) {
+        if (!entries || !entries.length) return [];
+        return view === '7d' ? entries.slice(-28) : entries;
+    }
+    function _fmtLabel(ts) {
+        try { return new Date(ts).toLocaleDateString('en-US', {month:'short',day:'numeric'}); }
+        catch { return ts; }
+    }
+
+    function renderHistoryChart(datasets, labels) {
+        const canvas = document.getElementById('historyChart');
+        const emptyEl = document.getElementById('historyEmpty');
+        if (!canvas) return;
+        if (!datasets || !datasets.length || !datasets[0].data.length) {
+            canvas.style.display='none'; if(emptyEl) emptyEl.style.display='block'; return;
+        }
+        canvas.style.display='block'; if(emptyEl) emptyEl.style.display='none';
+        if (_historyChart) { _historyChart.destroy(); _historyChart=null; }
+        const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+        const gridColor = isDark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.06)';
+        const tickColor = isDark?'#64748b':'#506080';
+        const fontFam = "'Times New Roman', Times, serif";
+        _historyChart = new Chart(canvas.getContext('2d'), {
+            type:'line', plugins:[zoneBandPlugin], data:{labels,datasets},
+            options:{
+                responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                interaction:{mode:'index',intersect:false},
+                plugins:{
+                    legend:{display:datasets.length>1,labels:{color:tickColor,font:{family:fontFam,size:10},boxWidth:20,boxHeight:2,usePointStyle:true,pointStyle:'line'}},
+                    tooltip:{
+                        backgroundColor:isDark?'#111827':'#fff',
+                        borderColor:isDark?'rgba(125,211,252,0.2)':'rgba(0,0,0,0.1)',
+                        borderWidth:1, titleColor:isDark?'#e2e8f0':'#0a1520',
+                        bodyColor:isDark?'#94a3b8':'#204060',
+                        titleFont:{family:fontFam,size:11,weight:'bold'},
+                        bodyFont:{family:fontFam,size:10},
+                        callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y}`}
+                    }
+                },
+                scales:{
+                    x:{grid:{color:gridColor},ticks:{color:tickColor,font:{family:fontFam,size:9},maxRotation:0,maxTicksLimit:10}},
+                    y:{min:0,max:100,grid:{color:gridColor},ticks:{color:tickColor,font:{family:fontFam,size:9},stepSize:20}}
+                }
+            }
+        });
+    }
+
+    async function loadHistoryData() {
+        try {
+            const resp = await fetch(HISTORY_CONFIG.historyUrl + '?limit=120');
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const history = data.history || [];
+            const entries = _sliceEntries(history, _historyView);
+            const legendEl = document.getElementById('historyLegend');
+            if (legendEl) legendEl.innerHTML = `
+                <div class="history-legend-item"><div class="history-legend-dot" style="background:#7dd3fc;"></div> Outbound (Vietnam posture)</div>
+                <div class="history-legend-item"><div class="history-legend-dot" style="background:#ef4444;"></div> Inbound (China pressure)</div>`;
+            renderHistoryChart([
+                { label:'Outbound', data:entries.map(e=>e.outbound_score??0), borderColor:'#7dd3fc', backgroundColor:'rgba(125,211,252,0.07)', borderWidth:2, pointRadius:entries.length<15?3:0, pointHoverRadius:4, fill:true, tension:0.35 },
+                { label:'Inbound',  data:entries.map(e=>e.inbound_score??0),  borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.07)',    borderWidth:2, pointRadius:entries.length<15?3:0, pointHoverRadius:4, fill:true, tension:0.35 },
+            ], entries.map(e=>_fmtLabel(e.ts)));
+        } catch(e) { console.warn('[HistoryChart]', e); }
+    }
+
+    async function loadCompareData() {
+        try {
+            const results = await Promise.allSettled(
+                HISTORY_CONFIG.compareTheatres.map(t => fetch(t.url+'?limit=120').then(r=>r.ok?r.json():null))
+            );
+            let maxEntries = [];
+            results.forEach(r => {
+                const h = r.status==='fulfilled' && r.value?.history ? _sliceEntries(r.value.history, _historyView) : [];
+                if (h.length > maxEntries.length) maxEntries = h;
+            });
+            const labels = maxEntries.map(e => _fmtLabel(e.ts));
+            const datasets = HISTORY_CONFIG.compareTheatres.map((t, i) => {
+                const h = results[i].status==='fulfilled' && results[i].value?.history ? _sliceEntries(results[i].value.history, _historyView) : [];
+                const field = t.field || 'outbound_score';
+                return { label:t.label, data:h.map(x=>x[field]??0), borderColor:t.color, backgroundColor:'transparent', borderWidth:2, pointRadius:h.length<15?3:0, pointHoverRadius:4, fill:false, tension:0.35 };
+            });
+            const legendEl = document.getElementById('historyLegend');
+            if (legendEl) legendEl.innerHTML = HISTORY_CONFIG.compareTheatres.map(t =>
+                `<div class="history-legend-item"><div class="history-legend-dot" style="background:${t.color};"></div> ${t.label}</div>`
+            ).join('');
+            renderHistoryChart(datasets, labels);
+        } catch(e) { console.warn('[HistoryChart compare]', e); }
+    }
+
+    function setHistoryView(mode) {
+        _historyView = mode;
+        document.getElementById('btn7d').classList.toggle('active', mode==='7d');
+        document.getElementById('btn30d').classList.toggle('active', mode==='30d');
+        document.getElementById('btnCompare').classList.toggle('active', mode==='compare');
+        if (mode === 'compare') loadCompareData(); else loadHistoryData();
+    }
+
+    // ── LANGUAGE ──
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        const t = T[lang] || T.en;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key] !== undefined) el.textContent = t[key];
+        });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            const labels = { en:'EN', zh:'中文', ja:'日本語', ko:'한국어' };
+            btn.classList.toggle('active', btn.textContent.trim() === labels[lang]);
+        });
+        if (currentData) renderAll(currentData);
+    }
+
+    // ── THEME ──
+    function toggleTheme() {
+        const isDark = document.getElementById('themeToggle').checked;
+        document.documentElement.setAttribute('data-theme', isDark?'light':'dark');
+        localStorage.setItem('vn_rhetoric_theme', isDark?'light':'dark');
+        if (_historyChart) { _historyChart.destroy(); _historyChart=null;
+            if (_historyView==='compare') loadCompareData(); else loadHistoryData(); }
+    }
+    function loadTheme() {
+        const saved = localStorage.getItem('vn_rhetoric_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        document.getElementById('themeToggle').checked = saved==='light';
+    }
+
+    // ── THEATRE BANNER ──
+    function renderTheatre(data) {
+        const level = data.overall_level || 0;
+        const lv = ESCALATION_LEVELS[level] || ESCALATION_LEVELS[0];
+        const score = level;
+
+        document.getElementById('theatreScore').textContent = `L${score}`;
+        document.getElementById('theatreScore').style.color = lv.color;
+        const badge = document.getElementById('theatreBadge');
+        badge.textContent = lv.label;
+        badge.style.background = lv.color;
+        document.getElementById('theatreLevelDisplay').textContent = `Level ${level} — ${lv.label}`;
+        document.getElementById('theatreLevelDisplay').style.color = lv.color;
+        document.getElementById('theatreLevelDesc').textContent = lv.description;
+
+        if (data.scanned_at) {
+            const ago = Math.round((Date.now() - new Date(data.scanned_at).getTime()) / 60000);
+            const agoTxt = ago < 60 ? `${ago}m ago` : `${Math.round(ago/60)}h ago`;
+            const src = data.inbound_source === 'china_fingerprint' ? ' · Inbound from China fingerprint' : '';
+            document.getElementById('theatreScanInfo').textContent = `Last scan: ${agoTxt} · ${data.total_articles||0} articles analyzed${src}`;
+        }
+        document.getElementById('lastUpdated').textContent = new Date(data.scanned_at || Date.now()).toLocaleString();
+    }
+
+    // ── CHINA FINGERPRINT CARD ──
+    function renderFingerprintCard(data) {
+        const grid = document.getElementById('fingerprintGrid');
+        const ageEl = document.getElementById('fingerprintAge');
+        if (!grid) return;
+
+        const items = [
+            { name:'PLA Posture',  level: data.china_pla_level     || 0, icon:'⚔️' },
+            { name:'MFA / GT',     level: data.china_mfa_level     || 0, icon:'📢' },
+            { name:'SCS Pressure', level: data.china_scs_level     || 0, icon:'🌊' },
+            { name:'Overall',      level: data.china_overall_level || 0, icon:'🇨🇳' },
+        ];
+
+        grid.innerHTML = items.map(item => {
+            const lv = ESCALATION_LEVELS[item.level] || ESCALATION_LEVELS[0];
+            return `<div class="fingerprint-item">
+                <div class="fingerprint-item-name">${item.icon} ${item.name}</div>
+                <div class="fingerprint-item-level" style="color:${lv.color};">${item.level}</div>
+                <div class="fingerprint-item-label" style="color:${lv.color};">${lv.label}</div>
+            </div>`;
+        }).join('');
+
+        if (ageEl && data.china_fingerprint_age) {
+            const ago = Math.round((Date.now() - new Date(data.china_fingerprint_age).getTime()) / 60000);
+            const agoTxt = ago < 60 ? `${ago}m ago` : `${Math.round(ago/60)}h ago`;
+            ageEl.textContent = `China fingerprint last updated: ${agoTxt}`;
+        }
+    }
+
+    // ── DUAL DASHBOARD ──
+    function renderDualDashboard(data) {
+        document.getElementById('outboundScore').textContent = data.outbound_score || 0;
+        document.getElementById('outboundScore').style.color = '#7dd3fc';
+
+        const outRows = [
+            { label:'🏛️ CPV / State Leadership',   level: data.cpv_level      || 0 },
+            { label:'🌐 MOFA Diplomacy / Lawfare',  level: data.mofa_level     || 0 },
+            { label:'⚓ Maritime Posture',          level: data.maritime_level || 0 },
+            { label:'🤝 US-Vietnam Partnership',    level: data.us_level       || 0 },
+            { label:'🧭 Indo-Pacific Partners',     level: data.regional_level || 0 },
+        ];
+        document.getElementById('outboundRows').innerHTML = outRows.map(r => {
+            const lv = ESCALATION_LEVELS[r.level] || ESCALATION_LEVELS[0];
+            return `<div class="dashboard-row">
+                <span class="dashboard-row-label">${r.label}</span>
+                <span class="dashboard-row-level" style="color:${lv.color};">L${r.level} — ${lv.label}</span>
+            </div>`;
+        }).join('');
+
+        document.getElementById('inboundScore').textContent = data.inbound_score || 0;
+        document.getElementById('inboundScore').style.color = (ESCALATION_LEVELS[data.inbound_max_level||0]||ESCALATION_LEVELS[0]).color;
+
+        const inRows = [
+            { label:'⚔️ China SCS Pressure (CCG/Militia)', level: data.china_scs_level        || 0 },
+            { label:'📢 Beijing Political Coercion',        level: data.beijing_coercion_level || 0 },
+            { label:'💹 China Economic Pressure',           level: data.economic_level         || 0 },
+        ];
+        document.getElementById('inboundRows').innerHTML = inRows.map(r => {
+            const lv = ESCALATION_LEVELS[r.level] || ESCALATION_LEVELS[0];
+            return `<div class="dashboard-row">
+                <span class="dashboard-row-label">${r.label}</span>
+                <span class="dashboard-row-level" style="color:${lv.color};">L${r.level} — ${lv.label}</span>
+            </div>`;
+        }).join('');
+    }
+
+    // ── ESCALATION LADDER ──
+    function renderLadder(activeLevel) {
+        const row = document.getElementById('ladderRow');
+        if (!row) return;
+        row.innerHTML = '';
+        for (let i = 0; i <= 5; i++) {
+            const lv = ESCALATION_LEVELS[i];
+            const div = document.createElement('div');
+            div.className = 'ladder-step' + (i===activeLevel?' active':'');
+            if (i===activeLevel) { div.style.borderColor=lv.color; div.style.boxShadow=`0 0 16px ${lv.color}55`; }
+            div.innerHTML = `<div class="ladder-step-num" style="color:${lv.color}">${i}</div>
+                             <div class="ladder-step-label" style="color:${lv.color}">${lv.label}</div>`;
+            row.appendChild(div);
+        }
+    }
+
+    // ── ACTOR CARDS ──
+    function renderActors(actors) {
+        const t = T[currentLang] || T.en;
+        const grid = document.getElementById('actorsGrid');
+        if (!grid || !actors) return;
+        grid.innerHTML = '';
+
+        ACTOR_ORDER.forEach(id => {
+            const a = actors[id];
+            if (!a) return;
+            const level = a.level || 0;
+            const lv = ESCALATION_LEVELS[level] || ESCALATION_LEVELS[0];
+            const isOut = OUTBOUND_ACTORS.includes(id);
+            const isIn  = INBOUND_ACTORS.includes(id);
+
+            const triggers = (a.matched_triggers || []).slice(0, 4);
+            const triggerPills = triggers.map(tr => {
+                const isTW = tr.startsWith('TRIPWIRE:');
+                return `<span class="trigger-pill${isTW?' tripwire':''}">${tr.replace('TRIPWIRE: ','⚡ ')}</span>`;
+            }).join('');
+
+            const card = document.createElement('div');
+            card.className = 'actor-card' + (isOut?' outbound-actor':isIn?' inbound-actor':'');
+            card.innerHTML = `
+                <div class="actor-header">
+                    <div class="actor-flag">${a.flag||''} ${a.icon||''}</div>
+                    <div style="flex:1;">
+                        <div class="actor-name">${a.name}</div>
+                        <div class="actor-role">${a.role||''}</div>
+                    </div>
+                    <div class="actor-level-badge" style="background:${lv.color}">${lv.label}</div>
+                </div>
+                <div class="actor-stats">
+                    <span>📰 ${a.article_count||0} ${t.articles}</span>
+                    <span>📊 ${t.maxLevel} ${level}</span>
+                    <span>⚖️ Score: ${a.weighted_score||0}</span>
+                </div>
+                ${triggers.length ? `<div class="matched-triggers">${triggerPills}</div>` : ''}
+                <div class="direction-tag ${isOut?'outbound':'inbound'}">${isOut?t.outboundTag:t.inboundTag}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // ── TOP ARTICLES ──
+    function renderArticles(actors) {
+        const list = document.getElementById('articlesList');
+        if (!list || !actors) return;
+        list.innerHTML = '';
+
+        ACTOR_ORDER.forEach(id => {
+            const a = actors[id];
+            if (!a || !a.top_articles || !a.top_articles.length) return;
+            const isOut = OUTBOUND_ACTORS.includes(id);
+            const headerColor = isOut ? '#7dd3fc' : '#ef4444';
+
+            const section = document.createElement('div');
+            section.style.marginBottom = '18px';
+            section.innerHTML = `<div style="font-size:0.7rem;font-weight:700;color:${headerColor};letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--card-border);">${a.flag||''} ${a.name}</div>`;
+
+            a.top_articles.slice(0, 3).forEach(art => {
+                const item = document.createElement('div');
+                item.className = 'article-item';
+                const dt = art.publishedAt ? new Date(art.publishedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+                const triggerLabel = art.trigger ? `<span class="article-trigger">${art.trigger}</span>` : '';
+                item.innerHTML = `
+                    <a href="${art.url||'#'}" target="_blank" rel="noopener" class="article-link">${art.title||'Untitled'}</a>${triggerLabel}
+                    <div class="article-meta">${art.source||''} ${dt?'· '+dt:''} · Contribution: ${(art.contribution||0).toFixed(2)}</div>
+                `;
+                section.appendChild(item);
+            });
+            list.appendChild(section);
+        });
+
+        if (!list.innerHTML) {
+            list.innerHTML = '<div style="color:var(--text-muted);font-size:0.75rem;font-style:italic;">No articles yet — run a scan to populate.</div>';
+        }
+    }
+
+    // ── RENDER ALL ──
+    function renderAll(data) {
+        currentData = data;
+        renderTheatre(data);
+        renderFingerprintCard(data);
+        renderDualDashboard(data);
+        renderLadder(data.overall_level || 0);
+        renderActors(data.actors || {});
+        renderArticles(data.actors || {});
+        renderSoWhat(data);
+        renderRedLines(data);
+        renderTopSignals(data);
+        const artCount = document.getElementById('articlesClassified');
+        if (artCount) artCount.textContent = `📰 ${data.total_articles||0} articles analyzed · Corresponding articles in Top Articles by Actor below`;
+        loadHistoryData();
+    }
+
+    // ── RENDER: SO WHAT CARD (v1.1.0) ──
+    // Taiwan-specific: 4-vector readout includes deterrence_gap (the key metric)
+    function renderSoWhat(data) {
+        const sw = data.so_what;
+        if (!sw) { document.getElementById('soWhatCard').style.display = 'none'; return; }
+
+        document.getElementById('soWhatCard').style.display = 'block';
+        document.getElementById('soWhatIcon').textContent = sw.scenario_icon || '⚪';
+
+        // Plain-language bottom line: prefer the BLUF, fall back to assessment
+        const _bl = document.getElementById('soWhatBottomLine');
+        if (_bl) _bl.textContent = data.bluf || sw.assessment || '';
+
+        const scenEl = document.getElementById('soWhatScenario');
+        scenEl.textContent = sw.scenario || '--';
+        scenEl.style.color = sw.scenario_color || '#6b7280';
+
+        // Taiwan 4-vector readout
+        document.getElementById('vecDeterrence').textContent = 'L' + (sw.response_strength ?? 0);
+        document.getElementById('vecInbound').textContent    = 'L' + (sw.inbound_pressure  ?? 0);
+        document.getElementById('vecResolve').textContent    = 'L' + (sw.partner_strength  ?? 0);
+
+        const gap = sw.coercion_gap ?? 0;
+        const gapEl = document.getElementById('vecGap');
+        const gapStat = document.getElementById('vecGapStat');
+        gapEl.textContent = 'L' + gap;
+        // Gap warning styling when gap >= 2
+        if (gap >= 3) {
+            gapEl.style.color = '#dc2626';
+            gapStat.classList.add('gap-warning');
+        } else if (gap >= 2) {
+            gapEl.style.color = '#f59e0b';
+            gapStat.classList.add('gap-warning');
+        } else {
+            gapEl.style.color = '#10b981';
+            gapStat.classList.remove('gap-warning');
+        }
+
+        document.getElementById('soWhatSituation').textContent = sw.situation || '';
+
+        const indEl = document.getElementById('soWhatIndicators');
+        indEl.innerHTML = '';
+        (sw.indicators || []).forEach(ind => {
+            const div = document.createElement('div');
+            const text = typeof ind === 'string' ? ind : (ind.text || '');
+            const icon = typeof ind === 'object' ? (ind.icon || '') : '';
+            const isBreached   = text.toUpperCase().includes('BREACHED') || text.toUpperCase().includes('RED LINE');
+            const isHistorical = text.toLowerCase().includes('historical') || text.toLowerCase().includes('analog');
+            div.className = `interp-indicator${isBreached ? ' breached-ind' : isHistorical ? ' historical-ind' : ''}`;
+            div.innerHTML = `${icon ? `<span style="margin-right:6px;">${icon}</span>` : ''}${text}`;
+            indEl.appendChild(div);
+        });
+
+        document.getElementById('soWhatAssessment').textContent = sw.assessment || '';
+
+        const wlEl = document.getElementById('soWhatWatchList');
+        wlEl.innerHTML = '';
+        (sw.watch_list || []).forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'interp-watch-item';
+            div.textContent = `→ ${item}`;
+            wlEl.appendChild(div);
+        });
+
+        document.getElementById('soWhatNote').textContent = sw.confidence_note || '';
+    }
+
+    // ── RENDER: RED LINES CARD (v1.1.0) ──
+    // Taiwan-specific: handles POSITIVE (deterrence-positive green line) events too
+    function renderRedLines(data) {
+        const rls = data.red_lines || [];
+        const card = document.getElementById('redLinesCard');
+        if (!rls.length) { card.style.display = 'none'; return; }
+
+        card.style.display = 'block';
+
+        // Taiwan trinary: BREACHED (red) / APPROACHING (orange) / POSITIVE (green — Japan formalization, etc.)
+        // Positive events are identified by color=#22c55e in the red-line def
+        const breached    = rls.filter(r => r.status === 'BREACHED' && r.color !== '#22c55e');
+        const approaching = rls.filter(r => r.status === 'APPROACHING');
+        const positive    = rls.filter(r => r.status === 'BREACHED' && r.color === '#22c55e');
+
+        document.getElementById('redLineBreachedCount').textContent    = breached.length;
+        document.getElementById('redLineApproachingCount').textContent = approaching.length;
+        document.getElementById('redLinePositiveCount').textContent    = positive.length;
+
+        const catLabels = {
+            'deterrence_failure':    '📉 DETERRENCE FAILURE',
+            'asymmetric_threshold':  '🦔 ASYMMETRIC THRESHOLD',
+            'coalition_cohesion':    '🤝 COALITION COHESION',
+            'domestic_resolve':      '🗳️ DOMESTIC RESOLVE',
+            'china_direct':          '⚔️ CHINA DIRECT',
+        };
+
+        const itemsEl = document.getElementById('redLineItems');
+        itemsEl.innerHTML = '';
+        // Order: positive first (good news lead), then breached, then approaching
+        [...positive, ...breached, ...approaching].forEach(r => {
+            let badgeClass = r.status === 'BREACHED' ? 'breached' : 'approaching';
+            let statusText = r.status || '';
+            if (r.color === '#22c55e' && r.status === 'BREACHED') {
+                badgeClass = 'positive';
+                statusText = 'POSITIVE';
+            }
+            const catLabel = catLabels[r.category] || (r.category || '').toUpperCase();
+            const item = document.createElement('div');
+            item.className = `red-line-item ${badgeClass}`;
+            item.innerHTML = `
+                <span class="red-line-icon">${r.icon || '⚠️'}</span>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <span class="red-line-label">${r.label || ''}</span>
+                        <span class="red-line-status-badge ${badgeClass}">${statusText}</span>
+                        <span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">${catLabel}</span>
+                        ${r.severity ? `<span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">SEV ${r.severity}/3</span>` : ''}
+                    </div>
+                    <div class="red-line-trigger">${r.trigger || r.detail || ''}</div>
+                    ${r.source ? `<div class="red-line-source">${r.source}</div>` : ''}
+                </div>`;
+            itemsEl.appendChild(item);
+        });
+    }
+
+    // ── RENDER: TOP SIGNALS (plain-language headline + why it matters) ──
+    function renderTopSignals(data) {
+        const wrap = document.getElementById('topSignalsCard');
+        const list = document.getElementById('topSignalsList');
+        if (!wrap || !list) return;
+        const sigs = data.top_signals || [];
+        if (!sigs.length) { wrap.style.display = 'none'; return; }
+        const esc = (x) => String(x || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        wrap.style.display = 'block';
+        list.innerHTML = sigs.map(sig => {
+            const color = sig.color || '#7dd3fc';
+            const head  = esc(sig.short_text);
+            const why   = esc(sig.long_text);
+            return `<div class="signal-item" style="border-left:3px solid ${color};">
+                <div class="signal-head">${head}</div>
+                ${why ? `<div class="signal-why">${why}</div>` : ''}
+            </div>`;
+        }).join('');
+    }
+
+    // ── DATA LOADING ──
+    async function loadRhetoricData(forceRefresh=false) {
+        try {
+            const url = API_BASE + '/api/rhetoric/vietnam' + (forceRefresh?'?force=true':'');
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 300000);
+            const resp = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeout);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Scan failed');
+            renderAll(data);
+        } catch(err) {
+            if (err.name === 'AbortError') {
+                document.getElementById('theatreScanInfo').textContent = 'Scan timed out (5min) — backend processing. Check back in a moment.';
+            } else {
+                console.error('[Vietnam Rhetoric]', err);
+                document.getElementById('theatreScanInfo').textContent = 'Error loading — retrying in 30s...';
+                setTimeout(() => loadRhetoricData(), 30000);
+            }
+        } finally {
+            const btn = document.getElementById('scanBtn');
+            if (btn) { btn.style.opacity='1'; btn.disabled=false; document.getElementById('scanBtnIcon').textContent='🔄'; }
+        }
+    }
+
+    async function triggerScan() {
+        const btn = document.getElementById('scanBtn');
+        if (btn) { btn.style.opacity='0.5'; btn.disabled=true; document.getElementById('scanBtnIcon').innerHTML='<span class="spin">⟳</span>'; }
+        document.getElementById('theatreScanInfo').textContent = 'Scan triggered — reading all sources (~4 min, inbound from China fingerprint)...';
+        await loadRhetoricData(true);
+    }
+
+    // ── MOBILE DRAWER ──
+    function toggleSidebar() {
+        const sb = document.getElementById('navSidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        if (!sb) return;
+        const open = sb.classList.toggle('open');
+        if (bd) bd.classList.toggle('open', open);
+    }
+    function closeSidebar() {
+        const sb = document.getElementById('navSidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        if (sb) sb.classList.remove('open');
+        if (bd) bd.classList.remove('open');
+    }
+
+    // ── INIT ──
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTheme();
+        loadRhetoricData();
+        document.querySelectorAll('#navSidebar a.nav-btn').forEach(a =>
+            a.addEventListener('click', () => closeSidebar()));
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+    });
+</script>
+</body>
+</html>
