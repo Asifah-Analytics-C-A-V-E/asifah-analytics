@@ -56,7 +56,7 @@
         width: 110vmin; height: 110vmin;
         min-width: 800px; min-height: 800px;
         max-width: 1400px; max-height: 1400px;
-        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
         background-size: contain; background-repeat: no-repeat; background-position: center;
         opacity: var(--watermark-opacity); filter: var(--watermark-filter);
         z-index: 0; pointer-events: none; user-select: none;
@@ -118,7 +118,40 @@
     .nav-btn.rhetoric-btn .nav-btn-status { color: #f97316; }
     .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
     .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
-    @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+    .nav-btn.commodity-btn { border-color: rgba(245,158,11,0.35); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.commodity-btn .nav-btn-status { color: #f59e0b; }
+    /* -- Mobile drawer (<=1199px) -- */
+    .menu-toggle {
+        display: none; position: fixed; top: 14px; left: 14px; z-index: 1600;
+        width: 44px; height: 44px; border-radius: 8px;
+        background: var(--accent); color: #04101e; border: none;
+        font-size: 22px; line-height: 1; cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1400; }
+    .sidebar-backdrop.open { display: block; }
+    @media (max-width: 1199px) {
+        .menu-toggle { display: flex; align-items: center; justify-content: center; }
+        .page-with-sidebar { display: block; }
+        .nav-sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 260px;
+            transform: translateX(-100%); transition: transform 0.25s ease;
+            z-index: 1500; overflow-y: auto; border-radius: 0; padding: 64px 12px 20px;
+            background: var(--container-bg); border-right: 1px solid var(--card-border);
+        }
+        .nav-sidebar.open { transform: translateX(0); }
+    }
+    /* -- Plain-language So What additions -- */
+    .interp-bottomline {
+        background: rgba(56,189,248,0.10); border: 1px solid rgba(56,189,248,0.35);
+        border-left: 4px solid var(--accent); border-radius: 8px;
+        padding: 12px 16px; margin: 14px 0 4px;
+    }
+    .interp-bottomline-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; font-family: 'Courier New', monospace; }
+    .interp-bottomline-text { font-size: 0.95rem; line-height: 1.5; color: var(--text-primary); }
+    .signal-item { background: var(--article-bg); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+    .signal-head { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); line-height: 1.4; margin-bottom: 5px; }
+    .signal-why { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.55; }
 
     /* ── SECTION CARDS ── */
     .section-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
@@ -288,7 +321,7 @@
 
 <!-- HEADER -->
 <header>
-    <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+    <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
     <div class="header-left">
         <a href="https://www.asifahanalytics.com/taiwan-stability.html" class="back-link" data-i18n="backLink">← Back to Taiwan Stability</a>
         <div class="theme-row">
@@ -321,9 +354,11 @@
 
 <!-- PAGE WITH SIDEBAR -->
 <div class="page-with-sidebar">
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
 <!-- LEFT NAV SIDEBAR -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
     <div class="nav-btn inactive-nav">
         <span class="nav-btn-label">🌍 Africa</span>
@@ -341,27 +376,54 @@
         <span class="nav-btn-label">🕌 Middle East</span>
         <span class="nav-btn-status">● Live</span>
     </a>
-    <div class="nav-btn inactive-nav">
+    <a href="wha.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">🔒 In Dev</span>
-    </div>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <div class="nav-divider"></div>
     <a href="military.html" class="nav-btn military-btn">
         <span class="nav-btn-label">🎖️ Military Tracker</span>
         <span class="nav-btn-status">● Live</span>
     </a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">📡 Asia Rhetoric</span>
-        <span class="nav-btn-status">◉ You are here</span>
-    </a>
-    <div class="nav-divider"></div>
-    <a href="rhetoric-china.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇨🇳 China</span>
+    <a href="gpi.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🌐 Global Pressure</span>
         <span class="nav-btn-status">● Live</span>
     </a>
-    <a href="rhetoric-taiwan.html" class="nav-btn current-page" style="border-color:rgba(125,211,252,0.6);">
-        <span class="nav-btn-label">🇹🇼 Taiwan</span>
-        <span class="nav-btn-status">◉ This page</span>
+    <a href="commodities.html" class="nav-btn commodity-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Taiwan</div>
+    <a href="rhetoric-china.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🇨🇳 China Rhetoric</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-taiwan.html" class="nav-btn rhetoric-btn current-page" style="border-color:rgba(125,211,252,0.6);">
+        <span class="nav-btn-label">🇹🇼 Taiwan Rhetoric</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </a>
+    <a href="taiwan-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🇹🇼 Taiwan Stability</span>
+        <span class="nav-btn-status">● Live</span>
     </a>
 </nav>
 
@@ -393,6 +455,12 @@
         </div>
     </div>
 
+    <!-- Plain-language bottom line (BLUF) -->
+    <div class="interp-bottomline">
+        <div class="interp-bottomline-label" data-i18n="bottomLine">THE BOTTOM LINE</div>
+        <div class="interp-bottomline-text" id="soWhatBottomLine">--</div>
+    </div>
+
     <!-- Four-vector readout (Taiwan-specific — includes DETERRENCE GAP) -->
     <div class="vector-readout" id="soWhatVectors">
         <div class="vector-stat">
@@ -421,6 +489,12 @@
     <div class="interp-section-title" style="margin-top:14px;">WATCH FOR</div>
     <div id="soWhatWatchList"></div>
     <div class="interp-confidence-note" id="soWhatNote"></div>
+</div>
+
+<!-- TOP SIGNALS CARD (plain-language: headline + why it matters) -->
+<div class="section-card" id="topSignalsCard" style="display:none;">
+    <div class="section-title" data-i18n="topSignalsTitle">📌 TOP SIGNALS — WHY IT MATTERS</div>
+    <div id="topSignalsList"></div>
 </div>
 
 <!-- RED LINES CARD -->
@@ -521,11 +595,24 @@
     <div id="articlesList"></div>
 </div>
 
-<!-- FOOTER -->
-<div class="page-footer">
-    © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v1.0.0-taiwan |
-    <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--accent);text-decoration:none;">☕ buy me a coffee</a>
-</div>
+<!-- GOLD STANDARD FOOTER (africa.html v1.3 canonical pattern) -->
+<footer style="background:var(--container-bg);border:1px solid var(--card-border);border-radius:12px;padding:24px 26px;margin-top:18px;box-shadow:var(--card-glow);">
+    <div style="font-weight:700;letter-spacing:1.5px;color:var(--text-primary);font-size:0.85rem;margin-bottom:8px;">ASIFAH ANALYTICS — TAIWAN RHETORIC &amp; DETERRENCE TRACKER</div>
+    <div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.55;margin-bottom:6px;">Live data: <a href="https://asifah-asia-backend.onrender.com/api/rhetoric/taiwan" target="_blank" style="color:var(--accent);">asifah-asia-backend.onrender.com/api/rhetoric/taiwan</a> &middot; Refreshed every ~6h</div>
+    <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.55;margin-bottom:16px;">OSINT sources: Focus Taiwan (CNA) &middot; Taipei Times &middot; Taiwan News &middot; Reuters &middot; GDELT (EN/ZH) &middot; CSIS ChinaPower &middot; USNI &middot; The Diplomat &middot; Reddit &middot; Telegram &middot; Bluesky. Inbound China pressure read from the China Rhetoric Tracker fingerprint.</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.5);color:#f59e0b;font-size:0.75rem;font-weight:700;text-decoration:none;">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.45);color:var(--accent);font-size:0.75rem;font-weight:700;text-decoration:none;">✉️ Contact Asifah</a>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.55;padding-top:14px;border-top:1px solid var(--card-border);">
+        This composite is a <strong>CONVERGENCE indicator, NOT a probability of action.</strong> OSINT-based pattern analysis, not certainty. Updated every ~6h &middot; Not for operational use. &copy; 2025-2026 Asifah Analytics — v1.1.0-taiwan.
+    </div>
+    <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:12px;">
+        <a href="mission.html" style="color:var(--text-secondary);text-decoration:none;">Mission Statement</a> &middot;
+        <a href="privacy.html" style="color:var(--text-secondary);text-decoration:none;">Privacy Policy</a> &middot;
+        <a href="index.html" style="color:var(--text-secondary);text-decoration:none;">Home</a>
+    </div>
+</footer>
 
 </div><!-- end main content -->
 </div><!-- end page-with-sidebar -->
@@ -572,6 +659,7 @@
             themeLabel:'THEME',
             articles:'articles', maxLevel:'Max Level',
             outboundTag:'🇹🇼 Outbound', inboundTag:'🇨🇳 Inbound',
+            bottomLine:'THE BOTTOM LINE', topSignalsTitle:'📌 TOP SIGNALS — WHY IT MATTERS',
         },
         zh: {
             backLink:'← 返回台湾稳定页', pageFlag:'台湾',
@@ -596,6 +684,7 @@
             themeLabel:'主题',
             articles:'文章', maxLevel:'最高级别',
             outboundTag:'🇹🇼 对外', inboundTag:'🇨🇳 对内',
+            bottomLine:'核心结论', topSignalsTitle:'📌 重点信号 — 为何重要',
         },
         ja: {
             backLink:'← 台湾安定ページへ戻る', pageFlag:'台湾',
@@ -620,6 +709,7 @@
             themeLabel:'テーマ',
             articles:'記事', maxLevel:'最高レベル',
             outboundTag:'🇹🇼 対外', inboundTag:'🇨🇳 対内',
+            bottomLine:'結論', topSignalsTitle:'📌 重要シグナル — なぜ重要か',
         },
         ko: {
             backLink:'← 대만 안정 페이지로', pageFlag:'대만',
@@ -644,6 +734,7 @@
             themeLabel:'테마',
             articles:'기사', maxLevel:'최고 레벨',
             outboundTag:'🇹🇼 대외', inboundTag:'🇨🇳 대내',
+            bottomLine:'핵심 결론', topSignalsTitle:'📌 주요 신호 — 왜 중요한가',
         },
     };
 
@@ -1010,6 +1101,7 @@
         renderArticles(data.actors || {});
         renderSoWhat(data);
         renderRedLines(data);
+        renderTopSignals(data);
         const artCount = document.getElementById('articlesClassified');
         if (artCount) artCount.textContent = `📰 ${data.total_articles||0} articles analyzed · Corresponding articles in Top Articles by Actor below`;
         loadHistoryData();
@@ -1023,6 +1115,10 @@
 
         document.getElementById('soWhatCard').style.display = 'block';
         document.getElementById('soWhatIcon').textContent = sw.scenario_icon || '⚪';
+
+        // Plain-language bottom line: prefer the BLUF, fall back to assessment
+        const _bl = document.getElementById('soWhatBottomLine');
+        if (_bl) _bl.textContent = data.bluf || sw.assessment || '';
 
         const scenEl = document.getElementById('soWhatScenario');
         scenEl.textContent = sw.scenario || '--';
@@ -1134,6 +1230,26 @@
         });
     }
 
+    // ── RENDER: TOP SIGNALS (plain-language headline + why it matters) ──
+    function renderTopSignals(data) {
+        const wrap = document.getElementById('topSignalsCard');
+        const list = document.getElementById('topSignalsList');
+        if (!wrap || !list) return;
+        const sigs = data.top_signals || [];
+        if (!sigs.length) { wrap.style.display = 'none'; return; }
+        const esc = (x) => String(x || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        wrap.style.display = 'block';
+        list.innerHTML = sigs.map(sig => {
+            const color = sig.color || '#7dd3fc';
+            const head  = esc(sig.short_text);
+            const why   = esc(sig.long_text);
+            return `<div class="signal-item" style="border-left:3px solid ${color};">
+                <div class="signal-head">${head}</div>
+                ${why ? `<div class="signal-why">${why}</div>` : ''}
+            </div>`;
+        }).join('');
+    }
+
     // ── DATA LOADING ──
     async function loadRhetoricData(forceRefresh=false) {
         try {
@@ -1167,10 +1283,28 @@
         await loadRhetoricData(true);
     }
 
+    // ── MOBILE DRAWER ──
+    function toggleSidebar() {
+        const sb = document.getElementById('navSidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        if (!sb) return;
+        const open = sb.classList.toggle('open');
+        if (bd) bd.classList.toggle('open', open);
+    }
+    function closeSidebar() {
+        const sb = document.getElementById('navSidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        if (sb) sb.classList.remove('open');
+        if (bd) bd.classList.remove('open');
+    }
+
     // ── INIT ──
     document.addEventListener('DOMContentLoaded', function() {
         loadTheme();
         loadRhetoricData();
+        document.querySelectorAll('#navSidebar a.nav-btn').forEach(a =>
+            a.addEventListener('click', () => closeSidebar()));
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
     });
 </script>
 </body>
