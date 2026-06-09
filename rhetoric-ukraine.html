@@ -974,6 +974,21 @@ function renderActors(data) {
 // ══════════════════════════════════════════════════════════════
 // RENDER THEATRE BANNER
 // ══════════════════════════════════════════════════════════════
+// Scenario-driven diplomatic tier (v1.3) -- single source of truth for every
+// diplomatic surface. Driven by SCENARIO + framework_active, NOT raw score
+// (diplomatic_track.score is a signal COUNT, not a 0-100 value).
+function dipTier(dt) {
+    const sc = (dt && dt.scenario) || 'No Active Track';
+    const fw = !!(dt && dt.framework_active);
+    if (sc === 'Active Ceasefire Track')
+        return { level: 5, fill: 90, color: '#10b981', label: sc, framework: fw, show: true };
+    if (sc === 'Tentative Diplomatic Signals')
+        return { level: 3, fill: 55, color: '#84cc16', label: sc, framework: fw, show: true };
+    if (sc === 'Limited De-escalation Indicators')
+        return { level: 1, fill: 25, color: '#3b82f6', label: sc, framework: fw, show: true };
+    return { level: 0, fill: 0, color: '#6b7280', label: 'No Active Track', framework: false, show: false };
+}
+
 function renderBanner(data) {
     const score = data.theatre_score || data.pressure_score || 0;
     const alertLevel = (data.alert_level || 'normal').toLowerCase();
@@ -1007,7 +1022,7 @@ function renderBanner(data) {
     const aidLvlAlt    = (actors.us_government?.actor_score || 0);
     const strikesLvl   = (actors.ukrainian_armed_forces?.actor_score || 0);
     const dibLvl       = (actors.defense_industrial_base?.actor_score || 0);
-    const ceasefireLvl = Math.min(5, Math.round(((data.diplomatic_track || {}).score || 0) / 20));
+    const ceasefireLvl = dipTier(data.diplomatic_track).level;
 
     const pillData = [
         { id: 'frontlinePill', level: frontlineLvl },
@@ -1059,12 +1074,22 @@ function renderInterpretation(data) {
         document.getElementById('soWhatScenario').textContent = sw.scenario || '--';
         document.getElementById('soWhatSituation').textContent = sw.assessment || '';
 
-        // Diplomatic line
+        // Diplomatic headline strip -- scenario-driven (v1.3), not raw-score-gated.
         const dt = data.diplomatic_track;
-        if (dt && dt.score >= 15) {
-            document.getElementById('diplomaticScenarioLine').style.display = 'block';
-            document.getElementById('diplomaticScenarioText').textContent = dt.scenario || '';
-            document.getElementById('diplomaticScoreText').textContent = `${dt.score}/100`;
+        const dtier = dipTier(dt);
+        const dLine = document.getElementById('diplomaticScenarioLine');
+        if (dtier.show) {
+            dLine.style.display = 'block';
+            dLine.style.borderColor = dtier.color;
+            document.getElementById('diplomaticScenarioText').textContent = dtier.label;
+            const nSig = (dt && dt.score) || 0;
+            const badge = document.getElementById('diplomaticScoreText');
+            badge.textContent = dtier.framework
+                ? 'FRAMEWORK ACTIVE'
+                : `${nSig} signal${nSig === 1 ? '' : 's'} - no framework`;
+            badge.style.color = dtier.color;
+        } else {
+            dLine.style.display = 'none';
         }
 
         // Watch list — derive from approaching red lines
@@ -1080,9 +1105,10 @@ function renderInterpretation(data) {
         });
 
         // Assessment — use so_what assessment again as fallback or watch summary
+        const _dn = (dt && dt.score) || 0;
         document.getElementById('soWhatAssessment').textContent =
             `Active red lines: ${rl.breached_count || 0} breached, ${rl.approaching_count || 0} approaching. ` +
-            `Diplomatic momentum score: ${(data.diplomatic_track || {}).score || 0}/100.`;
+            `Diplomatic track: ${dtier.label.toLowerCase()} (${_dn} signal${_dn === 1 ? '' : 's'}).`;
 
         document.getElementById('soWhatNote').textContent = '';
     }
@@ -1133,9 +1159,17 @@ function renderInterpretation(data) {
         document.getElementById('greenLineSignaledCount').textContent = gl.signaled_count || 0;
 
         const dscore = dt.score || 0;
-        document.getElementById('diplomaticScoreDisplay').textContent = `${dscore}/100`;
-        document.getElementById('diplomaticScoreFill').style.width = `${dscore}%`;
-        document.getElementById('diplomaticScenarioLabel').textContent = dt.scenario || '';
+        const dtier2 = dipTier(dt);
+        const _sigWord = dscore === 1 ? 'signal' : 'signals';
+        // Honest display (v1.3): score is a signal COUNT, not a percentage.
+        // Show "N signals"; bar fill + color are tier-based, not the raw number.
+        document.getElementById('diplomaticScoreDisplay').textContent = `${dscore} ${_sigWord}`;
+        document.getElementById('diplomaticScoreFill').style.width = `${dtier2.fill}%`;
+        document.getElementById('diplomaticScoreFill').style.background = dtier2.color;
+        document.getElementById('diplomaticScenarioLabel').textContent =
+            dtier2.framework ? `${dtier2.label} - framework active`
+                             : (dtier2.show ? `${dtier2.label} - signals only`
+                                            : (dt.scenario || 'No Active Track'));
 
         const glEl = document.getElementById('greenLineItems');
         glEl.innerHTML = '';
