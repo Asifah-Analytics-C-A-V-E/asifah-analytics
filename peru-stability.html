@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Peru Stability Index | Asifah Analytics v1.0.0</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 
 <style>
 /* ════════════════════════════════════════════════════════════
@@ -81,7 +81,7 @@ body::before {
     width: 110vmin; height: 110vmin;
     min-width: 800px; min-height: 800px;
     max-width: 1400px; max-height: 1400px;
-    background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
     background-size: contain; background-repeat: no-repeat; background-position: center;
     opacity: var(--watermark-opacity);
     filter: var(--watermark-filter);
@@ -93,7 +93,20 @@ body::before {
 .container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
 .page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
 .main-content { flex: 1; min-width: 0; }
-@media (max-width: 1024px) { .page-with-sidebar { flex-direction: column; } }
+/* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+.menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+    background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+    color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+.sidebar-backdrop.show { display: block; }
+@media (max-width: 1199px) {
+    .menu-toggle { display: block; }
+    .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+        overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+        background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+        z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+    .nav-sidebar.open { transform: translateX(0); }
+}
 
 /* ── HEADER ── */
 header {
@@ -666,6 +679,8 @@ footer .footer-copyright {
 </style>
 </head>
 <body>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
 <!-- ════════════════════════════════════════════════════════════
      LOADING OVERLAY
@@ -688,7 +703,7 @@ footer .footer-copyright {
 <header>
     <div class="header-logo-wrap">
         <a href="wha.html" class="back-link" data-i18n="back_to_wha">← W. Hemisphere</a>
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
              alt="Asifah Analytics Logo" class="header-logo"/>
     </div>
     <div class="header-content">
@@ -717,7 +732,7 @@ footer .footer-copyright {
 <div class="page-with-sidebar">
 
 <!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
     <div class="nav-btn inactive-nav">
         <span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span>
@@ -821,7 +836,7 @@ footer .footer-copyright {
 <div class="metric-card" id="peruRhetoricCard" style="border-left: 4px solid #4ade80;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
         <div>
-            <div class="section-title" style="margin-bottom:4px;" data-i18n="peru_rhetoric_title">📡 Peru Rhetoric &amp; Pressure Tracker</div>
+            <div class="section-title" style="margin-bottom:4px;" data-i18n="peru_rhetoric_title">📡 🇵🇪 Peru Rhetoric &amp; Pressure Tracker</div>
             <div style="font-size:11px; color:var(--text-secondary);" data-i18n="peru_rhetoric_subtitle">8 actors · 4-vector composite · live signal tempo</div>
         </div>
         <a href="rhetoric-peru.html" style="font-size:12px; padding:6px 14px; background:rgba(74,222,128,0.10); border:1px solid rgba(74,222,128,0.30); color:#4ade80; border-radius:6px; text-decoration:none; font-weight:700; letter-spacing:0.5px;" data-i18n="peru_rhetoric_full">View full tracker →</a>
@@ -866,6 +881,15 @@ footer .footer-copyright {
 </div>
 
 <style>
+    /* ── Gold Standard baseline treatment (Jun 9 2026 canon) ── */
+    .peru-gauge.composite .peru-gauge-value { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+    .peru-gauge.composite .peru-gauge-value.calm-baseline { color: #38bdf8; }
+    .peru-gauge-pill.calm-baseline { background: rgba(56,189,248,0.15) !important; color: #38bdf8 !important; border-color: rgba(56,189,248,0.4) !important; }
+    .peru-rh-signal { border-left: 3px solid #38bdf8; padding-left: 9px; }
+    .peru-rh-signal.lvl-elevated { border-left-color: #f59e0b; }
+    .peru-rh-signal.lvl-high     { border-left-color: #f97316; }
+    .peru-rh-signal.lvl-surge    { border-left-color: #ef4444; }
+
     /* Peru rhetoric card gauges — compact arctic styling */
     .peru-gauge {
         background: rgba(13,27,46,0.5);
@@ -1180,32 +1204,16 @@ footer .footer-copyright {
 <!-- ════════════════════════════════════════════════════════════
      FOOTER
      ════════════════════════════════════════════════════════════ -->
-<footer>
-    <div class="footer-grid">
-        <div>
-            <h4 data-i18n="footer_methodology_title">Methodology</h4>
-            <p data-i18n="footer_methodology_text">Multi-factor stability assessment scaffolding integrating commodity exposure (silver/copper), military posture, and rhetoric tracker score (when live). Detailed Peru stability backend (peru_stability.py) is in development. Articles aggregated from WHA backend rhetoric/threat scans, deduped by URL.</p>
-        </div>
-        <div>
-            <h4 data-i18n="footer_sources_title">Data Sources</h4>
-            <p data-i18n="footer_sources_text">RSS (Reuters Latin America, El Comercio, RPP Noticias, La República, Gestión, Andina, Mercopress, Mining.com), GDELT (English + Spanish queries), NewsAPI, Brave Search (tertiary fallback), Bluesky, Reddit (r/peru, r/copper, r/Mining). Background information compiled from open-source research.</p>
-        </div>
-        <div>
-            <h4 data-i18n="footer_contact_title">Contact</h4>
-            <p data-i18n-html="footer_contact_text">Built by Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a><br>Inquiries: <a href="mailto:asifahanalytics@gmail.com" style="color:var(--accent);">asifahanalytics@gmail.com</a></p>
-        </div>
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — PERU</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Comercio, La República, Gestión, RPP, Ojo Público, Reuters) · NewsAPI · Brave</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
     </div>
-    <div class="footer-disclaimer" data-i18n-html="footer_disclaimer">
-        <strong>⚠️ DISCLAIMER:</strong> This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Stability indicators reflect media signal intensity and should not be interpreted as ground-truth predictions. Always consult authoritative sources for decision-making. Updated every ~12 hours · Not for operational use.
-    </div>
-    <div class="footer-support">
-        <span data-i18n="footer_support_text">If you find Asifah Analytics useful and want to support ongoing development, you can ☕</span> <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" data-i18n="footer_support_link">buy me a coffee</a>
-    </div>
-    <div class="footer-copyright">
-        © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v1.0.0<br>
-        <span data-i18n="footer_copyright_legal">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span><br>
-        <a href="index.html" style="color:var(--accent);" data-i18n="footer_back_main">← Back to Main Dashboard</a>
-    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
 </footer>
 
 </div> <!-- /main-content -->
@@ -1873,10 +1881,17 @@ async function loadPeruRhetoric() {
         const compositeLevel = data.composite_level || 'low';
         const compositeGauge = card.querySelector('.peru-gauge.composite');
         if (compositeGauge) {
-            compositeGauge.querySelector('.peru-gauge-value').textContent = composite.toFixed(1);
+            const LEVEL_ORDER = ['low', 'normal', 'elevated', 'high', 'surge'];
+            // Calm-blue baseline (GS Jun 2026): gray reads as no-data; healthy
+            // baseline renders arctic blue. Elevated+ keep canonical palette.
+            const calm = (compositeLevel === 'low' || compositeLevel === 'normal');
+            const valEl = compositeGauge.querySelector('.peru-gauge-value');
+            valEl.textContent = composite.toFixed(1);
+            valEl.classList.toggle('calm-baseline', calm);
             const pill = compositeGauge.querySelector('.peru-gauge-pill');
-            pill.className = 'peru-gauge-pill lvl-' + compositeLevel;
-            pill.textContent = compositeLevel.toUpperCase();
+            pill.className = 'peru-gauge-pill lvl-' + compositeLevel + (calm ? ' calm-baseline' : '');
+            const li = LEVEL_ORDER.indexOf(compositeLevel);
+            pill.textContent = 'L' + (li < 0 ? 0 : li) + ' \u2014 ' + compositeLevel.toUpperCase();
         }
 
         // Vector gauges
@@ -1959,5 +1974,29 @@ async function loadData() {
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
 
+
+<script>
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
 </body>
 </html>
