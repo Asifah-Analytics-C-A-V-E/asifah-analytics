@@ -265,6 +265,11 @@
     .diplomatic-score-fill { height: 100%; background: linear-gradient(90deg, #10b981, #84cc16); transition: width 0.5s ease; }
     .max-pressure-alert { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.3); border-left: 3px solid #dc2626; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
 
+    /* ── TOP BLUF STRIP ── */
+    .bluf-strip { display:none; background: linear-gradient(180deg, rgba(56,189,248,0.07), rgba(56,189,248,0.02)); border:1px solid #1e3a5f; border-left:4px solid #38bdf8; border-radius:10px; padding:12px 18px; margin-bottom:18px; box-shadow: var(--card-glow); }
+    .bluf-strip .bluf-label { font-size:0.6rem; font-family:'Courier New',monospace; letter-spacing:2px; color:#38bdf8; text-transform:uppercase; margin-bottom:4px; }
+    .bluf-strip .bluf-text { font-size:0.88rem; line-height:1.5; font-weight:600; }
+
     /* ── COMMODITY CARD ── */
     .commodity-card { background: linear-gradient(180deg, rgba(245,158,11,0.05), rgba(217,119,6,0.02)); border: 1px solid rgba(245,158,11,0.3); border-left: 4px solid #f59e0b; border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; box-shadow: var(--card-glow); }
     .commodity-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -466,6 +471,12 @@
             <span id="articleCount">--</span> <span data-i18n="articlesLabel">articles analyzed</span>
         </div>
     </div>
+</div>
+
+<!-- TOP BLUF STRIP -->
+<div class="bluf-strip" id="blufStrip">
+    <div class="bluf-label" data-i18n="blufLabel">BLUF</div>
+    <div class="bluf-text" id="blufText"></div>
 </div>
 
 <!-- COMMODITY EXPOSURE CARD -->
@@ -717,7 +728,7 @@ const T = {
         loading: 'Loading...',
         soWhatLabel: 'UKRAINE STRATEGIC ASSESSMENT',
         diplomaticLabel: 'DIPLOMATIC TRACK — ',
-        situation: 'SITUATION', assessment: 'ASSESSMENT', watchFor: 'WATCH FOR', analystRead: 'ANALYST READ',
+        situation: 'SITUATION', assessment: 'ASSESSMENT', watchFor: 'WATCH FOR', analystRead: 'ANALYST READ', blufLabel: 'BLUF',
         redLinesTitle: 'RED LINE PROXIMITY',
         redLinesSub: 'Ukraine Escalation Triggers — Frontline Collapse · US Aid Suspension · Russian Tactical Nuclear · Energy Grid Collapse · Kyiv Strike · Drone Advisor Disclosure · Grain Corridor · Mobilization Crisis · Atrocity Disclosure',
         breached: 'BREACHED', approaching: 'APPROACHING',
@@ -763,7 +774,7 @@ const T = {
         loading: 'Chargement...',
         soWhatLabel: 'ÉVALUATION STRATÉGIQUE UKRAINIENNE',
         diplomaticLabel: 'PISTE DIPLOMATIQUE — ',
-        situation: 'SITUATION', assessment: 'ÉVALUATION', watchFor: 'À SURVEILLER', analystRead: 'LECTURE ANALYTIQUE',
+        situation: 'SITUATION', assessment: 'ÉVALUATION', watchFor: 'À SURVEILLER', analystRead: 'LECTURE ANALYTIQUE', blufLabel: 'BLUF',
         redLinesTitle: 'PROXIMITÉ DES LIGNES ROUGES',
         redLinesSub: 'Déclencheurs d\'escalade ukrainiens — Effondrement du front · Suspension de l\'aide US · Nucléaire tactique russe · Effondrement du réseau · Frappe sur Kyiv · Divulgation conseillers drones · Corridor céréalier · Crise mobilisation · Divulgation atrocités',
         breached: 'FRANCHIE', approaching: 'APPROCHE',
@@ -809,7 +820,7 @@ const T = {
         loading: 'Lädt...',
         soWhatLabel: 'STRATEGISCHE BEWERTUNG UKRAINE',
         diplomaticLabel: 'DIPLOMATISCHE SPUR — ',
-        situation: 'LAGE', assessment: 'BEWERTUNG', watchFor: 'BEACHTEN', analystRead: 'ANALYSE',
+        situation: 'LAGE', assessment: 'BEWERTUNG', watchFor: 'BEACHTEN', analystRead: 'ANALYSE', blufLabel: 'BLUF',
         redLinesTitle: 'NÄHE ZUR ROTEN LINIE',
         redLinesSub: 'Ukraine-Eskalations-Auslöser — Frontlinien-Kollaps · US-Hilfsstopp · Russisches taktisches Nuklear · Stromnetz-Kollaps · Kyjiw-Schlag · Drohnenberater-Offenlegung · Getreidekorridor · Mobilisierungskrise · Gräueltaten-Offenlegung',
         breached: 'ÜBERSCHRITTEN', approaching: 'NÄHERND',
@@ -855,7 +866,7 @@ const T = {
         loading: 'Загрузка...',
         soWhatLabel: 'СТРАТЕГИЧЕСКАЯ ОЦЕНКА УКРАИНЫ',
         diplomaticLabel: 'ДИПЛОМАТИЧЕСКИЙ ТРЕК — ',
-        situation: 'СИТУАЦИЯ', assessment: 'ОЦЕНКА', watchFor: 'НАБЛЮДАТЬ', analystRead: 'АНАЛИТИЧЕСКИЙ ОБЗОР',
+        situation: 'СИТУАЦИЯ', assessment: 'ОЦЕНКА', watchFor: 'НАБЛЮДАТЬ', analystRead: 'АНАЛИТИЧЕСКИЙ ОБЗОР', blufLabel: 'BLUF',
         redLinesTitle: 'БЛИЗОСТЬ К КРАСНЫМ ЛИНИЯМ',
         redLinesSub: 'Триггеры эскалации Украины — Обвал фронта · Приостановка помощи США · Российское тактическое ядерное · Обвал энергосети · Удар по Киеву · Раскрытие дрон-консультантов · Зерновой коридор · Кризис мобилизации · Раскрытие злодеяний',
         breached: 'ПРЕОДОЛЕНО', approaching: 'ПРИБЛИЖАЕТСЯ',
@@ -999,6 +1010,40 @@ function dipTier(dt) {
     if (sc === 'Limited De-escalation Indicators')
         return { level: 1, fill: 25, color: '#3b82f6', label: sc, framework: fw, show: true };
     return { level: 0, fill: 0, color: '#6b7280', label: 'No Active Track', framework: false, show: false };
+}
+
+// Top-of-page BLUF (one-line analyst headline; analysts should never have to
+// scroll to find the read). Synthesized from scenario + diplomatic + commodity
+// + US-aid red line. Dynamic prose stays English by design.
+function renderBluf(data) {
+    const strip = document.getElementById('blufStrip');
+    const txt = document.getElementById('blufText');
+    if (!strip || !txt) return;
+    const parts = [];
+    const sw = data.so_what || {};
+    if (sw.scenario) parts.push(sw.scenario.replace(':', ' --'));
+    const dtier = dipTier(data.diplomatic_track);
+    if (dtier.show) {
+        parts.push('Diplomacy: ' + dtier.label
+            + (dtier.framework ? ' (framework active)' : ' -- talk, not terms'));
+    }
+    const cs = data.commodity_signal;
+    if (cs && cs.alert && cs.alert !== 'normal') {
+        const m = ((cs.band || {}).short_text || '').match(/[-\u2014]\s*([A-Z ]+?)\s*\(/);
+        parts.push('Commodity ' + cs.alert.toUpperCase() + (m ? ' (' + m[1].trim().toLowerCase() + ')' : ''));
+    }
+    const aid = ((data.red_lines || {}).triggered || [])
+        .find(r => r.id === 'us_aid_suspension_total');
+    if (aid) {
+        const st = (aid.status || 'INACTIVE').toUpperCase();
+        parts.push(st === 'INACTIVE' ? 'US aid intact' : 'US aid: ' + st.toLowerCase());
+    }
+    if (parts.length) {
+        txt.textContent = parts.join(' \u00b7 ');
+        strip.style.display = 'block';
+    } else {
+        strip.style.display = 'none';
+    }
 }
 
 function renderBanner(data) {
@@ -1303,6 +1348,7 @@ function renderLadder(activeLevel) {
 function renderAll(data) {
     currentData = data;
     renderBanner(data);
+    renderBluf(data);
     renderCommodity(data);
     renderActors(data);
     renderInterpretation(data);
