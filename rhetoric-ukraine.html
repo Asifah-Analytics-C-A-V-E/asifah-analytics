@@ -220,6 +220,15 @@
     .red-line-source { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; font-family: 'Courier New', monospace; font-style: italic; }
 
     /* ── DIPLOMATIC TRACK / GREEN LINES ── */
+    /* Multi-dimensional analyst read (D) */
+    .so-what-narrative { display:flex; flex-direction:column; gap:8px; margin:4px 0 6px; }
+    .narr-thread { border-left:3px solid var(--card-border); padding:6px 10px; background:rgba(148,163,184,0.05); border-radius:0 6px 6px 0; }
+    .narr-thread .narr-label { font-size:0.58rem; font-family:'Courier New',monospace; letter-spacing:1.5px; text-transform:uppercase; color:#94a3b8; margin-bottom:2px; }
+    .narr-thread .narr-text { font-size:0.8rem; line-height:1.45; }
+    .narr-thread.tone-calm     { border-left-color:#10b981; }
+    .narr-thread.tone-watch    { border-left-color:#f59e0b; }
+    .narr-thread.tone-elevated { border-left-color:#f97316; }
+    .narr-thread.tone-alert    { border-left-color:#ef4444; }
     .diplomatic-track-card { background: linear-gradient(180deg, rgba(16,185,129,0.04), rgba(16,185,129,0.01)); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
     .green-line-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(16,185,129,0.15); }
     .green-line-item.active   { border-left: 3px solid #10b981; background: rgba(16,185,129,0.06); }
@@ -507,6 +516,9 @@
         <span style="font-size:0.78rem;font-weight:700;" id="diplomaticScenarioText"></span>
         <span style="font-size:0.72rem;font-weight:800;margin-left:8px;" id="diplomaticScoreText"></span>
     </div>
+    <!-- Multi-dimensional analyst read (D) -->
+    <div class="interp-section-title" data-i18n="analystRead">ANALYST READ</div>
+    <div id="soWhatNarrative" class="so-what-narrative"></div>
     <div class="interp-section-title" data-i18n="situation">SITUATION</div>
     <div class="interp-text" id="soWhatSituation"></div>
     <div id="soWhatIndicators"></div>
@@ -705,7 +717,7 @@ const T = {
         loading: 'Loading...',
         soWhatLabel: 'UKRAINE STRATEGIC ASSESSMENT',
         diplomaticLabel: 'DIPLOMATIC TRACK — ',
-        situation: 'SITUATION', assessment: 'ASSESSMENT', watchFor: 'WATCH FOR',
+        situation: 'SITUATION', assessment: 'ASSESSMENT', watchFor: 'WATCH FOR', analystRead: 'ANALYST READ',
         redLinesTitle: 'RED LINE PROXIMITY',
         redLinesSub: 'Ukraine Escalation Triggers — Frontline Collapse · US Aid Suspension · Russian Tactical Nuclear · Energy Grid Collapse · Kyiv Strike · Drone Advisor Disclosure · Grain Corridor · Mobilization Crisis · Atrocity Disclosure',
         breached: 'BREACHED', approaching: 'APPROACHING',
@@ -751,7 +763,7 @@ const T = {
         loading: 'Chargement...',
         soWhatLabel: 'ÉVALUATION STRATÉGIQUE UKRAINIENNE',
         diplomaticLabel: 'PISTE DIPLOMATIQUE — ',
-        situation: 'SITUATION', assessment: 'ÉVALUATION', watchFor: 'À SURVEILLER',
+        situation: 'SITUATION', assessment: 'ÉVALUATION', watchFor: 'À SURVEILLER', analystRead: 'LECTURE ANALYTIQUE',
         redLinesTitle: 'PROXIMITÉ DES LIGNES ROUGES',
         redLinesSub: 'Déclencheurs d\'escalade ukrainiens — Effondrement du front · Suspension de l\'aide US · Nucléaire tactique russe · Effondrement du réseau · Frappe sur Kyiv · Divulgation conseillers drones · Corridor céréalier · Crise mobilisation · Divulgation atrocités',
         breached: 'FRANCHIE', approaching: 'APPROCHE',
@@ -797,7 +809,7 @@ const T = {
         loading: 'Lädt...',
         soWhatLabel: 'STRATEGISCHE BEWERTUNG UKRAINE',
         diplomaticLabel: 'DIPLOMATISCHE SPUR — ',
-        situation: 'LAGE', assessment: 'BEWERTUNG', watchFor: 'BEACHTEN',
+        situation: 'LAGE', assessment: 'BEWERTUNG', watchFor: 'BEACHTEN', analystRead: 'ANALYSE',
         redLinesTitle: 'NÄHE ZUR ROTEN LINIE',
         redLinesSub: 'Ukraine-Eskalations-Auslöser — Frontlinien-Kollaps · US-Hilfsstopp · Russisches taktisches Nuklear · Stromnetz-Kollaps · Kyjiw-Schlag · Drohnenberater-Offenlegung · Getreidekorridor · Mobilisierungskrise · Gräueltaten-Offenlegung',
         breached: 'ÜBERSCHRITTEN', approaching: 'NÄHERND',
@@ -843,7 +855,7 @@ const T = {
         loading: 'Загрузка...',
         soWhatLabel: 'СТРАТЕГИЧЕСКАЯ ОЦЕНКА УКРАИНЫ',
         diplomaticLabel: 'ДИПЛОМАТИЧЕСКИЙ ТРЕК — ',
-        situation: 'СИТУАЦИЯ', assessment: 'ОЦЕНКА', watchFor: 'НАБЛЮДАТЬ',
+        situation: 'СИТУАЦИЯ', assessment: 'ОЦЕНКА', watchFor: 'НАБЛЮДАТЬ', analystRead: 'АНАЛИТИЧЕСКИЙ ОБЗОР',
         redLinesTitle: 'БЛИЗОСТЬ К КРАСНЫМ ЛИНИЯМ',
         redLinesSub: 'Триггеры эскалации Украины — Обвал фронта · Приостановка помощи США · Российское тактическое ядерное · Обвал энергосети · Удар по Киеву · Раскрытие дрон-консультантов · Зерновой коридор · Кризис мобилизации · Раскрытие злодеяний',
         breached: 'ПРЕОДОЛЕНО', approaching: 'ПРИБЛИЖАЕТСЯ',
@@ -1073,6 +1085,25 @@ function renderInterpretation(data) {
         document.getElementById('soWhatIcon').textContent = iconMap[sw.priority] || '⚪';
         document.getElementById('soWhatScenario').textContent = sw.scenario || '--';
         document.getElementById('soWhatSituation').textContent = sw.assessment || '';
+
+        // Multi-dimensional analyst read (D) -- structured, tone-colored threads
+        const narrEl = document.getElementById('soWhatNarrative');
+        if (narrEl) {
+            narrEl.innerHTML = '';
+            (sw.narrative || []).forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'narr-thread tone-' + (t.tone || 'calm');
+                const lab = document.createElement('div');
+                lab.className = 'narr-label';
+                lab.textContent = t.label || '';
+                const txt = document.createElement('div');
+                txt.className = 'narr-text';
+                txt.textContent = t.text || '';
+                div.appendChild(lab);
+                div.appendChild(txt);
+                narrEl.appendChild(div);
+            });
+        }
 
         // Diplomatic headline strip -- scenario-driven (v1.3), not raw-score-gated.
         const dt = data.diplomatic_track;
