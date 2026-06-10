@@ -115,7 +115,11 @@
         /* Header */
         .header {
             background: var(--header-gradient);
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-width: 1800px;          /* match .main-layout column width */
+            margin: 0 auto;
             padding: 16px 28px;
             position: sticky;
             top: 0;
@@ -862,6 +866,30 @@
             <p class="empty-state" data-i18n="loading">Loading...</p>
         </div>
 
+        <!-- COMMODITY COUPLING (only shown if pressure exists) -->
+        <div id="commoditySection" style="display: none;">
+            <div class="section-header">
+                <span class="section-icon">⛏️</span>
+                <span class="section-title" data-i18n="sec_commodity">Commodity Coupling</span>
+                <span class="section-desc" data-i18n="sec_commodity_desc">Live supply-risk fingerprints from the commodity tracker</span>
+            </div>
+            <!-- Convergence banners + composite strip (mirror peru-stability.html) -->
+            <div id="ccaCopper" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.10)); border:1px solid #f59e0b; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
+                <div style="font-weight:800; color:#fbbf24; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">⚡ <span data-i18n="cca_copper_title">Copper × Mining-Region Conflict Convergence</span></div>
+                <div style="font-size:12px; line-height:1.55; color:var(--text-primary);">Las Bambas (MMG), Antamina, and Cuajone copper mines have all faced multi-month community blockades since 2021. Mining accounts for ~60% of Peru's export earnings — when copper revenue stalls, fiscal stability and presidential approval both compress. China-bound copper concentrate flows are particularly exposed.</div>
+            </div>
+            <div id="ccaSilver" style="display:none; background:linear-gradient(135deg, rgba(168,85,247,0.18), rgba(139,92,246,0.18)); border:1px solid #a855f7; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
+                <div style="font-weight:800; color:#c4b5fd; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">🪙 <span data-i18n="cca_silver_title">Silver × Presidential Instability</span></div>
+                <div style="font-size:12px; line-height:1.55; color:#ddd6fe;">Peru is the world's #3 silver producer with the largest silver reserves globally per USGS. Antamina (also #1 zinc), Inmaculada, and Uchucchacua anchor Andean polymetallic operations. Multiple presidents since 2022 (Castillo → Boluarte → ongoing succession crises) creates structural mining-policy uncertainty — silver supply risk premium is partly a political risk premium.</div>
+            </div>
+            <div id="ccaComposite" style="display:none; border:1px solid #ef4444; border-left:4px solid #ef4444; border-radius:8px; background:rgba(239,68,68,0.07); padding:10px 16px; margin-bottom:12px; font-size:12.5px;">
+                <span id="ccaCompositeLabel" style="font-weight:800; letter-spacing:2px; color:#ef4444; margin-right:10px;">SURGE</span>
+                <span id="ccaCompositeText" style="color:var(--text-primary);"></span>
+                <span id="ccaCompositeMeta" style="color:var(--text-muted); margin-left:8px;"></span>
+            </div>
+            <div id="commodityCards"></div>
+        </div>
+
         <!-- VECTOR BREAKDOWN -->
         <div class="section-header">
             <span class="section-icon">🧭</span>
@@ -870,16 +898,6 @@
         </div>
         <div class="vector-grid" id="vectorGrid">
             <div class="empty-state" data-i18n="loading">Loading...</div>
-        </div>
-
-        <!-- COMMODITY COUPLING (only shown if pressure exists) -->
-        <div id="commoditySection" style="display: none;">
-            <div class="section-header">
-                <span class="section-icon">⛏️</span>
-                <span class="section-title" data-i18n="sec_commodity">Commodity Coupling</span>
-                <span class="section-desc" data-i18n="sec_commodity_desc">Live supply-risk fingerprints from the commodity tracker</span>
-            </div>
-            <div id="commodityCards"></div>
         </div>
 
         <!-- ACTORS -->
@@ -962,6 +980,7 @@ const T = {
         sec_signals: 'Top Signals',
         sec_signals_desc: 'Tripwires, convergence, commodity coupling, cross-theater',
         ew_title: 'Election Runoff Watch',
+        cca_copper_title: 'Copper \u00d7 Mining-Region Conflict Convergence', cca_silver_title: 'Silver \u00d7 Presidential Instability',
         sec_so_what: 'So What Factor',
         sec_so_what_desc: 'Strategic implications for the next 7-14 days',
         sec_vectors: 'Vector Breakdown',
@@ -1052,6 +1071,7 @@ const T = {
         sec_signals: 'Señales Principales',
         sec_signals_desc: 'Disparadores, convergencia, acoplamiento de commodities, multi-teatro',
         ew_title: 'Vigilancia de Segunda Vuelta',
+        cca_copper_title: 'Cobre \u00d7 Convergencia de Conflicto Minero', cca_silver_title: 'Plata \u00d7 Inestabilidad Presidencial',
         sec_so_what: 'Factor "Y Qué"',
         sec_so_what_desc: 'Implicaciones estratégicas para los próximos 7-14 días',
         sec_vectors: 'Desglose por Vector',
@@ -1137,6 +1157,7 @@ const T = {
         sec_signals: 'Sinais Principais',
         sec_signals_desc: 'Gatilhos, convergência, acoplamento de commodities, multi-teatro',
         ew_title: 'Vigilância do Segundo Turno',
+        cca_copper_title: 'Cobre \u00d7 Converg\u00eancia de Conflito Minerador', cca_silver_title: 'Prata \u00d7 Instabilidade Presidencial',
         sec_so_what: 'Fator "E Daí"',
         sec_so_what_desc: 'Implicações estratégicas para os próximos 7-14 dias',
         sec_vectors: 'Detalhamento por Vetor',
@@ -1471,12 +1492,35 @@ function renderCommodityCoupling() {
     const section = document.getElementById('commoditySection');
     const cards = document.getElementById('commodityCards');
     const pressure = scanData.commodity_pressure || {};
-    const keys = Object.keys(pressure);
-    if (!keys.length) {
+    const story = pressure._pressure_story || null;
+    const keys = Object.keys(pressure).filter(k => !k.startsWith('_'));
+    if (!keys.length && !story) {
         section.style.display = 'none';
         return;
     }
     section.style.display = 'block';
+
+    // ── Convergence banners + composite strip (one story with peru-stability) ──
+    const sc = (story && story.commodities) || {};
+    const copperHot = sc.copper && sc.copper !== 'normal';
+    const silverHot = sc.silver && sc.silver !== 'normal';
+    document.getElementById('ccaCopper').style.display = copperHot ? 'block' : 'none';
+    document.getElementById('ccaSilver').style.display = silverHot ? 'block' : 'none';
+    const comp = document.getElementById('ccaComposite');
+    if (story && story.alert && story.alert !== 'normal') {
+        const COLORS = { elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
+        const col = COLORS[story.alert] || '#ef4444';
+        comp.style.display = 'block';
+        comp.style.borderColor = col; comp.style.borderLeftColor = col;
+        const lab = document.getElementById('ccaCompositeLabel');
+        lab.textContent = story.alert.toUpperCase(); lab.style.color = col;
+        document.getElementById('ccaCompositeText').textContent =
+            'Composite commodity pressure: ' + story.alert;
+        document.getElementById('ccaCompositeMeta').textContent =
+            (story.points || 0) + ' pts \u00b7 ' + (story.profile_count || 0) + ' commodities tracked';
+    } else {
+        comp.style.display = 'none';
+    }
 
     let html = '';
     keys.forEach(commodity => {
