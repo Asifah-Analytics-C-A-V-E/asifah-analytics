@@ -1270,6 +1270,54 @@
         .card-top-signal.empty {
             border-left-color: var(--border-color);
         }
+        /* Domestic Price Stress strip (Food Price Pulse ground truth) */
+        .card-price-stress {
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-left: 3px solid #f59e0b;
+            border-radius: 6px;
+        }
+        .card-price-stress.quiet {
+            background: transparent;
+            border-color: var(--border-color);
+            border-left-color: var(--border-color);
+        }
+        .card-price-stress-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .card-price-stress-head {
+            font-size: 0.72rem;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        .card-price-stress-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .stress-chip {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 2px 7px;
+            border-radius: 9px;
+            border: 1px solid;
+        }
+        .stress-chip.b-watch    { color: #f59e0b; border-color: rgba(245,158,11,0.5);  background: rgba(245,158,11,0.10); }
+        .stress-chip.b-elevated { color: #f97316; border-color: rgba(249,115,22,0.5);  background: rgba(249,115,22,0.10); }
+        .stress-chip.b-high     { color: #ef4444; border-color: rgba(239,68,68,0.5);   background: rgba(239,68,68,0.12); }
+        .card-price-stress-note {
+            font-size: 0.58rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            letter-spacing: 0.3px;
+        }
         .card-top-signal.empty .card-top-signal-text {
             color: var(--text-muted);
             font-style: italic;
@@ -2649,6 +2697,37 @@ function buildCommodityCard(cid, m, sp, summary) {
         `;
     }
     card.appendChild(signalDiv);
+
+    // Domestic Price Stress strip (Food Price Pulse ground truth, Slice 2b).
+    // Only food-family commodities carry this field; null means not applicable.
+    const dps = summary.domestic_price_stress;
+    if (dps && typeof dps === 'object') {
+        const stressDiv = document.createElement('div');
+        const n = dps.countries_stressed || 0;
+        if (n > 0) {
+            const top = (dps.top || []).slice(0, 3);
+            const chips = top.map(h => {
+                const staples = (h.staples || []).map(x => x.staple).join(', ');
+                const tip = escapeHtml(`${h.iso3}: ${staples} (${h.band}) -- data as of ${h.data_as_of || '?'}`);
+                return `<span class="stress-chip b-${escapeHtml(h.band)}" title="${tip}">${escapeHtml(h.iso3)} ${escapeHtml(h.band).toUpperCase()}</span>`;
+            }).join('');
+            const more = n > 3 ? `<span class="stress-chip" style="color: var(--text-muted); border-color: var(--border-color);">+${n - 3} more</span>` : '';
+            stressDiv.className = 'card-price-stress';
+            stressDiv.innerHTML = `
+                <div class="card-price-stress-label">🌾 DOMESTIC PRICE STRESS</div>
+                <div class="card-price-stress-head"><strong>${n}</strong> ${n === 1 ? 'country' : 'countries'} with measured price anomalies</div>
+                <div class="card-price-stress-chips">${chips}${more}</div>
+                <div class="card-price-stress-note">WFP measured domestic prices vs each country's own baseline · convergence, not prediction</div>
+            `;
+        } else {
+            stressDiv.className = 'card-price-stress quiet';
+            stressDiv.innerHTML = `
+                <div class="card-price-stress-label">🌾 DOMESTIC PRICE STRESS</div>
+                <div class="card-price-stress-note">No measured domestic price anomalies across monitored countries</div>
+            `;
+        }
+        card.appendChild(stressDiv);
+    }
 
     // Meta strip
     const metaStrip = document.createElement('div');
