@@ -473,6 +473,7 @@
         .signal-type-pill.t-tripwire { background: rgba(239,68,68,0.10); color: #fca5a5; border-color: rgba(239,68,68,0.30); }
         .signal-type-pill.t-convergence { background: rgba(167,139,250,0.10); color: #c4b5fd; border-color: rgba(167,139,250,0.30); }
         .signal-type-pill.t-commodity_coupling { background: rgba(245,158,11,0.10); color: #fcd34d; border-color: rgba(245,158,11,0.30); }
+        .signal-type-pill.t-election { background: rgba(245,158,11,0.14); color: #fbbf24; border-color: rgba(245,158,11,0.45); }
         .signal-type-pill.t-crosstheater { background: rgba(16,185,129,0.10); color: #6ee7b7; border-color: rgba(16,185,129,0.30); }
         .signal-short {
             font-size: 0.95rem;
@@ -797,6 +798,15 @@
             ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.
         </div>
 
+        <!-- EXECUTIVE SUMMARY -->
+        <div class="section-header">
+            <span class="section-icon">📰</span>
+            <span class="section-title" data-i18n="sec_exec">Executive Summary</span>
+        </div>
+        <div class="exec-summary" id="execSummary">
+            <p class="empty-state" data-i18n="loading">Loading...</p>
+        </div>
+
         <!-- ── ELECTION RUNOFF WATCH (Jun 2026 cycle; hidden when quiet) ── -->
         <div id="electionWatchCard" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.07), rgba(56,189,248,0.05)); border:1px solid rgba(245,158,11,0.45); border-radius:12px; padding:18px 22px; margin-bottom:18px;">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
@@ -806,44 +816,6 @@
             <div id="ewMomentum" style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--text-primary);"></div>
             <div id="ewCandidates" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px;"></div>
             <div id="ewDisclaimer" style="font-size:10.5px; color:var(--text-muted); font-style:italic;"></div>
-        </div>
-
-        <!-- COMPOSITE STRIP — Peru pressure + 4 vector cards -->
-        <div class="composite-strip">
-            <div class="gauge-card composite">
-                <div class="gauge-label" data-i18n="composite_label">Peru Composite Pressure</div>
-                <div class="gauge-value composite" id="compositeScore">—</div>
-                <span class="level-pill" id="compositeLevel">—</span>
-            </div>
-            <div class="gauge-card">
-                <div class="gauge-label" data-i18n="vec_domestic">Domestic Stability</div>
-                <div class="gauge-value" id="vecDomesticScore">—</div>
-                <span class="level-pill" id="vecDomesticLevel">—</span>
-            </div>
-            <div class="gauge-card">
-                <div class="gauge-label" data-i18n="vec_resource">Resource Sector</div>
-                <div class="gauge-value" id="vecResourceScore">—</div>
-                <span class="level-pill" id="vecResourceLevel">—</span>
-            </div>
-            <div class="gauge-card">
-                <div class="gauge-label" data-i18n="vec_us">US Alignment</div>
-                <div class="gauge-value" id="vecUsScore">—</div>
-                <span class="level-pill" id="vecUsLevel">—</span>
-            </div>
-            <div class="gauge-card">
-                <div class="gauge-label" data-i18n="vec_china">China Alignment</div>
-                <div class="gauge-value" id="vecChinaScore">—</div>
-                <span class="level-pill" id="vecChinaLevel">—</span>
-            </div>
-        </div>
-
-        <!-- EXECUTIVE SUMMARY -->
-        <div class="section-header">
-            <span class="section-icon">📰</span>
-            <span class="section-title" data-i18n="sec_exec">Executive Summary</span>
-        </div>
-        <div class="exec-summary" id="execSummary">
-            <p class="empty-state" data-i18n="loading">Loading...</p>
         </div>
 
         <!-- TOP SIGNALS -->
@@ -887,7 +859,36 @@
                 <span id="ccaCompositeText" style="color:var(--text-primary);"></span>
                 <span id="ccaCompositeMeta" style="color:var(--text-muted); margin-left:8px;"></span>
             </div>
-            <div id="commodityCards"></div>
+
+        </div>
+
+        <!-- COMPOSITE STRIP — Peru pressure + 4 vector cards -->
+        <div class="composite-strip">
+            <div class="gauge-card composite">
+                <div class="gauge-label" data-i18n="composite_label">Peru Composite Pressure</div>
+                <div class="gauge-value composite" id="compositeScore">—</div>
+                <span class="level-pill" id="compositeLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_domestic">Domestic Stability</div>
+                <div class="gauge-value" id="vecDomesticScore">—</div>
+                <span class="level-pill" id="vecDomesticLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_resource">Resource Sector</div>
+                <div class="gauge-value" id="vecResourceScore">—</div>
+                <span class="level-pill" id="vecResourceLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_us">US Alignment</div>
+                <div class="gauge-value" id="vecUsScore">—</div>
+                <span class="level-pill" id="vecUsLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_china">China Alignment</div>
+                <div class="gauge-value" id="vecChinaScore">—</div>
+                <span class="level-pill" id="vecChinaLevel">—</span>
+            </div>
         </div>
 
         <!-- VECTOR BREAKDOWN -->
@@ -1009,7 +1010,7 @@ const T = {
         type_tripwire: 'Tripwire',
         type_convergence: 'Convergence',
         type_actor_signal: 'Actor Signal',
-        type_commodity_coupling: 'Commodity Coupling',
+        type_commodity_coupling: 'Commodity Coupling', type_election: 'Election Watch',
         type_crosstheater: 'Cross-Theater',
 
         // Footer
@@ -1097,7 +1098,7 @@ const T = {
         type_tripwire: 'Disparador',
         type_convergence: 'Convergencia',
         type_actor_signal: 'Señal de Actor',
-        type_commodity_coupling: 'Acoplamiento Commodity',
+        type_commodity_coupling: 'Acoplamiento Commodity', type_election: 'Vigilancia Electoral',
         type_crosstheater: 'Multi-Teatro',
 
         ftr_sources: 'FUENTES DE DATOS',
@@ -1183,7 +1184,7 @@ const T = {
         type_tripwire: 'Gatilho',
         type_convergence: 'Convergência',
         type_actor_signal: 'Sinal de Ator',
-        type_commodity_coupling: 'Acoplamento Commodity',
+        type_commodity_coupling: 'Acoplamento Commodity', type_election: 'Vigil\u00e2ncia Eleitoral',
         type_crosstheater: 'Multi-Teatro',
 
         ftr_sources: 'FONTES DE DADOS',
@@ -1490,24 +1491,24 @@ function renderVectors() {
 
 function renderCommodityCoupling() {
     const section = document.getElementById('commoditySection');
-    const cards = document.getElementById('commodityCards');
     const pressure = scanData.commodity_pressure || {};
     const story = pressure._pressure_story || null;
-    const keys = Object.keys(pressure).filter(k => !k.startsWith('_'));
-    if (!keys.length && !story) {
+    // Composite story only -- per-commodity fingerprint cards removed Jun 9 2026
+    // (redundant with the convergence banners + composite strip; the NORMAL
+    // per-commodity pills visually contradicted the composite band).
+    if (!story) {
         section.style.display = 'none';
         return;
     }
     section.style.display = 'block';
 
-    // ── Convergence banners + composite strip (one story with peru-stability) ──
-    const sc = (story && story.commodities) || {};
+    const sc = story.commodities || {};
     const copperHot = sc.copper && sc.copper !== 'normal';
     const silverHot = sc.silver && sc.silver !== 'normal';
     document.getElementById('ccaCopper').style.display = copperHot ? 'block' : 'none';
     document.getElementById('ccaSilver').style.display = silverHot ? 'block' : 'none';
     const comp = document.getElementById('ccaComposite');
-    if (story && story.alert && story.alert !== 'normal') {
+    if (story.alert && story.alert !== 'normal') {
         const COLORS = { elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
         const col = COLORS[story.alert] || '#ef4444';
         comp.style.display = 'block';
@@ -1521,29 +1522,6 @@ function renderCommodityCoupling() {
     } else {
         comp.style.display = 'none';
     }
-
-    let html = '';
-    keys.forEach(commodity => {
-        const risk = pressure[commodity] || {};
-        const role = risk.role || '';
-        const rank = risk.rank ? ` (#${risk.rank})` : '';
-        const alert = risk.alert_level || 'normal';
-        const sigCount = risk.signal_count || 0;
-        const top = risk.top_signal || {};
-        const t = T[currentLang] || T.en;
-        html += `
-            <div class="commodity-card">
-                <div class="commodity-card-header">
-                    <span class="commodity-card-title">⛏️ ${escapeHtml(commodity)} — ${escapeHtml(role)}${rank}</span>
-                    <span class="level-pill level-${alert}">${escapeHtml(t['level_' + alert] || alert)}</span>
-                </div>
-                <div class="commodity-card-detail">
-                    ${sigCount} signals · weighted score ${risk.country_weighted_score || 0}
-                    ${top.title ? `<br><br>📰 <em>${escapeHtml(top.title)}</em> — ${escapeHtml(top.source || '')}` : ''}
-                </div>
-            </div>`;
-    });
-    cards.innerHTML = html;
 }
 
 function renderActors() {
