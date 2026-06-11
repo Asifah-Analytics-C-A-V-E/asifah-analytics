@@ -25,8 +25,1040 @@ body {
 body::before {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
     background-image: linear-gradient(rgba(56,189,248,0.035) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(56,189,248,0.035) 1px, transparent 1px);
-    background-size: 40px 40px;
+                      linear-gradient(90deg, rgba(56,189,248,0.035) 1px, transparent 1px);<!DOCTYPE html>
+<!-- Asifah Analytics - Turkey Stability Monitor v1.0.0 (cloned from ukraine.html canonical exemplar, Jun 10 2026) -->
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Z9114D1Z5C');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turkey Stability Monitor | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+          onerror="this.onerror=null;this.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+            onerror="this.onerror=null;var s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';document.head.appendChild(s);"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-color:#f0f5fa;--container-bg:#ffffff;--card-bg:#ffffff;--card-border:#c8daea;--text-primary:#1a2a3a;--text-secondary:#2c4a6e;--text-muted:#7a9ab8;--metric-bg:#ffffff;--metric-hover-shadow:rgba(0,0,0,.15);--article-bg:#f0f5fa;--article-hover:#e0eaf5;--watermark-opacity:.5;--loading-overlay-bg:rgba(240,245,250,.98);--loading-spinner-bg:rgba(56,189,248,.2);--accent:#0284c7;--card:#ffffff;--border:#c8daea;--text-2:#2c4a6e;--wm-filter:none}
+        [data-theme="dark"]{--bg-color:#060d1a;--container-bg:#0d1b2e;--card-bg:#0d1b2e;--card-border:#1e3a5f;--text-primary:#e2f0fb;--text-secondary:#93c5fd;--text-muted:#4a7fa5;--metric-bg:#0d1b2e;--metric-hover-shadow:rgba(56,189,248,.15);--article-bg:#0a1628;--article-hover:#152740;--watermark-opacity:.5;--loading-overlay-bg:rgba(6,13,26,.98);--loading-spinner-bg:rgba(56,189,248,.3);--accent:#38bdf8;--card:#0d1b2e;--border:#1e3a5f;--text-2:#93c5fd;--wm-filter:saturate(3) brightness(0.8) hue-rotate(185deg)}
+        body{font-family:'Times New Roman',Times,serif;font-size:14px;background-color:var(--bg-color);color:var(--text-primary);line-height:1.6;padding:20px;min-height:100vh;transition:background-color .3s,color .3s;position:relative}
+        body::before { content:''; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:110vmin; height:110vmin; min-width:800px; min-height:800px; max-width:1400px; max-height:1400px; background-image:url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size:135%; background-repeat:no-repeat; background-position:center; opacity:0.22; filter:var(--wm-filter); z-index:0; pointer-events:none; border-radius:50%; }
+        [data-theme="light"] body::before { filter:none; opacity:0.06; }
+        .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--loading-overlay-bg);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s}
+        .loading-overlay.hidden{opacity:0;visibility:hidden}
+        .loading-spinner{width:60px;height:60px;border:5px solid var(--loading-spinner-bg);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:30px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loading-status{text-align:center;max-width:500px;padding:0 20px}
+        .loading-title{font-size:24px;font-weight:bold;color:var(--accent);margin-bottom:20px;letter-spacing:1px}
+        .loading-steps{margin-top:20px}
+        .loading-step{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;font-size:15px;color:var(--text-secondary);transition:all .3s}
+        .loading-step.active{color:var(--accent);font-weight:bold}.loading-step.complete{color:#4ade80}
+        .step-icon{font-size:18px;min-width:20px}
+        .loading-progress{margin-top:25px;font-size:13px;color:var(--text-secondary);font-style:italic}
+        .loading-error{color:#f87171;font-size:16px;margin-top:20px;padding:15px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px}
+        .container{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+        header{background:linear-gradient(135deg,#1e3a5f 0%,#eab308 100%);color:#fff;padding:35px;border-radius:12px;margin-bottom:30px;box-shadow:0 6px 20px rgba(0,0,0,.15);position:relative;display:flex;align-items:center;gap:30px}
+        .header-logo{width:80px;height:80px;flex-shrink:0;border-radius:50%;margin-top:48px}
+        .header-content{flex:1;text-align:center}
+        h1{font-size:28px;font-weight:bold;margin-bottom:10px;letter-spacing:2px;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+        .subtitle{font-size:16px;font-weight:normal;opacity:.95;letter-spacing:.5px}
+        .last-updated{font-size:13px;opacity:.85;margin-top:10px}
+        .header-controls{position:absolute;top:35px;right:35px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:1000}
+        .language-switcher{display:flex;gap:8px;background:rgba(255,255,255,.15);padding:8px 12px;border-radius:8px;backdrop-filter:blur(10px)}
+        .theme-toggle{display:flex;align-items:center;justify-content:center;gap:3px;background:rgba(255,255,255,.15);padding:2px 6px;border-radius:4px;backdrop-filter:blur(10px);max-width:100px}
+        .theme-toggle-label{font-size:9px;color:rgba(255,255,255,.9);margin-right:4px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+        .theme-toggle-switch{position:relative;width:28px;height:15px;background:rgba(255,255,255,.2);border-radius:8px;cursor:pointer;transition:all .3s;border:1.5px solid rgba(255,255,255,.3)}
+        .theme-toggle-switch:hover{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.5)}
+        .theme-toggle-slider{position:absolute;top:1.5px;left:1.5px;width:9px;height:9px;background:#fff;border-radius:50%;transition:transform .3s;display:flex;align-items:center;justify-content:center;font-size:6px}
+        .theme-toggle-slider::before{content:'☀️'}
+        [data-theme="dark"] .theme-toggle-slider{transform:translateX(13px)}
+        [data-theme="dark"] .theme-toggle-slider::before{content:'🌙'}
+        .lang-btn{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;font-family:'Times New Roman',serif;font-size:14px;font-weight:bold;border-radius:6px;cursor:pointer;transition:all .2s}
+        .lang-btn:hover{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.5)}
+        .lang-btn.active{background:#fff;color:#1e3a5f;border-color:#fff}
+        .back-link{display:inline-block;position:absolute;top:20px;left:20px;margin:0;padding:12px 24px;background:rgba(255,255,255,.2);color:#fff;text-decoration:none;border-radius:8px;border:2px solid rgba(255,255,255,.3);transition:all .2s;font-size:14px;font-weight:bold}
+        .back-link:hover{background:rgba(255,255,255,.3);border-color:rgba(255,255,255,.5)}
+        .map-section{background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:background .3s,border-color .3s}
+        .map-section h2{font-size:20px;margin-bottom:10px;color:var(--text-primary)}
+        .map-subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:15px;font-style:italic}
+        .knowledge-library{background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:background .3s,border-color .3s}
+        .knowledge-library h2{font-size:24px;margin-bottom:20px;color:var(--text-primary);display:flex;align-items:center;gap:10px}
+        .library-icon{font-size:28px}
+        .knowledge-categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+        .knowledge-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:10px;overflow:hidden;transition:all .3s}
+        .knowledge-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px var(--metric-hover-shadow)}
+        .knowledge-header{background:linear-gradient(135deg,rgba(56,189,248,.1) 0%,rgba(234,179,8,.1) 100%);padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .3s}
+        .knowledge-header:hover{background:linear-gradient(135deg,rgba(56,189,248,.15) 0%,rgba(234,179,8,.15) 100%)}
+        .knowledge-header-title{display:flex;align-items:center;gap:12px;font-size:16px;font-weight:bold;color:var(--text-primary)}
+        .category-icon{font-size:22px}
+        .collapse-icon{font-size:20px;color:var(--accent);transition:transform .3s}
+        .knowledge-card.collapsed .collapse-icon{transform:rotate(-90deg)}
+        .knowledge-content{padding:20px;max-height:600px;overflow-y:auto;transition:max-height .3s,padding .3s}
+        .knowledge-card.collapsed .knowledge-content{max-height:0;padding:0 20px;overflow:hidden}
+        .knowledge-content p{font-size:13px;line-height:1.6;color:var(--text-secondary);margin-bottom:12px}
+        .knowledge-content ul{margin-left:20px;margin-bottom:12px}
+        .knowledge-content li{font-size:13px;line-height:1.6;color:var(--text-secondary);margin-bottom:6px}
+        .knowledge-content strong{color:var(--text-primary)}
+        .open-source-disclaimer{font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;padding-top:12px;border-top:1px solid var(--card-border)}
+        .report-links-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:15px}
+        .report-link{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:var(--accent);color:#fff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:bold;transition:all .3s}
+        .report-link:hover{background:#0369a1;transform:translateX(3px);box-shadow:0 4px 12px rgba(56,189,248,.3)}
+        .knowledge-content::-webkit-scrollbar{width:8px}
+        .knowledge-content::-webkit-scrollbar-track{background:var(--article-bg);border-radius:4px}
+        .knowledge-content::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:4px}
+        .articles-section{background:var(--container-bg);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);border:2px solid var(--card-border);transition:background .3s,border-color .3s}
+        .section-title{font-size:20px;margin-bottom:20px;color:var(--text-primary);font-weight:bold;letter-spacing:.5px}
+        .article-item{background:var(--article-bg);padding:15px;border-radius:8px;margin-bottom:10px;transition:background .2s,transform .2s;border-left:4px solid var(--accent)}
+        .article-item:hover{background:var(--article-hover);transform:translateX(4px)}
+        .article-title{color:var(--text-primary);font-size:14px;margin-bottom:5px;font-weight:500}
+        .article-meta{font-size:12px;color:var(--text-secondary)}
+        .article-link{color:var(--accent);text-decoration:none;font-size:13px}
+        .article-link:hover{text-decoration:underline}
+        footer{background:var(--container-bg);padding:25px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);border:2px solid var(--card-border);font-size:12px;text-align:center;margin-top:40px;color:var(--text-secondary);transition:background .3s,border-color .3s}
+        [data-theme="dark"] header{background:linear-gradient(135deg,#0f172a 0%,#854d0e 100%);border:1px solid rgba(56,189,248,.2)}
+        [data-theme="dark"] .knowledge-header{background:linear-gradient(135deg,rgba(56,189,248,.08) 0%,rgba(234,179,8,.08) 100%)}
+        [data-theme="dark"] .article-item{border-left-color:#60a5fa}
+        #humanitarianGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}
+        #humanitarianGrid>div{overflow:hidden;word-wrap:break-word}
+        .humanitarian-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:10px;padding:18px;transition:all .3s}
+        .humanitarian-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px var(--metric-hover-shadow)}
+        .humanitarian-card h3{font-size:14px;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+        .humanitarian-card .big-number{font-size:28px;font-weight:bold;color:var(--text-primary);margin-bottom:6px}
+        .humanitarian-card .detail{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:4px}
+        .humanitarian-card .source-tag{font-size:10px;color:var(--text-muted);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--card-border)}
+        .leaflet-container{max-width:100%}
+        .news-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:15px;border-bottom:2px solid var(--card-border);padding-bottom:10px}
+        .news-tab{padding:6px 14px;background:var(--article-bg);border:1px solid var(--card-border);border-radius:6px 6px 0 0;cursor:pointer;font-size:12px;font-weight:bold;color:var(--text-secondary);transition:all .2s}
+        .news-tab:hover{background:var(--article-hover)}
+        .news-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+        [dir="rtl"] .back-link{left:auto;right:20px}
+        @media(max-width:768px){header{flex-direction:column;gap:20px;padding:25px 20px}.header-logo{width:60px;height:60px;margin-top:0}.header-controls{position:static;align-items:center}h1{font-size:22px}.back-link{position:static;display:block;width:fit-content;margin:0 auto 15px}.knowledge-categories{grid-template-columns:1fr}}
+
+        /* ── PAGE WITH SIDEBAR (canonical) ── */
+        .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+        .nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+        .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+        .nav-btn { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border-radius: 7px; background: rgba(13,27,46,0.6); border: 1px solid rgba(56,189,248,0.18); color: #e2f0fb; font-family: 'Times New Roman', serif; font-weight: 700; font-size: 11px; letter-spacing: 0.3px; text-decoration: none; transition: all 0.2s; overflow: hidden; }
+        [data-theme="light"] .nav-btn { color: var(--text-secondary); }
+        .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+        .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #38bdf8; }
+        .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); border-color: rgba(56,189,248,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(56,189,248,0.12); }
+        .nav-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); border-color: rgba(34,197,94,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+        .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+        .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+        [data-theme="light"] .nav-btn.inactive-nav { color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
+        .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+        .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+        .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+        .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+        .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+        .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+        .main-content { flex: 1; min-width: 0; }
+        @media (max-width: 1199px) {
+            .page-with-sidebar { display: block; }
+            .menu-toggle { display: flex; }
+            .nav-sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100vh; z-index: 180; overflow-y: auto; transition: left 0.25s ease; border-radius: 0; background: var(--card); padding: 60px 14px 20px; border-right: 1px solid var(--border); box-shadow: 2px 0 24px rgba(0,0,0,0.4); }
+            .nav-sidebar.open { left: 0; }
+            .sidebar-backdrop.open { display: block; }
+            body { padding-top: 64px; }
+            .nav-sidebar::before { content: '\2715  Close'; position: absolute; top: 14px; right: 14px; font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: rgba(56,189,248,0.05); }
+        }
+
+        /* ── RHETORIC TRACKER BANNER (canonical green pattern, matches Israel) ── */
+        .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+        .rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+        .rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+        .rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+
+        /* ── RHETORIC DETAIL CARD (canonical Russia pattern) ── */
+        .rhetoric-card { background: var(--card-bg); border: 2px solid rgba(56,189,248,0.35); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+        .rhetoric-actor-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); }
+        .rhetoric-actor-row:last-child { border-bottom: none; }
+        .rhetoric-signal-row { padding: 6px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .rhetoric-signal-row:last-child { border-bottom: none; }
+        .rhetoric-signal-label { font-weight: 700; color: #38bdf8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; font-family: 'Courier New', monospace; }
+        /* ── Canonical chrome retrofit (Russia baseline) ── */
+        .nav-btn.gpi-btn { border-color: rgba(56,189,248,0.55); background: linear-gradient(135deg, rgba(56,189,248,0.16) 0%, rgba(14,165,233,0.10) 100%); box-shadow: 0 0 14px rgba(56,189,248,0.10); }
+        .nav-btn.gpi-btn .nav-btn-status { color: #38bdf8; }
+        .nav-btn.gpi-btn:hover { background: linear-gradient(135deg, rgba(56,189,248,0.22) 0%, rgba(14,165,233,0.14) 100%); }
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; background: var(--card); border: 1.5px solid rgba(56,189,248,0.4); border-radius: 8px; width: 44px; height: 44px; font-size: 22px; cursor: pointer; color: var(--accent); align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.25); transition: all 0.2s ease; }
+        .menu-toggle:hover { background: rgba(56,189,248,0.15); transform: scale(1.05); }
+        .menu-toggle:active { transform: scale(0.95); }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); z-index: 150; }
+        /* Canonical Asifah footer */
+        .asifah-footer { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-top: 24px; margin-bottom: 24px; text-align: center; }
+        .asifah-footer-title { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .asifah-footer-backend { font-size: 0.75rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 6px; }
+        .asifah-footer-cadence { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; }
+        .asifah-footer-sources { font-size: 0.78rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+        .asifah-footer-pills { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+        .asifah-footer-pill { padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease; border: 1.5px solid; }
+        .asifah-footer-pill.bmc { background: rgba(251,191,36,0.12); color: #f59e0b; border-color: rgba(251,191,36,0.5); }
+        .asifah-footer-pill.bmc:hover { background: rgba(251,191,36,0.22); transform: translateY(-1px); }
+        .asifah-footer-pill.contact { background: rgba(56,189,248,0.12); color: var(--accent); border-color: rgba(56,189,248,0.5); }
+        .asifah-footer-pill.contact:hover { background: rgba(56,189,248,0.22); transform: translateY(-1px); }
+        .asifah-footer-disclaimer { font-size: 0.7rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+        .asifah-footer-links { display: flex; justify-content: center; gap: 14px; font-size: 0.75rem; flex-wrap: wrap; }
+        .asifah-footer-links a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
+        .asifah-footer-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-status">
+            <div class="loading-title">Loading Turkey Stability Data</div>
+            <div class="loading-steps" id="loadingSteps">
+                <div class="loading-step active" id="step1"><span class="step-icon">⏳</span><span>Initializing interactive map...</span></div>
+                <div class="loading-step" id="step2"><span class="step-icon">⏳</span><span>Fetching WFP food price pulse (HDX)...</span></div>
+                <div class="loading-step" id="step3"><span class="step-icon">⏳</span><span>Loading news feeds (Daily Sabah, GDELT, Reddit)...</span></div>
+                <div class="loading-step" id="step4"><span class="step-icon">⏳</span><span>Scanning commodity exposure (Europe proxy)...</span></div>
+                <div class="loading-step" id="step5"><span class="step-icon">⏳</span><span>Processing straits &amp; transit indicators...</span></div>
+                <div class="loading-step" id="step6"><span class="step-icon">⏳</span><span>Rendering dashboard...</span></div>
+            </div>
+            <div class="loading-progress" id="loadingProgress">This may take 20-40 seconds...</div>
+            <div class="loading-error" id="loadingError" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="europe.html" class="back-link" data-i18n="backLink">← Back to Europe Dashboard</a>
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Logo" class="header-logo">
+            <div class="header-content">
+                <h1 data-i18n="pageTitle">🇹🇷 TURKEY STABILITY MONITOR</h1>
+                <div class="subtitle" data-i18n="pageSubtitle">Multi-Factor Analysis: NATO Alignment, Straits &amp; Energy Transit, Levant Vectors &amp; Domestic Pressure</div>
+                <div class="last-updated" id="lastUpdated" data-i18n="lastUpdated">Last updated: Loading...</div>
+            </div>
+            <div class="header-controls">
+                <div class="language-switcher">
+                    <button class="lang-btn active" onclick="switchLanguage('en',this)">EN</button>
+                    <button class="lang-btn" onclick="switchLanguage('tr',this)">TR</button>
+                    <button class="lang-btn" onclick="switchLanguage('fr',this)">FR</button>
+                    <button class="lang-btn" onclick="switchLanguage('ru',this)">RU</button>
+                    <button class="lang-btn" onclick="switchLanguage('de',this)">DE</button>
+                </div>
+                <div class="theme-toggle">
+                    <span class="theme-toggle-label" data-i18n="themeToggle">Theme</span>
+                    <div class="theme-toggle-switch" onclick="toggleTheme()"><div class="theme-toggle-slider"></div></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MOBILE DRAWER TOGGLE -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" onclick="toggleSidebar()">&#9776;</button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+        <!-- PAGE WITH SIDEBAR -->
+        <div class="page-with-sidebar">
+
+        <!-- NAV SIDEBAR -->
+        <nav class="nav-sidebar" id="navSidebar">
+            <div class="nav-sidebar-label">Dashboards</div>
+            <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+            <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+            <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+            <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+            <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+            <div class="nav-divider"></div>
+            <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+            <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+            <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label">Regional Rhetoric</div>
+            <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+            <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+            <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+            <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-sidebar-label">Turkey</div>
+            <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn" style="opacity:0.55;"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status" style="color:var(--text-muted);">○ In Dev</span></a>
+            <a href="turkey-stability.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇹🇷 Stability Monitor</span><span class="nav-btn-status">◉ You are here</span></a>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+        <!-- WORLDWIDE CAUTION -->
+        <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,.3);">
+            <div style="font-size:24px;flex-shrink:0;">🚨</div>
+            <div style="flex:1;">
+                <div style="font-size:12px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;" data-i18n="cautionLabel">⚠️ U.S. State Department — Worldwide Caution</div>
+                <div style="font-size:12px;color:#fde8e8;line-height:1.4;" data-i18n="cautionText">U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in the Smart Traveler Enrollment Program (STEP).</div>
+            </div>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;" data-i18n="viewCaution">VIEW CAUTION →</a>
+        </div>
+
+        <!-- TURKEY TRAVEL ADVISORY - LEVEL 2 -->
+        <div style="background:linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%);border:2px solid #f59e0b;border-radius:10px;padding:14px 20px;margin-bottom:15px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);">
+            <div style="font-size:24px;flex-shrink:0;">🇹🇷</div>
+            <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                    <span style="font-size:11px;font-weight:bold;color:#fcd34d;text-transform:uppercase;letter-spacing:1.5px;">U.S. State Department — Turkey (Türkiye) Travel Advisory</span>
+                    <span style="background:#f59e0b;color:white;font-size:10px;font-weight:800;padding:2px 8px;border-radius:3px;letter-spacing:1px;">LEVEL 2</span>
+                </div>
+                <div style="font-size:12px;color:#e2e8f0;line-height:1.4;"><strong style="color:#f59e0b;">Exercise Increased Caution</strong> due to terrorism and arbitrary detentions. <strong style="color:#ef4444;">Do Not Travel (Level 4)</strong> to areas near the Syria and Iraq borders due to terrorism and armed conflict risk.</div>
+            </div>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/turkey-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">VIEW ADVISORY →</a>
+        </div>
+
+        <!-- TURKEY ALIGNMENT TRACKER BANNER (canonical green pattern) -->
+        <div class="rhetoric-banner-canonical" id="rhetoricPressureCard" style="display:none;">
+            <div style="font-size:24px;flex-shrink:0;">📡</div>
+            <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                    <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;" data-i18n="rhetoricLabel">Turkey Alignment Tracker — Live</span>
+                    <span class="rhet-banner-badge" id="rhetoricPill">LOADING</span>
+                    <span class="rhet-banner-badge" id="rhetoricScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+                </div>
+                <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="rhetoricHeadline">Loading Turkey alignment assessment...</div>
+                <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="rhetoricDetail"></div>
+            </div>
+            <a href="rhetoric-turkey.html" class="rhet-banner-link" data-i18n="rhetoricLink">Open Tracker →</a>
+        </div>
+
+        <!-- TRACKER IN-DEV STRIP (auto-hides when tracker ships) -->
+        <div id="turkeyTrackerInDev" style="border:1px dashed var(--card-border);border-radius:10px;padding:12px 16px;margin-bottom:15px;font-size:12px;color:var(--text-muted);">
+            📡 <strong style="color:var(--text-secondary);">Turkey Alignment Tracker — in development.</strong> The platform's first swing-state tracker: NATO-anchor vs strategic-autonomy indices, plus Levant expansion vectors (Syria lead indicator, Lebanon playbook ladder). This card auto-activates on deploy — no page changes needed.
+        </div>
+
+        <!-- TURKEY ALIGNMENT TRACKER DETAIL CARD (canonical Russia pattern) -->
+        <div class="rhetoric-card" id="turkeyRhetoricCard" style="display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 🇹🇷 <span data-i18n="rhetoricCardTitle">TURKEY ALIGNMENT TRACKER</span></div>
+            <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:5px;">
+                <div style="font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--text-primary);" id="turkeyRhetoricScoreFull">--</div>
+                <span id="turkeyRhetoricLevelLabel" style="font-size:12px;font-weight:800;padding:4px 12px;border-radius:5px;background:#6b7280;color:white;letter-spacing:0.5px;">--</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector alignment score — NATO Anchor · Strategic Autonomy · Syria/Lebanon Vectors · Domestic — Updated every 6h</div>
+            <div id="turkeyRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;" data-i18n="loading">Loading…</span></div>
+            <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="rhetoric-turkey.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="viewFullTracker">View Full Alignment Analysis →</a>
+            </div>
+            <div id="turkeyRhetoricScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
+        </div>
+
+        <!-- ═══ COMMODITY EXPOSURE CARD — Gold Standard v1.0 (May 6, 2026) ═══ -->
+        <div class="commodity-card" id="turkeyCommodityCard">
+            <div class="commodity-card-title">🛢️ <span data-i18n="commodityTitle">TURKEY COMMODITY EXPOSURE</span></div>
+            <div class="commodity-prose" id="commodityProse">Loading exposure profile…</div>
+            <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+            <div class="commodity-grid" id="commodityGrid"></div>
+            <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+            <div style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-secondary);line-height:1.55;" data-i18n="commodityLinkage">
+                <strong style="color:#f59e0b;">Strategic Linkage:</strong> Turkey is a transit gatekeeper, not just a consumer: the Turkish Straits carry ~3M bpd of Russian and Caspian crude, BTC and Ceyhan anchor non-Russian export routes, and TurkStream + TANAP make Ankara the EU's southeastern gas gatekeeper. On the import side, Turkey buys 6-7 Mt/yr of wheat (Russia/Ukraine/Romania) with politically sensitive bread subsidies — a domestic-stability transmission channel. Defense-industry exports (Bayraktar diplomacy) are the outbound vector distinguishing Turkey from other transit states.
+            </div>
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border, #1e293b);text-align:center;">
+                <a href="commodities.html" style="color:#f59e0b;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
+            </div>
+            <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+        </div>
+
+        <!-- COMMODITY CARD STYLING — Gold Standard v1.0 (May 6, 2026) -->
+        <style>
+        .commodity-card {
+            background: var(--card-bg, #0f172a);
+            border: 2px solid var(--card-border, #1e293b);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .commodity-card {
+            border-color: rgba(245,158,11,0.25);
+            box-shadow: 0 0 10px rgba(245,158,11,0.06);
+        }
+        .commodity-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-primary, #e2e8f0);
+            margin-bottom: 8px;
+        }
+        .commodity-prose {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--text-secondary, #94a3b8);
+            margin: 10px 0 16px 0;
+            padding: 12px 14px;
+            background: var(--bg-color, #020617);
+            border-left: 3px solid #f59e0b;
+            border-radius: 6px;
+        }
+        .commodity-alert-banner {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            display: none;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted, #64748b); font-weight: 400; margin-left: 10px; }
+
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: var(--bg-color, #020617);
+            border: 1px solid var(--card-border, #1e293b);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #f59e0b;
+            box-shadow: 0 4px 12px rgba(245,158,11,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary, #e2e8f0); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted, #64748b); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(245,158,11,0.12);
+            color: #f59e0b;
+            border: 1px solid rgba(245,158,11,0.25);
+        }
+        .commodity-pill-signal-count {
+            font-size: 10px;
+            color: var(--text-muted, #64748b);
+            font-weight: 600;
+        }
+        .commodity-pill-price {
+            font-size: 12px;
+            color: var(--text-primary, #e2e8f0);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+        .commodity-pill-note {
+            font-size: 11px;
+            color: var(--text-secondary, #94a3b8);
+            line-height: 1.45;
+            margin-top: 4px;
+        }
+        .commodity-top-signals {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: var(--bg-color, #020617);
+            border-radius: 6px;
+            border-left: 3px solid var(--text-muted, #64748b);
+            font-size: 11px;
+        }
+        .commodity-top-signals .ts-title {
+            color: var(--text-muted, #64748b);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        .commodity-top-signals a {
+            color: var(--text-secondary, #94a3b8);
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            line-height: 1.45;
+        }
+        .commodity-top-signals a:hover { color: #f59e0b; }
+        .commodity-top-signals .ts-source { color: var(--text-muted, #64748b); font-size: 10px; }
+        </style>
+
+        <div class="map-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <h2 style="margin-bottom:0;">🗺️ <span data-i18n="mapTitle">Turkey — Strategic Overview</span></h2>
+                <a href="https://www.asifahanalytics.com/military.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">🎖️ Military Posture Tracker →</a>
+            </div>
+            <div class="map-subtitle" data-i18n="mapSubtitle">Interactive map: Montreux straits, energy transit infrastructure, Incirlik, northern Syria footprint, and key cities.</div>
+            <div id="turkeyMap" style="width:100%;height:500px;border:2px solid var(--card-border);border-radius:8px;"></div>
+        </div>
+
+        <!-- FOOD PRICE PULSE (WFP-measured domestic staple prices) -->
+        <div style="background:var(--container-bg);border:2px solid var(--card-border);border-radius:12px;padding:25px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,.08);">
+            <h2 style="font-size:20px;margin-bottom:5px;">🌾 <span data-i18n="pulseTitle">Food Price Pulse</span></h2>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:15px;" id="pulseUpdated" data-i18n="pulseSubtitle">WFP-measured domestic staple prices vs Turkey's own trailing baseline — loading…</p>
+            <div id="pulseGrid"></div>
+            <div style="margin-top:12px;font-size:11px;color:var(--text-muted);font-style:italic;line-height:1.5;" data-i18n="pulseDisclaimer">Bands describe present price conditions relative to the country's own baseline. Convergence indicator — NOT a probability of unrest, shortage, or crisis. Source: WFP VAM via Humanitarian Data Exchange · ME backend (source of truth).</div>
+        </div>
+
+        <div class="knowledge-library">
+            <h2><span class="library-icon">📚</span> <span data-i18n="knowledgeLibraryTitle">Knowledge Library</span></h2>
+            <p class="open-source-disclaimer">Note: Background information compiled from open-source research, think tank analyses, and public government reporting.</p>
+            <div class="knowledge-categories">
+
+                <div class="knowledge-card collapsed" id="card-alignment">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('alignment')">
+                        <div class="knowledge-header-title"><span class="category-icon">⚓</span> <span data-i18n="catAlignment">NATO Swing State &amp; Strategic Autonomy</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Turkey is NATO's second-largest military and its most strategically ambiguous member.</strong> Ankara's doctrine of "strategic autonomy" means holding NATO membership, S-400 systems, Russia energy ties, and Gulf finance simultaneously — alignment with everyone, subordination to no one.</p>
+                        <ul>
+                            <li><strong>The Dual-Track Method:</strong> Armed Ukraine while expanding Russia trade; leveraged Sweden's NATO accession for F-16 progress; enforces Montreux warship limits while hosting TurkStream. The pattern is maximizing both tracks, never choosing.</li>
+                            <li><strong>The Analytical Signal:</strong> Because the baseline is "high on both," the tracker watches for <em>decoupling</em> — strategic-autonomy signals rising while Alliance cooperation falls. Membership in either camp is not the question; divergence between the two indices is.</li>
+                            <li><strong>Iran War Posture (2026):</strong> Analysts assess Erdogan has avoided entanglement in the Iran-US war largely for electoral reasons — while Iranian missiles striking a Turkish airbase in March 2026 tested that caution.</li>
+                            <li><strong>Leverage Instruments:</strong> Straits closure authority (Montreux), migration gatekeeping toward Europe, Incirlik basing rights, and a defense industry (Bayraktar) that buys influence across three continents.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on CSIS, MEI, FDD, and NATO official reporting</div>
+                        <div class="report-links-grid"><a href="https://www.csis.org/analysis/strategic-ambiguity-erdogans-turkey-multipolar-world" target="_blank" class="report-link">📑 CSIS</a><a href="https://mei.edu/backgrounder/turkish-foreign-policy/" target="_blank" class="report-link">📑 MEI</a><a href="https://www.fdd.org/issue/turkey/" target="_blank" class="report-link">📑 FDD</a><a href="https://www.nato.int/" target="_blank" class="report-link">📑 NATO</a></div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-playbook">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('playbook')">
+                        <div class="knowledge-header-title"><span class="category-icon">🗺️</span> <span data-i18n="catPlaybook">Ottoman-Space Influence Playbook</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Turkey does not announce takeovers — it runs a documented expansion playbook</strong>, and the AKP's "Ottoman-inflected geographic imagination" (CSIS) gives it ideological framing. The pattern is invitation engineering, not invasion.</p>
+                        <ul>
+                            <li><strong>The Ladder:</strong> Perimeter rhetoric → religious-cultural penetration (Diyanet, TIKA) → economic-strategic stakes → defense cooperation agreement → presence "at the host's request."</li>
+                            <li><strong>Precedents:</strong> Northern Cyprus (1974, the kinetic exception), Syria operations (2016-19), <strong>Libya 2020 (the canonical model:</strong> maritime MOU + troops by invitation of a weak government), Somalia (base + soft power), Iraq (Bashiqa), Azerbaijan (2020), and Balkans soft power (Bosnia, Kosovo, N. Macedonia).</li>
+                            <li><strong>The Signature Kinetic Tell:</strong> "Buffer zone" language preceded every Syria operation. In March 2026, allegations surfaced (denied by the Defense Ministry) that the TSK discussed a buffer zone inside Iran in a collapse scenario. The phrase itself is a tracked signal class.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on CSIS, Crisis Group, and academic literature on Turkish foreign policy</div>
+                        <div class="report-links-grid"><a href="https://www.csis.org/" target="_blank" class="report-link">📑 CSIS</a><a href="https://www.crisisgroup.org/europe-central-asia/western-europemediterranean/turkiye" target="_blank" class="report-link">📑 Crisis Group</a><a href="https://www.iiss.org/" target="_blank" class="report-link">📑 IISS</a></div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-syria">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('syria')">
+                        <div class="knowledge-header-title"><span class="category-icon">🇸🇾</span> <span data-i18n="catSyria">Syria Footprint — The Lead Indicator</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Turkey's deepest regional position is northern Syria</strong> — troops, proxy networks, intelligence infrastructure, and economic integration far exceeding any Lebanon presence. This makes Syria rhetoric the lead indicator for broader regional ambition.</p>
+                        <ul>
+                            <li><strong>Post-Assad Position:</strong> Ankara backs the post-2024 Damascus transition and competes directly with Israel for influence over Syria's trajectory — both capitals now accuse the other of expansionism there.</li>
+                            <li><strong>Mirror-Imaging Dynamic (June 2026):</strong> Erdogan states Israeli operations in Syria and Lebanon "threaten Turkey too" — threat-perimeter extension — while Israeli officials warn of Turkish takeover ambitions. Both rhetorics escalating in sync is itself a tracked friction index.</li>
+                            <li><strong>Kurdish Variable:</strong> SDF integration, the PKK dissolution process, and fear of a Kurdish corridor in any Iran-collapse scenario tie the Syria file directly to Ankara's core security doctrine.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on Crisis Group, Al-Monitor, MEI, and ISW Syria reporting</div>
+                        <div class="report-links-grid"><a href="https://www.al-monitor.com/contents/turkey" target="_blank" class="report-link">📑 Al-Monitor Turkey</a><a href="https://www.understandingwar.org/" target="_blank" class="report-link">📑 ISW</a><a href="https://mei.edu/" target="_blank" class="report-link">📑 MEI</a></div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-lebanon">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('lebanon')">
+                        <div class="knowledge-header-title"><span class="category-icon">🇱🇧</span> <span data-i18n="catLebanon">Lebanon Vector — Watch Items</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The "Turkish takeover of Lebanon" narrative circulates in regional commentary</strong> (including a Saudi-sponsorship framing from Egyptian analysts), but observed Turkish instruments in Lebanon to date are soft-power class — resembling Balkans activity more than military expansion.</p>
+                        <ul>
+                            <li><strong>Active Layer:</strong> Aid, education, religious institutions, and cultural programs in Tripoli, Akkar, and northern Lebanon; outreach to Turkmen communities; periodic citizenship distribution.</li>
+                            <li><strong>Watch Items (the ladder's upper rungs):</strong> Beirut and Tripoli <em>port reconstruction bids</em>, TPAO offshore interest, drone/defense offers to the LAF, any defense-cooperation MOU language (the Libya-model tripwire), and "buffer zone" framing applied to Lebanon.</li>
+                            <li><strong>Sunni-Axis Wrinkle:</strong> Whether Riyadh is Turkey's sponsor or rival in the Levant is live and contested — KSA-Turkey coordination signals on Lebanon are tracked as their own class.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on regional press analysis, Carnegie ME, and LCPS reporting</div>
+                        <div class="report-links-grid"><a href="https://carnegieendowment.org/middle-east" target="_blank" class="report-link">📑 Carnegie ME</a><a href="https://www.lcps-lebanon.org/" target="_blank" class="report-link">📑 LCPS</a><a href="https://www.lorientlejour.com/" target="_blank" class="report-link">📑 L'Orient</a></div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-domestic">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('domestic')">
+                        <div class="knowledge-header-title"><span class="category-icon">⚖️</span> <span data-i18n="catDomestic">Constitutional Clock &amp; Domestic Pressure</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Erdogan's term math requires a new constitution or early elections to run again (~2028)</strong> — and the clock is already governing foreign policy: election proximity is assessed to be suppressing appetite for war entanglement. The tracker treats election proximity as a timing multiplier, not a standalone signal.</p>
+                        <ul>
+                            <li><strong>Opposition Crackdown:</strong> The Imamoglu case and pressure on the CHP are protest-risk sensors — domestic instability transmits to foreign-policy risk appetite in both directions.</li>
+                            <li><strong>Economy:</strong> Lira fragility, CBRT independence questions, and inflation stress; bread subsidies make wheat prices politically sensitive (see commodity card). Erdogan's rate-pressure history places him in the platform's leader-intervention (jawboning) layer.</li>
+                            <li><strong>New-Constitution Campaign:</strong> Framed as democratic modernization by supporters and term-limit reset by critics; investor reaction is the constraint analysts watch.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on Freedom House, FDD, and financial press reporting</div>
+                        <div class="report-links-grid"><a href="https://freedomhouse.org/country/turkey" target="_blank" class="report-link">📑 Freedom House</a><a href="https://www.fdd.org/issue/turkey/" target="_blank" class="report-link">📑 FDD</a></div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-kurdish">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('kurdish')">
+                        <div class="knowledge-header-title"><span class="category-icon">🕌</span> <span data-i18n="catKurdish">Kurdish File &amp; Regional Identity</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The Kurdish question remains Ankara's deepest security doctrine driver.</strong> The PKK dissolution process (2025) opened a historic window, but the file's regional dimensions — SDF in Syria, the KRG relationship, and Iranian Kurdistan scenarios — keep it tightly coupled to every theater the tracker watches.</p>
+                        <ul>
+                            <li><strong>Reversal Risk:</strong> Kurdish-file reversals (renewed operations, peace-process collapse) are escalation tells with direct read-across to Syria and Iraq postures.</li>
+                            <li><strong>Iran-Collapse Scenario:</strong> Ankara's stated fear of a Kurdish independence push in Iranian Kurdistan — with US/Israeli sympathy — is the thread connecting the Kurdish file to the buffer-zone allegations of March 2026.</li>
+                            <li><strong>Religious Soft Power:</strong> The Diyanet's international network and Ottoman-heritage projects (Hagia Sophia symbolism) are the cultural arm of the influence playbook — tracked under the Levant and Balkans vectors.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on Crisis Group, MEI, and academic Kurdish-studies literature</div>
+                        <div class="report-links-grid"><a href="https://www.crisisgroup.org/" target="_blank" class="report-link">📑 Crisis Group</a><a href="https://mei.edu/" target="_blank" class="report-link">📑 MEI</a></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="articles-section">
+            <div class="section-title" data-i18n="recentArticles">📰 News Coverage</div>
+            <div class="news-tabs" id="newsTabs"></div>
+            <div id="articlesContainer"><div style="text-align:center;color:var(--text-secondary);padding:30px;">Loading articles...</div></div>
+        </div>
+
+        <footer class="asifah-footer">
+            <div class="asifah-footer-title">Asifah Analytics &mdash; Turkey Module</div>
+            <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/europe/commodity/turkey &middot; rhetoric tracker in development</div>
+            <div class="asifah-footer-cadence">Commodity via 12-hour Europe proxy &middot; Food Price Pulse weekly (WFP) &middot; Last update timestamp above</div>
+            <div class="asifah-footer-sources">WFP VAM/HDX &middot; GDELT &middot; Daily Sabah &middot; H&uuml;rriyet &middot; Duvar English &middot; Al-Monitor &middot; Europe Article Gatherer (GDELT + NewsAPI + RSS + Reddit + Telegram) &middot; NATO &middot; CSIS / MEI / FDD</div>
+            <div class="asifah-footer-pills">
+                <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc">☕ Buy Me a Coffee</a>
+                <a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact">✉️ Contact Asifah</a>
+            </div>
+            <div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. All scoring and assessments are convergence indicators based on publicly observable signals &mdash; not predictions of action. Not for operational use.</div>
+            <div class="asifah-footer-links">
+                <a href="mission.html">Mission Statement</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="index.html">Home</a>
+            </div>
+        </footer>
+        </div><!-- /main-content -->
+        </div><!-- /page-with-sidebar -->
+    </div>
+
+    <script>
+    const API_BASE='https://asifa-europe-backend.onrender.com';
+    function initTheme(){const s=localStorage.getItem('asifah-theme')||'light';document.documentElement.setAttribute('data-theme',s)}
+    function toggleTheme(){const c=document.documentElement.getAttribute('data-theme');const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('asifah-theme',n);if(window.turkeyMap)initMap()}
+    initTheme();
+    function toggleSidebar(){const sb=document.getElementById('navSidebar');const bd=document.getElementById('sidebarBackdrop');if(sb&&bd){sb.classList.toggle('open');bd.classList.toggle('open');}}
+    document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){const sb=document.getElementById('navSidebar');if(sb&&sb.classList.contains('open'))toggleSidebar();}});
+    function toggleKnowledgeCard(id){const c=document.getElementById('card-'+id);if(c)c.classList.toggle('collapsed')}
+    let loadingStepIndex=0,loadingInterval=null,loadingTimeout=null;
+    function startLoadingProgress(){
+        const steps=['step1','step2','step3','step4','step5','step6'];
+        loadingInterval=setInterval(()=>{
+            if(loadingStepIndex<steps.length-1){
+                const cur=document.getElementById(steps[loadingStepIndex]);
+                if(cur){cur.classList.remove('active');cur.classList.add('complete');cur.querySelector('.step-icon').textContent='✓'}
+                loadingStepIndex++;
+                const next=document.getElementById(steps[loadingStepIndex]);
+                if(next)next.classList.add('active');
+            }
+        },3000);
+        loadingTimeout=setTimeout(()=>{
+            const ep=document.getElementById('loadingProgress');
+            if(ep)ep.innerHTML='<span style="color:#60a5fa">ℹ️ First visit builds your intelligence cache — 1-2 minutes</span>';
+        },15000);
+    }
+    function hideLoadingOverlay(){
+        if(loadingInterval)clearInterval(loadingInterval);if(loadingTimeout)clearTimeout(loadingTimeout);
+        document.querySelectorAll('.loading-step').forEach(s=>{s.classList.remove('active');s.classList.add('complete');s.querySelector('.step-icon').textContent='✓'});
+        setTimeout(()=>{const o=document.getElementById('loadingOverlay');if(o)o.classList.add('hidden')},500);
+    }
+
+    // ── LEAFLET MAP ──
+    let turkeyMap=null;
+    function circleIcon(color,size){return L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,.8);box-shadow:0 0 6px ${color}"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]})}
+    function initMap(){
+        // Defensive: if Leaflet CDN failed, skip map but let rest of page load
+        if(typeof L==='undefined'){
+            console.warn('[Turkey Map] Leaflet library not loaded — skipping map render. Page will continue without map.');
+            const mapEl=document.getElementById('turkeyMap');
+            if(mapEl){mapEl.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--article-bg);color:var(--text-muted);font-style:italic;font-size:13px;text-align:center;padding:20px;">Map library unavailable. Refresh the page to retry.</div>';}
+            return;
+        }
+        if(turkeyMap){turkeyMap.remove();turkeyMap=null}
+        const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+        const tiles=isDark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        turkeyMap=L.map('turkeyMap',{center:[39.0,35.2],zoom:6,scrollWheelZoom:false});
+        L.tileLayer(tiles,{maxZoom:18,attribution:'© OSM'}).addTo(turkeyMap);
+
+        // The Straits — Montreux chokepoints
+        const bosphorus=L.polyline([[41.25,29.12],[41.05,29.0]],{color:'#38bdf8',weight:5,opacity:0.9}).addTo(turkeyMap).bindPopup('<b>Bosphorus Strait</b><br>Montreux Convention chokepoint. ~3M bpd Russian + Caspian crude transit. Watch: tanker queue length.');
+        const dardanelles=L.polyline([[40.45,26.7],[40.03,26.18]],{color:'#38bdf8',weight:5,opacity:0.9}).addTo(turkeyMap).bindPopup('<b>Dardanelles Strait</b><br>Second Montreux chokepoint. Warship transit governed by Convention — closure authority is a Turkish strategic lever.');
+
+        // Key cities
+        const cities=[
+            [39.93,32.86,'Ankara','Capital. Presidency, MFA, MSB — primary rhetoric sources for the alignment tracker.'],
+            [41.01,28.98,'Istanbul','Economic center. CHP mayoralty (Imamoglu case) — domestic-pressure sensor.'],
+            [38.42,27.14,'Izmir','Major port and opposition stronghold.'],
+            [37.07,37.38,'Gaziantep','Hub for northern Syria operations and refugee population.'],
+            [37.91,40.24,'Diyarbakir','Largest Kurdish-majority city. Kurdish-file barometer.'],
+        ];
+        cities.forEach(([lat,lng,name,note])=>{
+            L.marker([lat,lng],{icon:circleIcon('#1e3a5f',12)}).addTo(turkeyMap).bindPopup(`<b>${name}</b><br><span style="font-size:11px">${note}</span>`);
+        });
+
+        // Strategic infrastructure
+        const infra=[
+            [37.0,35.43,'Incirlik Air Base','US/NATO air base. Iranian ballistic missiles targeted a Turkish airbase in March 2026 (see Military Tracker).','#ef4444'],
+            [36.88,35.93,'Ceyhan Terminal','BTC pipeline terminus + Iraq-Turkey pipeline outlet. Non-Russian crude export anchor.','#f59e0b'],
+            [36.14,33.54,'Akkuyu NPP','Rosatom-built nuclear plant — flagship of Turkey-Russia energy entanglement.','#9333ea'],
+            [41.55,28.0,'TurkStream Landfall','Russian gas via Black Sea — EU southeastern gas gateway with TANAP.','#f59e0b'],
+        ];
+        infra.forEach(([lat,lng,name,note,color])=>{
+            L.marker([lat,lng],{icon:circleIcon(color,14)}).addTo(turkeyMap).bindPopup(`<b>${name}</b><br><span style="font-size:11px">${note}</span>`);
+        });
+
+        // Northern Syria operations zone (approximate Turkish-controlled / influenced areas)
+        const syriaZone=L.polygon([[36.6,36.7],[36.95,37.1],[36.8,38.2],[36.75,39.0],[36.6,40.2],[36.3,40.3],[36.4,38.5],[36.3,37.0]],{color:'#f97316',fillColor:'#f97316',fillOpacity:0.15,dashArray:'5,5',weight:2}).addTo(turkeyMap).bindPopup('<b>Northern Syria Footprint (approx.)</b><br>Turkish troops, proxies, and economic influence — the lead-indicator vector. Sharp rises in Syria rhetoric have historically preceded broader regional ambition.');
+
+        // Legend
+        const legend=L.control({position:'bottomright'});
+        legend.onAdd=function(){
+            const d=L.DomUtil.create('div');
+            d.style.cssText='background:rgba(0,0,0,.8);color:white;padding:10px 14px;border-radius:8px;font-size:11px;line-height:1.8';
+            d.innerHTML='<b>Legend</b><br><span style="color:#38bdf8">━</span> Straits (Montreux)<br><span style="color:#1e3a5f">●</span> Key Cities<br><span style="color:#ef4444">●</span> Incirlik AB<br><span style="color:#f59e0b">●</span> Energy Transit<br><span style="color:#9333ea">●</span> Akkuyu NPP<br><span style="color:#f97316">■</span> N. Syria Footprint';
+            return d;
+        };
+        legend.addTo(turkeyMap);
+    }
+
+    // ── FOOD PRICE PULSE (debut stability-page consumer, Jun 10 2026) ──
+    async function loadFoodPulse(){
+        const BANDC={normal:'#38bdf8',watch:'#f59e0b',elevated:'#f97316',high:'#ef4444',stale:'#6b7280'};
+        try{
+            const r=await fetch('https://asifah-backend.onrender.com/api/food-price-pulse/TUR');
+            if(!r.ok)throw new Error('HTTP '+r.status);
+            const d=await r.json();
+            if(!d||d.status!=='ok')throw new Error('no data');
+            const band=(d.band||'stale').toLowerCase();
+            const bc=BANDC[band]||'#6b7280';
+            document.getElementById('pulseUpdated').innerHTML=
+                `<span style="display:inline-block;padding:3px 12px;border-radius:12px;border:1px solid ${bc};color:${bc};font-weight:800;font-size:10px;letter-spacing:1px;">${band.toUpperCase()}</span> `+
+                `<span>data as of ${d.data_as_of||'?'} · WFP measured · ${(d.anomalous_staples||[]).length} anomalous staple${(d.anomalous_staples||[]).length===1?'':'s'}</span>`;
+            const order={high:0,elevated:1,watch:2,normal:3,stale:4};
+            const rows=Object.values(d.staples||{}).sort((a,b)=>(order[a.band]??9)-(order[b.band]??9)).slice(0,8);
+            document.getElementById('pulseGrid').innerHTML=rows.map(st=>{
+                const c=BANDC[st.band]||'#6b7280';
+                const stats=[];
+                if(st.mom_pct!=null)stats.push(`MoM ${st.mom_pct>=0?'+':''}${st.mom_pct}%`);
+                if(st.baseline_dev_pct!=null)stats.push(`vs baseline ${st.baseline_dev_pct>=0?'+':''}${st.baseline_dev_pct}%`);
+                return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;margin-top:6px;border-left:3px solid ${c};background:rgba(56,189,248,0.04);border-radius:0 6px 6px 0;font-size:12px;">`+
+                    `<span><span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:9px;border:1px solid ${c};color:${c};letter-spacing:.5px;">${(st.band||'').toUpperCase()}</span> ${st.staple}</span>`+
+                    `<span style="font-size:11px;color:var(--text-muted);">${stats.join(' · ')}</span></div>`;
+            }).join('')||'<div style="color:var(--text-muted);font-size:12px;">No recent staple rows in the WFP dataset for Turkey.</div>';
+        }catch(e){
+            console.warn('[Turkey] Food pulse fetch failed:',e.message);
+            document.getElementById('pulseUpdated').textContent='Food price pulse unavailable — bundle warming or TUR not yet scanned.';
+        }
+    }
+
+    // ── NEWS    // ── NEWS FEED (tabbed) ──
+    let newsData=null;
+    async function loadNews(){
+        try{
+            const r=await fetch(API_BASE+'/api/turkey/news');
+            if(!r.ok)throw new Error('HTTP '+r.status);
+            newsData=await r.json();
+            if(newsData.success)renderNewsTabs(newsData);
+        }catch(e){console.warn('News load failed:',e.message);displayFallback()}
+    }
+    function renderNewsTabs(data){
+        const tabs=document.getElementById('newsTabs');
+        const counts=data.counts||{};
+        const order=['english','turkish','french','german','russian','reddit'];
+        const labels={english:'English',turkish:'Türkçe',french:'Français',german:'Deutsch',russian:'Russian',reddit:'Reddit'};
+        tabs.innerHTML=order.map((k,i)=>`<div class="news-tab${i===0?' active':''}" onclick="showNewsTab('${k}',this)">${labels[k]||k} (${counts[k]||0})</div>`).join('');
+        showNewsTab('ukrinform',tabs.querySelector('.news-tab'));
+    }
+    function showNewsTab(key,tabEl){
+        document.querySelectorAll('.news-tab').forEach(t=>t.classList.remove('active'));
+        if(tabEl)tabEl.classList.add('active');
+        const articles=(newsData&&newsData.articles&&newsData.articles[key])||[];
+        if(articles.length>0){displayArticles(articles)}else{document.getElementById('articlesContainer').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-secondary)">No articles in this feed yet.</div>'}
+    }
+    function displayArticles(articles){
+        const c=document.getElementById('articlesContainer');
+        c.innerHTML=articles.slice(0,20).map(a=>{
+            const title=a.title||'Untitled';const source=a.source||'';const published=a.published||'';const url=a.url||'#';
+            let ds='Recent';if(published){try{ds=new Date(published).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}catch(e){ds=published}}
+            return`<div class="article-item"><div class="article-title">${title}</div><div class="article-meta">${source} • ${ds}${a.score?' • ↑'+a.score:''}</div>${url!=='#'?`<a href="${url}" target="_blank" class="article-link">Read article →</a>`:''}</div>`
+        }).join('');
+    }
+    function displayFallback(){
+        document.getElementById('articlesContainer').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary)"><p style="font-size:16px;margin-bottom:15px">📡 Live article feed loading. Check these curated sources:</p><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:15px"><a href="https://www.dailysabah.com/" target="_blank" style="padding:10px 18px;background:var(--accent);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold">Daily Sabah</a><a href="https://www.hurriyetdailynews.com/" target="_blank" style="padding:10px 18px;background:var(--accent);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold">Hürriyet Daily News</a><a href="https://www.duvarenglish.com/" target="_blank" style="padding:10px 18px;background:var(--accent);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold">Duvar English</a><a href="https://www.al-monitor.com/contents/turkey" target="_blank" style="padding:10px 18px;background:var(--accent);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold">Al-Monitor Turkey</a></div></div>';
+    }
+
+    const translations={
+        en:{pageTitle:"🇹🇷 TURKEY STABILITY MONITOR",pageSubtitle:"Multi-Factor Analysis: NATO Alignment, Straits & Energy Transit, Levant Vectors & Domestic Pressure",backLink:"← Back to Europe Dashboard",themeToggle:"Theme",lastUpdated:"Last updated: ",mapTitle:"Turkey — Strategic Overview",mapSubtitle:"Interactive map: Montreux straits, energy transit infrastructure, Incirlik, northern Syria footprint, and key cities.",knowledgeLibraryTitle:"Knowledge Library",pulseTitle:"Food Price Pulse",catAlignment:"NATO Swing State & Strategic Autonomy",catPlaybook:"Ottoman-Space Influence Playbook",catSyria:"Syria Footprint — The Lead Indicator",catLebanon:"Lebanon Vector — Watch Items",catDomestic:"Constitutional Clock & Domestic Pressure",catKurdish:"Kurdish File & Regional Identity",recentArticles:"📰 News Coverage"},
+        tr:{pageTitle:"🇹🇷 TÜRKİYE İSTİKRAR MONİTÖRÜ",pageSubtitle:"Çok Faktörlü Analiz: NATO Uyumu, Boğazlar ve Enerji Transiti, Levant Vektörleri ve İç Baskı",backLink:"← Avrupa Paneline Dön",themeToggle:"Tema",lastUpdated:"Son güncelleme: ",mapTitle:"Türkiye — Stratejik Genel Bakış",mapSubtitle:"Etkileşimli harita: Montrö boğazları, enerji transit altyapısı, İncirlik, kuzey Suriye varlığı ve önemli şehirler.",knowledgeLibraryTitle:"Bilgi Kütüphanesi",pulseTitle:"Gıda Fiyat Nabzı",catAlignment:"NATO Salınım Devleti ve Stratejik Özerklik",catPlaybook:"Osmanlı Coğrafyası Etki Stratejisi",catSyria:"Suriye Varlığı — Öncü Gösterge",catLebanon:"Lübnan Vektörü — İzleme Maddeleri",catDomestic:"Anayasa Saati ve İç Baskı",catKurdish:"Kürt Dosyası ve Bölgesel Kimlik",recentArticles:"📰 Haber Akışı"},
+        fr:{pageTitle:"🇹🇷 MONITEUR DE STABILITÉ — TURQUIE",pageSubtitle:"Analyse multifactorielle : alignement OTAN, détroits et transit énergétique, vecteurs levantins et pression intérieure",backLink:"← Retour au tableau de bord Europe",themeToggle:"Thème",lastUpdated:"Dernière mise à jour : ",mapTitle:"Turquie — Vue stratégique",mapSubtitle:"Carte interactive : détroits de Montreux, infrastructures de transit énergétique, Incirlik, empreinte en Syrie du Nord et villes clés.",knowledgeLibraryTitle:"Bibliothèque de connaissances",pulseTitle:"Pouls des prix alimentaires",catAlignment:"État pivot de l'OTAN et autonomie stratégique",catPlaybook:"Stratégie d'influence post-ottomane",catSyria:"Empreinte syrienne — l'indicateur avancé",catLebanon:"Vecteur Liban — points de veille",catDomestic:"Horloge constitutionnelle et pression intérieure",catKurdish:"Dossier kurde et identité régionale",recentArticles:"📰 Couverture médiatique"},
+        ru:{pageTitle:"🇹🇷 МОНИТОР СТАБИЛЬНОСТИ — ТУРЦИЯ",pageSubtitle:"Многофакторный анализ: ориентация в НАТО, проливы и энерготранзит, левантийские векторы и внутреннее давление",backLink:"← Назад к панели Европы",themeToggle:"Тема",lastUpdated:"Последнее обновление: ",mapTitle:"Турция — Стратегический обзор",mapSubtitle:"Интерактивная карта: проливы (Монтрё), энергетическая транзитная инфраструктура, Инджирлик, присутствие в северной Сирии и ключевые города.",knowledgeLibraryTitle:"Библиотека знаний",pulseTitle:"Пульс цен на продовольствие",catAlignment:"Колеблющееся государство НАТО и стратегическая автономия",catPlaybook:"Стратегия влияния в османском пространстве",catSyria:"Сирийское присутствие — опережающий индикатор",catLebanon:"Ливанский вектор — пункты наблюдения",catDomestic:"Конституционные часы и внутреннее давление",catKurdish:"Курдское досье и региональная идентичность",recentArticles:"📰 Новости"},
+        de:{pageTitle:"🇹🇷 STABILITÄTSMONITOR — TÜRKEI",pageSubtitle:"Mehrfaktorenanalyse: NATO-Ausrichtung, Meerengen und Energietransit, Levante-Vektoren und Innenpolitischer Druck",backLink:"← Zurück zum Europa-Dashboard",themeToggle:"Design",lastUpdated:"Letzte Aktualisierung: ",mapTitle:"Türkei — Strategischer Überblick",mapSubtitle:"Interaktive Karte: Montreux-Meerengen, Energietransit-Infrastruktur, Incirlik, Nordsyrien-Präsenz und wichtige Städte.",knowledgeLibraryTitle:"Wissensbibliothek",pulseTitle:"Lebensmittelpreis-Puls",catAlignment:"NATO-Schwenkstaat und strategische Autonomie",catPlaybook:"Einfluss-Strategie im osmanischen Raum",catSyria:"Syrien-Präsenz — der Frühindikator",catLebanon:"Libanon-Vektor — Beobachtungspunkte",catDomestic:"Verfassungsuhr und innenpolitischer Druck",catKurdish:"Kurden-Dossier und regionale Identität",recentArticles:"📰 Nachrichtenberichterstattung"}
+    };
+    function switchLanguage(lang,button){
+        document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));button.classList.add('active');
+        document.querySelectorAll('[data-i18n]').forEach(el=>{
+            const key=el.getAttribute('data-i18n');
+            if(translations[lang]&&translations[lang][key]){
+                if(key==='lastUpdated'&&el.id==='lastUpdated'){const parts=el.textContent.split(': ');const ts=parts.length>1?parts.slice(1).join(': '):'Loading...';el.textContent=translations[lang][key]+ts}
+                else{el.textContent=translations[lang][key]}
+            }
+        });
+    }
+    // ════════════════════════════════════════════════════════════
+    // COMMODITY EXPOSURE CARD — Gold Standard v1.0 renderer
+    // Always-rendered canonical pattern. Uses Europe proxy
+    // (12hr Redis cache → ME backend passthrough) for the canonical data.
+    // Three sections: prose paragraph + adaptive alert banner + tiles grid.
+    // ════════════════════════════════════════════════════════════
+    async function loadCommodity() {
+        const COUNTRY_KEY = 'turkey';
+        const card = document.getElementById('turkeyCommodityCard');
+        if (!card) return;
+
+        let data;
+        try {
+            const r = await fetch(`${API_BASE}/api/europe/commodity/${COUNTRY_KEY}`);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            data = await r.json();
+        } catch (e) {
+            console.warn(`[Turkey Commodity] Fetch failed:`, e.message);
+            const proseEl = document.getElementById('commodityProse');
+            if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+            return;
+        }
+
+        // ── Prose paragraph (always rendered) ──
+        document.getElementById('commodityProse').textContent =
+            data.prose || 'No exposure profile available.';
+
+        // ── Adaptive alert banner ──
+        const banner = document.getElementById('commodityAlertBanner');
+        const alertLevel = (data.alert_level || 'normal').toLowerCase();
+        const alertLabels = {
+            normal:   '✓ NO ACTIVE COMMODITY PRESSURE',
+            elevated: '◐ ELEVATED COMMODITY PRESSURE',
+            high:     '▲ HIGH COMMODITY PRESSURE',
+            surge:    '🚨 COMMODITY PRESSURE SURGE'
+        };
+        const pressure = (data.commodity_pressure || 0);
+        banner.className = `commodity-alert-banner alert-${alertLevel} show`;
+        banner.innerHTML = `
+            <strong>${alertLabels[alertLevel] || alertLabels.normal}</strong>
+            <span class="ab-meta">Pressure score: ${pressure.toFixed(1)} · ${data.commodity_summaries?.length || 0} exposures tracked${data.has_live_data ? '' : ' · awaiting live signals'}</span>
+        `;
+
+        // ── Commodity tiles ──
+        const grid = document.getElementById('commodityGrid');
+        grid.innerHTML = '';
+        (data.commodity_summaries || []).forEach(c => {
+            const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+            const role = (c.role || 'producer').toLowerCase();
+            const rankText = c.rank ? `#${c.rank} globally` : '';
+            const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+
+            let sparklineHtml = '';
+            let priceHtml = '';
+            if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+                const spark = c.sparkline.spark;
+                const min = Math.min(...spark);
+                const max = Math.max(...spark);
+                const range = max - min || 1;
+                const points = spark.map((v, i) => {
+                    const x = (i / (spark.length - 1)) * 100;
+                    const y = 100 - ((v - min) / range) * 100;
+                    return `${x.toFixed(1)},${y.toFixed(1)}`;
+                }).join(' ');
+                const pctChange = c.sparkline.change_pct_30d || 0;
+                const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+                sparklineHtml = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/></svg>`;
+                const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+                const arrow = pctChange >= 0 ? '▲' : '▼';
+                priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+            }
+
+            const tile = document.createElement('a');
+            tile.className = 'commodity-pill';
+            tile.href = `commodities.html#${c.commodity}`;
+            tile.innerHTML = `
+                <div class="commodity-pill-header">
+                    <div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                    <div style="flex:1;">
+                        <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                        ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                    </div>
+                </div>
+                <div class="commodity-pill-row">
+                    <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                    <span class="commodity-pill-role-badge">${role}</span>
+                    ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+                </div>
+                ${priceHtml}
+                ${sparklineHtml}
+                ${c.note ? `<div class="commodity-pill-note">${c.note.slice(0, 180)}${c.note.length > 180 ? '…' : ''}</div>` : ''}
+            `;
+            grid.appendChild(tile);
+        });
+
+        // ── Top signals footer ──
+        const tsEl = document.getElementById('commodityTopSignals');
+        const topSignals = data.top_signals || [];
+        if (topSignals.length > 0) {
+            const items = topSignals.slice(0, 3).map(s => `
+                <a href="${s.article_url}" target="_blank" rel="noopener">
+                    ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                    <span class="ts-source">— ${s.source}</span>
+                </a>
+            `).join('');
+            tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+            tsEl.style.display = 'block';
+        } else {
+            tsEl.style.display = 'none';
+        }
+
+        // ── Cache freshness note (Europe proxy artifact) ──
+        const cacheStatus = data.cache_status || 'unknown';
+        const cachedAt = data.proxy_cached_at || data.last_updated;
+        let cacheText = '';
+        if (cachedAt) {
+            const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
+            cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
+        }
+        const cacheEl = document.getElementById('commodityCacheNote');
+        if (cacheEl) cacheEl.textContent = cacheText;
+    }
+
+    // ── RHETORIC PRESSURE (live tracker summary card) ──
+    async function loadRhetoric() {
+        const ALERT_COLORS = { normal: '#6b7280', elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
+        const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, surge: 3, critical: 4 };
+        const LEVEL_LABELS = { 0: 'Baseline', 1: 'Rhetoric', 2: 'Warning', 3: 'Confrontation', 4: 'Coercion', 5: 'Active Conflict' };
+        try {
+            const r = await fetch(`${API_BASE}/api/rhetoric/turkey`);
+            if (!r.ok) return;
+            const d = await r.json();
+            const score = d.theatre_score || d.pressure_score || 0;
+            const alert = (d.alert_level || 'normal').toLowerCase();
+            const alertColor = ALERT_COLORS[alert] || '#6b7280';
+            const level = ALERT_TO_LEVEL[alert] !== undefined ? ALERT_TO_LEVEL[alert] : 0;
+            const levelLabel = LEVEL_LABELS[level] || 'Baseline';
+            // Calm-blue baseline (Jun 2026): gray reads as "no data". A healthy
+            // baseline renders arctic blue; L1-L5 keep the canonical palette.
+            const displayColor = (alert === 'normal') ? '#38bdf8' : alertColor;
+
+            // ── Green banner (top) ──
+            const dev = document.getElementById('turkeyTrackerInDev');
+            if (dev) dev.style.display = 'none';
+            const card = document.getElementById('rhetoricPressureCard');
+            if (card) {
+                card.style.display = 'flex';
+                document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
+                const pill = document.getElementById('rhetoricPill');
+                pill.textContent = alert.toUpperCase();
+                pill.style.background = displayColor;
+                const sw = d.so_what || {};
+                document.getElementById('rhetoricHeadline').textContent = sw.scenario || 'Turkey Alignment Tracker — Live';
+                const rl = d.red_lines || {};
+                const dt = d.diplomatic_track || {};
+                const breached = rl.breached_count || 0;
+                const approaching = rl.approaching_count || 0;
+                const greenActive = (d.green_lines || {}).active_count || 0;
+                document.getElementById('rhetoricDetail').textContent =
+                    `${breached} breached · ${approaching} approaching · ${greenActive} active diplomatic signals · Diplomatic track: ${dt.scenario || 'No Active Track'} (${dt.score || 0} signal${(dt.score || 0) === 1 ? '' : 's'}). ${sw.assessment || ''}`;
+            }
+
+            // ── Turkey alignment tracker detail card ──
+            const detailCard = document.getElementById('turkeyRhetoricCard');
+            if (detailCard) {
+                detailCard.style.display = 'block';
+                const scoreEl = document.getElementById('turkeyRhetoricScoreFull');
+                if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = displayColor; }
+                const lvlEl = document.getElementById('turkeyRhetoricLevelLabel');
+                if (lvlEl) { lvlEl.textContent = 'L' + level + ' \u2014 ' + levelLabel; lvlEl.style.background = displayColor; }
+
+                // Body: top_signals (preferred) or fallback to so_what + counts
+                const signalEl = document.getElementById('turkeyRhetoricSignalList');
+                if (signalEl) {
+                    const signals = (d.top_signals || []).slice(0, 5);
+                    if (signals.length) {
+                        // Each signal carries its own temperature -- chip + left
+                        // border take the signal's level color even when the card
+                        // overall sits at baseline (SURGE glows red, diplomatic green).
+                        const LVL_COLORS = { 0:'#6b7280', 1:'#3b82f6', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444', 5:'#dc2626',
+                                             normal:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', critical:'#dc2626', surge:'#ef4444' };
+                        signalEl.innerHTML = signals.map(s => {
+                            const txt = s.short_text || s.text || s.long_text || '';
+                            const cat = s.category ? s.category.toUpperCase().replace(/_/g, ' ') : '';
+                            let sc = s.color || LVL_COLORS[s.level];
+                            if (!sc || sc === '#6b7280') sc = '#38bdf8';
+                            if (s.category === 'diplomatic') sc = '#10b981';
+                            return `<div class="rhetoric-signal-row" style="border-left:3px solid ${sc};padding-left:9px;">${cat ? `<span class="rhetoric-signal-label" style="color:${sc};">${cat}</span>` : ''}${txt}</div>`;
+                        }).join('');
+                    } else {
+                        // Fallback: red/green/diplomatic counts as actor-row entries
+                        const rl = d.red_lines || {};
+                        const gl = d.green_lines || {};
+                        const dt = d.diplomatic_track || {};
+                        const sw = d.so_what || {};
+                        const rows = [
+                            { label: '🚨 Red Lines Breached',     val: rl.breached_count || 0,   color: '#dc2626' },
+                            { label: '⚠️ Red Lines Approaching',  val: rl.approaching_count || 0, color: '#f59e0b' },
+                            { label: '🕊️ Active Diplomatic',      val: gl.active_count || 0,     color: '#10b981' },
+                            { label: '📊 Diplomatic Signals',     val: (dt.score || 0), color: '#38bdf8' },
+                        ];
+                        let html = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
+                        if (sw.scenario) html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--card-border);font-style:italic;color:var(--text-muted);font-size:11px;line-height:1.5;">${sw.scenario}</div>`;
+                        signalEl.innerHTML = html;
+                    }
+                }
+
+                // Scan info footer
+                const scanEl = document.getElementById('turkeyRhetoricScanInfo');
+                if (scanEl && d.cached_at) {
+                    const ago = Math.round((Date.now() - new Date(d.cached_at)) / 60000);
+                    const agoStr = ago < 60 ? `${ago}m` : `${Math.round(ago / 60)}h`;
+                    scanEl.textContent = `Last scan: ${agoStr} ago · ${d.total_articles || 0} articles analyzed`;
+                }
+            }
+        } catch(e) { console.warn('[Turkey] Alignment tracker fetch pending (in development):', e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        startLoadingProgress();
+        document.getElementById('lastUpdated').textContent='Last updated: '+new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+        initMap();
+        loadRhetoric();
+        Promise.all([loadFoodPulse(),loadNews(),loadCommodity()]).then(()=>hideLoadingOverlay()).catch(()=>hideLoadingOverlay());
+    });
+    </script>
+</body>
+</html>
 }
 body::after {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
