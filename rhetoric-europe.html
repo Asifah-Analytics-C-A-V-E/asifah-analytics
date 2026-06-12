@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Europe Rhetoric Monitor v1.0.0 — April 2026 -->
+<!-- Asifah Analytics — Europe Rhetoric Monitor v1.2.0 — June 2026 -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <title>Europe Rhetoric Monitor — Asifah Analytics</title>
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -67,7 +67,7 @@
         width: 110vmin; height: 110vmin;
         min-width: 800px; min-height: 800px;
         max-width: 1400px; max-height: 1400px;
-        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
         background-size: contain; background-repeat: no-repeat; background-position: center;
         opacity: var(--watermark-opacity); filter: var(--watermark-filter);
         z-index: 0; pointer-events: none; user-select: none;
@@ -216,6 +216,8 @@
     .bluf-signal-item.gpi-only { border-left-width:3px; border-left-color:#f59e0b; background:rgba(245,158,11,0.06); }
     [data-theme="dark"] .bluf-signal-item.gpi-only { background:rgba(245,158,11,0.05); }
     .bluf-footer { font-size:0.6rem; color:var(--text-muted); font-family:'Courier New',monospace; margin-top:10px; font-style:italic; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; }
+    .bluf-methodology { font-size:0.65rem; color:var(--text-muted); font-family:'Times New Roman',Times,serif; font-style:italic; line-height:1.5; margin-top:10px; padding-top:8px; border-top:1px dashed var(--card-border); }
+    .bluf-methodology:empty { display:none; }
     .bluf-loading { text-align:center; padding:16px; font-size:0.72rem; color:var(--text-muted); font-family:'Courier New',monospace; letter-spacing:1px; }
 
     /* ── TRACKER BANNERS ── */
@@ -303,7 +305,7 @@
 <header>
     <div class="header-logo-wrap">
         <a href="europe.html" class="back-link">← Back to Europe</a>
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
              alt="Asifah Analytics Logo" class="header-logo"/>
     </div>
     <div class="header-content">
@@ -327,10 +329,10 @@
 <!-- NAV SIDEBAR -->
 <nav class="nav-sidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <div class="nav-btn inactive-nav">
+    <a href="africa.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">🔒 Future</span>
-    </div>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <a href="asia.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
         <span class="nav-btn-status">● Live</span>
@@ -395,6 +397,16 @@
         <span class="nav-btn-status">● Live</span>
     </a>
     <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Turkey</div>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🇹🇷 Alignment Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="turkey-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🇹🇷 Stability Index</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Ukraine</div>
     <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn">
         <span class="nav-btn-label">🇺🇦 Pressure Tracker</span>
@@ -422,7 +434,7 @@
     <div class="posture-right" id="postureStats"></div>
 </div>
 
-<!-- EUROPE BLUF — placeholder until europe_regional_bluf.py is built -->
+<!-- EUROPE BLUF — fed by europe_regional_bluf.py (/api/rhetoric/europe/bluf) -->
 <div class="bluf-card" id="blufCard">
     <div id="blufContent">
         <div class="bluf-header">
@@ -433,6 +445,7 @@
             Loading Europe regional assessment...
         </div>
         <div class="bluf-signals" id="blufSignals"></div>
+        <div class="bluf-methodology" id="blufMethodology"></div>
         <div class="bluf-footer">
             <span id="blufTimestamp"></span>
             <span>Asifah Analytics · Europe Regional Synthesis · Open-source signals only</span>
@@ -460,10 +473,10 @@
 <footer>
     <div>Data Sources: Google News RSS (EN/DA/RU/UK), GDELT, Telegram OSINT channels, Nitter/X feeds</div>
     <div style="margin-top:6px;font-size:0.85em;">
-        Escalation levels: 0 Baseline · 1 Rhetoric · 2 Pressure · 3 Crisis · 4 Confrontation · 5 Rupture
+        Escalation levels: 0 Monitoring · 1 Rhetoric · 2 Warning · 3 Direct Threat · 4 Incident · 5 Active Conflict
     </div>
     <div style="margin-top:15px;padding:15px;background:var(--article-bg);border-radius:8px;">
-        <div style="font-size:0.9em;margin-bottom:4px;">Asifah Analytics — Europe Rhetoric Monitor v1.0.0</div>
+        <div style="font-size:0.9em;margin-bottom:4px;">Asifah Analytics — Europe Rhetoric Monitor v1.2.0</div>
         <div style="font-size:0.8em;">Updated every 6 hours · Not for operational use</div>
     </div>
     <div style="margin-top:20px;padding:15px;background:rgba(56,189,248,0.06);border-radius:8px;">
@@ -482,13 +495,17 @@
 <script>
     const EUROPE_BACKEND = 'https://asifa-europe-backend.onrender.com';
 
+    // v1.2.0: fallback labels aligned to the Europe BLUF backend
+    // (ESCALATION_LABELS in europe_regional_bluf.py) so the posture banner
+    // and the BLUF card speak the same language. Trackers that emit their
+    // own theatre_label still take precedence in renderTrackerBanner.
     const ESCALATION_LEVELS = {
-        0: { label:'Baseline',      color:'#6b7280' },
-        1: { label:'Rhetoric',      color:'#3b82f6' },
-        2: { label:'Pressure',      color:'#f59e0b' },
-        3: { label:'Crisis',        color:'#f97316' },
-        4: { label:'Confrontation', color:'#ef4444' },
-        5: { label:'Rupture',       color:'#dc2626' },
+        0: { label:'Monitoring',      color:'#6b7280' },
+        1: { label:'Rhetoric',        color:'#3b82f6' },
+        2: { label:'Warning',         color:'#f59e0b' },
+        3: { label:'Direct Threat',   color:'#f97316' },
+        4: { label:'Incident',        color:'#ef4444' },
+        5: { label:'Active Conflict', color:'#dc2626' },
     };
 
     // ── TRACKER DEFINITIONS ──
@@ -529,6 +546,15 @@
             vectors:    ['Nuclear', 'Ground Ops', 'NATO Flank', 'Arctic', 'Hybrid'],
             summaryUrl: EUROPE_BACKEND + '/api/rhetoric/russia/summary',
             url:        'https://www.asifahanalytics.com/rhetoric-russia.html',
+        },
+        {
+            id:         'turkey',
+            name:       'Turkey Alignment Tracker',
+            flag:       '🇹🇷',
+            actors:     'Erdogan Government · Turkish Armed Forces · NATO Track · Russia Track · Israel Friction · Syria Vector',
+            vectors:    ['NATO Anchor', 'Strategic Autonomy', 'Friction Index', 'Lebanon Vector', 'Syria Lead'],
+            summaryUrl: EUROPE_BACKEND + '/api/rhetoric/turkey/summary',
+            url:        'https://www.asifahanalytics.com/rhetoric-turkey.html',
         },
         {
             id:         'ukraine',
@@ -622,9 +648,9 @@
         const elevated = levels.filter(l => l >= 3).length;
 
         let postureLabel, postureColor;
-        if (maxLevel >= 4)      { postureLabel = 'ELEVATED — CONFRONTATION';  postureColor = '#ef4444'; }
-        else if (maxLevel >= 3) { postureLabel = 'ELEVATED — CRISIS';          postureColor = '#f97316'; }
-        else if (maxLevel >= 2) { postureLabel = 'PRESSURE ACTIVE';            postureColor = '#f59e0b'; }
+        if (maxLevel >= 4)      { postureLabel = 'ELEVATED — INCIDENT';       postureColor = '#ef4444'; }
+        else if (maxLevel >= 3) { postureLabel = 'WARNING — DIRECT THREAT';    postureColor = '#f97316'; }
+        else if (maxLevel >= 2) { postureLabel = 'MONITORING — WARNING';       postureColor = '#f59e0b'; }
         else if (maxLevel >= 1) { postureLabel = 'MONITORING — RHETORIC';      postureColor = '#3b82f6'; }
         else                    { postureLabel = 'BASELINE';                   postureColor = '#6b7280'; }
 
@@ -698,6 +724,13 @@
                 const dt = new Date(data.generated_at);
                 document.getElementById('blufTimestamp').textContent =
                     `Generated: ${dt.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}${data.from_cache?' (cached)':''}`;
+            }
+
+            // Methodology note (backend v3.4+) — plain-language guide to what
+            // the scores measure. Hidden via :empty when backend predates it.
+            if (data.methodology_note) {
+                const mEl = document.getElementById('blufMethodology');
+                if (mEl) mEl.textContent = data.methodology_note;
             }
         } catch (e) {
             console.error('Europe BLUF load error:', e);
@@ -780,89 +813,13 @@
     }
 
     // ── INIT ──
-    // ── Three-Altitude Synthesis: GPI augmentation for Europe ──
-    // Until europe_regional_bluf.py ships, the Europe BLUF is populated
-    // entirely from GPI signals filtered for region='europe'. When the
-    // regional BLUF backend exists, this becomes a merge (GPI-only at top,
-    // matched signals get inline badge, regional-only render normally).
-    const ME_BACKEND_FOR_GPI = 'https://asifah-backend.onrender.com';
-    const REGION_KEY = 'europe';
-    function _gpiMatchKey(s) {
-        return ((s && s.short_text) || (s && s.text) || '').slice(0, 40).toLowerCase().trim();
-    }
-    async function _fetchGpiForRegion(regionKey) {
-        try {
-            const resp = await fetch(ME_BACKEND_FOR_GPI + '/api/gpi', { cache: 'no-store' });
-            if (!resp.ok) return null;
-            const data = await resp.json();
-            if (!data.success) return null;
-            const filtered = (data.top_signals || []).filter(s => {
-                const r = (s.region || s.theatre || '').toString().toLowerCase();
-                return r === regionKey;
-            });
-            return { signals: filtered, generated_at: data.generated_at, from_cache: data.from_cache };
-        } catch (e) {
-            console.warn('[GPI augment] fetch error:', e);
-            return null;
-        }
-    }
-    function _renderSignalItem(sig, opts) {
-        opts = opts || {};
-        const div = document.createElement('div');
-        div.className = 'bluf-signal-item' + (opts.gpiOnly ? ' gpi-only' : '');
-        div.style.borderLeftColor = opts.gpiOnly ? '#f59e0b' : (sig.color || '#6b7280');
-        const text     = sig.short_text || sig.text || '';
-        const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-        const gpiTip   = opts.gpiTooltip ? opts.gpiTooltip.replace(/"/g, '&quot;') : '';
-        const badge = opts.gpiFlagged
-            ? `<span class="gpi-badge" title="Also flagged by Global Pressure Index — ${gpiTip}">🌍 GPI${opts.gpiOnly ? ' · global' : ''}</span>`
-            : '';
-        div.innerHTML = `${badge}<span class="bluf-signal-icon">${sig.icon || '⚡'}</span>
-            <span class="bluf-signal-text" style="color:${opts.gpiOnly ? '#f59e0b' : (sig.color || 'var(--text-secondary)')};" title="${longText}">${text}</span>`;
-        return div;
-    }
-    async function loadEuropeBluf() {
-        try {
-            const gpi = await _fetchGpiForRegion(REGION_KEY);
-            const signalsEl = document.getElementById('blufSignals');
-            const proseEl   = document.getElementById('blufProse');
-            const pill      = document.getElementById('blufPosturePill');
-
-            if (!gpi || gpi.signals.length === 0) {
-                proseEl.textContent = 'No Europe signals currently elevated to Global Pressure Index. Regional BLUF synthesis pending — europe_regional_bluf.py module in development.';
-                pill.textContent = 'STABLE';
-                pill.style.background = '#16a34a';
-                signalsEl.innerHTML = '';
-                return;
-            }
-
-            proseEl.textContent = `Global Pressure Index has flagged ${gpi.signals.length} Europe signal${gpi.signals.length === 1 ? '' : 's'} as globally significant. Regional synthesis module in development; all entries below are surfaced from GPI.`;
-            pill.textContent = 'GPI ACTIVE';
-            pill.style.background = '#f59e0b';
-
-            signalsEl.innerHTML = '';
-            gpi.signals.forEach(g => {
-                signalsEl.appendChild(_renderSignalItem(g, {
-                    gpiFlagged: true, gpiOnly: true,
-                    gpiTooltip: g.long_text || g.short_text || ''
-                }));
-            });
-
-            if (gpi.generated_at) {
-                const dt = new Date(gpi.generated_at);
-                document.getElementById('blufTimestamp').textContent =
-                    `Generated: ${dt.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}${gpi.from_cache?' (cached)':''}`;
-            }
-        } catch (e) {
-            console.warn('[Europe BLUF]', e);
-        }
-    }
-
+    // v1.2.0 (Jun 2026): removed the pre-backend GPI-augmentation placeholder
+    // (loadEuropeBluf + helpers). It raced updateBluf() for the same DOM
+    // elements and could overwrite the real backend BLUF with stale
+    // "module in development" text. updateBluf() is now the sole writer.
     loadTheme();
-    loadEuropeBluf();
     loadAll();
 
-    setInterval(loadEuropeBluf, 30 * 60 * 1000);
     setInterval(loadAll, 30 * 60 * 1000);
 </script>
 </body>
