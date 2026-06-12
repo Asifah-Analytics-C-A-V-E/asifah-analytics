@@ -19,7 +19,9 @@
     <title>Iran Stability & Crisis Tracker | Asifah Analytics v3.2.0</title>
     
     <!-- Favicon using Asifah Analytics logo -->
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <!-- Chart.js for Financial Pulse sparklines (donor: us-stability.html) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
@@ -32,45 +34,45 @@
 
         /* CSS Variables for Light/Dark Mode */
         :root {
-            --bg-color: #f5f5f5;
+            --bg-color: #f8fafc;
             --container-bg: #ffffff;
             --card-bg: #ffffff;
-            --card-border: #e1e8ed;
-            --text-primary: #2c3e50;
-            --text-secondary: #7f8c8d;
-            --text-muted: #95a5a6;
-            --header-gradient-start: #1e3a5f;
-            --header-gradient-end: #2c5282;
-            --header-text: #ffffff;
+            --card-border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --header-gradient-start: #f1f5f9;
+            --header-gradient-end: #cbd5e1;
+            --header-text: #0f172a;
             --metric-bg: #ffffff;
             --metric-hover-shadow: rgba(0,0,0,0.15);
-            --article-bg: #f8f9fa;
-            --article-hover: #e8f4f8;
-            --watermark-opacity: 0.25;
-            --loading-overlay-bg: rgba(245, 245, 245, 0.98);
-            --loading-spinner-bg: rgba(100, 149, 237, 0.2);
-            --iran-accent: #6495ED;
+            --article-bg: #f1f5f9;
+            --article-hover: #e2e8f0;
+            --watermark-opacity: 0.5; --watermark-size: 500px;
+            --loading-overlay-bg: rgba(248,250,252,0.98);
+            --loading-spinner-bg: rgba(56,189,248,0.2);
+            --iran-accent: #0ea5e9;
         }
 
         [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --container-bg: #2d2d2d;
-            --card-bg: #2d2d2d;
-            --card-border: #404040;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
-            --header-gradient-start: #1e3a5f;
-            --header-gradient-end: #2c5282;
-            --header-text: #ffffff;
-            --metric-bg: #2d2d2d;
-            --metric-hover-shadow: rgba(255,255,255,0.1);
-            --article-bg: #353535;
-            --article-hover: #404040;
-            --watermark-opacity: 0.15;
-            --loading-overlay-bg: rgba(26, 26, 26, 0.98);
-            --loading-spinner-bg: rgba(100, 149, 237, 0.3);
-            --iran-accent: #6495ED;
+            --bg-color: #060d1a;
+            --container-bg: #0d1b2e;
+            --card-bg: #0d1b2e;
+            --card-border: #1e3a5f;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #4a7090;
+            --header-gradient-start: #060d1a;
+            --header-gradient-end: #1e3a5f;
+            --header-text: #e2f0fb;
+            --metric-bg: #0d1b2e;
+            --metric-hover-shadow: rgba(56,189,248,0.18);
+            --article-bg: #0a1525;
+            --article-hover: #112038;
+            --watermark-opacity: 1; --watermark-size: 800px;
+            --loading-overlay-bg: rgba(6,13,26,0.98);
+            --loading-spinner-bg: rgba(56,189,248,0.2);
+            --iran-accent: #38bdf8;
         }
 
         body {
@@ -85,23 +87,7 @@
         }
 
         /* Watermark Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 1400px;
-            height: 1400px;
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: var(--watermark-opacity);
-            z-index: 0;
-            pointer-events: none;
-            user-select: none;
-        }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: var(--watermark-size); height: var(--watermark-size); opacity: var(--watermark-opacity); pointer-events: none; z-index: 0; background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size: 135%; background-repeat: no-repeat; background-position: center; border-radius: 50%; transition: all 0.4s ease; }
 
         /* Loading Overlay */
         .loading-overlay {
@@ -1525,9 +1511,19 @@
             border-color: rgba(56,189,248,0.5);
             background: linear-gradient(135deg, rgba(56,189,248,0.12) 0%, rgba(14,165,233,0.08) 100%);
         }
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
         @media (max-width: 1199px) {
-            .nav-sidebar { display: none; }
-            .page-with-sidebar { display: block; }
+            .menu-toggle { display: block; }
+            .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+                overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+                background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .nav-sidebar.open { transform: translateX(0); }
         }
 
         /* ── Commodity Exposure Card — Gold Standard v1.0 (May 6, 2026) ── */
@@ -1567,6 +1563,197 @@
         .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
         .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
         .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+
+        /* ── Commodity v2.0 additions (Jun 12 2026): sanctions strip,
+           convergence alert, strategic linkage ── */
+        .sanctions-watch-strip {
+            display: none; margin: 12px 0; padding: 12px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, rgba(245,158,11,0.14) 0%, rgba(217,119,6,0.10) 100%);
+            border: 1px solid #f59e0b; border-left: 4px solid #f59e0b;
+            font-size: 12px; line-height: 1.55; color: var(--text-secondary);
+        }
+        .sanctions-watch-strip.show { display: block; }
+        .sanctions-watch-strip .sw-title { color: #f59e0b; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; font-size: 11px; margin-bottom: 6px; }
+        .sanctions-watch-strip a { color: var(--text-secondary); text-decoration: none; display: block; padding: 2px 0; }
+        .sanctions-watch-strip a:hover { color: #f59e0b; }
+        .commodity-convergence-alert {
+            display: none; margin: 12px 0; padding: 12px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, rgba(239,68,68,0.14) 0%, rgba(190,18,60,0.10) 100%);
+            border: 1px solid #ef4444; border-left: 4px solid #ef4444;
+            font-size: 12px; line-height: 1.55;
+        }
+        .commodity-convergence-alert.active { display: block; }
+        .commodity-convergence-alert .cca-title { font-weight: 800; letter-spacing: 0.5px; color: #fca5a5; margin-bottom: 5px; }
+        .commodity-convergence-alert .cca-detail { color: var(--text-secondary); }
+        .strategic-linkage {
+            margin-top: 14px; padding: 12px 14px;
+            background: rgba(56,189,248,0.05); border-left: 3px solid #38bdf8;
+            border-radius: 6px; font-size: 11.5px; line-height: 1.55; color: var(--text-secondary);
+        }
+        .strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+
+        /* ── FINANCIAL PULSE (nyse-card canon — donor: us-stability.html) ── */
+/* ── NYSE / U.S. EQUITY INDICES CARD (v1.0.0 May 27 2026) ── */
+        /* Three equal cards side by side: SPX / DJIA / IXIC.
+         * Mobile: stacks vertically below 768px. Mirrors TASE pattern
+         * from israel-stability.html with Chart.js mini sparklines. */
+        .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .nyse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .nyse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nyse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nyse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .nyse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+
+        .nyse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .nyse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .nyse-grid { grid-template-columns: 1fr; }
+        }
+
+        .nyse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .nyse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .nyse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .nyse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .nyse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .nyse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .nyse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+
+        .nyse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .nyse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+
+        .nyse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nyse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        .capital-flight-strip {
+            display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(139,92,246,0.14) 100%);
+            border: 1px solid #a855f7; border-left: 4px solid #a855f7;
+            font-size: 12px; line-height: 1.55; color: #ddd6fe;
+        }
+        .capital-flight-strip.show { display: block; }
+        .capital-flight-strip .cf-title { color: #c4b5fd; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; font-size: 11px; margin-bottom: 5px; }
         .commodity-alert-banner strong { letter-spacing: 1.5px; }
         .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
 
@@ -1915,6 +2102,9 @@
     </style>
 </head>
 <body>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
@@ -1955,7 +2145,7 @@
         <header>
             <a href="index.html" class="back-link" data-i18n="backLink">← Back to Dashboard</a>
             
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
             
             <div class="header-content">
                 <h1 id="main-title" data-i18n="pageTitle">🇮🇷 IRAN PROTESTS TRACKER</h1>
@@ -1983,12 +2173,12 @@
         <div class="page-with-sidebar">
 
         <!-- ═══ GOLD STANDARD SIDEBAR (matches GPI v2.0 pattern) ═══ -->
-        <nav class="nav-sidebar">
+        <nav class="nav-sidebar" id="navSidebar">
             <div class="nav-sidebar-label">Dashboards</div>
-            <div class="nav-btn inactive-nav">
+            <a href="africa.html" class="nav-btn active-nav">
                 <span class="nav-btn-label">🌍 Africa</span>
-                <span class="nav-btn-status">🔒 Future</span>
-            </div>
+                <span class="nav-btn-status">● Live</span>
+            </a>
             <a href="asia.html" class="nav-btn active-nav">
                 <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
                 <span class="nav-btn-status">● Live</span>
@@ -2012,6 +2202,10 @@
             </a>
             <a href="commodities.html" class="nav-btn commodities-btn">
                 <span class="nav-btn-label">📊 Commodities Tracker</span>
+                <span class="nav-btn-status">● Live</span>
+            </a>
+            <a href="gpi.html" class="nav-btn military-btn">
+                <span class="nav-btn-label">🌐 Global Pressure</span>
                 <span class="nav-btn-status">● Live</span>
             </a>
             <div class="nav-divider"></div>
@@ -2154,10 +2348,45 @@
             <div class="metric-title">📊 IRAN COMMODITY EXPOSURE</div>
             <div class="commodity-prose" id="commodityProse">Loading exposure profile…</div>
             <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+
+            <!-- SANCTIONS WATCH (v2.0) — lights up when sanctions/blockade signals appear -->
+            <div class="sanctions-watch-strip" id="sanctionsWatchStrip">
+                <div class="sw-title">🛑 Sanctions &amp; Blockade Watch</div>
+                <div id="sanctionsWatchBody"></div>
+            </div>
+
+            <!-- OIL × HORMUZ CONVERGENCE (v2.0) -->
+            <div class="commodity-convergence-alert" id="commodityConvergenceAlertOil">
+                <div class="cca-title">⚡ Oil × Hormuz Convergence</div>
+                <div class="cca-detail">Oil revenue is the regime's primary lifeline — and it is currently throttled from both ends: Kharg Island terminal struck, the Strait of Hormuz closed to normal commercial traffic with leakage flows only. Elevated oil-pressure signals while export capacity itself is the central US-Iran negotiation lever is the compound pattern that has historically preceded both sanctions-relief deals and escalation cycles.</div>
+            </div>
+
             <div class="commodity-grid" id="commodityGrid"></div>
             <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+
+            <div class="strategic-linkage">
+                <strong>🎯 Strategic Linkage:</strong> Oil is the regime's fiscal lifeline — pre-war exports of ~1.5M bpd have collapsed to near-zero with Kharg Island struck and Hormuz closed to normal traffic. What remains moves at deep sanctions discounts, largely to Chinese buyers via shadow-fleet transshipment. Export capacity is therefore not just an economic indicator: it is the central bargaining chip in US-Iran ceasefire/MOU negotiations. Watch: Kharg repair signals, shadow-fleet AIS anomalies, sanctions-relief language in negotiation coverage, black-market rial trajectory, and the TEDPIX capital-flight pattern in the Financial Pulse below.
+            </div>
             <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
                 <a href="commodities.html" style="color:var(--iran-accent);text-decoration:none;font-size:12px;font-weight:600;">View Full Commodity Tracker →</a>
+            </div>
+        </div>
+
+        <!-- ═══ FINANCIAL PULSE CARD (live — iran_financial_pulse.py v1.0.0, Jun 12 2026) ═══ -->
+        <div class="nyse-card" id="financialPulseCard">
+            <div class="nyse-card-header">
+                <div class="nyse-card-title">📈 IRAN FINANCIAL PULSE</div>
+                <span class="nyse-status-pill" id="pulseStatusPill">Loading...</span>
+            </div>
+            <div class="nyse-prose">
+                Three live signals tracking Iran's wartime financial stress. <strong>TEDPIX</strong> is the Tehran Stock Exchange all-share — but read it inverted from every other market on this platform: it is a <strong>rial-denominated inflation hedge</strong>, so TEDPIX rising while the rial falls signals capital flight, not confidence. <strong>USD/IRR</strong> is the black-market street rate (the official rate is fictional) — INVERTED polarity, rising = rial collapse. <strong>Brent</strong> is Iran's export benchmark; what little crude moves sells at sanctions discounts off Brent-linked formulas. TSE trades the Iranian week (Sat–Wed). Updated every 12 hours.
+            </div>
+            <div class="nyse-grid" id="pulseGrid">
+                <div class="nyse-empty-state">Loading financial pulse…</div>
+            </div>
+            <div class="capital-flight-strip" id="capitalFlightStrip">
+                <div class="cf-title">🏃 Capital-Flight Convergence Detected</div>
+                <div id="capitalFlightBody"></div>
             </div>
         </div>
 
@@ -2553,6 +2782,23 @@
             </h2>
             
             <div class="knowledge-categories">
+                <!-- Operation Epic Fury / 2026 Iran-US War -->
+                <div class="knowledge-card collapsed" id="card-epicfury">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('epicfury')">
+                        <div class="knowledge-header-title">
+                            <span class="category-icon">⚔️</span>
+                            <span>Operation Epic Fury &amp; the 2026 Iran-US War</span>
+                        </div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>Operation Epic Fury</strong> — the US military campaign against Iran, conducted alongside Israel's Operation Roaring Lion — began in the final days of February 2026, with sustained major combat operations from March 2. <strong>As of this update (June 12, 2026), the conflict remains ongoing</strong> despite rumored agreements on a renewed ceasefire and a memorandum of understanding under negotiation.</p>
+                        <p>This has been a <strong>region-shaping event</strong>: it has driven stability scores across the Middle East theater, sustained elevated kinetic activity (strikes, air defense engagements, maritime incidents), and reordered US geopolitical relationships — with Gulf partners, with Israel, and within the broader sanctions coalition. The Strait of Hormuz closure, the Kharg Island strike, and the succession of Supreme Leader Mujtaba Khamenei all trace to this conflict.</p>
+                        <p><em style="color:var(--text-muted);">For live indicators, read this page's Regime Stability Index, Conflict Casualties, and Financial Pulse cards — all of which track the war's ongoing effects. Reopening of Hormuz and sanctions-relief language are the lead signals to watch in ceasefire/MOU coverage.</em></p>
+                        <div class="open-source-disclaimer">* Based on open-source reporting. Casualty and damage figures remain preliminary while the conflict is active.</div>
+                    </div>
+                </div>
+
                 <!-- Nuclear Program -->
                 <div class="knowledge-card collapsed" id="card-nuclear">
                     <div class="knowledge-header" onclick="toggleKnowledgeCard('nuclear')">
@@ -2756,23 +3002,16 @@
         </div>
 
         <!-- ========== FOOTER ========== -->
-        <footer>
-            <p><strong>Asifah Analytics v3.0.0</strong></p>
-            <p><strong>Data Sources:</strong> NewsAPI for aggregating news sources, GDELT for Arabic, Hebrew, and Farsi content, Iran Wire and HRANA RSS feeds, Reddit for community intelligence, plus other OSINT sources.</p>
-            <p><strong>For inquiries, contact:</strong> <a href="/cdn-cgi/l/email-protection#40213329262128212e212c393429233300272d21292c6e232f2d" style="color: var(--iran-accent); text-decoration: none;"><span class="__cf_email__" data-cfemail="5534263c33343d343b34392c213c3626153238343c397b363a38">[email&#160;protected]</span></a></p>
-            <p style="margin-top: 10px; font-size: 11px;">Updated every 30 minutes | Not for operational use</p>
-            
-            <div class="support-footer">
-                <p>
-                    If you find Asifah Analytics useful and want to support ongoing development, you can 
-                    <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener noreferrer">☕ buy me a coffee</a>
-                </p>
+        <footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+            <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — IRAN</div>
+            <div style="margin-bottom:6px;">Backend: asifah-backend.onrender.com · Scans refresh ~every 30 minutes · Financial pulse every 12 hours</div>
+            <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT (EN/AR/HE/FA) · NewsAPI · IranWire + HRANA RSS · Reddit · bonbast (black-market IRR) · TSE mirrors (TEDPIX) · Yahoo Finance (Brent)</div>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+                <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+                <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
             </div>
-
-            <div class="copyright-footer">
-                © 2025 RCGG. All Rights Reserved. Proprietary and Confidential.<br>
-                Unauthorized use, reproduction, or distribution prohibited.
-            </div>
+            <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+            <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
         </footer>
 
         </main>
@@ -3192,6 +3431,129 @@
                 tsEl.style.display = 'block';
             } else {
                 tsEl.style.display = 'none';
+            }
+
+            // ── v2.0: Sanctions & Blockade Watch (Jun 12 2026) ──
+            // Lights up when sanctions-class language appears in live signals.
+            const SANCTION_RX = /sanction|blockade|embargo|opec|export|squeeze|shadow fleet|price cap|snapback|seiz/i;
+            const swStrip = document.getElementById('sanctionsWatchStrip');
+            const swBody = document.getElementById('sanctionsWatchBody');
+            if (swStrip && swBody) {
+                const hits = topSignals.filter(s => SANCTION_RX.test((s.article_title || '') + ' ' + (s.source || '')));
+                if (hits.length > 0) {
+                    swBody.innerHTML = hits.slice(0, 3).map(s =>
+                        `<a href="${s.article_url}" target="_blank" rel="noopener">▸ ${s.article_title} <span style="color:var(--text-muted);">— ${s.source}</span></a>`
+                    ).join('') +
+                    '<div style="margin-top:6px;color:var(--text-muted);font-size:11px;">Sanctions-class signals detected in the live commodity feed. Sanctions enforcement and relief language are lead indicators for the US-Iran negotiation track.</div>';
+                    swStrip.classList.add('show');
+                } else {
+                    swStrip.classList.remove('show');
+                }
+            }
+
+            // ── v2.0: Oil × Hormuz convergence activation ──
+            const oilTile = (data.commodity_summaries || []).find(c => ['crude_oil', 'oil', 'crude'].includes(c.commodity));
+            const oilAlert = document.getElementById('commodityConvergenceAlertOil');
+            if (oilAlert && oilTile && oilTile.global_alert_level && oilTile.global_alert_level.toLowerCase() !== 'normal') {
+                oilAlert.classList.add('active');
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // FINANCIAL PULSE — TEDPIX / USD-IRR / BRENT (v1.0.0 Jun 12 2026)
+        // Backend: iran_financial_pulse.py. Contract donor: russia/mexico.
+        // ════════════════════════════════════════════════════════════
+        let _pulseCharts = {};
+        function _fpEscape(s) {
+            if (s == null) return '';
+            return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+        }
+
+        async function loadFinancialPulse() {
+            const grid = document.getElementById('pulseGrid');
+            const pill = document.getElementById('pulseStatusPill');
+            if (!grid || !pill) return;
+            let data = null;
+            try {
+                const r = await fetch('https://asifah-backend.onrender.com/api/iran/financial-pulse');
+                if (r.ok) data = await r.json();
+            } catch (e) {
+                console.warn('[Iran Pulse] backend fetch failed:', e);
+            }
+            const fp = (data && data.financial_pulse) || null;
+            if (!fp || !fp.tiles) {
+                grid.innerHTML = '<div class="nyse-empty-state">Financial pulse unavailable — backend may be warming up. Refresh in 60 seconds.</div>';
+                return;
+            }
+
+            const agg = fp.market_status || 'closed';
+            pill.className = 'nyse-status-pill market-' + agg;
+            pill.textContent = ({ open: 'TSE Open', closed: 'TSE Closed' })[agg] || agg;
+
+            const order = ['TEDPIX', 'USDIRR', 'BRENT'];
+            Object.values(_pulseCharts).forEach(function (c) { try { c.destroy(); } catch (e) {} });
+            _pulseCharts = {};
+            const tierColor = { stress: '#ef4444', warning: '#f59e0b', stable: '#38bdf8', rally: '#22c55e' };
+
+            grid.innerHTML = order.map(function (key) {
+                const t = fp.tiles[key];
+                if (!t) return '';
+                const tier = t.tier || 'stable';
+                const val = (t.value !== null && t.value !== undefined)
+                    ? Number(t.value).toLocaleString(undefined, { maximumFractionDigits: key === 'BRENT' ? 2 : 0 })
+                    : 'N/A';
+                const chg = t.change_pct_24h;
+                const chgClass = (chg > 0.05) ? 'up' : (chg < -0.05) ? 'down' : 'flat';
+                const chgStr = (chg !== null && chg !== undefined)
+                    ? ((chg >= 0 ? '+' : '') + Number(chg).toFixed(2) + '%')
+                    : '— building history —';
+                const valPrefix = (key === 'BRENT') ? '$' : '';
+                const staleTag = t.stale ? ' · last known' : '';
+                return '<div class="nyse-tile tile-' + tier + '">' +
+                    '<div class="nyse-tile-header">' +
+                        '<span class="nyse-tile-name">' + _fpEscape(t.name || key) + '</span>' +
+                        '<span class="nyse-tile-ticker">' + _fpEscape(t.ticker || '') + '</span>' +
+                    '</div>' +
+                    '<div class="nyse-tile-value">' + valPrefix + val + '</div>' +
+                    '<div class="nyse-tile-change ' + chgClass + '">' + chgStr + '</div>' +
+                    '<div class="nyse-tile-spark"><canvas id="spark_' + key + '"></canvas></div>' +
+                    '<div class="nyse-tile-meta">' + _fpEscape((t.note || t.source || '') + staleTag) + '</div>' +
+                '</div>';
+            }).filter(Boolean).join('');
+
+            if (typeof Chart !== 'undefined') {
+                order.forEach(function (key) {
+                    const t = fp.tiles[key];
+                    if (!t || !t.sparkline || t.sparkline.length < 2) return;
+                    const ctx = document.getElementById('spark_' + key);
+                    if (!ctx) return;
+                    _pulseCharts[key] = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: t.sparkline.map(function (_, i) { return i; }),
+                            datasets: [{ data: t.sparkline, borderColor: tierColor[t.tier] || '#38bdf8', borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: false }]
+                        },
+                        options: {
+                            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                            scales: { x: { display: false }, y: { display: false } },
+                            responsive: true, maintainAspectRatio: false
+                        }
+                    });
+                });
+            }
+
+            // ── Capital-flight convergence strip (Iran-specific) ──
+            const conv = fp.capital_flight_convergence || {};
+            const strip = document.getElementById('capitalFlightStrip');
+            const body = document.getElementById('capitalFlightBody');
+            if (strip && body && conv.active) {
+                body.innerHTML = _fpEscape(conv.note || '') +
+                    ' <span style="color:#a78bfa;">(TEDPIX 7d: +' + (conv.tedpix_7d_pct || 0).toFixed(1) +
+                    '% · IRR 7d: +' + (conv.irr_7d_pct || 0).toFixed(1) + '%)</span>';
+                strip.classList.add('show');
+            } else if (strip) {
+                strip.classList.remove('show');
             }
         }
 
@@ -4474,11 +4836,36 @@
             startLoadingProgress();
             fetchProtestData();
             loadIranRhetoricCard();
+            loadFinancialPulse();
             // Single endpoint — refresh every 30 minutes
             setInterval(fetchProtestData, 30 * 60 * 1000);
             // Refresh rhetoric card every 30 minutes
             setInterval(loadIranRhetoricCard, 30 * 60 * 1000);
         });
     </script>
+
+<script>
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
 </body>
 </html>
