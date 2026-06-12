@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Mexico Stability Index v1.0.0 -->
+<!-- Asifah Analytics — Mexico Stability Index v2.0.0 — June 2026 -->
+<!-- Gold Standard: Arctic scheme + military-canon watermark + sidebar/drawer + rhetoric placeholder + commodity card + Financial Pulse (IPC/MXN/WTI) + Leaflet map + EN/ES/PT -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
-<html lang="en" dir="ltr">
+<html lang="en" data-theme="dark">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
     <script>
@@ -12,332 +13,1098 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mexico Stability Index | Asifah Analytics</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --bg-color: #f5f5f5;
-            --container-bg: #ffffff;
-            --card-bg: #ffffff;
-            --card-border: #e1e8ed;
-            --text-primary: #2c3e50;
-            --text-secondary: #7f8c8d;
-            --text-muted: #95a5a6;
-            --article-bg: #f8f9fa;
-            --article-hover: #e8f4f8;
-            --accent: #6495ED;
-        }
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --container-bg: #2d2d2d;
-            --card-bg: #2d2d2d;
-            --card-border: #404040;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
-            --article-bg: #333333;
-            --article-hover: #3a3a3a;
-            --accent: #00d4ff;
-        }
-
-        /* ── BODY + WATERMARK ── */
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 14px;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding: 20px;
-            /* Watermark */
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-size: 1800px;
-            background-attachment: fixed;
-        }
-        /* Light mode: white overlay at 50% so watermark shows at ~50% opacity */
-        body::before {
-            content: '';
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(245, 245, 245, 0.50);
-            transition: background-color 0.3s ease;
-            pointer-events: none;
-            z-index: -1;
-        }
-        /* Dark mode: no white overlay — cyan grid lines instead */
-        [data-theme="dark"] body::before {
-            background-color: rgba(26, 26, 26, 0.82);
-        }
-        [data-theme="dark"] body::after {
-            content: '';
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image:
-                linear-gradient(rgba(0,210,255,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,210,255,0.04) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .container { max-width: 1400px; margin: 0 auto; }
-
-        /* ── HEADER ── */
-        header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
-            color: white; padding: 35px; border-radius: 12px;
-            margin-bottom: 12px; position: relative; min-height: 130px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-        [data-theme="dark"] header {
-            background: linear-gradient(135deg, #0f172a 0%, #164e63 50%, #0f172a 100%);
-            border: 1px solid rgba(0,210,255,0.15);
-        }
-        header::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.015) 2px, rgba(0,255,255,0.015) 4px);
-            pointer-events: none; border-radius: 12px; z-index: 1;
-        }
-        .header-logo {
-            width: 70px; height: 70px;
-            position: absolute; top: 30px; left: 30px;
-            border-radius: 50%;
-            z-index: 2;
-        }
-        .header-content {
-            text-align: center; max-width: 800px;
-            margin: 0 auto; padding-top: 5px;
-            position: relative; z-index: 2;
-        }
-        header h1 { font-size: 26px; font-weight: bold; margin-bottom: 8px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        [data-theme="dark"] h1 { text-shadow: 0 0 20px rgba(0,212,255,0.4); }
-        .subtitle { font-size: 14px; opacity: 0.92; letter-spacing: 0.5px; }
-        .last-updated { font-size: 12px; opacity: 0.80; margin-top: 8px; }
-
-        /* ── HEADER CONTROLS ── */
-        .home-btn {
-            position: absolute; top: 30px; left: 115px; z-index: 2;
-            display: flex; align-items: center; gap: 6px;
-            background: rgba(255,255,255,0.15); padding: 6px 14px;
-            border-radius: 6px; color: white; text-decoration: none;
-            font-size: 13px; font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: all 0.2s ease;
-        }
-        .home-btn:hover { background: rgba(255,255,255,0.28); }
-        .header-controls {
-            position: absolute; top: 30px; right: 30px; z-index: 2;
-            display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-        }
-        .lang-btn-row { display: flex; align-items: center; gap: 6px; }
-        .lang-btn {
-            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3);
-            color: white; padding: 5px 11px; border-radius: 5px;
-            cursor: pointer; font-size: 12px; font-family: 'Times New Roman', serif;
-            transition: all 0.2s;
-        }
-        .lang-btn:hover { background: rgba(255,255,255,0.25); }
-        .lang-btn.active { background: rgba(255,255,255,0.3); border-color: white; font-weight: bold; }
-        .theme-toggle { display: flex; align-items: center; gap: 6px; color: white; font-size: 12px; cursor: pointer; }
-        .theme-toggle input {
-            width: 36px; height: 20px; appearance: none;
-            background: rgba(255,255,255,0.2); border-radius: 10px;
-            position: relative; cursor: pointer; transition: background 0.3s;
-        }
-        .theme-toggle input::after {
-            content: ''; position: absolute; width: 16px; height: 16px;
-            background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s;
-        }
-        .theme-toggle input:checked { background: rgba(0,210,255,0.5); }
-        .theme-toggle input:checked::after { left: 18px; }
-
-        /* ── ADVISORY BANNERS ── */
-        .worldwide-caution-banner {
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
-            border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
-            margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 4px 15px rgba(239,68,68,0.3);
-        }
-        .country-advisory-banner {
-            border-radius: 10px; padding: 14px 20px;
-            margin-bottom: 15px; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .advisory-btn {
-            flex-shrink: 0; padding: 6px 14px;
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 6px; color: white; text-decoration: none;
-            font-size: 11px; font-weight: bold; white-space: nowrap;
-            transition: background 0.2s;
-        }
-        .advisory-btn:hover { background: rgba(255,255,255,0.28); }
-
-        /* ── CARDS ── */
-        .map-section, .knowledge-library, .articles-section {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px; padding: 25px; margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        [data-theme="dark"] .map-section,
-        [data-theme="dark"] .knowledge-library,
-        [data-theme="dark"] .articles-section {
-            box-shadow: 0 2px 12px rgba(0,210,255,0.04);
-            border-color: #404040;
-        }
-        .section-heading { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
-        .section-subtitle { font-size: 12px; color: var(--text-secondary); font-style: italic; margin-bottom: 15px; }
-
-        /* ── KNOWLEDGE LIBRARY ── */
-        .knowledge-categories { display: grid; gap: 10px; }
-        .knowledge-card { border: 1px solid var(--card-border); border-radius: 8px; overflow: hidden; }
-        .knowledge-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 13px 18px; cursor: pointer; background: var(--article-bg);
-            transition: background 0.2s;
-        }
-        .knowledge-header:hover { background: var(--article-hover); }
-        .knowledge-header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 14px; }
-        .category-icon { font-size: 18px; }
-        .collapse-icon { font-size: 11px; color: var(--text-muted); transition: transform 0.3s; }
-        .knowledge-card.collapsed .knowledge-content { display: none; }
-        .knowledge-card:not(.collapsed) .collapse-icon { transform: rotate(180deg); }
-        .knowledge-content { padding: 18px; line-height: 1.8; font-size: 13px; }
-        .knowledge-content p { margin-bottom: 10px; }
-        .knowledge-content ul { margin: 8px 0 12px 20px; }
-        .knowledge-content li { margin-bottom: 5px; }
-        .report-links-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .report-link {
-            display: inline-block; padding: 5px 12px;
-            background: var(--article-bg); border: 1px solid var(--card-border);
-            border-radius: 6px; color: var(--accent); text-decoration: none;
-            font-size: 12px; font-weight: bold; transition: background 0.2s;
-        }
-        .report-link:hover { background: var(--article-hover); }
-        .open-source-disclaimer { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 8px; }
-
-        /* ── ARTICLES ── */
-        .section-title { font-size: 17px; font-weight: bold; margin-bottom: 15px; }
-        .article-item {
-            padding: 14px; border: 1px solid var(--card-border);
-            border-radius: 8px; margin-bottom: 10px; background: var(--article-bg);
-            transition: background 0.2s;
-        }
-        .article-item:hover { background: var(--article-hover); }
-        .article-title { font-weight: bold; margin-bottom: 4px; font-size: 13px; }
-        .article-meta { font-size: 11px; color: var(--text-muted); }
-        .article-link { display: inline-block; margin-top: 6px; color: var(--accent); text-decoration: none; font-size: 12px; }
-        .article-link:hover { text-decoration: underline; }
-
-        /* ── FOOTER ── */
-        footer {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 12px; padding: 30px; margin-top: 20px; margin-bottom: 30px;
-            text-align: center; font-size: 13px; color: var(--text-secondary);
-        }
-        .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; text-align: left; }
-        .footer-col h4 { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: var(--text-primary); }
-        .footer-col p { font-size: 12px; line-height: 1.6; }
-        .footer-divider { border: none; border-top: 1px solid var(--card-border); margin: 20px 0; }
-        .footer-bottom { font-size: 12px; color: var(--text-muted); }
-        .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
-        .footer-links a { color: var(--accent); text-decoration: none; font-size: 12px; }
-        .footer-links a:hover { text-decoration: underline; }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            header { padding: 20px; min-height: auto; }
-            header h1 { font-size: 20px; }
-            .header-logo { position: static; width: 50px; height: 50px; display: block; margin: 0 auto 10px; }
-            .home-btn { position: static; display: inline-flex; margin-bottom: 10px; }
-            .header-controls { position: static; align-items: center; margin-top: 10px; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .worldwide-caution-banner,
-            .country-advisory-banner { flex-direction: column; text-align: center; }
-            .advisory-btn { align-self: center; }
-        }
-    </style>
-    <!-- Leaflet for map -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Mexico Stability Index | Asifah Analytics v2.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <!-- Chart.js for Financial Pulse sparklines (donor: us-stability.html) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Leaflet for strategic map (donor: mexico shell) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
+    --watermark-opacity: 0.5; --watermark-size: 500px;
+    --loading-overlay-bg: rgba(248,250,252,0.98);
+    --loading-spinner-bg: rgba(14,165,233,0.2);
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
+    --watermark-opacity: 1; --watermark-size: 800px;
+    --loading-overlay-bg: rgba(6,13,26,0.98);
+    --loading-spinner-bg: rgba(56,189,248,0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+.watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: var(--watermark-size); height: var(--watermark-size); opacity: var(--watermark-opacity); pointer-events: none; z-index: 0; background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size: 135%; background-repeat: no-repeat; background-position: center; border-radius: 50%; transition: all 0.4s ease; }
+
+/* ── CONTAINER + LAYOUT ── */
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+/* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+.menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+    background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+    color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+.sidebar-backdrop.show { display: block; }
+@media (max-width: 1199px) {
+    .menu-toggle { display: block; }
+    .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+        overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+        background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+        z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+    .nav-sidebar.open { transform: translateX(0); }
+}
+
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    padding: 22px 30px;
+    margin-bottom: 22px;
+    border-radius: 0 0 12px 12px;
+    color: var(--header-text);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; gap: 24px;
+}
+.header-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.header-logo {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    object-fit: cover;
+}
+.back-link {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    transition: all 0.3s;
+}
+.back-link:hover { background: rgba(56,189,248,0.08); }
+.header-content { flex: 1; }
+header h1 {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--header-text);
+    margin-bottom: 4px;
+}
+.subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+.header-controls { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-label { font-size: 11px; color: var(--text-muted); }
+.theme-toggle-switch {
+    width: 44px; height: 22px; border-radius: 22px;
+    background: var(--card-border); position: relative; cursor: pointer;
+    transition: background 0.3s;
+}
+[data-theme="dark"] .theme-toggle-switch { background: var(--accent); }
+.theme-toggle-slider {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; position: absolute; top: 2px; left: 2px;
+    transition: left 0.3s;
+}
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; align-self: flex-start; }
+.nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+.nav-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 8px;
+    background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.18);
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 12px; font-weight: 600;
+    transition: all 0.25s;
+}
+.nav-btn-label { flex: 1; }
+.nav-btn-status { font-size: 10px; color: var(--text-muted); margin-left: 8px; }
+.nav-btn:hover { transform: translateY(-1px); border-color: var(--accent); color: var(--text-primary); }
+.nav-btn.active-nav { background: linear-gradient(135deg, rgba(0,180,255,0.15), rgba(0,120,200,0.10)); border-color: rgba(0,200,255,0.5); color: var(--text-primary); }
+.nav-btn.active-nav:hover { box-shadow: 0 0 18px rgba(0,180,255,0.25); }
+.nav-btn.current-page { background: linear-gradient(135deg, rgba(0,200,255,0.20), rgba(0,150,200,0.15)); border-color: rgba(0,220,255,0.7); color: var(--text-primary); box-shadow: 0 0 16px rgba(0,200,255,0.22); }
+.nav-btn.inactive-nav { opacity: 0.4; cursor: default; border-color: rgba(100,100,100,0.2); background: transparent; }
+.nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(21,128,61,0.05)); }
+.nav-btn.rhetoric-btn:hover { border-color: rgba(34,197,94,0.8); box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+.nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+.nav-btn.rhetoric-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(21,128,61,0.12)); }
+.nav-btn.military-btn { border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(91,33,182,0.05)); }
+.nav-btn.military-btn:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 18px rgba(139,92,246,0.2); }
+.nav-btn.military-btn .nav-btn-status { color: #a78bfa; }
+.nav-btn.commodity-btn { border-color: rgba(250,204,21,0.4); background: linear-gradient(135deg, rgba(250,204,21,0.08), rgba(202,138,4,0.05)); }
+.nav-btn.commodity-btn:hover { border-color: rgba(250,204,21,0.8); box-shadow: 0 0 18px rgba(250,204,21,0.2); }
+.nav-btn.commodity-btn .nav-btn-status { color: #fde047; }
+.nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--loading-overlay-bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s; backdrop-filter: blur(8px);
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner {
+    width: 70px; height: 70px;
+    border: 4px solid var(--loading-spinner-bg);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-status {
+    text-align: center; color: var(--text-primary);
+    max-width: 460px; padding: 22px 28px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; box-shadow: var(--card-glow);
+}
+.loading-title {
+    font-size: 1rem; font-weight: 700; letter-spacing: 1.5px;
+    margin-bottom: 14px; color: var(--accent);
+    text-transform: uppercase;
+}
+.loading-progress { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* ── TRAVEL ADVISORY BANNERS ── */
+.advisory-row { margin-bottom: 12px; }
+
+/* ── RHETORIC PLACEHOLDER (no tracker yet — flag-only) ── */
+.rhetoric-placeholder {
+    background: linear-gradient(135deg, rgba(100,116,139,0.10), rgba(71,85,105,0.05));
+    border: 1px dashed rgba(100,116,139,0.35);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* ── GENERIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+.subsection-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* ── STABILITY SCORE PLACEHOLDER ── */
+.stability-score-big {
+    font-size: 3rem; font-weight: 700; line-height: 1;
+    color: var(--accent);
+}
+.stability-score-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px;
+}
+.stability-label {
+    font-size: 0.8rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;
+    color: white;
+}
+.stability-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 0.8rem;
+}
+.stability-meta-item {
+    padding: 8px 10px;
+    background: var(--article-bg);
+    border-radius: 6px;
+}
+.stability-meta-label {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.stability-meta-value { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
+
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.knowledge-library h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+}
+.library-icon { font-size: 1.2rem; }
+.open-source-disclaimer {
+    font-size: 0.78rem; color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 14px;
+}
+.knowledge-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+}
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.knowledge-card:hover { border-color: var(--accent); box-shadow: var(--card-glow); }
+.knowledge-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+}
+.knowledge-card.collapsed .knowledge-header { border-bottom: none; }
+.knowledge-header-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
+}
+.category-icon { font-size: 1.2rem; }
+.collapse-icon {
+    color: var(--text-muted); font-size: 0.7rem;
+    transition: transform 0.3s;
+}
+.knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+.knowledge-content { padding: 14px 16px; font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); }
+.knowledge-card.collapsed .knowledge-content { display: none; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content strong { color: var(--text-primary); }
+.knowledge-content ul { padding-left: 22px; margin-bottom: 10px; }
+.knowledge-content ul li { margin-bottom: 6px; }
+.report-links-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+.report-link {
+    padding: 5px 10px;
+    background: rgba(56,189,248,0.10);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 5px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.72rem; font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: rgba(56,189,248,0.18); transform: translateY(-1px); }
+
+/* ── ARTICLES SECTION (tabbed) ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.article-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+}
+.article-tab {
+    padding: 6px 14px;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.article-tab:hover { border-color: var(--accent); color: var(--accent); }
+.article-tab.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.article-tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    background: rgba(56,189,248,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.articles-list { list-style: none; padding: 0; max-height: 600px; overflow-y: auto; }
+.articles-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85rem; line-height: 1.5;
+}
+.articles-list li:last-child { border-bottom: none; }
+.articles-list a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.articles-list a:hover { color: var(--accent); }
+.articles-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+.article-source-pill {
+    display: inline-block;
+    padding: 1px 7px; border-radius: 3px;
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    margin-right: 6px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ── FOOTER ── */
+footer {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+@media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+footer .footer-disclaimer {
+    padding: 12px 14px;
+    background: var(--article-bg); border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+}
+footer .footer-support { text-align: center; padding: 10px; font-size: 0.85rem; }
+footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+footer .footer-copyright {
+    text-align: center; font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+}
+
+/* ── LEVEL COLORS ── */
+.level-0 { background: #6b7280; color: white; }
+.level-1 { background: #3b82f6; color: white; }
+.level-2 { background: #f59e0b; color: white; }
+.level-3 { background: #f97316; color: white; }
+.level-4 { background: #ef4444; color: white; }
+.level-5 { background: #dc2626; color: white; }
+
+/* ── LOADING DOTS ── */
+.loading-dot { display: inline-block; animation: pulse 1.4s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+   ═══════════════════════════════════════════════════════════ */
+.language-switcher {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.lang-btn {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.lang-btn:hover {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.45);
+}
+.lang-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+[data-theme="light"] .lang-btn { background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.30); color: var(--text-primary); }
+[data-theme="light"] .lang-btn:hover { background: rgba(14,165,233,0.18); }
+[data-theme="light"] .lang-btn.active { background: var(--accent); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+   ═══════════════════════════════════════════════════════════ */
+.commodity-card {
+    background: var(--container-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .commodity-card {
+    box-shadow: 0 0 6px rgba(56,189,248,0.15);
+}
+.commodity-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--card-border);
+}
+.commodity-prose {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 10px 0 16px 0;
+    padding: 12px 14px;
+    background: rgba(2,6,23,0.5);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+}
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+
+.commodity-convergence-alert {
+    display: none;
+    margin: 10px 0 14px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+}
+.commodity-convergence-alert.active { display: block; }
+.cca-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f59e0b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.cca-detail {
+    font-size: 11px;
+    color: #fbbf24;
+    line-height: 1.5;
+}
+
+.commodity-alert-banner {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-size: 12px;
+    display: none;
+}
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+.commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.commodity-pill {
+    background: rgba(2,6,23,0.5);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+}
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 22px; line-height: 1; }
+.commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+.commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.commodity-pill-alert {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-pill-role-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.25);
+}
+.commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+.commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+.commodity-pill-price .price-up   { color: #22c55e; }
+.commodity-pill-price .price-down { color: #ef4444; }
+.commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+.commodity-top-signals {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(2,6,23,0.5);
+    border-radius: 6px;
+    border-left: 3px solid var(--text-muted);
+    font-size: 11px;
+}
+[data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+.commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+.commodity-top-signals a { color: var(--text-secondary); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+.commodity-top-signals a:hover { color: #38bdf8; }
+.commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+.strategic-linkage {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(56,189,248,0.05);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+
+/* ── FINANCIAL PULSE (nyse-card canon — donor: us-stability.html) ── */
+/* ── NYSE / U.S. EQUITY INDICES CARD (v1.0.0 May 27 2026) ── */
+        /* Three equal cards side by side: SPX / DJIA / IXIC.
+         * Mobile: stacks vertically below 768px. Mirrors TASE pattern
+         * from israel-stability.html with Chart.js mini sparklines. */
+        .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .nyse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .nyse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nyse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nyse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .nyse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+
+        .nyse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .nyse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .nyse-grid { grid-template-columns: 1fr; }
+        }
+
+        .nyse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .nyse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .nyse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .nyse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .nyse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .nyse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .nyse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+
+        .nyse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .nyse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+
+        .nyse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nyse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+</style>
 </head>
 <body>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+     LOADING OVERLAY
+     ════════════════════════════════════════════════════════════ -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-status">
+        <div class="loading-title" data-i18n="loading_title">Loading Mexico Stability Data</div>
+        <div class="loading-progress" id="loadingProgress">
+            <span data-i18n="loading_progress">Connecting to backend... This may take 20-40 seconds on cold cache.</span>
+        </div>
+    </div>
+</div>
+
 <div class="container">
 
-    <!-- ── HEADER ── -->
-    <header>
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
-             alt="Asifah Analytics" class="header-logo">
-        <a href="wha.html" class="home-btn">&#8592; <span data-i18n="backBtn">Back to WHA Dashboard</span></a>
-        <div class="header-controls">
-            <div class="lang-btn-row">
-                <button class="lang-btn active" onclick="switchLang('en',this)">EN</button>
-                <button class="lang-btn" onclick="switchLang('es',this)">ES</button>
-                <button class="lang-btn" onclick="switchLang('pt',this)">PT</button>
+<!-- ════════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════════ -->
+<header>
+    <div class="header-logo-wrap">
+        <a href="wha.html" class="back-link" data-i18n="back_to_wha">← W. Hemisphere</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1 data-i18n="page_title">🇲🇽 MEXICO STABILITY INDEX</h1>
+        <div class="subtitle" data-i18n="page_subtitle">Multi-Factor Analysis: Cartel Conflict &amp; State Capacity · U.S. Border Dynamics · Oil &amp; Corn Commodity Exposure · Financial Pulse (IPC · USD/MXN · WTI)</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('es', this)">ES</button>
+            <button class="lang-btn" onclick="switchLanguage('pt', this)">PT</button>
+        </div>
+        <div class="theme-toggle">
+            <span class="theme-toggle-label" data-i18n="theme_label">Theme</span>
+            <div class="theme-toggle-switch" onclick="toggleTheme()">
+                <div class="theme-toggle-slider"></div>
             </div>
-            <label class="theme-toggle">
-                <span>☀️</span>
-                <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
-                <span>🌙</span>
-            </label>
         </div>
-        <div class="header-content">
-            <h1>&#x1F1F2;&#x1F1FD; <span data-i18n="pageTitle">MEXICO STABILITY INDEX</span></h1>
-            <div class="subtitle" data-i18n="pageSubtitle">Multi-Factor Analysis: Cartel Conflict, State Capacity, U.S. Border Dynamics &amp; Democratic Institutions</div>
-            <div class="last-updated" id="lastUpdated" data-i18n="lastUpdated">Last updated: Loading...</div>
-        </div>
-    </header>
+    </div>
+</header>
 
-    <!-- ── WORLDWIDE CAUTION ── -->
-    <div class="worldwide-caution-banner">
-        <div style="font-size:22px; flex-shrink:0;">&#x1F6A8;</div>
-        <div style="flex:1;">
-            <div style="font-size:11px; font-weight:bold; color:#fca5a5; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;">
-                &#x26A0;&#xFE0F; <span data-i18n="wcLabel">U.S. State Department — Worldwide Caution</span>
-            </div>
-            <div style="font-size:12px; color:#fde8e8; line-height:1.5;" data-i18n="wcText">
-                The U.S. State Department maintains a standing Worldwide Caution advising U.S. citizens to be aware of the increased risk of terrorist attacks, violence, and other threats worldwide. Review local conditions before travel.
-            </div>
+<!-- ════════════════════════════════════════════════════════════
+     PAGE WITH SIDEBAR
+     ════════════════════════════════════════════════════════════ -->
+<div class="page-with-sidebar">
+
+<!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_asia_pacific">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_europe">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_me">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_wha">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="commodities.html" class="nav-btn commodity-btn">
+        <span class="nav-btn-label" data-i18n="nav_commodities">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="military.html" class="nav-btn military-btn">
+        <span class="nav-btn-label" data-i18n="nav_military">🎖️ Military Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn military-btn">
+        <span class="nav-btn-label" data-i18n="nav_gpi">🌐 Global Pressure</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_rhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_me">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_asia">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_europe">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_wha">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_mexico">Mexico</div>
+    <a href="mexico-stability.html" class="nav-btn current-page">
+        <span class="nav-btn-label" data-i18n="nav_mexico_stability">🇲🇽 Mexico Stability</span>
+        <span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span>
+    </a>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ════════════════════════════════════════════════════════════ -->
+<div class="main-content">
+
+<!-- ── U.S. STATE DEPARTMENT WORLDWIDE CAUTION ── -->
+<div class="advisory-row" style="
+    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
+    border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+">
+    <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+    <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+</div>
+
+<!-- ── MEXICO TRAVEL ADVISORY (dynamic — fetched from WHA backend) ── -->
+<div class="advisory-row" id="mexicoTravelAdvisory" style="
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+">
+    <div style="font-size: 24px; flex-shrink: 0;">🇲🇽</div>
+    <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Mexico Travel Advisory</span>
+            <span id="mexicoTravelLevel" style="background: #f97316; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;" data-i18n="travel_level">LOADING…</span>
         </div>
-        <a href="https://travel.state.gov/content/travel/en/international-travel/emergencies/worldwide-caution.html"
-           target="_blank" rel="noopener" class="advisory-btn" data-i18n="wcBtn">VIEW CAUTION &rarr;</a>
+        <div id="mexicoTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n="travel_text"><strong style='color: #f97316;'>Reconsider Travel (advisory varies by state).</strong> Violent crime — homicide, kidnapping, carjacking, and robbery — is widespread. Six states including Colima, Guerrero, Michoacán, Sinaloa, Tamaulipas, and Zacatecas are <strong>Level 4: Do Not Travel</strong>. The U.S. government has limited ability to provide emergency services in many areas.</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/mexico-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="travel_button">VIEW ADVISORY →</a>
+</div>
+
+<!-- ── MEXICO RHETORIC TRACKER PLACEHOLDER (tracker queued — WHA roadmap) ── -->
+<div class="metric-card" id="mexicoRhetoricPlaceholder" style="border-left: 4px solid #4ade80;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+        <div>
+            <div class="section-title" style="margin-bottom:4px;" data-i18n="rhetoric_ph_title">📡 🇲🇽 Mexico Rhetoric &amp; Pressure Tracker</div>
+            <div style="font-size:11px; color:var(--text-secondary);" data-i18n="rhetoric_ph_subtitle">Coming soon: Sheinbaum Government · SEDENA / Guardia Nacional · Cartel Communications · US Border Track · FTO Designation Pressure</div>
+        </div>
+        <span style="font-size:12px; padding:6px 14px; background:rgba(74,222,128,0.10); border:1px solid rgba(74,222,128,0.30); color:#4ade80; border-radius:6px; font-weight:700; letter-spacing:0.5px;" data-i18n="rhetoric_in_dev">🔧 In Development</span>
+    </div>
+    <div style="font-size:12.5px; line-height:1.55; color:var(--text-secondary); padding:10px 14px; background:rgba(74,222,128,0.05); border:1px solid rgba(74,222,128,0.15); border-radius:6px;" data-i18n="rhetoric_ph_text">
+        The dedicated Mexico rhetoric tracker is queued on the WHA build roadmap. Until it ships, read Mexico's pressure load through the commodity exposure and financial pulse cards below — both are live sensors. When the tracker is live, this card will populate with a composite gauge, vector scores, and top signals.
+    </div>
+</div>
+
+<!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 ── -->
+<div class="commodity-card" id="commodityCard">
+    <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+
+    <div class="commodity-prose" id="commodityProse">
+        <span data-i18n="commodity_prose_loading">Loading commodity exposure profile…</span>
     </div>
 
-    <!-- ── MEXICO TRAVEL ADVISORY — Level 3 ── -->
-    <div class="country-advisory-banner" style="background:linear-gradient(135deg,#431407 0%,#7c2d12 50%,#431407 100%); border:2px solid #ea580c;">
-        <div style="font-size:24px; flex-shrink:0;">&#x1F1F2;&#x1F1FD;</div>
-        <div style="flex:1;">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
-                <span style="font-size:11px; font-weight:bold; color:#fdba74; text-transform:uppercase; letter-spacing:1.5px;" data-i18n="taLabel">U.S. State Department — Mexico Travel Advisory</span>
-                <span style="background:#ea580c; color:white; font-size:10px; font-weight:800; padding:2px 9px; border-radius:3px; letter-spacing:1px;">LEVEL 3</span>
-            </div>
-            <div style="font-size:12px; color:#e2e8f0; line-height:1.5;">
-                <strong style="color:#fb923c;" data-i18n="taHeadline">Reconsider Travel to Mexico</strong>
-                <span data-i18n="taText"> due to crime and kidnapping. Violent crime — homicide, kidnapping, carjacking, and robbery — is widespread and common. The U.S. government has limited ability to provide emergency services to U.S. citizens in many areas of Mexico due to travel restrictions on U.S. government employees.</span>
-            </div>
+    <!-- OIL × PEMEX FISCAL CONVERGENCE ALERT -->
+    <div class="commodity-convergence-alert" id="commodityConvergenceAlertOil">
+        <div class="cca-title" data-i18n="cca_oil_title">⚡ Oil × Pemex Fiscal Convergence</div>
+        <div class="cca-detail" data-i18n="cca_oil_detail">
+            Pemex carries the largest debt load of any oil company in the world, and federal budget transfers to keep it solvent compete directly with social spending. When crude prices fall while cartel theft of fuel (huachicoleo) persists, the fiscal squeeze tightens — historically a precursor to austerity friction and state-capacity stress.
         </div>
-        <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/mexico-travel-advisory.html"
-           target="_blank" rel="noopener" class="advisory-btn" data-i18n="taBtn">VIEW ADVISORY &rarr;</a>
     </div>
 
-    <!-- ── MAP ── -->
-    <div class="map-section">
-        <h2 class="section-heading">&#x1F5FA;&#xFE0F; <span data-i18n="mapTitle">Mexico — Strategic Overview</span></h2>
-        <div class="section-subtitle" data-i18n="mapSubtitle">Key conflict zones, cartel territorial control areas, and U.S. border crossing points. Data based on open-source reporting.</div>
-        <div id="mexico-map" style="width:100%; height:480px; border:2px solid var(--card-border); border-radius:8px; overflow:hidden; z-index:0;"></div>
+    <!-- CORN × FOOD-PRICE SOCIAL STRESS CONVERGENCE ALERT -->
+    <div class="commodity-convergence-alert" id="commodityConvergenceAlertCorn" style="background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(139,92,246,0.18) 100%); border-color: #a855f7;">
+        <div class="cca-title" data-i18n="cca_corn_title" style="color: #c4b5fd;">🌽 Corn × Food-Price Social Stress</div>
+        <div class="cca-detail" data-i18n="cca_corn_detail" style="color: #ddd6fe;">
+            Mexico is self-sufficient in white corn (tortillas) but imports the bulk of its yellow corn from the U.S. — one of the world's largest corn import dependencies. Tortilla price shocks are a documented social-stress trigger: the 2007 tortilla crisis put tens of thousands on the streets. Sustained corn price stress co-occurring with peso weakness is the compound pattern to watch.
+        </div>
     </div>
 
-    <!-- ── KNOWLEDGE LIBRARY ── -->
-    <div class="knowledge-library">
-        <h2 class="section-heading">&#x1F4DA; <span data-i18n="kbTitle">Knowledge Library</span></h2>
-        <p class="open-source-disclaimer" data-i18n="kbDisclaimer">Background information compiled from open-source research, think tank analysis, and government publications.</p>
-        <div style="height:12px;"></div>
-        <div class="knowledge-categories">
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+
+    <div class="commodity-grid" id="commodityGrid">
+        <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;" data-i18n="commodity_loading">
+            ⏳ Loading commodity exposure tiles…
+        </div>
+    </div>
+
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;">
+        <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
+        <div id="commodityTopSignalsList"></div>
+    </div>
+
+    <div class="strategic-linkage" data-i18n-html="strategic_linkage">
+        <strong>🎯 Strategic Linkage:</strong> Mexico is the world's <strong>#1 silver producer</strong> (~24% of global output per USGS), a major crude exporter through Pemex (Maya crude priced off WTI-linked formulas), and one of the world's largest corn importers despite white-corn self-sufficiency — the 2007 tortilla crisis is the canonical precedent for food-price social stress. Remittances (~$60B+/yr) exceed oil as a foreign-exchange earner, tying household stability to U.S. labor-market access. Watch: Pemex production and debt-service trajectory, white-corn and tortilla prices, USD/MXN under U.S. tariff rhetoric, FTO-designation enforcement dynamics, and nearshoring investment flows under USMCA review pressure.
+    </div>
+</div>
+
+<!-- ── FINANCIAL PULSE CARD (live — mexico_stability.py v1.0.0) ── -->
+<div class="nyse-card" id="financialPulseCard">
+    <div class="nyse-card-header">
+        <div class="nyse-card-title">
+            📈 <span data-i18n="pulse_title">Mexico Financial Pulse</span>
+        </div>
+        <span class="nyse-status-pill" id="pulseStatusPill" data-i18n="pulse_loading_pill">Loading...</span>
+    </div>
+    <div class="nyse-prose" data-i18n-html="pulse_prose">
+        Three live signals tracking Mexico's financial stability. <strong>S&amp;P/BMV IPC</strong> is the Bolsa Mexicana equity benchmark — domestic institutional confidence. <strong>USD/MXN</strong> shows peso FX stress (rising = weaker peso — <strong>INVERTED polarity</strong>), the fastest-moving readout of tariff rhetoric and capital-flow pressure. <strong>WTI (CL=F)</strong> is the Pemex state-oil-revenue proxy — Mexican export crude prices off WTI-linked formulas. Updated every 12 hours.
+    </div>
+    <div class="nyse-grid" id="pulseGrid">
+        <div class="nyse-empty-state" data-i18n="pulse_loading">Loading financial pulse…</div>
+    </div>
+</div>
+
+<!-- ── STABILITY SCORE PLACEHOLDER (scaffolding for future full scoring) ── -->
+<div class="metric-card">
+    <div class="subsection-title" data-i18n="stability_card_title">🇲🇽 Mexico Stability Index</div>
+    <div class="stability-score-row">
+        <div class="stability-score-big" id="stabilityScore">--</div>
+        <span id="stabilityLevelLabel" class="stability-label level-0">Pending</span>
+    </div>
+    <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.55;" data-i18n-html="stability_card_text">
+        Multi-factor stability assessment combining cartel-conflict posture, state capacity, U.S. border dynamics, commodity exposure (oil/corn), and financial pulse (IPC · USD/MXN · WTI).
+        <br><br>
+        <em style="color:var(--text-muted);">The financial pulse backend (mexico_stability.py) is live above. Full composite stability scoring is in development. Until then, draw stability inferences from the commodity, financial pulse, and Knowledge Library cards. When the rhetoric tracker ships, this card will populate with a theatre score.</em>
+    </div>
+    <div class="stability-meta-grid">
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_mil_posture">Military Posture</div>
+            <div class="stability-meta-value" id="metaMilPosture">--</div>
+        </div>
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_rhetoric">Rhetoric Tier</div>
+            <div class="stability-meta-value" id="metaRhetoric">Pending</div>
+        </div>
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_commodity">Commodity Pressure</div>
+            <div class="stability-meta-value" id="metaCommodity">--</div>
+        </div>
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_alert">Alert Level</div>
+            <div class="stability-meta-value" id="metaAlert">--</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MAP SECTION (Leaflet — donor: mexico shell) ── -->
+<div class="map-section">
+    <h2 data-i18n="map_title">🗺️ Mexico — Strategic Overview</h2>
+    <div class="map-subtitle" data-i18n="map_subtitle">Key conflict zones, cartel territorial control areas, and U.S. border crossing points. Data based on open-source reporting.</div>
+    <div id="mexico-map" style="width:100%; height:480px; border:2px solid var(--card-border); border-radius:8px; overflow:hidden; z-index:0;"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     KNOWLEDGE LIBRARY (donor: mexico shell — 6 cards, Jun 2026 review)
+     ════════════════════════════════════════════════════════════ -->
+<div class="knowledge-library">
+    <h2>
+        <span class="library-icon">📚</span>
+        <span data-i18n="kbTitle">Knowledge Library</span>
+    </h2>
+    <p class="open-source-disclaimer" data-i18n="kbDisclaimer">
+        Background information compiled from open-source research, think tank analysis, and government publications.
+    </p>
+
+    <div class="knowledge-categories">
 
             <!-- CARTEL LANDSCAPE -->
             <div class="knowledge-card collapsed" id="card-cartels">
-                <div class="knowledge-header" onclick="toggleCard('cartels')">
+                <div class="knowledge-header" onclick="toggleKnowledgeCard('cartels')">
                     <div class="knowledge-header-title">
                         <span class="category-icon">&#x26A0;&#xFE0F;</span>
                         <span data-i18n="kb1Title">Cartel Landscape &amp; Territorial Control</span>
@@ -360,7 +1127,7 @@
 
             <!-- STATE CAPACITY -->
             <div class="knowledge-card collapsed" id="card-state">
-                <div class="knowledge-header" onclick="toggleCard('state')">
+                <div class="knowledge-header" onclick="toggleKnowledgeCard('state')">
                     <div class="knowledge-header-title">
                         <span class="category-icon">&#x1F3DB;&#xFE0F;</span>
                         <span data-i18n="kb2Title">State Capacity &amp; Security Forces</span>
@@ -382,7 +1149,7 @@
 
             <!-- US-MEXICO RELATIONS -->
             <div class="knowledge-card collapsed" id="card-us_relations">
-                <div class="knowledge-header" onclick="toggleCard('us_relations')">
+                <div class="knowledge-header" onclick="toggleKnowledgeCard('us_relations')">
                     <div class="knowledge-header-title">
                         <span class="category-icon">&#x1F1FA;&#x1F1F8;</span>
                         <span data-i18n="kb3Title">U.S.–Mexico Relations &amp; Border Dynamics</span>
@@ -391,7 +1158,7 @@
                 </div>
                 <div class="knowledge-content">
                     <p data-i18n="kb3p1"><strong>The U.S.–Mexico relationship is one of the world's most complex bilateral partnerships</strong>, encompassing $800+ billion in annual trade (making Mexico the U.S.'s largest trading partner), shared border security challenges, migration flows, and drug trafficking. The two countries are bound by the USMCA trade agreement.</p>
-                    <p data-i18n="kb3p2"><strong>Cartel Designation Pressure:</strong> The U.S. Congress and Trump administration have debated designating Mexican cartels as Foreign Terrorist Organizations (FTOs). Mexico has firmly opposed any unilateral U.S. military or law enforcement operations on Mexican soil, making this a significant sovereignty flashpoint. The DEA's operational presence in Mexico has been restricted.</p>
+                    <p data-i18n="kb3p2"><strong>Cartel Designation Pressure:</strong> The U.S. designated several Mexican cartels and transnational criminal organizations as Foreign Terrorist Organizations (FTOs) in February 2025. Mexico firmly opposes any unilateral U.S. military or law enforcement operations on Mexican soil, making enforcement of the designation a standing sovereignty flashpoint. The DEA's operational presence in Mexico remains restricted.</p>
                     <p data-i18n="kb3p3"><strong>Fentanyl Crisis:</strong> The flow of fentanyl — primarily manufactured using Chinese precursor chemicals and trafficked by cartels through Mexico — has become the defining drug policy challenge. U.S. pressure on Mexico to interdict fentanyl production and trafficking is a constant source of bilateral tension.</p>
                     <div class="open-source-disclaimer" data-i18n="disclaimer">* Based on open-source intelligence, think tank analysis, and government publications</div>
                     <div class="report-links-grid">
@@ -404,7 +1171,7 @@
 
             <!-- DEMOCRATIC INSTITUTIONS -->
             <div class="knowledge-card collapsed" id="card-democracy">
-                <div class="knowledge-header" onclick="toggleCard('democracy')">
+                <div class="knowledge-header" onclick="toggleKnowledgeCard('democracy')">
                     <div class="knowledge-header-title">
                         <span class="category-icon">&#x1F5F3;&#xFE0F;</span>
                         <span data-i18n="kb4Title">Democratic Institutions &amp; Rule of Law</span>
@@ -426,7 +1193,7 @@
 
             <!-- ECONOMY -->
             <div class="knowledge-card collapsed" id="card-economy">
-                <div class="knowledge-header" onclick="toggleCard('economy')">
+                <div class="knowledge-header" onclick="toggleKnowledgeCard('economy')">
                     <div class="knowledge-header-title">
                         <span class="category-icon">&#x1F4B9;</span>
                         <span data-i18n="kb5Title">Economy &amp; Nearshoring</span>
@@ -448,7 +1215,7 @@
 
             <!-- HUMANITARIAN -->
             <div class="knowledge-card collapsed" id="card-humanitarian">
-                <div class="knowledge-header" onclick="toggleCard('humanitarian')">
+                <div class="knowledge-header" onclick="toggleKnowledgeCard('humanitarian')">
                     <div class="knowledge-header-title">
                         <span class="category-icon">&#x1F90D;</span>
                         <span data-i18n="kb6Title">Humanitarian &amp; Displacement</span>
@@ -468,275 +1235,755 @@
                 </div>
             </div>
 
-        </div><!-- end knowledge-categories -->
-    </div><!-- end knowledge-library -->
-
-    <!-- ── ARTICLES ── -->
-    <div class="articles-section">
-        <div class="section-title">&#x1F4F0; <span data-i18n="articlesTitle">Recent Mexico OSINT Articles (Last 7 Days)</span></div>
-        <div id="articlesContainer">
-            <div style="text-align:center; color:var(--text-secondary); padding:30px;" data-i18n="articlesLoading">Loading articles...</div>
         </div>
+</div>
+
+<!-- ── RECENT ARTICLES (tabbed: EN / ES / Social) ── -->
+<div class="articles-section">
+    <div class="section-title" data-i18n="articles_title">📰 Recent Mexico, Border &amp; Regional Articles</div>
+    <div class="article-tabs" id="articleTabs">
+        <div class="article-tab active" data-tab="all" onclick="filterArticles('all')" data-i18n="tab_all">All</div>
+        <div class="article-tab" data-tab="en" onclick="filterArticles('en')" data-i18n="tab_en">English</div>
+        <div class="article-tab" data-tab="es" onclick="filterArticles('es')" data-i18n="tab_es">Español</div>
+        <div class="article-tab" data-tab="social" onclick="filterArticles('social')" data-i18n="tab_social">Social</div>
     </div>
+    <ul class="articles-list" id="articlesList">
+        <li style="text-align: center; color: var(--text-muted); padding: 30px;">
+            <span class="loading-dot">●</span><span class="loading-dot">●</span><span class="loading-dot">●</span>
+            <span data-i18n="articles_loading">Loading articles...</span>
+        </li>
+    </ul>
+</div>
 
-    <!-- ── FOOTER ── -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4 data-i18n="footerAboutTitle">About This Page</h4>
-                <p data-i18n="footerAboutText">Asifah Analytics is a personal-time, open-source OSINT geopolitical intelligence platform. Mexico stability data is sourced from GDELT, NewsAPI, and RSS feeds updated every 12 hours.</p>
-            </div>
-            <div class="footer-col">
-                <h4 data-i18n="footerSourcesTitle">Data Sources</h4>
-                <p>GDELT Project &middot; NewsAPI &middot; Google News RSS &middot; U.S. State Dept Travel Advisories &middot; InSight Crime &middot; WOLA</p>
-            </div>
-            <div class="footer-col">
-                <h4 data-i18n="footerBackendTitle">Backend</h4>
-                <p>asifah-wha-backend.onrender.com &middot; <span data-i18n="footerBackendText">Updates every 12 hours</span></p>
-            </div>
-        </div>
-        <hr class="footer-divider">
-        <div class="footer-links">
-            <a href="privacy.html" data-i18n="footerPrivacy">Privacy Policy</a>
-            <a href="mailto:rcgg@asifahanalytics.com" data-i18n="footerContact">Contact</a>
-            <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">&#x2615; <span data-i18n="footerCoffee">Buy Me a Coffee</span></a>
-        </div>
-        <div class="footer-bottom">
-            <div style="margin-bottom:6px;" data-i18n="footerDisclaimer">&#x26A0;&#xFE0F; Research &amp; Educational Use Only. Not for operational decision-making.</div>
-            &copy; 2025-2026 RCGG. All Rights Reserved.
-        </div>
-    </footer>
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════════ -->
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — MEXICO</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours · Financial pulse every 12 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Universal, Milenio, Reforma, La Jornada, Animal Político, Proceso, Reuters) · NewsAPI · Brave · Yahoo Finance (IPC · MXN · WTI)</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+</footer>
 
-</div><!-- end container -->
+</div> <!-- /main-content -->
+</div> <!-- /page-with-sidebar -->
+</div> <!-- /container -->
 
 <script>
-// ========================================
-// CONFIG
-// ========================================
-var WHA_API = 'https://asifah-wha-backend.onrender.com';
+// ════════════════════════════════════════════════════════════
+// MEXICO STABILITY — Frontend Logic v2.0.0
+// EN / ES / PT i18n + Gold Standard commodity card
+// Backends: WHA (asifah-wha-backend) + ME (asifah-backend) for commodity
+// ════════════════════════════════════════════════════════════
+const WHA_BACKEND = 'https://asifah-wha-backend.onrender.com';
+const ME_BACKEND  = 'https://asifah-backend.onrender.com';
 
-// ========================================
-// TRANSLATIONS
-// ========================================
-var TRANSLATIONS = {
+// ════════════════════════════════════════════════════════════
+// TRANSLATIONS — EN / ES / PT
+// ════════════════════════════════════════════════════════════
+const TRANSLATIONS = {
     en: {
-        backBtn:         '← Back to WHA Dashboard',
-        themeLabel:      'Theme',
-        pageTitle:       'MEXICO STABILITY INDEX',
-        pageSubtitle:    'Multi-Factor Analysis: Cartel Conflict, State Capacity, U.S. Border Dynamics & Democratic Institutions',
-        lastUpdated:     'Last updated: Loading...',
-        wcLabel:         'U.S. State Department — Worldwide Caution',
-        wcText:          'The U.S. State Department maintains a standing Worldwide Caution advising U.S. citizens to be aware of the increased risk of terrorist attacks, violence, and other threats worldwide. Review local conditions before travel.',
-        wcBtn:           'VIEW CAUTION →',
-        taLabel:         'U.S. State Department — Mexico Travel Advisory',
-        taHeadline:      'Reconsider Travel to Mexico',
-        taText:          ' due to crime and kidnapping. Violent crime — homicide, kidnapping, carjacking, and robbery — is widespread and common. The U.S. government has limited ability to provide emergency services to U.S. citizens in many areas of Mexico.',
-        taBtn:           'VIEW ADVISORY →',
-        mapTitle:        'Mexico — Strategic Overview',
-        mapSubtitle:     'Key conflict zones, cartel territorial control areas, and U.S. border crossing points. Data based on open-source reporting.',
-        kbTitle:         'Knowledge Library',
-        kbDisclaimer:    'Background information compiled from open-source research, think tank analysis, and government publications.',
-        kb1Title:        'Cartel Landscape & Territorial Control',
-        kb1p1:           '<strong>Mexico\'s criminal landscape is dominated by several major cartel organizations</strong> competing for territory, drug trafficking routes, and control of extortion networks. The Sinaloa Cartel and the Jalisco New Generation Cartel (CJNG) are the two most powerful organizations.',
-        kb1p2:           '<strong>Territorial Hotspots:</strong> Sinaloa, Sonora, Chihuahua, Tamaulipas, Michoacán, Guerrero, Colima, and Zacatecas consistently record the highest rates of cartel-related violence.',
-        kb1p3:           '<strong>Military-Grade Capabilities:</strong> Major cartels now field drones, armored vehicles, and .50-caliber weapons, and have demonstrated the ability to temporarily defeat Mexican military forces in direct engagements.',
-        kb2Title:        'State Capacity & Security Forces',
-        kb2p1:           '<strong>Mexico\'s security architecture has shifted significantly</strong> under President Claudia Sheinbaum. The National Guard (Guardia Nacional) was created in 2019, but critics argue it lacks adequate training and civilian oversight.',
-        kb2p2:           '<strong>Police Corruption:</strong> Local and state police forces remain deeply compromised by cartel infiltration and corruption, limiting effective law enforcement at the municipal level.',
-        kb2p3:           '<strong>Hugs Not Bullets:</strong> AMLO\'s "abrazos no balazos" strategy avoided direct military confrontation with cartels. The Sheinbaum administration has signaled a more assertive approach.',
-        kb3Title:        'U.S.–Mexico Relations & Border Dynamics',
-        kb3p1:           '<strong>The U.S.–Mexico relationship encompasses $800+ billion in annual trade</strong>, shared border security challenges, migration flows, and drug trafficking. The two countries are bound by the USMCA trade agreement.',
-        kb3p2:           '<strong>Cartel Designation Pressure:</strong> The U.S. has debated designating Mexican cartels as Foreign Terrorist Organizations. Mexico firmly opposes any unilateral U.S. military operations on Mexican soil.',
-        kb3p3:           '<strong>Fentanyl Crisis:</strong> The flow of fentanyl trafficked by cartels through Mexico has become the defining drug policy challenge and a constant source of bilateral tension.',
-        kb4Title:        'Democratic Institutions & Rule of Law',
-        kb4p1:           '<strong>Mexico is a federal constitutional republic</strong> but faces deep structural challenges. A sweeping judicial reform in 2024 introduced popular election of judges, drawing international criticism.',
-        kb4p2:           '<strong>Press Freedom:</strong> Mexico is one of the world\'s most dangerous countries for journalists. Reporters covering cartel activity face assassination and many stories go unpublished.',
-        kb4p3:           '<strong>Morena\'s Dominance:</strong> The ruling Morena party and its allies hold supermajorities in both chambers of Congress, raising concerns about institutional checks and balances.',
-        kb5Title:        'Economy & Nearshoring',
-        kb5p1:           '<strong>Mexico\'s economy is the 12th largest in the world</strong> and deeply integrated with the United States. Mexico has emerged as a major nearshoring beneficiary as companies seek to reduce supply chain dependence on China.',
-        kb5p2:           '<strong>Remittances:</strong> Remittances exceeded $63 billion in 2023, surpassing oil revenues as a foreign exchange earner.',
-        kb5p3:           '<strong>Risks:</strong> Cartel extortion, state capture of local economies, and U.S. tariff threats represent significant economic risks given trade dependency.',
-        kb6Title:        'Humanitarian & Displacement',
-        kb6p1:           '<strong>Mexico hosts one of the world\'s largest internally displaced populations</strong> driven by cartel violence. Tens of thousands have fled Sinaloa, Michoacán, Chihuahua, and Guerrero.',
-        kb6p2:           '<strong>Transit Migration:</strong> Mexico is a major transit country for migrants from Central America, South America, and Haiti seeking to reach the U.S. border.',
-        kb6p3:           '<strong>Femicide Crisis:</strong> Mexico records among the highest rates of femicide in Latin America, with approximately 10 women killed per day.',
-        disclaimer:      '* Based on open-source intelligence, think tank analysis, and government publications',
-        articlesTitle:   'Recent Mexico OSINT Articles (Last 7 Days)',
-        articlesLoading: 'Loading articles...',
-        footerAboutTitle:   'About This Page',
-        footerAboutText:    'Asifah Analytics is a personal-time, open-source OSINT geopolitical intelligence platform. Mexico stability data is sourced from GDELT, NewsAPI, and RSS feeds updated every 12 hours.',
-        footerSourcesTitle: 'Data Sources',
-        footerBackendTitle: 'Backend',
-        footerBackendText:  'Updates every 12 hours',
-        footerPrivacy:   'Privacy Policy',
-        footerContact:   'Contact',
-        footerCoffee:    'Buy Me a Coffee',
-        footerDisclaimer:'⚠️ Research & Educational Use Only. Not for operational decision-making.',
+        back_to_wha: "← W. Hemisphere",
+        theme_label: "Theme",
+        page_title: "🇲🇽 MEXICO STABILITY INDEX",
+        page_subtitle: "Multi-Factor Analysis: Cartel Conflict & State Capacity · U.S. Border Dynamics · Oil & Corn Commodity Exposure · Financial Pulse (IPC · USD/MXN · WTI)",
+        loading_title: "Loading Mexico Stability Data",
+        loading_progress: "Connecting to backend... This may take 20-40 seconds on cold cache.",
+        nav_dashboards: "Dashboards",
+        nav_rhetoric: "Regional Rhetoric",
+        nav_mexico: "Mexico",
+        nav_africa: "🌍 Africa",
+        nav_asia_pacific: "🌏 Asia & Pacific",
+        nav_europe: "🌍 Europe",
+        nav_me: "🕌 Middle East",
+        nav_wha: "🌎 W. Hemisphere",
+        nav_military: "🎖️ Military Tracker",
+        nav_gpi: "🌐 Global Pressure",
+        nav_commodities: "🛢️ Commodities",
+        nav_rhetoric_me: "🕌 Middle East",
+        nav_rhetoric_asia: "🌏 Asia",
+        nav_rhetoric_europe: "🌍 Europe",
+        nav_rhetoric_wha: "🌎 W. Hemisphere",
+        nav_mexico_stability: "🇲🇽 Mexico Stability",
+        nav_here: "◉ You are here",
+        ww_caution_label: "⚠️ U.S. State Department — Worldwide Caution",
+        ww_caution_text: "Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.",
+        ww_caution_button: "VIEW CAUTION →",
+        travel_label: "U.S. State Department — Mexico Travel Advisory",
+        travel_level: "LOADING…",
+        travel_text: "<strong style='color: #f97316;'>Reconsider Travel (advisory varies by state).</strong> Violent crime — homicide, kidnapping, carjacking, and robbery — is widespread. Six states including Colima, Guerrero, Michoacán, Sinaloa, Tamaulipas, and Zacatecas are <strong>Level 4: Do Not Travel</strong>. The U.S. government has limited ability to provide emergency services in many areas.",
+        travel_button: "VIEW ADVISORY →",
+        rhetoric_ph_title: "📡 🇲🇽 Mexico Rhetoric & Pressure Tracker",
+        rhetoric_ph_subtitle: "Coming soon: Sheinbaum Government · SEDENA / Guardia Nacional · Cartel Communications · US Border Track · FTO Designation Pressure",
+        rhetoric_in_dev: "🔧 In Development",
+        rhetoric_ph_text: "The dedicated Mexico rhetoric tracker is queued on the WHA build roadmap. Until it ships, read Mexico's pressure load through the commodity exposure and financial pulse cards below — both are live sensors. When the tracker is live, this card will populate with a composite gauge, vector scores, and top signals.",
+        commodity_title: "🛢️ Commodity Exposure & Strategic Pressure",
+        commodity_prose_loading: "Loading commodity exposure profile…",
+        commodity_loading: "⏳ Loading commodity exposure tiles…",
+        cca_oil_title: "⚡ Oil × Pemex Fiscal Convergence",
+        cca_oil_detail: "Pemex carries the largest debt load of any oil company in the world, and federal budget transfers to keep it solvent compete directly with social spending. When crude prices fall while cartel fuel theft (huachicoleo) persists, the fiscal squeeze tightens — historically a precursor to austerity friction and state-capacity stress.",
+        cca_corn_title: "🌽 Corn × Food-Price Social Stress",
+        cca_corn_detail: "Mexico is self-sufficient in white corn (tortillas) but imports the bulk of its yellow corn from the U.S. — one of the world’s largest corn import dependencies. Tortilla price shocks are a documented social-stress trigger: the 2007 tortilla crisis put tens of thousands on the streets. Sustained corn price stress co-occurring with peso weakness is the compound pattern to watch.",
+        ts_title: "📰 Top signals (last 24h)",
+        strategic_linkage: "<strong>🎯 Strategic Linkage:</strong> Mexico is the world's <strong>#1 silver producer</strong> (~24% of global output per USGS), a major crude exporter through Pemex (Maya crude priced off WTI-linked formulas), and one of the world's largest corn importers despite white-corn self-sufficiency — the 2007 tortilla crisis is the canonical precedent for food-price social stress. Remittances (~$60B+/yr) exceed oil as a foreign-exchange earner, tying household stability to U.S. labor-market access. Watch: Pemex production and debt-service trajectory, white-corn and tortilla prices, USD/MXN under U.S. tariff rhetoric, FTO-designation enforcement dynamics, and nearshoring investment flows under USMCA review pressure.",
+        pulse_title: "Mexico Financial Pulse",
+        pulse_loading_pill: "Loading...",
+        pulse_loading: "Loading financial pulse…",
+        pulse_prose: "Three live signals tracking Mexico's financial stability. <strong>S&amp;P/BMV IPC</strong> is the Bolsa Mexicana equity benchmark — domestic institutional confidence. <strong>USD/MXN</strong> shows peso FX stress (rising = weaker peso — <strong>INVERTED polarity</strong>), the fastest-moving readout of tariff rhetoric and capital-flow pressure. <strong>WTI (CL=F)</strong> is the Pemex state-oil-revenue proxy — Mexican export crude prices off WTI-linked formulas. Updated every 12 hours.",
+        stability_card_title: "🇲🇽 Mexico Stability Index",
+        stability_card_text: "Multi-factor stability assessment combining cartel-conflict posture, state capacity, U.S. border dynamics, commodity exposure (oil/corn), and financial pulse (IPC · USD/MXN · WTI).<br><br><em style=\"color:var(--text-muted);\">The financial pulse backend (mexico_stability.py) is live above. Full composite stability scoring is in development. Until then, draw stability inferences from the commodity, financial pulse, and Knowledge Library cards. When the rhetoric tracker ships, this card will populate with a theatre score.</em>",
+        meta_mil_posture: "Military Posture",
+        meta_rhetoric: "Rhetoric Tier",
+        meta_commodity: "Commodity Pressure",
+        meta_alert: "Alert Level",
+        map_title: "🗺️ Mexico — Strategic Overview",
+        map_subtitle: "Key conflict zones, cartel territorial control areas, and U.S. border crossing points. Data based on open-source reporting.",
+        articles_title: "📰 Recent Mexico, Border & Regional Articles",
+        articles_loading: "Loading articles...",
+        tab_all: "All",
+        tab_en: "English",
+        tab_es: "Español",
+        tab_social: "Social",
+        kbTitle: "Knowledge Library",
+        kbDisclaimer: "Background information compiled from open-source research, think tank analysis, and government publications.",
+        disclaimer: "* Based on open-source intelligence, think tank analysis, and government publications",
+        kb1Title: "Cartel Landscape & Territorial Control",
+        kb2Title: "State Capacity & Security Forces",
+        kb3Title: "U.S.–Mexico Relations & Border Dynamics",
+        kb4Title: "Democratic Institutions & Rule of Law",
+        kb5Title: "Economy & Nearshoring",
+        kb6Title: "Humanitarian & Displacement",
+        kb1p1: "<strong>Mexico's criminal landscape is dominated by several major cartel organizations</strong> competing for territory, drug trafficking routes, and control of extortion networks. The Sinaloa Cartel and the Jalisco New Generation Cartel (CJNG) are the two most powerful organizations.",
+        kb1p2: "<strong>Territorial Hotspots:</strong> Sinaloa, Sonora, Chihuahua, Tamaulipas, Michoacán, Guerrero, Colima, and Zacatecas consistently record the highest rates of cartel-related violence.",
+        kb1p3: "<strong>Military-Grade Capabilities:</strong> Major cartels now field drones, armored vehicles, and .50-caliber weapons, and have demonstrated the ability to temporarily defeat Mexican military forces in direct engagements.",
+        kb2p1: "<strong>Mexico's security architecture has shifted significantly</strong> under President Claudia Sheinbaum. The National Guard (Guardia Nacional) was created in 2019, but critics argue it lacks adequate training and civilian oversight.",
+        kb2p2: "<strong>Police Corruption:</strong> Local and state police forces remain deeply compromised by cartel infiltration and corruption, limiting effective law enforcement at the municipal level.",
+        kb2p3: "<strong>Hugs Not Bullets:</strong> AMLO's \"abrazos no balazos\" strategy avoided direct military confrontation with cartels. The Sheinbaum administration has signaled a more assertive approach.",
+        kb3p1: "<strong>The U.S.–Mexico relationship encompasses $800+ billion in annual trade</strong>, shared border security challenges, migration flows, and drug trafficking. The two countries are bound by the USMCA trade agreement.",
+        kb3p2: "<strong>Cartel Designation Pressure:</strong> The U.S. designated several Mexican cartels as Foreign Terrorist Organizations in February 2025. Mexico firmly opposes any unilateral U.S. military operations on Mexican soil, making enforcement a standing sovereignty flashpoint.",
+        kb3p3: "<strong>Fentanyl Crisis:</strong> The flow of fentanyl trafficked by cartels through Mexico has become the defining drug policy challenge and a constant source of bilateral tension.",
+        kb4p1: "<strong>Mexico is a federal constitutional republic</strong> but faces deep structural challenges. A sweeping judicial reform in 2024 introduced popular election of judges, drawing international criticism.",
+        kb4p2: "<strong>Press Freedom:</strong> Mexico is one of the world's most dangerous countries for journalists. Reporters covering cartel activity face assassination and many stories go unpublished.",
+        kb4p3: "<strong>Morena's Dominance:</strong> The ruling Morena party and its allies hold supermajorities in both chambers of Congress, raising concerns about institutional checks and balances.",
+        kb5p1: "<strong>Mexico's economy is the 12th largest in the world</strong> and deeply integrated with the United States. Mexico has emerged as a major nearshoring beneficiary as companies seek to reduce supply chain dependence on China.",
+        kb5p2: "<strong>Remittances:</strong> Remittances exceeded $63 billion in 2023, surpassing oil revenues as a foreign exchange earner.",
+        kb5p3: "<strong>Risks:</strong> Cartel extortion, state capture of local economies, and U.S. tariff threats represent significant economic risks given trade dependency.",
+        kb6p1: "<strong>Mexico hosts one of the world's largest internally displaced populations</strong> driven by cartel violence. Tens of thousands have fled Sinaloa, Michoacán, Chihuahua, and Guerrero.",
+        kb6p2: "<strong>Transit Migration:</strong> Mexico is a major transit country for migrants from Central America, South America, and Haiti seeking to reach the U.S. border.",
+        kb6p3: "<strong>Femicide Crisis:</strong> Mexico records among the highest rates of femicide in Latin America, with approximately 10 women killed per day.",
     },
     es: {
-        backBtn:         '← Volver al Panel WHA',
-        themeLabel:      'Tema',
-        pageTitle:       'ÍNDICE DE ESTABILIDAD DE MÉXICO',
-        pageSubtitle:    'Análisis Multifactorial: Conflicto de Cárteles, Capacidad Estatal, Dinámica Fronteriza con EE.UU. e Instituciones Democráticas',
-        lastUpdated:     'Última actualización: Cargando...',
-        wcLabel:         'Depto. de Estado de EE.UU. — Precaución Mundial',
-        wcText:          'El Departamento de Estado de EE.UU. mantiene una Precaución Mundial vigente que aconseja a los ciudadanos estadounidenses estar atentos al mayor riesgo de ataques terroristas, violencia y otras amenazas en todo el mundo.',
-        wcBtn:           'VER PRECAUCIÓN →',
-        taLabel:         'Depto. de Estado de EE.UU. — Aviso de Viaje a México',
-        taHeadline:      'Reconsidera Viajar a México',
-        taText:          ' debido a crimen y secuestros. El crimen violento — homicidio, secuestro, robo de autos y robo — es generalizado. El gobierno de EE.UU. tiene capacidad limitada para brindar servicios de emergencia en muchas áreas de México.',
-        taBtn:           'VER AVISO →',
-        mapTitle:        'México — Panorama Estratégico',
-        mapSubtitle:     'Zonas clave de conflicto, áreas de control territorial de cárteles y cruces fronterizos con EE.UU. Datos basados en informes de fuentes abiertas.',
-        kbTitle:         'Biblioteca de Conocimiento',
-        kbDisclaimer:    'Información de contexto compilada de investigación de fuentes abiertas, análisis de think tanks y publicaciones gubernamentales.',
-        kb1Title:        'Panorama de Cárteles y Control Territorial',
-        kb1p1:           '<strong>El panorama criminal de México está dominado por varias organizaciones de cárteles</strong> que compiten por territorio, rutas de tráfico de drogas y control de redes de extorsión. El Cártel de Sinaloa y el CJNG son las dos organizaciones más poderosas.',
-        kb1p2:           '<strong>Puntos Críticos:</strong> Sinaloa, Sonora, Chihuahua, Tamaulipas, Michoacán, Guerrero, Colima y Zacatecas registran consistentemente las tasas más altas de violencia relacionada con cárteles.',
-        kb1p3:           '<strong>Capacidades Militares:</strong> Los principales cárteles ahora emplean drones, vehículos blindados y armas calibre .50, y han demostrado capacidad para vencer temporalmente a las fuerzas militares mexicanas.',
-        kb2Title:        'Capacidad Estatal y Fuerzas de Seguridad',
-        kb2p1:           '<strong>La arquitectura de seguridad de México ha cambiado significativamente</strong> bajo la presidenta Claudia Sheinbaum. La Guardia Nacional fue creada en 2019, pero los críticos argumentan que carece de capacitación adecuada.',
-        kb2p2:           '<strong>Corrupción Policial:</strong> Las fuerzas policiales locales y estatales siguen profundamente comprometidas por la infiltración y corrupción de los cárteles.',
-        kb2p3:           '<strong>Abrazos No Balazos:</strong> La estrategia de AMLO evitó la confrontación militar directa con los cárteles. La administración Sheinbaum ha señalado un enfoque más asertivo.',
-        kb3Title:        'Relaciones EE.UU.–México y Dinámica Fronteriza',
-        kb3p1:           '<strong>La relación EE.UU.–México abarca más de 800 mil millones de dólares en comercio anual</strong>, desafíos compartidos de seguridad fronteriza, flujos migratorios y narcotráfico.',
-        kb3p2:           '<strong>Presión por Designación de Cárteles:</strong> EE.UU. ha debatido designar a los cárteles mexicanos como Organizaciones Terroristas Extranjeras. México se opone firmemente a operaciones unilaterales de EE.UU. en suelo mexicano.',
-        kb3p3:           '<strong>Crisis del Fentanilo:</strong> El flujo de fentanilo traficado por los cárteles a través de México es el principal desafío de política de drogas y fuente constante de tensión bilateral.',
-        kb4Title:        'Instituciones Democráticas y Estado de Derecho',
-        kb4p1:           '<strong>México es una república constitucional federal</strong> pero enfrenta profundos desafíos estructurales. Una reforma judicial de 2024 introdujo la elección popular de jueces, generando críticas internacionales.',
-        kb4p2:           '<strong>Libertad de Prensa:</strong> México es uno de los países más peligrosos del mundo para los periodistas. Los reporteros que cubren actividades de cárteles enfrentan asesinato.',
-        kb4p3:           '<strong>Dominio de Morena:</strong> El partido Morena y sus aliados tienen supermayorías en ambas cámaras del Congreso, generando preocupaciones sobre los controles institucionales.',
-        kb5Title:        'Economía y Nearshoring',
-        kb5p1:           '<strong>La economía de México es la 12ª más grande del mundo</strong> y está profundamente integrada con Estados Unidos. México ha emergido como un beneficiario importante del nearshoring.',
-        kb5p2:           '<strong>Remesas:</strong> Las remesas superaron los 63 mil millones de dólares en 2023, superando los ingresos petroleros como fuente de divisas.',
-        kb5p3:           '<strong>Riesgos:</strong> La extorsión de los cárteles y las amenazas arancelarias de EE.UU. representan riesgos económicos significativos.',
-        kb6Title:        'Humanitario y Desplazamiento',
-        kb6p1:           '<strong>México alberga una de las mayores poblaciones desplazadas internamente del mundo</strong> impulsada por la violencia de los cárteles en Sinaloa, Michoacán, Chihuahua y Guerrero.',
-        kb6p2:           '<strong>Migración de Tránsito:</strong> México es un país de tránsito importante para migrantes de Centroamérica, Sudamérica y Haití que buscan llegar a la frontera con EE.UU.',
-        kb6p3:           '<strong>Crisis de Feminicidio:</strong> México registra una de las tasas más altas de feminicidio en América Latina, con aproximadamente 10 mujeres asesinadas por día.',
-        disclaimer:      '* Basado en inteligencia de fuentes abiertas, análisis de think tanks y publicaciones gubernamentales',
-        articlesTitle:   'Artículos Recientes sobre México (Últimos 7 días)',
-        articlesLoading: 'Cargando artículos...',
-        footerAboutTitle:   'Acerca de Esta Página',
-        footerAboutText:    'Asifah Analytics es una plataforma de inteligencia geopolítica OSINT de código abierto. Los datos de estabilidad de México se actualizan cada 12 horas.',
-        footerSourcesTitle: 'Fuentes de Datos',
-        footerBackendTitle: 'Backend',
-        footerBackendText:  'Se actualiza cada 12 horas',
-        footerPrivacy:   'Política de Privacidad',
-        footerContact:   'Contacto',
-        footerCoffee:    'Invítame un Café',
-        footerDisclaimer:'⚠️ Solo para Investigación y Uso Educativo. No para toma de decisiones operativas.',
+        back_to_wha: "← Hem. Occidental",
+        theme_label: "Tema",
+        page_title: "🇲🇽 ÍNDICE DE ESTABILIDAD DE MÉXICO",
+        page_subtitle: "Análisis multifactorial: Conflicto de cárteles y capacidad estatal · Dinámica fronteriza con EE.UU. · Exposición a petróleo y maíz · Pulso financiero (IPC · USD/MXN · WTI)",
+        loading_title: "Cargando datos de estabilidad de México",
+        loading_progress: "Conectando con el backend... Puede tardar 20-40 segundos en caché frío.",
+        nav_dashboards: "Paneles",
+        nav_rhetoric: "Retórica Regional",
+        nav_mexico: "México",
+        nav_africa: "🌍 África",
+        nav_asia_pacific: "🌏 Asia y Pacífico",
+        nav_europe: "🌍 Europa",
+        nav_me: "🕌 Oriente Medio",
+        nav_wha: "🌎 Hem. Occidental",
+        nav_military: "🎖️ Rastreador Militar",
+        nav_gpi: "🌐 Presión Global",
+        nav_commodities: "🛢️ Materias Primas",
+        nav_rhetoric_me: "🕌 Oriente Medio",
+        nav_rhetoric_asia: "🌏 Asia",
+        nav_rhetoric_europe: "🌍 Europa",
+        nav_rhetoric_wha: "🌎 Hem. Occidental",
+        nav_mexico_stability: "🇲🇽 Estabilidad de México",
+        nav_here: "◉ Usted está aquí",
+        ww_caution_label: "⚠️ Departamento de Estado de EE.UU. — Precaución Mundial",
+        ww_caution_text: "Tras el inicio de operaciones de combate de EE.UU. en Irán, los estadounidenses en todo el mundo, y especialmente en Oriente Medio, deben seguir las indicaciones de la embajada o consulado de EE.UU. más cercano.",
+        ww_caution_button: "VER AVISO →",
+        travel_label: "Departamento de Estado de EE.UU. — Aviso de Viaje a México",
+        travel_level: "CARGANDO…",
+        travel_text: "<strong style='color: #f97316;'>Reconsidere viajar (el aviso varía por estado).</strong> La violencia — homicidio, secuestro, robo de vehículos y asalto — está extendida. Seis estados, incluidos Colima, Guerrero, Michoacán, Sinaloa, Tamaulipas y Zacatecas, están en <strong>Nivel 4: No viajar</strong>. El gobierno de EE.UU. tiene capacidad limitada para brindar servicios de emergencia en muchas zonas.",
+        travel_button: "VER AVISO →",
+        rhetoric_ph_title: "📡 🇲🇽 Rastreador de Retórica y Presión de México",
+        rhetoric_ph_subtitle: "Próximamente: Gobierno de Sheinbaum · SEDENA / Guardia Nacional · Comunicaciones de cárteles · Frontera con EE.UU. · Presión por designación FTO",
+        rhetoric_in_dev: "🔧 En desarrollo",
+        rhetoric_ph_text: "El rastreador de retórica dedicado a México está en la hoja de ruta del backend WHA. Hasta entonces, lea la presión de México a través de las tarjetas de exposición a materias primas y pulso financiero — ambas son sensores en vivo. Cuando el rastreador esté activo, esta tarjeta mostrará un indicador compuesto, puntajes por vector y señales principales.",
+        commodity_title: "🛢️ Exposición a Materias Primas y Presión Estratégica",
+        commodity_prose_loading: "Cargando perfil de exposición…",
+        commodity_loading: "⏳ Cargando indicadores de materias primas…",
+        cca_oil_title: "⚡ Petróleo × Convergencia Fiscal de Pemex",
+        cca_oil_detail: "Pemex tiene la mayor deuda de cualquier petrolera del mundo, y las transferencias federales para mantenerla solvente compiten directamente con el gasto social. Cuando los precios del crudo caen mientras persiste el robo de combustible (huachicoleo), la presión fiscal se agudiza — históricamente un precursor de fricción por austeridad y estrés de capacidad estatal.",
+        cca_corn_title: "🌽 Maíz × Estrés Social por Precios de Alimentos",
+        cca_corn_detail: "México es autosuficiente en maíz blanco (tortillas) pero importa la mayor parte de su maíz amarillo de EE.UU. Los choques de precio de la tortilla son un detonante social documentado: la crisis de la tortilla de 2007 llevó a decenas de miles a las calles. El estrés sostenido del maíz junto con debilidad del peso es el patrón compuesto a vigilar.",
+        ts_title: "📰 Señales principales (últimas 24h)",
+        strategic_linkage: "<strong>🎯 Vinculación estratégica:</strong> México es el <strong>productor #1 de plata del mundo</strong> (~24% de la producción global según USGS), un exportador importante de crudo a través de Pemex (crudo Maya con fórmulas ligadas al WTI), y uno de los mayores importadores de maíz del mundo pese a la autosuficiencia en maíz blanco — la crisis de la tortilla de 2007 es el precedente canónico de estrés social por precios de alimentos. Las remesas (~$60 mil millones+/año) superan al petróleo como fuente de divisas. Vigilar: producción y deuda de Pemex, precios del maíz blanco y la tortilla, USD/MXN bajo retórica arancelaria de EE.UU., dinámica de aplicación de la designación FTO, y flujos de nearshoring bajo presión de revisión del T-MEC.",
+        pulse_title: "Pulso Financiero de México",
+        pulse_loading_pill: "Cargando...",
+        pulse_loading: "Cargando pulso financiero…",
+        pulse_prose: "Tres señales en vivo de la estabilidad financiera de México. <strong>S&amp;P/BMV IPC</strong> es el índice de referencia de la Bolsa Mexicana — confianza institucional interna. <strong>USD/MXN</strong> muestra el estrés cambiario del peso (al alza = peso más débil — <strong>polaridad INVERTIDA</strong>). <strong>WTI (CL=F)</strong> es el proxy de ingresos petroleros de Pemex. Actualizado cada 12 horas.",
+        stability_card_title: "🇲🇽 Índice de Estabilidad de México",
+        stability_card_text: "Evaluación multifactorial que combina conflicto de cárteles, capacidad estatal, dinámica fronteriza con EE.UU., exposición a materias primas (petróleo/maíz) y pulso financiero (IPC · USD/MXN · WTI).<br><br><em style=\"color:var(--text-muted);\">El backend del pulso financiero (mexico_stability.py) está activo arriba. La puntuación compuesta completa está en desarrollo.</em>",
+        meta_mil_posture: "Postura Militar",
+        meta_rhetoric: "Nivel Retórico",
+        meta_commodity: "Presión de Materias Primas",
+        meta_alert: "Nivel de Alerta",
+        map_title: "🗺️ México — Panorama Estratégico",
+        map_subtitle: "Zonas clave de conflicto, áreas de control territorial de cárteles y cruces fronterizos con EE.UU. Datos de reportes de fuentes abiertas.",
+        articles_title: "📰 Artículos Recientes: México, Frontera y Región",
+        articles_loading: "Cargando artículos...",
+        tab_all: "Todos",
+        tab_en: "Inglés",
+        tab_es: "Español",
+        tab_social: "Social",
+        kbTitle: "Biblioteca de Conocimiento",
+        kbDisclaimer: "Información de contexto compilada de investigación de fuentes abiertas, análisis de think tanks y publicaciones gubernamentales.",
+        disclaimer: "* Basado en inteligencia de fuentes abiertas, análisis de think tanks y publicaciones gubernamentales",
+        kb1Title: "Panorama de Cárteles y Control Territorial",
+        kb2Title: "Capacidad Estatal y Fuerzas de Seguridad",
+        kb3Title: "Relaciones EE.UU.–México y Dinámica Fronteriza",
+        kb4Title: "Instituciones Democráticas y Estado de Derecho",
+        kb5Title: "Economía y Nearshoring",
+        kb6Title: "Humanitario y Desplazamiento",
+        kb1p1: "<strong>El panorama criminal de México está dominado por varias organizaciones de cárteles</strong> que compiten por territorio, rutas de tráfico de drogas y control de redes de extorsión. El Cártel de Sinaloa y el CJNG son las dos organizaciones más poderosas.",
+        kb1p2: "<strong>Puntos Críticos:</strong> Sinaloa, Sonora, Chihuahua, Tamaulipas, Michoacán, Guerrero, Colima y Zacatecas registran consistentemente las tasas más altas de violencia relacionada con cárteles.",
+        kb1p3: "<strong>Capacidades Militares:</strong> Los principales cárteles ahora emplean drones, vehículos blindados y armas calibre .50, y han demostrado capacidad para vencer temporalmente a las fuerzas militares mexicanas.",
+        kb2p1: "<strong>La arquitectura de seguridad de México ha cambiado significativamente</strong> bajo la presidenta Claudia Sheinbaum. La Guardia Nacional fue creada en 2019, pero los críticos argumentan que carece de capacitación adecuada.",
+        kb2p2: "<strong>Corrupción Policial:</strong> Las fuerzas policiales locales y estatales siguen profundamente comprometidas por la infiltración y corrupción de los cárteles.",
+        kb2p3: "<strong>Abrazos No Balazos:</strong> La estrategia de AMLO evitó la confrontación militar directa con los cárteles. La administración Sheinbaum ha señalado un enfoque más asertivo.",
+        kb3p1: "<strong>La relación EE.UU.–México abarca más de 800 mil millones de dólares en comercio anual</strong>, desafíos compartidos de seguridad fronteriza, flujos migratorios y narcotráfico.",
+        kb3p2: "<strong>Presión por designación de cárteles:</strong> EE.UU. designó a varios cárteles mexicanos como Organizaciones Terroristas Extranjeras en febrero de 2025. México se opone firmemente a cualquier operación militar unilateral de EE.UU. en suelo mexicano, lo que convierte su aplicación en un punto de fricción de soberanía permanente.",
+        kb3p3: "<strong>Crisis del Fentanilo:</strong> El flujo de fentanilo traficado por los cárteles a través de México es el principal desafío de política de drogas y fuente constante de tensión bilateral.",
+        kb4p1: "<strong>México es una república constitucional federal</strong> pero enfrenta profundos desafíos estructurales. Una reforma judicial de 2024 introdujo la elección popular de jueces, generando críticas internacionales.",
+        kb4p2: "<strong>Libertad de Prensa:</strong> México es uno de los países más peligrosos del mundo para los periodistas. Los reporteros que cubren actividades de cárteles enfrentan asesinato.",
+        kb4p3: "<strong>Dominio de Morena:</strong> El partido Morena y sus aliados tienen supermayorías en ambas cámaras del Congreso, generando preocupaciones sobre los controles institucionales.",
+        kb5p1: "<strong>La economía de México es la 12ª más grande del mundo</strong> y está profundamente integrada con Estados Unidos. México ha emergido como un beneficiario importante del nearshoring.",
+        kb5p2: "<strong>Remesas:</strong> Las remesas superaron los 63 mil millones de dólares en 2023, superando los ingresos petroleros como fuente de divisas.",
+        kb5p3: "<strong>Riesgos:</strong> La extorsión de los cárteles y las amenazas arancelarias de EE.UU. representan riesgos económicos significativos.",
+        kb6p1: "<strong>México alberga una de las mayores poblaciones desplazadas internamente del mundo</strong> impulsada por la violencia de los cárteles en Sinaloa, Michoacán, Chihuahua y Guerrero.",
+        kb6p2: "<strong>Migración de Tránsito:</strong> México es un país de tránsito importante para migrantes de Centroamérica, Sudamérica y Haití que buscan llegar a la frontera con EE.UU.",
+        kb6p3: "<strong>Crisis de Feminicidio:</strong> México registra una de las tasas más altas de feminicidio en América Latina, con aproximadamente 10 mujeres asesinadas por día.",
     },
     pt: {
-        backBtn:         '← Voltar ao Painel WHA',
-        themeLabel:      'Tema',
-        pageTitle:       'ÍNDICE DE ESTABILIDADE DO MÉXICO',
-        pageSubtitle:    'Análise Multifatorial: Conflito de Cartéis, Capacidade Estatal, Dinâmica Fronteiriça com os EUA e Instituições Democráticas',
-        lastUpdated:     'Última atualização: Carregando...',
-        wcLabel:         'Depto. de Estado dos EUA — Cautela Mundial',
-        wcText:          'O Departamento de Estado dos EUA mantém uma Cautela Mundial vigente aconselhando os cidadãos americanos a estarem cientes do maior risco de ataques terroristas, violência e outras ameaças em todo o mundo.',
-        wcBtn:           'VER CAUTELA →',
-        taLabel:         'Depto. de Estado dos EUA — Aviso de Viagem ao México',
-        taHeadline:      'Reconsidere Viajar ao México',
-        taText:          ' devido a crimes e sequestros. O crime violento — homicídio, sequestro, roubo de veículos e roubo — é generalizado. O governo dos EUA tem capacidade limitada para fornecer serviços de emergência em muitas áreas do México.',
-        taBtn:           'VER AVISO →',
-        mapTitle:        'México — Visão Geral Estratégica',
-        mapSubtitle:     'Principais zonas de conflito, áreas de controle territorial de cartéis e pontos de cruzamento da fronteira com os EUA. Dados baseados em fontes abertas.',
-        kbTitle:         'Biblioteca de Conhecimento',
-        kbDisclaimer:    'Informações de contexto compiladas de pesquisa de fontes abertas, análise de think tanks e publicações governamentais.',
-        kb1Title:        'Panorama dos Cartéis e Controle Territorial',
-        kb1p1:           '<strong>O panorama criminal do México é dominado por várias organizações de cartéis</strong> que competem por território, rotas de tráfico de drogas e controle de redes de extorsão. O Cartel de Sinaloa e o CJNG são as duas organizações mais poderosas.',
-        kb1p2:           '<strong>Pontos Críticos:</strong> Sinaloa, Sonora, Chihuahua, Tamaulipas, Michoacán, Guerrero, Colima e Zacatecas registram consistentemente as maiores taxas de violência relacionada a cartéis.',
-        kb1p3:           '<strong>Capacidades Militares:</strong> Os principais cartéis empregam drones, veículos blindados e armas calibre .50, e demonstraram capacidade de derrotar temporariamente as forças militares mexicanas.',
-        kb2Title:        'Capacidade Estatal e Forças de Segurança',
-        kb2p1:           '<strong>A arquitetura de segurança do México mudou significativamente</strong> sob a presidenta Claudia Sheinbaum. A Guarda Nacional foi criada em 2019, mas críticos argumentam que carece de treinamento adequado.',
-        kb2p2:           '<strong>Corrupção Policial:</strong> As forças policiais locais e estaduais permanecem profundamente comprometidas pela infiltração e corrupção dos cartéis.',
-        kb2p3:           '<strong>Abraços Não Balas:</strong> A estratégia de AMLO evitou o confronto militar direto com os cartéis. A administração Sheinbaum sinalizou uma abordagem mais assertiva.',
-        kb3Title:        'Relações EUA–México e Dinâmica Fronteiriça',
-        kb3p1:           '<strong>A relação EUA–México abrange mais de 800 bilhões de dólares em comércio anual</strong>, desafios compartilhados de segurança fronteiriça, fluxos migratórios e tráfico de drogas.',
-        kb3p2:           '<strong>Pressão pela Designação de Cartéis:</strong> Os EUA debateram designar os cartéis mexicanos como Organizações Terroristas Estrangeiras. O México se opõe firmemente a operações unilaterais dos EUA em solo mexicano.',
-        kb3p3:           '<strong>Crise do Fentanil:</strong> O fluxo de fentanil traficado pelos cartéis pelo México tornou-se o principal desafio de política de drogas e fonte constante de tensão bilateral.',
-        kb4Title:        'Instituições Democráticas e Estado de Direito',
-        kb4p1:           '<strong>O México é uma república constitucional federal</strong> mas enfrenta profundos desafios estruturais. Uma reforma judicial de 2024 introduziu a eleição popular de juízes, gerando críticas internacionais.',
-        kb4p2:           '<strong>Liberdade de Imprensa:</strong> O México é um dos países mais perigosos do mundo para jornalistas. Repórteres que cobrem atividades de cartéis enfrentam assassinato.',
-        kb4p3:           '<strong>Domínio do Morena:</strong> O partido Morena e seus aliados têm supermaioria em ambas as câmaras do Congresso, levantando preocupações sobre controles institucionais.',
-        kb5Title:        'Economia e Nearshoring',
-        kb5p1:           '<strong>A economia do México é a 12ª maior do mundo</strong> e profundamente integrada com os Estados Unidos. O México emergiu como um grande beneficiário do nearshoring.',
-        kb5p2:           '<strong>Remessas:</strong> As remessas ultrapassaram US$ 63 bilhões em 2023, superando as receitas do petróleo como fonte de divisas.',
-        kb5p3:           '<strong>Riscos:</strong> A extorsão dos cartéis e as ameaças tarifárias dos EUA representam riscos econômicos significativos.',
-        kb6Title:        'Humanitário e Deslocamento',
-        kb6p1:           '<strong>O México abriga uma das maiores populações deslocadas internamente do mundo</strong> impulsionada pela violência dos cartéis em Sinaloa, Michoacán, Chihuahua e Guerrero.',
-        kb6p2:           '<strong>Migração de Trânsito:</strong> O México é um país de trânsito importante para migrantes da América Central, América do Sul e Haiti que buscam chegar à fronteira com os EUA.',
-        kb6p3:           '<strong>Crise do Feminicídio:</strong> O México registra uma das maiores taxas de feminicídio da América Latina, com aproximadamente 10 mulheres assassinadas por dia.',
-        disclaimer:      '* Baseado em inteligência de fontes abertas, análise de think tanks e publicações governamentais',
-        articlesTitle:   'Artigos Recentes sobre o México (Últimos 7 dias)',
-        articlesLoading: 'Carregando artigos...',
-        footerAboutTitle:   'Sobre Esta Página',
-        footerAboutText:    'Asifah Analytics é uma plataforma de inteligência geopolítica OSINT de código aberto. Os dados de estabilidade do México são atualizados a cada 12 horas.',
-        footerSourcesTitle: 'Fontes de Dados',
-        footerBackendTitle: 'Backend',
-        footerBackendText:  'Atualizado a cada 12 horas',
-        footerPrivacy:   'Política de Privacidade',
-        footerContact:   'Contato',
-        footerCoffee:    'Me Pague um Café',
-        footerDisclaimer:'⚠️ Apenas para Pesquisa e Uso Educacional. Não para tomada de decisões operacionais.',
-    }
+        back_to_wha: "← Hem. Ocidental",
+        theme_label: "Tema",
+        page_title: "🇲🇽 ÍNDICE DE ESTABILIDADE DO MÉXICO",
+        page_subtitle: "Análise multifatorial: Conflito de cartéis e capacidade estatal · Dinâmica de fronteira com os EUA · Exposição a petróleo e milho · Pulso financeiro (IPC · USD/MXN · WTI)",
+        loading_title: "Carregando dados de estabilidade do México",
+        loading_progress: "Conectando ao backend... Pode levar 20-40 segundos em cache frio.",
+        nav_dashboards: "Painéis",
+        nav_rhetoric: "Retórica Regional",
+        nav_mexico: "México",
+        nav_africa: "🌍 África",
+        nav_asia_pacific: "🌏 Ásia e Pacífico",
+        nav_europe: "🌍 Europa",
+        nav_me: "🕌 Oriente Médio",
+        nav_wha: "🌎 Hem. Ocidental",
+        nav_military: "🎖️ Rastreador Militar",
+        nav_gpi: "🌐 Pressão Global",
+        nav_commodities: "🛢️ Commodities",
+        nav_rhetoric_me: "🕌 Oriente Médio",
+        nav_rhetoric_asia: "🌏 Ásia",
+        nav_rhetoric_europe: "🌍 Europa",
+        nav_rhetoric_wha: "🌎 Hem. Ocidental",
+        nav_mexico_stability: "🇲🇽 Estabilidade do México",
+        nav_here: "◉ Você está aqui",
+        ww_caution_label: "⚠️ Departamento de Estado dos EUA — Cautela Mundial",
+        ww_caution_text: "Após o início das operações de combate dos EUA no Irã, os americanos em todo o mundo, e especialmente no Oriente Médio, devem seguir as orientações da embaixada ou consulado dos EUA mais próximo.",
+        ww_caution_button: "VER AVISO →",
+        travel_label: "Departamento de Estado dos EUA — Aviso de Viagem ao México",
+        travel_level: "CARREGANDO…",
+        travel_text: "<strong style='color: #f97316;'>Reconsidere viajar (o aviso varia por estado).</strong> A violência — homicídio, sequestro, roubo de veículos e assalto — é generalizada. Seis estados, incluindo Colima, Guerrero, Michoacán, Sinaloa, Tamaulipas e Zacatecas, estão no <strong>Nível 4: Não viaje</strong>. O governo dos EUA tem capacidade limitada de prestar serviços de emergência em muitas áreas.",
+        travel_button: "VER AVISO →",
+        rhetoric_ph_title: "📡 🇲🇽 Rastreador de Retórica e Pressão do México",
+        rhetoric_ph_subtitle: "Em breve: Governo Sheinbaum · SEDENA / Guarda Nacional · Comunicações de cartéis · Fronteira com os EUA · Pressão de designação FTO",
+        rhetoric_in_dev: "🔧 Em desenvolvimento",
+        rhetoric_ph_text: "O rastreador de retórica dedicado ao México está no roteiro do backend WHA. Até lá, leia a pressão do México pelos cartões de exposição a commodities e pulso financeiro — ambos são sensores ao vivo. Quando o rastreador estiver ativo, este cartão mostrará um indicador composto, pontuações por vetor e principais sinais.",
+        commodity_title: "🛢️ Exposição a Commodities e Pressão Estratégica",
+        commodity_prose_loading: "Carregando perfil de exposição…",
+        commodity_loading: "⏳ Carregando indicadores de commodities…",
+        cca_oil_title: "⚡ Petróleo × Convergência Fiscal da Pemex",
+        cca_oil_detail: "A Pemex carrega a maior dívida de qualquer petrolífera do mundo, e as transferências federais para mantê-la solvente competem diretamente com gastos sociais. Quando os preços do petróleo caem enquanto o roubo de combustível (huachicoleo) persiste, o aperto fiscal se intensifica — historicamente um precursor de atrito por austeridade e estresse de capacidade estatal.",
+        cca_corn_title: "🌽 Milho × Estresse Social por Preços de Alimentos",
+        cca_corn_detail: "O México é autossuficiente em milho branco (tortilhas), mas importa a maior parte de seu milho amarelo dos EUA. Choques no preço da tortilha são um gatilho social documentado: a crise da tortilha de 2007 levou dezenas de milhares às ruas. Estresse sustentado do milho junto com fraqueza do peso é o padrão composto a observar.",
+        ts_title: "📰 Principais sinais (últimas 24h)",
+        strategic_linkage: "<strong>🎯 Vinculação estratégica:</strong> O México é o <strong>produtor nº 1 de prata do mundo</strong> (~24% da produção global segundo o USGS), um grande exportador de petróleo via Pemex (petróleo Maya com fórmulas ligadas ao WTI), e um dos maiores importadores de milho do mundo apesar da autossuficiência em milho branco — a crise da tortilha de 2007 é o precedente canônico de estresse social por preços de alimentos. As remessas (~US$ 60 bilhões+/ano) superam o petróleo como fonte de divisas. Observar: produção e dívida da Pemex, preços do milho branco e da tortilha, USD/MXN sob retórica tarifária dos EUA, dinâmica de aplicação da designação FTO, e fluxos de nearshoring sob pressão de revisão do USMCA.",
+        pulse_title: "Pulso Financeiro do México",
+        pulse_loading_pill: "Carregando...",
+        pulse_loading: "Carregando pulso financeiro…",
+        pulse_prose: "Três sinais ao vivo da estabilidade financeira do México. <strong>S&amp;P/BMV IPC</strong> é o índice de referência da Bolsa Mexicana — confiança institucional interna. <strong>USD/MXN</strong> mostra o estresse cambial do peso (em alta = peso mais fraco — <strong>polaridade INVERTIDA</strong>). <strong>WTI (CL=F)</strong> é o proxy de receita petrolífera da Pemex. Atualizado a cada 12 horas.",
+        stability_card_title: "🇲🇽 Índice de Estabilidade do México",
+        stability_card_text: "Avaliação multifatorial combinando conflito de cartéis, capacidade estatal, dinâmica de fronteira com os EUA, exposição a commodities (petróleo/milho) e pulso financeiro (IPC · USD/MXN · WTI).<br><br><em style=\"color:var(--text-muted);\">O backend do pulso financeiro (mexico_stability.py) está ativo acima. A pontuação composta completa está em desenvolvimento.</em>",
+        meta_mil_posture: "Postura Militar",
+        meta_rhetoric: "Nível Retórico",
+        meta_commodity: "Pressão de Commodities",
+        meta_alert: "Nível de Alerta",
+        map_title: "🗺️ México — Panorama Estratégico",
+        map_subtitle: "Zonas-chave de conflito, áreas de controle territorial de cartéis e travessias de fronteira com os EUA. Dados de relatórios de fontes abertas.",
+        articles_title: "📰 Artigos Recentes: México, Fronteira e Região",
+        articles_loading: "Carregando artigos...",
+        tab_all: "Todos",
+        tab_en: "Inglês",
+        tab_es: "Espanhol",
+        tab_social: "Social",
+        kbTitle: "Biblioteca de Conhecimento",
+        kbDisclaimer: "Informações de contexto compiladas de pesquisa de fontes abertas, análise de think tanks e publicações governamentais.",
+        disclaimer: "* Baseado em inteligência de fontes abertas, análise de think tanks e publicações governamentais",
+        kb1Title: "Panorama dos Cartéis e Controle Territorial",
+        kb2Title: "Capacidade Estatal e Forças de Segurança",
+        kb3Title: "Relações EUA–México e Dinâmica Fronteiriça",
+        kb4Title: "Instituições Democráticas e Estado de Direito",
+        kb5Title: "Economia e Nearshoring",
+        kb6Title: "Humanitário e Deslocamento",
+        kb1p1: "<strong>O panorama criminal do México é dominado por várias organizações de cartéis</strong> que competem por território, rotas de tráfico de drogas e controle de redes de extorsão. O Cartel de Sinaloa e o CJNG são as duas organizações mais poderosas.",
+        kb1p2: "<strong>Pontos Críticos:</strong> Sinaloa, Sonora, Chihuahua, Tamaulipas, Michoacán, Guerrero, Colima e Zacatecas registram consistentemente as maiores taxas de violência relacionada a cartéis.",
+        kb1p3: "<strong>Capacidades Militares:</strong> Os principais cartéis empregam drones, veículos blindados e armas calibre .50, e demonstraram capacidade de derrotar temporariamente as forças militares mexicanas.",
+        kb2p1: "<strong>A arquitetura de segurança do México mudou significativamente</strong> sob a presidenta Claudia Sheinbaum. A Guarda Nacional foi criada em 2019, mas críticos argumentam que carece de treinamento adequado.",
+        kb2p2: "<strong>Corrupção Policial:</strong> As forças policiais locais e estaduais permanecem profundamente comprometidas pela infiltração e corrupção dos cartéis.",
+        kb2p3: "<strong>Abraços Não Balas:</strong> A estratégia de AMLO evitou o confronto militar direto com os cartéis. A administração Sheinbaum sinalizou uma abordagem mais assertiva.",
+        kb3p1: "<strong>A relação EUA–México abrange mais de 800 bilhões de dólares em comércio anual</strong>, desafios compartilhados de segurança fronteiriça, fluxos migratórios e tráfico de drogas.",
+        kb3p2: "<strong>Pressão por designação de cartéis:</strong> Os EUA designaram vários cartéis mexicanos como Organizações Terroristas Estrangeiras em fevereiro de 2025. O México se opõe firmemente a qualquer operação militar unilateral dos EUA em solo mexicano, tornando a aplicação um ponto de atrito de soberania permanente.",
+        kb3p3: "<strong>Crise do Fentanil:</strong> O fluxo de fentanil traficado pelos cartéis pelo México tornou-se o principal desafio de política de drogas e fonte constante de tensão bilateral.",
+        kb4p1: "<strong>O México é uma república constitucional federal</strong> mas enfrenta profundos desafios estruturais. Uma reforma judicial de 2024 introduziu a eleição popular de juízes, gerando críticas internacionais.",
+        kb4p2: "<strong>Liberdade de Imprensa:</strong> O México é um dos países mais perigosos do mundo para jornalistas. Repórteres que cobrem atividades de cartéis enfrentam assassinato.",
+        kb4p3: "<strong>Domínio do Morena:</strong> O partido Morena e seus aliados têm supermaioria em ambas as câmaras do Congresso, levantando preocupações sobre controles institucionais.",
+        kb5p1: "<strong>A economia do México é a 12ª maior do mundo</strong> e profundamente integrada com os Estados Unidos. O México emergiu como um grande beneficiário do nearshoring.",
+        kb5p2: "<strong>Remessas:</strong> As remessas ultrapassaram US$ 63 bilhões em 2023, superando as receitas do petróleo como fonte de divisas.",
+        kb5p3: "<strong>Riscos:</strong> A extorsão dos cartéis e as ameaças tarifárias dos EUA representam riscos econômicos significativos.",
+        kb6p1: "<strong>O México abriga uma das maiores populações deslocadas internamente do mundo</strong> impulsionada pela violência dos cartéis em Sinaloa, Michoacán, Chihuahua e Guerrero.",
+        kb6p2: "<strong>Migração de Trânsito:</strong> O México é um país de trânsito importante para migrantes da América Central, América do Sul e Haiti que buscam chegar à fronteira com os EUA.",
+        kb6p3: "<strong>Crise do Feminicídio:</strong> O México registra uma das maiores taxas de feminicídio da América Latina, com aproximadamente 10 mulheres assassinadas por dia.",
+    },
 };
 
-var currentLang = 'en';
+// ════════════════════════════════════════════════════════════
+// LANGUAGE SWITCHING
+// ════════════════════════════════════════════════════════════
+let currentLang = 'en';
 
-function switchLang(lang, btn) {
+function applyTranslations() {
+    const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+        const key = el.getAttribute('data-i18n-html');
+        if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.documentElement.setAttribute('lang', currentLang);
+}
+
+function switchLanguage(lang, button) {
     currentLang = lang;
-    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
+    try { localStorage.setItem('asifah-mexico-lang', lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.remove('active'); });
+    if (button) button.classList.add('active');
     applyTranslations();
 }
 
-function applyTranslations() {
-    var t = TRANSLATIONS[currentLang] || TRANSLATIONS['en'];
-    document.querySelectorAll('[data-i18n]').forEach(function(el) {
-        var key = el.getAttribute('data-i18n');
-        if (t[key] !== undefined) {
-            el.innerHTML = t[key];
-        }
-    });
-}
+(function initLang() {
+    try {
+        const saved = localStorage.getItem('asifah-mexico-lang');
+        if (saved && TRANSLATIONS[saved]) currentLang = saved;
+    } catch (e) {}
+})();
 
-// ========================================
+// ════════════════════════════════════════════════════════════
 // THEME
-// ========================================
+// ════════════════════════════════════════════════════════════
 function initTheme() {
-    var saved = localStorage.getItem('asifah-theme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('themeToggle').checked = (saved === 'dark');
+    try {
+        const saved = localStorage.getItem('asifah-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) {}
 }
 function toggleTheme() {
-    var current = document.documentElement.getAttribute('data-theme');
-    var next = current === 'dark' ? 'light' : 'dark';
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('asifah-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch (e) {}
 }
 initTheme();
 
-// ========================================
-// KNOWLEDGE CARDS
-// ========================================
-function toggleCard(id) {
-    var card = document.getElementById('card-' + id);
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatDate(iso) {
+    if (!iso) return '';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return iso.slice(0, 10);
+        const now = new Date();
+        const diffMin = Math.round((now - d) / 60000);
+        if (diffMin < 60) return diffMin + 'm ago';
+        if (diffMin < 1440) return Math.round(diffMin / 60) + 'h ago';
+        return Math.round(diffMin / 1440) + 'd ago';
+    } catch (e) { return ''; }
+}
+
+function toggleKnowledgeCard(cardId) {
+    const card = document.getElementById('card-' + cardId);
     if (card) card.classList.toggle('collapsed');
 }
 
-// ========================================
-// MAP
-// ========================================
+function hideLoadingOverlay() {
+    const overlay = el('loadingOverlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        setTimeout(function () { overlay.style.display = 'none'; }, 600);
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// TRAVEL ADVISORY (dynamic from WHA backend)
+// ════════════════════════════════════════════════════════════
+async function loadTravelAdvisory() {
+    try {
+        const r = await fetch(WHA_BACKEND + '/api/wha/travel-advisories');
+        if (!r.ok) return;
+        const data = await r.json();
+        if (!data.success || !data.advisories) return;
+        const ad = data.advisories.mexico;
+        if (!ad) return;
+        const lvl = ad.level || 2;
+        const lvlEl = el('mexicoTravelLevel');
+        const containerEl = el('mexicoTravelAdvisory');
+        if (lvlEl) {
+            lvlEl.textContent = 'LEVEL ' + lvl;
+            const colors = {1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'};
+            lvlEl.style.background = colors[lvl] || '#6b7280';
+        }
+        if (containerEl) containerEl.style.borderColor = ({1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'})[lvl] || '#6b7280';
+    } catch (e) {
+        console.warn('[Mexico Stability] Travel advisory load failed:', e);
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// COMMODITY CARD — Gold Standard v2.0
+// ════════════════════════════════════════════════════════════
+async function loadCommodity() {
+    // WHA-local proxy first (commodity_proxy_wha.py caches ME data in WHA
+    // Redis); ME-backend direct as fallback. Same payload either way.
+    let data = null;
+    try {
+        const r = await fetch(WHA_BACKEND + '/api/wha/commodity/mexico');
+        if (r.ok) data = await r.json();
+    } catch (e) {
+        console.warn('[Mexico Commodity] WHA proxy failed:', e);
+    }
+    if (!data || data.success === false) {
+        try {
+            const r2 = await fetch(ME_BACKEND + '/api/commodity-pressure/mexico');
+            if (r2.ok) data = await r2.json();
+        } catch (e) {
+            console.warn('[Mexico Commodity] ME fallback failed:', e);
+        }
+    }
+    if (!data) {
+        const grid = el('commodityGrid');
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">⚠️ Commodity data unavailable</div>';
+        return;
+    }
+
+    renderCommodityProse(data);
+    renderCommodityAlertBanner(data);
+    renderCommodityTiles(data);
+    renderCommodityTopSignals(data);
+
+    // Update stability scaffold meta
+    const cm = el('metaCommodity');
+    if (cm) {
+        const al = (data.alert_level || 'normal').toUpperCase();
+        cm.textContent = al + ' (' + (data.commodity_pressure || 0).toFixed(1) + ')';
+    }
+    const ma = el('metaAlert');
+    if (ma) ma.textContent = (data.alert_level || 'normal').toUpperCase();
+
+    // Show convergence alerts based on tiles (heuristic: oil or corn at elevated+)
+    const tiles = data.commodity_summaries || [];
+    const oilTile = tiles.find(t => ['crude_oil', 'oil', 'crude'].includes(t.commodity));
+    const cornTile = tiles.find(t => t.commodity === 'corn');
+    const oilAlert = el('commodityConvergenceAlertOil');
+    const cornAlert = el('commodityConvergenceAlertCorn');
+    if (oilAlert && oilTile && oilTile.global_alert_level && oilTile.global_alert_level !== 'normal') {
+        oilAlert.classList.add('active');
+    }
+    if (cornAlert && cornTile && cornTile.global_alert_level && cornTile.global_alert_level !== 'normal') {
+        cornAlert.classList.add('active');
+    }
+}
+
+function renderCommodityProse(data) {
+    const proseEl = el('commodityProse');
+    if (!proseEl) return;
+    const prose = data.prose || data.profile_prose || '';
+    if (prose) proseEl.textContent = prose;
+}
+
+function renderCommodityAlertBanner(data) {
+    const banner = el('commodityAlertBanner');
+    if (!banner) return;
+    const alertLevel = (data.alert_level || 'normal').toLowerCase();
+    if (alertLevel === 'normal') {
+        banner.classList.remove('show');
+        return;
+    }
+    banner.className = 'commodity-alert-banner show alert-' + alertLevel;
+    banner.innerHTML = '<strong>' + alertLevel.toUpperCase() + '</strong> Composite commodity pressure: ' + alertLevel +
+        '<span class="ab-meta">' + ((data.commodity_pressure || 0).toFixed(1)) + ' pts · ' + (data.profile_count || 0) + ' commodities tracked</span>';
+}
+
+function renderCommodityTiles(data) {
+    const grid = el('commodityGrid');
+    if (!grid) return;
+    const tiles = data.commodity_summaries || [];
+    if (!tiles.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure profile available</div>';
+        return;
+    }
+    grid.innerHTML = tiles.map(function (t) {
+        const alertCls = 'commodity-alert-' + (t.global_alert_level || 'normal').toLowerCase();
+        const role = (t.role || '').toUpperCase();
+        const rank = t.rank ? '#' + t.rank : '';
+        const sigCount = t.signal_count || 0;
+        const note = t.note || '';
+        const sp = t.sparkline;
+        let priceHtml = '';
+        if (sp && sp.price != null) {
+            const ch = sp.change_pct_1d;
+            const dir = ch > 0 ? 'price-up' : ch < 0 ? 'price-down' : '';
+            const sign = ch >= 0 ? '+' : '';
+            priceHtml = '<div class="commodity-pill-price">$' + Number(sp.price).toFixed(2) +
+                (typeof ch === 'number' ? ' <span class="' + dir + '">' + sign + ch.toFixed(1) + '%</span>' : '') +
+                '</div>';
+        }
+        return '<div class="commodity-pill">' +
+            '<div class="commodity-pill-header">' +
+                '<span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+                '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+                (rank ? '<span class="commodity-pill-rank">' + rank + '</span>' : '') +
+            '</div>' +
+            '<div class="commodity-pill-row">' +
+                '<span class="commodity-pill-alert ' + alertCls + '">' + (t.global_alert_level || 'normal') + '</span>' +
+                (role ? '<span class="commodity-pill-role-badge">' + role + '</span>' : '') +
+                (sigCount ? '<span class="commodity-pill-signal-count">' + sigCount + ' sig</span>' : '') +
+            '</div>' +
+            priceHtml +
+            (note ? '<div class="commodity-pill-note">' + escapeHtml(note) + '</div>' : '') +
+        '</div>';
+    }).join('');
+}
+
+function renderCommodityTopSignals(data) {
+    const wrap = el('commodityTopSignals');
+    const list = el('commodityTopSignalsList');
+    if (!wrap || !list) return;
+    const sigs = data.top_signals || [];
+    if (!sigs.length || data.alert_level === 'normal') {
+        wrap.style.display = 'none';
+        return;
+    }
+    wrap.style.display = 'block';
+    list.innerHTML = sigs.slice(0, 5).map(function (s) {
+        const url = s.article_url || s.url || '#';
+        const title = s.article_title || s.title || 'Signal';
+        const src = s.source || s.feed_type || '';
+        return '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">▸ ' +
+            escapeHtml(title) + ' <span class="ts-source">' + escapeHtml(src) + '</span></a>';
+    }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// MILITARY POSTURE (scaffold — pulls from ME backend if available)
+// ════════════════════════════════════════════════════════════
+async function loadMilitaryPosture() {
+    try {
+        const r = await fetch(WHA_BACKEND + '/api/military-posture/mexico');
+        if (!r.ok) return;
+        const data = await r.json();
+        const mp = el('metaMilPosture');
+        if (mp) {
+            const lvl = (data.alert_level || 'normal').toUpperCase();
+            mp.textContent = lvl + ' (' + (data.military_bonus || 0).toFixed(1) + ')';
+        }
+    } catch (e) {
+        // silent fail — military backend may not have Mexico yet
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// ARTICLES (from WHA backend threat scan)
+// ════════════════════════════════════════════════════════════
+let allArticles = [];
+
+async function loadArticles() {
+    try {
+        const r = await fetch(WHA_BACKEND + '/api/wha/threat/mexico');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        allArticles = data.top_signals || [];
+        renderArticles('all');
+        if (data.last_updated) {
+            el('lastUpdated').textContent = 'Last scan: ' + formatDate(data.last_updated);
+        }
+    } catch (e) {
+        console.warn('[Mexico Stability] Articles load failed:', e);
+        const list = el('articlesList');
+        if (list) list.innerHTML = '<li style="color:var(--text-muted); font-style:italic; padding:20px; text-align:center;">Backend unavailable — refresh in 60 seconds.</li>';
+    }
+}
+
+function filterArticles(tab) {
+    document.querySelectorAll('.article-tab').forEach(function (t) {
+        t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    renderArticles(tab);
+}
+
+function renderArticles(tab) {
+    const list = el('articlesList');
+    if (!list) return;
+    if (!allArticles || !allArticles.length) {
+        list.innerHTML = '<li style="color:var(--text-muted); font-style:italic; padding:20px; text-align:center;">No articles available yet — cache may be warming up. Refresh in 60 seconds.</li>';
+        return;
+    }
+    let filtered = allArticles;
+    if (tab !== 'all') {
+        filtered = allArticles.filter(function (a) {
+            const ft = (a.feed_type || '').toLowerCase();
+            const url = (a.url || '').toLowerCase();
+            if (tab === 'social') {
+                return ft === 'bluesky' || ft === 'telegram' || ft === 'reddit' ||
+                       url.indexOf('bsky.app') !== -1 || url.indexOf('t.me') !== -1 || url.indexOf('reddit.com') !== -1;
+            }
+            if (tab === 'es') {
+                // Heuristic: Spanish-source articles. GDELT lang or domain hint.
+                const src = (a.source || '').toLowerCase();
+                return /\b(es|spa|spanish)\b/.test(ft) || /\.mx\b|\.es\b|eluniversal|milenio|jornada|reforma|excelsior|proceso|animalpolitico|aristegui|sinembargo|infobae/.test(src + ' ' + url);
+            }
+            if (tab === 'en') {
+                const src = (a.source || '').toLowerCase();
+                const isSocial = ft === 'bluesky' || ft === 'telegram' || ft === 'reddit';
+                const isSpanish = /\.mx\b|\.es\b|eluniversal|milenio|jornada|reforma|excelsior|proceso|animalpolitico|aristegui|sinembargo|infobae/.test(src + ' ' + url);
+                return !isSocial && !isSpanish;
+            }
+            return true;
+        });
+    }
+    if (!filtered.length) {
+        list.innerHTML = '<li style="color:var(--text-muted); font-style:italic; padding:20px; text-align:center;">No articles in this category yet.</li>';
+        return;
+    }
+    list.innerHTML = '';
+    filtered.slice(0, 50).forEach(function (a) {
+        const li = document.createElement('li');
+        li.innerHTML =
+            '<a href="' + escapeHtml(a.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(a.title || 'Untitled') + '</a>' +
+            '<div class="articles-meta">' +
+                '<span class="article-source-pill">' + (a.feed_type || 'src').toUpperCase() + '</span>' +
+                escapeHtml(a.source || '') + ' · ' + formatDate(a.published) +
+            '</div>';
+        list.appendChild(li);
+    });
+}
+
+// ════════════════════════════════════════════════════════════
+// FINANCIAL PULSE — IPC / USD-MXN / WTI (v1.0.0 Jun 12 2026)
+// Contract donor: russia.html renderMarkets; backend: mexico_stability.py
+// ════════════════════════════════════════════════════════════
+let _pulseCharts = {};
+
+async function loadFinancialPulse() {
+    const grid = el('pulseGrid');
+    const pill = el('pulseStatusPill');
+    if (!grid || !pill) return;
+    let data = null;
+    try {
+        const r = await fetch(WHA_BACKEND + '/api/mexico/stability');
+        if (r.ok) data = await r.json();
+    } catch (e) {
+        console.warn('[Mexico Pulse] backend fetch failed:', e);
+    }
+    const fp = (data && data.financial_pulse) || null;
+    if (!fp || !fp.tiles) {
+        grid.innerHTML = '<div class="nyse-empty-state">Financial pulse unavailable — backend may be warming up. Refresh in 60 seconds.</div>';
+        return;
+    }
+
+    const agg = fp.market_status || 'closed';
+    pill.className = 'nyse-status-pill market-' + agg;
+    pill.textContent = ({ open: 'Open', closed: 'Closed', 'pre-market': 'Pre-Market', 'after-hours': 'After-Hours' })[agg] || agg;
+
+    const order = ['IPC', 'MXNUSD', 'WTI'];
+    Object.values(_pulseCharts).forEach(function (c) { try { c.destroy(); } catch (e) {} });
+    _pulseCharts = {};
+    const tierColor = { stress: '#ef4444', warning: '#f59e0b', stable: '#38bdf8', rally: '#22c55e' };
+
+    grid.innerHTML = order.map(function (key) {
+        const t = fp.tiles[key];
+        if (!t) return '';
+        const tier = t.tier || 'stable';
+        const val = (t.value !== null && t.value !== undefined)
+            ? Number(t.value).toLocaleString(undefined, { maximumFractionDigits: 2 })
+            : 'N/A';
+        const chg = t.change_pct_24h;
+        const chgClass = (chg > 0.05) ? 'up' : (chg < -0.05) ? 'down' : 'flat';
+        const chgStr = (chg !== null && chg !== undefined)
+            ? ((chg >= 0 ? '+' : '') + Number(chg).toFixed(2) + '%')
+            : '--';
+        const valPrefix = (key === 'WTI') ? '$' : '';
+        return '<div class="nyse-tile tile-' + tier + '">' +
+            '<div class="nyse-tile-header">' +
+                '<span class="nyse-tile-name">' + escapeHtml(t.name || key) + '</span>' +
+                '<span class="nyse-tile-ticker">' + escapeHtml(t.ticker || '') + '</span>' +
+            '</div>' +
+            '<div class="nyse-tile-value">' + valPrefix + val + '</div>' +
+            '<div class="nyse-tile-change ' + chgClass + '">' + chgStr + '</div>' +
+            '<div class="nyse-tile-spark"><canvas id="spark_' + key + '"></canvas></div>' +
+            '<div class="nyse-tile-meta">' + escapeHtml(t.note || t.source || '') + '</div>' +
+        '</div>';
+    }).filter(Boolean).join('');
+
+    if (typeof Chart !== 'undefined') {
+        order.forEach(function (key) {
+            const t = fp.tiles[key];
+            if (!t || !t.sparkline || !t.sparkline.length) return;
+            const ctx = document.getElementById('spark_' + key);
+            if (!ctx) return;
+            _pulseCharts[key] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: t.sparkline.map(function (_, i) { return i; }),
+                    datasets: [{ data: t.sparkline, borderColor: tierColor[t.tier] || '#38bdf8', borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: false }]
+                },
+                options: {
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } },
+                    responsive: true, maintainAspectRatio: false
+                }
+            });
+        });
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// STRATEGIC MAP (Leaflet — donor: mexico shell, markers verbatim)
+// ════════════════════════════════════════════════════════════
 function initMap() {
+    if (typeof L === 'undefined' || !document.getElementById('mexico-map')) return;
     var map = L.map('mexico-map', { zoomControl: true, scrollWheelZoom: false }).setView([23.5, -102.5], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 10
     }).addTo(map);
 
-    // Key markers
     var markers = [
         { lat: 25.686, lng: -100.316, label: '🏙️ Monterrey (Cartel Border Hub)', color: 'orange' },
         { lat: 24.8,   lng: -107.4,   label: '⚠️ Culiacán (Sinaloa Cartel HQ)', color: 'red' },
@@ -746,12 +1993,12 @@ function initMap() {
         { lat: 32.53,  lng: -116.97,  label: '🇺🇸 San Diego / Tijuana Border Crossing', color: 'blue' },
         { lat: 26.08,  lng: -98.29,   label: '🇺🇸 McAllen / Reynosa Border Crossing', color: 'blue' },
         { lat: 19.43,  lng: -99.13,   label: '🏛️ Mexico City (Federal Government)', color: 'green' },
-        { lat: 20.97,  lng: -89.62,   label: '🏙️ Mérida (Relatively Stable)', color: 'green' },
+        { lat: 20.97,  lng: -89.62,   label: '🏙️ Mérida (Relatively Stable)', color: 'green' }
     ];
 
     var colorMap = { red: '#ef4444', orange: '#f97316', blue: '#3b82f6', green: '#22c55e' };
 
-    markers.forEach(function(m) {
+    markers.forEach(function (m) {
         var circle = L.circleMarker([m.lat, m.lng], {
             radius: 8, fillColor: colorMap[m.color] || '#6b7280',
             color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.85
@@ -759,11 +2006,10 @@ function initMap() {
         circle.bindPopup('<strong>' + m.label + '</strong>');
     });
 
-    // Legend
     var legend = L.control({ position: 'bottomright' });
-    legend.onAdd = function() {
+    legend.onAdd = function () {
         var div = L.DomUtil.create('div');
-        div.style.cssText = 'background:white;padding:10px;border-radius:6px;font-size:12px;font-family:Times New Roman,serif;line-height:1.8;box-shadow:0 2px 6px rgba(0,0,0,0.2);';
+        div.style.cssText = 'background:white;padding:10px;border-radius:6px;font-size:12px;font-family:Times New Roman,serif;line-height:1.8;box-shadow:0 2px 6px rgba(0,0,0,0.2);color:#0f172a;';
         div.innerHTML =
             '<strong>Map Legend</strong><br>' +
             '<span style="color:#ef4444;">●</span> High Violence Zone<br>' +
@@ -775,56 +2021,68 @@ function initMap() {
     legend.addTo(map);
 }
 
-// ========================================
-// ARTICLES
-// ========================================
-async function loadArticles() {
-    try {
-        var r = await fetch(WHA_API + '/api/wha/threat/mexico');
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        var d = await r.json();
-        var articles = d.top_scoring_articles || d.articles || [];
-        if (articles.length > 0) {
-            displayArticles(articles);
-        } else {
-            displayFallback();
-        }
-    } catch(e) {
-        displayFallback();
-    }
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
 }
 
-function displayArticles(articles) {
-    var html = articles.slice(0, 20).map(function(a) {
-        var title = a.title || a.article_title || 'Untitled';
-        var source = a.source || a.source_name || '';
-        var pub = a.published || a.publishedAt || '';
-        var url = a.url || '#';
-        var dateStr = 'Recent';
-        if (pub) { try { dateStr = new Date(pub).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); } catch(e) {} }
-        return '<div class="article-item">' +
-            '<div class="article-title">' + title + '</div>' +
-            '<div class="article-meta">' + source + (source && dateStr ? ' &bull; ' : '') + dateStr + '</div>' +
-            (url !== '#' ? '<a href="' + url + '" target="_blank" rel="noopener" class="article-link">Read &rarr;</a>' : '') +
-            '</div>';
-    }).join('');
-    document.getElementById('articlesContainer').innerHTML = html;
-}
-
-function displayFallback() {
-    document.getElementById('articlesContainer').innerHTML =
-        '<div style="text-align:center; padding:30px; color:var(--text-secondary);">&#x1F4E1; Live article feed loading — check back shortly or run a manual scan.</div>';
-}
-
-// ========================================
-// INIT
-// ========================================
-document.addEventListener('DOMContentLoaded', function() {
+// ════════════════════════════════════════════════════════════
+// MAIN LOAD
+// ════════════════════════════════════════════════════════════
+async function loadData() {
     applyTranslations();
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+        b.classList.remove('active');
+        if ((currentLang === 'en' && b.textContent === 'EN') ||
+            (currentLang === 'es' && b.textContent === 'ES') ||
+            (currentLang === 'pt' && b.textContent === 'PT')) {
+            b.classList.add('active');
+        }
+    });
+
     initMap();
-    loadArticles();
-    document.getElementById('lastUpdated').textContent =
-        (TRANSLATIONS[currentLang] || TRANSLATIONS['en']).lastUpdated.replace('Loading...', new Date().toUTCString());
+
+    await Promise.allSettled([
+        loadTravelAdvisory(),
+        loadCommodity(),
+        loadFinancialPulse(),
+        loadMilitaryPosture(),
+        loadArticles(),
+    ]);
+
+    hideLoadingOverlay();
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+
+
+<script>
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
 });
 </script>
 </body>
