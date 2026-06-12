@@ -2521,16 +2521,9 @@
                             <div id="hormuz-current-est">⚡ Current: Scanning...</div>
                         </div>
 
-                        <!-- USD/IRR compact (moved here) -->
-                        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--card-border);">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 16px;">💱</span>
-                                <div>
-                                    <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">USD/IRR (Black Market)</div>
-                                    <div class="stability-metric-value" id="usd-irr-value" style="font-size: 14px;">--</div>
-                                </div>
-                            </div>
-                            <div id="irr-trend" style="margin-top: 4px; font-size: 0.8em;"></div>
+                        <!-- Market readouts consolidated into Financial Pulse (Jun 12 2026) -->
+                        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--card-border); font-size: 11px; color: var(--text-muted);">
+                            💱 Rial &amp; market readouts → <a href="#financialPulseCard" style="color: var(--iran-accent); text-decoration: none; font-weight: 600;">Iran Financial Pulse ↑</a>
                         </div>
 
                         <!-- Live tracker link -->
@@ -2540,11 +2533,10 @@
                     <div class="stability-metric-item">
                         <span class="stability-icon">🛢️</span>
                         <div class="stability-metric-content">
-                            <div class="stability-metric-label" data-i18n="oilBrentLabel">Oil (Brent)</div>
-                            <div class="stability-metric-value" id="oil-price-value">Loading...</div>
-                            
-                            <!-- Sparkline Canvas -->
-                            <canvas id="oil-sparkline" width="200" height="40" style="margin-top: 8px;"></canvas>
+                            <div class="stability-metric-label" data-i18n="oilBrentLabel">Oil &amp; Energy</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin: 4px 0 6px;">
+                                🛢️ Brent price &amp; sparkline → <a href="#financialPulseCard" style="color: var(--iran-accent); text-decoration: none; font-weight: 600;">Iran Financial Pulse ↑</a>
+                            </div>
                             
                             <!-- OPEC Stats -->
                             <div id="opec-stats" style="margin-top: 12px; font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
@@ -3557,120 +3549,10 @@
             }
         }
 
-        function updateInterpreterCards(data) {
-            // Iran rhetoric interpretation comes from the rhetoric tracker, not iran_protests
-            // Try to fetch it from the rhetoric endpoint
-            fetchIranInterpretation();
-        }
-
-        async function fetchIranInterpretation() {
-            try {
-                const resp = await fetch('https://asifah-backend.onrender.com/api/rhetoric/iran');
-                if (!resp.ok) return;
-                const data = await resp.json();
-                const interp = data.interpretation;
-                if (!interp) return;
-
-                // ── So What card ──
-                const sw = interp.so_what;
-                if (sw && sw.scenario) {
-                    document.getElementById('soWhatCard').style.display = 'block';
-                    const banner = document.getElementById('scenarioBanner');
-                    banner.style.background = (sw.scenario_color || '#6b7280') + '15';
-                    banner.style.borderColor = sw.scenario_color || '#6b7280';
-                    document.getElementById('scenarioIcon').textContent = sw.scenario_icon || '⚪';
-                    document.getElementById('scenarioText').textContent = sw.scenario;
-                    document.getElementById('scenarioText').style.color = sw.scenario_color || 'var(--text-primary)';
-                    document.getElementById('situationText').textContent = sw.situation || 'No situation summary available.';
-                    document.getElementById('assessmentText').textContent = sw.assessment || 'No assessment available.';
-
-                    // Key indicators
-                    const kiList = document.getElementById('keyIndicators');
-                    kiList.innerHTML = '';
-                    (sw.key_indicators || []).forEach(ind => {
-                        const li = document.createElement('li');
-                        li.textContent = ind;
-                        kiList.appendChild(li);
-                    });
-                    if ((sw.key_indicators || []).length === 0) {
-                        kiList.innerHTML = '<li style="border-left-color:var(--text-muted);font-style:italic;color:var(--text-muted);">No key indicators triggered at current threshold.</li>';
-                    }
-
-                    // Watch list
-                    const wlList = document.getElementById('watchList');
-                    wlList.innerHTML = '';
-                    (sw.watch_list || []).forEach(item => {
-                        const li = document.createElement('li');
-                        li.textContent = item;
-                        wlList.appendChild(li);
-                    });
-
-                    if (sw.confidence_note) {
-                        document.getElementById('confidenceNote').textContent = '⚠️ ' + sw.confidence_note;
-                    }
-                }
-
-                // ── Red Lines card ──
-                const rl = interp.red_lines;
-                if (rl && rl.triggered) {
-                    document.getElementById('redLinesCard').style.display = 'block';
-                    document.getElementById('redLinesSummary').textContent = 
-                        `${rl.breached_count || 0} BREACHED, ${rl.approaching_count || 0} APPROACHING`;
-                    
-                    const container = document.getElementById('redLinesContainer');
-                    container.innerHTML = '';
-                    if (rl.triggered.length === 0) {
-                        container.innerHTML = '<div style="padding:14px;text-align:center;color:var(--text-muted);font-style:italic;font-size:12px;">No red lines currently triggered.</div>';
-                    } else {
-                        rl.triggered.forEach(line => {
-                            const status = (line.status || '').toLowerCase();
-                            const item = document.createElement('div');
-                            item.className = `red-line-item ${status}`;
-                            item.innerHTML = `
-                                <div class="red-line-icon">${line.icon || '🚨'}</div>
-                                <div class="red-line-content">
-                                    <div class="red-line-label">
-                                        ${line.label || 'Red line'}
-                                        <span class="red-line-status-badge ${status}">${line.status || ''}</span>
-                                    </div>
-                                    <div class="red-line-trigger">${line.trigger || ''}</div>
-                                    ${line.detail ? `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">${line.detail}</div>` : ''}
-                                </div>
-                            `;
-                            container.appendChild(item);
-                        });
-                    }
-                }
-
-                // ── Historical Matches card ──
-                const hm = interp.historical_matches;
-                if (hm && hm.length > 0) {
-                    document.getElementById('historicalCard').style.display = 'block';
-                    const container = document.getElementById('historicalContainer');
-                    container.innerHTML = '';
-                    hm.forEach(match => {
-                        const card = document.createElement('div');
-                        card.className = 'historical-match';
-                        card.innerHTML = `
-                            <div class="historical-match-header">
-                                <div class="historical-match-label">${match.label || 'Historical pattern'}</div>
-                                <div class="historical-similarity">${match.similarity || 0}%</div>
-                            </div>
-                            <div class="historical-match-outcome">${match.outcome || ''}</div>
-                            <div class="historical-match-meta">
-                                <span>Window: ${match.window_hours || '--'}h</span>
-                                <span>Confidence: ${match.confidence || 'Unknown'}</span>
-                                ${match.source ? '<span style="font-style:italic;">Source: ' + match.source.slice(0, 80) + (match.source.length > 80 ? '...' : '') + '</span>' : ''}
-                            </div>
-                        `;
-                        container.appendChild(card);
-                    });
-                }
-
-            } catch (e) {
-                console.warn('[Iran Interpreter Cards] Fetch failed (non-fatal):', e);
-            }
-        }
+        // Dormant interpreter functions removed (Jun 12 2026): per analytical
+        // doctrine, stability pages are sensors -- the analyst layer lives in
+        // the Iran rhetoric tracker, which now reads this page's financial
+        // and Hormuz fingerprints.
 
         function updateStabilityPenalties(data) {
             const rs = data.regime_stability || {};
@@ -3791,34 +3673,8 @@
             updateComponent('comp-geopolitical-score', components.geopolitical_tension);
             updateComponent('comp-cohesion-score', components.internal_cohesion);
             
-            // --- USD/IRR ---
-            const exchangeRate = data.exchange_rate || {};
-            if (exchangeRate.usd_to_irr) {
-                const baselineRate = 42000;
-                const currentRate = exchangeRate.usd_to_irr;
-                const changePercent = ((currentRate - baselineRate) / baselineRate * 100).toFixed(1);
-                const changeSign = changePercent > 0 ? '+' : '';
-                const changeColor = changePercent > 0 ? 'var(--iran-accent)' : '#4ade80';
-                
-                document.getElementById('usd-irr-value').innerHTML = 
-                    `${currentRate.toLocaleString()} <span style="color: ${changeColor}; font-size: 12px;">(${changeSign}${changePercent}%)</span>`;
-                
-                const change24h = exchangeRate.change_24h || 0;
-                const pressure = exchangeRate.pressure || 'NEUTRAL';
-                const trendIcon = change24h > 0 ? '▼' : (change24h < 0 ? '▲' : '—');
-                const trendColor = change24h > 0 ? 'var(--iran-accent)' : (change24h < 0 ? '#4ade80' : '#a0aec0');
-                const pressureIcon = pressure === 'SELLING' ? '📉' : (pressure === 'BUYING' ? '📈' : '━');
-                
-                document.getElementById('irr-trend').innerHTML = `
-                    <div style="color:${trendColor}; font-weight:600; font-size:0.9em;">
-                        ${trendIcon} ${Math.abs(change24h).toFixed(2)}% (24h)
-                    </div>
-                    <div style="color:var(--text-secondary); font-size:0.85em; margin-top:2px;">
-                        ${pressureIcon} ${pressure}
-                    </div>
-                `;
-            }
-            
+            // --- USD/IRR: consolidated into Financial Pulse card (Jun 12 2026) ---
+
             // --- Cities + Strike Locations ---
             const protestCities = data.num_cities_affected || 0;
             const strikeLocations = (data.war_casualties && data.war_casualties.strike_locations) ? data.war_casualties.strike_locations.length : 0;
@@ -4010,23 +3866,8 @@
                 }
             }
             
-            // Oil price
-            if (oilPrice.current_price) {
-                const arrow = oilPrice.arrow || '→';
-                const changeColor = oilPrice.trend === 'up' ? '#4ade80' : oilPrice.trend === 'down' ? 'var(--iran-accent)' : '#a0aec0';
-                const changeSign = oilPrice.percent_change >= 0 ? '+' : '';
-                
-                document.getElementById('oil-price-value').innerHTML = 
-                    `$${oilPrice.current_price}/bbl ${arrow} <span style="color: ${changeColor}; font-size: 12px;">(${changeSign}${oilPrice.percent_change}%)</span>`;
-            }
-            
-            // Sparkline
-            if (sparkline.data && sparkline.data.length > 0) {
-                drawOilSparkline(sparkline.data);
-            } else if (oilPrice.sparkline && oilPrice.sparkline.length > 0) {
-                drawOilSparkline(oilPrice.sparkline);
-            }
-            
+            // Oil price + sparkline: consolidated into Financial Pulse card (Jun 12 2026)
+
             // Reserves
             if (reserves.oil_reserves) {
                 document.getElementById('oil-reserves-value').textContent = 
@@ -4410,47 +4251,8 @@
         // ============================================
         // OIL SPARKLINE
         // ============================================
-        function drawOilSparkline(data) {
-            const canvas = document.getElementById('oil-sparkline');
-            if (!canvas || !data || data.length === 0) return;
-            
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            
-            ctx.clearRect(0, 0, width, height);
-            
-            const prices = data.map(d => d.price);
-            const minPrice = Math.min(...prices);
-            const maxPrice = Math.max(...prices);
-            const priceRange = maxPrice - minPrice || 1;
-            
-            const stepX = width / (prices.length - 1);
-            const points = prices.map((price, i) => ({
-                x: i * stepX,
-                y: height - ((price - minPrice) / priceRange) * height
-            }));
-            
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            points.forEach(point => ctx.lineTo(point.x, point.y));
-            ctx.strokeStyle = '#6495ED';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            ctx.lineTo(width, height);
-            ctx.lineTo(0, height);
-            ctx.closePath();
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, 'rgba(100, 149, 237, 0.3)');
-            gradient.addColorStop(1, 'rgba(100, 149, 237, 0.05)');
-            ctx.fillStyle = gradient;
-            ctx.fill();
-        }
+        // drawOilSparkline removed -- sparklines now live in the Financial Pulse card (Jun 12 2026)
 
-        // ============================================
-        // HELPERS
-        // ============================================
         function getIntensityClass(value) {
             if (value >= 80) return 'intensity-critical';
             if (value >= 60) return 'intensity-high';
