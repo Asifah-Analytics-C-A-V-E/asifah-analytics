@@ -255,7 +255,7 @@
             <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
             <div class="nav-divider"></div>
             <div class="nav-sidebar-label">Turkey</div>
-            <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn" style="opacity:0.55;"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status" style="color:var(--text-muted);">○ In Dev</span></a>
+            <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status">● Live</span></a>
             <a href="turkey-stability.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇹🇷 Stability Monitor</span><span class="nav-btn-status">◉ You are here</span></a>
         </nav>
 
@@ -298,6 +298,21 @@
                 <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="rhetoricDetail"></div>
             </div>
             <a href="rhetoric-turkey.html" class="rhet-banner-link" data-i18n="rhetoricLink">Open Tracker →</a>
+        </div>
+
+        <!-- SO WHAT FACTOR CARD (analyst toplines -> full rhetoric page) -->
+        <div class="rhetoric-card" id="soWhatFactorCard" style="display:none;border-color:rgba(245,158,11,0.4);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#f59e0b;" data-i18n="soWhatTitle">🧠 THE SO WHAT FACTOR — TURKEY</span>
+                <span id="soWhatPriorityPill" style="font-size:10px;font-weight:800;padding:2px 10px;border-radius:10px;background:#6b7280;color:white;letter-spacing:1px;text-transform:uppercase;font-family:'Courier New',monospace;">--</span>
+            </div>
+            <div id="soWhatScenarioLine" style="font-size:15px;font-weight:800;color:var(--text-primary);margin-bottom:7px;">--</div>
+            <div id="soWhatAssessmentText" style="font-size:12.5px;color:var(--text-secondary);line-height:1.65;font-family:'Times New Roman',serif;margin-bottom:12px;">Loading analyst assessment...</div>
+            <div id="soWhatToplines" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;"></div>
+            <div style="margin-top:11px;padding-top:10px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="rhetoric-turkey.html" style="color:#f59e0b;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="soWhatLink">Full Alignment Analysis — Indices · Ladder · Friction · Tripwires →</a>
+            </div>
+            <div style="margin-top:7px;font-size:9.5px;color:var(--text-muted);text-align:center;font-style:italic;" data-i18n="soWhatDisclaimer">Convergence indicator, not a prediction — the reader completes the inference.</div>
         </div>
 
         <!-- TRACKER IN-DEV STRIP (auto-hides when tracker ships) -->
@@ -971,6 +986,45 @@
                 const greenActive = (d.green_lines || {}).active_count || 0;
                 document.getElementById('rhetoricDetail').textContent =
                     `${breached} breached · ${approaching} approaching · ${greenActive} active diplomatic signals · Diplomatic track: ${dt.scenario || 'No Active Track'} (${dt.score || 0} signal${(dt.score || 0) === 1 ? '' : 's'}). ${sw.assessment || ''}`;
+            }
+
+            // ── So What Factor card (analyst toplines) ──
+            const swCard = document.getElementById('soWhatFactorCard');
+            if (swCard) {
+                swCard.style.display = 'block';
+                const sw2 = d.so_what || {};
+                const PRIORITY_META = { normal:   { color: '#38bdf8', icon: '⚪' },
+                                        elevated: { color: '#f59e0b', icon: '🟡' },
+                                        high:     { color: '#f97316', icon: '🟠' },
+                                        critical: { color: '#dc2626', icon: '🔴' } };
+                const pm = PRIORITY_META[sw2.priority] || PRIORITY_META.normal;
+                const pPill = document.getElementById('soWhatPriorityPill');
+                pPill.textContent = (sw2.priority || 'normal').toUpperCase();
+                pPill.style.background = pm.color;
+                document.getElementById('soWhatScenarioLine').textContent = pm.icon + ' ' + (sw2.scenario || 'Dual-Track Baseline');
+                document.getElementById('soWhatAssessmentText').textContent = sw2.assessment || '';
+                // Topline chips: alignment / ladder / friction / mediation
+                const al = d.alignment || {};
+                const lv = d.lebanon_vector || {};
+                const mf = d.mirror_friction || {};
+                const dt2 = d.diplomatic_track || {};
+                const BANDC = { anchored:'#10b981', anchoring:'#10b981', drifting:'#f59e0b', decoupling:'#ef4444',
+                                dormant:'#6b7280', rhetoric:'#3b82f6', soft_power:'#f59e0b', economic:'#f97316',
+                                security:'#ef4444', kinetic_risk:'#dc2626',
+                                normal:'#6b7280', simmering:'#f59e0b', elevated:'#f97316', high:'#ef4444' };
+                const chip = (txt, color) =>
+                    `<span style="font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:12px;border:1px solid ${color};color:${color};font-family:'Courier New',monospace;white-space:nowrap;">${txt}</span>`;
+                const chips = [];
+                if (al.nato_anchor_index !== undefined) {
+                    chips.push(chip('⚓ ANCHOR ' + al.nato_anchor_index + '/100', '#10b981'));
+                    chips.push(chip('🧭 AUTONOMY ' + al.strategic_autonomy_index + '/100', '#9333ea'));
+                    const dv = al.divergence || 0;
+                    chips.push(chip('DIVERGENCE ' + (dv > 0 ? '+' : '') + dv + ' · ' + String(al.band || 'anchored').toUpperCase(), BANDC[al.band] || '#10b981'));
+                }
+                if (lv.stage !== undefined) chips.push(chip('🇱🇧 VECTOR L' + (lv.stage || 0) + ' ' + (lv.stage_name || 'Dormant').toUpperCase(), BANDC[lv.band] || '#6b7280'));
+                if (mf.band) chips.push(chip('⚔️ IL-TR ' + mf.band.toUpperCase() + (mf.synchronized ? ' · SYNC' : ''), BANDC[mf.band] || '#6b7280'));
+                if (dt2.scenario && dt2.scenario !== 'No Active Mediation Track') chips.push(chip('🕊️ ' + dt2.scenario.toUpperCase(), '#10b981'));
+                document.getElementById('soWhatToplines').innerHTML = chips.join('');
             }
 
             // ── Turkey alignment tracker detail card ──
