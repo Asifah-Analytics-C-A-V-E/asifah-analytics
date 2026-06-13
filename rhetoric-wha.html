@@ -192,7 +192,39 @@
     .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
     .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
     .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 6px 0; }
-    @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+    /* ── Canonical mobile drawer (Jun 2026 retrofit) ── */
+    .mobile-hamburger { display: none; }
+    .mobile-drawer-backdrop { display: none; }
+    @media (max-width: 1199px) {
+        .page-with-sidebar { display: block; }
+        .mobile-hamburger {
+            display: flex; position: fixed; top: 16px; left: 16px;
+            width: 44px; height: 44px;
+            background: var(--card-bg, #0d1b2e);
+            border: 1px solid var(--card-border, #1e3a5f);
+            border-radius: 8px; cursor: pointer; z-index: 1001;
+            align-items: center; justify-content: center;
+            font-size: 22px; color: var(--text-primary, #e2f0fb);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-family: monospace;
+        }
+        .mobile-hamburger:active { transform: scale(0.95); }
+        .nav-sidebar {
+            display: flex; position: fixed; top: 0; left: 0;
+            width: min(82vw, 280px); max-width: 280px; height: 100dvh;
+            background: var(--card-bg, #0d1b2e);
+            border-right: 1px solid var(--card-border, #1e3a5f);
+            padding: 70px 12px 20px 12px; overflow-y: auto;
+            z-index: 1000; transform: translateX(-105%);
+            transition: transform 0.25s ease-in-out;
+            box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+        }
+        .nav-sidebar.open { transform: translateX(0); }
+        .mobile-drawer-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 999; backdrop-filter: blur(2px);
+        }
+        .mobile-drawer-backdrop.open { display: block; }
+    }
 
     /* ── REGIONAL POSTURE BANNER ── */
     .posture-banner {
@@ -399,6 +431,9 @@
 
 <div class="watermark"></div>
 <div class="container">
+<!-- ── Mobile drawer (hamburger + backdrop, inside .container for stacking) ── -->
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
 
 <!-- HEADER -->
 <header>
@@ -430,7 +465,7 @@
 <div class="page-with-sidebar">
 
 <!-- ── NAV SIDEBAR (canonical Asifah pattern) ── -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
     <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
@@ -1182,6 +1217,25 @@
     loadAll();
     // Refresh posture/BLUF every 30 minutes
     setInterval(loadAll, 30 * 60 * 1000);
+</script>
+<script>
+// ── Canonical mobile drawer JS (Jun 2026 retrofit) ──
+function toggleMobileDrawer() {
+    const s = document.getElementById('navSidebar');
+    const b = document.getElementById('mobileDrawerBackdrop');
+    if (!s || !b) return;
+    if (s.classList.contains('open')) { closeMobileDrawer(); return; }
+    s.classList.add('open'); b.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileDrawer() {
+    const s = document.getElementById('navSidebar');
+    const b = document.getElementById('mobileDrawerBackdrop');
+    if (s) s.classList.remove('open');
+    if (b) b.classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
 </script>
 </body>
 </html>
