@@ -257,6 +257,30 @@
     .gpi-badge { display:inline-flex; align-items:center; gap:3px; font-family:'Courier New',monospace; font-size:0.58rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:2px 6px; border-radius:3px; background:rgba(245,158,11,0.18); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); flex-shrink:0; margin-top:1px; cursor:help; }
     [data-theme="dark"] .gpi-badge { background:rgba(245,158,11,0.12); color:#fbbf24; border-color:rgba(245,158,11,0.35); }
     .bluf-signal-item.gpi-only { border-left-width:3px; border-left-color:#f59e0b; background:rgba(245,158,11,0.06); }
+    /* Approach B readability (Jun 13 2026) */
+    .bluf-para { margin-bottom:12px; line-height:1.7; font-family:'Times New Roman',Times,serif; font-size:0.9rem; color:var(--text-primary); }
+    .bluf-para:last-child { margin-bottom:0; }
+    .bluf-para .bluf-para-label { font-weight:800; letter-spacing:0.3px; color:var(--accent,#38bdf8); }
+    .bluf-para.bluf-header-para .bluf-para-label { font-size:1.0rem; letter-spacing:0.5px; }
+    .bluf-signals-scroll { max-height:420px; overflow-y:auto; padding-right:6px; margin-top:6px; }
+    .bluf-signals-scroll::-webkit-scrollbar { width:8px; }
+    .bluf-signals-scroll::-webkit-scrollbar-thumb { background:var(--card-border); border-radius:4px; }
+    .sigrow { display:flex; align-items:flex-start; gap:9px; padding:9px 12px; border-radius:7px; background:rgba(0,0,0,0.05); border-left:4px solid var(--card-border); margin-bottom:7px; }
+    [data-theme="dark"] .sigrow { background:rgba(255,255,255,0.04); }
+    .sigrow-icon { font-size:1rem; flex-shrink:0; margin-top:1px; }
+    .sigrow-body { flex:1; min-width:0; }
+    .sigrow-head { display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:3px; }
+    .sigrow-chip { font-family:'Courier New',monospace; font-size:0.58rem; font-weight:700; letter-spacing:0.5px; padding:2px 7px; border-radius:4px; color:#fff; flex-shrink:0; }
+    .sigrow-loc { font-weight:800; font-size:0.78rem; font-family:'Times New Roman',Times,serif; text-decoration:none; border-bottom:1px dotted currentColor; }
+    .sigrow-loc:hover { opacity:0.8; }
+    .sigrow-loc.nolink { border-bottom:none; cursor:default; }
+    .sigrow-text { font-size:0.78rem; line-height:1.55; font-family:'Times New Roman',Times,serif; color:var(--text-secondary); }
+    .sigrow-foot { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; }
+    .sigrow-axis { font-family:'Courier New',monospace; font-size:0.56rem; font-weight:700; letter-spacing:0.5px; padding:2px 9px; border-radius:999px; }
+    .ax-kinetic { background:rgba(220,38,38,0.14); color:#f87171; border:1px solid #f8717166; }
+    .ax-economic { background:rgba(245,158,11,0.14); color:#fbbf24; border:1px solid #fbbf2466; }
+    .ax-diplomatic { background:rgba(14,165,233,0.14); color:#38bdf8; border:1px solid #38bdf866; }
+    .ax-humanitarian { background:rgba(168,85,247,0.14); color:#c084fc; border:1px solid #c084fc66; }
     [data-theme="dark"] .bluf-signal-item.gpi-only { background:rgba(245,158,11,0.05); }
     .bluf-footer { font-size:0.6rem; color:var(--text-muted); font-family:'Courier New',monospace; margin-top:10px; font-style:italic; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; }
     .bluf-methodology { font-size:0.65rem; color:var(--text-muted); font-family:'Times New Roman',Times,serif; font-style:italic; line-height:1.5; margin-top:10px; padding-top:8px; border-top:1px dashed var(--card-border); }
@@ -339,6 +363,8 @@
         .tracker-banner { grid-template-columns: 1fr; }
         .tracker-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
     }
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
 </style>
 </head>
 <body>
@@ -374,99 +400,40 @@
 <aside class="mobile-drawer" id="mobileDrawer" aria-label="Navigation menu">
     <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu">✕</button>
     <div class="mobile-drawer-title">Navigation</div>
-    <div class="nav-sidebar-label">Dashboards</div>
-    <a href="africa.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="asia.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="europe.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+        <div class="nav-sidebar-label">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="commodities.html" class="nav-btn commodities-btn">
-        <span class="nav-btn-label">🛢️ Commodities</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Regional Rhetoric</div>
-    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌏 Asia</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">◉ You are here</span>
-    </a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <div class="nav-divider"></div>
-    <a href="gpi.html" class="nav-btn gpi-btn">
-        <span class="nav-btn-label">🌐 Global Pressure Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">◉ You are here</span></div>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Belarus</div>
-    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇧🇾 Pressure Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="belarus-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇧🇾 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇧🇾 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="belarus-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇧🇾 Stability Index</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Hungary</div>
-    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇭🇺 Pressure Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="hungary-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇭🇺 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="hungary-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇭🇺 Stability Index</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Turkey</div>
-    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇹🇷 Alignment Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="turkey-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇹🇷 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="turkey-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇹🇷 Stability Index</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Ukraine</div>
-    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇺🇦 Pressure Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="ukraine.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇺🇦 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="ukraine.html" class="nav-btn active-nav"><span class="nav-btn-label">🇺🇦 Stability Index</span><span class="nav-btn-status">● Live</span></a>
 </aside>
 
 <!-- PAGE WITH SIDEBAR (v1.1.0) -->
@@ -475,98 +442,39 @@
 <!-- NAV SIDEBAR -->
 <nav class="nav-sidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <a href="africa.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="asia.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="europe.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="commodities.html" class="nav-btn commodities-btn">
-        <span class="nav-btn-label">🛢️ Commodities</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Regional Rhetoric</div>
-    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌏 Asia</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">◉ You are here</span>
-    </a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <div class="nav-divider"></div>
-    <a href="gpi.html" class="nav-btn gpi-btn">
-        <span class="nav-btn-label">🌐 Global Pressure Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">◉ You are here</span></div>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Belarus</div>
-    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇧🇾 Pressure Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="belarus-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇧🇾 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇧🇾 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="belarus-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇧🇾 Stability Index</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Hungary</div>
-    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇭🇺 Pressure Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="hungary-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇭🇺 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="hungary-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇭🇺 Stability Index</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Turkey</div>
-    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇹🇷 Alignment Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="turkey-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇹🇷 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="turkey-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇹🇷 Stability Index</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Ukraine</div>
-    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇺🇦 Pressure Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="ukraine.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇺🇦 Stability Index</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="ukraine.html" class="nav-btn active-nav"><span class="nav-btn-label">🇺🇦 Stability Index</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -847,7 +755,75 @@
     // ── BLUF — consumes /api/rhetoric/europe/bluf (canonical schema) ──
     // v1.0 (Apr 2026): switched from client-side synthesis to backend BLUF.
     // Pattern matches rhetoric-asia.html, rhetoric-index.html (ME), rhetoric-wha.html.
-    async function updateBluf(_resolvedUnused) {
+    // ── Approach B helpers (Jun 13 2026) ──
+const _EU_RHET_PAGE = {
+    russia:'rhetoric-russia.html', belarus:'rhetoric-belarus.html',
+    greenland:'rhetoric-greenland.html', hungary:'rhetoric-hungary.html',
+    turkey:'rhetoric-turkey.html', ukraine:'rhetoric-ukraine.html',
+};
+const _EU_LOC_NAME = { russia:'Russia', belarus:'Belarus', greenland:'Greenland',
+    hungary:'Hungary', turkey:'Turkey', ukraine:'Ukraine', poland:'Poland',
+    baltics:'Baltics', regional:'Europe' };
+const _EU_AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+function _euEsc(s){ if(s==null)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _euLvlChip(sig){
+    let lv = sig.level, txt, bg;
+    if (typeof lv === 'number'){ txt='L'+lv; bg=['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'][Math.max(0,Math.min(5,lv))]; }
+    else { const t=String(lv||'').toLowerCase(); txt=(t||'L0').toUpperCase(); bg=t==='surge'?'#dc2626':t==='high'?'#ef4444':t==='elevated'?'#f97316':'#6b7280'; }
+    return `<span class="sigrow-chip" style="background:${bg};">${txt}</span>`;
+}
+function _euAxisPills(sig){
+    let axes = Array.isArray(sig.axes)&&sig.axes.length ? sig.axes : (sig.pressure_type?[sig.pressure_type]:[]);
+    const seen={}; const clean=axes.map(a=>String(a).toLowerCase()).filter(a=>_EU_AXIS_LABEL[a]&&!seen[a]&&(seen[a]=true));
+    return clean.map(a=>`<span class="sigrow-axis ax-${a}">${_EU_AXIS_LABEL[a]}</span>`).join('');
+}
+function _euLocName(theatre){ const t=String(theatre||'').toLowerCase(); return _EU_LOC_NAME[t] || (t?t.charAt(0).toUpperCase()+t.slice(1):'Europe'); }
+function _euSplitBody(sig, locName){
+    let full=(sig.long_text||sig.short_text||sig.text||'').trim();
+    const m=full.match(/^([^:]{2,40}):\s*([\s\S]*)$/);
+    if(m){ const lead=m[1].replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').trim();
+        if(lead && lead.toLowerCase().replace(/[^a-z]/g,'')===locName.toLowerCase().replace(/[^a-z]/g,'')) full=m[2].trim(); }
+    return full;
+}
+function _euRenderSignalRow(sig){
+    const div=document.createElement('div');
+    div.className='sigrow';
+    const color=sig.color||'#6b7280';
+    div.style.borderLeftColor=color;
+    const theatre=(sig.theatre||'').toLowerCase();
+    const locName=_euLocName(theatre);
+    const href=_EU_RHET_PAGE[theatre]||null;
+    const chip=_euLvlChip(sig);
+    const body=_euSplitBody(sig, locName);
+    const pills=_euAxisPills(sig);
+    const locHtml = href
+        ? `<a class="sigrow-loc" style="color:${color};" href="${href}">${_euEsc(locName)}:</a>`
+        : `<span class="sigrow-loc nolink" style="color:${color};">${_euEsc(locName)}:</span>`;
+    div.innerHTML=`<span class="sigrow-icon">${sig.icon||'⚡'}</span>
+        <div class="sigrow-body">
+            <div class="sigrow-head">${chip}${locHtml}</div>
+            <div class="sigrow-text">${_euEsc(body)}</div>
+            <div class="sigrow-foot">${pills}</div>
+        </div>`;
+    return div;
+}
+function _euRenderBlufBlocks(blocks){
+    return blocks.map((b,i)=>{
+        const isHeader=(i===0&&!b.text);
+        const cls='bluf-para'+(isHeader?' bluf-header-para':'');
+        if(b.label&&b.text) return `<div class="${cls}"><span class="bluf-para-label">${_euEsc(b.label)}:</span> ${_euEsc(b.text)}</div>`;
+        if(b.label) return `<div class="${cls}"><span class="bluf-para-label">${_euEsc(b.label)}:</span></div>`;
+        return `<div class="${cls}">${_euEsc(b.text||'')}</div>`;
+    }).join('');
+}
+function _euFallbackParas(prose){
+    let p=String(prose||'');
+    ['Regional posture','Arctic convergence','Russian nuclear signaling','At baseline this cycle']
+        .forEach(seam=>{ p=p.replace(new RegExp('\\s*('+seam+')','g'),'\n\n$1'); });
+    return p.split(/\n\n+/).map(x=>x.trim()).filter(Boolean).map(par=>`<div class="bluf-para">${_euEsc(par)}</div>`).join('');
+}
+
+async function updateBluf(_resolvedUnused) {
         try {
             const resp = await fetch(EUROPE_BACKEND + '/api/rhetoric/europe/bluf');
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -864,21 +840,20 @@
             pill.textContent = (data.posture_label || 'BASELINE').toUpperCase();
             pill.style.background = data.posture_color || '#6b7280';
 
-            // Prose
-            document.getElementById('blufProse').textContent = data.bluf || '';
+            // Prose — approach B structured blocks, fallback to split string
+            const proseEl = document.getElementById('blufProse');
+            if (Array.isArray(data.bluf_v2) && data.bluf_v2.length) {
+                proseEl.innerHTML = _euRenderBlufBlocks(data.bluf_v2);
+            } else {
+                proseEl.innerHTML = _euFallbackParas(data.bluf || '');
+            }
 
-            // Signals (canonical schema with backward-compat fallback)
+            // Signals — upgraded rows (level chip, linked country, full text, axis pills)
             const signalsEl = document.getElementById('blufSignals');
             signalsEl.innerHTML = '';
+            signalsEl.classList.add('bluf-signals-scroll');
             (data.top_signals || data.signals || []).forEach(sig => {
-                const div = document.createElement('div');
-                div.className = 'bluf-signal-item';
-                div.style.borderLeftColor = sig.color || '#6b7280';
-                const text     = sig.short_text || sig.text || '';
-                const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-                div.innerHTML = `<span class="bluf-signal-icon">${sig.icon || '⚡'}</span>
-                    <span class="bluf-signal-text" style="color:${sig.color || 'var(--text-secondary)'};" title="${longText}">${text}</span>`;
-                signalsEl.appendChild(div);
+                signalsEl.appendChild(_euRenderSignalRow(sig));
             });
 
             // Timestamp
