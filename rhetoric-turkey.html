@@ -135,6 +135,8 @@
     .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
     .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
     .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
     .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
     .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
     .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
@@ -145,6 +147,11 @@
     .theatre-banner { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px 28px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--card-glow); }
     .theatre-score-big { font-size: 3.4rem; font-weight: 900; line-height: 1; font-family: 'Times New Roman', serif; }
     .theatre-score-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    /* RUMINT pill: rides alongside the threat score, never part of it. Deliberately
+       NOT in the L0-L5 threat palette -- reds are reserved for actual threat. */
+    .rumint-pill { margin-top: 8px; display: inline-block; padding: 4px 10px; border-radius: 6px;
+        font-family: 'Courier New', monospace; font-size: 0.62rem; font-weight: 800;
+        letter-spacing: 1px; cursor: help; border: 1px solid; }
     .theatre-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; color: white; margin-top: 8px; text-transform: uppercase; font-family: 'Courier New', monospace; }
     .theatre-right { text-align: right; }
     .theatre-escalation-label-text { font-size: 0.55rem; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; font-family: 'Courier New', monospace; }
@@ -380,63 +387,42 @@
 <!-- NAV SIDEBAR -->
 <nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
-    <a href="africa.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="asia.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="europe.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="https://www.asifahanalytics.com/commodities.html" class="nav-btn commodities-btn">
-        <span class="nav-btn-label">🛢️ Commodities</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="navRegional">Regional Rhetoric</div>
-    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌏 Asia</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Belarus</div>
+    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇧🇾 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Greenland</div>
+    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🧊 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Hungary</div>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Russia</div>
+    <a href="rhetoric-russia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇷🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="navTurkey">Turkey</div>
-    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">🇹🇷 Alignment Tracker</span>
-        <span class="nav-btn-status">◉ You are here</span>
-    </a>
-    <a href="turkey-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇹🇷 Stability Monitor</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status">◉ You are here</span></a>
+    <a href="turkey-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇹🇷 Stability Monitor</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Ukraine</div>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -448,6 +434,7 @@
         <div class="theatre-score-big" id="theatreScore" style="color:#38bdf8;">--</div>
         <div class="theatre-score-label" data-i18n="scoreLabel">PRESSURE SCORE / 100</div>
         <div class="theatre-badge" id="theatreBadge" style="background:#6b7280;">--</div>
+        <div class="rumint-pill" id="rumintPill" style="display:none;" title=""></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
         <!-- Five vector pills -->
@@ -717,9 +704,11 @@
         <span data-i18n="footBmacText">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:bold;" data-i18n="footBmacButton">buy me a coffee</a>
     </div>
     <div style="text-align:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--card-border, #1e3a5f);font-size:12px;">
+        <a href="mission.html" style="color:var(--accent, #38bdf8);text-decoration:none;">Mission Statement</a>
+        <span style="color:var(--text-muted, #4a7090);margin:0 12px;">|</span>
         <a href="privacy.html" style="color:var(--accent, #38bdf8);text-decoration:none;" data-i18n="footPrivacy">Privacy Policy</a>
         <span style="color:var(--text-muted, #4a7090);margin:0 12px;">|</span>
-        <a href="contact.html" style="color:var(--accent, #38bdf8);text-decoration:none;" data-i18n="footContact">Contact</a>
+        <a href="https://asifahanalytics.com" style="color:var(--accent, #38bdf8);text-decoration:none;">Home</a>
     </div>
     <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted, #4a7090);">
         © 2025-2026 RCGG. <span data-i18n="footCopy">All Rights Reserved. Turkey Alignment Tracker v1.0.0 — Proprietary and Confidential.</span>
@@ -774,7 +763,7 @@ const T = {
         scanLabel: 'Last scan', articlesLabel: 'articles analyzed',
         vecAnchor: '\u2693 NATO ANCHOR', vecAutonomy: '\ud83e\udded AUTONOMY', vecLebanon: '\ud83c\uddf1\ud83c\udde7 LEBANON VECTOR',
         vecFriction: '\u2694\ufe0f IL-TR FRICTION', vecMediation: '\ud83d\udd4a\ufe0f MEDIATION',
-        navDashboards: 'Dashboards', navRegional: 'Regional Rhetoric', navTurkey: 'Turkey',
+        navDashboards: 'Dashboards', navGlobalTrackers: 'Global Trackers', navRegional: 'Regional Rhetoric', navTurkey: 'Turkey',
         alignTitle: '\u2696\ufe0f DUAL ALIGNMENT INDICES \u2014 DIVERGENCE IS THE SIGNAL',
         alignAnchorLabel: '\u2693 NATO-ANCHOR INDEX', alignAutonomyLabel: '\ud83e\udded STRATEGIC-AUTONOMY INDEX',
         alignDivLabel: 'DIVERGENCE', frictionLabel: '\u2694\ufe0f MIRROR-IMAGING FRICTION INDEX',
@@ -824,7 +813,7 @@ const T = {
         scanLabel: 'Dernier scan', articlesLabel: 'articles analys\u00e9s',
         vecAnchor: '\u2693 ANCRAGE OTAN', vecAutonomy: '\ud83e\udded AUTONOMIE', vecLebanon: '\ud83c\uddf1\ud83c\udde7 VECTEUR LIBAN',
         vecFriction: '\u2694\ufe0f FRICTION IL-TR', vecMediation: '\ud83d\udd4a\ufe0f M\u00c9DIATION',
-        navDashboards: 'Tableaux de bord', navRegional: 'Rh\u00e9torique r\u00e9gionale', navTurkey: 'Turquie',
+        navDashboards: 'Tableaux de bord', navGlobalTrackers: 'Suivis mondiaux', navRegional: 'Rh\u00e9torique r\u00e9gionale', navTurkey: 'Turquie',
         alignTitle: '\u2696\ufe0f DOUBLES INDICES D\u2019ALIGNEMENT \u2014 LA DIVERGENCE EST LE SIGNAL',
         alignAnchorLabel: '\u2693 INDICE ANCRAGE OTAN', alignAutonomyLabel: '\ud83e\udded INDICE AUTONOMIE STRAT\u00c9GIQUE',
         alignDivLabel: 'DIVERGENCE', frictionLabel: '\u2694\ufe0f INDICE DE FRICTION MIROIR',
@@ -874,7 +863,7 @@ const T = {
         scanLabel: 'Letzter Scan', articlesLabel: 'Artikel analysiert',
         vecAnchor: '\u2693 NATO-ANKER', vecAutonomy: '\ud83e\udded AUTONOMIE', vecLebanon: '\ud83c\uddf1\ud83c\udde7 LIBANON-VEKTOR',
         vecFriction: '\u2694\ufe0f IL-TR-REIBUNG', vecMediation: '\ud83d\udd4a\ufe0f VERMITTLUNG',
-        navDashboards: '\u00dcbersichten', navRegional: 'Regionale Rhetorik', navTurkey: 'T\u00fcrkei',
+        navDashboards: '\u00dcbersichten', navGlobalTrackers: 'Globale Tracker', navRegional: 'Regionale Rhetorik', navTurkey: 'T\u00fcrkei',
         alignTitle: '\u2696\ufe0f DOPPELTE AUSRICHTUNGSINDIZES \u2014 DIE DIVERGENZ IST DAS SIGNAL',
         alignAnchorLabel: '\u2693 NATO-ANKER-INDEX', alignAutonomyLabel: '\ud83e\udded INDEX STRATEGISCHE AUTONOMIE',
         alignDivLabel: 'DIVERGENZ', frictionLabel: '\u2694\ufe0f SPIEGELBILD-REIBUNGSINDEX',
@@ -924,7 +913,7 @@ const T = {
         scanLabel: '\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u0441\u043a\u0430\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435', articlesLabel: '\u0441\u0442\u0430\u0442\u0435\u0439 \u043f\u0440\u043e\u0430\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u043d\u043e',
         vecAnchor: '\u2693 \u042f\u041a\u041e\u0420\u042c \u041d\u0410\u0422\u041e', vecAutonomy: '\ud83e\udded \u0410\u0412\u0422\u041e\u041d\u041e\u041c\u0418\u042f', vecLebanon: '\ud83c\uddf1\ud83c\udde7 \u041b\u0418\u0412\u0410\u041d\u0421\u041a\u0418\u0419 \u0412\u0415\u041a\u0422\u041e\u0420',
         vecFriction: '\u2694\ufe0f \u0422\u0420\u0415\u041d\u0418\u0415 \u0418\u0417-\u0422\u0420', vecMediation: '\ud83d\udd4a\ufe0f \u041f\u041e\u0421\u0420\u0415\u0414\u041d\u0418\u0427\u0415\u0421\u0422\u0412\u041e',
-        navDashboards: '\u041f\u0430\u043d\u0435\u043b\u0438', navRegional: '\u0420\u0435\u0433\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u0430\u044f \u0440\u0438\u0442\u043e\u0440\u0438\u043a\u0430', navTurkey: '\u0422\u0443\u0440\u0446\u0438\u044f',
+        navDashboards: '\u041f\u0430\u043d\u0435\u043b\u0438', navGlobalTrackers: '\u0413\u043b\u043e\u0431\u0430\u043b\u044c\u043d\u044b\u0435 \u0442\u0440\u0435\u043a\u0435\u0440\u044b', navRegional: '\u0420\u0435\u0433\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u0430\u044f \u0440\u0438\u0442\u043e\u0440\u0438\u043a\u0430', navTurkey: '\u0422\u0443\u0440\u0446\u0438\u044f',
         alignTitle: '\u2696\ufe0f \u0414\u0412\u041e\u0419\u041d\u042b\u0415 \u0418\u041d\u0414\u0415\u041a\u0421\u042b \u0412\u042b\u0420\u0410\u0412\u041d\u0418\u0412\u0410\u041d\u0418\u042f \u2014 \u0421\u0418\u0413\u041d\u0410\u041b \u0412 \u0420\u0410\u0421\u0425\u041e\u0416\u0414\u0415\u041d\u0418\u0418',
         alignAnchorLabel: '\u2693 \u0418\u041d\u0414\u0415\u041a\u0421 \u042f\u041a\u041e\u0420\u042f \u041d\u0410\u0422\u041e', alignAutonomyLabel: '\ud83e\udded \u0418\u041d\u0414\u0415\u041a\u0421 \u0421\u0422\u0420\u0410\u0422\u0415\u0413\u0418\u0427\u0415\u0421\u041a\u041e\u0419 \u0410\u0412\u0422\u041e\u041d\u041e\u041c\u0418\u0418',
         alignDivLabel: '\u0420\u0410\u0421\u0425\u041e\u0416\u0414\u0415\u041d\u0418\u0415', frictionLabel: '\u2694\ufe0f \u0418\u041d\u0414\u0415\u041a\u0421 \u0417\u0415\u0420\u041a\u0410\u041b\u042c\u041d\u041e\u0413\u041e \u0422\u0420\u0415\u041d\u0418\u042f',
@@ -1125,6 +1114,27 @@ function renderBanner(data) {
     setPill('frictionPill', (mf.band || 'normal').toUpperCase(), BAND_COLORS[mf.band] || '#6b7280');
     const dtier = dipTier(data.diplomatic_track);
     setPill('mediationPill', dtier.show ? dtier.label.split(' ')[0].toUpperCase() : 'QUIET', dtier.color);
+}
+
+// ── RUMINT pill: concept-seeding / posture-probing read. Rides ALONGSIDE the
+// threat score and never alters it. Hidden when band is off (absence stays honest).
+function renderRumint(data) {
+    const el = document.getElementById('rumintPill');
+    if (!el) return;
+    const r = data.rumint;
+    if (!r || !r.active) { el.style.display = 'none'; return; }
+    const STYLE = {
+        watch:        { c: '#64748b', bg: 'rgba(100,116,139,0.08)' },
+        active:       { c: '#38bdf8', bg: 'rgba(56,189,248,0.08)' },
+        corroborated: { c: '#f59e0b', bg: 'rgba(245,158,11,0.10)' },
+    };
+    const s = STYLE[r.band] || STYLE.watch;
+    el.textContent = '\uD83D\uDD75\uFE0F RUMINT \u00b7 ' + (r.label || 'Watch');
+    el.style.color = s.c;
+    el.style.borderColor = s.c;
+    el.style.background = s.bg;
+    el.title = r.driver || '';   // tooltip = estimative driver line (the "why")
+    el.style.display = 'inline-block';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1438,6 +1448,7 @@ function renderLadder(activeLevel) {
 function renderAll(data) {
     currentData = data;
     renderBanner(data);
+    renderRumint(data);
     renderActors(data);
     renderInterpretation(data);
     renderArticles(data);
