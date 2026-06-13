@@ -240,6 +240,33 @@
     [data-theme="dark"] .bluf-signal-item.gpi-only { background:rgba(245,158,11,0.05); }
     .bluf-footer { font-size:0.6rem; color:var(--text-muted); font-family:'Courier New',monospace; margin-top:10px; font-style:italic; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; }
     .bluf-loading { text-align:center; padding:16px; font-size:0.72rem; color:var(--text-muted); font-family:'Courier New',monospace; letter-spacing:1px; }
+    /* ── Approach B readability (Jun 13 2026) ── */
+    .bluf-para { margin-bottom:12px; line-height:1.7; font-family:'Times New Roman',Times,serif; font-size:0.9rem; color:var(--text-primary); }
+    .bluf-para:last-child { margin-bottom:0; }
+    .bluf-para .bluf-para-label { font-weight:800; letter-spacing:0.3px; color:var(--cyber-cyan,#38bdf8); }
+    .bluf-para.bluf-header-para .bluf-para-label { font-size:1.0rem; letter-spacing:0.5px; }
+    .bluf-signals-scroll { max-height:420px; overflow-y:auto; padding-right:6px; margin-top:6px; }
+    .bluf-signals-scroll::-webkit-scrollbar { width:8px; }
+    .bluf-signals-scroll::-webkit-scrollbar-thumb { background:var(--card-border); border-radius:4px; }
+    .sigrow { display:flex; align-items:flex-start; gap:9px; padding:9px 12px; border-radius:7px; background:rgba(0,0,0,0.05); border-left:4px solid var(--card-border); margin-bottom:7px; }
+    [data-theme="dark"] .sigrow { background:rgba(255,255,255,0.04); }
+    .sigrow.gpi-only { border-left-color:#f59e0b !important; background:rgba(245,158,11,0.06); }
+    [data-theme="dark"] .sigrow.gpi-only { background:rgba(245,158,11,0.05); }
+    .sigrow-icon { font-size:1rem; flex-shrink:0; margin-top:1px; }
+    .sigrow-body { flex:1; min-width:0; }
+    .sigrow-head { display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:3px; }
+    .sigrow-chip { font-family:'Courier New',monospace; font-size:0.58rem; font-weight:700; letter-spacing:0.5px; padding:2px 7px; border-radius:4px; color:#fff; flex-shrink:0; }
+    .sigrow-loc { font-weight:800; font-size:0.78rem; font-family:'Times New Roman',Times,serif; text-decoration:none; border-bottom:1px dotted currentColor; }
+    .sigrow-loc:hover { opacity:0.8; }
+    .sigrow-loc.nolink { border-bottom:none; cursor:default; }
+    .sigrow-gpi-badge { font-family:'Courier New',monospace; font-size:0.54rem; font-weight:700; letter-spacing:0.5px; padding:2px 6px; border-radius:4px; background:rgba(245,158,11,0.18); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); }
+    .sigrow-text { font-size:0.78rem; line-height:1.55; font-family:'Times New Roman',Times,serif; color:var(--text-secondary); }
+    .sigrow-foot { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; }
+    .sigrow-axis { font-family:'Courier New',monospace; font-size:0.56rem; font-weight:700; letter-spacing:0.5px; padding:2px 9px; border-radius:999px; }
+    .ax-kinetic { background:rgba(220,38,38,0.14); color:#f87171; border:1px solid #f8717166; }
+    .ax-economic { background:rgba(245,158,11,0.14); color:#fbbf24; border:1px solid #fbbf2466; }
+    .ax-diplomatic { background:rgba(14,165,233,0.14); color:#38bdf8; border:1px solid #38bdf866; }
+    .ax-humanitarian { background:rgba(168,85,247,0.14); color:#c084fc; border:1px solid #c084fc66; }
 
     /* ── TRACKER BANNERS ── */
     .trackers-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
@@ -704,19 +731,100 @@
             return [];
         }
     }
+    // ── Approach B helpers (Jun 13 2026) ──
+    const _ASIA_RHET_PAGE = {
+        china:'rhetoric-china.html', taiwan:'rhetoric-taiwan.html', japan:'rhetoric-japan.html',
+        india:'rhetoric-india.html', pakistan:'rhetoric-pakistan.html', vietnam:'rhetoric-vietnam.html',
+    };
+    const _AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+    function _lvlChip(sig) {
+        let lv = sig.level;
+        let txt, bg;
+        if (typeof lv === 'number') {
+            txt = 'L'+lv;
+            bg = ['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'][Math.max(0,Math.min(5,lv))];
+        } else {
+            const t = String(lv||'').toLowerCase();
+            txt = (t||'L0').toUpperCase();
+            bg = t==='surge'?'#dc2626':t==='high'?'#ef4444':t==='elevated'?'#f97316':'#6b7280';
+        }
+        return `<span class="sigrow-chip" style="background:${bg};">${txt}</span>`;
+    }
+    function _axisPills(sig) {
+        let axes = Array.isArray(sig.axes) && sig.axes.length ? sig.axes
+                 : (sig.pressure_type ? [sig.pressure_type] : []);
+        const seen = {};
+        const clean = axes.map(a=>String(a).toLowerCase()).filter(a=>_AXIS_LABEL[a]&&!seen[a]&&(seen[a]=true));
+        return clean.map(a=>`<span class="sigrow-axis ax-${a}">${_AXIS_LABEL[a]}</span>`).join('');
+    }
+    function _locName(theatre) {
+        const t = String(theatre||'').toLowerCase();
+        const map = { china:'China', taiwan:'Taiwan', japan:'Japan', india:'India',
+                      pakistan:'Pakistan', vietnam:'Vietnam', regional:'Asia-Pacific' };
+        return map[t] || (t ? t.charAt(0).toUpperCase()+t.slice(1) : 'Asia-Pacific');
+    }
+    function _splitBody(sig, locName) {
+        let full = (sig.long_text || sig.short_text || sig.text || '').trim();
+        const m = full.match(/^([^:]{2,40}):\s*([\s\S]*)$/);
+        if (m) {
+            const lead = m[1].replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').trim();
+            if (lead && lead.toLowerCase().replace(/[^a-z]/g,'') === locName.toLowerCase().replace(/[^a-z]/g,''))
+                full = m[2].trim();
+        }
+        return full;
+    }
+    function _escAsia(s){ if(s==null)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // Render bluf_v2 structured blocks (approach B). Fallback: split .bluf string.
+    function _renderBlufBlocks(blocks) {
+        return blocks.map((b, i) => {
+            const isHeader = (i === 0 && !b.text);
+            const cls = 'bluf-para' + (isHeader ? ' bluf-header-para' : '');
+            if (b.label && b.text) {
+                return `<div class="${cls}"><span class="bluf-para-label">${_escAsia(b.label)}:</span> ${_escAsia(b.text)}</div>`;
+            } else if (b.label) {
+                return `<div class="${cls}"><span class="bluf-para-label">${_escAsia(b.label)}:</span></div>`;
+            }
+            return `<div class="${cls}">${_escAsia(b.text||'')}</div>`;
+        }).join('');
+    }
+    function _fallbackBlufParas(prose) {
+        // Split the legacy single-string bluf on its sentence seams.
+        let p = String(prose||'');
+        ['Regional posture','Mutual cross-strait','Multiple theaters','red line(s) breached']
+            .forEach(seam => { p = p.replace(new RegExp('\\s*('+seam+')','g'), '\n\n$1'); });
+        return p.split(/\n\n+/).map(x=>x.trim()).filter(Boolean)
+            .map(par => `<div class="bluf-para">${_escAsia(par)}</div>`).join('');
+    }
+
     function _renderSignalItem(sig, opts) {
         opts = opts || {};
         const div = document.createElement('div');
-        div.className = 'bluf-signal-item' + (opts.gpiOnly ? ' gpi-only' : '');
-        div.style.borderLeftColor = opts.gpiOnly ? '#f59e0b' : (sig.color || '#6b7280');
-        const text     = sig.short_text || sig.text || '';
-        const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-        const gpiTip   = opts.gpiTooltip ? opts.gpiTooltip.replace(/"/g, '&quot;') : '';
+        div.className = 'sigrow' + (opts.gpiOnly ? ' gpi-only' : '');
+        const color = opts.gpiOnly ? '#f59e0b' : (sig.color || '#6b7280');
+        div.style.borderLeftColor = color;
+
+        const theatre = (sig.theatre || '').toLowerCase();
+        const locName = _locName(theatre);
+        const href = _ASIA_RHET_PAGE[theatre] || null;
+        const chip = _lvlChip(sig);
+        const body = _splitBody(sig, locName);
+        const pills = _axisPills(sig);
+
+        const gpiTip = opts.gpiTooltip ? _escAsia(opts.gpiTooltip) : '';
         const badge = opts.gpiFlagged
-            ? `<span class="gpi-badge" title="Also flagged by Global Pressure Index — ${gpiTip}">🌍 GPI${opts.gpiOnly ? ' · global' : ''}</span>`
+            ? `<span class="sigrow-gpi-badge" title="Also flagged by Global Pressure Index — ${gpiTip}">🌍 GPI${opts.gpiOnly ? ' · global' : ''}</span>`
             : '';
-        div.innerHTML = `${badge}<span class="bluf-signal-icon">${sig.icon || '⚡'}</span>
-            <span class="bluf-signal-text" style="color:${opts.gpiOnly ? '#f59e0b' : (sig.color || 'var(--text-secondary)')};" title="${longText}">${text}</span>`;
+        const locHtml = href
+            ? `<a class="sigrow-loc" style="color:${color};" href="${href}">${_escAsia(locName)}:</a>`
+            : `<span class="sigrow-loc nolink" style="color:${color};">${_escAsia(locName)}:</span>`;
+
+        div.innerHTML = `<span class="sigrow-icon">${sig.icon || '⚡'}</span>
+            <div class="sigrow-body">
+                <div class="sigrow-head">${chip}${locHtml}${badge}</div>
+                <div class="sigrow-text">${_escAsia(body)}</div>
+                <div class="sigrow-foot">${pills}</div>
+            </div>`;
         return div;
     }
     async function loadAsiaBluf() {
@@ -737,9 +845,16 @@
             const pill = document.getElementById('blufPosturePill');
             pill.textContent = data.posture_label || 'UNKNOWN';
             pill.style.background = data.posture_color || '#6b7280';
-            document.getElementById('blufProse').textContent = data.bluf || '';
+            // Approach B: render structured blocks if present, else fallback-split.
+            const proseEl = document.getElementById('blufProse');
+            if (Array.isArray(data.bluf_v2) && data.bluf_v2.length) {
+                proseEl.innerHTML = _renderBlufBlocks(data.bluf_v2);
+            } else {
+                proseEl.innerHTML = _fallbackBlufParas(data.bluf || '');
+            }
             const signalsEl = document.getElementById('blufSignals');
             signalsEl.innerHTML = '';
+            signalsEl.classList.add('bluf-signals-scroll');
 
             const regionalSignals = data.top_signals || data.signals || [];
             const regionalKeys = new Set(regionalSignals.map(_gpiMatchKey));
