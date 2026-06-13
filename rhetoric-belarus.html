@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <title>Belarus Pressure Tracker — Asifah Analytics</title>
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
     /* ── ARCTIC THEME VARIABLES (canonical for all Europe trackers) ── */
@@ -58,7 +58,7 @@
         width: 110vmin; height: 110vmin;
         min-width: 800px; min-height: 800px;
         max-width: 1400px; max-height: 1400px;
-        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
         background-size: contain; background-repeat: no-repeat; background-position: center;
         opacity: var(--watermark-opacity); filter: var(--watermark-filter);
         z-index: 0; pointer-events: none; user-select: none;
@@ -324,6 +324,19 @@
     .footer-col p, .footer-col a { font-size: 0.7rem; line-height: 1.55; color: var(--text-muted); text-decoration: none; display: block; margin-bottom: 4px; }
     .footer-col a:hover { color: #38bdf8; }
     @media (max-width: 800px) { .page-footer-grid { grid-template-columns: 1fr; } }
+    /* ── MOBILE DRAWER (Jun 13 2026) ── */
+    .mobile-menu-btn { display: none; background: rgba(56,189,248,0.10); border: 1px solid var(--card-border, #1e3a5f); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 18px; line-height: 1; color: var(--text-primary, #e2f0fb); font-family: inherit; margin-top: 8px; }
+    .mobile-menu-btn:hover { border-color: var(--accent, #38bdf8); background: rgba(56,189,248,0.20); }
+    .mobile-drawer-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9998; backdrop-filter: blur(2px); }
+    .mobile-drawer-backdrop.open { display: block; }
+    .mobile-drawer { display: none; position: fixed; top: 0; left: 0; bottom: 0; width: 84%; max-width: 320px; background: var(--card-bg, #0d1b2e); border-right: 2px solid var(--accent, #38bdf8); z-index: 9999; padding: 18px 16px; overflow-y: auto; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+    .mobile-drawer.open { display: block; transform: translateX(0); }
+    .mobile-drawer-close { position: absolute; top: 10px; right: 10px; background: transparent; border: 1px solid var(--card-border, #1e3a5f); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; color: var(--text-primary, #e2f0fb); font-size: 16px; line-height: 1; font-family: inherit; }
+    .mobile-drawer-close:hover { border-color: var(--accent, #38bdf8); color: var(--accent, #38bdf8); }
+    .mobile-drawer-title { font-size: 14px; font-weight: 700; color: var(--accent, #38bdf8); text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 14px 4px; padding-right: 40px; }
+    @media (max-width: 1199px) { .mobile-menu-btn { display: inline-flex; align-items: center; gap: 6px; } }
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
 </style>
 </head>
 <body>
@@ -333,7 +346,8 @@
 <!-- ── HEADER ── -->
 <header>
     <div class="header-left">
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+        <button class="mobile-menu-btn" onclick="openMobileDrawer()" aria-label="Open navigation menu"><span style="font-size:20px;">☰</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;">Menu</span></button>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
         <a href="belarus-stability.html" class="back-link" data-i18n="backLink">← Back to Belarus Stability</a>
     </div>
     <div class="header-center">
@@ -363,64 +377,96 @@
 <div class="page-with-sidebar">
 
 <!-- ── NAV SIDEBAR ── -->
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<aside class="mobile-drawer" id="mobileDrawer" aria-label="Navigation menu">
+    <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu">✕</button>
+    <div class="mobile-drawer-title">Navigation</div>
+    <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="navRegionalRhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Belarus</div>
+    <div class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🇧🇾 Pressure Tracker</span><span class="nav-btn-status">◉ You are here</span></div>
+    <a href="belarus-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇧🇾 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Greenland</div>
+    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🧊 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="greenland.html" class="nav-btn active-nav"><span class="nav-btn-label">🧊 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Hungary</div>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="hungary-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇭🇺 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Russia</div>
+    <a href="rhetoric-russia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇷🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="russia.html" class="nav-btn active-nav"><span class="nav-btn-label">🇷🇺 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Turkey</div>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="turkey-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇹🇷 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Ukraine</div>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="ukraine.html" class="nav-btn active-nav"><span class="nav-btn-label">🇺🇦 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+</aside>
 <nav class="nav-sidebar">
     <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
-    <div class="nav-btn inactive-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">🔒 Future</span>
-    </div>
-    <a href="asia.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="europe.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="https://www.asifahanalytics.com/commodities.html" class="nav-btn commodity-btn">
-        <span class="nav-btn-label">🛢️ Commodities</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <div class="nav-sidebar-label" data-i18n="navEuropeRhetoric">Europe Rhetoric</div>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 Europe Monitor</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-russia.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇷🇺 Russia Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🧊 Greenland Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">🇧🇾 Belarus Tracker</span>
-        <span class="nav-btn-status">◉ You are here</span>
-    </a>
-    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇺🇦 Ukraine Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label" data-i18n="navRegionalRhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="belarus-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🇧🇾 Belarus Stability</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label">Belarus</div>
+    <div class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🇧🇾 Pressure Tracker</span><span class="nav-btn-status">◉ You are here</span></div>
+    <a href="belarus-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇧🇾 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Greenland</div>
+    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🧊 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="greenland.html" class="nav-btn active-nav"><span class="nav-btn-label">🧊 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Hungary</div>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="hungary-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇭🇺 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Russia</div>
+    <a href="rhetoric-russia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇷🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="russia.html" class="nav-btn active-nav"><span class="nav-btn-label">🇷🇺 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Turkey</div>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="turkey-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇹🇷 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Ukraine</div>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="ukraine.html" class="nav-btn active-nav"><span class="nav-btn-label">🇺🇦 Stability Index</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <!-- ── MAIN CONTENT ── -->
@@ -624,16 +670,26 @@
     <div style="margin-top:20px;padding:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;font-size:12px;line-height:1.5;">
         <strong style="color:#f59e0b;" data-i18n="footDisclaimerLabel">⚠️ DISCLAIMER</strong> &mdash; <span data-i18n="footDisclaimerText">This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.</span>
     </div>
-    <div style="margin-top:20px;padding:14px 18px;background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.2);border-radius:8px;text-align:center;font-size:13px;">
-        <span data-i18n="footBmacText">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:bold;" data-i18n="footBmacButton">buy me a coffee</a>
+    <!-- Backend + cadence (canonical Gold Standard) -->
+    <div style="text-align:center;margin-top:6px;font-size:12px;color:var(--text-muted, #4a7090);">
+        asifa-europe-backend.onrender.com · Updates every 6 hours · Force refresh via Scan OSINT
     </div>
-    <div style="text-align:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--card-border, #1e3a5f);font-size:12px;">
-        <a href="privacy.html" style="color:var(--accent, #38bdf8);text-decoration:none;" data-i18n="footPrivacy">Privacy Policy</a>
-        <span style="color:var(--text-muted, #4a7090);margin:0 12px;">|</span>
-        <a href="contact.html" style="color:var(--accent, #38bdf8);text-decoration:none;" data-i18n="footContact">Contact</a>
+
+    <!-- Support + Contact CTAs (canonical pills) -->
+    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
     </div>
+
     <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted, #4a7090);">
-        © 2025-2026 RCGG. <span data-i18n="footCopy">All Rights Reserved. Belarus Pressure Tracker v1.0.0 — Proprietary and Confidential.</span>
+        © 2025-2026 Asifah Analytics. <span data-i18n="footCopy">All Rights Reserved. Belarus Pressure Tracker v1.0.0 — Proprietary and Confidential.</span>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:12px;">
+        <a href="mission.html" style="color:var(--accent, #38bdf8);text-decoration:none;">Mission Statement</a>
+        <span style="color:var(--text-muted, #4a7090);margin:0 10px;">·</span>
+        <a href="privacy.html" style="color:var(--accent, #38bdf8);text-decoration:none;" data-i18n="footPrivacy">Privacy Policy</a>
+        <span style="color:var(--text-muted, #4a7090);margin:0 10px;">·</span>
+        <a href="https://asifahanalytics.com" style="color:var(--accent, #38bdf8);text-decoration:none;">Home</a>
     </div>
 </footer>
 
@@ -701,7 +757,7 @@ const T = {
         articlesSourcesTitle: '📰 ARTICLES & INTELLIGENCE FEEDS',
         tabEnglish: 'English', tabRussian: 'Russian (Беларуская)', tabRegional: 'Regional', tabSocial: 'Social', tabAll: 'All',
         loading: 'Loading...',
-        navDashboards: 'Dashboards', navEuropeRhetoric: 'Europe Rhetoric',
+        navDashboards: 'Dashboards', navGlobalTrackers: 'Global Trackers', navRegionalRhetoric: 'Regional Rhetoric', navEuropeRhetoric: 'Europe Rhetoric',
         footSourcesTitle: 'Data Sources',
         footSourcesText: 'RSS (Nasha Niva, Zviazda, Euroradio, Radio Svaboda, NEXTA, RFE/RL, Viasna, Meduza, Belsat), Telegram OSINT (@pul_1, @nexta_tv, @belamova), GDELT (EN/RU/BE), Bluesky, Reddit. NewsAPI + Brave fallback when GDELT rate-limits.',
         footMethodTitle: 'Methodology',
@@ -747,7 +803,7 @@ const T = {
         articlesSourcesTitle: '📰 ARTICLES & FLUX DE RENSEIGNEMENT',
         tabEnglish: 'Anglais', tabRussian: 'Russe (Беларуская)', tabRegional: 'Régional', tabSocial: 'Social', tabAll: 'Tous',
         loading: 'Chargement...',
-        navDashboards: 'Tableaux de bord', navEuropeRhetoric: 'Rhétorique Europe',
+        navDashboards: 'Tableaux de bord', navGlobalTrackers: 'Suivis mondiaux', navRegionalRhetoric: 'Rhétorique régionale', navEuropeRhetoric: 'Rhétorique Europe',
         footSourcesTitle: 'Sources de données',
         footSourcesText: 'RSS (Nasha Niva, Zviazda, Euroradio, Radio Svaboda, NEXTA, RFE/RL, Viasna, Meduza, Belsat), Telegram OSINT (@pul_1, @nexta_tv, @belamova), GDELT (EN/RU/BE), Bluesky, Reddit. NewsAPI + Brave en relais lors des limitations GDELT.',
         footMethodTitle: 'Méthodologie',
@@ -793,7 +849,7 @@ const T = {
         articlesSourcesTitle: '📰 ARTIKEL & NACHRICHTENQUELLEN',
         tabEnglish: 'Englisch', tabRussian: 'Russisch (Беларуская)', tabRegional: 'Regional', tabSocial: 'Sozial', tabAll: 'Alle',
         loading: 'Wird geladen...',
-        navDashboards: 'Dashboards', navEuropeRhetoric: 'Europa-Rhetorik',
+        navDashboards: 'Dashboards', navGlobalTrackers: 'Globale Tracker', navRegionalRhetoric: 'Regionale Rhetorik', navEuropeRhetoric: 'Europa-Rhetorik',
         footSourcesTitle: 'Datenquellen',
         footSourcesText: 'RSS (Nasha Niva, Zviazda, Euroradio, Radio Svaboda, NEXTA, RFE/RL, Viasna, Meduza, Belsat), Telegram OSINT (@pul_1, @nexta_tv, @belamova), GDELT (EN/RU/BE), Bluesky, Reddit. NewsAPI + Brave als Reserve bei GDELT-Ratenbegrenzungen.',
         footMethodTitle: 'Methodik',
@@ -839,7 +895,7 @@ const T = {
         articlesSourcesTitle: '📰 СТАТЬИ И ИСТОЧНИКИ',
         tabEnglish: 'Английский', tabRussian: 'Русский (Беларуская)', tabRegional: 'Региональные', tabSocial: 'Соцсети', tabAll: 'Все',
         loading: 'Загрузка...',
-        navDashboards: 'Дашборды', navEuropeRhetoric: 'Риторика Европы',
+        navDashboards: 'Дашборды', navGlobalTrackers: 'Глобальные трекеры', navRegionalRhetoric: 'Региональная риторика', navEuropeRhetoric: 'Риторика Европы',
         footSourcesTitle: 'Источники данных',
         footSourcesText: 'RSS (Nasha Niva, Zviazda, Euroradio, Radio Svaboda, NEXTA, RFE/RL, Viasna, Meduza, Belsat), Telegram OSINT (@pul_1, @nexta_tv, @belamova), GDELT (EN/RU/BE), Bluesky, Reddit. NewsAPI + Brave при ограничениях GDELT.',
         footMethodTitle: 'Методология',
@@ -1358,6 +1414,11 @@ async function triggerScan() {
 loadTheme();
 applyTranslations();
 fetchData();
+</script>
+<script>
+function openMobileDrawer(){ document.getElementById('mobileDrawer')?.classList.add('open'); document.getElementById('mobileDrawerBackdrop')?.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobileDrawer(){ document.getElementById('mobileDrawer')?.classList.remove('open'); document.getElementById('mobileDrawerBackdrop')?.classList.remove('open'); document.body.style.overflow=''; }
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeMobileDrawer(); });
 </script>
 </body>
 </html>
