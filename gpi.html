@@ -205,6 +205,12 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 26px; margi
 .axis-tag-economic { border-color: rgba(245,158,11,0.4); color: #fbbf24; }
 .axis-tag-diplomatic { border-color: rgba(14,165,233,0.4); color: #38bdf8; }
 .axis-tag-humanitarian { border-color: rgba(168,85,247,0.4); color: #c084fc; }
+/* Slice 2: trailing axis pill, linked location, page-less tag */
+.sig-row-foot { margin-top: 7px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sig-axis-tag-end { font-family: 'Courier New', monospace; font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--card-border); }
+a.sig-location-link { text-decoration: none; border-bottom: 1px dotted currentColor; }
+a.sig-location-link:hover { opacity: 0.8; }
+.sig-source-tag { font-family: 'Courier New', monospace; font-size: 9.5px; letter-spacing: 0.5px; color: var(--text-muted); padding: 2px 8px; border: 1px solid var(--card-border); border-radius: 4px; }
 .bluf-signals { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--card-border); }
 .bluf-signal-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--article-bg); border-left: 4px solid var(--accent); border-radius: 6px; font-size: 13px; }
 .bluf-signal-icon { font-size: 18px; flex-shrink: 0; }
@@ -869,52 +875,134 @@ function _gpiLevelChip(s) {
 }
 
 const _AXIS_TAG_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+
+// Region-code -> display name (Slice 2 FIX B). Bare region codes must never
+// render as a 'location' (the 'Me:' bug); they get spelled out.
+const _REGION_DISPLAY = {
+    me: 'Middle East & North Africa', middle_east: 'Middle East & North Africa',
+    wha: 'The Western Hemisphere', asia: 'Asia & The Pacific',
+    europe: 'Europe', africa: 'Africa', arctic: 'Arctic', global: 'Global',
+    global_commodity: 'Global Commodities', global_food: 'Global Food',
+    global_humanitarian: 'Global Humanitarian', global_market: 'Global Markets',
+};
+
+// theatre -> source page. country theatres -> rhetoric page (default);
+// commodity/military/market -> their tracker; page-less -> null ('GPI Signal').
+const _THEATRE_PAGE = {
+    iran:'rhetoric-iran.html', israel:'rhetoric-israel.html', lebanon:'rhetoric-lebanon.html',
+    iraq:'rhetoric-iraq.html', syria:'rhetoric-syria.html', yemen:'rhetoric-yemen.html',
+    china:'china-stability.html', taiwan:'taiwan-stability.html', japan:'japan-stability.html',
+    india:'rhetoric-india.html', pakistan:'pakistan-stability.html', vietnam:'vietnam-stability.html',
+    russia:'rhetoric-russia.html', hungary:'rhetoric-hungary.html', ukraine:'ukraine.html',
+    us:'us-stability.html', cuba:'cuba-stability.html', chile:'rhetoric-chile.html',
+    peru:'peru-stability.html', mexico:'mexico-stability.html', greenland:'greenland-stability.html',
+};
+const _REGION_HUB = {
+    me:'rhetoric-index.html', middle_east:'rhetoric-index.html',
+    asia:'rhetoric-asia.html', europe:'rhetoric-europe.html', wha:'rhetoric-wha.html',
+};
+// category keyword -> tracker page (overrides theatre routing)
+function _trackerPageFor(s) {
+    const cat = (s.category || '').toLowerCase();
+    const src = (s.source || '').toLowerCase();
+    if (cat.startsWith('commodity') || cat === 'commodity' || /commodity|wheat|oil|potash|rice|gas/.test(cat)) return 'commodities.html';
+    if (cat.startsWith('market_fragility') || /fragility/.test(cat)) return 'market-watch.html';
+    if (/military|naval|base_evacuation|notam/.test(cat)) return 'military.html';
+    if (s.source_link) return s.source_link;  // commodity rows already carry one
+    return null;
+}
+
 function _gpiAxisTag(s) {
     const ax = (s.pressure_type || '').toLowerCase();
     if (!ax || !_AXIS_TAG_LABEL[ax]) return '';
     return `<span class="sig-axis-tag axis-tag-${ax}">${_AXIS_TAG_LABEL[ax]}</span>`;
 }
 
+// Trailing axis pill (Slice 2 FIX C) -- terminal, end of row.
+const _AXIS_PILL_BG = { kinetic:'rgba(220,38,38,0.14)', economic:'rgba(245,158,11,0.14)',
+                        diplomatic:'rgba(14,165,233,0.14)', humanitarian:'rgba(168,85,247,0.14)' };
+const _AXIS_PILL_FG = { kinetic:'#f87171', economic:'#fbbf24', diplomatic:'#38bdf8', humanitarian:'#c084fc' };
+function _gpiAxisPillEnd(s) {
+    const ax = (s.pressure_type || '').toLowerCase();
+    if (!ax || !_AXIS_TAG_LABEL[ax]) return '';
+    return `<span class="sig-axis-tag-end" style="background:${_AXIS_PILL_BG[ax]};color:${_AXIS_PILL_FG[ax]};border-color:${_AXIS_PILL_FG[ax]}66;">${_AXIS_TAG_LABEL[ax]}</span>`;
+}
+
 function _titleCase(str) {
     return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1));
 }
 
-// Split 'THEATRE: rest of text' or '🇮🇷 IRAN: rest' into {location, body}.
-function _splitLocation(s) {
+// Resolve a signal's display location + optional source link (Slice 2).
+// Priority: real country theatre (page) > parsed country from text >
+// region display name (hub link) > 'Global'.
+function _resolveLocation(s) {
+    const theatre = (s.theatre || '').toLowerCase().trim();
+    const region = (s.region || '').toLowerCase().trim();
+    const isBareRegion = theatre && _REGION_DISPLAY[theatre] && !_THEATRE_PAGE[theatre];
+
+    // 1. Real country theatre with a known page
+    if (theatre && _THEATRE_PAGE[theatre]) {
+        return { label: _titleCase(theatre.replace(/_/g,' ')), href: _trackerPageFor(s) || _THEATRE_PAGE[theatre] };
+    }
+    // 2. theatre is actually a region code (the 'Me:' bug) OR a global bucket:
+    //    try to parse a country name out of the text first.
     const full = (s.long_text || s.short_text || s.text || '').trim();
-    // Prefer an explicit theatre field for the location label.
-    let loc = (s.theatre || '').replace(/_/g, ' ').trim();
-    let body = full;
-    // If the text starts with 'SOMETHING:' use that as location when no theatre.
-    const m = full.match(/^([^:]{2,40}):\s*(.*)$/s);
+    const m = full.match(/^[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F\s]*([A-Z][A-Za-z .'-]{2,30}?)[:\s]/u);
+    if ((isBareRegion || !theatre || _REGION_DISPLAY[theatre]) && m) {
+        const cand = m[1].trim().toLowerCase();
+        if (_THEATRE_PAGE[cand]) {
+            return { label: _titleCase(cand), href: _trackerPageFor(s) || _THEATRE_PAGE[cand] };
+        }
+    }
+    // 3. tracker-page categories (commodity/market/military) regardless of theatre
+    const tp = _trackerPageFor(s);
+    // 4. region display name + hub link
+    const regionKey = _REGION_DISPLAY[theatre] ? theatre : (_REGION_DISPLAY[region] ? region : null);
+    if (regionKey) {
+        return { label: _REGION_DISPLAY[regionKey], href: tp || _REGION_HUB[regionKey] || null };
+    }
+    return { label: 'Global', href: tp || null };
+}
+
+// Body text with the leading 'LOC:' lead stripped if present.
+function _signalBody(s, locLabel) {
+    let full = (s.long_text || s.short_text || s.text || '').trim();
+    const m = full.match(/^([^:]{2,40}):\s*([\s\S]*)$/s);
     if (m) {
         const lead = m[1].replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu, '').trim();
-        if (!loc) loc = lead;
-        // strip the leading 'LOC:' from body if it matches our location
-        if (lead && lead.toLowerCase() === loc.toLowerCase()) body = m[2].trim();
-        else if (!s.theatre) body = m[2].trim();
+        if (lead && lead.toLowerCase().replace(/[^a-z]/g,'') === locLabel.toLowerCase().replace(/[^a-z]/g,'')) {
+            full = m[2].trim();
+        }
     }
-    loc = loc ? _titleCase(loc) : 'Global';
-    return { location: loc, body: body };
+    return full;
 }
 
 function _renderSignalRow(s, axisColor) {
     const icon = s.icon || '\u26a1';
     const color = s.color || axisColor;
     const chip = _gpiLevelChip(s);
-    const tag = _gpiAxisTag(s);
-    const { location, body } = _splitLocation(s);
-    const safeLoc = escapeHtmlGpi(location);
+    const loc = _resolveLocation(s);
+    const safeLoc = escapeHtmlGpi(loc.label);
+    const body = _signalBody(s, loc.label);
     const safeBody = escapeHtmlGpi(body);
+    const endPill = _gpiAxisPillEnd(s);
+
+    // Linked location label where a page exists; muted 'GPI Signal' tag otherwise.
+    const locHtml = loc.href
+        ? `<a class="sig-location-link sig-location" style="color:${color};" href="${loc.href}">${safeLoc}:</a>`
+        : `<span class="sig-location" style="color:${color};">${safeLoc}:</span>`;
+    const sourceTag = loc.href ? '' : '<span class="sig-source-tag">GPI Signal</span>';
+
     return `<div class="sig-row" style="border-left-color:${color};">
         <span class="sig-row-icon">${icon}</span>
         <div class="sig-row-body">
             <div class="sig-row-head">
                 ${chip}
-                <span class="sig-location" style="color:${color};">${safeLoc}:</span>
-                ${tag}
+                ${locHtml}
+                ${sourceTag}
             </div>
             <div class="sig-row-text">${safeBody}</div>
+            <div class="sig-row-foot">${endPill}</div>
         </div>
     </div>`;
 }
@@ -930,9 +1018,13 @@ function _formatBlufParagraphs(prose) {
     });
     const paras = p.split(/\n\n+/).map(x => x.trim()).filter(Boolean);
     return paras.map(para => {
-        // Capitalize + bold the leading label up to the first colon (if short).
-        const m = para.match(/^([^:]{3,40}):\s*([\s\S]*)$/);
-        if (m) {
+        // Label = leading text up to the colon that introduces the body.
+        // But if a parenthetical timestamp like '(Jun 13, 2026 15:41Z)' sits
+        // before that colon, keep it inside the (blue) label -- its internal
+        // ':' must not split the line.
+        let m = para.match(/^(.*?\([^)]*\)):\s*([\s\S]*)$/);  // label ends in (...)
+        if (!m) m = para.match(/^([^:]{3,40}):\s*([\s\S]*)$/);   // simple label
+        if (m && m[1].length <= 70) {
             const label = _titleCase(m[1].trim());
             return `<div class="bluf-para"><span class="bluf-label">${escapeHtmlGpi(label)}:</span> ${escapeHtmlGpi(m[2].trim())}</div>`;
         }
