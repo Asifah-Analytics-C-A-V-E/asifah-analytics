@@ -242,6 +242,33 @@
     [data-theme="dark"] .gpi-badge { background:rgba(245,158,11,0.12); color:#fbbf24; border-color:rgba(245,158,11,0.35); }
     .bluf-signal-item.gpi-only { border-left-width:3px; border-left-color:#f59e0b; background:rgba(245,158,11,0.06); }
     [data-theme="dark"] .bluf-signal-item.gpi-only { background:rgba(245,158,11,0.05); }
+    /* Approach B readability (Jun 13 2026) */
+    .bluf-para { margin-bottom:12px; line-height:1.7; font-family:'Times New Roman',Times,serif; font-size:0.9rem; color:var(--text-primary); }
+    .bluf-para:last-child { margin-bottom:0; }
+    .bluf-para .bluf-para-label { font-weight:800; letter-spacing:0.3px; color:var(--cyber-cyan,#38bdf8); }
+    .bluf-para.bluf-header-para .bluf-para-label { font-size:1.0rem; letter-spacing:0.5px; }
+    .bluf-signals-scroll { max-height:420px; overflow-y:auto; padding-right:6px; margin-top:6px; }
+    .bluf-signals-scroll::-webkit-scrollbar { width:8px; }
+    .bluf-signals-scroll::-webkit-scrollbar-thumb { background:var(--card-border); border-radius:4px; }
+    .sigrow { display:flex; align-items:flex-start; gap:9px; padding:9px 12px; border-radius:7px; background:rgba(0,0,0,0.05); border-left:4px solid var(--card-border); margin-bottom:7px; }
+    [data-theme="dark"] .sigrow { background:rgba(255,255,255,0.04); }
+    .sigrow.gpi-only { border-left-color:#f59e0b !important; background:rgba(245,158,11,0.06); }
+    [data-theme="dark"] .sigrow.gpi-only { background:rgba(245,158,11,0.05); }
+    .sigrow-icon { font-size:1rem; flex-shrink:0; margin-top:1px; }
+    .sigrow-body { flex:1; min-width:0; }
+    .sigrow-head { display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:3px; }
+    .sigrow-chip { font-family:'Courier New',monospace; font-size:0.58rem; font-weight:700; letter-spacing:0.5px; padding:2px 7px; border-radius:4px; color:#fff; flex-shrink:0; }
+    .sigrow-loc { font-weight:800; font-size:0.78rem; font-family:'Times New Roman',Times,serif; text-decoration:none; border-bottom:1px dotted currentColor; }
+    .sigrow-loc:hover { opacity:0.8; }
+    .sigrow-loc.nolink { border-bottom:none; cursor:default; }
+    .sigrow-gpi-badge { font-family:'Courier New',monospace; font-size:0.54rem; font-weight:700; letter-spacing:0.5px; padding:2px 6px; border-radius:4px; background:rgba(245,158,11,0.18); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); }
+    .sigrow-text { font-size:0.78rem; line-height:1.55; font-family:'Times New Roman',Times,serif; color:var(--text-secondary); }
+    .sigrow-foot { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; }
+    .sigrow-axis { font-family:'Courier New',monospace; font-size:0.56rem; font-weight:700; letter-spacing:0.5px; padding:2px 9px; border-radius:999px; }
+    .ax-kinetic { background:rgba(220,38,38,0.14); color:#f87171; border:1px solid #f8717166; }
+    .ax-economic { background:rgba(245,158,11,0.14); color:#fbbf24; border:1px solid #fbbf2466; }
+    .ax-diplomatic { background:rgba(14,165,233,0.14); color:#38bdf8; border:1px solid #38bdf866; }
+    .ax-humanitarian { background:rgba(168,85,247,0.14); color:#c084fc; border:1px solid #c084fc66; }
     .bluf-footer { font-size:0.6rem; color:var(--text-muted); font-family:'Courier New',monospace; margin-top:10px; font-style:italic; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; }
 
     /* ── TRACKER BANNERS ── */
@@ -357,6 +384,8 @@
         .tracker-banner { grid-template-columns: 1fr; }
         .tracker-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
     }
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
 </style>
 </head>
 <body>
@@ -403,98 +432,38 @@
 <!-- ── NAV SIDEBAR (canonical Asifah pattern) ── -->
 <nav class="nav-sidebar">
     <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
-    <div class="nav-btn inactive-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status" data-i18n="navFuture">🔒 Future</span>
-    </div>
-    <a href="asia.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="europe.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 Western Hemisphere</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="commodities.html" class="nav-btn rhetoric-btn" style="border-color:rgba(245,158,11,0.4); background:linear-gradient(135deg,rgba(245,158,11,0.08) 0%,rgba(217,119,6,0.05) 100%);">
-        <span class="nav-btn-label">🌾 Commodities Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive" style="color:#fbbf24;">● Live</span>
-    </a>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="gpi.html" class="nav-btn rhetoric-btn" style="border-color:rgba(167,139,250,0.4); background:linear-gradient(135deg,rgba(167,139,250,0.08) 0%,rgba(124,58,237,0.05) 100%);">
-        <span class="nav-btn-label">🌐 Global Pressure Index</span>
-        <span class="nav-btn-status" data-i18n="navLive" style="color:#c4b5fd;">● Live</span>
-    </a>
+    <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="navRegionalRhetoric">Regional Rhetoric</div>
-    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 Middle East Rhetoric</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 Asia Rhetoric</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 Europe Rhetoric</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">📡 Western Hemisphere Rhetoric</span>
-        <span class="nav-btn-status" data-i18n="navYouAreHere">◉ You are here</span>
-    </a>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status" data-i18n="navYouAreHere">◉ You are here</span></div>
     <div class="nav-divider"></div>
-    <a href="rhetoric-cuba.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇨🇺 Cuba Rhetoric Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="cuba-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">📊 Cuba Stability</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-peru.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇵🇪 Peru Rhetoric Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="peru-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">📊 Peru Stability</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-chile.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇨🇱 Chile Rhetoric Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="chile-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">📊 Chile Stability</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-venezuela.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇻🇪 Venezuela Rhetoric Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="venezuela-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">📊 Venezuela Stability</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="rhetoric-us.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">🇺🇸 U.S. Rhetoric Tracker</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
-    <a href="us-stability.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">📊 U.S. Stability</span>
-        <span class="nav-btn-status" data-i18n="navLive">● Live</span>
-    </a>
+    <a href="rhetoric-cuba.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇨🇺 Cuba Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="cuba-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Cuba Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-divider"></div>
+    <a href="rhetoric-peru.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇵🇪 Peru Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="peru-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Peru Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-divider"></div>
+    <a href="rhetoric-chile.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇨🇱 Chile Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="chile-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Chile Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-divider"></div>
+    <a href="rhetoric-venezuela.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇻🇪 Venezuela Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="venezuela-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Venezuela Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-divider"></div>
+    <a href="rhetoric-us.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇸 U.S. Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="us-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 U.S. Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -565,17 +534,22 @@
 
 <!-- FOOTER -->
 <footer>
-    <div data-i18n="footerSources">Data Sources: RSS (EN/ES/PT), GDELT, NewsAPI, Telegram OSINT channels, Bluesky mirrors</div>
-    <div style="margin-top:6px;font-size:0.85em;" data-i18n="footerMethodology">
-        Methodology: Three-question analytical frame (U.S. pressure · Regime fracture · Adversary access) · Red Lines · So What factor · Cross-theater fingerprints
+    <p style="margin:0 0 6px;"><strong>ASIFAH ANALYTICS · WESTERN HEMISPHERE RHETORIC MONITOR</strong></p>
+    <p style="margin:0 0 6px;">asifah-wha-backend.onrender.com · Updates every 12 hours · Force refresh via Scan OSINT</p>
+    <p style="margin:0;" data-i18n="footerSources">Data Sources: RSS (EN/ES/PT), GDELT, NewsAPI, Telegram OSINT channels, Bluesky mirrors</p>
+
+    <!-- Support + Contact CTAs -->
+    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
     </div>
-    <div style="margin-top:14px;padding:10px;background:rgba(56,189,248,0.07);border-radius:8px;">
-        <span style="font-size:0.92em;" data-i18n="footerCoffee">If you find Asifah Analytics useful, you can </span>
-        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--cyber-cyan);font-weight:bold;text-decoration:none;">☕ <span data-i18n="footerCoffeeLink">buy me a coffee</span></a>
-    </div>
-    <div style="margin-top:10px;font-size:0.85em;opacity:0.7;">
-        © 2025-2026 Asifah Analytics · <span data-i18n="footerDisclaimer">Research & Educational Use Only. Not for operational decision-making.</span>
-    </div>
+
+    <p style="margin-top:14px;font-size:10px;opacity:0.7;">© 2025-2026 Asifah Analytics · <span data-i18n="footerDisclaimer">Research & Educational Use Only. Not for operational decision-making.</span></p>
+    <p style="margin-top:10px;">
+        <a href="mission.html">Mission Statement</a> · 
+        <a href="privacy.html">Privacy Policy</a> · 
+        <a href="https://asifahanalytics.com">Home</a>
+    </p>
 </footer>
 
 </div>
@@ -672,6 +646,7 @@
             footerCoffee:       'If you find Asifah Analytics useful, you can ',
             footerCoffeeLink:   'buy me a coffee',
             navDashboards:        'Dashboards',
+            navGlobalTrackers:    'Global Trackers',
             navRegionalRhetoric:  'Regional Rhetoric',
             navLive:              '● Live',
             navFuture:            '🔒 Future',
@@ -712,6 +687,7 @@
             footerCoffee:       'Si Asifah Analytics te resulta útil, puedes ',
             footerCoffeeLink:   'invitarme un café',
             navDashboards:        'Paneles',
+            navGlobalTrackers:    'Rastreadores Globales',
             navRegionalRhetoric:  'Retórica Regional',
             navLive:              '● En Vivo',
             navFuture:            '🔒 Futuro',
@@ -752,6 +728,7 @@
             footerCoffee:       'Se Asifah Analytics for útil, você pode ',
             footerCoffeeLink:   'me pagar um café',
             navDashboards:        'Painéis',
+            navGlobalTrackers:    'Rastreadores Globais',
             navRegionalRhetoric:  'Retórica Regional',
             navLive:              '● Ao Vivo',
             navFuture:            '🔒 Futuro',
@@ -978,10 +955,12 @@
         // Prose
         // Prefer bluf_v2 (May 22 2026 richer human-language prose, with **bold** markers)
         // Fall back to legacy bluf, then to fallback message.
-        if (blufData.bluf_v2) {
-            blufProseEl.innerHTML = renderBlufMarkdown(blufData.bluf_v2);
+        if (Array.isArray(blufData.bluf_v2) && blufData.bluf_v2.length) {
+            blufProseEl.innerHTML = _whaRenderBlufBlocks(blufData.bluf_v2);
+        } else if (typeof blufData.bluf_v2_md === 'string' && blufData.bluf_v2_md) {
+            blufProseEl.innerHTML = _whaFallbackMd(blufData.bluf_v2_md);
         } else if (blufData.bluf) {
-            blufProseEl.textContent = blufData.bluf;
+            blufProseEl.innerHTML = _whaFallbackMd(blufData.bluf);
         } else {
             blufProseEl.textContent = 'No BLUF prose available.';
         }
@@ -990,8 +969,22 @@
         // v2.1 Three-Altitude Synthesis: GPI-flagged signals get 🌍 badge.
         // GPI-only (cross-region escalation that regional BLUF missed) appears at TOP.
         signalsEl.innerHTML = '';
+        signalsEl.classList.add('bluf-signals-scroll');
         const signals = blufData.top_signals || blufData.signals || [];
         const gpiSignals = (window._gpiSignalsForRegion || []);
+
+        // Approach B helpers (Jun 13 2026)
+        const _WHA_RHET_PAGE = { cuba:'rhetoric-cuba.html', peru:'rhetoric-peru.html', chile:'rhetoric-chile.html', venezuela:'rhetoric-venezuela.html', us:'rhetoric-us.html' };
+        const _WHA_LOC_NAME = { cuba:'Cuba', peru:'Peru', chile:'Chile', venezuela:'Venezuela', us:'United States', mexico:'Mexico', colombia:'Colombia', brazil:'Brazil', haiti:'Haiti', panama:'Panama', regional:'Western Hemisphere' };
+        const _WHA_AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+        function _whaEsc(s){ if(s==null)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        function _whaEscMd(s){ return _whaEsc(s).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>'); }
+        function _whaLvlChip(sig){ let lv=sig.level,txt,bg; if(typeof lv==='number'){txt='L'+lv;bg=['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'][Math.max(0,Math.min(5,lv))];}else{const t=String(lv||'').toLowerCase();txt=(t||'L0').toUpperCase();bg=t==='surge'?'#dc2626':t==='high'?'#ef4444':t==='elevated'?'#f97316':'#6b7280';} return '<span class="sigrow-chip" style="background:'+bg+';">'+txt+'</span>'; }
+        function _whaAxisPills(sig){ let axes=Array.isArray(sig.axes)&&sig.axes.length?sig.axes:(sig.pressure_type?[sig.pressure_type]:[]); const seen={}; const clean=axes.map(a=>String(a).toLowerCase()).filter(a=>_WHA_AXIS_LABEL[a]&&!seen[a]&&(seen[a]=true)); return clean.map(a=>'<span class="sigrow-axis ax-'+a+'">'+_WHA_AXIS_LABEL[a]+'</span>').join(''); }
+        function _whaLocName(theatre){ const t=String(theatre||'').toLowerCase(); return _WHA_LOC_NAME[t]||(t?t.charAt(0).toUpperCase()+t.slice(1):'Western Hemisphere'); }
+        function _whaSplitBody(sig, locName){ let full=(sig.long_text||sig.short_text||sig.text||'').trim(); const m=full.match(/^([^:]{2,40}):\s*([\s\S]*)$/); if(m){const lead=m[1].replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').trim(); if(lead&&lead.toLowerCase().replace(/[^a-z]/g,'')===locName.toLowerCase().replace(/[^a-z]/g,''))full=m[2].trim();} return full; }
+        function _whaRenderBlufBlocks(blocks){ return blocks.map((b,i)=>{ const isHeader=(i===0&&!b.text); const cls='bluf-para'+(isHeader?' bluf-header-para':''); if(b.label&&b.text)return '<div class="'+cls+'"><span class="bluf-para-label">'+_whaEsc(b.label)+':</span> '+_whaEscMd(b.text)+'</div>'; if(b.label)return '<div class="'+cls+'"><span class="bluf-para-label">'+_whaEsc(b.label)+':</span></div>'; return '<div class="'+cls+'">'+_whaEscMd(b.text||'')+'</div>'; }).join(''); }
+        function _whaFallbackMd(md){ return String(md||'').replace(/^WHA /,'').split(/\n\n/).map(p=>p.trim()).filter(Boolean).map(p=>'<div class="bluf-para">'+_whaEscMd(p)+'</div>').join(''); }
 
         function _gpiMatchKey(s) {
             return ((s && s.short_text) || (s && s.text) || '').slice(0, 40).toLowerCase().trim();
@@ -999,16 +992,24 @@
         function _renderSignalItem(sig, opts) {
             opts = opts || {};
             const div = document.createElement('div');
-            div.className = 'bluf-signal-item' + (opts.gpiOnly ? ' gpi-only' : '');
-            div.style.borderLeftColor = opts.gpiOnly ? '#f59e0b' : (sig.color || '#6b7280');
-            const text     = sig.short_text || sig.text || '';
-            const longText = (sig.long_text || '').replace(/"/g, '&quot;');
-            const gpiTip   = opts.gpiTooltip ? opts.gpiTooltip.replace(/"/g, '&quot;') : '';
-            const badge = opts.gpiFlagged
-                ? `<span class="gpi-badge" title="Also flagged by Global Pressure Index — ${gpiTip}">🌍 GPI${opts.gpiOnly ? ' · global' : ''}</span>`
-                : '';
-            div.innerHTML = `${badge}<span class="bluf-signal-icon">${sig.icon || '•'}</span>
-                <span class="bluf-signal-text" style="color:${opts.gpiOnly ? '#f59e0b' : (sig.color || '#6b7280')};" title="${longText}">${text}</span>`;
+            div.className = 'sigrow' + (opts.gpiOnly ? ' gpi-only' : '');
+            const color = opts.gpiOnly ? '#f59e0b' : (sig.color || '#6b7280');
+            div.style.borderLeftColor = color;
+            const theatre = (sig.theatre || '').toLowerCase();
+            const locName = _whaLocName(theatre);
+            const href = _WHA_RHET_PAGE[theatre] || null;
+            const chip = _whaLvlChip(sig);
+            const body = _whaSplitBody(sig, locName);
+            const pills = _whaAxisPills(sig);
+            const gpiTip = opts.gpiTooltip ? _whaEsc(opts.gpiTooltip) : '';
+            const badge = opts.gpiFlagged ? ('<span class="sigrow-gpi-badge" title="Also flagged by Global Pressure Index. '+gpiTip+'">\uD83C\uDF0D GPI'+(opts.gpiOnly?' \u00b7 global':'')+'</span>') : '';
+            const locHtml = href ? ('<a class="sigrow-loc" style="color:'+color+';" href="'+href+'">'+_whaEsc(locName)+':</a>') : ('<span class="sigrow-loc nolink" style="color:'+color+';">'+_whaEsc(locName)+':</span>');
+            div.innerHTML = '<span class="sigrow-icon">'+(sig.icon||'\u2022')+'</span>'
+                + '<div class="sigrow-body">'
+                + '<div class="sigrow-head">'+chip+locHtml+badge+'</div>'
+                + '<div class="sigrow-text">'+_whaEsc(body)+'</div>'
+                + '<div class="sigrow-foot">'+pills+'</div>'
+                + '</div>';
             return div;
         }
 
