@@ -185,6 +185,26 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 26px; margi
 .bluf-pill { font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; background: var(--accent); color: #ffffff; }
 .bluf-title { font-family: 'Times New Roman', Times, serif; font-size: 16px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-primary); }
 .bluf-prose { font-size: 16px; line-height: 1.75; color: var(--text-primary); margin-bottom: 16px; white-space: pre-wrap; }
+/* ── Slice 1 readability (Jun 13 2026) ── */
+.bluf-para { margin-bottom: 14px; line-height: 1.75; font-size: 15.5px; }
+.bluf-para:last-child { margin-bottom: 0; }
+.bluf-para .bluf-label { font-weight: 800; letter-spacing: 0.3px; color: var(--accent); }
+.signals-scroll { max-height: 430px; overflow-y: auto; padding-right: 6px; margin-top: 6px; }
+.signals-scroll::-webkit-scrollbar { width: 8px; }
+.signals-scroll::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+.signals-scroll::-webkit-scrollbar-track { background: transparent; }
+.sig-row { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; background: var(--article-bg); border-left: 4px solid var(--accent); border-radius: 7px; margin-bottom: 8px; }
+.sig-row-icon { font-size: 17px; flex-shrink: 0; line-height: 1.4; }
+.sig-row-body { flex: 1; min-width: 0; }
+.sig-row-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+.sig-level-chip { font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; color: #fff; }
+.sig-location { font-weight: 800; font-size: 13.5px; }
+.sig-axis-tag { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--card-border); color: var(--text-muted); flex-shrink: 0; }
+.sig-row-text { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+.axis-tag-kinetic { border-color: rgba(220,38,38,0.4); color: #f87171; }
+.axis-tag-economic { border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+.axis-tag-diplomatic { border-color: rgba(14,165,233,0.4); color: #38bdf8; }
+.axis-tag-humanitarian { border-color: rgba(168,85,247,0.4); color: #c084fc; }
 .bluf-signals { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--card-border); }
 .bluf-signal-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--article-bg); border-left: 4px solid var(--accent); border-radius: 6px; font-size: 13px; }
 .bluf-signal-icon { font-size: 18px; flex-shrink: 0; }
@@ -799,16 +819,31 @@ function _buildCardData(axisName) {
         : (axis.description || AXIS_FALLBACK_DESCRIPTIONS[axisName] || '');
 
     // BLUF prose: synthesized for 'all', per-axis for the others
-    const blufProse = isAll
+    const blufProseRaw = isAll
         ? (data.bluf || '')
         : ((data.bluf_by_axis || {})[axisName] || data.bluf || '');
+    const blufProse = blufProseRaw;  // formatting happens at render time
 
     // Signals: top_signals (global) for 'all', axis.top_signals for the others
     // 'All Vectors' shows up to 15 globally-ranked signals (axis-diverse via backend
     // v3.6+ distribution). Per-axis cards still show 5 to keep them focused.
-    const signals = isAll
-        ? (data.top_signals || []).slice(0, 15)
-        : (axis.top_signals || []).slice(0, 5);
+    // Slice 1: level-gate (show L3+ or surge-class only) then cap.
+    // All Vectors up to 25, axis cards up to 10 -- never padded with L0/L1/L2.
+    const _lvlRank = (s) => {
+        const lv = s.level;
+        if (typeof lv === 'number') return lv;
+        const t = String(lv || '').toLowerCase();
+        if (t === 'surge') return 5;
+        if (t === 'high') return 4;
+        if (t === 'elevated') return 3;
+        return 0;
+    };
+    const _pool = isAll ? (data.top_signals || []) : (axis.top_signals || []);
+    const _gated = _pool.filter(s => _lvlRank(s) >= 3);
+    // If nothing clears the gate, fall back to whatever exists (keeps a quiet
+    // axis honest: shows its real low-level signals rather than going blank).
+    const _use = _gated.length > 0 ? _gated : _pool;
+    const signals = isAll ? _use.slice(0, 25) : _use.slice(0, 10);
 
     const regionLevels = isAll ? {} : (axis.region_levels || {});
 
@@ -818,29 +853,101 @@ function _buildCardData(axisName) {
     };
 }
 
+// ── Slice 1 helpers (Jun 13 2026) ──────────────────────────────────────
+function _gpiLevelChip(s) {
+    const lv = s.level;
+    let txt, bg;
+    if (typeof lv === 'number') {
+        txt = 'L' + lv;
+        bg = ['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'][Math.max(0,Math.min(5,lv))];
+    } else {
+        const t = String(lv || '').toLowerCase();
+        txt = (t || 'L0').toUpperCase();
+        bg = t === 'surge' ? '#dc2626' : t === 'high' ? '#ef4444' : t === 'elevated' ? '#f97316' : '#6b7280';
+    }
+    return `<span class="sig-level-chip" style="background:${bg};">${txt}</span>`;
+}
+
+const _AXIS_TAG_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+function _gpiAxisTag(s) {
+    const ax = (s.pressure_type || '').toLowerCase();
+    if (!ax || !_AXIS_TAG_LABEL[ax]) return '';
+    return `<span class="sig-axis-tag axis-tag-${ax}">${_AXIS_TAG_LABEL[ax]}</span>`;
+}
+
+function _titleCase(str) {
+    return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1));
+}
+
+// Split 'THEATRE: rest of text' or '🇮🇷 IRAN: rest' into {location, body}.
+function _splitLocation(s) {
+    const full = (s.long_text || s.short_text || s.text || '').trim();
+    // Prefer an explicit theatre field for the location label.
+    let loc = (s.theatre || '').replace(/_/g, ' ').trim();
+    let body = full;
+    // If the text starts with 'SOMETHING:' use that as location when no theatre.
+    const m = full.match(/^([^:]{2,40}):\s*(.*)$/s);
+    if (m) {
+        const lead = m[1].replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu, '').trim();
+        if (!loc) loc = lead;
+        // strip the leading 'LOC:' from body if it matches our location
+        if (lead && lead.toLowerCase() === loc.toLowerCase()) body = m[2].trim();
+        else if (!s.theatre) body = m[2].trim();
+    }
+    loc = loc ? _titleCase(loc) : 'Global';
+    return { location: loc, body: body };
+}
+
+function _renderSignalRow(s, axisColor) {
+    const icon = s.icon || '\u26a1';
+    const color = s.color || axisColor;
+    const chip = _gpiLevelChip(s);
+    const tag = _gpiAxisTag(s);
+    const { location, body } = _splitLocation(s);
+    const safeLoc = escapeHtmlGpi(location);
+    const safeBody = escapeHtmlGpi(body);
+    return `<div class="sig-row" style="border-left-color:${color};">
+        <span class="sig-row-icon">${icon}</span>
+        <div class="sig-row-body">
+            <div class="sig-row-head">
+                ${chip}
+                <span class="sig-location" style="color:${color};">${safeLoc}:</span>
+                ${tag}
+            </div>
+            <div class="sig-row-text">${safeBody}</div>
+        </div>
+    </div>`;
+}
+
+// Split the synthesized BLUF into labeled paragraphs at known seams.
+function _formatBlufParagraphs(prose) {
+    if (!prose) return '';
+    let p = prose;
+    const seams = ['Driving signals', 'Concurrent narratives', 'Regional posture'];
+    seams.forEach(seam => {
+        const re = new RegExp('\\s*(' + seam + ')', 'g');
+        p = p.replace(re, '\n\n$1');
+    });
+    const paras = p.split(/\n\n+/).map(x => x.trim()).filter(Boolean);
+    return paras.map(para => {
+        // Capitalize + bold the leading label up to the first colon (if short).
+        const m = para.match(/^([^:]{3,40}):\s*([\s\S]*)$/);
+        if (m) {
+            const label = _titleCase(m[1].trim());
+            return `<div class="bluf-para"><span class="bluf-label">${escapeHtmlGpi(label)}:</span> ${escapeHtmlGpi(m[2].trim())}</div>`;
+        }
+        return `<div class="bluf-para">${escapeHtmlGpi(para)}</div>`;
+    }).join('');
+}
+
 function _renderHeroCard(axisName) {
     /* Build the expanded hero card HTML for the active axis. */
     const d = _buildCardData(axisName);
 
-    const signalsHtml = d.signals.length > 0
-        ? d.signals.map(s => {
-            const sigIcon  = s.icon || '\u26a1';
-            const sigText  = (s.short_text || s.text || '').replace(/</g, '&lt;');
-            const sigColor = s.color || d.axisColor;
-            const rawLong  = (s.long_text || '').trim();
-            const baseText = (s.short_text || s.text || '').trim();
-            const hasWhy   = rawLong && rawLong !== baseText;
-            const longText = rawLong.replace(/"/g, '&quot;');
-            const whyMark  = hasWhy ? '<span class="signal-why-mark" aria-hidden="true">&#9432;</span>' : '';
-            const whyCls   = hasWhy ? ' has-why' : '';
-            const whyTitle = hasWhy ? ` title="${longText}"` : '';
-            return `<div class="pressure-axis-signal${whyCls}"${whyTitle}>
-                <span class="pressure-axis-signal-icon">${sigIcon}</span>
-                <span class="pressure-axis-signal-text" style="color:${sigColor};">${sigText}</span>
-                ${whyMark}
-            </div>`;
-        }).join('')
+    const signalsInner = d.signals.length > 0
+        ? d.signals.map(s => _renderSignalRow(s, d.axisColor)).join('')
         : `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
+    const signalsHtml = `<div class="signals-scroll">${signalsInner}</div>`;
 
     const regionsLine = Object.keys(d.regionLevels).length > 0
         ? `<div class="pressure-axis-regions">Regions contributing: ${
@@ -875,7 +982,7 @@ function _renderHeroCard(axisName) {
             <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level} \u00b7 ${d.levelLabel}</span>
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
-        <div class="axis-bluf-prose">${(d.blufProse || '').replace(/</g, '&lt;')}</div>
+        <div class="axis-bluf-prose">${_formatBlufParagraphs(d.blufProse || '')}</div>
         <div class="pressure-axis-signals">${signalsHtml}</div>
         <div class="bluf-legend">
             <strong>How to read this:</strong> each line is a live signal on a 0&ndash;5 escalation ladder &mdash;
