@@ -923,9 +923,21 @@ const _AXIS_PILL_BG = { kinetic:'rgba(220,38,38,0.14)', economic:'rgba(245,158,1
                         diplomatic:'rgba(14,165,233,0.14)', humanitarian:'rgba(168,85,247,0.14)' };
 const _AXIS_PILL_FG = { kinetic:'#f87171', economic:'#fbbf24', diplomatic:'#38bdf8', humanitarian:'#c084fc' };
 function _gpiAxisPillEnd(s) {
-    const ax = (s.pressure_type || '').toLowerCase();
-    if (!ax || !_AXIS_TAG_LABEL[ax]) return '';
-    return `<span class="sig-axis-tag-end" style="background:${_AXIS_PILL_BG[ax]};color:${_AXIS_PILL_FG[ax]};border-color:${_AXIS_PILL_FG[ax]}66;">${_AXIS_TAG_LABEL[ax]}</span>`;
+    // Slice 3: render one pill per axis. Narratives carry s.axes (multi);
+    // ordinary signals fall back to their single pressure_type.
+    let axes = Array.isArray(s.axes) && s.axes.length ? s.axes : null;
+    if (!axes) {
+        const ax = (s.pressure_type || '').toLowerCase();
+        axes = (ax && _AXIS_TAG_LABEL[ax]) ? [ax] : [];
+    }
+    // de-dupe + keep only known axes, preserve order
+    const seen = {};
+    const clean = axes.map(a => String(a).toLowerCase())
+        .filter(a => _AXIS_TAG_LABEL[a] && !seen[a] && (seen[a] = true));
+    if (!clean.length) return '';
+    return clean.map(ax =>
+        `<span class="sig-axis-tag-end" style="background:${_AXIS_PILL_BG[ax]};color:${_AXIS_PILL_FG[ax]};border-color:${_AXIS_PILL_FG[ax]}66;">${_AXIS_TAG_LABEL[ax]}</span>`
+    ).join('');
 }
 
 function _titleCase(str) {
