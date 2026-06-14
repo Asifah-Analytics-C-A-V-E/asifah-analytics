@@ -1,1244 +1,1572 @@
-"""
-rhetoric_tracker_chile.py
-=========================================================
-Chile Rhetoric Tracker v1.0.0 — Asifah Analytics
-Built: May 9, 2026
-
-7-actor rhetoric and pressure tracker for Chile, modeled on the Peru
-tracker pattern (Apr 2026) but tuned to Chile's analytical distinctions:
-
-  • More institutionally stable than Peru — `constitutional_politics`
-    actor takes the structural-stability slot Peru's FFAA + VRAEM occupied
-  • China posture is *cautious* (no Chancay-equivalent flagship); lithium
-    dependency is structural — expect lower volume but more economically-
-    loaded signals than Peru's Chancay/BRI tempo
-  • Mapuche conflict has narrower geographic footprint (Araucanía /
-    Biobío) but recurring violent incidents — analytically equivalent
-    to Peru's VRAEM in salience but politically/legally distinct
-    (autonomy-claim politics, not narco-insurgency)
-
-ACTORS (7 total):
-  1. presidency             — Boric admin / 2026 election context
-  2. cancilleria             — MINREL / Pacific Alliance / regional posture
-  3. mining_sector           — Codelco state + private (BHP, Anglo, Antofagasta)
-                                + SQM / Albemarle lithium politics
-  4. mapuche_conflict        — Araucanía / Biobío conflict zone
-  5. constitutional_politics — post-2022/2023 referendum aftermath,
-                                institutional drift, Congressional dynamics
-  6. us_chile                — Embassy Santiago / SOUTHCOM / Pacific
-                                Council / lithium strategic-minerals dialog / FTA
-  7. china_chile             — lithium / copper investment / FTA review /
-                                BRI ambivalence
-
-ANALYTICAL VECTORS (4):
-  • domestic_stability  = presidency + constitutional_politics + mapuche_conflict
-  • resource_sector     = mining_sector
-  • us_alignment        = us_chile
-  • china_alignment     = china_chile
-
-CROSS-TRACKER ARCHITECTURE:
-  • READS  /api/wha/commodity-fingerprint/chile (copper + lithium supply-risk
-    fingerprints, via WHA-local proxy with 1h TTL)
-  • READS  rhetoric:china:latest, rhetoric:iran:latest, rhetoric:russia:latest
-    sibling fingerprints from Asia / ME backends (China LAC, Iran LatAm,
-    Hezbollah TBA — quiet tripwires, armed-and-watching by design)
-  • WRITES chile_china_axis_active, chile_lithium_disruption,
-    chile_copper_disruption, chile_constitutional_pressure for downstream
-    consumers (regional BLUF, GPI)
-
-COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved.
-"""
-
-import os
-import re
-import json
-import time
-import threading
-import requests
-from datetime import datetime, timezone, timedelta
-from flask import jsonify, request
-
-# Optional dependencies — degrade gracefully if missing (mirrors Peru pattern)
-try:
-    import feedparser
-    FEEDPARSER_AVAILABLE = True
-except ImportError:
-    FEEDPARSER_AVAILABLE = False
-    print("[Chile Rhetoric] ⚠️  feedparser unavailable — RSS disabled")
-
-print("[Chile Rhetoric] Module loading...")
-
-# ============================================
-# CONFIGURATION
-# ============================================
-UPSTASH_REDIS_URL   = os.environ.get('UPSTASH_REDIS_URL')
-UPSTASH_REDIS_TOKEN = os.environ.get('UPSTASH_REDIS_TOKEN')
-NEWSAPI_KEY         = os.environ.get('NEWSAPI_KEY')
-BRAVE_API_KEY       = os.environ.get('BRAVE_API_KEY')
-
-CACHE_KEY           = 'rhetoric:chile:latest'
-HISTORY_KEY         = 'rhetoric:chile:history'  # canonical snapshot index (May 22 2026 — read by wha_regional_bluf.prose_v2)
-CACHE_TTL_HOURS     = 13          # 12h refresh + 1h buffer
-SCAN_INTERVAL_HOURS = 12
-
-# WHA-local self URL — for reading commodity fingerprints from the WHA proxy
-WHA_BACKEND_SELF_URL = os.environ.get(
-    'WHA_BACKEND_SELF_URL',
-    'http://localhost:10000'
-)
-COMMODITY_FINGERPRINT_AVAILABLE = True
-
-# Cross-theater amplifier sibling tracker keys (Redis)
-SIBLING_TRACKER_KEYS = {
-    'china':    'rhetoric:china:latest',
-    'iran':     'rhetoric:iran:latest',
-    'russia':   'rhetoric:russia:latest',
-}
-
-# Optional signal interpreter (loaded lazily — if absent, tracker still works)
-try:
-    from chile_signal_interpreter import (
-        build_top_signals as _interp_top_signals,
-        build_executive_summary as _interp_exec_summary,
-        build_so_what_factor as _interp_so_what,
-    )
-    INTERPRETER_AVAILABLE = True
-    print("[Chile Rhetoric] ✅ Signal interpreter loaded")
-except ImportError:
-    INTERPRETER_AVAILABLE = False
-    print("[Chile Rhetoric] ⚠️  Signal interpreter unavailable — tracker will emit raw fields only")
-
-
-# ============================================
-# ACTOR DEFINITIONS
-# ============================================
-# Each actor:
-#   - name, flag, icon, role (for UI)
-#   - vector (for 4-vector composite)
-#   - keywords (mix of EN + ES for matching across feed languages)
-#   - tripwires (low-base-rate high-impact patterns; severity 0-4)
-#   - baseline (expected signal volume per week — used for level calibration)
-
-ACTORS = {
-    'presidency': {
-        'name':     'Presidency',
-        'flag':     '🇨🇱',
-        'icon':     '🏛️',
-        'role':     'Executive Branch / Boric Administration',
-        'vector':   'domestic_stability',
-        'baseline': 14,
-        'keywords': [
-            # English
-            'boric', 'chilean president', 'chile president', 'la moneda',
-            'chilean executive', 'boric administration', 'palacio de la moneda',
-            'chile cabinet', 'chilean cabinet reshuffle',
-            # Spanish — president direct
-            'presidente boric', 'gabriel boric', 'la moneda',
-            'gobierno de chile', 'gobierno chileno', 'ejecutivo chileno',
-            'palacio de la moneda', 'gabinete', 'cambio de gabinete',
-            # Election cycle (2026 generals)
-            'elecciones chile 2026', 'chile 2026 election', 'chilean primary',
-            'primarias chile', 'jara', 'kast', 'matthei', 'frente amplio',
-            # Approval / political position
-            'aprobación boric', 'boric approval', 'rechazo a boric',
-            'chile poll', 'cadem', 'plaza pública',
-        ],
-        'tripwires': [
-            ('boric_resignation',    4, ['renuncia boric', 'boric resigns', 'dimisión boric']),
-            ('cabinet_collapse',     3, ['gabinete renuncia', 'cabinet collapses', 'cabinet resign en masse']),
-            ('approval_cliff',       2, ['aprobación 20', 'aprobación 18', 'aprobación 15', 'approval crashes']),
-        ],
-    },
-    'cancilleria': {
-        'name':     'Cancillería (MINREL)',
-        'flag':     '🇨🇱',
-        'icon':     '🤝',
-        'role':     'Foreign Ministry / Regional Posture',
-        'vector':   'domestic_stability',
-        'baseline': 8,
-        'keywords': [
-            # English
-            'chilean foreign ministry', 'chile foreign minister',
-            'minrel', 'pacific alliance chile', 'chilean diplomacy',
-            'chile-bolivia relations', 'chile-peru relations',
-            'chile-argentina relations', 'mercosur chile',
-            # Spanish
-            'cancillería chile', 'minrel', 'alberto van klaveren',
-            'política exterior chile', 'alianza del pacífico',
-            'relaciones bolivia chile', 'relaciones peru chile',
-            'mercosur chile', 'unasur', 'celac',
-            # Maritime / territorial
-            'salida al mar bolivia', 'mar territorial chile',
-            'demarcación', 'la haya chile', 'icj chile',
-        ],
-        'tripwires': [
-            ('boundary_crisis',      3, ['crisis fronteriza', 'border crisis chile', 'incidente fronterizo']),
-            ('icj_filing',           3, ['icj chile filing', 'la haya nuevo caso', 'corte internacional chile']),
-        ],
-    },
-    'mining_sector': {
-        'name':     'Mining Sector',
-        'flag':     '🇨🇱',
-        'icon':     '⛏️',
-        'role':     'Codelco + Private (BHP / Anglo / Antofagasta) + SQM/Albemarle Lithium',
-        'vector':   'resource_sector',
-        'baseline': 18,
-        'keywords': [
-            # English — copper anchors
-            'codelco', 'chuquicamata', 'el teniente', 'andina',
-            'salvador mine', 'gabriela mistral mine',
-            'escondida', 'bhp escondida', 'minera escondida',
-            'collahuasi', 'los pelambres', 'antofagasta minerals',
-            'quebrada blanca', 'spence', 'centinela',
-            'anglo american chile', 'sur andes', 'los bronces',
-            # English — lithium anchors
-            'sqm chile', 'sociedad quimica minera',
-            'albemarle chile', 'salar de atacama lithium',
-            'codelco lithium', 'chile lithium nationalization',
-            'national lithium strategy chile',
-            # Spanish — copper
-            'cobre chile', 'producción cobre chile',
-            'codelco chuquicamata', 'mineros chile', 'sindicato cobre',
-            'huelga minera chile', 'paralización minera',
-            'precio cobre', 'cobre lme', 'comisión chilena del cobre', 'cochilco',
-            # Spanish — lithium
-            'litio chile', 'litio salar de atacama',
-            'sociedad química y minera', 'sqm tianqi',
-            'estrategia nacional litio', 'codelco litio',
-            'corfo litio', 'royalty litio',
-            # Strikes / labor
-            'huelga codelco', 'huelga escondida', 'huelga el teniente',
-            'paralización minera chile', 'strike codelco', 'strike escondida',
-        ],
-        'tripwires': [
-            ('escondida_strike',          4, ['escondida strike', 'huelga escondida', 'paralización escondida']),
-            ('codelco_strike',            4, ['codelco strike', 'huelga codelco', 'paralización codelco']),
-            ('chuquicamata_disruption',   3, ['chuquicamata cierre', 'chuquicamata closure', 'chuquicamata suspension']),
-            ('lithium_nationalization',   3, ['lithium nationalization', 'nacionalización litio', 'estatización litio']),
-            ('mining_fatality',           3, ['minero muerto', 'mining fatality chile', 'accidente fatal mina']),
-        ],
-    },
-    'mapuche_conflict': {
-        'name':     'Mapuche Conflict',
-        'flag':     '🇨🇱',
-        'icon':     '🔥',
-        'role':     'Araucanía / Biobío Conflict Zone',
-        'vector':   'domestic_stability',
-        'baseline': 9,
-        'keywords': [
-            # English
-            'mapuche', 'araucania', 'wallmapu', 'cam mapuche',
-            'arauco malleco', 'coordinadora arauco malleco',
-            'temuco violence', 'biobio violence',
-            'mapuche autonomy', 'mapuche territory claim',
-            'chile indigenous conflict',
-            # Spanish — direct
-            'conflicto mapuche', 'pueblo mapuche', 'wallmapu',
-            'cam coordinadora', 'cam arauco malleco',
-            'estado de excepción araucanía', 'estado de excepción biobío',
-            'macrozona sur', 'zonas conflictuadas',
-            # Specific incidents / violence patterns
-            'atentado mapuche', 'incendio camiones', 'quema de camiones',
-            'usurpación de tierras', 'tomas de fundos',
-            'helicóptero pdi', 'pdi araucanía',
-            # Communities + leaders
-            'temucuicui', 'lof temucuicui', 'héctor llaitul',
-            'machi linconao', 'celestino córdova',
-        ],
-        'tripwires': [
-            ('state_of_exception',    4, ['estado de excepción araucanía', 'state of exception araucania', 'estado de excepción macrozona']),
-            ('mass_arson',            3, ['quema masiva', 'incendios coordinados', 'mass arson araucania']),
-            ('mapuche_fatality',      3, ['mapuche muerto', 'comunero muerto', 'mapuche killed']),
-            ('cam_attack',            3, ['atentado cam', 'cam attack', 'coordinadora atentado']),
-        ],
-    },
-    'constitutional_politics': {
-        'name':     'Constitutional Politics',
-        'flag':     '🇨🇱',
-        'icon':     '⚖️',
-        'role':     'Post-Referendum Aftermath / Congressional Dynamics',
-        'vector':   'domestic_stability',
-        'baseline': 11,
-        'keywords': [
-            # English
-            'chilean constitution', 'chile constitution', 'constitutional referendum chile',
-            'constitutional convention chile', 'rejection vote 2022',
-            'constitutional council chile', 'rejection 2023',
-            'chile congressional dynamics', 'chilean senate',
-            'chile chamber of deputies', 'chile congress',
-            'chile pension reform', 'chile pension afp',
-            'chile tax reform', 'chile fiscal pact',
-            # Spanish
-            'constitución chile', 'nueva constitución chile',
-            'plebiscito constitucional', 'rechazo plebiscito',
-            'consejo constitucional', 'comisión experta',
-            'cámara de diputados', 'senado chile', 'congreso chile',
-            'reforma de pensiones', 'reforma previsional chile',
-            'afp chile', 'reforma tributaria', 'pacto fiscal',
-            # Constitutional crisis / executive-legislative friction
-            'acusación constitucional', 'impeachment chile',
-            'censura ministro', 'destitución ministro',
-            'oposición chilena', 'partidos oposición',
-        ],
-        'tripwires': [
-            ('impeachment_vote',         4, ['acusación constitucional aprobada', 'impeachment passed chile']),
-            ('cabinet_minister_ousted',  3, ['ministro destituido', 'minister ousted chile', 'censura ministro aprobada']),
-            ('major_reform_collapse',    2, ['reforma previsional rechazada', 'pension reform rejected', 'reforma tributaria rechazada']),
-        ],
-    },
-    'us_chile': {
-        'name':     'US-Chile Bilateral',
-        'flag':     '🇺🇸',
-        'icon':     '🤝',
-        'role':     'Embassy Santiago / SOUTHCOM / Strategic Minerals / FTA',
-        'vector':   'us_alignment',
-        'baseline': 7,
-        'keywords': [
-            # English
-            'us chile relations', 'embassy santiago', 'us embassy chile',
-            'southcom chile', 'pacific council chile',
-            'chile fta', 'us chile free trade agreement',
-            'strategic minerals dialogue', 'chile lithium united states',
-            'chile critical minerals', 'irna chile',
-            'usaid chile', 'us state department chile',
-            'antofagasta basing', 'us military chile',
-            # Spanish
-            'relaciones eeuu chile', 'embajada eeuu chile',
-            'embajador eeuu chile', 'tlc estados unidos chile',
-            'minerales críticos chile', 'minerales estratégicos',
-            'ejercicios conjuntos chile', 'unitas chile', 'pacific dragon',
-            'cooperación bilateral chile estados unidos',
-            # USAID — historical context only (dissolved 2025)
-            'usaid chile historical', 'former usaid chile',
-            # NEW (Jun 2026) -- US counter-pressure / China-displacement contest layer
-            'monroe doctrine', 'doctrina monroe', 'updated monroe doctrine',
-            'better partner', 'better trade partner',
-            'limit china', 'select committee', 'house select committee',
-            'brandon judd', 'us pressure chile', 'eeuu presiona chile',
-            'us warns chile', 'eeuu advierte chile',
-            'pushes back against chinese', 'us target',
-            'suspending the project', 'suspende proyecto', 'observatory suspended',
-            'china dual use concern', 'pulling latin america',
-        ],
-        'tripwires': [
-            ('strategic_minerals_pact', 3, ['us chile critical minerals agreement', 'pacto minerales críticos chile estados unidos']),
-            ('ambassador_recall',       4, ['embajador retirado', 'ambassador recalled chile']),
-            ('joint_exercise_friction', 2, ['ejercicio conjunto cancelado', 'joint exercise canceled chile']),
-            ('project_contestation',    3, ['suspending the project', 'suspende proyecto', 'blocked the observatory', 'stopped a chinese', 'observatory suspended', 'pushes back against chinese', 'us target']),
-            ('monroe_doctrine_invoked', 2, ['monroe doctrine', 'doctrina monroe']),
-            ('us_displacement_push',    2, ['better partner', 'limit china', 'select committee']),
-        ],
-    },
-    'china_chile': {
-        'name':     'China-Chile Bilateral',
-        'flag':     '🇨🇳',
-        'icon':     '🐉',
-        'role':     'Lithium / Copper Investment / FTA Review / BRI Ambivalence',
-        'vector':   'china_alignment',
-        'baseline': 9,
-        'keywords': [
-            # English
-            'china chile relations', 'chile china fta',
-            'tianqi sqm', 'tianqi chile', 'tianqi lithium',
-            'ganfeng lithium chile', 'byd chile',
-            'china investment chile', 'huawei chile',
-            'china belt and road chile', 'chile bri',
-            'beijing chile bilateral', 'xi jinping chile',
-            'china strait of magellan', 'china magellan',
-            # Spanish
-            'relaciones china chile', 'tlc china chile',
-            'tianqi sqm', 'inversión china chile',
-            'huawei chile', 'belt and road chile',
-            'cumbre china chile', 'embajador china chile',
-            'cooperación china chile', 'comercio china chile',
-            # Strategic infrastructure
-            'cable submarino transpacific', 'humboldt cable',
-            'puerto san antonio china', 'puerto valparaíso china',
-            'observatorio chino chile', 'estación espacial china',
-            # Lithium specifically
-            'tianqi sqm 24%', 'china lithium chile',
-            'ganfeng codelco', 'byd salar maricunga',
-            # NEW (Jun 2026) -- Scientific / space dual-use inroad layer
-            'observatorio atacama', 'telescopio chino', 'observatorio chino',
-            'radio telescope china', 'chinese radio telescope',
-            'astronomical observatory china', 'national astronomical observatory',
-            'universidad católica del norte', 'catholic university of the north',
-            'near-earth', 'objetos cercanos a la tierra',
-            'deep space station', 'espacio lejano', 'neuquén', 'cesco',
-            'dual-use observatory', 'satellite tracking china',
-            # NEW -- Diplomatic anti-US alignment layer
-            'sovereign right', 'derecho soberano', 'elegir socios',
-            'multipolar', 'injerencia estadounidense', 'niu qingbao',
-            'desinformación china', 'china lashes out',
-            # NEW -- Security-cooperation / presence-by-invitation rung
-            'china police training', 'cooperación policial china',
-            'safe city china', 'ciudad segura china', 'china surveillance chile',
-            # NEW -- Economic-capture depth (structural dependency)
-            'largest trading partner', 'mayor socio comercial',
-            'lithium offtake', 'codelco china',
-        ],
-        'tripwires': [
-            ('chinese_naval_visit',     3, ['china naval chile', 'pla navy chile', 'buque chino chile']),
-            ('major_infra_milestone',   3, ['china port chile groundbreaking', 'cable transpacífico inauguración']),
-            ('fta_renegotiation',       2, ['fta china chile renegotiation', 'tlc china chile renegociación']),
-            ('dual_use_facility',       3, ['telescopio chino', 'radio telescope', 'observatorio atacama', 'deep space station', 'chinese observatory']),
-            ('diplomatic_anti_us',      2, ['sovereign right', 'derecho soberano', 'injerencia estadounidense', 'lashes out at us']),
-            ('security_cooperation',    3, ['china police training', 'cooperación policial china', 'ciudad segura china']),
-        ],
-    },
-}
-
-# ============================================
-# VECTOR DEFINITIONS
-# ============================================
-VECTORS = {
-    'domestic_stability': {
-        'name': 'Domestic Stability',
-        'actors': ['presidency', 'cancilleria', 'mapuche_conflict', 'constitutional_politics'],
-    },
-    'resource_sector': {
-        'name': 'Resource-Sector Politics',
-        'actors': ['mining_sector'],
-    },
-    'us_alignment': {
-        'name': 'US Alignment',
-        'actors': ['us_chile'],
-    },
-    'china_alignment': {
-        'name': 'China Alignment',
-        'actors': ['china_chile'],
-    },
-}
-
-
-# ============================================
-# RSS FEEDS — Native Chilean Spanish + regional
-# ============================================
-RSS_FEEDS = {
-    'la_tercera':  {'url': 'https://www.latercera.com/feed/',                            'name': 'La Tercera',         'language': 'es'},
-    'el_mercurio': {'url': 'https://www.emol.com/sindicacion/rss.asp?canal=44',          'name': 'El Mercurio (Emol)', 'language': 'es'},
-    'biobio':      {'url': 'https://www.biobiochile.cl/lista_de_noticias.rss',           'name': 'BioBioChile',        'language': 'es'},
-    'cooperativa': {'url': 'https://www.cooperativa.cl/noticias/site/tax/port/all/rss_2-1.xml', 'name': 'Cooperativa',  'language': 'es'},
-    'reuters_la':  {'url': 'https://www.reutersagency.com/feed/?best-regions=latin-america&post_type=best',
-                    'name': 'Reuters LatAm', 'language': 'en'},
-}
-
-
-# ============================================
-# GDELT QUERIES — English + Spanish
-# ============================================
-GDELT_QUERIES_EN = [
-    'Chile Boric',                    'Chile cabinet reshuffle',
-    'Codelco strike',                 'Escondida strike',
-    'Chile mining sector',            'Chile lithium nationalization',
-    'SQM Tianqi',                     'Albemarle Chile',
-    'Mapuche Araucania',              'Chile state of exception',
-    'Chile constitutional reform',    'Chile pension reform',
-    'US Chile critical minerals',     'Chile FTA review',
-    'China Chile investment',         'Tianqi SQM stake',
-]
-
-GDELT_QUERIES_ES = [
-    'Boric gabinete',                 'cambio gabinete Chile',
-    'huelga Codelco',                 'huelga Escondida',
-    'litio Chile nacionalización',    'estrategia nacional litio',
-    'mapuche Araucanía',              'estado excepción Araucanía',
-    'reforma previsional Chile',      'reforma constitucional',
-    'acusación constitucional',       'cancillería Chile',
-    'inversión china Chile',          'tianqi SQM',
-    'minerales críticos Chile',
-]
-
-
-# ============================================
-# ALERT-LEVEL CALIBRATION
-# ============================================
-def actor_alert_level(score, baseline):
-    """Map a weighted score to a categorical alert level."""
-    if baseline <= 0: baseline = 1
-    ratio = score / baseline
-    if ratio >= 2.5:  return 'surge'
-    if ratio >= 1.7:  return 'high'
-    if ratio >= 1.1:  return 'elevated'
-    if ratio >= 0.4:  return 'normal'
-    return 'low'
-
-
-# ============================================
-# REDIS HELPERS
-# ============================================
-def _redis_get(key):
-    if not (UPSTASH_REDIS_URL and UPSTASH_REDIS_TOKEN):
-        return None
-    try:
-        resp = requests.get(
-            f"{UPSTASH_REDIS_URL}/get/{key}",
-            headers={'Authorization': f'Bearer {UPSTASH_REDIS_TOKEN}'},
-            timeout=5,
-        )
-        body = resp.json()
-        if body.get('result'):
-            return json.loads(body['result'])
-    except Exception as e:
-        print(f"[Chile Rhetoric] Redis get error ({key}): {str(e)[:120]}")
-    return None
-
-
-def _redis_set(key, value, ttl_hours=CACHE_TTL_HOURS):
-    if not (UPSTASH_REDIS_URL and UPSTASH_REDIS_TOKEN):
-        return False
-    try:
-        url = f"{UPSTASH_REDIS_URL}/setex/{key}/{int(ttl_hours * 3600)}"
-        resp = requests.post(
-            url,
-            headers={'Authorization': f'Bearer {UPSTASH_REDIS_TOKEN}'},
-            data=json.dumps(value, default=str),
-            timeout=8,
-        )
-        return resp.status_code == 200
-    except Exception as e:
-        print(f"[Chile Rhetoric] Redis set error ({key}): {str(e)[:120]}")
-        return False
-
-
-def _redis_lpush_trim(key, value, max_len=336):
-    """LPUSH + LTRIM to keep rolling history (336 = 14 days × 24 hourly entries).
-    Canonical helper added May 22 2026 — mirrors Cuba pattern, read by wha_regional_bluf.prose_v2."""
-    if not UPSTASH_REDIS_URL or not UPSTASH_REDIS_TOKEN:
-        return False
-    try:
-        resp = requests.post(
-            f"{UPSTASH_REDIS_URL}/lpush/{key}",
-            headers={'Authorization': f'Bearer {UPSTASH_REDIS_TOKEN}'},
-            data=json.dumps(value, default=str),
-            timeout=8,
-        )
-        if resp.status_code != 200:
-            return False
-        requests.post(
-            f"{UPSTASH_REDIS_URL}/ltrim/{key}/0/{max_len - 1}",
-            headers={'Authorization': f'Bearer {UPSTASH_REDIS_TOKEN}'},
-            timeout=8,
-        )
-        return True
-    except Exception as e:
-        print(f"[Chile Rhetoric] Redis LPUSH error ({key}): {str(e)[:120]}")
-        return False
-
-
-def load_cache():
-    return _redis_get(CACHE_KEY)
-
-
-def save_cache(data):
-    return _redis_set(CACHE_KEY, data, ttl_hours=CACHE_TTL_HOURS)
-
-
-def is_cache_fresh(data):
-    if not data or 'scanned_at' not in data:
-        return False
-    try:
-        scanned = datetime.fromisoformat(data['scanned_at'])
-        age_hours = (datetime.now(timezone.utc) - scanned).total_seconds() / 3600
-        return age_hours < SCAN_INTERVAL_HOURS
-    except Exception:
-        return False
-
-
-# ============================================
-# SIGNAL FETCHERS — RSS / GDELT / NewsAPI / Brave
-# ============================================
-def fetch_rss_articles(feed_id, feed_config, max_articles=30):
-    """Fetch + parse one RSS feed."""
-    out = []
-    if not FEEDPARSER_AVAILABLE:
-        return out
-    try:
-        parsed = feedparser.parse(feed_config['url'])
-        for entry in parsed.entries[:max_articles]:
-            out.append({
-                'title':    entry.get('title', '')[:300],
-                'url':      entry.get('link', ''),
-                'source':   feed_config['name'],
-                'language': feed_config['language'],
-                'published': entry.get('published', ''),
-                'feed_type': 'rss',
-            })
-    except Exception as e:
-        print(f"[Chile Rhetoric] RSS error ({feed_id}): {str(e)[:120]}")
-    return out
-
-
-def fetch_all_rss():
-    if not FEEDPARSER_AVAILABLE:
-        print("[Chile Rhetoric] RSS: skipped (feedparser unavailable)")
-        return []
-    all_articles = []
-    for feed_id, cfg in RSS_FEEDS.items():
-        all_articles.extend(fetch_rss_articles(feed_id, cfg))
-    print(f"[Chile Rhetoric] RSS: {len(all_articles)} articles")
-    return all_articles
-
-
-def fetch_gdelt_query(query, language='eng', days=7, max_articles=50):
-    out = []
-    try:
-        url = (
-            "https://api.gdeltproject.org/api/v2/doc/doc"
-            f"?query={requests.utils.quote(query)}"
-            f"&mode=ArtList&format=json&maxrecords={max_articles}"
-            f"&timespan={days}d&sourcelang={language}"
-        )
-        resp = requests.get(url, timeout=(5, 15))
-        if resp.status_code == 429:
-            return []
-        if resp.status_code != 200:
-            return []
-        body = resp.json()
-        for art in body.get('articles', []):
-            out.append({
-                'title':     (art.get('title') or '')[:300],
-                'url':       art.get('url', ''),
-                'source':    art.get('domain', 'GDELT'),
-                'language':  language[:2] if language else 'en',
-                'published': art.get('seendate', ''),
-                'feed_type': 'gdelt',
-            })
-    except Exception:
-        pass
-    return out
-
-
-def fetch_all_gdelt(days=7):
-    out = []
-    for q in GDELT_QUERIES_EN:
-        out.extend(fetch_gdelt_query(q, language='eng', days=days))
-        time.sleep(0.5)
-    for q in GDELT_QUERIES_ES:
-        out.extend(fetch_gdelt_query(q, language='spa', days=days))
-        time.sleep(0.5)
-    print(f"[Chile Rhetoric] GDELT: {len(out)} articles")
-    return out
-
-
-def fetch_newsapi(query, days=7):
-    if not NEWSAPI_KEY:
-        return []
-    try:
-        from_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime('%Y-%m-%d')
-        resp = requests.get(
-            'https://newsapi.org/v2/everything',
-            params={
-                'q': query, 'from': from_date, 'sortBy': 'relevancy',
-                'pageSize': 50, 'apiKey': NEWSAPI_KEY,
-            },
-            timeout=10,
-        )
-        if resp.status_code != 200:
-            return []
-        body = resp.json()
-        out = []
-        for art in body.get('articles', []):
-            out.append({
-                'title':     (art.get('title') or '')[:300],
-                'url':       art.get('url', ''),
-                'source':    (art.get('source') or {}).get('name', 'NewsAPI'),
-                'language':  'en',
-                'published': art.get('publishedAt', ''),
-                'feed_type': 'newsapi',
-            })
-        return out
-    except Exception:
-        return []
-
-
-def fetch_all_newsapi(days=7):
-    out = []
-    for q in ['Chile mining', 'Boric Chile', 'Mapuche Chile', 'Codelco', 'SQM lithium', 'Chile constitutional']:
-        out.extend(fetch_newsapi(q, days=days))
-        time.sleep(0.3)
-    print(f"[Chile Rhetoric] NewsAPI: {len(out)} articles")
-    return out
-
-
-def fetch_brave(query, days=7):
-    if not BRAVE_API_KEY:
-        return []
-    try:
-        resp = requests.get(
-            'https://api.search.brave.com/res/v1/news/search',
-            params={'q': query, 'count': 20, 'freshness': 'pw'},
-            headers={'X-Subscription-Token': BRAVE_API_KEY},
-            timeout=8,
-        )
-        if resp.status_code != 200:
-            return []
-        body = resp.json()
-        out = []
-        for art in body.get('results', []):
-            out.append({
-                'title':     (art.get('title') or '')[:300],
-                'url':       art.get('url', ''),
-                'source':    (art.get('meta_url') or {}).get('hostname', 'Brave'),
-                'language':  'en',
-                'published': art.get('age', ''),
-                'feed_type': 'brave',
-            })
-        return out
-    except Exception:
-        return []
-
-
-def fetch_all_brave(days=7, gdelt_count=0, newsapi_count=0):
-    """Brave fires only as fallback when GDELT + NewsAPI are weak."""
-    if (gdelt_count + newsapi_count) >= 30:
-        return []
-    out = []
-    for q in ['Chile mining strike', 'Boric Chile politics', 'Mapuche Araucania', 'Chile lithium SQM']:
-        out.extend(fetch_brave(q, days=days))
-        time.sleep(0.5)
-    print(f"[Chile Rhetoric] Brave: {len(out)} articles")
-    return out
-
-
-# ============================================
-# ARTICLE → ACTOR CLASSIFICATION
-# ============================================
-def _normalize_text(text):
-    return (text or '').lower()
-
-
-def _classify_article_actor(article):
-    """Match article against actor keywords; return list of matched actors."""
-    text = _normalize_text((article.get('title') or '') + ' ' + (article.get('source') or ''))
-    matches = []
-    for actor_id, cfg in ACTORS.items():
-        for kw in cfg['keywords']:
-            if kw.lower() in text:
-                matches.append(actor_id)
-                break
-    return matches
-
-
-def _check_tripwires(text):
-    """Return list of (actor_id, tripwire_id, severity) for any pattern match."""
-    text = _normalize_text(text)
-    fired = []
-    for actor_id, cfg in ACTORS.items():
-        for tw in cfg.get('tripwires', []):
-            tw_id, severity, patterns = tw
-            for pat in patterns:
-                if pat.lower() in text:
-                    fired.append((actor_id, tw_id, severity))
-                    break
-    return fired
-
-
-def _score_actor_articles(articles_for_actor, actor_id):
-    """Compute a simple weighted score for an actor's article batch."""
-    if not articles_for_actor:
-        return 0.0
-    score = 0.0
-    seen_urls = set()
-    for art in articles_for_actor:
-        url = art.get('url', '')
-        if url in seen_urls:
-            continue
-        seen_urls.add(url)
-        # Weight by source type
-        ft = art.get('feed_type', '')
-        if ft == 'rss':
-            score += 1.5
-        elif ft == 'gdelt':
-            score += 1.0
-        elif ft == 'newsapi':
-            score += 1.2
-        elif ft == 'brave':
-            score += 1.0
-        else:
-            score += 1.0
-    return round(score, 2)
-
-
-# ============================================
-# CROSS-TRACKER READS
-# ============================================
-def _read_commodity_pressure_for_chile():
-    """Read commodity supply-risk fingerprints for Chile (copper + lithium)
-    via WHA-local commodity proxy. 1h-cached. Graceful degrade on error."""
-    try:
-        url = f"{WHA_BACKEND_SELF_URL}/api/wha/commodity-fingerprint/chile"
-        resp = requests.get(url, timeout=5)
-        if resp.status_code != 200:
-            return {}
-        data = resp.json()
-        return data.get('fingerprints', {}) or {}
-    except Exception as e:
-        print(f"[Chile Rhetoric] commodity proxy read error: {str(e)[:120]}")
-        return {}
-
-
-def _read_crosstheater_amplifiers():
-    """Read sibling-tracker fingerprints from Asia/ME/Russia trackers.
-    These trigger cross-theater amplification when active."""
-    amplifiers = {}
-    for theatre, key in SIBLING_TRACKER_KEYS.items():
-        sibling = _redis_get(key)
-        if not sibling:
-            continue
-        # Generic amplifier extraction — looks for known keys
-        if theatre == 'china':
-            if sibling.get('china_lac_active') or sibling.get('china_bri_latam'):
-                amplifiers['china_lac_active'] = {'active': True, 'level': 'elevated'}
-            if sibling.get('china_bri_latam'):
-                amplifiers['china_bri_latam'] = {'active': True, 'level': 'elevated'}
-        if theatre == 'iran':
-            if sibling.get('iran_latam_active') or sibling.get('iran_hezbollah_tba'):
-                amplifiers['iran_latam_active'] = {'active': True, 'level': 'elevated'}
-            if sibling.get('iran_hezbollah_tba'):
-                amplifiers['iran_hezbollah_tba'] = {'active': True, 'level': 'elevated'}
-    return amplifiers
-
-
-def _write_chile_fingerprints(actor_levels, vector_scores, tripwires_global):
-    """Write Chile-side fingerprints to Redis for downstream consumers."""
-    try:
-        china_lvl = actor_levels.get('china_chile', 'low')
-        if china_lvl in ('elevated', 'high', 'surge'):
-            _redis_set('chile_china_axis_active',
-                       {'active': True, 'level': china_lvl,
-                        'scanned_at': datetime.now(timezone.utc).isoformat()},
-                       ttl_hours=CACHE_TTL_HOURS)
-
-        if any(t[1] in ('lithium_nationalization', 'codelco_strike', 'escondida_strike',
-                        'chuquicamata_disruption') for t in tripwires_global):
-            _redis_set('chile_lithium_disruption' if any(t[1] == 'lithium_nationalization' for t in tripwires_global)
-                       else 'chile_copper_disruption',
-                       {'active': True, 'tripwires': [t[1] for t in tripwires_global],
-                        'scanned_at': datetime.now(timezone.utc).isoformat()},
-                       ttl_hours=CACHE_TTL_HOURS)
-
-        if any(t[1] in ('impeachment_vote', 'cabinet_minister_ousted',
-                        'major_reform_collapse') for t in tripwires_global):
-            _redis_set('chile_constitutional_pressure',
-                       {'active': True, 'tripwires': [t[1] for t in tripwires_global],
-                        'scanned_at': datetime.now(timezone.utc).isoformat()},
-                       ttl_hours=CACHE_TTL_HOURS)
-    except Exception as e:
-        print(f"[Chile Rhetoric] fingerprint write error: {str(e)[:120]}")
-
-
-# ============================================
-# MAIN SCAN
-# ============================================
-# ============================================================
-# L5 RESERVATION CONTRACT (v1.0.0 — May 21 2026)
-# ============================================================
-# Per platform-wide L5 Reservation Contract: L5 "Active Crisis" requires
-# an explicit kinetic / humanitarian / economic / diplomatic L5 trigger.
-# Chile is a stable democracy; absent crisis-class events (currency collapse,
-# armed conflict surge with casualties, mass displacement, diplomatic
-# rupture) Chile correctly caps at L4 "Imminent Crisis" ceiling.
-#
-# AXIS MAPPING: Each ACTORS entry has a 'vector' field. Tripwires of
-# severity >= 5 from each vector activate the corresponding L5 axis.
-# When the weekend audit adds severity-5 tripwires to ACTORS, the gate
-# auto-activates without requiring code changes here.
-
-VECTOR_TO_L5_AXIS = {
-    'domestic_stability':  'kinetic',       # Mapuche armed conflict, state-of-emergency events
-    'cancilleria':         'diplomatic',    # boundary crises, ICJ filings, PNG events
-    'mining_sector':       'economic',      # Las Bambas-scale shutdowns, codelco collapse
-    'resource_sector':     'economic',      # commodity collapse, sovereign default
-    'us_alignment':        'diplomatic',    # US sanctions, embassy actions
-    'china_alignment':     'diplomatic',    # China rupture events
-    # New vectors added in weekend audit can append here.
-}
-
-WHA_LABEL_VOCAB = {
-    0: 'Monitoring',
-    1: 'Rhetoric',
-    2: 'Warning',
-    3: 'Direct Threat',
-    4: 'Imminent Crisis',
-    5: 'Active Crisis',
-}
-
-
-def _compute_chile_l5_gate(tripwires_global, actor_summaries, vector_scores):
-    """
-    Per platform L5 Reservation Contract: Chile L5 "Active Crisis" requires
-    an explicit axis trigger. Scans fired tripwires for severity >= 5 and
-    maps each one's actor->vector->axis to set the corresponding gate flag.
-
-    Today: no Chile tripwires defined at severity 5 — gate returns any=False.
-    When tripwires of severity 5 are added in weekend audit, the gate
-    auto-activates without further code changes.
-
-    Returns dict: {kinetic, humanitarian, economic, diplomatic, reason, any}
-    """
-    gate = {
-        'kinetic':      False,
-        'humanitarian': False,
-        'economic':     False,
-        'diplomatic':   False,
-        'reason':       '',
-        'any':          False,
-    }
-    reasons = []
-
-    # tripwires_global format: list of (actor_id, tw_id, severity) tuples
-    for entry in tripwires_global or []:
-        if not (isinstance(entry, (list, tuple)) and len(entry) >= 3):
-            continue
-        actor_id, tw_id, severity = entry[0], entry[1], entry[2]
-        try:
-            sev_int = int(severity)
-        except (TypeError, ValueError):
-            continue
-        if sev_int < 5:
-            continue
-
-        # Look up actor's vector to determine which axis to flag
-        actor_cfg = ACTORS.get(actor_id, {})
-        vector    = actor_cfg.get('vector', '')
-        axis      = VECTOR_TO_L5_AXIS.get(vector)
-        if axis and not gate[axis]:
-            gate[axis] = True
-            reasons.append(f"{axis.title()}: {actor_id}:{tw_id} (sev {sev_int})")
-
-    gate['any']    = any(gate[k] for k in ('kinetic', 'humanitarian', 'economic', 'diplomatic'))
-    gate['reason'] = '; '.join(reasons) if reasons else 'No L5 axis trigger fired'
-    return gate
-
-
-def _build_chile_signal_text(theatre_level, theatre_score, vector_levels, actor_summaries, l5_capped=False):
-    """
-    Build short_text + long_text for Chile's theatre_high signal.
-    Uses WHA label vocabulary (Imminent Crisis at L4, Active Crisis at L5).
-    """
-    # Active vectors (elevated/high/surge)
-    vectors_active = []
-    if isinstance(vector_levels, dict):
-        for vec, lvl in vector_levels.items():
-            if lvl in ('elevated', 'high', 'surge'):
-                vectors_active.append(vec.replace('_', ' '))
-    vectors_brief = ', '.join(vectors_active[:3]) if vectors_active else 'baseline'
-
-    # Active actors
-    actors_active = []
-    if isinstance(actor_summaries, dict):
-        for actor, summary in actor_summaries.items():
-            lvl = summary.get('level', 'low') if isinstance(summary, dict) else 'low'
-            if lvl in ('elevated', 'high', 'surge'):
-                actors_active.append(actor.replace('_', ' '))
-    actors_brief = ', '.join(actors_active[:3]) if actors_active else ''
-
-    label = WHA_LABEL_VOCAB.get(theatre_level, 'Monitoring')
-
-    short = f"🇨🇱 CHILE L{theatre_level} {label} — {vectors_brief}"
-    if len(short) > 120:
-        short = short[:117] + '...'
-
-    long_parts = [f"🇨🇱 CHILE at L{theatre_level} {label} (theatre score {theatre_score}/100)."]
-    if vectors_active:
-        long_parts.append(f"Active vectors: {vectors_brief}.")
-    if actors_active:
-        long_parts.append(f"Top actors: {actors_brief}.")
-    if l5_capped:
-        long_parts.append("L5 axis gate did not fire — capped at L4 ceiling per platform L5 Reservation Contract.")
-    else:
-        long_parts.append("Chile is a stable democracy; tracking domestic political and economic pressure.")
-
-    return {'short': short, 'long': ' '.join(long_parts)}
-
-
-def scan_chile_rhetoric(force=False, days=7):
-    """Full scan: fetch → classify → score → tripwires → interpret → cache."""
-    if not force:
-        cached = load_cache()
-        if cached and is_cache_fresh(cached):
-            cached['cached'] = True
-            return cached
-
-    scan_start = time.time()
-    print(f"[Chile Rhetoric] Scan starting (force={force}, days={days})")
-
-    # ── Fetch all signal sources ──
-    rss_articles      = fetch_all_rss()
-    gdelt_articles    = fetch_all_gdelt(days=days)
-    newsapi_articles  = fetch_all_newsapi(days=days)
-    brave_articles    = fetch_all_brave(
-        days=days,
-        gdelt_count=len(gdelt_articles),
-        newsapi_count=len(newsapi_articles)
-    )
-    all_articles = rss_articles + gdelt_articles + newsapi_articles + brave_articles
-
-    # ── Classify articles by actor ──
-    articles_by_actor  = {a: [] for a in ACTORS}
-    tripwires_global   = []
-    for art in all_articles:
-        # Actor classification
-        for actor_id in _classify_article_actor(art):
-            articles_by_actor[actor_id].append(art)
-        # Tripwire pattern matching
-        for tw in _check_tripwires(art.get('title', '')):
-            tripwires_global.append({
-                'id':        tw[1],
-                'actor':     tw[0],
-                'severity':  ['low', 'normal', 'elevated', 'high', 'surge'][tw[2]],
-                'article':   {'title': art.get('title', ''), 'url': art.get('url', ''),
-                              'source': art.get('source', '')},
-            })
-
-    # ── Score actors + compute levels ──
-    actor_summaries = {}
-    for actor_id, cfg in ACTORS.items():
-        arts  = articles_by_actor[actor_id]
-        score = _score_actor_articles(arts, actor_id)
-        level = actor_alert_level(score, cfg['baseline'])
-        actor_tripwires = [tw for tw in tripwires_global if tw['actor'] == actor_id]
-        # Top 8 articles per actor for UI display
-        sorted_arts = sorted(arts, key=lambda a: a.get('feed_type') == 'rss', reverse=True)[:8]
-        actor_summaries[actor_id] = {
-            'name':           cfg['name'],
-            'flag':           cfg['flag'],
-            'icon':           cfg['icon'],
-            'role':           cfg['role'],
-            'vector':         cfg['vector'],
-            'score':          score,
-            'baseline':       cfg['baseline'],
-            'level':          level,
-            'article_count':  len(arts),
-            'top_articles':   sorted_arts,
-            'tripwires':      actor_tripwires,
+<!DOCTYPE html>
+<!-- Asifah Analytics — Chile Rhetoric Tracker v1.0.0 — May 9, 2026 -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<!-- Arctic palette · 7 actors · 4-vector composite · en/es/pt full i18n -->
+<html lang="en" dir="ltr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Chile Rhetoric Tracker | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* ARCTIC PALETTE — canonical for rhetoric trackers */
+            --bg-primary: #060d1a;
+            --bg-card: #0d1b2e;
+            --bg-signal: #0a1626;
+            --bg-elevated: #112338;
+            --border-color: #1e3a5f;
+            --border-strong: #2a5288;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #5d7ea3;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #a78bfa;
+
+            /* Levels */
+            --level-low-bg: rgba(16,185,129,0.10);
+            --level-low-border: #10b981;
+            --level-normal-bg: rgba(56,189,248,0.10);
+            --level-normal-border: #38bdf8;
+            --level-elevated-bg: rgba(245,158,11,0.10);
+            --level-elevated-border: #f59e0b;
+            --level-high-bg: rgba(249,115,22,0.10);
+            --level-high-border: #f97316;
+            --level-surge-bg: rgba(239,68,68,0.12);
+            --level-surge-border: #ef4444;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px rgba(56,189,248,0.15);
+
+            --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+            --loading-bg: rgba(6,13,26,0.95);
+            --header-gradient: linear-gradient(135deg, #0d1b2e 0%, #112338 50%, #1e3a5f 100%);
         }
 
-    # ── Compute vector scores ──
-    vector_scores = {}
-    vector_levels = {}
-    for vec_id, cfg in VECTORS.items():
-        member_scores = [actor_summaries[a]['score'] for a in cfg['actors'] if a in actor_summaries]
-        member_levels = [actor_summaries[a]['level'] for a in cfg['actors'] if a in actor_summaries]
-        vec_score = round(sum(member_scores), 2)
-        vec_level = max(member_levels,
-                        key=lambda lv: ['low', 'normal', 'elevated', 'high', 'surge'].index(lv),
-                        default='low')
-        vector_scores[vec_id] = vec_score
-        vector_levels[vec_id] = vec_level
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.55;
+        }
 
-    # ── Compute composite Chile pressure score ──
-    composite_score = round(sum(vector_scores.values()), 2)
-    composite_level = max(
-        (actor_summaries[a]['level'] for a in actor_summaries),
-        key=lambda lv: ['low', 'normal', 'elevated', 'high', 'surge'].index(lv),
-        default='low',
-    )
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 700px;
+            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+            filter: var(--watermark-filter);
+        }
 
-    # ── BLUF compatibility shim ──
-    LEVEL_TO_THEATRE_INT = {'low': 0, 'normal': 1, 'elevated': 2, 'high': 3, 'surge': 4}
-    raw_theatre_level = LEVEL_TO_THEATRE_INT.get(composite_level, 0)
-    theatre_score     = min(100, int(composite_score))
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--loading-bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner {
+            width: 48px; height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
 
-    # ── L5 Reservation Contract (v1.0.0 May 21 2026) ──
-    # Compute L5 gate from fired tripwires. If raw_theatre_level >= 5 and no
-    # axis fires, cap at L4 "Imminent Crisis" ceiling per platform contract.
-    l5_gate     = _compute_chile_l5_gate(tripwires_global, actor_summaries, vector_scores)
-    l5_capped   = (raw_theatre_level >= 5 and not l5_gate['any'])
-    theatre_level = 4 if l5_capped else raw_theatre_level
-    theatre_label = WHA_LABEL_VOCAB.get(theatre_level, 'Monitoring')
+        /* Header */
+        .header {
+            background: var(--header-gradient);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .header-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .header-logo { height: 50px; width: auto; }
+        .header-right-controls { display: flex; gap: 12px; align-items: center; }
+        .home-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .home-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .header-row-2 { text-align: center; margin-bottom: 10px; }
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-top: 6px;
+        }
+        .header-row-3 {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .lang-toggle {
+            display: flex;
+            gap: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .lang-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .lang-btn:hover { background: rgba(56,189,248,0.10); }
+        .lang-btn.active { background: rgba(56,189,248,0.20); color: var(--accent-cyan); }
+        .toggle-container { display: flex; align-items: center; gap: 8px; }
+        .toggle-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1.5px; }
+        .toggle-switch {
+            width: 40px; height: 22px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 1px; left: 1px;
+            width: 18px; height: 18px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        body[data-theme="light"] .toggle-switch::after { transform: translateX(18px); }
+        .refresh-btn {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .refresh-btn:hover {
+            background: rgba(56,189,248,0.1);
+            box-shadow: var(--shadow-glow);
+        }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    if l5_capped:
-        print(f"[Chile Rhetoric] L5 GATE CAPPED: raw={raw_theatre_level}, "
-              f"no axis fired → effective L4 ceiling")
+        /* Layout */
+        .main-layout {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 24px;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+        }
 
-    # ── Read commodity pressure + cross-theater amplifiers ──
-    commodity_pressure       = _read_commodity_pressure_for_chile()
-    crosstheater_amplifiers  = _read_crosstheater_amplifiers()
+        /* Sidebar — gold-standard pattern */
+        .sidebar {
+            position: sticky;
+            top: 130px;
+            align-self: start;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+        .sidebar-section { margin-bottom: 14px; }
+        .sidebar-link {
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            background: var(--bg-signal);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-link:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateX(2px);
+        }
+        .sidebar-link.crosscut {
+            border-left-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(16,185,129,0.05);
+        }
+        .sidebar-link.rhetoric { border-left-color: var(--accent-orange); }
+        .sidebar-link.rhetoric:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .sidebar-link.active {
+            background: rgba(249,115,22,0.15);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+        .sidebar-divider { height: 1px; background: var(--border-color); margin: 10px 0; }
 
-    # ── Interpret signals (top_signals, executive summary, so what) ──
-    if INTERPRETER_AVAILABLE:
-        try:
-            top_signals = _interp_top_signals(
-                actor_summaries, tripwires_global,
-                commodity_pressure, crosstheater_amplifiers
-            )
-            executive_summary = _interp_exec_summary(
-                actor_summaries, vector_scores, vector_levels, tripwires_global
-            )
-            so_what = _interp_so_what(
-                actor_summaries, vector_scores, vector_levels,
-                tripwires_global, commodity_pressure
-            )
-        except Exception as e:
-            print(f"[Chile Rhetoric] Interpreter error: {str(e)[:200]}")
-            top_signals, executive_summary, so_what = [], '', []
-    else:
-        top_signals, executive_summary, so_what = [], '', []
+        /* Content */
+        .content { min-width: 0; }
+        .updated-bar {
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            padding: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
 
-    # ── L5 Reservation Contract: emit theatre_high signal in top_signals ──
-    # This signal carries the composite Chile posture in the canonical schema
-    # the WHA BLUF consumes. Without it, Chile's L4 composite never surfaces
-    # to the regional card (only actor-specific signals do).
-    signal_text = _build_chile_signal_text(
-        theatre_level, theatre_score, vector_levels, actor_summaries, l5_capped
-    )
-    theatre_high_signal = {
-        'priority':   9 + theatre_level,
-        'category':   'theatre_high',
-        'theatre':    'chile',
-        'level':      theatre_level,
-        'icon':       '🔴' if theatre_level >= 4 else '🟠',
-        'color':      '#dc2626' if theatre_level >= 5 else ('#ef4444' if theatre_level == 4 else '#f97316'),
-        'short_text': signal_text['short'],
-        'long_text':  signal_text['long'],
+        /* Composite gauge strip */
+        .composite-strip {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .gauge-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .gauge-card.composite { border-top: 3px solid var(--accent-cyan); }
+        .gauge-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .gauge-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1.1;
+        }
+        .gauge-value.composite { font-size: 1.7rem; }
+        .gauge-sub {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .level-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            border: 1px solid;
+        }
+        .level-pill.level-low { background: var(--level-low-bg); border-color: var(--level-low-border); color: var(--level-low-border); }
+        .level-pill.level-normal { background: var(--level-normal-bg); border-color: var(--level-normal-border); color: var(--level-normal-border); }
+        .level-pill.level-elevated { background: var(--level-elevated-bg); border-color: var(--level-elevated-border); color: var(--level-elevated-border); }
+        .level-pill.level-high { background: var(--level-high-bg); border-color: var(--level-high-border); color: var(--level-high-border); }
+        .level-pill.level-surge { background: var(--level-surge-bg); border-color: var(--level-surge-border); color: var(--level-surge-border); }
+
+        /* Section header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 22px 0 12px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .section-icon { font-size: 1.3rem; }
+        .section-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 8px;
+            font-style: italic;
+        }
+
+        /* Executive summary card */
+        .exec-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .exec-summary p {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* So What card */
+        .so-what {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-orange);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .so-what-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .so-what-item {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+        .so-what-bullet {
+            flex-shrink: 0;
+            font-size: 1rem;
+            color: var(--accent-orange);
+            line-height: 1.4;
+        }
+
+        /* Top signals */
+        .top-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .top-signals-grid { grid-template-columns: 1fr; } }
+        .signal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .signal-card:hover { border-color: var(--accent-cyan); transform: translateY(-1px); }
+        .signal-card.level-surge { border-left-color: var(--level-surge-border); }
+        .signal-card.level-high { border-left-color: var(--level-high-border); }
+        .signal-card.level-elevated { border-left-color: var(--level-elevated-border); }
+        .signal-card.level-normal { border-left-color: var(--level-normal-border); }
+        .signal-card.level-low { border-left-color: var(--level-low-border); }
+        .signal-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+        .signal-type-pill {
+            font-size: 0.55rem;
+            padding: 2px 8px;
+            border-radius: 3px;
+            background: rgba(56,189,248,0.10);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56,189,248,0.30);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .signal-type-pill.t-tripwire { background: rgba(239,68,68,0.10); color: #fca5a5; border-color: rgba(239,68,68,0.30); }
+        .signal-type-pill.t-convergence { background: rgba(167,139,250,0.10); color: #c4b5fd; border-color: rgba(167,139,250,0.30); }
+        .signal-type-pill.t-commodity_coupling { background: rgba(245,158,11,0.10); color: #fcd34d; border-color: rgba(245,158,11,0.30); }
+        .signal-type-pill.t-crosstheater { background: rgba(16,185,129,0.10); color: #6ee7b7; border-color: rgba(16,185,129,0.30); }
+        .signal-short {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .signal-long {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+        .signal-sources {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .signal-source-row {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .signal-source-row a { color: var(--text-secondary); text-decoration: none; }
+        .signal-source-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+
+        /* Actor cards */
+        .actor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .actor-grid { grid-template-columns: 1fr; } }
+        .actor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+        .actor-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .actor-card.level-surge { border-top-color: var(--level-surge-border); }
+        .actor-card.level-high { border-top-color: var(--level-high-border); }
+        .actor-card.level-elevated { border-top-color: var(--level-elevated-border); }
+        .actor-card.level-normal { border-top-color: var(--level-normal-border); }
+        .actor-card.level-low { border-top-color: var(--level-low-border); }
+        .actor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .actor-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .actor-icon { font-size: 1.4rem; line-height: 1; }
+        .actor-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .actor-role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-style: italic;
+        }
+        .actor-stats {
+            display: flex;
+            gap: 14px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+        .actor-stats span { color: var(--text-muted); }
+        .actor-stats strong { color: var(--text-primary); font-weight: 700; }
+        .actor-articles-toggle {
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            user-select: none;
+            margin-top: 6px;
+        }
+        .actor-articles-toggle:hover { text-decoration: underline; }
+        .actor-articles {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+        .actor-articles.visible { display: block; }
+        .actor-article-row {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(30,58,95,0.4);
+            line-height: 1.45;
+        }
+        .actor-article-row:last-child { border-bottom: none; }
+        .actor-article-row a { color: var(--text-secondary); text-decoration: none; }
+        .actor-article-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+        .article-source-tag {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
+        /* Vector breakdown card */
+        .vector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 600px) { .vector-grid { grid-template-columns: 1fr; } }
+        .vector-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .vector-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .vector-actors {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Commodity coupling card */
+        .commodity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .commodity-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .commodity-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .commodity-card-detail {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Empty / pending */
+        .pending-banner {
+            background: rgba(245,158,11,0.10);
+            border: 1px solid var(--level-elevated-border);
+            color: var(--accent-yellow);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Light theme overrides */
+        body[data-theme="light"] {
+            --bg-primary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-signal: #f0f5fa;
+            --bg-elevated: #e8eef5;
+            --border-color: #d1dce6;
+            --border-strong: #a8b8cc;
+            --text-primary: #1e3a5f;
+            --text-secondary: #2c5282;
+            --text-muted: #5d7ea3;
+            --watermark-filter: saturate(2) brightness(1.1) hue-rotate(190deg);
+            --shadow-sm: 0 1px 3px rgba(30,58,95,0.08);
+            --shadow-md: 0 4px 12px rgba(30,58,95,0.12);
+            --shadow-glow: 0 0 12px rgba(56,189,248,0.2);
+            --header-gradient: linear-gradient(135deg, #ffffff 0%, #f0f5fa 50%, #e8eef5 100%);
+            --loading-bg: rgba(240,244,247,0.95);
+        }
+
+        /* Mobile */
+        @media (max-width: 1080px) {
+            .composite-strip { grid-template-columns: 1fr 1fr; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; max-height: none; }
+        }
+        @media (max-width: 600px) {
+            .composite-strip { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="watermark"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">SCANNING CHILE RHETORIC...</div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-row-1">
+        <a href="index.html">
+            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
+        </a>
+        <div class="header-right-controls">
+            <a href="chile-stability.html" class="home-btn" data-i18n="back_to_stability">← CHILE STABILITY</a>
+            <a href="index.html" class="home-btn" data-i18n="home">🏠 HOME</a>
+        </div>
+    </div>
+    <div class="header-row-2">
+        <div class="header-title" data-i18n="page_title">CHILE RHETORIC TRACKER</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">7-Actor · 4-Vector Composite · Domestic / Resource / US / China Alignment</div>
+    </div>
+    <div class="header-row-3">
+        <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+            <button class="lang-btn" data-lang="pt" onclick="setLang('pt')">PT</button>
+        </div>
+        <div class="toggle-container">
+            <span class="toggle-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+            <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+        </div>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" data-i18n="refresh">⟳ REFRESH</button>
+    </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
+            <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
+            <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
+            <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
+            <a href="wha.html" class="sidebar-link" data-i18n="sb_wha">🌎 Western Hemisphere</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
+            <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
+            <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
+            <a href="gpi.html" class="sidebar-link crosscut" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_rhetoric">RHETORIC LANDINGS</div>
+            <a href="rhetoric-index.html" class="sidebar-link rhetoric" data-i18n="sb_rh_me">💬 Middle East Rhetoric</a>
+            <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
+            <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
+            <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_peru">PERU PAGES</div>
+            <a href="rhetoric-peru.html" class="sidebar-link rhetoric" data-i18n="sb_peru_rhetoric">💬 Peru Rhetoric</a>
+            <a href="peru-stability.html" class="sidebar-link" data-i18n="sb_peru_stability">📊 Peru Stability</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_chile">CHILE PAGES</div>
+            <a href="rhetoric-chile.html" class="sidebar-link rhetoric active" data-i18n="sb_chile_rhetoric">💬 Chile Rhetoric</a>
+            <a href="chile-stability.html" class="sidebar-link" data-i18n="sb_chile_stability">📊 Chile Stability</a>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <div class="updated-bar" id="updatedBar" data-i18n="initializing">Initializing...</div>
+
+        <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">
+            ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.
+        </div>
+
+        <!-- COMPOSITE STRIP — Chile pressure + 4 vector cards -->
+        <div class="composite-strip">
+            <div class="gauge-card composite">
+                <div class="gauge-label" data-i18n="composite_label">Chile Composite Pressure</div>
+                <div class="gauge-value composite" id="compositeScore">—</div>
+                <span class="level-pill" id="compositeLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_domestic">Domestic Stability</div>
+                <div class="gauge-value" id="vecDomesticScore">—</div>
+                <span class="level-pill" id="vecDomesticLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_resource">Resource Sector</div>
+                <div class="gauge-value" id="vecResourceScore">—</div>
+                <span class="level-pill" id="vecResourceLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_us">US Alignment</div>
+                <div class="gauge-value" id="vecUsScore">—</div>
+                <span class="level-pill" id="vecUsLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_china">China Alignment</div>
+                <div class="gauge-value" id="vecChinaScore">—</div>
+                <span class="level-pill" id="vecChinaLevel">—</span>
+            </div>
+        </div>
+
+        <!-- EXECUTIVE SUMMARY -->
+        <div class="section-header">
+            <span class="section-icon">📰</span>
+            <span class="section-title" data-i18n="sec_exec">Executive Summary</span>
+        </div>
+        <div class="exec-summary" id="execSummary">
+            <p class="empty-state" data-i18n="loading">Loading...</p>
+        </div>
+
+        <!-- TOP SIGNALS -->
+        <div class="section-header">
+            <span class="section-icon">⚡</span>
+            <span class="section-title" data-i18n="sec_signals">Top Signals</span>
+            <span class="section-desc" data-i18n="sec_signals_desc">Tripwires, convergence, commodity coupling, cross-theater</span>
+        </div>
+        <div class="top-signals-grid" id="topSignalsGrid">
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+
+        <!-- SO WHAT -->
+        <div class="section-header">
+            <span class="section-icon">🎯</span>
+            <span class="section-title" data-i18n="sec_so_what">So What Factor</span>
+            <span class="section-desc" data-i18n="sec_so_what_desc">Strategic implications for the next 7-14 days</span>
+        </div>
+        <div class="so-what" id="soWhatCard">
+            <p class="empty-state" data-i18n="loading">Loading...</p>
+        </div>
+
+        <!-- VECTOR BREAKDOWN -->
+        <div class="section-header">
+            <span class="section-icon">🧭</span>
+            <span class="section-title" data-i18n="sec_vectors">Vector Breakdown</span>
+            <span class="section-desc" data-i18n="sec_vectors_desc">4 analytical vectors — composition + scoring</span>
+        </div>
+        <div class="vector-grid" id="vectorGrid">
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+
+        <!-- COMMODITY COUPLING (only shown if pressure exists) -->
+        <div id="commoditySection" style="display: none;">
+            <div class="section-header">
+                <span class="section-icon">⛏️</span>
+                <span class="section-title" data-i18n="sec_commodity">Commodity Coupling</span>
+                <span class="section-desc" data-i18n="sec_commodity_desc">Live supply-risk fingerprints from the commodity tracker</span>
+            </div>
+            <div id="commodityCards"></div>
+        </div>
+
+        <!-- ACTORS -->
+        <div class="section-header">
+            <span class="section-icon">🎭</span>
+            <span class="section-title" data-i18n="sec_actors">Actor Breakdown</span>
+            <span class="section-desc" data-i18n="sec_actors_desc">8 tracked actors across 4 vectors</span>
+        </div>
+        <div class="actor-grid" id="actorGrid">
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+
+    </main>
+</div>
+
+<!-- FOOTER (canonical Asifah pattern) -->
+<footer style="background:var(--bg-card, #0d1b2e); border:1px solid var(--border-color, #1e3a5f); border-radius:12px; padding:30px; margin:30px; font-size:13px; color:var(--text-secondary, #93c5fd);">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:20px;">
+        <div>
+            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_sources">DATA SOURCES</h4>
+            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_sources_text">La Tercera, El Mercurio (Emol), BioBioChile, Cooperativa (native Spanish RSS); Reuters Americas; GDELT (English + Spanish queries); NewsAPI; Brave Search fallback. Cross-tracker fingerprints from commodity tracker (copper + lithium supply-risk).</p>
+        </div>
+        <div>
+            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_method">METHODOLOGY</h4>
+            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_method_text">7-actor frame: Presidency, Cancillería, Mining sector, Mapuche conflict, Constitutional politics, US-Chile bilateral, China-Chile/lithium. 4-vector composite score: Domestic Stability, Resource-Sector Politics, US Alignment, China Alignment. Tripwire system flags low-base-rate high-impact events. Scan refreshes every 12 hours.</p>
+        </div>
+        <div>
+            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_connected">CONNECTED TRACKERS</h4>
+            <p style="font-size:12px; line-height:1.5;">
+                <a href="commodities.html" style="color:#38bdf8; text-decoration:none;">🌾 Commodities</a> ·
+                <a href="chile-stability.html" style="color:#38bdf8; text-decoration:none;">📊 Chile Stability</a> ·
+                <a href="rhetoric-wha.html" style="color:#38bdf8; text-decoration:none;">💬 WHA Rhetoric</a> ·
+                <a href="gpi.html" style="color:#38bdf8; text-decoration:none;">🌐 GPI</a>
+            </p>
+        </div>
+    </div>
+    <div style="margin-top:20px; padding:14px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:8px; font-size:12px; line-height:1.5;">
+        <strong style="color:#f59e0b;" data-i18n="ftr_disclaimer_label">⚠️ DISCLAIMER</strong> &mdash;
+        <span data-i18n="ftr_disclaimer_text">This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.</span>
+    </div>
+    <div style="margin-top:20px; padding:14px 18px; background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.2); border-radius:8px; text-align:center; font-size:13px;">
+        <span data-i18n="ftr_coffee">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6; text-decoration:none; font-weight:bold;" data-i18n="ftr_coffee_link">buy me a coffee</a>
+    </div>
+    <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color,#1e3a5f); font-size:12px;">
+        <a href="privacy.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_privacy">Privacy Policy</a>
+        <span style="color:var(--text-muted,#4a7090); margin:0 12px;">|</span>
+        <a href="contact.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_contact">Contact</a>
+    </div>
+    <div style="text-align:center; margin-top:15px; font-size:11px; color:var(--text-muted,#4a7090);">
+        © 2025-2026 RCGG. All Rights Reserved. Asifah Chile Rhetoric Tracker v1.0.0 — Proprietary and Confidential.
+    </div>
+</footer>
+
+<script>
+// =============================================
+// CONFIGURATION
+// =============================================
+const API_BASE = 'https://asifah-wha-backend.onrender.com';
+const ENDPOINT = `${API_BASE}/api/rhetoric/chile`;
+
+// =============================================
+// I18N — English / Spanish / Portuguese
+// =============================================
+const T = {
+    en: {
+        // Header / chrome
+        home: '🏠 HOME',
+        back_to_stability: '← CHILE STABILITY',
+        page_title: 'CHILE RHETORIC TRACKER',
+        page_subtitle: '7-Actor · 4-Vector Composite · Domestic / Resource / US / China Alignment',
+        theme_toggle: 'DARK / LIGHT',
+        refresh: '⟳ REFRESH',
+        loading: 'Loading...',
+        initializing: 'Initializing...',
+        pending_banner: '⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.',
+
+        // Sidebar
+        sb_regional: 'REGIONAL LANDINGS',
+        sb_me: '🌍 Middle East',
+        sb_asia: '🌏 Asia-Pacific',
+        sb_europe: '🌍 Europe',
+        sb_wha: '🌎 Western Hemisphere',
+        sb_crosscut: 'CROSS-CUTTING TOOLS',
+        sb_commodities: '🌾 Commodities Tracker',
+        sb_military: '🪖 Military Tracker',
+        sb_gpi: '🌐 Global Pressure Index',
+        sb_rhetoric: 'RHETORIC LANDINGS',
+        sb_rh_me: '💬 Middle East Rhetoric',
+        sb_rh_asia: '💬 Asia Rhetoric',
+        sb_rh_europe: '💬 Europe Rhetoric',
+        sb_rh_wha: '💬 Western Hemisphere Rhetoric',
+        sb_peru: 'PERU PAGES',
+        sb_peru_rhetoric: '💬 Peru Rhetoric',
+        sb_peru_stability: '📊 Peru Stability',
+        sb_chile: 'CHILE PAGES',
+        sb_chile_rhetoric: '💬 Chile Rhetoric',
+        sb_chile_stability: '📊 Chile Stability',
+
+        // Composite gauge
+        composite_label: 'Chile Composite Pressure',
+        vec_domestic: 'Domestic Stability',
+        vec_resource: 'Resource Sector',
+        vec_us: 'US Alignment',
+        vec_china: 'China Alignment',
+
+        // Sections
+        sec_exec: 'Executive Summary',
+        sec_signals: 'Top Signals',
+        sec_signals_desc: 'Tripwires, convergence, commodity coupling, cross-theater',
+        sec_so_what: 'So What Factor',
+        sec_so_what_desc: 'Strategic implications for the next 7-14 days',
+        sec_vectors: 'Vector Breakdown',
+        sec_vectors_desc: '4 analytical vectors — composition + scoring',
+        sec_commodity: 'Commodity Coupling',
+        sec_commodity_desc: 'Live supply-risk fingerprints from the commodity tracker',
+        sec_actors: 'Actor Breakdown',
+        sec_actors_desc: '8 tracked actors across 4 vectors',
+
+        // Levels
+        level_low: 'Low',
+        level_normal: 'Normal',
+        level_elevated: 'Elevated',
+        level_high: 'High',
+        level_surge: 'Surge',
+
+        // Actor card labels
+        actor_score: 'Score',
+        actor_signals: 'Signals',
+        actor_baseline: 'Baseline',
+        actor_show_articles: 'Show top articles',
+        actor_hide_articles: 'Hide articles',
+        actor_no_articles: 'No articles this scan.',
+
+        // Signal types
+        type_tripwire: 'Tripwire',
+        type_convergence: 'Convergence',
+        type_actor_signal: 'Actor Signal',
+        type_commodity_coupling: 'Commodity Coupling',
+        type_crosstheater: 'Cross-Theater',
+
+        // Footer
+        ftr_sources: 'DATA SOURCES',
+        ftr_sources_text: 'La Tercera, El Mercurio (Emol), BioBioChile, Cooperativa (native Spanish RSS); Reuters Americas; GDELT (English + Spanish queries); NewsAPI; Brave Search fallback. Cross-tracker fingerprints from commodity tracker (copper + lithium supply-risk).',
+        ftr_method: 'METHODOLOGY',
+        ftr_method_text: '7-actor frame: Presidency, Cancillería, Mining sector, Mapuche conflict, Constitutional politics, US-Chile bilateral, China-Chile/lithium. 4-vector composite score: Domestic Stability, Resource-Sector Politics, US Alignment, China Alignment. Tripwire system flags low-base-rate high-impact events. Scan refreshes every 12 hours.',
+        ftr_connected: 'CONNECTED TRACKERS',
+        ftr_disclaimer_label: '⚠️ DISCLAIMER',
+        ftr_disclaimer_text: 'This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.',
+        ftr_coffee: 'If you find Asifah Analytics useful and want to support ongoing development, you can',
+        ftr_coffee_link: 'buy me a coffee',
+        ftr_privacy: 'Privacy Policy',
+        ftr_contact: 'Contact',
+
+        // Updated bar
+        updated_prefix: 'LAST UPDATED',
+        updated_cached: 'CACHED',
+        updated_live: 'LIVE',
+        updated_stale: ' (stale, refresh in progress)',
+    },
+
+    es: {
+        home: '🏠 INICIO',
+        back_to_stability: '← ESTABILIDAD CHILE',
+        page_title: 'RASTREADOR DE RETÓRICA — CHILE',
+        page_subtitle: '7 Actores · Compuesto de 4 Vectores · Estabilidad Doméstica / Recursos / EE.UU. / China',
+        theme_toggle: 'OSCURO / CLARO',
+        refresh: '⟳ ACTUALIZAR',
+        loading: 'Cargando...',
+        initializing: 'Inicializando...',
+        pending_banner: '⏳ Escaneo inicial en curso — normalmente toma 3 a 5 minutos después de un despliegue. Las señales aparecerán pronto.',
+
+        sb_regional: 'PÁGINAS REGIONALES',
+        sb_me: '🌍 Medio Oriente',
+        sb_asia: '🌏 Asia-Pacífico',
+        sb_europe: '🌍 Europa',
+        sb_wha: '🌎 Hemisferio Occidental',
+        sb_crosscut: 'HERRAMIENTAS TRANSVERSALES',
+        sb_commodities: '🌾 Rastreador de Commodities',
+        sb_military: '🪖 Rastreador Militar',
+        sb_gpi: '🌐 Índice de Presión Global',
+        sb_rhetoric: 'PÁGINAS DE RETÓRICA',
+        sb_rh_me: '💬 Retórica Medio Oriente',
+        sb_rh_asia: '💬 Retórica Asia',
+        sb_rh_europe: '💬 Retórica Europa',
+        sb_rh_wha: '💬 Retórica Hemisferio Occidental',
+        sb_peru: 'PÁGINAS DE PERÚ',
+        sb_peru_rhetoric: '💬 Retórica Perú',
+        sb_peru_stability: '📊 Estabilidad Perú',
+        sb_chile: 'PÁGINAS DE CHILE',
+        sb_chile_rhetoric: '💬 Retórica Chile',
+        sb_chile_stability: '📊 Estabilidad Chile',
+
+        composite_label: 'Presión Compuesta Chile',
+        vec_domestic: 'Estabilidad Doméstica',
+        vec_resource: 'Sector de Recursos',
+        vec_us: 'Alineamiento EE.UU.',
+        vec_china: 'Alineamiento China',
+
+        sec_exec: 'Resumen Ejecutivo',
+        sec_signals: 'Señales Principales',
+        sec_signals_desc: 'Disparadores, convergencia, acoplamiento de commodities, multi-teatro',
+        sec_so_what: 'Factor "Y Qué"',
+        sec_so_what_desc: 'Implicaciones estratégicas para los próximos 7-14 días',
+        sec_vectors: 'Desglose por Vector',
+        sec_vectors_desc: '4 vectores analíticos — composición + puntuación',
+        sec_commodity: 'Acoplamiento de Commodities',
+        sec_commodity_desc: 'Huellas digitales en vivo del rastreador de commodities',
+        sec_actors: 'Desglose por Actor',
+        sec_actors_desc: '8 actores rastreados en 4 vectores',
+
+        level_low: 'Bajo',
+        level_normal: 'Normal',
+        level_elevated: 'Elevado',
+        level_high: 'Alto',
+        level_surge: 'Crítico',
+
+        actor_score: 'Puntuación',
+        actor_signals: 'Señales',
+        actor_baseline: 'Baseline',
+        actor_show_articles: 'Ver artículos principales',
+        actor_hide_articles: 'Ocultar artículos',
+        actor_no_articles: 'Sin artículos en este escaneo.',
+
+        type_tripwire: 'Disparador',
+        type_convergence: 'Convergencia',
+        type_actor_signal: 'Señal de Actor',
+        type_commodity_coupling: 'Acoplamiento Commodity',
+        type_crosstheater: 'Multi-Teatro',
+
+        ftr_sources: 'FUENTES DE DATOS',
+        ftr_sources_text: 'La Tercera, El Mercurio (Emol), BioBioChile, Cooperativa (RSS español nativo); Reuters Americas; GDELT (consultas en inglés + español); NewsAPI; respaldo de Brave Search. Huellas digitales del rastreador de commodities (riesgo de oferta de cobre + litio).',
+        ftr_method: 'METODOLOGÍA',
+        ftr_method_text: 'Marco de 7 actores: Presidencia, Cancillería, Sector minero, Conflicto mapuche, Política constitucional, Bilateral EE.UU.-Chile, China-Chile/litio. Puntuación compuesta de 4 vectores: Estabilidad Doméstica, Política del Sector de Recursos, Alineamiento EE.UU., Alineamiento China. Sistema de disparadores marca eventos de baja frecuencia y alto impacto. El escaneo se actualiza cada 12 horas.',
+        ftr_connected: 'RASTREADORES CONECTADOS',
+        ftr_disclaimer_label: '⚠️ EXENCIÓN DE RESPONSABILIDAD',
+        ftr_disclaimer_text: 'Esta página proporciona estimaciones analíticas basadas en agregación de inteligencia de fuentes abiertas. No constituye asesoramiento de inversión, evaluaciones de inteligencia, ni recomendaciones de política. Consulte siempre fuentes autorizadas para tomar decisiones. No apto para uso operativo.',
+        ftr_coffee: 'Si Asifah Analytics te resulta útil y quieres apoyar el desarrollo continuo, puedes',
+        ftr_coffee_link: 'invitarme un café',
+        ftr_privacy: 'Política de Privacidad',
+        ftr_contact: 'Contacto',
+
+        updated_prefix: 'ÚLTIMA ACTUALIZACIÓN',
+        updated_cached: 'EN CACHÉ',
+        updated_live: 'EN VIVO',
+        updated_stale: ' (obsoleto, actualizando)',
+    },
+
+    pt: {
+        home: '🏠 INÍCIO',
+        back_to_stability: '← ESTABILIDADE CHILE',
+        page_title: 'RASTREADOR DE RETÓRICA — CHILE',
+        page_subtitle: '7 Atores · Composto de 4 Vetores · Estabilidade Doméstica / Recursos / EUA / China',
+        theme_toggle: 'ESCURO / CLARO',
+        refresh: '⟳ ATUALIZAR',
+        loading: 'Carregando...',
+        initializing: 'Inicializando...',
+        pending_banner: '⏳ Verificação inicial em andamento — normalmente leva 3 a 5 minutos após um deploy. Os sinais aparecerão em breve.',
+
+        sb_regional: 'PÁGINAS REGIONAIS',
+        sb_me: '🌍 Oriente Médio',
+        sb_asia: '🌏 Ásia-Pacífico',
+        sb_europe: '🌍 Europa',
+        sb_wha: '🌎 Hemisfério Ocidental',
+        sb_crosscut: 'FERRAMENTAS TRANSVERSAIS',
+        sb_commodities: '🌾 Rastreador de Commodities',
+        sb_military: '🪖 Rastreador Militar',
+        sb_gpi: '🌐 Índice de Pressão Global',
+        sb_rhetoric: 'PÁGINAS DE RETÓRICA',
+        sb_rh_me: '💬 Retórica Oriente Médio',
+        sb_rh_asia: '💬 Retórica Ásia',
+        sb_rh_europe: '💬 Retórica Europa',
+        sb_rh_wha: '💬 Retórica Hemisfério Ocidental',
+        sb_peru: 'PÁGINAS DO PERU',
+        sb_peru_rhetoric: '💬 Retórica Peru',
+        sb_peru_stability: '📊 Estabilidade Peru',
+        sb_chile: 'PÁGINAS DO CHILE',
+        sb_chile_rhetoric: '💬 Retórica Chile',
+        sb_chile_stability: '📊 Estabilidade Chile',
+
+        composite_label: 'Pressão Composta Chile',
+        vec_domestic: 'Estabilidade Doméstica',
+        vec_resource: 'Setor de Recursos',
+        vec_us: 'Alinhamento EUA',
+        vec_china: 'Alinhamento China',
+
+        sec_exec: 'Resumo Executivo',
+        sec_signals: 'Sinais Principais',
+        sec_signals_desc: 'Gatilhos, convergência, acoplamento de commodities, multi-teatro',
+        sec_so_what: 'Fator "E Daí"',
+        sec_so_what_desc: 'Implicações estratégicas para os próximos 7-14 dias',
+        sec_vectors: 'Detalhamento por Vetor',
+        sec_vectors_desc: '4 vetores analíticos — composição + pontuação',
+        sec_commodity: 'Acoplamento de Commodities',
+        sec_commodity_desc: 'Impressões digitais ao vivo do rastreador de commodities',
+        sec_actors: 'Detalhamento por Ator',
+        sec_actors_desc: '8 atores rastreados em 4 vetores',
+
+        level_low: 'Baixo',
+        level_normal: 'Normal',
+        level_elevated: 'Elevado',
+        level_high: 'Alto',
+        level_surge: 'Crítico',
+
+        actor_score: 'Pontuação',
+        actor_signals: 'Sinais',
+        actor_baseline: 'Baseline',
+        actor_show_articles: 'Ver artigos principais',
+        actor_hide_articles: 'Ocultar artigos',
+        actor_no_articles: 'Sem artigos nesta verificação.',
+
+        type_tripwire: 'Gatilho',
+        type_convergence: 'Convergência',
+        type_actor_signal: 'Sinal de Ator',
+        type_commodity_coupling: 'Acoplamento Commodity',
+        type_crosstheater: 'Multi-Teatro',
+
+        ftr_sources: 'FONTES DE DADOS',
+        ftr_sources_text: 'La Tercera, El Mercurio (Emol), BioBioChile, Cooperativa (RSS espanhol nativo); Reuters Americas; GDELT (consultas em inglês + espanhol); NewsAPI; fallback do Brave Search. Impressões digitais do rastreador de commodities (risco de oferta de cobre + lítio).',
+        ftr_method: 'METODOLOGIA',
+        ftr_method_text: 'Marco de 7 atores: Presidência, Cancillería, Setor de mineração, Conflito mapuche, Política constitucional, Bilateral EUA-Chile, China-Chile/lítio. Pontuação composta de 4 vetores: Estabilidade Doméstica, Política do Setor de Recursos, Alinhamento EUA, Alinhamento China. Sistema de gatilhos sinaliza eventos de baixa frequência e alto impacto. A verificação atualiza a cada 12 horas.',
+        ftr_connected: 'RASTREADORES CONECTADOS',
+        ftr_disclaimer_label: '⚠️ AVISO',
+        ftr_disclaimer_text: 'Esta página fornece estimativas analíticas baseadas em agregação de inteligência de código aberto. Não constitui aconselhamento de investimento, avaliações de inteligência, nem recomendações de política. Sempre consulte fontes autorizadas para tomar decisões. Não destinado a uso operacional.',
+        ftr_coffee: 'Se você acha o Asifah Analytics útil e quer apoiar o desenvolvimento contínuo, você pode',
+        ftr_coffee_link: 'me pagar um café',
+        ftr_privacy: 'Política de Privacidade',
+        ftr_contact: 'Contato',
+
+        updated_prefix: 'ÚLTIMA ATUALIZAÇÃO',
+        updated_cached: 'EM CACHE',
+        updated_live: 'AO VIVO',
+        updated_stale: ' (obsoleto, atualizando)',
+    },
+};
+
+// =============================================
+// STATE
+// =============================================
+let currentLang = localStorage.getItem('asifah_chile_lang') || 'en';
+let scanData = null;
+
+// =============================================
+// THEME / LANG TOGGLES
+// =============================================
+function toggleTheme() {
+    const body = document.body;
+    const cur = body.getAttribute('data-theme') || 'dark';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', next);
+    localStorage.setItem('asifah_theme', next);
+}
+(function initTheme() {
+    const saved = localStorage.getItem('asifah_theme');
+    if (saved === 'light') document.body.setAttribute('data-theme', 'light');
+})();
+
+function setLang(lang) {
+    if (!T[lang]) return;
+    currentLang = lang;
+    localStorage.setItem('asifah_chile_lang', lang);
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    applyI18n();
+    if (scanData) renderEverything();
+}
+
+function applyI18n() {
+    const t = T[currentLang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+    });
+}
+
+// Apply initial i18n on load
+applyI18n();
+
+// =============================================
+// FETCH
+// =============================================
+async function loadAll(forceRefresh = false) {
+    const refreshBtn = document.getElementById('refreshBtn');
+    refreshBtn.disabled = true;
+    const t = T[currentLang] || T.en;
+    refreshBtn.textContent = '⟳ ' + t.loading;
+
+    try {
+        const url = forceRefresh ? `${ENDPOINT}?refresh=true` : ENDPOINT;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.success) {
+            scanData = data;
+            renderEverything();
+        } else {
+            console.warn('Chile fetch failed:', data);
+            document.getElementById('updatedBar').textContent = '⚠️ Error loading data — please retry';
+        }
+    } catch (err) {
+        console.error('loadAll error:', err);
+        document.getElementById('updatedBar').textContent = '⚠️ Error loading data — please retry';
+    } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = (T[currentLang] || T.en).refresh;
+        document.getElementById('loadingOverlay').classList.add('hidden');
     }
-    # Prepend so it ranks high in priority sort
-    if not any(s.get('category') == 'theatre_high' and s.get('theatre') == 'chile' for s in top_signals):
-        top_signals = [theatre_high_signal] + list(top_signals)
+}
 
-    # ── Write Chile fingerprints for downstream consumers ──
-    actor_levels = {a: s['level'] for a, s in actor_summaries.items()}
-    _write_chile_fingerprints(actor_levels, vector_scores, tripwires_global)
+function refreshData() { loadAll(true); }
 
-    scan_time = round(time.time() - scan_start, 1)
+// =============================================
+// RENDER
+// =============================================
+function renderEverything() {
+    const t = T[currentLang] || T.en;
+    if (!scanData) return;
 
-    result = {
-        'success':                  True,
-        'country':                  'chile',
-        'composite_score':          composite_score,
-        'composite_level':          composite_level,
-        'theatre_level':            theatre_level,
-        'raw_theatre_level':        raw_theatre_level,           # NEW v1.1.0
-        'theatre_score':            theatre_score,
-        'theatre_label':            theatre_label,               # NEW v1.1.0
-        'source_class':             'absorber',                  # NEW v1.1.0
-        'l5_gate':                  l5_gate,                     # NEW v1.1.0
-        'l5_capped':                l5_capped,                   # NEW v1.1.0
-        'signal_text_short':        signal_text['short'],        # NEW v1.1.0
-        'signal_text_long':         signal_text['long'],         # NEW v1.1.0
-        'vector_scores':            vector_scores,
-        'vector_levels':            vector_levels,
-        'actor_summaries':          actor_summaries,
-        'tripwires_global':         tripwires_global,
-        'commodity_pressure':       commodity_pressure,
-        'crosstheater_amplifiers':  crosstheater_amplifiers,
-        'top_signals':              top_signals,
-        'executive_summary':        executive_summary,
-        'so_what':                  so_what,
-        'total_articles_scanned':   len(all_articles),
-        'rss_count':                len(rss_articles),
-        'gdelt_count':              len(gdelt_articles),
-        'newsapi_count':            len(newsapi_articles),
-        'brave_count':              len(brave_articles),
-        'scan_time_seconds':        scan_time,
-        'scanned_at':               datetime.now(timezone.utc).isoformat(),
-        'last_updated':             datetime.now(timezone.utc).isoformat(),
-        'cached':                   False,
-        'version':                  '1.1.0',                     # bumped per L5 contract retrofit
+    renderUpdatedBar();
+    renderComposite();
+    renderExecSummary();
+    renderTopSignals();
+    renderSoWhat();
+    renderVectors();
+    renderCommodityCoupling();
+    renderActors();
+    maybeShowPendingBanner();
+}
+
+function renderUpdatedBar() {
+    const t = T[currentLang] || T.en;
+    const bar = document.getElementById('updatedBar');
+    if (scanData && scanData.last_updated) {
+        const dt = new Date(scanData.last_updated);
+        const formatted = dt.toLocaleString(currentLang === 'pt' ? 'pt-BR' : currentLang === 'es' ? 'es' : 'en-US',
+                                              { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+        const tag = scanData.cached ? t.updated_cached : t.updated_live;
+        const stale = scanData.stale ? t.updated_stale : '';
+        bar.textContent = `${t.updated_prefix} ${formatted} UTC · ${tag}${stale}`;
+    }
+}
+
+function maybeShowPendingBanner() {
+    const banner = document.getElementById('pendingBanner');
+    const noData = !scanData || !scanData.total_articles_scanned || scanData.total_articles_scanned === 0;
+    banner.style.display = noData ? 'block' : 'none';
+}
+
+function renderComposite() {
+    const t = T[currentLang] || T.en;
+    document.getElementById('compositeScore').textContent = (scanData.composite_score || 0).toFixed(1);
+    setPill('compositeLevel', scanData.composite_level || 'low');
+
+    const vs = scanData.vector_scores || {};
+    const vl = scanData.vector_levels || {};
+    document.getElementById('vecDomesticScore').textContent = (vs.domestic_stability || 0).toFixed(1);
+    setPill('vecDomesticLevel', vl.domestic_stability || 'low');
+    document.getElementById('vecResourceScore').textContent = (vs.resource_sector || 0).toFixed(1);
+    setPill('vecResourceLevel', vl.resource_sector || 'low');
+    document.getElementById('vecUsScore').textContent = (vs.us_alignment || 0).toFixed(1);
+    setPill('vecUsLevel', vl.us_alignment || 'low');
+    document.getElementById('vecChinaScore').textContent = (vs.china_alignment || 0).toFixed(1);
+    setPill('vecChinaLevel', vl.china_alignment || 'low');
+}
+
+function setPill(elemId, level) {
+    const t = T[currentLang] || T.en;
+    const el = document.getElementById(elemId);
+    if (!el) return;
+    el.className = 'level-pill level-' + (level || 'low');
+    el.textContent = t['level_' + (level || 'low')] || level;
+}
+
+function renderExecSummary() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('execSummary');
+    const summary = scanData.executive_summary;
+    if (!summary) {
+        card.innerHTML = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
+        return;
+    }
+    card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
+}
+
+function renderTopSignals() {
+    const t = T[currentLang] || T.en;
+    const grid = document.getElementById('topSignalsGrid');
+    const signals = scanData.top_signals || [];
+    if (!signals.length) {
+        grid.innerHTML = `<div class="empty-state">${escapeHtml(t.loading)}</div>`;
+        return;
     }
 
-    save_cache(result)
+    let html = '';
+    signals.forEach(sig => {
+        const level = sig.level || 'low';
+        const type = sig.type || 'actor_signal';
+        const typeLabel = t['type_' + type] || type;
+        let sourcesHtml = '';
+        if (sig.sources && sig.sources.length) {
+            sourcesHtml = '<div class="signal-sources">';
+            sig.sources.forEach(src => {
+                const url = src.url || '#';
+                const linkOpen = url && url !== '#' ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">` : '';
+                const linkClose = url && url !== '#' ? '</a>' : '';
+                sourcesHtml += `
+                    <div class="signal-source-row">
+                        ${linkOpen}${escapeHtml(src.title || '')}${linkClose}
+                        <span style="color:var(--text-muted)"> — ${escapeHtml(src.source || '')}</span>
+                    </div>`;
+            });
+            sourcesHtml += '</div>';
+        }
 
-    # ── Canonical history snapshot (May 22 2026 reconciled schema) ──
-    # Universal fields read by wha_regional_bluf.prose_v2:
-    #   theatre_level, theatre_score, scanned_at, red_lines_count
-    # Plus Chile-specific vector levels.
-    try:
-        _redis_lpush_trim(HISTORY_KEY, {
-            'theatre_level':       theatre_level,
-            'theatre_score':       theatre_score,
-            'scanned_at':          result.get('scanned_at') or datetime.now(timezone.utc).isoformat(),
-            'red_lines_count':     len(tripwires_global),
-            'domestic_stability':  vector_levels.get('domestic_stability'),
-            'resource_sector':     vector_levels.get('resource_sector'),
-            'us_alignment':        vector_levels.get('us_alignment'),
-            'china_alignment':     vector_levels.get('china_alignment'),
-        }, max_len=336)
-    except Exception as e:
-        print(f"[Chile Rhetoric] History snapshot write failed: {e}")
+        html += `
+            <div class="signal-card level-${level}">
+                <div class="signal-meta-row">
+                    <span class="signal-type-pill t-${type}">${escapeHtml(typeLabel)}</span>
+                    <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
+                </div>
+                <div class="signal-short">${escapeHtml(sig.short_text || '')}</div>
+                <div class="signal-long">${escapeHtml(sig.long_text || '')}</div>
+                ${sourcesHtml}
+            </div>`;
+    });
+    grid.innerHTML = html;
+}
 
-    print(f"[Chile Rhetoric] ✅ Scan complete: composite={composite_score} ({composite_level}), "
-          f"{len(all_articles)} articles, {scan_time}s")
-    return result
+function renderSoWhat() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('soWhatCard');
+    const bullets = scanData.so_what || [];
+    if (!bullets.length) {
+        card.innerHTML = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
+        return;
+    }
+    let html = '<ul class="so-what-list">';
+    bullets.forEach(b => {
+        html += `<li class="so-what-item"><span class="so-what-bullet">▸</span><span>${escapeHtml(b.bullet || '')}</span></li>`;
+    });
+    html += '</ul>';
+    card.innerHTML = html;
+}
 
+function renderVectors() {
+    const t = T[currentLang] || T.en;
+    const grid = document.getElementById('vectorGrid');
+    const vs = scanData.vector_scores || {};
+    const vl = scanData.vector_levels || {};
+    const actors = scanData.actor_summaries || {};
 
-# ============================================
-# BACKGROUND REFRESH
-# ============================================
-def _background_refresh_loop():
-    """Refresh every 12h. 90s warm-up so backend boot completes first."""
-    time.sleep(90)
-    while True:
-        try:
-            print("[Chile Rhetoric] Background refresh starting...")
-            scan_chile_rhetoric(force=True)
-        except Exception as e:
-            print(f"[Chile Rhetoric] Background refresh error: {str(e)[:200]}")
-        time.sleep(SCAN_INTERVAL_HOURS * 3600)
+    const vectorMembers = {
+        'domestic_stability': ['presidency', 'cancilleria', 'mapuche_conflict', 'constitutional_politics'],
+        'resource_sector':    ['mining_sector'],
+        'us_alignment':       ['us_chile'],
+        'china_alignment':    ['china_chile'],
+    };
+    const vectorLabels = {
+        'domestic_stability': t.vec_domestic,
+        'resource_sector':    t.vec_resource,
+        'us_alignment':       t.vec_us,
+        'china_alignment':    t.vec_china,
+    };
 
+    let html = '';
+    Object.entries(vectorMembers).forEach(([vid, members]) => {
+        const memberNames = members.map(a => (actors[a] && actors[a].name) || a).join(', ');
+        const score = (vs[vid] || 0).toFixed(1);
+        const level = vl[vid] || 'low';
+        html += `
+            <div class="vector-card">
+                <div class="vector-name">${escapeHtml(vectorLabels[vid] || vid)}</div>
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span style="font-size:1.4rem; font-weight:700; color:var(--accent-cyan);">${score}</span>
+                    <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
+                </div>
+                <div class="vector-actors">${escapeHtml(memberNames)}</div>
+            </div>`;
+    });
+    grid.innerHTML = html;
+}
 
-def _start_background_refresh():
-    t = threading.Thread(target=_background_refresh_loop,
-                         daemon=True, name='ChileRhetoricBG')
-    t.start()
-    print("[Chile Rhetoric] ✅ Background refresh worker started (12h cadence)")
+function renderCommodityCoupling() {
+    const section = document.getElementById('commoditySection');
+    const cards = document.getElementById('commodityCards');
+    const pressure = scanData.commodity_pressure || {};
+    const keys = Object.keys(pressure);
+    if (!keys.length) {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = 'block';
 
+    let html = '';
+    keys.forEach(commodity => {
+        const risk = pressure[commodity] || {};
+        const role = risk.role || '';
+        const rank = risk.rank ? ` (#${risk.rank})` : '';
+        const alert = risk.alert_level || 'normal';
+        const sigCount = risk.signal_count || 0;
+        const top = risk.top_signal || {};
+        const t = T[currentLang] || T.en;
+        html += `
+            <div class="commodity-card">
+                <div class="commodity-card-header">
+                    <span class="commodity-card-title">⛏️ ${escapeHtml(commodity)} — ${escapeHtml(role)}${rank}</span>
+                    <span class="level-pill level-${alert}">${escapeHtml(t['level_' + alert] || alert)}</span>
+                </div>
+                <div class="commodity-card-detail">
+                    ${sigCount} signals · weighted score ${risk.country_weighted_score || 0}
+                    ${top.title ? `<br><br>📰 <em>${escapeHtml(top.title)}</em> — ${escapeHtml(top.source || '')}` : ''}
+                </div>
+            </div>`;
+    });
+    cards.innerHTML = html;
+}
 
-# ============================================
-# FLASK ENDPOINTS
-# ============================================
-def register_chile_rhetoric_endpoints(app, start_background=True):
-    """Register Chile rhetoric endpoints. Call from app.py."""
+function renderActors() {
+    const t = T[currentLang] || T.en;
+    const grid = document.getElementById('actorGrid');
+    const actors = scanData.actor_summaries || {};
 
-    @app.route('/api/rhetoric/chile', methods=['GET', 'OPTIONS'])
-    def api_chile_rhetoric():
-        if request.method == 'OPTIONS':
-            return '', 200
-        try:
-            force = request.args.get('refresh', 'false').lower() == 'true'
-            data  = scan_chile_rhetoric(force=force)
-            return jsonify(data)
-        except Exception as e:
-            return jsonify({
-                'success': False,
-                'error':   str(e)[:200],
-                'country': 'chile',
-            }), 500
+    // Order: domestic first, then resource, then alignment
+    const actorOrder = ['presidency', 'cancilleria', 'mapuche_conflict', 'constitutional_politics', 'mining_sector', 'us_chile', 'china_chile'];
 
-    @app.route('/api/rhetoric/chile/debug', methods=['GET'])
-    def api_chile_rhetoric_debug():
-        cached = load_cache()
-        return jsonify({
-            'version':                '1.0.0',
-            'cache_key':              CACHE_KEY,
-            'cache_ttl_hours':        CACHE_TTL_HOURS,
-            'scan_interval_hours':    SCAN_INTERVAL_HOURS,
-            'actor_count':            len(ACTORS),
-            'vector_count':           len(VECTORS),
-            'rss_feed_count':         len(RSS_FEEDS),
-            'gdelt_query_count_en':   len(GDELT_QUERIES_EN),
-            'gdelt_query_count_es':   len(GDELT_QUERIES_ES),
-            'newsapi_configured':     bool(NEWSAPI_KEY),
-            'brave_configured':       bool(BRAVE_API_KEY),
-            'redis_configured':       bool(UPSTASH_REDIS_URL and UPSTASH_REDIS_TOKEN),
-            'interpreter_available':  INTERPRETER_AVAILABLE,
-            'commodity_proxy_url':    f"{WHA_BACKEND_SELF_URL}/api/wha/commodity-fingerprint/chile",
-            'sibling_tracker_keys':   list(SIBLING_TRACKER_KEYS.values()),
-            'cache_status': {
-                'has_cache':    bool(cached),
-                'cache_fresh':  is_cache_fresh(cached) if cached else False,
-                'last_scan':    cached.get('scanned_at') if cached else None,
-                'composite':    cached.get('composite_score') if cached else None,
-                'composite_lv': cached.get('composite_level') if cached else None,
-            },
-        })
+    let html = '';
+    actorOrder.forEach(aid => {
+        const a = actors[aid];
+        if (!a) return;
+        const level = a.level || 'low';
+        const articles = a.top_articles || [];
+        let articlesHtml = '';
+        if (articles.length) {
+            articlesHtml = articles.map(art => {
+                const url = art.url || '#';
+                const linkOpen = url && url !== '#' ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">` : '';
+                const linkClose = url && url !== '#' ? '</a>' : '';
+                const lang = (art.language || '').toUpperCase();
+                return `
+                    <div class="actor-article-row">
+                        ${linkOpen}${escapeHtml(art.title || '')}${linkClose}
+                        <span class="article-source-tag">[${escapeHtml(art.source || '')}${lang ? ' · ' + escapeHtml(lang) : ''}]</span>
+                    </div>`;
+            }).join('');
+        } else {
+            articlesHtml = `<div class="actor-article-row"><em style="color:var(--text-muted)">${escapeHtml(t.actor_no_articles)}</em></div>`;
+        }
 
-    if start_background:
-        _start_background_refresh()
+        html += `
+            <div class="actor-card level-${level}">
+                <div class="actor-header">
+                    <div class="actor-title">
+                        <span class="actor-icon">${escapeHtml(a.icon || '📊')}</span>
+                        <span class="actor-name">${escapeHtml(a.name || aid)}</span>
+                    </div>
+                    <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
+                </div>
+                <div class="actor-role">${escapeHtml(a.role || '')}</div>
+                <div class="actor-stats">
+                    <div><span>${escapeHtml(t.actor_score)}:</span> <strong>${(a.score || 0).toFixed(1)}</strong></div>
+                    <div><span>${escapeHtml(t.actor_signals)}:</span> <strong>${a.article_count || 0}</strong></div>
+                    <div><span>${escapeHtml(t.actor_baseline)}:</span> <strong>${a.baseline || 0}/wk</strong></div>
+                </div>
+                <div class="actor-articles-toggle" onclick="toggleArticles('${aid}', this)">${escapeHtml(t.actor_show_articles)}</div>
+                <div class="actor-articles" id="articles-${aid}">
+                    ${articlesHtml}
+                </div>
+            </div>`;
+    });
+    grid.innerHTML = html;
+}
 
-    print("[Chile Rhetoric] ✅ Endpoints registered: /api/rhetoric/chile, /api/rhetoric/chile/debug")
+function toggleArticles(aid, toggleEl) {
+    const t = T[currentLang] || T.en;
+    const div = document.getElementById('articles-' + aid);
+    if (!div) return;
+    const isVisible = div.classList.toggle('visible');
+    toggleEl.textContent = isVisible ? t.actor_hide_articles : t.actor_show_articles;
+}
 
+// =============================================
+// HELPERS
+// =============================================
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
 
-print("[Chile Rhetoric] Module loaded.")
+// =============================================
+// INITIAL LOAD
+// =============================================
+// Set initial active language button
+document.querySelector(`.lang-btn[data-lang="${currentLang}"]`)?.classList.add('active');
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    if (btn.dataset.lang !== currentLang) btn.classList.remove('active');
+});
+loadAll(false);
+</script>
+
+</body>
+</html>
