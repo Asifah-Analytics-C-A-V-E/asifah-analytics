@@ -750,9 +750,27 @@
         @media (max-width: 600px) {
             .composite-strip { grid-template-columns: 1fr; }
         }
+
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--bg-card, #0d1b2e); border: 1px solid var(--border-color, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100vh; max-height: 100vh;
+                width: 264px; overflow-y: auto; margin: 0; padding: 56px 14px 24px;
+                background: var(--bg-card, #0d1b2e); border-right: 1px solid var(--border-color, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .sidebar.open { transform: translateX(0); }
+        }
     </style>
 </head>
 <body data-theme="dark">
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
 <div class="watermark"></div>
 
@@ -794,7 +812,7 @@
 <div class="main-layout">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="navSidebar">
         <div class="sidebar-section">
             <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
             <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
@@ -810,6 +828,7 @@
             <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
             <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
             <a href="gpi.html" class="sidebar-link crosscut" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
+            <a href="market-watch.html" class="sidebar-link crosscut" data-i18n="sb_market">📈 Market Watch</a>
         </div>
 
         <div class="sidebar-divider"></div>
@@ -820,14 +839,6 @@
             <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
             <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
             <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_peru">PERU PAGES</div>
-            <a href="rhetoric-peru.html" class="sidebar-link rhetoric" data-i18n="sb_peru_rhetoric">💬 Peru Rhetoric</a>
-            <a href="peru-stability.html" class="sidebar-link" data-i18n="sb_peru_stability">📊 Peru Stability</a>
         </div>
 
         <div class="sidebar-divider"></div>
@@ -940,41 +951,16 @@
 </div>
 
 <!-- FOOTER (canonical Asifah pattern) -->
-<footer style="background:var(--bg-card, #0d1b2e); border:1px solid var(--border-color, #1e3a5f); border-radius:12px; padding:30px; margin:30px auto; max-width:1800px; font-size:13px; color:var(--text-secondary, #93c5fd);">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:20px;">
-        <div>
-            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_sources">DATA SOURCES</h4>
-            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_sources_text">La Tercera, El Mercurio (Emol), BioBioChile, Cooperativa (native Spanish RSS); Reuters Americas; GDELT (English + Spanish queries); NewsAPI; Brave Search fallback. Cross-tracker fingerprints from commodity tracker (copper + lithium supply-risk).</p>
-        </div>
-        <div>
-            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_method">METHODOLOGY</h4>
-            <p style="font-size:12px; line-height:1.5;" data-i18n="ftr_method_text">7-actor frame: Presidency, Cancillería, Mining sector, Mapuche conflict, Constitutional politics, US-Chile bilateral, China-Chile/lithium. 4-vector composite score: Domestic Stability, Resource-Sector Politics, US Alignment, China Alignment. Tripwire system flags low-base-rate high-impact events. Scan refreshes every 12 hours.</p>
-        </div>
-        <div>
-            <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_connected">CONNECTED TRACKERS</h4>
-            <p style="font-size:12px; line-height:1.5;">
-                <a href="commodities.html" style="color:#38bdf8; text-decoration:none;">🌾 Commodities</a> ·
-                <a href="chile-stability.html" style="color:#38bdf8; text-decoration:none;">📊 Chile Stability</a> ·
-                <a href="rhetoric-wha.html" style="color:#38bdf8; text-decoration:none;">💬 WHA Rhetoric</a> ·
-                <a href="gpi.html" style="color:#38bdf8; text-decoration:none;">🌐 GPI</a>
-            </p>
-        </div>
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — CHILE</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 12 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (La Tercera, El Mercurio/Emol, BioBioChile, Cooperativa, Reuters) · NewsAPI · Brave</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
     </div>
-    <div style="margin-top:20px; padding:14px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:8px; font-size:12px; line-height:1.5;">
-        <strong style="color:#f59e0b;" data-i18n="ftr_disclaimer_label">⚠️ DISCLAIMER</strong> &mdash;
-        <span data-i18n="ftr_disclaimer_text">This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.</span>
-    </div>
-    <div style="margin-top:20px; padding:14px 18px; background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.2); border-radius:8px; text-align:center; font-size:13px;">
-        <span data-i18n="ftr_coffee">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6; text-decoration:none; font-weight:bold;" data-i18n="ftr_coffee_link">buy me a coffee</a>
-    </div>
-    <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color,#1e3a5f); font-size:12px;">
-        <a href="privacy.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_privacy">Privacy Policy</a>
-        <span style="color:var(--text-muted,#4a7090); margin:0 12px;">|</span>
-        <a href="contact.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_contact">Contact</a>
-    </div>
-    <div style="text-align:center; margin-top:15px; font-size:11px; color:var(--text-muted,#4a7090);">
-        © 2025-2026 RCGG. All Rights Reserved. Asifah Chile Rhetoric Tracker v1.0.0 — Proprietary and Confidential.
-    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
 </footer>
 
 <script>
@@ -1010,6 +996,7 @@ const T = {
         sb_commodities: '🌾 Commodities Tracker',
         sb_military: '🪖 Military Tracker',
         sb_gpi: '🌐 Global Pressure Index',
+        sb_market: '📈 Market Watch',
         sb_rhetoric: 'RHETORIC LANDINGS',
         sb_rh_me: '💬 Middle East Rhetoric',
         sb_rh_asia: '💬 Asia Rhetoric',
@@ -1106,6 +1093,7 @@ const T = {
         sb_commodities: '🌾 Rastreador de Commodities',
         sb_military: '🪖 Rastreador Militar',
         sb_gpi: '🌐 Índice de Presión Global',
+        sb_market: '📈 Monitor de Mercados',
         sb_rhetoric: 'PÁGINAS DE RETÓRICA',
         sb_rh_me: '💬 Retórica Medio Oriente',
         sb_rh_asia: '💬 Retórica Asia',
@@ -1195,6 +1183,7 @@ const T = {
         sb_commodities: '🌾 Rastreador de Commodities',
         sb_military: '🪖 Rastreador Militar',
         sb_gpi: '🌐 Índice de Pressão Global',
+        sb_market: '📈 Monitor de Mercado',
         sb_rhetoric: 'PÁGINAS DE RETÓRICA',
         sb_rh_me: '💬 Retórica Oriente Médio',
         sb_rh_asia: '💬 Retórica Ásia',
@@ -1657,6 +1646,28 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
     if (btn.dataset.lang !== currentLang) btn.classList.remove('active');
 });
 loadAll(false);
+
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
 </script>
 
 </body>
