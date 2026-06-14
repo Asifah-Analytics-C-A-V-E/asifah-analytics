@@ -57,7 +57,7 @@
         width: 110vmin; height: 110vmin;
         min-width: 800px; min-height: 800px;
         max-width: 1400px; max-height: 1400px;
-        background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
         background-size: contain; background-repeat: no-repeat; background-position: center;
         opacity: var(--watermark-opacity); filter: var(--watermark-filter);
         z-index: 0; pointer-events: none; user-select: none;
@@ -135,7 +135,43 @@
     .nav-btn.rhetoric-btn .nav-btn-status { color: #f97316; }
     .nav-btn.military-btn { border-color: rgba(100,116,139,0.35); background: linear-gradient(135deg, rgba(100,116,139,0.07) 0%, rgba(51,65,85,0.04) 100%); }
     .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
-    @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+    /* RUMINT pill -- deliberately NOT in the L0-L5 threat palette */
+    .rumint-pill { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px; border: 1px solid #64748b; background: rgba(15,23,42,0.35); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; cursor: help; }
+    /* ── Canonical mobile drawer (Jun 2026 retrofit) ── */
+    .mobile-hamburger { display: none; }
+    .mobile-drawer-backdrop { display: none; }
+    @media (max-width: 1199px) {
+        .page-with-sidebar { display: block; }
+        .mobile-hamburger {
+            display: flex; position: fixed; top: 16px; left: 16px;
+            width: 44px; height: 44px;
+            background: var(--card-bg, #0d1b2e);
+            border: 1px solid var(--card-border, #1e3a5f);
+            border-radius: 8px; cursor: pointer; z-index: 1001;
+            align-items: center; justify-content: center;
+            font-size: 22px; color: var(--text-primary, #e2f0fb);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-family: monospace;
+        }
+        .mobile-hamburger:active { transform: scale(0.95); }
+        .nav-sidebar {
+            display: flex; position: fixed; top: 0; left: 0;
+            width: min(82vw, 280px); max-width: 280px; height: 100dvh;
+            background: var(--card-bg, #0d1b2e);
+            border-right: 1px solid var(--card-border, #1e3a5f);
+            padding: 70px 12px 20px 12px; overflow-y: auto;
+            z-index: 1000; transform: translateX(-105%);
+            transition: transform 0.25s ease-in-out;
+            box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+        }
+        .nav-sidebar.open { transform: translateX(0); }
+        .mobile-drawer-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 999; backdrop-filter: blur(2px);
+        }
+        .mobile-drawer-backdrop.open { display: block; }
+    }
 
     /* ── SECTION CARDS ── */
     .section-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: var(--card-glow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
@@ -310,10 +346,13 @@
 </head>
 <body>
 <div class="container">
+<!-- ── Mobile drawer (hamburger + backdrop, inside .container for stacking) ── -->
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
 
 <!-- ── HEADER ── -->
 <header>
-    <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+    <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
     <div class="header-left">
         <a href="greenland.html" class="back-link" data-i18n="backLink">← Back to Greenland Stability</a>
         <div class="theme-row">
@@ -348,65 +387,33 @@
 <div class="page-with-sidebar">
 
 <!-- ── LEFT NAV SIDEBAR ── -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <div class="nav-btn inactive-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">🔒 Future</span>
-    </div>
-    <a href="asia.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="europe.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Europe</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="wha.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌎 W. Hemisphere</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <div class="nav-sidebar-label" style="margin-top:4px;">Rhetoric Trackers</div>
-    <a href="https://www.asifahanalytics.com/rhetoric-index.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 ME Rhetoric</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
-        <span class="nav-btn-label">📡 Asia Rhetoric</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn current-page">
-        <span class="nav-btn-label">📡 Europe Rhetoric</span>
-        <span class="nav-btn-status">◉ You are here</span>
-    </a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn inactive-nav">
-        <span class="nav-btn-label">📡 WHA Rhetoric</span>
-        <span class="nav-btn-status">🔒 Coming Soon</span>
-    </a>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
-    <div class="nav-sidebar-label" style="margin-top:4px;">Europe Countries</div>
-    <a href="rhetoric-greenland.html" class="nav-btn active-nav current-page">
-        <span class="nav-btn-label">🇬🇱 Greenland</span>
-        <span class="nav-btn-status">◉ This page</span>
-    </a>
-    <div class="nav-btn inactive-nav">
-        <span class="nav-btn-label">🇺🇦 Ukraine</span>
-        <span class="nav-btn-status">🔒 Coming Soon</span>
-    </div>
-    <div class="nav-btn inactive-nav">
-        <span class="nav-btn-label">🇷🇺 Russia</span>
-        <span class="nav-btn-status">🔒 Coming Soon</span>
-    </div>
+    <div class="nav-sidebar-label">Europe Countries</div>
+    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇧🇾 Belarus</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🇬🇱 Greenland</span><span class="nav-btn-status">◉ You are here</span></a>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Hungary</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-russia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇷🇺 Russia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Turkey</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Ukraine</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <!-- ── MAIN CONTENT ── -->
@@ -418,6 +425,7 @@
         <div class="theatre-score-big" id="theatreScore">--</div>
         <div class="theatre-score-label" data-i18n="scoreLabel">SOVEREIGNTY PRESSURE SCORE / 100</div>
         <div class="theatre-badge" id="theatreBadge" style="background:#6b7280;">--</div>
+        <div class="rumint-pill" id="rumintPill" style="display:none;"></div>
     </div>
     <div class="theatre-right">
         <div class="theatre-escalation-label-text" data-i18n="escalationLabel">SOVEREIGNTY CRISIS LEVEL</div>
@@ -693,6 +701,22 @@
     }
 
     // ── THEATRE BANNER ──
+    function renderRumint(data) {
+        // RUMINT rides ALONGSIDE the threat level -- it never moves the score.
+        // Hidden entirely when 'off' (absence stays honest).
+        const pill = document.getElementById('rumintPill');
+        if (!pill) return;
+        const r = data.rumint || (data.interpretation && data.interpretation.rumint) || null;
+        if (!r || !r.active || r.band === 'off') { pill.style.display = 'none'; return; }
+        const COLORS = { watch: '#64748b', active: '#38bdf8', corroborated: '#f59e0b' };
+        const c = COLORS[r.band] || '#64748b';
+        pill.textContent = '\uD83D\uDD75\uFE0F RUMINT: ' + (r.label || '');
+        pill.style.color = c;
+        pill.style.borderColor = c;
+        pill.title = r.driver || '';
+        pill.style.display = 'inline-block';
+    }
+
     function renderTheatre(data) {
         const level  = data.theatre_level || 0;
         const lv     = ESCALATION_LEVELS[level] || ESCALATION_LEVELS[0];
@@ -1048,6 +1072,7 @@
     function renderAll(data) {
         currentData = data;
         renderTheatre(data);
+        renderRumint(data);
         renderConvergence(data);
         renderInterpretation(data);
         renderActors(data.actors || {});
@@ -1116,6 +1141,25 @@
         setLanguage('en');
         loadRhetoricData();
     });
+</script>
+<script>
+// ── Canonical mobile drawer JS (Jun 2026 retrofit) ──
+function toggleMobileDrawer() {
+    const a = document.getElementById('navSidebar');
+    const b = document.getElementById('mobileDrawerBackdrop');
+    if (!a || !b) return;
+    if (a.classList.contains('open')) { closeMobileDrawer(); return; }
+    a.classList.add('open'); b.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileDrawer() {
+    const a = document.getElementById('navSidebar');
+    const b = document.getElementById('mobileDrawerBackdrop');
+    if (a) a.classList.remove('open');
+    if (b) b.classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
 </script>
 </body>
 </html>
