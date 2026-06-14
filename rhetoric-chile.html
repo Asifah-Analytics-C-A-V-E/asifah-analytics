@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Chile Rhetoric Tracker | Asifah Analytics</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
@@ -77,7 +77,7 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 700px; height: 700px;
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -127,6 +127,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
         }
         .header-logo { height: 50px; width: auto; }
         .header-right-controls { display: flex; gap: 12px; align-items: center; }
@@ -143,7 +147,7 @@
             transition: all 0.2s;
         }
         .home-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-        .header-row-2 { text-align: center; margin-bottom: 10px; }
+        .header-row-2 { text-align: center; margin-bottom: 10px; max-width: 1800px; margin-left: auto; margin-right: auto; }
         .header-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -163,6 +167,10 @@
             gap: 16px;
             align-items: center;
             flex-wrap: wrap;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
         }
         .lang-toggle {
             display: flex;
@@ -423,6 +431,61 @@
             font-size: 1rem;
             color: var(--accent-orange);
             line-height: 1.4;
+        }
+        /* Alignment-drift factor block (BRI inroad read) */
+        .drift-block {
+            background: var(--bg-signal);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-orange);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+        .drift-band-row { margin-bottom: 10px; }
+        .drift-band-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+        .drift-sowhat {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        .drift-li-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+        .drift-li-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+        .drift-li-list li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            padding: 4px 0 4px 18px;
+            position: relative;
+        }
+        .drift-li-list li::before {
+            content: '\25B8';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+        .drift-disclaimer {
+            font-size: 0.75rem;
+            line-height: 1.45;
+            color: var(--text-muted);
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin: 0;
         }
 
         /* Top signals */
@@ -706,7 +769,7 @@
 <header class="header">
     <div class="header-row-1">
         <a href="index.html">
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
         </a>
         <div class="header-right-controls">
             <a href="chile-stability.html" class="home-btn" data-i18n="back_to_stability">← CHILE STABILITY</a>
@@ -827,6 +890,16 @@
             <p class="empty-state" data-i18n="loading">Loading...</p>
         </div>
 
+        <!-- SO WHAT (lead: alignment-drift factor) -->
+        <div class="section-header">
+            <span class="section-icon">🎯</span>
+            <span class="section-title" data-i18n="sec_so_what">So What Factor</span>
+            <span class="section-desc" data-i18n="sec_so_what_desc">Strategic implications for the next 7-14 days</span>
+        </div>
+        <div class="so-what" id="soWhatCard">
+            <p class="empty-state" data-i18n="loading">Loading...</p>
+        </div>
+
         <!-- TOP SIGNALS -->
         <div class="section-header">
             <span class="section-icon">⚡</span>
@@ -835,16 +908,6 @@
         </div>
         <div class="top-signals-grid" id="topSignalsGrid">
             <div class="empty-state" data-i18n="loading">Loading...</div>
-        </div>
-
-        <!-- SO WHAT -->
-        <div class="section-header">
-            <span class="section-icon">🎯</span>
-            <span class="section-title" data-i18n="sec_so_what">So What Factor</span>
-            <span class="section-desc" data-i18n="sec_so_what_desc">Strategic implications for the next 7-14 days</span>
-        </div>
-        <div class="so-what" id="soWhatCard">
-            <p class="empty-state" data-i18n="loading">Loading...</p>
         </div>
 
         <!-- VECTOR BREAKDOWN -->
@@ -976,6 +1039,8 @@ const T = {
         sec_signals_desc: 'Tripwires, convergence, commodity coupling, cross-theater',
         sec_so_what: 'So What Factor',
         sec_so_what_desc: 'Strategic implications for the next 7-14 days',
+        drift_label: 'Alignment Drift',
+        leading_indicators: 'Leading Indicators',
         sec_vectors: 'Vector Breakdown',
         sec_vectors_desc: '4 analytical vectors — composition + scoring',
         sec_commodity: 'Commodity Coupling',
@@ -1068,6 +1133,8 @@ const T = {
         sec_signals_desc: 'Disparadores, convergencia, acoplamiento de commodities, multi-teatro',
         sec_so_what: 'Factor "Y Qué"',
         sec_so_what_desc: 'Implicaciones estratégicas para los próximos 7-14 días',
+        drift_label: 'Deriva de Alineación',
+        leading_indicators: 'Indicadores Adelantados',
         sec_vectors: 'Desglose por Vector',
         sec_vectors_desc: '4 vectores analíticos — composición + puntuación',
         sec_commodity: 'Acoplamiento de Commodities',
@@ -1155,6 +1222,8 @@ const T = {
         sec_signals_desc: 'Gatilhos, convergência, acoplamento de commodities, multi-teatro',
         sec_so_what: 'Fator "E Daí"',
         sec_so_what_desc: 'Implicações estratégicas para os próximos 7-14 dias',
+        drift_label: 'Deriva de Alinhamento',
+        leading_indicators: 'Indicadores Antecedentes',
         sec_vectors: 'Detalhamento por Vetor',
         sec_vectors_desc: '4 vetores analíticos — composição + pontuação',
         sec_commodity: 'Acoplamento de Commodities',
@@ -1396,15 +1465,41 @@ function renderSoWhat() {
     const t = T[currentLang] || T.en;
     const card = document.getElementById('soWhatCard');
     const bullets = scanData.so_what || [];
-    if (!bullets.length) {
-        card.innerHTML = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
-        return;
+    const drift = scanData.alignment_drift || null;
+    const em = s => (s || '').replace(/--/g, '\u2014');
+    let html = '';
+
+    // Lead: great-power alignment-drift factor (BRI inroad read)
+    if (drift && drift.band) {
+        const bc = drift.color || 'var(--accent-orange)';
+        html += `<div class="drift-block" style="border-left-color:${escapeHtml(bc)};">`;
+        html += `<div class="drift-band-row"><span class="drift-band-badge" style="background:${escapeHtml(bc)}22; color:${escapeHtml(bc)}; border:1px solid ${escapeHtml(bc)};">${escapeHtml(t.drift_label || 'Alignment Drift')}: ${escapeHtml(drift.band)}</span></div>`;
+        html += `<p class="drift-sowhat">${escapeHtml(em(drift.so_what_factor || ''))}</p>`;
+        if (drift.leading_indicators && drift.leading_indicators.length) {
+            html += `<div class="drift-li-header">${escapeHtml(t.leading_indicators || 'Leading Indicators')}</div>`;
+            html += '<ul class="drift-li-list">';
+            drift.leading_indicators.forEach(li => {
+                html += `<li>${escapeHtml(em(li))}</li>`;
+            });
+            html += '</ul>';
+        }
+        if (drift.disclaimer) {
+            html += `<p class="drift-disclaimer">${escapeHtml(em(drift.disclaimer))}</p>`;
+        }
+        html += '</div>';
     }
-    let html = '<ul class="so-what-list">';
-    bullets.forEach(b => {
-        html += `<li class="so-what-item"><span class="so-what-bullet">▸</span><span>${escapeHtml(b.bullet || '')}</span></li>`;
-    });
-    html += '</ul>';
+
+    // Remaining strategic bullets (exclude the alignment-drift lead bullet to avoid duplication)
+    const others = bullets.filter(b => !(b.bullet || '').toUpperCase().startsWith('ALIGNMENT DRIFT'));
+    if (others.length) {
+        html += '<ul class="so-what-list">';
+        others.forEach(b => {
+            html += `<li class="so-what-item"><span class="so-what-bullet">\u25B8</span><span>${escapeHtml(em(b.bullet || ''))}</span></li>`;
+        });
+        html += '</ul>';
+    }
+
+    if (!html) html = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
     card.innerHTML = html;
 }
 
