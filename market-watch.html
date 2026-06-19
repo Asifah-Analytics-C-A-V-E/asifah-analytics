@@ -79,10 +79,15 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 .subtitle { font-size: 15px; opacity: 0.95; letter-spacing: 1px; }
 .last-updated { font-size: 12px; opacity: 0.85; margin-top: 8px; font-family: 'Courier New', monospace; }
 .header-controls { position: absolute; top: 18px; right: 22px; display: flex; gap: 10px; align-items: center; }
-.theme-toggle { display: flex; align-items: center; gap: 6px; color: white; font-size: 12px; cursor: pointer; }
-.theme-toggle input { width: 36px; height: 20px; appearance: none; background: rgba(255,255,255,0.2); border-radius: 10px; position: relative; cursor: pointer; }
-.theme-toggle input::after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
-.theme-toggle input:checked::after { left: 18px; }
+/* Sun/Moon light-dark toggle (header) */
+.theme-toggle { position: relative; width: 60px; height: 28px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.15); cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: space-between; }
+.theme-toggle:hover { background: rgba(255,255,255,0.25); }
+.theme-toggle .tt-track-icon { font-size: 12px; line-height: 1; opacity: 0.6; pointer-events: none; }
+.theme-toggle .tt-sun  { margin-left: 7px; }
+.theme-toggle .tt-moon { margin-right: 7px; }
+.theme-toggle .tt-knob { position: absolute; top: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.45); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1; transition: left 0.25s ease; }
+.theme-toggle.is-dark  .tt-knob { left: 34px; }
+.theme-toggle.is-light .tt-knob { left: 2px; }
 .home-btn { display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: white; text-decoration: none; font-size: 13px; font-weight: bold; position: absolute; top: 18px; left: 22px; }
 .home-btn:hover { background: rgba(255,255,255,0.3); }
 
@@ -157,6 +162,36 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 .sim-pct { font-family: 'Courier New', monospace; font-weight: 700; font-size: 15px; min-width: 52px; }
 .disclaimer-strip { margin-top: 16px; padding: 12px 14px; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.22); border-radius: 8px; font-size: 11.5px; line-height: 1.5; color: var(--text-secondary); }
 .disclaimer-strip strong { color: #ef4444; }
+
+.reprice-theater { border: 1px solid var(--card-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; background: var(--article-bg); border-left: 4px solid var(--text-muted); }
+.reprice-theater.state-offramp_contradicted { border-left-color: #f59e0b; }
+.reprice-theater.state-escalation_repricing { border-left-color: #ef4444; }
+.reprice-theater.state-offramp_corroborated { border-left-color: #22c55e; }
+.reprice-theater.state-calm_repricing       { border-left-color: #22c55e; }
+.reprice-theater.state-offramp_market_mixed  { border-left-color: #eab308; }
+.reprice-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.reprice-flag { font-size: 18px; }
+.reprice-name { font-weight: 800; font-size: 14px; letter-spacing: 0.5px; }
+.reprice-state-pill { font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 3px 12px; border-radius: 999px; text-transform: uppercase; margin-left: auto; }
+.rs-good { background: rgba(34,197,94,0.18); color: #22c55e; border: 1px solid rgba(34,197,94,0.4); }
+.rs-warn { background: rgba(245,158,11,0.18); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); }
+.rs-bad  { background: rgba(239,68,68,0.18); color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.rs-mut  { background: rgba(107,114,128,0.15); color: var(--text-muted); border: 1px solid rgba(107,114,128,0.3); }
+.reprice-prose { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 12px; }
+.reprice-instruments { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.reprice-ins { font-family: 'Courier New', monospace; font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--card-border); display: inline-flex; gap: 6px; align-items: center; }
+.reprice-ins .ri-name { color: var(--text-secondary); }
+.reprice-ins .ri-chg { font-weight: 700; }
+.reprice-ins.vote-peace      { background: rgba(34,197,94,0.10);  border-color: rgba(34,197,94,0.35); }
+.reprice-ins.vote-peace .ri-chg      { color: #22c55e; }
+.reprice-ins.vote-escalation { background: rgba(239,68,68,0.10);  border-color: rgba(239,68,68,0.35); }
+.reprice-ins.vote-escalation .ri-chg { color: #ef4444; }
+.reprice-ins.vote-flat       { opacity: 0.75; }
+.reprice-ins.vote-unavailable { opacity: 0.45; font-style: italic; }
+.reprice-analog { font-size: 12px; font-style: italic; color: var(--text-muted); padding: 8px 12px; background: rgba(56,189,248,0.05); border-left: 3px solid var(--accent); border-radius: 6px; margin-bottom: 10px; }
+.reprice-drill { font-size: 12px; font-weight: 700; color: var(--accent); text-decoration: none; }
+.reprice-drill:hover { text-decoration: underline; }
+.reprice-drill + .reprice-drill { margin-left: 14px; }
 
 /* ── REGIONAL BOARD ── */
 .region-block { margin-bottom: 22px; }
@@ -369,7 +404,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
             <span style="font-size:20px;">&#9776;</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;">Menu</span>
         </button>
         <div class="header-controls">
-            <label class="theme-toggle"><span>Theme</span><input type="checkbox" id="themeToggle" onchange="toggleTheme()" checked></label>
+            <button class="theme-toggle is-dark" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light or dark mode" title="Toggle light / dark mode"><span class="tt-track-icon tt-sun">&#9728;&#65039;</span><span class="tt-track-icon tt-moon">&#127769;</span><span class="tt-knob" id="themeKnob">&#127769;</span></button>
         </div>
         <h1>📈 MARKET WATCH</h1>
         <div class="subtitle">Global Markets Board &amp; Bubble-Fragility Convergence</div>
@@ -444,8 +479,25 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                 <div id="similarityMatches"><div class="nyse-empty-state">Loading similarity matches…</div></div>
 
                 <div class="disclaimer-strip" id="disclaimerStrip">
-                    <strong>⚠️ FRAGILITY INDICATOR, NOT A FORECAST</strong> — loading disclaimer…
+                    <strong>⚠️ CONVERGENCE READ, NOT A FORECAST</strong> — loading disclaimer…
                 </div>
+            </div>
+
+            <!-- ══ CONFLICT REPRICING ══ -->
+            <div class="fragility-card" id="repricingCard">
+                <div class="fragility-top">
+                    <div>
+                        <div class="fragility-title">📊 Conflict Repricing</div>
+                        <div class="fragility-sub">Is informed capital pricing each diplomatic off-ramp as durable? · coherence across four instruments vs the rhetoric off-ramp · updated every 6h</div>
+                    </div>
+                </div>
+                <div class="fragility-frame">
+                    Where fragility asks how dry the forest is, this asks whether the market believes the
+                    ceasefire — it reads the tape against the diplomatic track. The marquee case is the
+                    contradiction: rhetoric signalling an off-ramp while the tape refuses to price it as durable.
+                </div>
+                <div id="repricingTheaters"><div class="nyse-empty-state">Loading repricing read…</div></div>
+                <div class="disclaimer-strip" id="repricingDisclaimer" style="display:none;"></div>
             </div>
 
             <!-- ══ REGIONAL MARKETS BOARD ══ -->
@@ -543,6 +595,26 @@ const PULSES = [
 
 const tierColor = { stress: '#ef4444', warning: '#eab308', stable: '#22c55e', rally: '#38bdf8' };
 const _charts = {};
+
+// Cross-detector market state -- fragility + per-theater repricing feed one headline.
+const _marketState = { fragility: null, repricing: [] };
+
+// Conflict-repricing theaters surfaced on this page, each with its drill-down.
+const REPRICING_THEATERS = [
+    { theater: 'israel',         drill: 'rhetoric-iran.html',    drillLabel: 'Iran rhetoric tracker',    hub: 'rhetoric-index.html',  hubLabel: 'Middle East BLUF' },
+    { theater: 'europe_ukraine', drill: 'rhetoric-ukraine.html', drillLabel: 'Ukraine rhetoric tracker', hub: 'rhetoric-europe.html', hubLabel: 'Europe BLUF' },
+];
+
+// State -> display label + pill class + headline severity (loudest wins the banner).
+const REPRICE_STATE = {
+    offramp_corroborated: { label: 'Off-ramp corroborated', cls: 'rs-good', sev: 2 },
+    offramp_contradicted: { label: 'Off-ramp contradicted', cls: 'rs-warn', sev: 4 },
+    offramp_market_mixed: { label: 'Market mixed',          cls: 'rs-warn', sev: 1 },
+    escalation_repricing: { label: 'Escalation repricing',  cls: 'rs-bad',  sev: 4 },
+    calm_repricing:       { label: 'Calm repricing',        cls: 'rs-good', sev: 1 },
+    insufficient_data:    { label: 'Insufficient data',     cls: 'rs-mut',  sev: 0 },
+    no_read:              { label: 'No off-ramp read',      cls: 'rs-mut',  sev: 0 },
+};
 
 function esc(s){ if(s==null) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
 function el(id){ return document.getElementById(id); }
@@ -651,20 +723,11 @@ function renderFragility(d){
         }).join('');
     } else { sm.innerHTML='<div class="nyse-empty-state">No analogs above threshold.</div>'; }
 
-    if(d.disclaimer) el('disclaimerStrip').innerHTML = '<strong>⚠️ FRAGILITY INDICATOR, NOT A FORECAST</strong> — ' + esc(d.disclaimer);
+    if(d.disclaimer) el('disclaimerStrip').innerHTML = '<strong>⚠️ CONVERGENCE READ, NOT A FORECAST</strong> — ' + esc(d.disclaimer);
 
-    // Headline banner synthesis
-    const banner = el('headlineBanner');
-    banner.className = 'headline-banner band-'+band;
-    const bandWord = {normal:'calm',elevated:'elevated',high:'high',critical:'critical'}[band]||band;
-    el('headlineTitle').textContent = 'Global market fragility: ' + band.toUpperCase();
-    let prose = 'Endogenous market-fragility convergence reads <strong>'+bandWord+'</strong> at a composite of <strong>'+(d.composite!=null?d.composite:'—')+'</strong>';
-    if(d.active_features && d.active_features.length){
-        prose += ', driven by '+d.active_features.map(f=>esc(f.name.replace(/_/g,' '))).join(', ')+'.';
-    } else { prose += '.'; }
-    if(d.historical_lag_read){ prose += ' ' + esc(d.historical_lag_read); }
-    prose += ' <em>Fragility describes how dry the forest is, not whether lightning will strike.</em>';
-    el('headlineProse').innerHTML = prose;
+    // Feed the cross-detector headline (fragility + repricing pick the loudest read).
+    _marketState.fragility = d;
+    renderHeadline();
 
     if(d.last_updated){ el('lastUpdated').textContent = 'Detector as of ' + d.as_of_month + ' · fetched ' + new Date(d.last_updated).toLocaleString(); }
 }
@@ -708,11 +771,110 @@ async function loadBacktest(){
     } catch(e){ console.warn('[Market Watch] backtest failed:', e); }
 }
 
+// -- Conflict repricing: fetch both theaters, render, feed the headline --
+async function loadRepricing(){
+    const cards = [];
+    for(const t of REPRICING_THEATERS){
+        try {
+            const r = await fetch(ME_BACKEND + '/api/conflict-repricing/' + t.theater);
+            if(!r.ok) continue;
+            const d = await r.json();
+            if(d && d.success!==false){ d._meta = t; cards.push(d); }
+        } catch(e){ console.warn('[Market Watch] repricing failed:', t.theater, e); }
+    }
+    _marketState.repricing = cards;
+    renderRepricing(cards);
+    renderHeadline();
+}
+
+function renderRepricing(cards){
+    const wrap = el('repricingTheaters');
+    if(!cards.length){ wrap.innerHTML = '<div class="nyse-empty-state">Repricing detector warming up (cold cache can take 60-90s). Refresh shortly.</div>'; return; }
+    wrap.innerHTML = cards.map(d=>{
+        const st = REPRICE_STATE[d.state] || { label: d.state, cls: 'rs-mut' };
+        const instruments = (d.instruments||[]).map(ins=>{
+            const chg = (ins.change_pct!=null) ? ((ins.change_pct>=0?'+':'')+Number(ins.change_pct).toFixed(2)+'%') : '—';
+            const voteWord = ins.vote==='peace'?'off-ramp':ins.vote==='escalation'?'escalation':ins.vote;
+            return '<span class="reprice-ins vote-'+esc(ins.vote)+'"><span class="ri-name">'+esc(ins.name)+'</span><span class="ri-chg">'+esc(chg)+'</span><span style="opacity:0.7;">'+esc(voteWord)+'</span></span>';
+        }).join('');
+        const analog = d.episode_read ? '<div class="reprice-analog">'+esc(d.episode_read)+'</div>' : '';
+        const m = d._meta || {};
+        const drill = m.drill ? '<a class="reprice-drill" href="'+esc(m.drill)+'">Drill down: '+esc(m.drillLabel)+' &rarr;</a>' : '';
+        const hub   = m.hub ? '<a class="reprice-drill" href="'+esc(m.hub)+'">'+esc(m.hubLabel)+' &rarr;</a>' : '';
+        return '<div class="reprice-theater state-'+esc(d.state)+'">'
+            + '<div class="reprice-head"><span class="reprice-flag">'+esc(d.flag||'')+'</span>'
+            + '<span class="reprice-name">'+esc(d.display||d.theater)+'</span>'
+            + '<span class="reprice-state-pill '+st.cls+'">'+esc(st.label)+'</span></div>'
+            + '<div class="reprice-prose">'+esc(d.market_read||'')+'</div>'
+            + '<div class="reprice-instruments">'+instruments+'</div>'
+            + analog
+            + '<div>'+drill+hub+'</div>'
+            + '</div>';
+    }).join('');
+    const disc = (cards.find(c=>c && c.disclaimer) || {}).disclaimer || '';
+    if(disc){ const ds = el('repricingDisclaimer'); ds.style.display='block'; ds.innerHTML = '<strong>⚠️ CONVERGENCE READ, NOT A FORECAST</strong> — ' + esc(disc); }
+}
+
+// -- Cross-detector headline: whichever market read is loudest leads the banner --
+function _fragilityHeadline(d){
+    const band = d.band || 'normal';
+    const bandWord = {normal:'calm',elevated:'elevated',high:'high',critical:'critical'}[band]||band;
+    let prose = 'Endogenous market-fragility convergence reads <strong>'+bandWord+'</strong> at a composite of <strong>'+(d.composite!=null?d.composite:'—')+'</strong>';
+    if(d.active_features && d.active_features.length){
+        prose += ', driven by '+d.active_features.map(f=>esc(f.name.replace(/_/g,' '))).join(', ')+'.';
+    } else { prose += '.'; }
+    if(d.historical_lag_read){ prose += ' ' + esc(d.historical_lag_read); }
+    prose += ' <em>Fragility describes how dry the forest is, not whether lightning will strike.</em>';
+    return { band: band, sev: {normal:1,elevated:2,high:3,critical:4}[band]||0,
+             title: 'Global market fragility: ' + band.toUpperCase(), prose: prose };
+}
+
+function _repricingHeadline(d){
+    const st = REPRICE_STATE[d.state] || { sev: 0 };
+    const bandByState = { escalation_repricing:'critical', offramp_contradicted:'high',
+                          offramp_market_mixed:'elevated', offramp_corroborated:'normal',
+                          calm_repricing:'normal' };
+    const who = d.display || d.theater;
+    let title;
+    if(d.state==='offramp_contradicted'){ title = who + ': markets are not pricing the off-ramp as durable'; }
+    else if(d.state==='escalation_repricing'){ title = who + ': markets repricing war-risk — no off-ramp present'; }
+    else if(d.state==='offramp_corroborated'){ title = who + ': markets are pricing the off-ramp as durable'; }
+    else { title = who + ': market repricing read'; }
+    return { band: bandByState[d.state] || 'elevated', sev: st.sev || 0, title: title, prose: esc(d.market_read||'') };
+}
+
+function renderHeadline(){
+    const banner = el('headlineBanner');
+    const fr = _marketState.fragility;
+    const reps = _marketState.repricing || [];
+    const frH = fr ? _fragilityHeadline(fr) : null;
+    let repH = null;
+    reps.forEach(d=>{ const h = _repricingHeadline(d); if(!repH || h.sev > repH.sev) repH = h; });
+    if(!frH && !repH){ return; }
+    let lead, second;
+    if(frH && (!repH || frH.sev >= repH.sev)){ lead = frH; second = (repH && repH.sev>=3) ? repH : null; }
+    else { lead = repH; second = frH; }
+    banner.className = 'headline-banner band-'+lead.band;
+    el('headlineTitle').textContent = lead.title;
+    let prose = lead.prose;
+    if(second){ prose += ' <strong>Also:</strong> ' + (second===frH ? second.prose : second.title + '.'); }
+    el('headlineProse').innerHTML = prose;
+}
+
 // Theme + drawer (gpi canon)
+function applyThemeButton(mode){
+    const btn = el('themeToggle'); const knob = el('themeKnob');
+    if(!btn) return;
+    btn.classList.toggle('is-dark', mode==='dark');
+    btn.classList.toggle('is-light', mode!=='dark');
+    if(knob) knob.innerHTML = (mode==='dark') ? '&#127769;' : '&#9728;&#65039;';
+}
 function toggleTheme(){
-    const dark = document.getElementById('themeToggle').checked;
-    document.documentElement.setAttribute('data-theme', dark?'dark':'light');
-    document.body.setAttribute('data-theme', dark?'dark':'light');
+    const btn = el('themeToggle');
+    const mode = (btn && btn.classList.contains('is-dark')) ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', mode);
+    document.body.setAttribute('data-theme', mode);
+    applyThemeButton(mode);
 }
 function openMobileDrawer(){
     document.getElementById('mobileDrawer')?.classList.add('open');
@@ -728,7 +890,10 @@ document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMobileDraw
 
 document.addEventListener('DOMContentLoaded', ()=>{
     document.documentElement.setAttribute('data-theme','dark');
+    document.body.setAttribute('data-theme','dark');
+    applyThemeButton('dark');
     loadDetector();
+    loadRepricing();
     loadBacktest();
     PULSES.forEach(loadPulse);
 });
