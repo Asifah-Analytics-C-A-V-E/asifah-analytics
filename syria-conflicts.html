@@ -991,6 +991,38 @@
             <div id="humanitarianLoading" style="text-align: center; font-size: 12px; color: var(--text-muted); padding: 15px;">Loading humanitarian data...</div>
             <div id="humanitarianGrid" style="display: none;">
 
+                <!-- Food Security Card (FEWS NET FAOB + WFP overlay) -->
+                <div style="background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 10px; padding: 18px;">
+                    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px;"><span data-i18n="cardFoodSecurity">🍞 Food Security (FEWS NET)</span></div>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                        <div style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; text-transform: uppercase; background: #f97316; color: white;" id="syrFoodPhase">--</div>
+                        <div style="display: none; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; background: #dc2626; color: white;" id="syrFoodFamine">Risk of Famine</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 80px; text-align: center; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.3); border-radius: 6px; padding: 8px;">
+                            <div style="font-size: 16px; font-weight: bold; color: #f97316;" id="syrFoodPin">--</div>
+                            <div style="font-size: 9px; color: var(--text-muted);">PIN now (Jun 2026)</div>
+                        </div>
+                        <div style="flex: 1; min-width: 80px; text-align: center; background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.2); border-radius: 6px; padding: 8px;">
+                            <div style="font-size: 16px; font-weight: bold; color: #fb923c;" id="syrFoodPinProj">--</div>
+                            <div style="font-size: 9px; color: var(--text-muted);">Projected (Dec 2026)</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 80px; text-align: center; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 6px; padding: 8px;">
+                            <div style="font-size: 15px; font-weight: bold; color: #818cf8;" id="syrFoodPct">--</div>
+                            <div style="font-size: 9px; color: var(--text-muted);">% of population</div>
+                        </div>
+                        <div style="flex: 1; min-width: 80px; text-align: center; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 6px; padding: 8px;">
+                            <div style="font-size: 15px; font-weight: bold; color: #818cf8;" id="syrFoodTrend">--</div>
+                            <div style="font-size: 9px; color: var(--text-muted);">vs last year</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;" id="syrFoodNotes"></div>
+                    <div style="margin-top: 8px; padding: 8px; background: rgba(220,38,38,0.10); border: 1px solid rgba(220,38,38,0.3); border-radius: 6px; font-size: 11px; color: var(--text-secondary); line-height: 1.5; display: none;" id="syrFoodAidBox"></div>
+                    <div style="font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 8px;" id="syrFoodSource"></div>
+                </div>
+
                 <!-- Displacement Card -->
                 <div style="background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 10px; padding: 18px;">
                     <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px;"><span data-i18n="cardDisplacement">🏃 Displacement (Since 2011)</span></div>
@@ -1664,6 +1696,27 @@
         function renderHumanitarianCards(data) {
             document.getElementById('humanitarianLoading').style.display = 'none';
             document.getElementById('humanitarianGrid').style.display = 'grid';
+
+            // Food Security (FEWS NET FAOB + WFP overlay)
+            const fs = data.food_security;
+            if (fs) {
+                const phaseEl = document.getElementById('syrFoodPhase');
+                phaseEl.textContent = fs.ipc_label ? `${fs.ipc_label} (Phase ${fs.highest_ipc_phase})` : '--';
+                const phaseColors = {1:'#10b981', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444', 5:'#dc2626'};
+                phaseEl.style.background = phaseColors[fs.highest_ipc_phase] || '#6b7280';
+                if (fs.risk_of_famine) document.getElementById('syrFoodFamine').style.display = 'inline-block';
+                document.getElementById('syrFoodPin').textContent = fs.current_pin || '--';
+                document.getElementById('syrFoodPinProj').textContent = fs.projected_pin || '--';
+                document.getElementById('syrFoodPct').textContent = fs.pct_population || '--';
+                document.getElementById('syrFoodTrend').textContent = fs.trend_vs_last_year || '--';
+                document.getElementById('syrFoodNotes').innerHTML = fs.notes || '';
+                if (fs.aid_disruption) {
+                    const aidBox = document.getElementById('syrFoodAidBox');
+                    aidBox.innerHTML = '<strong>⚠️ Aid disruption:</strong> ' + fs.aid_disruption;
+                    aidBox.style.display = 'block';
+                }
+                document.getElementById('syrFoodSource').textContent = `Source: ${fs.source || 'FEWS NET'} • ${fs.cycle || ''}`;
+            }
 
             // Displacement
             const disp = data.displacement || {};
