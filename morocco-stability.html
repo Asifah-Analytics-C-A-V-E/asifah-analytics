@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics - Morocco Stability Tracker v1.0.0 - Last updated: Jun 20, 2026 -->
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Morocco Stability & Crisis Tracker | Asifah Analytics v1.0.0</title>
+    
+    <!-- Favicon using Asifah Analytics logo -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <!-- Chart.js for Financial Pulse sparklines (donor: us-stability.html) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CSS Variables for Light/Dark Mode */
+        :root {
+            --bg-color: #f8fafc;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --header-gradient-start: #f1f5f9;
+            --header-gradient-end: #cbd5e1;
+            --header-text: #0f172a;
+            --metric-bg: #ffffff;
+            --metric-hover-shadow: rgba(0,0,0,0.15);
+            --article-bg: #f1f5f9;
+            --article-hover: #e2e8f0;
+            --watermark-opacity: 0.5; --watermark-size: 500px;
+            --loading-overlay-bg: rgba(248,250,252,0.98);
+            --loading-spinner-bg: rgba(56,189,248,0.2);
+            --accent: #0ea5e9;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #060d1a;
+            --container-bg: #0d1b2e;
+            --card-bg: #0d1b2e;
+            --card-border: #1e3a5f;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #4a7090;
+            --header-gradient-start: #060d1a;
+            --header-gradient-end: #1e3a5f;
+            --header-text: #e2f0fb;
+            --metric-bg: #0d1b2e;
+            --metric-hover-shadow: rgba(56,189,248,0.18);
+            --article-bg: #0a1525;
+            --article-hover: #112038;
+            --watermark-opacity: 1; --watermark-size: 800px;
+            --loading-overlay-bg: rgba(6,13,26,0.98);
+            --loading-spinner-bg: rgba(56,189,248,0.2);
+            --accent: #38bdf8;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        /* Watermark Background */
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: var(--watermark-size); height: var(--watermark-size); opacity: var(--watermark-opacity); pointer-events: none; z-index: 0; background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size: 135%; background-repeat: no-repeat; background-position: center; border-radius: 50%; transition: all 0.4s ease; }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--loading-overlay-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--loading-spinner-bg);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-status {
+            text-align: center;
+            max-width: 500px;
+            padding: 0 20px;
+        }
+
+        .loading-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .loading-steps {
+            margin-top: 20px;
+        }
+
+        .loading-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .loading-step.active {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .loading-step.complete {
+            color: #4ade80;
+        }
+
+        .step-icon {
+            font-size: 18px;
+            min-width: 20px;
+        }
+
+        .loading-progress {
+            margin-top: 25px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .loading-error {
+            color: var(--accent);
+            font-size: 16px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(100, 149, 237, 0.1);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            border-radius: 8px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: var(--header-text);
+            padding: 35px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            margin-top: 48px;
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            font-weight: normal;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 35px;
+            right: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        [dir="rtl"] .header-controls {
+    right: auto;
+    left: 35px;
+}
+
+[dir="rtl"] .back-link {
+    left: auto;
+    right: 20px;
+}
+
+        .language-switcher {
+            display: flex;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.9);
+            margin-right: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .theme-toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .theme-toggle-switch:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .theme-toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .theme-toggle-slider::before {
+            content: '☀️';
+        }
+
+        [data-theme="dark"] .theme-toggle-slider {
+            transform: translateX(24px);
+        }
+
+        [data-theme="dark"] .theme-toggle-slider::before {
+            content: '🌙';
+        }
+
+        .lang-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 14px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: #1e3a5f;
+            border-color: white;
+        }
+
+        .back-link {
+            display: inline-block;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            margin: 0;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .last-updated {
+            text-align: center;
+            padding: 15px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--metric-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, background 0.3s ease, border-color 0.3s ease, box-shadow 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px var(--metric-hover-shadow);
+        }
+
+        .regime-stability-card {
+            grid-column: 1 / -1;
+        }
+
+        .metric-title {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        
+        .regime-stability-card .metric-title {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        
+        .stability-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .metric-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .metric-explanation {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .intensity-low { color: #ffd43b; }
+        .intensity-medium { color: #ff8c42; }
+        .intensity-high { color: var(--accent); }
+        .intensity-critical { color: #4169E1; }
+
+        .stability-high { color: #4ade80; }
+        .stability-medium { color: #ffd43b; }
+        .stability-low { color: #ff8c42; }
+        .stability-critical { color: var(--accent); }
+
+        /* Stability Progress Container */
+        .stability-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stability-progress-bar {
+            flex: 1;
+            height: 30px;
+            background: var(--card-border);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .stability-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, #ffd43b 50%, #4ade80 100%);
+            transition: width 1s ease;
+            border-radius: 15px;
+        }
+
+        .stability-score-display {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            min-width: 120px;
+        }
+
+        .stability-score-display .metric-value {
+            font-size: 56px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .stability-max {
+            font-size: 24px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        /* 5-Component Stability Grid */
+        .stability-components-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stability-component {
+            padding: 14px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stability-component:hover {
+            background: var(--article-hover);
+            transform: translateY(-2px);
+        }
+
+        .component-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .component-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .component-score {
+            font-size: 22px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .component-weight {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Economic Indicators Row (USD/IRR + Oil) */
+        .stability-econ-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stability-metric-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s;
+        }
+
+        .stability-metric-item:hover {
+            background: var(--article-hover);
+        }
+
+        .stability-icon {
+            font-size: 28px;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .stability-metric-content {
+            flex: 1;
+        }
+
+        .stability-metric-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .stability-metric-value {
+            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stability-trend-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+        }
+
+        .stability-trend-section .metric-subtitle {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .stability-trend-section .metric-explanation {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Government Status Card */
+        .govt-card {
+            background: var(--metric-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .govt-card:hover {
+            box-shadow: 0 8px 20px var(--metric-hover-shadow);
+        }
+
+        .govt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .govt-official {
+            padding: 15px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s;
+        }
+
+        .govt-official:hover {
+            background: var(--article-hover);
+            transform: translateY(-2px);
+        }
+
+        .govt-official-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .govt-official-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .govt-official-since {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .govt-official-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        .govt-status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            margin-bottom: 4px;
+        }
+
+        .govt-status-badge.status-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .govt-status-badge.status-orange {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.4);
+        }
+
+        .govt-status-badge.status-yellow {
+            background: rgba(234, 179, 8, 0.15);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.4);
+        }
+
+        .govt-status-badge.status-green {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .govt-status-detail {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .govt-successor {
+            font-size: 10px;
+            color: var(--accent);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .govt-regime-summary {
+            margin-top: 15px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .govt-regime-summary-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+
+        .govt-regime-summary-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Casualties Grid */
+        .casualties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .casualty-card {
+            background: var(--metric-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .casualty-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px var(--metric-hover-shadow);
+        }
+
+        .casualty-card.deaths { border-color: var(--accent); }
+        .casualty-card.injuries { border-color: #ff8c42; }
+        .casualty-card.arrests { border-color: #4dabf7; }
+
+        .casualty-icon { font-size: 36px; margin-bottom: 10px; }
+
+        .casualty-number {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .casualty-card.deaths .casualty-number { color: var(--accent); }
+        .casualty-card.injuries .casualty-number { color: #ff8c42; }
+        .casualty-card.arrests .casualty-number { color: #4dabf7; }
+
+        .casualty-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: bold;
+        }
+
+        .casualty-section {
+            margin: 15px 0;
+            padding: 12px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .casualty-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .casualty-recent-values {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .casualty-trend {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .trend-up { color: #f87171; }
+        .trend-down { color: #4ade80; }
+        .trend-neutral { color: #a0aec0; }
+
+        .casualty-cumulative-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .casualty-cumulative-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .casualty-avg {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .casualty-footnote {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-style: italic;
+            padding-top: 10px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .verified-badge {
+            display: inline-block;
+            background: #4ade80;
+            color: #1a1a2e;
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .cities-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .city-pill {
+            background: var(--article-bg);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Knowledge Library */
+        .knowledge-library {
+            background: var(--container-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .knowledge-library h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .library-icon { font-size: 28px; }
+
+        .knowledge-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .knowledge-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .knowledge-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px var(--metric-hover-shadow);
+        }
+
+        .knowledge-header {
+            background: linear-gradient(135deg, rgba(100, 149, 237, 0.1) 0%, rgba(30, 82, 130, 0.1) 100%);
+            padding: 18px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .knowledge-header:hover {
+            background: linear-gradient(135deg, rgba(100, 149, 237, 0.15) 0%, rgba(30, 82, 130, 0.15) 100%);
+        }
+
+        .knowledge-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .category-icon { font-size: 22px; }
+
+        .collapse-icon {
+            font-size: 20px;
+            color: var(--accent);
+            transition: transform 0.3s ease;
+        }
+
+        .knowledge-card.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .knowledge-content {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .knowledge-card.collapsed .knowledge-content {
+            max-height: 0;
+            padding: 0 20px;
+            overflow: hidden;
+        }
+
+        .knowledge-content p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .knowledge-content ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .knowledge-content li {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .knowledge-content strong { color: var(--text-primary); }
+
+        .pdf-link-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(100, 149, 237, 0.08);
+            border-left: 4px solid var(--accent);
+            border-radius: 6px;
+        }
+
+        .pdf-link-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pdf-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .pdf-link:hover {
+            background: #4169E1;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3);
+        }
+
+        .open-source-disclaimer {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .report-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .report-link {
+            display: block;
+            padding: 10px 12px;
+            background: var(--article-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .report-link:hover {
+            background: rgba(100, 149, 237, 0.1);
+            border-color: var(--accent);
+            transform: translateX(3px);
+        }
+
+        .report-link::before {
+            content: "📄 ";
+            margin-right: 6px;
+        }
+
+        .knowledge-content::-webkit-scrollbar { width: 8px; }
+        .knowledge-content::-webkit-scrollbar-track { background: var(--article-bg); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        [dir="rtl"] .pdf-link-section {
+            border-left: none;
+            border-right: 4px solid var(--accent);
+        }
+
+        /* News Section */
+        .news-section {
+            background: var(--container-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .news-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .language-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .language-tabs button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -12px;
+        }
+
+        .language-tabs button:hover { color: var(--text-primary); }
+
+        .language-tabs button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .articles-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .article {
+            background: var(--article-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .article:hover { background: var(--article-hover); }
+
+        .article-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .article-title a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .article-title a:hover { text-decoration: underline; }
+
+        .article-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .article-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 15px;
+        }
+
+        .loading, .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 16px;
+        }
+
+        .loading { color: var(--accent); }
+        .error { color: var(--accent); }
+
+        footer {
+            background: var(--container-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 2px solid var(--card-border);
+            font-size: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .support-footer {
+            margin-top: 25px;
+            padding: 15px 20px;
+            background: rgba(100, 149, 237, 0.1);
+            border: 1px solid rgba(100, 149, 237, 0.2);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .support-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .support-footer a:hover {
+            color: #4169E1;
+            text-decoration: underline;
+        }
+
+        .copyright-footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .articles-container::-webkit-scrollbar { width: 8px; }
+        .articles-container::-webkit-scrollbar-track { background: var(--article-bg); border-radius: 4px; }
+        .articles-container::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+        .articles-container::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 25px 20px;
+            }
+            .header-logo { width: 60px; height: 60px; }
+            .header-content { text-align: center; }
+            .header-controls { position: static; align-items: center; }
+            h1 { font-size: 24px; }
+            .back-link {
+                position: static;
+                display: block;
+                width: fit-content;
+                margin: 0 auto 15px;
+            }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .casualties-grid { grid-template-columns: 1fr; }
+            .metric-value { font-size: 36px; }
+            .knowledge-categories { grid-template-columns: 1fr; }
+            .stability-components-grid { grid-template-columns: repeat(3, 1fr); }
+            .stability-econ-grid { grid-template-columns: 1fr; }
+            .govt-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .stability-components-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Leaflet city tooltip */
+        .city-tooltip {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* ── CYBER DARK MODE — Cyan card outlines + glow ── */
+        [data-theme="dark"] .metric-card {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08), 0 0 1px rgba(0,200,212,0.15);
+        }
+        [data-theme="dark"] .metric-card:hover {
+            border-color: rgba(0,200,212,0.35);
+            box-shadow: 0 0 18px rgba(0,200,212,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        }
+        [data-theme="dark"] .govt-card {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08), 0 0 1px rgba(0,200,212,0.15);
+        }
+        [data-theme="dark"] .govt-card:hover {
+            border-color: rgba(0,200,212,0.35);
+            box-shadow: 0 0 18px rgba(0,200,212,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        }
+        [data-theme="dark"] .knowledge-library {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08);
+        }
+        [data-theme="dark"] .knowledge-card {
+            border-color: rgba(0,200,212,0.15);
+        }
+        [data-theme="dark"] .knowledge-card:hover {
+            border-color: rgba(0,200,212,0.3);
+            box-shadow: 0 6px 16px rgba(0,200,212,0.12);
+        }
+        [data-theme="dark"] .knowledge-header {
+            background: linear-gradient(135deg, rgba(0,200,212,0.06) 0%, rgba(30,58,95,0.08) 100%);
+        }
+        [data-theme="dark"] .knowledge-header:hover {
+            background: linear-gradient(135deg, rgba(0,200,212,0.1) 0%, rgba(30,58,95,0.12) 100%);
+        }
+        [data-theme="dark"] .news-section {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08);
+        }
+        [data-theme="dark"] footer {
+            border-color: rgba(0,200,212,0.15);
+        }
+        [data-theme="dark"] .casualty-card {
+            border-color: rgba(0,200,212,0.15) !important;
+            box-shadow: 0 0 6px rgba(0,200,212,0.06);
+        }
+        [data-theme="dark"] .casualty-card:hover {
+            border-color: rgba(0,200,212,0.3) !important;
+            box-shadow: 0 0 16px rgba(0,200,212,0.15), 0 8px 20px rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] .stability-component {
+            border-color: rgba(0,200,212,0.12);
+        }
+        [data-theme="dark"] .stability-component:hover {
+            border-color: rgba(0,200,212,0.25);
+            box-shadow: 0 0 10px rgba(0,200,212,0.1);
+        }
+        [data-theme="dark"] .stability-metric-item {
+            border-color: rgba(0,200,212,0.12);
+        }
+        [data-theme="dark"] .stability-metric-item:hover {
+            border-color: rgba(0,200,212,0.25);
+        }
+        [data-theme="dark"] .govt-official {
+            border-color: rgba(0,200,212,0.1);
+        }
+        [data-theme="dark"] .govt-official:hover {
+            border-color: rgba(0,200,212,0.25);
+            box-shadow: 0 0 10px rgba(0,200,212,0.1);
+        }
+        [data-theme="dark"] .regime-stability-card {
+            border-color: rgba(0,200,212,0.25);
+            box-shadow: 0 0 12px rgba(0,200,212,0.1), 0 0 2px rgba(0,200,212,0.2);
+        }
+        [data-theme="dark"] .regime-stability-card:hover {
+            border-color: rgba(0,200,212,0.45);
+            box-shadow: 0 0 24px rgba(0,200,212,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        }
+        /* Rhetoric card — subtle purple-cyan hybrid */
+        [data-theme="dark"] #irRhetoricCard {
+            border-color: rgba(0,200,212,0.2);
+            box-shadow: 0 0 8px rgba(0,200,212,0.1);
+        }
+        [data-theme="dark"] #irRhetoricCard:hover {
+            border-color: rgba(0,200,212,0.35);
+            box-shadow: 0 0 20px rgba(0,200,212,0.18);
+        }
+        /* Section title subtle cyan */
+        [data-theme="dark"] .metric-title {
+            color: #22d3ee;
+        }
+        [data-theme="dark"] .govt-card .metric-title {
+            color: #22d3ee;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3 GOLD STANDARD ADDITIONS (May 5, 2026)
+           Sidebar + Commodity Card + Interpreter Cards + Footer harmonization
+           ═══════════════════════════════════════════════════════════ */
+
+        /* ── GOLD STANDARD SIDEBAR (matches GPI v2.0 pattern) ── */
+        .page-with-sidebar {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-sidebar {
+            width: 180px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 4px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        .nav-sidebar-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(56,189,248,0.5);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 4px;
+            padding-left: 2px;
+        }
+        .nav-btn {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 10px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1.5px solid rgba(56,189,248,0.2);
+            background: linear-gradient(135deg, rgba(56,189,248,0.06) 0%, rgba(14,165,233,0.04) 100%);
+            color: var(--text-secondary);
+        }
+        [data-theme="dark"] .nav-btn { color: rgba(255,255,255,0.7); }
+        .nav-btn .nav-btn-label { font-size: 12px; line-height: 1.3; z-index: 2; }
+        .nav-btn .nav-btn-status {
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            opacity: 0.7;
+            color: #38bdf8;
+            z-index: 2;
+        }
+        .nav-btn.active-nav {
+            background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%);
+            border-color: rgba(56,189,248,0.5);
+            color: var(--text-primary);
+            box-shadow: 0 0 14px rgba(56,189,248,0.12);
+        }
+        [data-theme="dark"] .nav-btn.active-nav { color: #ffffff; }
+        .nav-btn.current-page {
+            background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%);
+            border-color: rgba(34,197,94,0.6);
+            color: var(--text-primary);
+            box-shadow: 0 0 18px rgba(34,197,94,0.2);
+        }
+        [data-theme="dark"] .nav-btn.current-page { color: #ffffff; }
+        .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+        .nav-btn.inactive-nav {
+            border-color: rgba(0,0,0,0.08);
+            background: rgba(0,0,0,0.02);
+            color: rgba(0,0,0,0.3);
+            cursor: default;
+        }
+        [data-theme="dark"] .nav-btn.inactive-nav {
+            border-color: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+            color: rgba(255,255,255,0.25);
+        }
+        .nav-divider {
+            height: 1px;
+            background: rgba(56,189,248,0.15);
+            margin: 4px 0;
+        }
+        .nav-btn.rhetoric-btn {
+            border-color: rgba(34,197,94,0.35);
+            background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%);
+        }
+        .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.military-btn {
+            border-color: rgba(100,116,139,0.4);
+            background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%);
+        }
+        .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+        .nav-btn.commodities-btn {
+            border-color: rgba(234,179,8,0.4);
+            background: linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(202,138,4,0.05) 100%);
+        }
+        .nav-btn.commodities-btn .nav-btn-status { color: #facc15; }
+        .nav-btn.gpi-btn {
+            border-color: rgba(56,189,248,0.5);
+            background: linear-gradient(135deg, rgba(56,189,248,0.12) 0%, rgba(14,165,233,0.08) 100%);
+        }
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
+            .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+                overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+                background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .nav-sidebar.open { transform: translateX(0); }
+        }
+
+        /* ── Commodity Exposure Card — Gold Standard v1.0 (May 6, 2026) ── */
+        .commodity-card {
+            background: var(--container-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .commodity-card {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08);
+        }
+        .commodity-prose {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            margin: 10px 0 16px 0;
+            padding: 12px 14px;
+            background: var(--article-bg);
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+        }
+        .commodity-alert-banner {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left-width: 4px;
+            border-left-style: solid;
+            font-size: 12px;
+            display: none;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+
+        /* ── Commodity v2.0 additions (Jun 12 2026): sanctions strip,
+           convergence alert, strategic linkage ── */
+        .sanctions-watch-strip {
+            display: none; margin: 12px 0; padding: 12px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, rgba(245,158,11,0.14) 0%, rgba(217,119,6,0.10) 100%);
+            border: 1px solid #f59e0b; border-left: 4px solid #f59e0b;
+            font-size: 12px; line-height: 1.55; color: var(--text-secondary);
+        }
+        .sanctions-watch-strip.show { display: block; }
+        .sanctions-watch-strip .sw-title { color: #f59e0b; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; font-size: 11px; margin-bottom: 6px; }
+        .sanctions-watch-strip a { color: var(--text-secondary); text-decoration: none; display: block; padding: 2px 0; }
+        .sanctions-watch-strip a:hover { color: #f59e0b; }
+        .commodity-convergence-alert {
+            display: none; margin: 12px 0; padding: 12px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, rgba(239,68,68,0.14) 0%, rgba(190,18,60,0.10) 100%);
+            border: 1px solid #ef4444; border-left: 4px solid #ef4444;
+            font-size: 12px; line-height: 1.55;
+        }
+        .commodity-convergence-alert.active { display: block; }
+        .commodity-convergence-alert .cca-title { font-weight: 800; letter-spacing: 0.5px; color: #fca5a5; margin-bottom: 5px; }
+        .commodity-convergence-alert .cca-detail { color: var(--text-secondary); }
+        .strategic-linkage {
+            margin-top: 14px; padding: 12px 14px;
+            background: rgba(56,189,248,0.05); border-left: 3px solid #38bdf8;
+            border-radius: 6px; font-size: 11.5px; line-height: 1.55; color: var(--text-secondary);
+        }
+        .strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+
+        /* ── FINANCIAL PULSE (nyse-card canon — donor: us-stability.html) ── */
+/* ── NYSE / U.S. EQUITY INDICES CARD (v1.0.0 May 27 2026) ── */
+        /* Three equal cards side by side: SPX / DJIA / IXIC.
+         * Mobile: stacks vertically below 768px. Mirrors TASE pattern
+         * from israel-stability.html with Chart.js mini sparklines. */
+        .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .nyse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .nyse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .nyse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nyse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nyse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .nyse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+
+        .nyse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .nyse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .nyse-grid { grid-template-columns: 1fr; }
+        }
+
+        .nyse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .nyse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .nyse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .nyse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .nyse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .nyse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .nyse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+
+        .nyse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .nyse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+
+        .nyse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nyse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        .capital-flight-strip {
+            display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+            background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(139,92,246,0.14) 100%);
+            border: 1px solid #a855f7; border-left: 4px solid #a855f7;
+            font-size: 12px; line-height: 1.55; color: #ddd6fe;
+        }
+        .capital-flight-strip.show { display: block; }
+        .capital-flight-strip .cf-title { color: #c4b5fd; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; font-size: 11px; margin-bottom: 5px; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: var(--article-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(100,149,237,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 24px; line-height: 1; }
+        .commodity-pill-name { font-size: 14px; font-weight: 700; color: var(--text-primary); flex: 1; }
+        .commodity-pill-rank { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(100,149,237,0.12);
+            color: var(--accent);
+            border: 1px solid rgba(100,149,237,0.25);
+        }
+        .commodity-pill-signal-count {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .commodity-pill-price {
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark {
+            width: 100%;
+            height: 28px;
+            display: block;
+        }
+        .commodity-pill-note {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-top: 4px;
+        }
+        .commodity-top-signals {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: var(--article-bg);
+            border-radius: 6px;
+            border-left: 3px solid var(--text-muted);
+            font-size: 11px;
+        }
+        .commodity-top-signals .ts-title {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        .commodity-top-signals a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            line-height: 1.45;
+        }
+        .commodity-top-signals a:hover { color: var(--accent); }
+        .commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+
+        /* ── Interpreter output cards (So What / Red Lines / Historical) ── */
+        .interpreter-card {
+            background: var(--metric-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        [data-theme="dark"] .interpreter-card {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08);
+        }
+
+        .scenario-banner {
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .scenario-icon {
+            font-size: 28px;
+        }
+
+        .scenario-text {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .interpreter-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            font-weight: 700;
+            margin: 16px 0 8px 0;
+        }
+
+        .interpreter-prose {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .interpreter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .interpreter-list li {
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            background: var(--article-bg);
+            border-left: 4px solid var(--accent);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .interpreter-watch-list li {
+            border-left-color: #f97316;
+        }
+
+        .red-line-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--card-border);
+        }
+
+        .red-line-item.breached {
+            border-left-color: #ef4444;
+            background: rgba(239,68,68,0.05);
+        }
+
+        .red-line-item.approaching {
+            border-left-color: #f97316;
+            background: rgba(249,115,22,0.05);
+        }
+
+        .red-line-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .red-line-content {
+            flex: 1;
+        }
+
+        .red-line-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .red-line-status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-left: 8px;
+        }
+
+        .red-line-status-badge.breached {
+            background: rgba(239,68,68,0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.4);
+        }
+
+        .red-line-status-badge.approaching {
+            background: rgba(249,115,22,0.15);
+            color: #f97316;
+            border: 1px solid rgba(249,115,22,0.4);
+        }
+
+        .red-line-trigger {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        .historical-match {
+            padding: 14px;
+            background: var(--article-bg);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .historical-match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .historical-match-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .historical-similarity {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+        }
+
+        .historical-match-outcome {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .historical-match-meta {
+            display: flex;
+            gap: 14px;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Source pills (articles by source) ── */
+        .source-pill {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-right: 6px;
+        }
+
+        .source-pill-rss { background: rgba(100,149,237,0.15); color: #6495ED; }
+        .source-pill-gdelt { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .source-pill-newsapi { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .source-pill-brave { background: rgba(249,115,22,0.15); color: #f97316; }
+        .source-pill-telegram { background: rgba(14,165,233,0.15); color: #0ea5e9; }
+        .source-pill-bluesky { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .source-pill-reddit { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+        /* ── Component score breakdown row ── */
+        .stability-penalty-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--card-border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stability-penalty-item {
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .stability-penalty-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .stability-penalty-value {
+            font-size: 18px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+        }
+
+        .penalty-negative { color: #ef4444; }
+        .penalty-positive { color: #22c55e; }
+        .penalty-zero { color: var(--text-muted); }
+
+    </style>
+</head>
+<body>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-status">
+            <div class="loading-title">Loading Morocco Stability Data</div>
+            <div class="loading-steps" id="loadingSteps">
+                <div class="loading-step active" id="step1">
+                    <span class="step-icon">⏳</span>
+                    <span>Querying Morocco signal feed...</span>
+                </div>
+                <div class="loading-step" id="step2">
+                    <span class="step-icon">⏳</span>
+                    <span>Fetching GDELT articles (EN / AR / FR)...</span>
+                </div>
+                <div class="loading-step" id="step3">
+                    <span class="step-icon">⏳</span>
+                    <span>Pulling NewsAPI, RSS &amp; Reddit...</span>
+                </div>
+                <div class="loading-step" id="step4">
+                    <span class="step-icon">⏳</span>
+                    <span>Reading commodity-pressure signal...</span>
+                </div>
+                <div class="loading-step" id="step5">
+                    <span class="step-icon">⏳</span>
+                    <span>Rendering map &amp; knowledge library...</span>
+                </div>
+            </div>
+            <div class="loading-progress" id="loadingProgress">
+                Loading live OSINT feed...
+            </div>
+            <div class="loading-error" id="loadingError" style="display: none;">
+                ⚠️ Loading is taking longer than expected. Please wait or refresh the page.
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="middle-east.html" class="back-link" data-i18n="backLink">← Back to Dashboard</a>
+            
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
+            
+            <div class="header-content">
+                <h1 id="main-title" data-i18n="pageTitle">🇲🇦 MOROCCO STABILITY TRACKER</h1>
+                <div class="subtitle" id="subtitle" data-i18n="pageSubtitle">Multi-source OSINT sensor feed: Western Sahara, the Algeria rupture, monarchy stability &amp; commodity exposure</div>
+            </div>
+            
+            <div class="header-controls">
+                <div class="language-switcher">
+                    <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+                    <button class="lang-btn" onclick="switchLanguage('he')">עב</button>
+                    <button class="lang-btn" onclick="switchLanguage('ar')">ع</button>
+                    <button class="lang-btn" onclick="switchLanguage('fa')">فا</button>
+                </div>
+                
+                <div class="theme-toggle">
+                    <span class="theme-toggle-label" data-i18n="themeToggle">Toggle: Light - Dark</span>
+                    <div class="theme-toggle-switch" onclick="toggleTheme()">
+                        <div class="theme-toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ═══ PAGE GRID: SIDEBAR + MAIN ═══ -->
+        <div class="page-with-sidebar">
+        <nav class="nav-sidebar" id="navSidebar">
+        <div class="nav-sidebar-label">Dashboards</div>
+        <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+        <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+        <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+        <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+        <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Global Trackers</div>
+        <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+        <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+        <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+        <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Regional Rhetoric</div>
+        <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">North Africa</div>
+        <a href="algeria-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇩🇿 Algeria Stability</span><span class="nav-btn-status">● Live</span></a>
+        <a href="libya-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇱🇾 Libya Stability</span><span class="nav-btn-status">● Live</span></a>
+        <a href="morocco-stability.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇲🇦 Morocco Stability</span><span class="nav-btn-status">◉ You are here</span></a>
+        <a href="tunisia-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇹🇳 Tunisia Stability</span><span class="nav-btn-status">● Live</span></a>
+    </nav>
+        <!-- ═══ MAIN CONTENT ═══ -->
+        <main style="flex:1; min-width:0;">
+
+        <!-- WORLDWIDE CAUTION BANNER -->
+        <div style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%); border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 15px rgba(239,68,68,0.3);">
+            <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+            <div style="flex: 1;">
+                <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;">⚠️ U.S. State Department — Worldwide Caution</div>
+                <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;">The Department of State advises U.S. citizens overseas to exercise increased caution due to the heightened potential for violence, terrorism, and demonstrations against U.S. citizens and interests abroad. Stay alert in locations frequented by tourists and enroll in the Smart Traveler Enrollment Program (STEP).</div>
+            </div>
+            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW CAUTION →</a>
+        </div>
+
+        <!-- MOROCCO TRAVEL ADVISORY -->
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #eab308; border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="font-size: 24px; flex-shrink: 0;">🇲🇦</div>
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #fde68a; text-transform: uppercase; letter-spacing: 1px;">U.S. Travel Advisory — Morocco</span>
+                    <span style="background: #eab308; color: #1a1a1a; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px;">LEVEL 2</span>
+                </div>
+                <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;"><strong style="color:#fde68a;">Exercise Increased Caution</strong> in Morocco due to terrorism. The Western Sahara region carries additional restrictions. Verify the current level before travel.</div>
+            </div>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/morocco-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">FULL ADVISORY →</a>
+        </div>
+
+        <!-- COMMODITY EXPOSURE CARD -->
+        <div class="commodity-card" id="commodityCard" style="margin-bottom:20px;">
+            <h2 style="font-size:18px;margin-bottom:6px;">🛢️ Commodity Exposure — Morocco</h2>
+            <div class="commodity-alert-banner" id="commodityAlert"></div>
+            <div class="commodity-prose" id="commodityProse">Loading commodity-pressure signal…</div>
+            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:10px;">News-signal pressure (weighted volume/severity of matched reporting), not price. Morocco anchors global phosphate supply (OCP); watch fertilizer, sulfur, and energy-import exposure.</div>
+        </div>
+
+        <!-- MOROCCO MAP -->
+        <div class="map-section" style="margin-bottom:20px;">
+            <h2 style="font-size:18px;margin-bottom:6px;">🗺️ Geographic Context</h2>
+            <div style="font-size:13px;color:var(--text-secondary);font-style:italic;margin-bottom:12px;">Morocco, the Western Sahara line of control, and the closed Algerian frontier.</div>
+            <div id="morocco-map" style="width: 100%; height: 400px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; z-index: 1;"></div>
+        </div>
+
+        <!-- KNOWLEDGE LIBRARY -->
+        <div class="knowledge-library">
+            <h2><span class="library-icon">📚</span><span>Knowledge Library</span></h2>
+            <div class="knowledge-categories">
+                <div class="knowledge-card collapsed" id="card-govstructure">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('govstructure')">
+                        <div class="knowledge-header-title"><span class="category-icon">🏛️</span><span>Government Structure</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content"><p>Morocco is a <strong>constitutional monarchy</strong>. King <strong>Mohammed VI</strong> is head of state and <em>Amir al-Mu'minin</em> (Commander of the Faithful), controlling defense, foreign affairs, and religious policy through the <strong>Makhzen</strong> (the royal establishment).</p><p>The 2011 constitution — an Arab Spring concession — strengthened the elected government on paper: a head of government drawn from the largest party in the elected <strong>House of Representatives</strong>, alongside an indirectly-elected House of Councillors. In practice the monarchy retains decisive power; the elected government manages domestic policy.</p><p>Current head of government: <strong>Aziz Akhannouch</strong> (RNI).</p><div class="open-source-disclaimer">* Structural baseline. Sensor feed below reflects current open-source reporting, not analysis.</div></div>
+                </div>
+                <div class="knowledge-card collapsed" id="card-westernsahara">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('westernsahara')">
+                        <div class="knowledge-header-title"><span class="category-icon">🗺️</span><span>Western Sahara — the defining issue</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content"><p>Morocco controls ~80% of the disputed territory (its "Southern Provinces"), separated from Polisario-held areas by the <strong>Berm</strong> sand wall. The <strong>Polisario Front / SADR</strong>, backed by Algeria, claims the remainder.</p><p><strong>UN MINURSO</strong> has monitored since the 1991 ceasefire, which collapsed in November 2020. Morocco offers a 2007 <strong>Autonomy Plan</strong>; momentum has shifted its way — U.S. recognition of Moroccan sovereignty (December 2020), followed by Spain (2022) and France (2024).</p><p>OCP's <strong>Bou Craa</strong> phosphate mine sits inside the territory, tying the dispute directly to commodity flows.</p></div>
+                </div>
+                <div class="knowledge-card collapsed" id="card-algeria">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('algeria')">
+                        <div class="knowledge-header-title"><span class="category-icon">⚔️</span><span>Rupture with Algeria</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content"><p>Algeria severed diplomatic relations in <strong>August 2021</strong> and closed the <strong>GME gas pipeline</strong> through Morocco that October; the land border has been shut since 1994.</p><p>The rivalry is a proxy contest over Western Sahara (Algeria arms and hosts Polisario) layered onto a mutual arms build-up — the central inter-state fault line in the Maghreb.</p></div>
+                </div>
+                <div class="knowledge-card collapsed" id="card-israel">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('israel')">
+                        <div class="knowledge-header-title"><span class="category-icon">🤝</span><span>Abraham Accords &amp; Israel</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content"><p>Morocco normalized relations with Israel in <strong>December 2020</strong> as the reciprocal half of U.S. Western Sahara recognition.</p><p>Cooperation since has run heavily to <strong>defense</strong> — drones, cyber, and intelligence — notable given Morocco's deep historic Jewish heritage and the King's custodial framing of it.</p></div>
+                </div>
+                <div class="knowledge-card collapsed" id="card-economy">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('economy')">
+                        <div class="knowledge-header-title"><span class="category-icon">📊</span><span>Stability &amp; Economy</span></div>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="knowledge-content"><p>Among the more stable Arab monarchies, but with real pressure points: phosphate-dependent export revenue (OCP), drought-sensitive agriculture, youth unemployment, and cost-of-living unrest (2023–24 protests).</p><p>The September 2023 <strong>Al Haouz earthquake</strong> strained the south. Monarchy legitimacy remains the system's ballast.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEWS COVERAGE -->
+        <div class="news-section">
+            <h2 id="news-title" data-i18n="newsTitle">News Coverage</h2>
+            <div class="articles-container" id="articles-container">
+                <div class="loading">Loading articles…</div>
+            </div>
+        </div>
+
+        <footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+            <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — MOROCCO</div>
+            <div style="margin-bottom:6px;">Backend: asifah-backend.onrender.com · Scans refresh ~every 30 minutes</div>
+            <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT (EN/AR/FR), NewsAPI, RSS, Bluesky, Reddit · estimative, convergence-framed — not prediction</div>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+                <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:8px 18px;background:#f59e0b;color:#1a1a1a;border-radius:8px;text-decoration:none;font-weight:700;">☕ Buy Me a Coffee</a>
+                <a href="mailto:asifahanalytics@gmail.com" style="padding:8px 18px;background:#0284c7;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;">✉️ Contact Asifah</a>
+            </div>
+            <div style="color:#64748b;font-size:11px;margin-bottom:12px;">For situational awareness only. Not for operational use. Figures are preliminary and open-source.</div>
+            <div style="font-size:12px;">
+                <a href="mission.html" style="color:#93c5fd;text-decoration:none;">Mission Statement</a> ·
+                <a href="privacy.html" style="color:#93c5fd;text-decoration:none;">Privacy Policy</a> ·
+                <a href="index.html" style="color:#93c5fd;text-decoration:none;">Home</a>
+            </div>
+        </footer>
+        </main>
+        </div><!-- /.page-with-sidebar -->
+    </div><!-- /.container -->
+
+    <script>
+        const BACKEND_URL = 'https://asifah-backend.onrender.com';
+        const COUNTRY = 'morocco';
+
+        function initTheme() {
+            const saved = localStorage.getItem('asifah-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+        }
+        function toggleTheme() {
+            const cur = document.documentElement.getAttribute('data-theme');
+            const next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('asifah-theme', next);
+        }
+        initTheme();
+
+        function toggleKnowledgeCard(cardId) {
+            const card = document.getElementById('card-' + cardId);
+            if (card) card.classList.toggle('collapsed');
+        }
+
+        function switchLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            const map = { en: 0, he: 1, ar: 2, fa: 3 };
+            const btns = document.querySelectorAll('.lang-btn');
+            if (btns[map[lang]]) btns[map[lang]].classList.add('active');
+            document.documentElement.setAttribute('dir', (lang === 'he' || lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr');
+        }
+
+        // ---- Articles: /api/threat/morocco ----
+        async function loadArticles() {
+            const box = document.getElementById('articles-container');
+            try {
+                const r = await fetch(BACKEND_URL + '/api/threat/' + COUNTRY + '?days=7');
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                const arts = data.top_scoring_articles || data.articles || data.recent_headlines || [];
+                if (arts.length) { displayArticles(arts); } else { displayFallback(); }
+            } catch (e) {
+                console.warn('Article load failed:', e.message);
+                displayFallback();
+            }
+        }
+        function displayArticles(arts) {
+            const box = document.getElementById('articles-container');
+            box.innerHTML = arts.slice(0, 20).map(a => {
+                const title = a.title || a.article_title || 'Untitled';
+                const source = a.source || a.source_name || '';
+                const published = a.published || a.publishedAt || a.date || '';
+                const url = a.url || '#';
+                let dateStr = 'Recent';
+                if (published) { try { dateStr = new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) {} }
+                return '<div class="article-item">' +
+                    '<div class="article-title">' + title + '</div>' +
+                    '<div class="article-meta">' + source + ' • ' + dateStr + '</div>' +
+                    (url !== '#' ? '<a href="' + url + '" target="_blank" rel="noopener" class="article-link">Read article →</a>' : '') +
+                    '</div>';
+            }).join('');
+        }
+        function displayFallback() {
+            const box = document.getElementById('articles-container');
+            box.innerHTML =
+                '<div style="text-align:center;padding:30px;color:var(--text-secondary);">' +
+                '<p style="font-size:15px;margin-bottom:12px;">📡 Live feed loading — curated OSINT sources:</p>' +
+                '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px;">' +
+                '<a href="https://www.aljazeera.com/where/morocco/" target="_blank" rel="noopener" style="padding:9px 16px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">Al Jazeera — Morocco</a>' +
+                '<a href="https://www.reuters.com/world/africa/" target="_blank" rel="noopener" style="padding:9px 16px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">Reuters — Africa</a>' +
+                '<a href="https://www.moroccoworldnews.com/" target="_blank" rel="noopener" style="padding:9px 16px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">Morocco World News</a>' +
+                '<a href="https://acleddata.com/explorer/" target="_blank" rel="noopener" style="padding:9px 16px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">ACLED Explorer</a>' +
+                '</div></div>';
+        }
+
+        // ---- Commodity card: /api/commodity-pressure/morocco (defensive parse) ----
+        async function updateCommodityCard() {
+            const prose = document.getElementById('commodityProse');
+            const alert = document.getElementById('commodityAlert');
+            try {
+                const r = await fetch(BACKEND_URL + '/api/commodity-pressure/' + COUNTRY);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const d = await r.json();
+                const text = d.prose || d.so_what || d.summary || d.narrative || '';
+                const level = (d.alert_level || d.level || d.band || 'normal').toString().toLowerCase();
+                if (text) { prose.textContent = text; }
+                else { prose.textContent = 'No significant commodity-pressure signal in current reporting window.'; }
+                if (alert) {
+                    let cls = 'alert-normal', label = '● Baseline';
+                    if (level.includes('high') || level.includes('surge')) { cls = 'alert-high'; label = '▲ Elevated commodity pressure'; }
+                    else if (level.includes('elev')) { cls = 'alert-elevated'; label = '◆ Watch'; }
+                    alert.className = 'commodity-alert-banner show ' + cls;
+                    alert.textContent = label;
+                }
+            } catch (e) {
+                console.warn('Commodity load failed:', e.message);
+                prose.textContent = 'Commodity-pressure feed unavailable right now (cache warming). Morocco anchors global phosphate supply via OCP.';
+                if (alert) { alert.className = 'commodity-alert-banner'; }
+            }
+        }
+
+        // ---- Map ----
+        function initMoroccoMap() {
+            if (typeof L === 'undefined') return;
+            try {
+                const map = L.map('morocco-map', { scrollWheelZoom: false }).setView([29.5, -8.5], 5);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+                }).addTo(map);
+                L.circleMarker([34.0209, -6.8416], { radius: 7, color: '#38bdf8', fillColor: '#38bdf8', fillOpacity: 0.8 })
+                    .addTo(map).bindTooltip('Rabat (capital)');
+                L.circleMarker([27.15, -13.20], { radius: 6, color: '#eab308', fillColor: '#eab308', fillOpacity: 0.7 })
+                    .addTo(map).bindTooltip('Western Sahara (disputed)');
+            } catch (e) { console.warn('Map init failed:', e.message); }
+        }
+
+        function hideLoadingOverlay() {
+            const o = document.getElementById('loadingOverlay');
+            if (o) o.classList.add('hidden');
+        }
+        function startLoadingProgress() {
+            const steps = ['step1','step2','step3','step4','step5'];
+            let i = 0;
+            (function tick() {
+                if (i > 0) {
+                    const p = document.getElementById(steps[i-1]);
+                    if (p) { p.classList.remove('active'); p.classList.add('complete'); const ic = p.querySelector('.step-icon'); if (ic) ic.textContent = '\u2705'; }
+                }
+                if (i < steps.length) {
+                    const c = document.getElementById(steps[i]);
+                    if (c) c.classList.add('active');
+                    i++; setTimeout(tick, 350);
+                } else {
+                    hideLoadingOverlay();
+                }
+            })();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startLoadingProgress();
+            loadArticles();
+            updateCommodityCard();
+            initMoroccoMap();
+            setTimeout(hideLoadingOverlay, 4000); // safety: overlay never sticks
+            setInterval(loadArticles, 30 * 60 * 1000);
+            setInterval(updateCommodityCard, 30 * 60 * 1000);
+        });
+    </script>
+
+    <script>
+    // ── Canonical mobile drawer (Gold Standard) ──
+    function toggleSidebar() {
+        var sb = document.getElementById('navSidebar');
+        var bd = document.getElementById('sidebarBackdrop');
+        if (!sb) return;
+        var open = sb.classList.toggle('open');
+        if (bd) bd.classList.toggle('show', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+    }
+    function closeSidebar() {
+        var sb = document.getElementById('navSidebar');
+        var bd = document.getElementById('sidebarBackdrop');
+        if (sb) sb.classList.remove('open');
+        if (bd) bd.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+    document.addEventListener('DOMContentLoaded', function () {
+        var sb = document.getElementById('navSidebar');
+        if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+    });
+    </script>
+</body>
+</html>
