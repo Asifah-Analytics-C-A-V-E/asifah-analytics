@@ -2219,6 +2219,17 @@
             <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;">News-signal pressure (weighted volume/severity of matched reporting), not price. Libya holds Africa's largest proven oil reserves (NOC); production is repeatedly weaponized through port and field blockades — watch oil exposure.</div>
         </div>
 
+        <!-- OIL PULSE CARD (production STATUS — force majeure / blockades / output, NOT price) -->
+        <div class="commodity-card" id="libyaOilPulseCard" style="margin-bottom:20px;">
+            <div class="metric-title">🛢️ LIBYA OIL PULSE</div>
+            <div id="oilPulseAsOf" style="font-size:11px;color:var(--text-secondary);font-style:italic;margin:4px 0 12px;">Loading oil-status signals…</div>
+            <div id="oilPulseBanner" class="commodity-alert-banner"></div>
+            <div id="oilPulseProduction" style="margin:10px 0;"></div>
+            <div id="oilPulseFacilities" style="margin-top:10px;"></div>
+            <div id="oilPulseEvents" style="margin-top:10px;"></div>
+            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;border-top:1px solid var(--card-border);padding-top:8px;">Sensor feed — open-source oil-production STATUS (NOC force majeure, port/field blockades &amp; reopenings, reported output), not price and not analysis. Only signals from the recent window drive the status; the blockade-as-leverage read lives in the regional analysis layer.</div>
+        </div>
+
         <!-- DISPLACEMENT & MIGRATION CARD (IOM DTM v3 - Path A live IDPs) -->
         <div class="commodity-card" id="libyaDisplacementCard" style="margin-bottom:20px;">
             <div class="metric-title">🛂 LIBYA DISPLACEMENT &amp; MIGRATION</div>
@@ -2501,6 +2512,58 @@
             }
         }
 
+        // ---- Oil Pulse card: /api/libya/oil-pulse (production STATUS, not price) ----
+        async function updateOilPulseCard() {
+            const card = document.getElementById('libyaOilPulseCard');
+            if (!card) return;
+            let data;
+            try {
+                const resp = await fetch(BACKEND_URL + '/api/libya/oil-pulse');
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                data = await resp.json();
+            } catch (e) {
+                console.warn('[OilPulse] fetch failed:', e.message);
+                const ao = document.getElementById('oilPulseAsOf');
+                if (ao) ao.textContent = 'Oil-status signals temporarily unavailable (cache warming).';
+                return;
+            }
+            const band = data.status_band || 'flowing';
+            const bandClass = { flowing:'alert-normal', disrupted:'alert-elevated', force_majeure:'alert-high', shutdown:'alert-surge' };
+            const ao = document.getElementById('oilPulseAsOf');
+            const asOf = data.as_of ? data.as_of.slice(0,10) : 'n/a';
+            const win = data.recency_window_days || 90;
+            ao.innerHTML = 'Status as of <strong>' + asOf + '</strong> · open-source signals, last ' + win + ' days · NOC / oil-facility';
+            const banner = document.getElementById('oilPulseBanner');
+            banner.className = 'commodity-alert-banner show ' + (bandClass[band] || 'alert-normal');
+            banner.innerHTML = '<strong>' + (data.status_label || 'Production Flowing').toUpperCase() + '</strong>' +
+                '<span class="ab-meta">' + (data.headline || '') + '</span>';
+            const prodEl = document.getElementById('oilPulseProduction');
+            if (data.production_figure && data.production_figure.text) {
+                const pf = data.production_figure;
+                prodEl.innerHTML = '<div style="background:var(--bg-color);border:1px solid var(--card-border);border-radius:8px;padding:12px 14px;">' +
+                    '<div style="font-size:22px;font-weight:800;color:var(--accent);">' + pf.text + '</div>' +
+                    '<div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Reported output (sensor)</div>' +
+                    (pf.source_title ? '<a href="' + pf.source_url + '" target="_blank" rel="noopener" style="font-size:10px;color:var(--text-muted);text-decoration:none;display:block;margin-top:4px;">' + pf.source_title + '</a>' : '') +
+                    '</div>';
+            } else { prodEl.innerHTML = ''; }
+            const facEl = document.getElementById('oilPulseFacilities');
+            const facs = data.facilities || [];
+            if (facs.length) {
+                const evL = { force_majeure:'force majeure', blockade:'blockade', reopen:'reopening', production:'output', threat:'threat' };
+                facEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Facilities in the news</div>' +
+                    facs.map(f => '<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(30,58,95,0.4);"><span>' + f.name + ' <span style="color:var(--text-muted);font-size:11px;">(' + f.type + ')</span></span><span style="color:var(--text-secondary);font-size:11px;">' + (evL[f.last_event]||f.last_event) + '</span></div>').join('');
+            } else { facEl.innerHTML = ''; }
+            const evEl = document.getElementById('oilPulseEvents');
+            const events = data.events || [];
+            if (events.length) {
+                const ic = { force_majeure:'⛔', blockade:'🚧', reopen:'✅', production:'📊', threat:'⚠️' };
+                evEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Latest oil-status signals</div>' +
+                    events.slice(0,5).map(e => '<a href="' + e.url + '" target="_blank" rel="noopener" style="display:block;font-size:12px;color:var(--accent);text-decoration:none;padding:3px 0;">' + (ic[e.event_type]||'•') + ' ' + e.title + ' <span style="color:var(--text-muted);">— ' + (e.source||'') + '</span></a>').join('');
+            } else {
+                evEl.innerHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic;">No oil-status events in the recent window.</div>';
+            }
+        }
+
         // ---- Displacement & Migration card: /api/libya/humanitarian (IOM DTM v3, Path A live IDPs) ----
         async function updateDisplacementCard() {
             const card = document.getElementById('libyaDisplacementCard');
@@ -2621,11 +2684,13 @@
             startLoadingProgress();
             loadArticles();
             updateCommodityCard();
+            updateOilPulseCard();
             updateDisplacementCard();
             initLibyaMap();
             setTimeout(hideLoadingOverlay, 4000); // safety: overlay never sticks
             setInterval(loadArticles, 30 * 60 * 1000);
             setInterval(updateCommodityCard, 30 * 60 * 1000);
+            setInterval(updateOilPulseCard, 30 * 60 * 1000);
         });
     </script>
 
