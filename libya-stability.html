@@ -2086,6 +2086,17 @@
         .penalty-positive { color: #22c55e; }
         .penalty-zero { color: var(--text-muted); }
 
+        /* ── RHETORIC PRESSURE BANNER + BLUF CARD (canonical green / Russia pattern) ── */
+        .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+        .rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+        .rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+        .rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+        .rhetoric-card { background: var(--card-bg); border: 2px solid rgba(56,189,248,0.35); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+        .rhetoric-actor-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); }
+        .rhetoric-actor-row:last-child { border-bottom: none; }
+        .rhetoric-signal-row { padding: 6px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .rhetoric-signal-row:last-child { border-bottom: none; }
+        .rhetoric-signal-label { font-weight: 700; color: #38bdf8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; font-family: 'Courier New', monospace; }
     </style>
 </head>
 <body>
@@ -2207,6 +2218,36 @@
                 <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;"><strong style="color:#fca5a5;">Do Not Travel</strong> to Libya due to crime, terrorism, civil unrest, kidnapping, and armed conflict. The U.S. government has no embassy presence in Libya and is unable to provide emergency services to U.S. citizens.</div>
             </div>
             <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/libya-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">FULL ADVISORY →</a>
+        </div>
+
+        <!-- ═══ LIBYA RHETORIC PRESSURE BANNER (canonical green pattern) ═══ -->
+        <div class="rhetoric-banner-canonical" id="rhetoricPressureCard" style="display:none;">
+            <div style="font-size:24px;flex-shrink:0;">📡</div>
+            <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                    <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;">Libya Rhetoric Tracker — Live</span>
+                    <span class="rhet-banner-badge" id="rhetoricPill">LOADING</span>
+                    <span class="rhet-banner-badge" id="rhetoricScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+                </div>
+                <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="rhetoricHeadline">Loading Libya pressure assessment…</div>
+                <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="rhetoricDetail"></div>
+            </div>
+            <a href="rhetoric-libya.html" class="rhet-banner-link">Open Tracker →</a>
+        </div>
+
+        <!-- ═══ LIBYA PRESSURE TRACKER — PLAIN-LANGUAGE BLUF CARD ═══ -->
+        <div class="rhetoric-card" id="libyaRhetoricCard" style="display:none; margin-bottom:20px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 🇱🇾 LIBYA PRESSURE TRACKER</div>
+            <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:5px;">
+                <div style="font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--text-primary);" id="libyaRhetoricScoreFull">--</div>
+                <span id="libyaRhetoricLevelLabel" style="font-size:12px;font-weight:800;padding:4px 12px;border-radius:5px;background:#6b7280;color:white;letter-spacing:0.5px;">--</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;">Multi-vector pressure score — Militia &amp; Ground · Oil &amp; Economic · Diplomacy &amp; Elections · Foreign Force · East–West Fracture — Updated ~every 30 min</div>
+            <div id="libyaRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;">Loading…</span></div>
+            <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="rhetoric-libya.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;">View Full Pressure Analysis →</a>
+            </div>
+            <div id="libyaRhetoricScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
         </div>
 
         <!-- COMMODITY EXPOSURE CARD -->
@@ -2680,8 +2721,99 @@
             })();
         }
 
+        // ── Libya rhetoric pressure (green banner + plain-language BLUF card) ──
+        async function loadRhetoric() {
+            const ALERT_COLORS = { normal: '#6b7280', elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
+            const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, surge: 3, critical: 4 };
+            const LEVEL_LABELS = { 0: 'Baseline', 1: 'Rhetoric', 2: 'Warning', 3: 'Confrontation', 4: 'Coercion', 5: 'Active Conflict' };
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/rhetoric/libya`);
+                if (!r.ok) return;
+                const d = await r.json();
+                const score = d.theatre_score || d.pressure_score || 0;
+                const alert = (d.alert_level || 'normal').toLowerCase();
+                const alertColor = ALERT_COLORS[alert] || '#6b7280';
+                const level = ALERT_TO_LEVEL[alert] !== undefined ? ALERT_TO_LEVEL[alert] : 0;
+                const levelLabel = LEVEL_LABELS[level] || 'Baseline';
+                // Calm-blue baseline: gray reads as "no data". A healthy baseline
+                // renders arctic blue; L1-L5 keep the canonical palette.
+                const displayColor = (alert === 'normal') ? '#38bdf8' : alertColor;
+
+                // ── Green banner (top) ──
+                const card = document.getElementById('rhetoricPressureCard');
+                if (card) {
+                    card.style.display = 'flex';
+                    document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
+                    const pill = document.getElementById('rhetoricPill');
+                    pill.textContent = alert.toUpperCase();
+                    pill.style.background = displayColor;
+                    const sw = d.so_what || {};
+                    document.getElementById('rhetoricHeadline').textContent = sw.scenario || 'Libya Pressure Tracker — Live';
+                    const rl = d.red_lines || {};
+                    const dt = d.diplomatic_track || {};
+                    const breached = rl.breached_count || 0;
+                    const approaching = rl.approaching_count || 0;
+                    const greenActive = (d.green_lines || {}).active_count || 0;
+                    document.getElementById('rhetoricDetail').textContent =
+                        `${breached} breached · ${approaching} approaching · ${greenActive} active diplomatic signals · Diplomatic track: ${dt.scenario || 'No Active Track'} (${dt.score || 0} signal${(dt.score || 0) === 1 ? '' : 's'}). ${sw.assessment || ''}`;
+                }
+
+                // ── Libya pressure tracker detail card ──
+                const detailCard = document.getElementById('libyaRhetoricCard');
+                if (detailCard) {
+                    detailCard.style.display = 'block';
+                    const scoreEl = document.getElementById('libyaRhetoricScoreFull');
+                    if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = displayColor; }
+                    const lvlEl = document.getElementById('libyaRhetoricLevelLabel');
+                    if (lvlEl) { lvlEl.textContent = 'L' + level + ' \u2014 ' + levelLabel; lvlEl.style.background = displayColor; }
+
+                    // Body: top_signals (preferred) or fallback to so_what + counts
+                    const signalEl = document.getElementById('libyaRhetoricSignalList');
+                    if (signalEl) {
+                        const signals = (d.top_signals || []).slice(0, 5);
+                        if (signals.length) {
+                            const LVL_COLORS = { 0:'#6b7280', 1:'#3b82f6', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444', 5:'#dc2626',
+                                                 normal:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', critical:'#dc2626', surge:'#ef4444' };
+                            signalEl.innerHTML = signals.map(s => {
+                                const txt = s.short_text || s.text || s.long_text || '';
+                                const cat = s.category ? s.category.toUpperCase().replace(/_/g, ' ') : '';
+                                let sc = s.color || LVL_COLORS[s.level];
+                                if (!sc || sc === '#6b7280') sc = '#38bdf8';
+                                if (s.category === 'diplomatic') sc = '#10b981';
+                                return `<div class="rhetoric-signal-row" style="border-left:3px solid ${sc};padding-left:9px;">${cat ? `<span class="rhetoric-signal-label" style="color:${sc};">${cat}</span>` : ''}${txt}</div>`;
+                            }).join('');
+                        } else {
+                            const rl = d.red_lines || {};
+                            const gl = d.green_lines || {};
+                            const dt = d.diplomatic_track || {};
+                            const sw = d.so_what || {};
+                            const rows = [
+                                { label: '🚨 Red Lines Breached',     val: rl.breached_count || 0,   color: '#dc2626' },
+                                { label: '⚠️ Red Lines Approaching',  val: rl.approaching_count || 0, color: '#f59e0b' },
+                                { label: '🕊️ Active Diplomatic',      val: gl.active_count || 0,     color: '#10b981' },
+                                { label: '📊 Diplomatic Signals',     val: (dt.score || 0), color: '#38bdf8' },
+                            ];
+                            let html = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
+                            if (sw.scenario) html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--card-border);font-style:italic;color:var(--text-muted);font-size:11px;line-height:1.5;">${sw.scenario}</div>`;
+                            signalEl.innerHTML = html;
+                        }
+                    }
+
+                    // Scan info footer (tracker emits scanned_at; fall back to cached_at)
+                    const scanEl = document.getElementById('libyaRhetoricScanInfo');
+                    const ts = d.cached_at || d.scanned_at;
+                    if (scanEl && ts) {
+                        const ago = Math.round((Date.now() - new Date(ts)) / 60000);
+                        const agoStr = ago < 60 ? `${ago}m` : `${Math.round(ago / 60)}h`;
+                        scanEl.textContent = `Last scan: ${agoStr} ago · ${d.total_articles || 0} articles analyzed`;
+                    }
+                }
+            } catch(e) { console.warn('[Libya] Rhetoric pressure fetch failed:', e.message); }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             startLoadingProgress();
+            loadRhetoric();
             loadArticles();
             updateCommodityCard();
             updateOilPulseCard();
@@ -2691,6 +2823,7 @@
             setInterval(loadArticles, 30 * 60 * 1000);
             setInterval(updateCommodityCard, 30 * 60 * 1000);
             setInterval(updateOilPulseCard, 30 * 60 * 1000);
+            setInterval(loadRhetoric, 30 * 60 * 1000);
         });
     </script>
 
