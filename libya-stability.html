@@ -2219,6 +2219,19 @@
             <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;">News-signal pressure (weighted volume/severity of matched reporting), not price. Libya holds Africa's largest proven oil reserves (NOC); production is repeatedly weaponized through port and field blockades — watch oil exposure.</div>
         </div>
 
+        <!-- DISPLACEMENT & MIGRATION CARD (IOM DTM v3 - Path A live IDPs) -->
+        <div class="commodity-card" id="libyaDisplacementCard" style="margin-bottom:20px;">
+            <div class="metric-title">🛂 LIBYA DISPLACEMENT &amp; MIGRATION</div>
+            <div id="displacementDataAsOf" style="font-size:11px;color:var(--text-secondary);font-style:italic;margin:4px 0 12px;">Loading IOM DTM data…</div>
+            <div id="displacementProse" class="commodity-prose">Querying IOM Displacement Tracking Matrix…</div>
+            <div id="displacementStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;"></div>
+            <div id="displacementRegions" style="margin-top:6px;"></div>
+            <div id="displacementHub" style="margin-top:10px;"></div>
+            <div id="displacementReports" style="margin-top:10px;"></div>
+            <div id="displacementSources" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;border-top:1px solid var(--card-border);padding-top:8px;">Sensor feed — raw displacement &amp; migration figures from IOM DTM, not analysis. Internal-displacement (IDP) totals update live via the DTM API v3; migrant-presence and context figures are periodic DTM rounds.</div>
+        </div>
+
         <!-- LIBYA MAP -->
         <div class="map-section" style="margin-bottom:20px;">
             <h2 style="font-size:18px;margin-bottom:6px;">🗺️ Geographic Context</h2>
@@ -2487,6 +2500,67 @@
             }
         }
 
+        // ---- Displacement & Migration card: /api/libya/humanitarian (IOM DTM v3, Path A live IDPs) ----
+        async function updateDisplacementCard() {
+            const card = document.getElementById('libyaDisplacementCard');
+            if (!card) return;
+            let data;
+            try {
+                const resp = await fetch(BACKEND_URL + '/api/libya/humanitarian');
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                data = await resp.json();
+            } catch (e) {
+                console.warn('[Displacement] fetch failed:', e.message);
+                const pe = document.getElementById('displacementProse');
+                if (pe) pe.textContent = 'Displacement data temporarily unavailable (cache warming). IOM DTM tracks internal displacement and migrant presence across Libya.';
+                const ao = document.getElementById('displacementDataAsOf');
+                if (ao) ao.textContent = 'IOM DTM — awaiting live data';
+                return;
+            }
+            const disp = data.displacement || {};
+            const hub = data.migration_hub || {};
+            const fmt = n => (typeof n === 'number' ? n.toLocaleString('en-US') : (n || '—'));
+            const liveIdps = disp.dtm_api_idps || disp.total_idps || 0;
+            const isLive = !!disp.dtm_api_idps;
+            const ao = document.getElementById('displacementDataAsOf');
+            const asOfDate = disp.dtm_reporting_date || disp.as_of || '';
+            const roundTxt = disp.dtm_round ? (' · Round ' + disp.dtm_round) : '';
+            const liveBadge = isLive ? '🟢 live' : '🟡 last-known';
+            ao.innerHTML = 'Data as of <strong>' + (asOfDate ? asOfDate.slice(0,10) : 'n/a') + '</strong>' + roundTxt + ' · IOM DTM v3 (' + liveBadge + ')';
+            const proseEl = document.getElementById('displacementProse');
+            proseEl.textContent = 'Libya is both an internal-displacement context and the primary central-Mediterranean migrant transit hub. Internal displacement (IDPs) updates live via the IOM DTM API; migrant presence is reported in periodic DTM rounds.';
+            const tile = (label, val, sub) =>
+                '<div style="background:var(--bg-color);border:1px solid var(--card-border);border-radius:8px;padding:12px 14px;">' +
+                '<div style="font-size:22px;font-weight:800;color:var(--accent);">' + val + '</div>' +
+                '<div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">' + label + '</div>' +
+                (sub ? '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">' + sub + '</div>' : '') +
+                '</div>';
+            document.getElementById('displacementStats').innerHTML =
+                tile('Internal displacement (IDPs)', fmt(liveIdps), isLive ? 'live · DTM API' : 'last-known baseline') +
+                tile('Returnees', fmt(disp.idp_returnees), 'DTM mobility tracking') +
+                tile('Migrants present', fmt(hub.migrants_present || disp.migrants_present), 'DTM Migrant Report');
+            const regionsEl = document.getElementById('displacementRegions');
+            const regions = (data.dtm_raw && data.dtm_raw.region_level) ? data.dtm_raw.region_level.slice().sort((a,b)=>(b.idps||0)-(a.idps||0)).slice(0,5) : [];
+            if (regions.length > 0) {
+                regionsEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Top displaced regions</div>' +
+                    regions.map(r => '<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(30,58,95,0.4);"><span>' + r.region + '</span><span style="color:var(--accent);font-weight:600;">' + fmt(r.idps) + '</span></div>').join('');
+            } else { regionsEl.innerHTML = ''; }
+            const hubEl = document.getElementById('displacementHub');
+            if (hub.top_nationalities && hub.top_nationalities.length) {
+                hubEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Migrant transit hub</div>' +
+                    '<div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">Top origins: ' + hub.top_nationalities.join(' · ') + (hub.border_flows_q1_2026 ? '<br>' + hub.border_flows_q1_2026 : '') + (hub.sudan_spillover ? '<br>' + hub.sudan_spillover : '') + '</div>';
+            } else { hubEl.innerHTML = ''; }
+            const reportsEl = document.getElementById('displacementReports');
+            const reports = data.reliefweb_reports || [];
+            if (reports.length > 0) {
+                reportsEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Latest OCHA / ReliefWeb reports</div>' +
+                    reports.slice(0,4).map(r => '<a href="' + r.url + '" target="_blank" rel="noopener" style="display:block;font-size:12px;color:var(--accent);text-decoration:none;padding:3px 0;">📄 ' + r.title + ' <span style="color:var(--text-muted);">— ' + (r.source||'OCHA') + '</span></a>').join('');
+            } else { reportsEl.innerHTML = ''; }
+            const srcEl = document.getElementById('displacementSources');
+            const links = data.source_links || {};
+            srcEl.innerHTML = Object.values(links).map(l => '<a href="' + l.url + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--accent);text-decoration:none;border:1px solid var(--card-border);border-radius:6px;padding:4px 10px;">' + (l.icon||'🔗') + ' ' + l.label + '</a>').join('');
+        }
+
         // ---- Map ----
         function initLibyaMap() {
             if (typeof L === 'undefined') return;
@@ -2530,6 +2604,7 @@
             startLoadingProgress();
             loadArticles();
             updateCommodityCard();
+            updateDisplacementCard();
             initLibyaMap();
             setTimeout(hideLoadingOverlay, 4000); // safety: overlay never sticks
             setInterval(loadArticles, 30 * 60 * 1000);
