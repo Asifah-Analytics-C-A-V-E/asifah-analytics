@@ -1482,6 +1482,10 @@
             background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%);
         }
         .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+        .nav-btn.tracker-btn.current-page { border-color: rgba(245,158,11,0.7); background: linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(217,119,6,0.12) 100%); box-shadow: 0 0 18px rgba(245,158,11,0.22); }
+        .nav-btn.tracker-btn.current-page .nav-btn-status { color: #f59e0b; }
         .nav-btn.military-btn {
             border-color: rgba(100,116,139,0.4);
             background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%);
@@ -2206,11 +2210,13 @@
         </div>
 
         <!-- COMMODITY EXPOSURE CARD -->
-        <div class="commodity-card" id="commodityCard" style="margin-bottom:20px;">
-            <h2 style="font-size:18px;margin-bottom:6px;">🛢️ Commodity Exposure — Morocco</h2>
-            <div class="commodity-alert-banner" id="commodityAlert"></div>
-            <div class="commodity-prose" id="commodityProse">Loading commodity-pressure signal…</div>
-            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:10px;">News-signal pressure (weighted volume/severity of matched reporting), not price. Morocco anchors global phosphate supply (OCP); watch fertilizer, sulfur, and energy-import exposure.</div>
+        <div class="commodity-card" id="moroccoCommodityCard" style="margin-bottom:20px;">
+            <div class="metric-title">📊 MOROCCO COMMODITY EXPOSURE</div>
+            <div class="commodity-prose" id="commodityProse">Loading exposure profile…</div>
+            <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+            <div class="commodity-grid" id="commodityGrid"></div>
+            <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;">News-signal pressure (weighted volume/severity of matched reporting), not price. Morocco anchors global phosphate supply via OCP; watch fertilizer, sulfur, and energy-import exposure.</div>
         </div>
 
         <!-- MOROCCO MAP -->
@@ -2361,29 +2367,116 @@
                 '</div></div>';
         }
 
-        // ---- Commodity card: /api/commodity-pressure/morocco (defensive parse) ----
+        // ---- Commodity card: /api/commodity-pressure/morocco (per-commodity tiles) ----
         async function updateCommodityCard() {
-            const prose = document.getElementById('commodityProse');
-            const alert = document.getElementById('commodityAlert');
+            const COUNTRY = 'morocco';
+            const card = document.getElementById('moroccoCommodityCard');
+            if (!card) return;
+
+            // Fetch canonical commodity data from dedicated endpoint
+            let data;
             try {
-                const r = await fetch(BACKEND_URL + '/api/commodity-pressure/' + COUNTRY);
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const d = await r.json();
-                const text = d.prose || d.so_what || d.summary || d.narrative || '';
-                const level = (d.alert_level || d.level || d.band || 'normal').toString().toLowerCase();
-                if (text) { prose.textContent = text; }
-                else { prose.textContent = 'No significant commodity-pressure signal in current reporting window.'; }
-                if (alert) {
-                    let cls = 'alert-normal', label = '● Baseline';
-                    if (level.includes('high') || level.includes('surge')) { cls = 'alert-high'; label = '▲ Elevated commodity pressure'; }
-                    else if (level.includes('elev')) { cls = 'alert-elevated'; label = '◆ Watch'; }
-                    alert.className = 'commodity-alert-banner show ' + cls;
-                    alert.textContent = label;
-                }
+                const resp = await fetch(`https://asifah-backend.onrender.com/api/commodity-pressure/${COUNTRY}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                data = await resp.json();
             } catch (e) {
-                console.warn('Commodity load failed:', e.message);
-                prose.textContent = 'Commodity-pressure feed unavailable right now (cache warming). Morocco anchors global phosphate supply via OCP.';
-                if (alert) { alert.className = 'commodity-alert-banner'; }
+                console.warn(`[Commodity] Fetch failed for ${COUNTRY}, card will show minimal state:`, e.message);
+                document.getElementById('commodityProse').textContent =
+                    'Commodity exposure data temporarily unavailable. Please refresh.';
+                return;
+            }
+
+            // ── Prose paragraph (always rendered) ──
+            const proseEl = document.getElementById('commodityProse');
+            proseEl.textContent = data.prose || 'No exposure profile available.';
+
+            // ── Adaptive alert banner ──
+            const banner = document.getElementById('commodityAlertBanner');
+            const alertLevel = (data.alert_level || 'normal').toLowerCase();
+            const alertLabels = {
+                normal:   '✓ NO ACTIVE COMMODITY PRESSURE',
+                elevated: '◐ ELEVATED COMMODITY PRESSURE',
+                high:     '▲ HIGH COMMODITY PRESSURE',
+                surge:    '🚨 COMMODITY PRESSURE SURGE'
+            };
+            const pressure = (data.commodity_pressure || 0);
+            banner.className = `commodity-alert-banner alert-${alertLevel} show`;
+            banner.innerHTML = `
+                <strong>${alertLabels[alertLevel] || alertLabels.normal}</strong>
+                <span class="ab-meta">Pressure score: ${pressure.toFixed(1)} · ${data.commodity_summaries?.length || 0} exposures tracked${data.has_live_data ? '' : ' · awaiting live signals'}</span>
+            `;
+
+            // ── Commodity tiles ──
+            const grid = document.getElementById('commodityGrid');
+            grid.innerHTML = '';
+            (data.commodity_summaries || []).forEach(c => {
+                const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+                const role = (c.role || 'consumer').toLowerCase();
+                const rankText = c.rank ? `#${c.rank} globally` : '';
+                const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+                
+                // Sparkline rendering
+                let sparklineHtml = '';
+                let priceHtml = '';
+                if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+                    const spark = c.sparkline.spark;
+                    const min = Math.min(...spark);
+                    const max = Math.max(...spark);
+                    const range = max - min || 1;
+                    const points = spark.map((v, i) => {
+                        const x = (i / (spark.length - 1)) * 100;
+                        const y = 100 - ((v - min) / range) * 100;
+                        return `${x.toFixed(1)},${y.toFixed(1)}`;
+                    }).join(' ');
+                    const pctChange = c.sparkline.change_pct_30d || 0;
+                    const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+                    sparklineHtml = `
+                        <svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/>
+                        </svg>
+                    `;
+                    const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+                    const arrow = pctChange >= 0 ? '▲' : '▼';
+                    priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+                }
+
+                const tile = document.createElement('a');
+                tile.className = 'commodity-pill';
+                tile.href = `commodities.html#${c.commodity}`;
+                tile.innerHTML = `
+                    <div class="commodity-pill-header">
+                        <div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                        <div style="flex:1;">
+                            <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                            ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="commodity-pill-row">
+                        <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                        <span class="commodity-pill-role-badge">${role}</span>
+                        ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+                    </div>
+                    ${priceHtml}
+                    ${sparklineHtml}
+                    ${c.note ? `<div class="commodity-pill-note">${c.note.slice(0, 180)}${c.note.length > 180 ? '…' : ''}</div>` : ''}
+                `;
+                grid.appendChild(tile);
+            });
+
+            // ── Top signals footer (when live signals exist) ──
+            const tsEl = document.getElementById('commodityTopSignals');
+            const topSignals = data.top_signals || [];
+            if (topSignals.length > 0) {
+                const items = topSignals.slice(0, 3).map(s => `
+                    <a href="${s.article_url}" target="_blank" rel="noopener">
+                        ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                        <span class="ts-source">— ${s.source}</span>
+                    </a>
+                `).join('');
+                tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+                tsEl.style.display = 'block';
+            } else {
+                tsEl.style.display = 'none';
             }
         }
 
