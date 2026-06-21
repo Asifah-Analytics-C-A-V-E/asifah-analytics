@@ -2227,9 +2227,10 @@
             <div id="displacementStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;"></div>
             <div id="displacementRegions" style="margin-top:6px;"></div>
             <div id="displacementHub" style="margin-top:10px;"></div>
+            <div id="displacementRefugees" style="margin-top:10px;"></div>
             <div id="displacementReports" style="margin-top:10px;"></div>
             <div id="displacementSources" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
-            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;border-top:1px solid var(--card-border);padding-top:8px;">Sensor feed — raw displacement &amp; migration figures from IOM DTM, not analysis. Internal-displacement (IDP) totals update live via the DTM API v3; migrant-presence and context figures are periodic DTM rounds.</div>
+            <div style="font-size:11px;color:var(--text-muted);font-style:italic;margin-top:12px;border-top:1px solid var(--card-border);padding-top:8px;">Sensor feed — raw displacement &amp; migration figures from IOM DTM and UNHCR, not analysis. Internal-displacement (IDP) totals update live via the DTM API v3; migrant-presence figures are periodic DTM rounds; refugee/asylum figures are UNHCR end-year annual stock.</div>
         </div>
 
         <!-- LIBYA MAP -->
@@ -2519,6 +2520,7 @@
             }
             const disp = data.displacement || {};
             const hub = data.migration_hub || {};
+            const ref = data.refugees || {};
             const fmt = n => (typeof n === 'number' ? n.toLocaleString('en-US') : (n || '—'));
             const liveIdps = disp.dtm_api_idps || disp.total_idps || 0;
             const isLive = !!disp.dtm_api_idps;
@@ -2538,7 +2540,8 @@
             document.getElementById('displacementStats').innerHTML =
                 tile('Internal displacement (IDPs)', fmt(liveIdps), isLive ? 'live · DTM API' : 'last-known baseline') +
                 tile('Returnees', fmt(disp.idp_returnees), 'DTM mobility tracking') +
-                tile('Migrants present', fmt(hub.migrants_present || disp.migrants_present), 'DTM Migrant Report');
+                tile('Migrants present', fmt(hub.migrants_present || disp.migrants_present), 'DTM Migrant Report') +
+                (ref.hosted_total ? tile('Refugees hosted (UNHCR)', fmt(ref.hosted_total), 'end-' + (ref.data_year || '') + ' · annual stock') : '');
             const regionsEl = document.getElementById('displacementRegions');
             const regions = (data.dtm_raw && data.dtm_raw.region_level) ? data.dtm_raw.region_level.slice().sort((a,b)=>(b.idps||0)-(a.idps||0)).slice(0,5) : [];
             if (regions.length > 0) {
@@ -2550,6 +2553,20 @@
                 hubEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Migrant transit hub</div>' +
                     '<div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">Top origins: ' + hub.top_nationalities.join(' · ') + (hub.border_flows_q1_2026 ? '<br>' + hub.border_flows_q1_2026 : '') + (hub.sudan_spillover ? '<br>' + hub.sudan_spillover : '') + '</div>';
             } else { hubEl.innerHTML = ''; }
+            const refEl = document.getElementById('displacementRefugees');
+            if (refEl && ref.hosted_total) {
+                const origins = (ref.top_origins || []).slice(0, 5);
+                const top = origins[0];
+                const pct = (top && ref.hosted_total) ? Math.round(top.total / ref.hosted_total * 100) : null;
+                let rhtml = '<div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Refugees &amp; asylum-seekers hosted in Libya (UNHCR)</div>';
+                if (top && pct !== null) {
+                    rhtml += '<div style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:6px;"><strong style="color:var(--accent);">' + top.name + ' — ' + fmt(top.total) + '</strong> (~' + pct + '% of hosted total)</div>';
+                }
+                rhtml += origins.map(o => '<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(30,58,95,0.4);"><span>' + o.name + '</span><span style="color:var(--accent);font-weight:600;">' + fmt(o.total) + '</span></div>').join('');
+                if (ref.note) { rhtml += '<div style="font-size:10px;color:var(--text-muted);font-style:italic;margin-top:8px;">' + ref.note + '</div>'; }
+                rhtml += '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Source: UNHCR Refugee Data Finder' + (ref.data_as_of ? ' · ' + ref.data_as_of : '') + '</div>';
+                refEl.innerHTML = rhtml;
+            } else if (refEl) { refEl.innerHTML = ''; }
             const reportsEl = document.getElementById('displacementReports');
             const reports = data.reliefweb_reports || [];
             if (reports.length > 0) {
