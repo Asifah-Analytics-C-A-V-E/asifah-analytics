@@ -650,9 +650,7 @@
 <div class="articles-card">
     <div class="section-title" data-i18n="articlesTitle">📰 RHETORIC SIGNALS — ARTICLES</div>
     <div class="article-tabs" id="articleTabs">
-        <div class="article-tab active" data-tab="en"  onclick="setArticleTab('en')">EN <span class="article-tab-count" id="cnt_en">0</span></div>
-        <div class="article-tab" data-tab="uk"  onclick="setArticleTab('uk')">UK <span class="article-tab-count" id="cnt_uk">0</span></div>
-        <div class="article-tab" data-tab="ru"  onclick="setArticleTab('ru')">RU <span class="article-tab-count" id="cnt_ru">0</span></div>
+        <div class="article-tab active" data-tab="en"  onclick="setArticleTab('en')">SIGNALS <span class="article-tab-count" id="cnt_en">0</span></div>
         <div class="article-tab" data-tab="social"  onclick="setArticleTab('social')">SOCIAL <span class="article-tab-count" id="cnt_social">0</span></div>
         <div class="article-tab" data-tab="all"  onclick="setArticleTab('all')">ALL <span class="article-tab-count" id="cnt_all">0</span></div>
     </div>
@@ -1059,8 +1057,8 @@ function renderActors(data) {
                 <a href="${art.url || '#'}" target="_blank" class="article-link">${(art.title || '').slice(0, 90)}${art.title?.length > 90 ? '…' : ''}</a>
                 <div class="article-meta">${art.source || ''} · ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
             </div>`).join('');
-        const score = a.actor_score || 0;
-        const articleCount = a.article_count || 0;
+        const score = a.max_escalation_level ?? a.escalation_level ?? 0;
+        const articleCount = a.statement_count ?? ((a.top_articles && a.top_articles.length) || 0);
         return `
             <div class="actor-card ${panelClass}">
                 <div class="actor-header">
@@ -1140,9 +1138,8 @@ function renderBluf(data) {
 
 function renderBanner(data) {
     const score = data.theatre_score || data.pressure_score || 0;
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
-    const level = ALERT_TO_LEVEL[alertLevel] ?? 0;
+    // Libya tracker emits theatre_level (0-5) directly; no alert_level field.
+    const level = data.theatre_level ?? data.theatre_escalation_level ?? 0;
     const lv = lvl(level);
 
     document.getElementById('theatreScore').textContent = score;
@@ -1367,40 +1364,40 @@ function renderInterpretation(data) {
 // RENDER ARTICLES (5 tabs)
 // ══════════════════════════════════════════════════════════════
 function renderArticles(data) {
-    const en      = data.articles_en      || [];
-    const uk      = data.articles_uk      || [];
-    const ru      = data.articles_ru      || [];
-    const social  = []; // bluesky, telegram, reddit if exposed; else combine
-    const all = [...en, ...uk, ...ru].slice(0, 100);
+    // Libya nests its articles inside actors[].top_articles -- there is no top-level
+    // articles_en/uk/ru array. Flatten across all actors, dedupe by URL, then sort by
+    // escalation level (then recency) so the loudest signals surface first.
+    const actorsObj = data.actors || {};
+    const seen = new Set();
+    const all = [];
+    Object.values(actorsObj).forEach(a => (a.top_articles || []).forEach(art => {
+        const key = art.url || art.title;
+        if (key && !seen.has(key)) { seen.add(key); all.push(art); }
+    }));
+    all.sort((x, y) => (y.escalation_level || 0) - (x.escalation_level || 0)
+        || (new Date(y.published || 0) - new Date(x.published || 0)));
 
-    document.getElementById('cnt_en').textContent = en.length;
-    document.getElementById('cnt_uk').textContent = uk.length;
-    document.getElementById('cnt_ru').textContent = ru.length;
+    document.getElementById('cnt_en').textContent     = all.length;
     document.getElementById('cnt_social').textContent = (data.bluesky_count||0) + (data.telegram_count||0) + (data.reddit_count||0);
-    document.getElementById('cnt_all').textContent = all.length;
+    document.getElementById('cnt_all').textContent    = all.length;
 
     function renderTab(tab) {
-        let list = [];
-        if (tab === 'en')      list = en;
-        else if (tab === 'uk') list = uk;
-        else if (tab === 'ru') list = ru;
-        else if (tab === 'social') list = []; // social handled via counts only (no per-post array exposed here)
-        else                   list = all;
-
+        const list = (tab === 'social') ? [] : all;
         const body = document.getElementById('articleListBody');
         if (!list.length) {
-            body.innerHTML = `<div style="color:var(--text-muted);font-size:0.75rem;padding:14px;font-style:italic;">No articles in this language for current scan.</div>`;
+            body.innerHTML = `<div style="color:var(--text-muted);font-size:0.75rem;padding:14px;font-style:italic;">No signal articles in the current scan.</div>`;
             return;
         }
         body.innerHTML = list.slice(0, 30).map(a => {
             const sourceType = (a.source_type || 'rss').toLowerCase();
             const dt = a.published ? new Date(a.published).toLocaleDateString() : '';
+            const trig = a.trigger_phrase ? ` \u00b7 \u26a1 ${a.trigger_phrase}` : '';
             return `
                 <div class="article-list-item">
                     <span class="article-list-source-pill ${sourceType}">${sourceType}</span>
                     <div style="flex:1;">
-                        <a href="${a.url || '#'}" target="_blank" class="article-link">${(a.title || '').slice(0, 130)}${a.title?.length > 130 ? '…' : ''}</a>
-                        <div class="article-meta">${a.source || ''} · ${dt}</div>
+                        <a href="${a.url || '#'}" target="_blank" class="article-link">${(a.title || '').slice(0, 130)}${a.title?.length > 130 ? '\u2026' : ''}</a>
+                        <div class="article-meta">${a.source || ''} \u00b7 ${dt}${trig}</div>
                     </div>
                 </div>`;
         }).join('');
@@ -1409,7 +1406,6 @@ function renderArticles(data) {
     renderTab(currentArticleTab);
     window._renderArticleTab = renderTab;
 }
-
 function setArticleTab(tab) {
     currentArticleTab = tab;
     document.querySelectorAll('.article-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
@@ -1445,11 +1441,9 @@ function renderAll(data) {
     renderInterpretation(data);
     renderArticles(data);
 
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
-    renderLadder(ALERT_TO_LEVEL[alertLevel] ?? 0);
+    renderLadder(data.theatre_level ?? data.theatre_escalation_level ?? 0);
 
-    const classified = Object.values(data.actor_summaries || {}).reduce((s, a) => s + (a.article_count || 0), 0);
+    const classified = data.articles_classified || 0;
     document.getElementById('articlesClassified').textContent = `${T[currentLang].articlesClassified || 'Articles classified:'} ${classified}`;
 }
 
