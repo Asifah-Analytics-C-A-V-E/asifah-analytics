@@ -38,8 +38,8 @@
     --accent-glow:    rgba(14,165,233,0.15);
     --card-glow:      0 1px 3px rgba(0,0,0,0.06);
     --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
-    --watermark-opacity: 0.05;
-    --watermark-filter: none;
+    --watermark-opacity: 0.5;
+    --watermark-size: 500px;
     --loading-overlay-bg: rgba(248,250,252,0.98);
     --loading-spinner-bg: rgba(14,165,233,0.2);
 }
@@ -60,8 +60,8 @@
     --accent-glow:    rgba(56,189,248,0.2);
     --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
     --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
-    --watermark-opacity: 0.18;
-    --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+    --watermark-opacity: 1;
+    --watermark-size: 800px;
     --loading-overlay-bg: rgba(6,13,26,0.98);
     --loading-spinner-bg: rgba(56,189,248,0.2);
 }
@@ -74,19 +74,15 @@ body {
     min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;
 }
-body::before {
-    content: '';
+.watermark {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 110vmin; height: 110vmin;
-    min-width: 800px; min-height: 800px;
-    max-width: 1400px; max-height: 1400px;
-    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-    background-size: contain; background-repeat: no-repeat; background-position: center;
+    width: var(--watermark-size); height: var(--watermark-size);
     opacity: var(--watermark-opacity);
-    filter: var(--watermark-filter);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: 135%; background-repeat: no-repeat; background-position: center;
+    border-radius: 50%; transition: all 0.4s ease;
 }
 
 /* ── CONTAINER + LAYOUT ── */
@@ -687,6 +683,7 @@ footer .footer-copyright {
 </style>
 </head>
 <body>
+<div class="watermark"></div>
 <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
