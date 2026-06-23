@@ -176,13 +176,25 @@ class LeaderSignalsCard extends HTMLElement {
     `;
 
     this.shadowRoot.addEventListener('click', (e) => {
-      const toggle = e.target.closest('.sw-toggle');
-      if (toggle) {
+      const swToggle = e.target.closest('.sw-toggle');
+      if (swToggle) {
         e.preventDefault();
-        const block = toggle.closest('.so-what');
+        const block = swToggle.closest('.so-what');
         if (block) {
           const isOpen = block.classList.toggle('open');
-          toggle.textContent = isOpen ? 'Hide full analysis ▴' : 'Read full analysis ▾';
+          swToggle.textContent = isOpen ? 'Hide full analysis \u25b4' : 'Read full analysis \u25be';
+        }
+        return;
+      }
+      // Speaker-group expand/collapse (group-by-speaker layout).
+      const lsgToggle = e.target.closest('.lsg-toggle');
+      if (lsgToggle) {
+        e.preventDefault();
+        const grp = lsgToggle.closest('.lsg');
+        if (grp) {
+          const open = grp.classList.toggle('open');
+          const chev = lsgToggle.querySelector('.lsg-chevron');
+          if (chev) chev.textContent = open ? '\u25b4' : '\u25be';
         }
       }
     });
@@ -276,8 +288,79 @@ class LeaderSignalsCard extends HTMLElement {
       `;
     }
 
-    const listHtml = interventions.map(iv => this._renderIntervention(iv, mode)).join('');
-    body.innerHTML = breakdownHtml + `<div class="intervention-list">${listHtml}</div>`;
+    // Group by speaker -- one expandable card per speaker (collapsed by default).
+    // Pan Gongsheng's 5 signals collapse into a single card; Xi's 3 into another.
+    const groups = this._groupBySpeaker(interventions);
+    const groupsHtml = groups.map(g => this._renderSpeakerGroup(g, mode)).join('');
+    body.innerHTML = breakdownHtml + `<div class="speaker-group-list">${groupsHtml}</div>`;
+  }
+
+  // Group interventions by speaker; sort groups by signal count desc, then latest.
+  _groupBySpeaker(interventions) {
+    const map = new Map();
+    interventions.forEach(iv => {
+      const key = (iv.speaker || 'Unknown speaker').trim();
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(iv);
+    });
+    const groups = [];
+    map.forEach((items, speaker) => {
+      items.sort((a, b) => this._dateVal(b.date) - this._dateVal(a.date)); // latest first
+      groups.push({ speaker, items });
+    });
+    groups.sort((a, b) => {
+      if (b.items.length !== a.items.length) return b.items.length - a.items.length;
+      return this._dateVal(b.items[0].date) - this._dateVal(a.items[0].date);
+    });
+    return groups;
+  }
+
+  _dateVal(d) {
+    const t = d ? Date.parse(d) : NaN;
+    return isNaN(t) ? 0 : t;
+  }
+
+  // One expandable speaker card: collapsed header (speaker, role, count, teaser)
+  // + a body holding that speaker's individual intervention cards.
+  _renderSpeakerGroup(group, mode) {
+    const items = group.items;
+    const lead = items[0] || {};
+    const role = this._humanizeRole(lead.role);
+    const n = items.length;
+    const countLabel = `${n} ${n === 1 ? 'signal' : 'signals'}`;
+    const dirMeta = this._directionMeta(lead.direction);
+    const commodities = Array.from(new Set(
+      items.map(iv => (iv.commodity || '').toUpperCase()).filter(Boolean)
+    ));
+    const commTags = commodities.slice(0, 4)
+      .map(c => `<span class="lsg-commtag">${this._escape(c)}</span>`).join('');
+    const moreComm = commodities.length > 4
+      ? `<span class="lsg-commtag lsg-commtag-more">+${commodities.length - 4}</span>` : '';
+    const teaser = this._escape(lead.quote_short || '');
+    const itemsHtml = items.map(iv => this._renderIntervention(iv, mode)).join('');
+
+    return `
+      <div class="lsg">
+        <button class="lsg-toggle" type="button">
+          <span class="lsg-icon" title="${dirMeta.label}">${dirMeta.icon}</span>
+          <span class="lsg-headline">
+            <span class="lsg-name-row">
+              <strong class="lsg-name">${this._escape(group.speaker)}</strong>
+              <span class="lsg-role">${role ? '· ' + this._escape(role) : ''}</span>
+            </span>
+            ${teaser ? `<span class="lsg-teaser">${teaser}</span>` : ''}
+            ${commTags || moreComm ? `<span class="lsg-commrow">${commTags}${moreComm}</span>` : ''}
+          </span>
+          <span class="lsg-right">
+            <span class="lsg-count">${countLabel}</span>
+            <span class="lsg-chevron">▾</span>
+          </span>
+        </button>
+        <div class="lsg-body">
+          <div class="intervention-list">${itemsHtml}</div>
+        </div>
+      </div>
+    `;
   }
 
   _renderIntervention(iv, mode) {
@@ -716,6 +799,26 @@ class LeaderSignalsCard extends HTMLElement {
       .breakdown-pill b { color: var(--_accent); font-weight: 700; margin-left: 4px; }
 
       .intervention-list { display: flex; flex-direction: column; gap: 14px; }
+      /* --- Speaker grouping: one expandable card per speaker --- */
+      .speaker-group-list { display: flex; flex-direction: column; gap: 12px; }
+      .lsg { border: 1px solid var(--_border); border-radius: var(--_radius-sm); background: rgba(255,255,255,0.015); overflow: hidden; }
+      .lsg-toggle { width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; cursor: pointer; text-align: left; background: transparent; border: none; color: inherit; font: inherit; transition: background 0.15s ease; }
+      .lsg-toggle:hover { background: rgba(56,189,248,0.04); }
+      .lsg-icon { font-size: 1.3em; flex-shrink: 0; line-height: 1.2; }
+      .lsg-headline { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+      .lsg-name-row { font-size: 0.95em; color: var(--_text); }
+      .lsg-name { font-weight: 700; }
+      .lsg-role { color: var(--_text-3); font-weight: 400; font-size: 0.85em; }
+      .lsg-teaser { font-size: 0.85em; color: var(--_text-2); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+      .lsg-commrow { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+      .lsg-commtag { font-size: 0.65em; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: rgba(251,191,36,0.12); color: #fbbf24; letter-spacing: 0.03em; }
+      .lsg-commtag-more { background: rgba(255,255,255,0.05); color: var(--_text-3); }
+      .lsg-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .lsg-count { font-size: 0.72em; font-weight: 700; white-space: nowrap; padding: 3px 10px; border-radius: 999px; background: rgba(56,189,248,0.1); color: var(--_accent); }
+      .lsg-chevron { color: var(--_text-3); font-size: 0.9em; transition: color 0.15s ease; }
+      .lsg-toggle:hover .lsg-chevron { color: var(--_accent); }
+      .lsg-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; padding: 0 14px; }
+      .lsg.open .lsg-body { max-height: 6000px; transition: max-height 0.6s ease-in; padding: 0 14px 14px; }
       .intervention-wrapper { display: flex; flex-direction: column; }
 
       .intervention {
