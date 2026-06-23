@@ -541,6 +541,61 @@
             --ca-butterfly-bg-strong: rgba(109,40,217,0.12);
         }
 
+        /* ===== STRUCTURAL CONVERGENCE PANEL (Slice 3 — Jun 22 2026) =====
+           Exposure x World Bank structural stress. Orange "stress" register,
+           distinct from butterfly violet. Convergence-not-prediction. */
+        :root {
+            --ca-conv:           #f97316;            /* orange-500 — structural stress */
+            --ca-conv-bg:        rgba(249,115,22,0.07);
+            --ca-conv-bg-strong: rgba(249,115,22,0.14);
+        }
+        [data-theme="light"] {
+            --ca-conv:           #c2410c;            /* orange-700 for light theme */
+            --ca-conv-bg:        rgba(194,65,12,0.06);
+            --ca-conv-bg-strong: rgba(194,65,12,0.12);
+        }
+        .convergence-panel { margin-bottom: 28px; }
+        .conv-intro {
+            font-size: 0.86rem; line-height: 1.55; color: var(--text-primary);
+            background: var(--ca-conv-bg); border-left: 3px solid var(--ca-conv);
+            padding: 11px 15px; border-radius: 6px; margin-bottom: 10px;
+        }
+        .conv-disclaimer {
+            font-size: 0.7rem; line-height: 1.5; color: var(--text-muted);
+            font-style: italic; margin-bottom: 14px; padding: 0 2px;
+        }
+        .ca-section.convergence {
+            background: var(--ca-conv-bg); border: 1px solid rgba(249,115,22,0.30);
+            border-top: 1px solid rgba(249,115,22,0.30); border-radius: 8px;
+            padding: 10px 14px; margin-top: 0; margin-bottom: 8px;
+        }
+        [data-theme="dark"] .ca-section.convergence { box-shadow: 0 0 12px rgba(249,115,22,0.08); }
+        .ca-section.convergence .ca-section-title { color: var(--ca-conv); }
+        .ca-section.convergence .ca-section-count { color: var(--ca-conv); }
+        .ca-section.convergence .ca-section-toggle:hover { background: var(--ca-conv-bg-strong); }
+        .conv-cell {
+            padding: 10px 12px; background: var(--bg-signal); border-radius: 6px;
+            margin-bottom: 8px; border-left: 3px solid var(--ca-conv);
+        }
+        .conv-cell:last-child { margin-bottom: 0; }
+        .conv-cell-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+        .conv-country { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+        .conv-pill {
+            font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color); color: var(--text-secondary);
+        }
+        .conv-sev {
+            font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 2px 8px; border-radius: 999px;
+        }
+        .conv-sev.sev-2 { background: rgba(245,158,11,0.18); color: #f59e0b; border: 1px solid rgba(245,158,11,0.45); }
+        .conv-sev.sev-3 { background: rgba(239,68,68,0.18); color: #ef4444; border: 1px solid rgba(239,68,68,0.45); }
+        .conv-stress { font-size: 0.72rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 6px; }
+        .conv-read { font-size: 0.84rem; line-height: 1.5; color: var(--text-primary); }
+        .conv-empty {
+            font-size: 0.84rem; color: var(--text-muted); padding: 12px 14px;
+            background: var(--bg-signal); border-radius: 6px; border-left: 3px solid var(--border-color);
+        }
         .ca-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -1727,6 +1782,20 @@
             <div class="news-empty">Loading exposure matrix...</div>
         </div>
 
+        <!-- ========== STRUCTURAL CONVERGENCE (Slice 3 — Jun 22 2026) ========== -->
+        <!-- Exposure x World Bank structural stress. Reads
+             /api/commodity-structural-convergence. Stressed-only, commodity-lens,
+             collapsed accordion per commodity. Convergence-not-prediction. -->
+        <div class="section-header">
+            <span class="section-icon">🌐</span>
+            <span class="section-title">Exposure × Structural Stress</span>
+            <span class="section-desc">Commodities whose exposed players also carry independent World Bank structural stress — convergence, not prediction</span>
+        </div>
+
+        <div class="convergence-panel" id="convergencePanel">
+            <div class="news-empty">Loading structural convergence…</div>
+        </div>
+        
         <!-- ========== LEADER COMMODITY SIGNALS (Butterfly Build Phase 1) ========== -->
         <!-- "Jawboning" — verbal interventions by senior officials that move commodity
              markets without formal policy action. Bloomberg sees the price tick;
@@ -1874,6 +1943,7 @@ const API_BASE = 'https://asifah-backend.onrender.com';
 const ENDPOINT_PRESSURE = `${API_BASE}/api/commodity-pressure`;
 const ENDPOINT_PRICES = `${API_BASE}/api/commodity-prices`;
 const ENDPOINT_FFPI = `${API_BASE}/api/food-price-index`;
+const ENDPOINT_CONVERGENCE = `${API_BASE}/api/commodity-structural-convergence`;
 
 // ============================================================
 // STATIC METADATA — country flags + display names
@@ -1972,6 +2042,7 @@ const COMMODITY_ORDER = [
 let pressureData = null;
 let pricesData = null;
 let ffpiData = null;          // FAO Food Price Index bundle (Stage 1b)
+let convergenceData = null;   // commodity x WB-structural convergence (Slice 3)
 let allSignals = [];          // flat list of news signals (from pressureData.top_signals)
 let activeNewsFilter = 'all';
 let chartInstances = {};      // Chart.js instances keyed by commodity_id
@@ -2038,6 +2109,19 @@ async function loadAll(forceRefresh = false) {
             console.warn('FFPI fetch failed:', e);
         }
 
+        // Structural convergence — independent, non-blocking (Slice 3).
+        try {
+            const convUrl = forceRefresh ? `${ENDPOINT_CONVERGENCE}?_=${Date.now()}` : ENDPOINT_CONVERGENCE;
+            const convRes = await fetch(convUrl).then(r => r.json());
+            if (convRes && Array.isArray(convRes.commodities)) {
+                convergenceData = convRes;
+            } else {
+                console.warn('Convergence fetch returned no commodities:', convRes);
+            }
+        } catch (e) {
+            console.warn('Convergence fetch failed:', e);
+        }
+
         renderEverything();
 
     } catch (err) {
@@ -2063,6 +2147,7 @@ function renderEverything() {
     renderStatusStrip();
     renderFFPI();                // Stage 1b — FAO Food Price Index card
     renderExposureMatrix();
+    renderConvergence();         // Slice 3 — exposure x structural stress
     renderCommodityCards();
     renderNewsFilters();
     renderNewsList();
@@ -2159,6 +2244,72 @@ function toggleCaSection(sectionId) {
     if (sec) sec.classList.toggle('expanded');
 }
 
+    // ════════════════════════════════════════════════════════════════
+// STRUCTURAL CONVERGENCE (Slice 3 — Jun 22 2026)
+// Renders /api/commodity-structural-convergence: commodities whose exposed
+// players also carry independent World Bank structural stress. Stressed-only,
+// commodity-lens, collapsed accordion. Absence stays honest (missing != calm).
+// ════════════════════════════════════════════════════════════════
+const CONV_FLAGS = { egypt:'🇪🇬', nigeria:'🇳🇬', lebanon:'🇱🇧', turkey:'🇹🇷', argentina:'🇦🇷',
+    iran:'🇮🇷', venezuela:'🇻🇪', libya:'🇱🇾', jordan:'🇯🇴', morocco:'🇲🇦', algeria:'🇩🇿',
+    angola:'🇦🇴', guinea:'🇬🇳', drc:'🇨🇩', india:'🇮🇳', philippines:'🇵🇭', indonesia:'🇮🇩',
+    kazakhstan:'🇰🇿', ukraine:'🇺🇦', russia:'🇷🇺', china:'🇨🇳', vietnam:'🇻🇳', thailand:'🇹🇭',
+    mexico:'🇲🇽', peru:'🇵🇪', chile:'🇨🇱', botswana:'🇧🇼', south_africa:'🇿🇦',
+    saudi_arabia:'🇸🇦', cuba:'🇨🇺', belarus:'🇧🇾', hungary:'🇭🇺' };
+
+function _convEsc(s){ return (s==null?'':String(s)).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+function renderConvergence() {
+    var el = document.getElementById('convergencePanel');
+    if (!el) return;
+    var d = convergenceData;
+
+    if (!d || !d.structural_feed_present) {
+        el.innerHTML = '<div class="conv-empty">⚠️ Structural-stress feed warming up — no convergence computed yet. (Missing data, not an all-clear.)</div>';
+        return;
+    }
+    var commodities = Array.isArray(d.commodities) ? d.commodities : [];
+    if (commodities.length === 0) {
+        el.innerHTML = '<div class="conv-empty">No commodity currently shows an exposed-and-structurally-stressed cell at the gate. Calm by this measure.</div>';
+        return;
+    }
+
+    var html = '';
+    if (d.bluf) html += '<div class="conv-intro">' + _convEsc(d.bluf) + '</div>';
+    if (d.disclaimer) html += '<div class="conv-disclaimer">' + _convEsc(d.disclaimer) + '</div>';
+
+    commodities.forEach(function(c){
+        var secId = 'convSec_' + c.commodity;
+        var icon = c.icon || '•';
+        var n = c.cell_count || (c.cells ? c.cells.length : 0);
+        var plural = (n === 1) ? 'player' : 'players';
+        html += '<div class="ca-section convergence" id="' + secId + '">';
+        html +=   '<div class="ca-section-toggle" onclick="toggleCaSection(\'' + secId + '\')">';
+        html +=     '<div class="ca-section-title">' + icon + ' <span>' + _convEsc(c.name) + '</span> ';
+        html +=       '<span class="ca-section-count">' + n + ' stressed ' + plural + '</span></div>';
+        html +=     '<span class="ca-chevron">▾</span>';
+        html +=   '</div>';
+        html +=   '<div class="ca-section-body">';
+        (c.cells || []).forEach(function(cell){
+            var flag = CONV_FLAGS[cell.country] || '';
+            var sev = cell.stress_severity || 0;
+            var roleLabel = (cell.role || '').replace(/_/g,' ');
+            html += '<div class="conv-cell">';
+            html +=   '<div class="conv-cell-head">';
+            html +=     '<span class="conv-country">' + (flag ? flag + ' ' : '') + _convEsc(cell.country_name) + '</span>';
+            html +=     '<span class="conv-pill">' + _convEsc(roleLabel) + '</span>';
+            html +=     '<span class="conv-sev sev-' + (sev >= 3 ? '3' : '2') + '">severity ' + sev + '</span>';
+            html +=   '</div>';
+            if (cell.stress_summary) html += '<div class="conv-stress">⚠ ' + _convEsc(cell.stress_summary) + '</div>';
+            if (cell.read) html += '<div class="conv-read">' + _convEsc(cell.read) + '</div>';
+            html += '</div>';
+        });
+        html +=   '</div>';
+        html += '</div>';
+    });
+    el.innerHTML = html;
+}
+    
 // Freshness helpers — turn an ISO timestamp into a human age, so the analysis
 // card can show how old its scan is right next to the prose.
 function caRelativeAge(iso) {
