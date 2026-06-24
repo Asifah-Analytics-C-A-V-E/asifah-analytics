@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics - Greece Stability Index v1.1.0 — May 2026 -->
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greece Stability Index | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ── ARCTIC / ICE COLOR SCHEME ── */
+        :root {
+            --bg:           #060d1a;
+            --card:         #0d1b2e;
+            --border:       #1e3a5f;
+            --accent:       #38bdf8;
+            --accent-glow:  rgba(56,189,248,0.18);
+            --text:         #e2f0fb;
+            --text-2:       #93c5fd;
+            --text-muted:   #4a7fa5;
+            --red:          #ef4444;
+            --amber:        #f59e0b;
+            --green:        #22c55e;
+            --wm-filter:    saturate(3) brightness(0.8) hue-rotate(185deg);
+        }
+        [data-theme="light"] {
+            --bg:           #f0f5fa;
+            --card:         #ffffff;
+            --border:       #c8daea;
+            --text:         #1a2a3a;
+            --text-2:       #2c4a6e;
+            --text-muted:   #7a9ab8;
+            --wm-filter:    none;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110vmin; height: 110vmin;
+            min-width: 800px; min-height: 800px;
+            max-width: 1400px; max-height: 1400px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.22;
+            filter: var(--wm-filter);
+            z-index: 0;
+            pointer-events: none;
+        }
+        [data-theme="light"] body::before { opacity: 0.06; }
+
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* ── LOADING ── */
+        .loading-overlay {
+            position: fixed; inset: 0;
+            background: rgba(6,13,26,0.97);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-spinner {
+            width: 56px; height: 56px;
+            border: 4px solid rgba(56,189,248,0.2);
+            border-top-color: #38bdf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 28px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-title { font-size: 20px; font-weight: 700; color: #38bdf8; margin-bottom: 18px; letter-spacing: 2px; }
+        .loading-step { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px; font-size: 13px; color: var(--text-2); }
+        .loading-step.active { color: #38bdf8; font-weight: 700; }
+        .loading-step.complete { color: #22c55e; }
+        .step-icon { font-size: 15px; min-width: 18px; }
+        .loading-error { color: #f87171; font-size: 13px; margin-top: 14px; padding: 10px 14px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 8px; display: none; }
+
+        /* ── HEADER ── */
+        header {
+            background: linear-gradient(135deg, #060d1a, #0d1b2e);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 26px 30px;
+            margin-bottom: 18px;
+            display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+            box-shadow: 0 0 40px rgba(56,189,248,0.07);
+            position: relative;
+        }
+        [data-theme="light"] header { background: linear-gradient(135deg, #1c3a5c, #2a5080); }
+        .header-logo { width: 68px; height: 68px; border-radius: 50%; border: 2px solid rgba(56,189,248,0.35); flex-shrink: 0; }
+        .header-center { flex: 1; text-align: center; }
+        .header-flag { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; }
+        .header-title { font-size: clamp(1.2rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e2f0fb; margin: 4px 0; }
+        .header-subtitle { font-size: 0.73rem; color: var(--text-muted); letter-spacing: 1px; }
+        .header-ts { font-size: 0.63rem; color: var(--text-muted); margin-top: 4px; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 13px; border-radius: 8px;
+            border: 1px solid rgba(56,189,248,0.3);
+            color: var(--accent); font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 1px; text-decoration: none; text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .back-link:hover { border-color: var(--accent); background: rgba(56,189,248,0.08); }
+        .lang-group { display: flex; gap: 4px; }
+        .lang-btn {
+            font-family: 'Times New Roman', serif;
+            padding: 4px 10px; border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent; color: var(--text-muted);
+            font-size: 0.68rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .theme-row { display: flex; align-items: center; gap: 7px; }
+        .theme-label { font-size: 0.58rem; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+        .theme-toggle { position: relative; width: 44px; height: 22px; cursor: pointer; }
+        .theme-toggle input { opacity: 0; width: 0; height: 0; }
+        .theme-slider { position: absolute; inset: 0; border-radius: 11px; background: var(--border); transition: 0.3s; display: flex; align-items: center; padding: 2px; }
+        .theme-slider::before { content: '☀️'; width: 18px; height: 18px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: 0.3s; }
+        [data-theme="light"] .theme-slider { background: var(--accent); }
+        [data-theme="light"] .theme-slider::before { content: '🌙'; margin-left: 22px; }
+
+        /* ── BANNERS ── */
+        .banner-red {
+            background: linear-gradient(135deg, #1a0000, #2a0000);
+            border: 1px solid rgba(239,68,68,0.5);
+            border-radius: 12px; padding: 15px 18px; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        }
+        .banner-amber {
+            background: linear-gradient(135deg, #1a0e00, #2a1800);
+            border: 1px solid rgba(245,158,11,0.5);
+            border-radius: 12px; padding: 15px 18px; margin-bottom: 18px;
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        }
+        .level-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 4px;
+            font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; color: white;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 0 6px rgba(30,58,95,0.25);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .card-title {
+            font-size: 0.63rem; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 14px;
+            padding-bottom: 9px; border-bottom: 1px solid var(--border);
+        }
+
+        /* ── MAP ── */
+        .map-frame {
+            width: 100%; height: 420px;
+            border-radius: 8px; border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        /* ── KNOWLEDGE LIBRARY ── */
+        .knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+        .knowledge-card {
+            background: rgba(6,13,26,0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            transition: all 0.3s;
+        }
+        [data-theme="light"] .knowledge-card { background: #f8fbfe; }
+        .knowledge-card:hover { border-color: rgba(56,189,248,0.35); }
+        .knowledge-header {
+            padding: 14px 17px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(30,58,95,0.2);
+            transition: background 0.3s;
+        }
+        [data-theme="light"] .knowledge-header { background: rgba(56,189,248,0.06); }
+        .knowledge-header:hover { background: rgba(30,58,95,0.32); }
+        .knowledge-header-title { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; color: var(--text); }
+        .collapse-icon { font-size: 14px; color: var(--accent); transition: transform 0.3s; }
+        .knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+        .knowledge-content {
+            padding: 15px 17px;
+            max-height: 520px; overflow-y: auto;
+            transition: max-height 0.3s ease, padding 0.3s;
+        }
+        .knowledge-card.collapsed .knowledge-content { max-height: 0; padding: 0 17px; overflow: hidden; }
+        .knowledge-content p { font-size: 13px; line-height: 1.6; color: var(--text-2); margin-bottom: 9px; }
+        .knowledge-content ul { margin-left: 17px; margin-bottom: 9px; }
+        .knowledge-content li { font-size: 13px; line-height: 1.6; color: var(--text-2); margin-bottom: 5px; }
+        .knowledge-content strong { color: var(--text); }
+        .kl-note { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
+        .report-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 7px; margin-top: 10px; }
+        .report-link {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 7px 11px;
+            background: rgba(56,189,248,0.1); color: var(--accent);
+            text-decoration: none; border-radius: 6px;
+            font-size: 11px; font-weight: 700;
+            border: 1px solid rgba(56,189,248,0.22);
+            transition: all 0.2s;
+        }
+        .report-link:hover { background: rgba(56,189,248,0.18); }
+
+        /* ── ARTICLES ── */
+        .article-item {
+            background: rgba(6,13,26,0.6);
+            padding: 13px; border-radius: 8px; margin-bottom: 9px;
+            border-left: 3px solid var(--accent);
+            transition: all 0.2s;
+        }
+        [data-theme="light"] .article-item { background: #f8fbfe; }
+        .article-item:hover { transform: translateX(4px); }
+        .article-title { color: var(--text); font-size: 13px; margin-bottom: 3px; font-weight: 500; line-height: 1.4; }
+        .article-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .article-link { color: var(--accent); text-decoration: none; font-size: 12px; }
+        .article-link:hover { text-decoration: underline; }
+
+        /* ── ARTICLE TABS (canonical Russia pattern) ── */
+        .tab-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+        .tab-btn { padding: 6px 15px; border-radius: 6px; border: 2px solid var(--card-border); background: transparent; color: var(--text-muted); font-family: 'Times New Roman', serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .tab-btn:hover { color: var(--accent); border-color: rgba(56,189,248,0.5); }
+        .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .tab-count { display: inline-block; background: rgba(255,255,255,0.18); padding: 1px 7px; border-radius: 10px; font-size: 10px; margin-left: 4px; font-weight: 600; }
+        .tab-btn.active .tab-count { background: rgba(0,0,0,0.25); color: #000; }
+
+        /* ── FOOTER ── */
+        .page-footer {
+            text-align: center; padding: 22px 0 30px;
+            font-size: 0.58rem; color: var(--text-muted); letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: center; text-align: center; }
+            .header-right { align-items: center; }
+            .knowledge-categories { grid-template-columns: 1fr; }
+        }
+
+        /* ── PAGE WITH SIDEBAR (canonical) ── */
+        .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+        .nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+        .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+        .nav-btn { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border-radius: 7px; background: rgba(13,27,46,0.6); border: 1px solid rgba(56,189,248,0.18); color: #e2f0fb; font-family: 'Times New Roman', serif; font-weight: 700; font-size: 11px; letter-spacing: 0.3px; text-decoration: none; transition: all 0.2s; overflow: hidden; }
+        [data-theme="light"] .nav-btn { color: var(--text-secondary); }
+        .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+        .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #38bdf8; }
+        .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); border-color: rgba(56,189,248,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(56,189,248,0.12); }
+        .nav-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); border-color: rgba(34,197,94,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+        .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+        .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+        [data-theme="light"] .nav-btn.inactive-nav { color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
+        .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+        .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+        .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+        .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+        .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+        .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+        .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+        .nav-btn.tracker-btn.current-page { border-color: rgba(245,158,11,0.7); background: linear-gradient(135deg, rgba(245,158,11,0.20) 0%, rgba(217,119,6,0.12) 100%); box-shadow: 0 0 18px rgba(245,158,11,0.22); }
+        .nav-btn.tracker-btn.current-page .nav-btn-status { color: #f59e0b; }
+        .main-content { flex: 1; min-width: 0; }
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001; background: var(--card, #0d1b2e); border: 1px solid var(--border, #1e3a5f); color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
+            .page-with-sidebar { display: block; }
+            .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px; overflow-y: auto; padding: 56px 14px 24px; margin: 0; background: var(--card, #0d1b2e); border-right: 1px solid var(--border, #1e3a5f); z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .nav-sidebar.open { transform: translateX(0); }
+        }
+
+        /* ── RHETORIC TRACKER BANNER (canonical green pattern, matches Israel) ── */
+        .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+        .rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+        .rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+        .rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+
+        /* ── RHETORIC DETAIL CARD (canonical Russia pattern) ── */
+        .rhetoric-card { background: var(--card-bg); border: 2px solid rgba(56,189,248,0.35); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+        .rhetoric-actor-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); }
+        .rhetoric-actor-row:last-child { border-bottom: none; }
+        .rhetoric-signal-row { padding: 6px 0; border-bottom: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .rhetoric-signal-row:last-child { border-bottom: none; }
+        .rhetoric-signal-label { font-weight: 700; color: #38bdf8; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; font-family: 'Courier New', monospace; }
+    </style>
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div style="text-align:center;">
+        <div class="loading-title">Loading Greece Stability Data</div>
+        <div>
+            <div class="loading-step active" id="step1"><span class="step-icon">⏳</span> Fetching OSINT articles on Greece...</div>
+            <div class="loading-step" id="step2"><span class="step-icon">⏳</span> Scanning Aegean &amp; Eastern-Mediterranean signals...</div>
+            <div class="loading-step" id="step3"><span class="step-icon">⏳</span> Analyzing Greece-Turkey, NATO posture &amp; Evros dynamics...</div>
+            <div class="loading-step" id="step4"><span class="step-icon">⏳</span> Rendering dashboard...</div>
+        </div>
+        <div style="margin-top:18px;font-size:11px;color:var(--text-muted);font-style:italic;">This may take 20–40 seconds...</div>
+        <div class="loading-error" id="loadingError"></div>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- HEADER -->
+<header>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+        <a href="europe.html" class="back-link" data-i18n="backLink">← Back to Europe</a>
+    </div>
+    <div class="header-center">
+        <div class="header-flag">🇬🇷 <span data-i18n="pageFlag">GREECE</span></div>
+        <div class="header-title" data-i18n="pageTitle">GREECE STABILITY INDEX</div>
+        <div class="header-subtitle" data-i18n="pageSubtitle">Aegean & Greece-Turkey Friction · Souda Bay Naval Hub · Eastern-Med Energy & EEZ · Cyprus Reinforcement · Evros Border</div>
+        <div class="header-ts">Last updated: <span id="lastUpdated">Loading...</span></div>
+    </div>
+    <div class="header-right">
+        <div class="lang-group">
+            <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+            <button class="lang-btn" onclick="setLang('fr',this)">FR</button>
+            <button class="lang-btn" onclick="setLang('ru',this)">RU</button>
+            <button class="lang-btn" onclick="setLang('de',this)">DE</button>
+        </div>
+        <div class="theme-row">
+            <span class="theme-label">THEME</span>
+            <label class="theme-toggle">
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()"/>
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+</header>
+
+<!-- PAGE WITH SIDEBAR -->
+<div class="page-with-sidebar">
+
+<!-- NAV SIDEBAR -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label">Dashboards</div>
+    <div class="nav-btn inactive-nav">
+        <span class="nav-btn-label">🌍 Africa</span>
+        <span class="nav-btn-status">🔒 Future</span>
+    </div>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Greece</div>
+    <a href="rhetoric-greece.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🇬🇷 Pressure Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="greece-stability.html" class="nav-btn active-nav current-page">
+        <span class="nav-btn-label">🇬🇷 Stability Index</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+<!-- WORLDWIDE CAUTION (canonical bright red) -->
+<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);">
+    <div style="font-size:24px;flex-shrink:0;">🚨</div>
+    <div style="flex:1;">
+        <div style="font-size:12px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;" data-i18n="cautionLabel">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size:12px;color:#fde8e8;line-height:1.4;" data-i18n="cautionText">U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in the Smart Traveler Enrollment Program (STEP).</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;" data-i18n="viewCaution">VIEW CAUTION →</a>
+</div>
+
+<!-- GREECE TRAVEL ADVISORY — LEVEL 2 (SHELL — verify level/text) -->
+<div style="background:linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%);border:2px solid #f59e0b;border-radius:10px;padding:14px 20px;margin-bottom:15px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+    <div style="font-size:24px;flex-shrink:0;">🇬🇷</div>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:bold;color:#fcd34d;text-transform:uppercase;letter-spacing:1.5px;" data-i18n="advisoryLabel">U.S. State Department — Greece Travel Advisory</span>
+            <span style="background:#f59e0b;color:white;font-size:10px;font-weight:800;padding:2px 8px;border-radius:3px;letter-spacing:1px;" data-i18n="advisoryLevel">LEVEL 2</span>
+        </div>
+        <div style="font-size:12px;color:#e2e8f0;line-height:1.4;" data-i18n="advisoryText"><strong style="color:#f59e0b;">Exercise Increased Caution</strong> — Greece is a stable NATO member; this level reflects the broader Eastern-Mediterranean security environment and periodic Aegean air activity rather than country-specific instability. [SHELL — verify current State Dept level &amp; text before publishing.]</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/greece-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;" data-i18n="viewAdvisory">VIEW ADVISORY →</a>
+</div>
+
+<!-- GREECE RHETORIC TRACKER BANNER (canonical green pattern) -->
+<div class="rhetoric-banner-canonical" id="rhetoricPressureCard" style="display:none;">
+    <div style="font-size:24px;flex-shrink:0;">📡</div>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;" data-i18n="rhetoricLabel">Greece Rhetoric Tracker — Live</span>
+            <span class="rhet-banner-badge" id="rhetoricPill">LOADING</span>
+            <span class="rhet-banner-badge" id="rhetoricScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+        </div>
+        <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="rhetoricHeadline">Loading Greece pressure assessment...</div>
+        <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="rhetoricDetail"></div>
+    </div>
+    <a href="rhetoric-greece.html" class="rhet-banner-link" data-i18n="rhetoricLink">Open Tracker →</a>
+</div>
+
+<!-- GREECE STRATEGIC CONTEXT BANNER -->
+<div style="background:linear-gradient(135deg,#0d1b2e,#1e3a5f);border:2px solid rgba(56,189,248,0.4);border-radius:12px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div>
+        <div style="font-size:0.63rem;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:5px;" data-i18n="contextLabel">📡 STRATEGIC SIGNAL</div>
+        <div style="font-size:0.82rem;color:var(--text);font-weight:700;" data-i18n="contextHeadline">Aegean Friction · Eastern-Med Energy · NATO Forward Posture</div>
+        <div style="font-size:0.72rem;color:var(--text-2);margin-top:3px;" data-i18n="contextSub">Greece sits at the intersection of Aegean Greece-Turkey friction, Eastern-Mediterranean energy and EEZ delimitation disputes, NATO forward basing (Souda Bay, Alexandroupoli) and Evros migration pressure. [SHELL — replace with the live strategic signal.]</div>
+    </div>
+    <div style="text-align:right;">
+        <div style="font-size:0.58rem;color:var(--text-muted);letter-spacing:1px;" data-i18n="contextTagLabel">Source:</div>
+        <div style="font-size:0.72rem;color:var(--accent);font-style:italic;" data-i18n="contextQuote">"Eastern Mediterranean — standing watch"</div>
+    </div>
+</div>
+
+<!-- GREECE PRESSURE TRACKER DETAIL CARD (canonical Russia pattern) -->
+<div class="rhetoric-card" id="greeceRhetoricCard" style="display:none;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 <span data-i18n="rhetoricCardTitle">GREECE PRESSURE TRACKER</span></div>
+    <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:5px;">
+        <div style="font-size:30px;font-weight:700;color:var(--text-primary);" id="greeceRhetoricScoreFull">--</div>
+        <span id="greeceRhetoricLevelLabel" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:#6b7280;color:white;">--</span>
+    </div>
+    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector pressure score — Aegean / Greece-Turkey · Eastern-Med Energy & EEZ · NATO Posture · Cyprus Reinforcement · Evros Border · Updated every 6h</div>
+    <div id="greeceRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;" data-i18n="loading">Loading…</span></div>
+    <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
+        <a href="rhetoric-greece.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="viewFullTracker">View Full Pressure Analysis →</a>
+    </div>
+    <div id="greeceRhetoricScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
+</div>
+
+<!-- COMMODITY EXPOSURE CARD (above map per spec) -->
+<div class="card" id="commodityCard" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
+        <div class="card-title" style="margin-bottom:0;">🛢️ <span data-i18n="commodityTitle">COMMODITY EXPOSURE — GREECE</span></div>
+        <a href="commodities.html" class="commodity-full-link" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-style:italic;" data-i18n="commoditySubtitle">Strategic commodity exposure with live news signal counts. Click any row to deep-dive on commodities tracker.</div>
+
+    <!-- Pressure summary strip -->
+    <div id="commodityPressureStrip" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;"></div>
+
+    <!-- Per-commodity rows -->
+    <div id="commodityRows"></div>
+
+    <!-- Strategic linkage footer -->
+    <div id="commodityLinkage" style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">Strategic Linkage: Greece is a maritime and energy-transit hub rather than a producer — one of the world’s largest merchant shipping fleets, a Southern Gas Corridor terminus (TAP), and a prospective Eastern-Mediterranean interconnector node (Great Sea Interconnector). Exposure concentrates in shipping, refined fuels and energy-transit infrastructure rather than upstream commodities. [SHELL — expand with live exposure pegs.]</div>
+
+    <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+</div>
+
+<!-- COMMODITY CARD STYLING -->
+<style>
+.commodity-full-link {
+    font-size: 11px; font-weight: 700; color: #fbbf24; text-decoration: none;
+    padding: 6px 12px; border: 1px solid rgba(245,158,11,0.4); border-radius: 6px;
+    background: rgba(245,158,11,0.06); transition: all 0.2s;
+}
+.commodity-full-link:hover {
+    background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.7);
+}
+.commodity-row {
+    display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px; align-items: center;
+    padding: 10px 14px; margin-bottom: 8px;
+    background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.18);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    text-decoration: none; color: var(--text);
+}
+.commodity-row:hover {
+    background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.4);
+    transform: translateX(2px);
+}
+.commodity-row .c-icon { font-size: 18px; }
+.commodity-row .c-meta { display: flex; flex-direction: column; gap: 2px; }
+.commodity-row .c-name { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
+.commodity-row .c-note { font-size: 10.5px; color: var(--text-muted); line-height: 1.4; }
+.commodity-row .c-role-pill {
+    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px;
+    letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-right: 5px;
+}
+.role-producer { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.role-consumer { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.role-transit  { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+.commodity-row .c-rank { font-size: 9.5px; color: #93c5fd; font-weight: 600; letter-spacing: 0.5px; }
+.commodity-row .c-spark { font-family: 'Courier New', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+.commodity-row .c-signals {
+    font-size: 10.5px; color: var(--text-2); white-space: nowrap;
+    padding: 4px 9px; background: rgba(56,189,248,0.08); border-radius: 4px;
+}
+.commodity-pressure-pill {
+    padding: 5px 12px; border-radius: 16px; font-weight: 700; letter-spacing: 1px;
+}
+.alert-normal   { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.alert-elevated { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.alert-high     { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+.alert-critical { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+@media (max-width: 768px) {
+    .commodity-row { grid-template-columns: auto 1fr; gap: 8px; }
+    .commodity-row .c-spark, .commodity-row .c-signals { grid-column: 2; }
+}
+</style>
+
+
+<div class="card">
+    <div class="card-title">🗺️ <span data-i18n="mapTitle">GREECE — STRATEGIC OVERVIEW</span></div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:11px;font-style:italic;" data-i18n="mapSubtitle">Greece commands the Aegean and a gateway between the Balkans, Anatolia and the Eastern Mediterranean — bordering Turkey across the Aegean and at the Evros land frontier (east), Bulgaria and North Macedonia (north) and Albania (northwest). Souda Bay (Crete) is a forward US/NATO naval-air hub; Alexandroupoli is an emerging logistics corridor. Maritime jurisdiction and continental-shelf delimitation in the Aegean and Eastern Mediterranean are the long-running flashpoints.</div>
+    <iframe class="map-frame"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=19.0%2C34.0%2C29.0%2C42.0&layer=mapnik&marker=37.98%2C23.73"
+        frameborder="0" scrolling="no">
+    </iframe>
+</div>
+
+<!-- KNOWLEDGE LIBRARY -->
+<div class="card">
+    <div class="card-title">📚 <span data-i18n="knowledgeTitle">KNOWLEDGE LIBRARY</span></div>
+    <p style="font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:14px;" data-i18n="knowledgeDisclaimer">Background information compiled from open-source research, think tank analyses, and public government reporting.</p>
+
+    <div class="knowledge-categories">
+
+        <!-- Iran Transit Corridor (April 2026) — OPEN BY DEFAULT — anchor narrative -->
+                <div class="knowledge-card" id="card-aegean">
+            <div class="knowledge-header" onclick="toggleCard('aegean')">
+                <div class="knowledge-header-title"><span>⚔️</span> <span data-i18n="catAegean">Aegean &amp; Greece-Turkey Disputes</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Greece and Turkey — both NATO members — maintain a decades-long set of overlapping Aegean disputes that periodically spike but have historically been managed short of conflict.</strong> The pattern is consistent with a managed rivalry: recurring friction, dialogue channels and NATO deconfliction rather than escalation to force.</p>
+                <ul>
+                    <li><strong>Airspace &amp; continental shelf:</strong> Disagreement over the breadth of national airspace and seabed delimitation drives recurring interceptions of Turkish flights over the Aegean.</li>
+                    <li><strong>Militarization of the eastern islands:</strong> Turkey contests Greek garrisons on islands near the Anatolian coast; Greece cites self-defense. A standing point of rhetorical friction.</li>
+                    <li><strong>Casus belli &amp; flashpoints:</strong> Turkey’s standing position on a Greek extension of territorial waters to 12nm, plus episodic flashpoints (Imia/Kardak, Kastellorizo), are the named tripwires analysts watch.</li>
+                </ul>
+                <div class="kl-note">* Background compiled from open-source research. Sources: ICG, Chatham House, Hellenic MFA, U.S. State Department.</div>
+                <div class="report-links-grid">
+                    <a href="https://www.crisisgroup.org/" target="_blank" class="report-link">📑 Crisis Group</a>
+                    <a href="https://www.chathamhouse.org/" target="_blank" class="report-link">📑 Chatham House</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="knowledge-card collapsed" id="card-souda">
+            <div class="knowledge-header" onclick="toggleCard('souda')">
+                <div class="knowledge-header-title"><span>⚓</span> <span data-i18n="catSouda">Souda Bay &amp; NATO/US Basing</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Crete’s Souda Bay is one of NATO’s most important forward naval and air facilities in the Eastern Mediterranean, and U.S.-Greece defense ties have deepened markedly.</strong> Greece has become a more central logistics and basing partner for the United States.</p>
+                <ul>
+                    <li><strong>Souda Bay:</strong> A deep-water port and air base on Crete used by the U.S. Navy and NATO for Eastern-Mediterranean operations, resupply and ISR.</li>
+                    <li><strong>Defense cooperation:</strong> The U.S.-Greece Mutual Defense Cooperation Agreement has been expanded and made effectively indefinite, adding access at Alexandroupoli, Larissa and Stefanovikeio.</li>
+                    <li><strong>Alexandroupoli:</strong> A northern-Aegean port that has become a strategic logistics corridor for moving forces toward the Balkans and Black Sea, bypassing the Turkish Straits.</li>
+                </ul>
+                <div class="kl-note">* Background compiled from open-source research. Sources: U.S. State Department, CRS, IISS, Hellenic MoD.</div>
+                <div class="report-links-grid">
+                    <a href="https://www.state.gov/" target="_blank" class="report-link">📑 U.S. State Dept</a>
+                    <a href="https://crsreports.congress.gov/" target="_blank" class="report-link">📑 CRS</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="knowledge-card collapsed" id="card-eastmed">
+            <div class="knowledge-header" onclick="toggleCard('eastmed')">
+                <div class="knowledge-header-title"><span>🛢️</span> <span data-i18n="catEastMed">Eastern Mediterranean Energy &amp; EEZ</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Greece anchors an Eastern-Mediterranean energy and maritime-delimitation bloc alongside Cyprus, Israel and Egypt.</strong> Competing maritime claims are the principal source of regional friction.</p>
+                <ul>
+                    <li><strong>EastMed alignment:</strong> Greece-Cyprus-Israel-Egypt cooperation (East Mediterranean Gas Forum) on gas, electricity interconnection (Great Sea Interconnector) and pipeline concepts.</li>
+                    <li><strong>Delimitation disputes:</strong> The Turkey-Libya 2019 maritime memorandum overlaps zones Greece claims; Greece has countered with EEZ deals (Egypt, Italy).</li>
+                    <li><strong>Transit role:</strong> Greece is a Southern Gas Corridor terminus (TAP) and a prospective interconnector node rather than a hydrocarbon producer.</li>
+                </ul>
+                <div class="kl-note">* Background compiled from open-source research. Sources: EIA, ICG, Chatham House, Hellenic MFA.</div>
+                <div class="report-links-grid">
+                    <a href="https://www.eia.gov/" target="_blank" class="report-link">📑 EIA</a>
+                    <a href="https://www.crisisgroup.org/" target="_blank" class="report-link">📑 Crisis Group</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="knowledge-card collapsed" id="card-evros">
+            <div class="knowledge-header" onclick="toggleCard('evros')">
+                <div class="knowledge-header-title"><span>🚧</span> <span data-i18n="catEvros">Evros Border &amp; Migration</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>The Evros land border with Turkey is Greece’s principal migration pressure point and an EU external frontier.</strong> Sudden surges have historically tracked Greece-Turkey political friction.</p>
+                <ul>
+                    <li><strong>Instrumentalization risk:</strong> Border crossings have at times spiked during diplomatic tension — a pattern analysts read as leverage rather than purely humanitarian flow.</li>
+                    <li><strong>Hardening:</strong> Fencing, surveillance and Frontex deployment define the current posture.</li>
+                    <li><strong>EU dimension:</strong> Evros is a test case for the EU’s external-border and migration-pact framework.</li>
+                </ul>
+                <div class="kl-note">* Background compiled from open-source research. Sources: Frontex, ICG, UNHCR, Hellenic authorities.</div>
+                <div class="report-links-grid">
+                    <a href="https://www.unhcr.org/" target="_blank" class="report-link">📑 UNHCR</a>
+                    <a href="https://www.crisisgroup.org/" target="_blank" class="report-link">📑 Crisis Group</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ARTICLES — TABBED -->
+<div class="card">
+    <div class="card-title">📰 <span data-i18n="articlesTitle">RECENT GREECE STABILITY & STRATEGIC ARTICLES</span></div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:11px;" data-i18n="articlesDesc">English · Russian · French · Social signals · Last 7 days · NewsAPI + GDELT + Telegram + Bluesky + Reddit</div>
+    <div class="tab-row">
+        <button class="tab-btn active" id="tab-en" onclick="switchArticleTab('en')" data-i18n="tabEN">🇬🇧 English <span class="tab-count" id="tabCountEN">0</span></button>
+        <button class="tab-btn" id="tab-ru" onclick="switchArticleTab('ru')" data-i18n="tabRU">🇷🇺 Russian <span class="tab-count" id="tabCountRU">0</span></button>
+        <button class="tab-btn" id="tab-fr" onclick="switchArticleTab('fr')" data-i18n="tabFR">🇫🇷 French <span class="tab-count" id="tabCountFR">0</span></button>
+        <button class="tab-btn" id="tab-social" onclick="switchArticleTab('social')" data-i18n="tabSocial">📡 Social <span class="tab-count" id="tabCountSocial">0</span></button>
+    </div>
+    <div id="articlesContainer">
+        <div style="text-align:center;color:var(--text-muted);padding:26px;font-style:italic;" data-i18n="articlesLoading">Loading articles...</div>
+    </div>
+</div>
+
+</div><!-- /main-content -->
+</div><!-- /page-with-sidebar -->
+
+<!-- FOOTER (canonical Asifah pattern) -->
+<footer style="background:var(--card, #0d1b2e);border:1px solid var(--border, #1e3a5f);border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:var(--text-2, #93c5fd);text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:var(--text, #e2f0fb);letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — GREECE</div>
+    <div style="margin-bottom:6px;" data-i18n="footBackend">Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:var(--text-muted, #64748b);" data-i18n="footSignals">Open-source signals: GDELT (EN/EL/FR/DE), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimative, convergence-framed — not prediction</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:8px 18px;background:#f59e0b;color:#1a1a1a;border-radius:8px;text-decoration:none;font-weight:700;" data-i18n="footCoffee">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:8px 18px;background:#0284c7;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;" data-i18n="footContactBtn">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:var(--text-muted, #64748b);font-size:11px;margin-bottom:12px;" data-i18n="footAwareness">For situational awareness only. Not for operational use. Figures are preliminary and open-source.</div>
+    <div style="font-size:12px;">
+        <a href="mission.html" style="color:var(--text-2, #93c5fd);text-decoration:none;" data-i18n="footMission">Mission Statement</a> ·
+        <a href="privacy.html" style="color:var(--text-2, #93c5fd);text-decoration:none;" data-i18n="footPrivacy">Privacy Policy</a> ·
+        <a href="index.html" style="color:var(--text-2, #93c5fd);text-decoration:none;" data-i18n="footHome">Home</a>
+    </div>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+const API_BASE = 'https://asifa-europe-backend.onrender.com';
+
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+
+// ── THEME ──
+function initTheme() {
+    const s = localStorage.getItem('asifah-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', s);
+    document.getElementById('themeToggle').checked = (s === 'light');
+}
+function toggleTheme() {
+    const n = document.getElementById('themeToggle').checked ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', n);
+    localStorage.setItem('asifah-theme', n);
+}
+initTheme();
+
+// ── KNOWLEDGE CARDS ──
+function toggleCard(id) {
+    const c = document.getElementById('card-' + id);
+    if (c) c.classList.toggle('collapsed');
+}
+
+// ── LOADING ──
+let _step = 0, _loadInt = null;
+function startLoading() {
+    const steps = ['step1','step2','step3','step4'];
+    _loadInt = setInterval(() => {
+        if (_step < steps.length - 1) {
+            const c = document.getElementById(steps[_step]);
+            if (c) { c.classList.remove('active'); c.classList.add('complete'); c.querySelector('.step-icon').textContent = '✓'; }
+            _step++;
+            const n = document.getElementById(steps[_step]);
+            if (n) n.classList.add('active');
+        }
+    }, 4000);
+}
+function hideLoading() {
+    if (_loadInt) clearInterval(_loadInt);
+    document.querySelectorAll('.loading-step').forEach(s => {
+        s.classList.remove('active'); s.classList.add('complete');
+        s.querySelector('.step-icon').textContent = '✓';
+    });
+    setTimeout(() => {
+        const o = document.getElementById('loadingOverlay');
+        if (o) o.classList.add('hidden');
+    }, 500);
+}
+
+// ── ARTICLES ──
+// ── ARTICLES (tabbed: EN / RU / FR / Social) ──
+let _articleCache = { en: [], ru: [], fr: [], social: [] };
+
+async function loadArticles() {
+    try {
+        const r = await fetch(`${API_BASE}/api/europe/threat/greece`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+
+        // Stash raw payload for rhetoric loader (avoid double-fetch — same endpoint)
+        window._threatPayload = d;
+
+        _articleCache.en = (d.articles_en || []).map(a => ({ ...a, _lang: 'en' }));
+        _articleCache.ru = (d.articles_ru || []).map(a => ({ ...a, _lang: 'ru' }));
+        _articleCache.fr = (d.articles_fr || []).map(a => ({ ...a, _lang: 'fr' }));
+
+        // Social: reddit articles from generic threat endpoint
+        const reddit = (d.articles_reddit || []).map(p => ({ ...p, _origin: 'reddit' }));
+        _articleCache.social = [...reddit];
+
+        document.getElementById('tabCountEN').textContent = _articleCache.en.length;
+        document.getElementById('tabCountRU').textContent = _articleCache.ru.length;
+        document.getElementById('tabCountFR').textContent = _articleCache.fr.length;
+        document.getElementById('tabCountSocial').textContent = _articleCache.social.length;
+
+        // Default to EN; auto-switch to first tab with content
+        if (_articleCache.en.length) {
+            switchArticleTab('en');
+        } else if (_articleCache.ru.length) {
+            switchArticleTab('ru');
+        } else if (_articleCache.fr.length) {
+            switchArticleTab('fr');
+        } else {
+            switchArticleTab('en');
+        }
+    } catch(e) {
+        console.warn('[Greece] Articles failed:', e.message);
+        displayFallback();
+    } finally {
+        hideLoading();
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+    }
+}
+
+function switchArticleTab(tab) {
+    ['en','ru','fr','social'].forEach(t => {
+        const b = document.getElementById('tab-'+t);
+        if (b) b.classList.toggle('active', t === tab);
+    });
+    const c = document.getElementById('articlesContainer');
+
+    if (tab === 'social') {
+        const posts = _articleCache.social;
+        if (!posts.length) {
+            c.innerHTML = '<div style="text-align:center;padding:22px;color:var(--text-muted);font-style:italic;">No social signals captured this scan. Backend may still be aggregating Reddit feeds.</div>';
+            return;
+        }
+        const ORIGINS = {
+            telegram: { color: '#38bdf8', label: '📨 Telegram', bg: 'rgba(56,189,248,0.07)', border: 'rgba(56,189,248,0.25)' },
+            bluesky:  { color: '#60a5fa', label: '🦋 Bluesky',  bg: 'rgba(96,165,250,0.07)', border: 'rgba(96,165,250,0.25)' },
+            reddit:   { color: '#fb923c', label: '💬 Reddit',   bg: 'rgba(251,146,60,0.07)', border: 'rgba(251,146,60,0.25)' },
+        };
+        c.innerHTML = posts.slice(0, 30).map(p => {
+            const o = ORIGINS[p._origin] || { color: '#94a3b8', label: '📡 Signal', bg: 'rgba(148,163,184,0.07)', border: 'rgba(148,163,184,0.25)' };
+            const text = p.title || p.text || p.content || p.message || '';
+            const author = (typeof p.source === 'object' ? p.source?.name : p.source) || p.author || p.subreddit || '';
+            const url = p.url || p.link || '#';
+            const pub = p.published || p.publishedAt || p.date || p.timestamp || '';
+            let ds = '';
+            if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds = pub; } }
+            return `<div style="padding:11px 14px;background:${o.bg};border:1px solid ${o.border};border-radius:8px;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                    <span style="font-size:10px;font-weight:700;color:${o.color};text-transform:uppercase;letter-spacing:1px;">${o.label}</span>
+                    ${author ? `<span style="font-size:11px;color:var(--text-muted);">${author}</span>` : ''}
+                    ${ds ? `<span style="font-size:10px;color:var(--text-muted);">${ds}</span>` : ''}
+                </div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5;">${text.substring(0,260)}${text.length>260?'…':''}</div>
+                ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener" style="color:${o.color};text-decoration:none;font-size:11px;font-weight:600;margin-top:5px;display:inline-block;">View post →</a>` : ''}
+            </div>`;
+        }).join('');
+        return;
+    }
+
+    const list = _articleCache[tab] || [];
+    const langName = { en: 'English', ru: 'Russian', fr: 'French' }[tab] || tab;
+    if (!list.length) {
+        c.innerHTML = `<div style="text-align:center;padding:22px;color:var(--text-muted);font-style:italic;">No ${langName} articles in current scan.</div>`;
+        return;
+    }
+    c.innerHTML = list.slice(0, 25).map(a => {
+        const title = a.title || 'Untitled';
+        const src = (typeof a.source === 'object' ? a.source?.name : a.source) || a.source_name || '';
+        const pub = a.published || a.publishedAt || a.date || '';
+        const url = a.url || a.link || '#';
+        const desc = a.description || a.summary || '';
+        let ds = '';
+        if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds = pub; } }
+        return `<div class="article-item">
+            <div class="article-title">${title}</div>
+            ${desc ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${desc.substring(0,180)}${desc.length>180?'...':''}</div>` : ''}
+            <div class="article-meta">${src}${ds ? ' · '+ds : ''}</div>
+            ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener" class="article-link">Read article →</a>` : ''}
+        </div>`;
+    }).join('');
+}
+
+function displayFallback() {
+    document.getElementById('articlesContainer').innerHTML =
+        '<div style="text-align:center;padding:22px;color:var(--text-muted);">' +
+        '<p style="font-size:14px;margin-bottom:10px;">📡 Live feed loading. Check these curated sources:</p>' +
+        '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:10px;">' +
+        ['Eurasianet|https://eurasianet.org/regions/greece','Caucasus Watch|https://caucasuswatch.de/','APA|https://apa.az/en','Trend|https://en.trend.az/','OC Media|https://oc-media.org/']
+            .map(s => { const [l,u] = s.split('|'); return `<a href="${u}" target="_blank" style="padding:7px 14px;background:rgba(56,189,248,0.14);color:#38bdf8;border-radius:6px;text-decoration:none;font-size:12px;font-weight:700;border:1px solid rgba(56,189,248,0.28);">${l}</a>`; })
+            .join('') +
+        '</div></div>';
+}
+
+// ── COMMODITY EXPOSURE LOADER (calls Europe backend proxy with 12hr Redis cache) ──
+async function loadCommodity() {
+    const COUNTRY_KEY = 'greece';
+    try {
+        const r = await fetch(`${API_BASE}/api/europe/commodity/${COUNTRY_KEY}`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        if (d.success !== false && (d.commodity_summaries || []).length > 0) {
+            renderCommodityCard(d);
+            document.getElementById('commodityCard').style.display = 'block';
+        } else if (d.message) {
+            renderCommodityPlaceholder(d.message);
+            document.getElementById('commodityCard').style.display = 'block';
+        }
+    } catch(e) {
+        console.warn('[Greece] Commodity fetch failed:', e.message);
+    }
+}
+
+// ── RHETORIC PRESSURE — adapter for /api/europe/threat/<target> ──
+// Maps generic threat-scan output (probability, momentum, top_scoring_articles)
+// onto the canonical rhetoric banner + pressure detail card.
+async function loadRhetoric() {
+    // Reuse payload fetched by loadArticles to avoid double-call
+    let d = window._threatPayload;
+    if (!d) {
+        try {
+            const r = await fetch(`${API_BASE}/api/europe/threat/greece`);
+            if (!r.ok) return;
+            d = await r.json();
+        } catch(e) { console.warn('[Greece] Rhetoric pressure fetch failed:', e.message); return; }
+    }
+
+    // Awaiting first scan — show nothing; loadCommodity placeholder logic handles UI
+    if (d.pending_scan || d.probability === null || d.probability === undefined) return;
+
+    const score = d.probability || 0;
+
+    // Map momentum → alert level + color
+    const momentum = (d.momentum || 'stable').toLowerCase();
+    let alert, alertColor;
+    if (momentum === 'increasing' && score > 60) { alert = 'critical'; alertColor = '#dc2626'; }
+    else if (momentum === 'increasing')          { alert = 'high';     alertColor = '#f59e0b'; }
+    else if (momentum === 'decreasing')          { alert = 'normal';   alertColor = '#22c55e'; }
+    else                                         { alert = 'elevated'; alertColor = '#3b82f6'; }
+
+    // Map probability band → level label
+    let levelLabel;
+    if      (score >= 85) levelLabel = 'Critical';
+    else if (score >= 70) levelLabel = 'Elevated';
+    else if (score >= 50) levelLabel = 'Warning';
+    else if (score >= 30) levelLabel = 'Watch';
+    else                  levelLabel = 'Baseline';
+
+    // ── Green banner (top) ──
+    const card = document.getElementById('rhetoricPressureCard');
+    if (card) {
+        card.style.display = 'flex';
+        document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
+        const pill = document.getElementById('rhetoricPill');
+        pill.textContent = alert.toUpperCase();
+        pill.style.background = alertColor;
+        document.getElementById('rhetoricHeadline').textContent =
+            `${levelLabel} pressure level · ${d.timeline || 'Timeline pending'} · momentum ${momentum}`;
+        document.getElementById('rhetoricDetail').textContent =
+            `${d.total_articles || 0} articles analyzed · ${d.recent_articles_48h || 0} in last 48h · ${d.deescalation_count || 0} de-escalation signals · Confidence: ${d.confidence || 'Unknown'}`;
+    }
+
+    // ── Pressure tracker detail card ──
+    const detailCard = document.getElementById('greeceRhetoricCard');
+    if (detailCard) {
+        detailCard.style.display = 'block';
+        const scoreEl = document.getElementById('greeceRhetoricScoreFull');
+        if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = alertColor; }
+        const lvlEl = document.getElementById('greeceRhetoricLevelLabel');
+        if (lvlEl) { lvlEl.textContent = levelLabel; lvlEl.style.background = alertColor; }
+
+        // Body: top scoring article titles → signal rows
+        const signalEl = document.getElementById('greeceRhetoricSignalList');
+        if (signalEl) {
+            const top = (d.top_scoring_articles || []).slice(0, 5);
+            if (top.length) {
+                signalEl.innerHTML = top.map(a => {
+                    const title = a.title || 'Untitled';
+                    const src = (typeof a.source === 'object' ? a.source?.name : a.source) || '';
+                    return `<div class="rhetoric-signal-row">${src ? `<span class="rhetoric-signal-label">${src}</span>` : ''}${title}</div>`;
+                }).join('');
+            } else {
+                // Fallback: scoring breakdown summary
+                const rows = [
+                    { label: '📈 Momentum',           val: momentum, color: alertColor },
+                    { label: '📊 Recent (48h)',       val: d.recent_articles_48h || 0, color: '#38bdf8' },
+                    { label: '📰 Total Articles',     val: d.total_articles || 0, color: '#38bdf8' },
+                    { label: '🕊️ De-escalation Hits', val: d.deescalation_count || 0, color: '#22c55e' },
+                ];
+                signalEl.innerHTML = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
+            }
+        }
+
+        // Scan info footer
+        const scanEl = document.getElementById('greeceRhetoricScanInfo');
+        if (scanEl) {
+            const ageStr = d.cache_age_human || (d.cached ? 'cached' : 'fresh scan');
+            scanEl.textContent = `${ageStr} · ${d.total_articles || 0} articles analyzed · ${d.confidence || 'Unknown'} confidence`;
+        }
+    }
+}
+// ── COMMODITY HELPER RENDERERS ──
+function renderCommodityCard(d) {
+    const pressure = d.commodity_pressure || 0;
+    const alert = (d.alert_level || 'normal').toLowerCase();
+    const alertLabel = alert.toUpperCase();
+    const stripHtml = `
+        <div class="commodity-pressure-pill alert-${alert}">PRESSURE: ${Math.round(pressure)}</div>
+        <div class="commodity-pressure-pill alert-${alert}">ALERT: ${alertLabel}</div>
+        <div style="display:flex;align-items:center;color:var(--text-muted);font-size:10.5px;letter-spacing:1px;">
+            ${(d.commodity_summaries || []).length} commodities tracked
+        </div>
+    `;
+    document.getElementById('commodityPressureStrip').innerHTML = stripHtml;
+
+    const rowsContainer = document.getElementById('commodityRows');
+    rowsContainer.innerHTML = '';
+    (d.commodity_summaries || []).forEach(c => {
+        const role = (c.role || 'producer').toLowerCase();
+        const rolePill = `<span class="c-role-pill role-${role}">${role}</span>`;
+        const rankText = c.rank ? `#${c.rank} globally` : '';
+        const sparkline = renderSparkline(c.sparkline);
+        const signalCount = c.signal_count || 0;
+        const note = c.note || '';
+        const icon = c.icon || '📦';
+        const name = (c.name || c.commodity || '').toUpperCase();
+
+        const row = document.createElement('a');
+        row.className = 'commodity-row';
+        row.href = `commodities.html#${c.commodity}`;
+        row.innerHTML = `
+            <div class="c-icon">${icon}</div>
+            <div class="c-meta">
+                <div class="c-name">${name}</div>
+                <div>${rolePill}<span class="c-rank">${rankText}</span></div>
+                ${note ? `<div class="c-note">${note}</div>` : ''}
+            </div>
+            <div class="c-spark">${sparkline}</div>
+            <div class="c-signals">📰 ${signalCount} signals</div>
+        `;
+        rowsContainer.appendChild(row);
+    });
+
+    const cacheStatus = d.cache_status || 'unknown';
+    const cachedAt = d.proxy_cached_at || d.last_updated;
+    let cacheText = '';
+    if (cachedAt) {
+        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
+        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
+    }
+    document.getElementById('commodityCacheNote').textContent = cacheText;
+}
+
+function renderCommodityPlaceholder(msg) {
+    document.getElementById('commodityPressureStrip').innerHTML = '';
+    document.getElementById('commodityRows').innerHTML = `
+        <div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;font-size:12px;">
+            ${msg || 'Commodity scan pending — data will appear shortly.'}
+        </div>
+    `;
+}
+
+function renderSparkline(spark) {
+    if (!spark) return '';
+    let values = [];
+    if (Array.isArray(spark)) values = spark;
+    else if (spark.values && Array.isArray(spark.values)) values = spark.values;
+    else if (spark.points && Array.isArray(spark.points)) values = spark.points.map(p => typeof p === 'number' ? p : (p.y || p.close || 0));
+    if (values.length < 2) return '';
+    const blocks = '▁▂▃▄▅▆▇█';
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = max - min || 1;
+    const sparkStr = values.map(v => blocks[Math.floor(((v - min) / range) * (blocks.length - 1))]).join('');
+    const trend = values[values.length - 1] - values[0];
+    const arrow = trend > 0 ? '↑' : (trend < 0 ? '↓' : '→');
+    const arrowColor = trend > 0 ? '#4ade80' : (trend < 0 ? '#f87171' : '#94a3b8');
+    return `${sparkStr} <span style="color:${arrowColor};font-weight:700;">${arrow}</span>`;
+}
+
+
+
+// ── TRANSLATIONS ──
+const T = {
+    en: {
+        pageFlag:'GREECE', pageTitle:'GREECE STABILITY INDEX',
+        pageSubtitle:'Aegean & Greece-Turkey Friction · Souda Bay Naval Hub · Eastern-Med Energy & EEZ · Cyprus Reinforcement · Evros Border',
+        backLink:'← Back to Europe',
+        cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION',
+        cautionText:'U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in STEP.',
+        viewCaution:'VIEW CAUTION →',
+        advisoryLabel:'U.S. STATE DEPARTMENT — GREECE TRAVEL ADVISORY',
+        advisoryLevel:'LEVEL 2', viewAdvisory:'VIEW ADVISORY →',
+        advisoryText:'<strong style="color:#f59e0b;">Exercise Increased Caution</strong> — Greece is a stable NATO member; this level reflects the broader Eastern-Mediterranean security environment rather than country-specific instability. [SHELL — verify level & text.]',
+        rhetoricLabel:'Greece Rhetoric Tracker — Live',
+        rhetoricLink:'Open Tracker →',
+        contextLabel:'📡 STRATEGIC SIGNAL',
+        contextHeadline:'Aegean Friction · Eastern-Med Energy · NATO Forward Posture',
+        contextSub:'Greece sits at the intersection of Aegean Greece-Turkey friction, Eastern-Mediterranean energy and EEZ delimitation disputes, NATO forward basing and Evros migration pressure. [SHELL — replace with live signal.]',
+        contextTagLabel:'Source:',
+        contextQuote:'"Eastern Mediterranean — standing watch"',
+        rhetoricCardTitle:'GREECE PRESSURE TRACKER',
+        rhetoricCardDesc:'Multi-vector pressure score — Aegean / Greece-Turkey · Eastern-Med Energy & EEZ · NATO Posture · Cyprus Reinforcement · Evros Border · Updated every 6h',
+        loading:'Loading…', viewFullTracker:'View Full Pressure Analysis →',
+        commodityTitle:'COMMODITY EXPOSURE — GREECE',
+        commodityFullLink:'View Full Commodity Tracker →',
+        commoditySubtitle:'Strategic commodity exposure with live news signal counts. Click any row to deep-dive on commodities tracker.',
+        commodityLinkage:'Strategic Linkage: Greece is a maritime and energy-transit hub rather than a producer — one of the world’s largest merchant shipping fleets, a Southern Gas Corridor terminus (TAP), and a prospective Eastern-Mediterranean interconnector node (Great Sea Interconnector). Exposure concentrates in shipping, refined fuels and energy-transit infrastructure rather than upstream commodities. [SHELL — expand with live exposure pegs.]',
+        mapTitle:'GREECE — STRATEGIC OVERVIEW',
+        mapSubtitle:"Greece commands the Aegean and a gateway between the Balkans, Anatolia and the Eastern Mediterranean — bordering Turkey across the Aegean and at the Evros land frontier (east), Bulgaria and North Macedonia (north) and Albania (northwest). Souda Bay (Crete) is a forward US/NATO naval-air hub; Alexandroupoli is an emerging logistics corridor. Maritime jurisdiction and continental-shelf delimitation are the long-running flashpoints.",
+        knowledgeTitle:'KNOWLEDGE LIBRARY',
+        knowledgeDisclaimer:'Background information compiled from open-source research, think tank analyses, and public government reporting.',
+        catAegean:'Aegean & Greece-Turkey Disputes', catSouda:'Souda Bay & NATO/US Basing', catEastMed:'Eastern Mediterranean Energy & EEZ', catEvros:'Evros Border & Migration',
+        articlesTitle:'RECENT GREECE STABILITY & STRATEGIC ARTICLES',
+        articlesDesc:'English · Russian · French · Social signals · Last 7 days · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
+        tabEN:'🇬🇧 English', tabRU:'🇷🇺 Russian', tabFR:'🇫🇷 French', tabSocial:'📡 Social',
+        articlesLoading:'Loading articles...',
+        footSourcesTitle:'Data Sources',
+        footSourcesText:'NewsAPI, GDELT, RSS Feeds (EN, RU, FR), Telegram OSINT, Bluesky, Reddit, and travel.state.gov travel advisory data.',
+        footMethodTitle:'Methodology',
+        footMethodText:'Source-weighted OSINT aggregation with time-decay scoring. Open-source signals only — no classified data.',
+        footContactTitle:'Contact',
+        footDisclaimerLabel:'⚠️ DISCLAIMER',
+        footDisclaimerText:'This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.',
+        footBmacText:'If you find Asifah Analytics useful and want to support ongoing development, you can',
+        footBmacButton:'buy me a coffee',
+        footBackend:'Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 6 hours', footSignals:'Open-source signals: GDELT (EN/EL/FR/DE), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimative, convergence-framed — not prediction', footCoffee:'☕ Buy Me a Coffee', footContactBtn:'✉️ Contact Asifah', footAwareness:'For situational awareness only. Not for operational use. Figures are preliminary and open-source.', footMission:'Mission Statement', footPrivacy:'Privacy Policy', footHome:'Home',
+        footCopy:'All Rights Reserved. Greece Stability Index v1.0.0 — Proprietary and Confidential.',
+    },
+    fr: {
+        pageFlag:'GRÈCE', pageTitle:'INDICE DE STABILITÉ — GRÈCE',
+        pageSubtitle:'Friction égéenne Grèce-Turquie · Hub naval de Souda Bay · Énergie et ZEE en Méditerranée orientale · Renfort à Chypre · Frontière de l’Évros',
+        backLink:'← Retour à l\u2019Europe',
+        cautionLabel:'DÉPARTEMENT D\u2019ÉTAT — MISE EN GARDE MONDIALE',
+        cautionText:'Les citoyens américains dans le monde entier doivent rester vigilants face aux menaces terroristes et à la violence.',
+        viewCaution:'VOIR LA MISE EN GARDE →',
+        advisoryLabel:'DÉPARTEMENT D’ÉTAT AMÉRICAIN — AVIS AUX VOYAGEURS GRÈCE',
+        advisoryLevel:'NIVEAU 2', viewAdvisory:'VOIR L\u2019AVIS →',
+        advisoryText:'<strong style="color:#f59e0b;">Exercise Increased Caution</strong> — Greece is a stable NATO member; this level reflects the broader Eastern-Mediterranean security environment rather than country-specific instability. [SHELL — verify level & text.]',
+        rhetoricLabel:'Suivi rhétorique Grèce — En direct',
+        rhetoricLink:'Ouvrir le tracker →',
+        contextLabel:'📡 SIGNAL STRATÉGIQUE',
+        contextHeadline:'Aegean Friction · Eastern-Med Energy · NATO Forward Posture',
+        contextSub:'Greece sits at the intersection of Aegean Greece-Turkey friction, Eastern-Mediterranean energy and EEZ delimitation disputes, NATO forward basing and Evros migration pressure. [SHELL — replace with live signal.]',
+        contextTagLabel:'Source :',
+        contextQuote:'"Eastern Mediterranean — standing watch"',
+        rhetoricCardTitle:'TRACKER DE PRESSION GRÈCE',
+        rhetoricCardDesc:'Multi-vector pressure score — Aegean / Greece-Turkey · Eastern-Med Energy & EEZ · NATO Posture · Cyprus Reinforcement · Evros Border · Updated every 6h',
+        loading:'Chargement…', viewFullTracker:'Voir l\u2019analyse complète →',
+        commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES — GRÈCE',
+        commodityFullLink:'Voir le tracker complet →',
+        commoditySubtitle:'Exposition stratégique aux matières premières avec comptage de signaux médiatiques en direct. Cliquez sur une ligne pour explorer.',
+        commodityLinkage:'Strategic Linkage: Greece is a maritime and energy-transit hub rather than a producer — one of the world’s largest merchant shipping fleets, a Southern Gas Corridor terminus (TAP), and a prospective Eastern-Mediterranean interconnector node (Great Sea Interconnector). Exposure concentrates in shipping, refined fuels and energy-transit infrastructure rather than upstream commodities. [SHELL — expand with live exposure pegs.]',
+        mapTitle:'GRÈCE — APERÇU STRATÉGIQUE',
+        mapSubtitle:"Greece commands the Aegean and a gateway between the Balkans, Anatolia and the Eastern Mediterranean — bordering Turkey across the Aegean and at the Evros land frontier (east), Bulgaria and North Macedonia (north) and Albania (northwest). Souda Bay (Crete) is a forward US/NATO naval-air hub; Alexandroupoli is an emerging logistics corridor. Maritime jurisdiction and continental-shelf delimitation are the long-running flashpoints.",
+        knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES',
+        knowledgeDisclaimer:'Informations compilées à partir de recherches en sources ouvertes, d\u2019analyses de groupes de réflexion et de rapports gouvernementaux publics.',
+        catAegean:'Différends égéens Grèce-Turquie', catSouda:'Souda Bay et bases OTAN/US', catEastMed:'Énergie et ZEE en Méditerranée orientale', catEvros:'Frontière de l’Évros et migration',
+        articlesTitle:'ARTICLES RÉCENTS — GRÈCE',
+        articlesDesc:'Anglais · Russe · Français · Signaux sociaux · 7 derniers jours · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
+        tabEN:'🇬🇧 Anglais', tabRU:'🇷🇺 Russe', tabFR:'🇫🇷 Français', tabSocial:'📡 Social',
+        articlesLoading:'Chargement des articles...',
+        footSourcesTitle:'Sources de données',
+        footSourcesText:'NewsAPI, GDELT, flux RSS (EN, RU, FR), Telegram OSINT, Bluesky, Reddit et données du Département d\u2019État.',
+        footMethodTitle:'Méthodologie',
+        footMethodText:'Agrégation OSINT pondérée par source avec score de décroissance temporelle. Sources ouvertes uniquement — aucune donnée classifiée.',
+        footContactTitle:'Contact',
+        footDisclaimerLabel:'⚠️ AVERTISSEMENT',
+        footDisclaimerText:'Cette page fournit des estimations analytiques basées sur l\u2019agrégation de renseignements open-source. Elle ne constitue ni évaluation de renseignement, ni conseil militaire, ni recommandation politique. Toujours consulter des sources autoritaires. Non destiné à un usage opérationnel.',
+        footBmacText:'Si Asifah Analytics vous est utile et que vous souhaitez soutenir le développement, vous pouvez',
+        footBmacButton:'m\u2019offrir un café',
+        footBackend:'Backend : asifa-europe-backend.onrender.com · Actualisation des analyses ~toutes les 6 heures', footSignals:'Signaux open source : GDELT (EN/EL/FR/DE), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimatif, axé sur la convergence — pas une prédiction', footCoffee:'☕ Offrez-moi un café', footContactBtn:'✉️ Contacter Asifah', footAwareness:'À des fins de sensibilisation situationnelle uniquement. Pas pour usage opérationnel. Les chiffres sont préliminaires et open source.', footMission:'Énoncé de mission', footPrivacy:'Politique de confidentialité', footHome:'Accueil',
+        footCopy:'Tous droits réservés. Indice de stabilité Grèce v1.0.0 — Propriétaire et confidentiel.',
+    },
+    ru: {
+        pageFlag:'ГРЕЦИЯ', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ ГРЕЦИИ',
+        pageSubtitle:'Эгейское трение Греция-Турция · ВМБ Суда · Энергетика и ИЭЗ · Поддержка Кипра · Граница Эврос',
+        backLink:'← Назад к Европе',
+        cautionLabel:'ГОСДЕПАРТАМЕНТ США — ВСЕМИРНОЕ ПРЕДУПРЕЖДЕНИЕ',
+        cautionText:'Гражданам США во всём мире следует сохранять бдительность. Террористические группы и насильственные субъекты продолжают планировать атаки.',
+        viewCaution:'СМОТРЕТЬ ПРЕДУПРЕЖДЕНИЕ →',
+        advisoryLabel:'ГОСДЕП США — РЕКОМЕНДАЦИИ ПО ГРЕЦИИ',
+        advisoryLevel:'УРОВЕНЬ 2', viewAdvisory:'СМОТРЕТЬ РЕКОМЕНДАЦИЮ →',
+        advisoryText:'<strong style="color:#f59e0b;">Exercise Increased Caution</strong> — Greece is a stable NATO member; this level reflects the broader Eastern-Mediterranean security environment rather than country-specific instability. [SHELL — verify level & text.]',
+        rhetoricLabel:'Трекер риторики Греции — Онлайн',
+        rhetoricLink:'Открыть трекер →',
+        contextLabel:'📡 СТРАТЕГИЧЕСКИЙ СИГНАЛ',
+        contextHeadline:'Aegean Friction · Eastern-Med Energy · NATO Forward Posture',
+        contextSub:'Greece sits at the intersection of Aegean Greece-Turkey friction, Eastern-Mediterranean energy and EEZ delimitation disputes, NATO forward basing and Evros migration pressure. [SHELL — replace with live signal.]',
+        contextTagLabel:'Источник:',
+        contextQuote:'"Eastern Mediterranean — standing watch"',
+        rhetoricCardTitle:'ТРЕКЕР ДАВЛЕНИЯ ГРЕЦИИ',
+        rhetoricCardDesc:'Multi-vector pressure score — Aegean / Greece-Turkey · Eastern-Med Energy & EEZ · NATO Posture · Cyprus Reinforcement · Evros Border · Updated every 6h',
+        loading:'Загрузка…', viewFullTracker:'Посмотреть полный анализ →',
+        commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ — ГРЕЦИЯ',
+        commodityFullLink:'Полный трекер сырья →',
+        commoditySubtitle:'Стратегическая сырьевая экспозиция с подсчётом новостных сигналов в реальном времени.',
+        commodityLinkage:'Strategic Linkage: Greece is a maritime and energy-transit hub rather than a producer — one of the world’s largest merchant shipping fleets, a Southern Gas Corridor terminus (TAP), and a prospective Eastern-Mediterranean interconnector node (Great Sea Interconnector). Exposure concentrates in shipping, refined fuels and energy-transit infrastructure rather than upstream commodities. [SHELL — expand with live exposure pegs.]',
+        mapTitle:'ГРЕЦИЯ — СТРАТЕГИЧЕСКИЙ ОБЗОР',
+        mapSubtitle:'Greece commands the Aegean and a gateway between the Balkans, Anatolia and the Eastern Mediterranean — bordering Turkey across the Aegean and at the Evros land frontier (east), Bulgaria and North Macedonia (north) and Albania (northwest). Souda Bay (Crete) is a forward US/NATO naval-air hub; Alexandroupoli is an emerging logistics corridor. Maritime jurisdiction and continental-shelf delimitation are the long-running flashpoints.',
+        knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ',
+        knowledgeDisclaimer:'Справочная информация составлена из открытых источников, аналитических работ исследовательских центров и публичных правительственных отчётов.',
+        catAegean:'Эгейские споры Греция-Турция', catSouda:'Суда и базы НАТО/США', catEastMed:'Энергетика и ИЭЗ Вост. Средиземноморья', catEvros:'Граница Эврос и миграция',
+        articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О ГРЕЦИИ',
+        articlesDesc:'Английский · Русский · Французский · Социальные сигналы · Последние 7 дней · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
+        tabEN:'🇬🇧 Английский', tabRU:'🇷🇺 Русский', tabFR:'🇫🇷 Французский', tabSocial:'📡 Социальные',
+        articlesLoading:'Загрузка статей...',
+        footSourcesTitle:'Источники данных',
+        footSourcesText:'NewsAPI, GDELT, RSS-каналы (EN, RU, FR), Telegram OSINT, Bluesky, Reddit и данные travel.state.gov.',
+        footMethodTitle:'Методология',
+        footMethodText:'Взвешенная по источникам OSINT-агрегация с временным затуханием. Только открытые источники — никаких засекреченных данных.',
+        footContactTitle:'Контакт',
+        footDisclaimerLabel:'⚠️ ДИСКЛЕЙМЕР',
+        footDisclaimerText:'Эта страница предоставляет аналитические оценки на основе агрегации разведданных из открытых источников. Не для оперативного использования.',
+        footBmacText:'Если Asifah Analytics полезен вам и вы хотите поддержать развитие, вы можете',
+        footBmacButton:'купить мне кофе',
+        footBackend:'Бэкенд: asifa-europe-backend.onrender.com · Обновление сканирований ~каждые 6 часов', footSignals:'Сигналы из открытых источников: GDELT (EN/EL/FR/DE), NewsAPI, RSS, Telegram, Bluesky, Reddit · оценочно, на основе конвергенции — не прогноз', footCoffee:'☕ Купить мне кофе', footContactBtn:'✉️ Связаться с Asifah', footAwareness:'Только для ситуационной осведомлённости. Не для оперативного использования. Данные предварительные и из открытых источников.', footMission:'Заявление о миссии', footPrivacy:'Политика конфиденциальности', footHome:'Главная',
+        footCopy:'Все права защищены. Индекс стабильности Греции v1.0.0.',
+    },
+    de: {
+        pageFlag:'GRIECHENLAND', pageTitle:'GRIECHENLAND-STABILITÄTSINDEX',
+        pageSubtitle:'Ägäis-Friktion Griechenland-Türkei · Marinedrehkreuz Souda Bay · Energie & AWZ östl. Mittelmeer · Zypern-Verstärkung · Evros-Grenze',
+        backLink:'← Zurück zu Europa',
+        cautionLabel:'AUSSENMINISTERIUM — WELTWEITE WARNUNG',
+        cautionText:'US-Bürger weltweit sollten wachsam bleiben. Terrorgruppen und gewalttätige Akteure planen weiterhin Angriffe.',
+        viewCaution:'WARNUNG ANZEIGEN →',
+        advisoryLabel:'US-AUßENMINISTERIUM — REISEHINWEIS GRIECHENLAND',
+        advisoryLevel:'STUFE 2', viewAdvisory:'WARNUNG ANZEIGEN →',
+        advisoryText:'<strong style="color:#f59e0b;">Exercise Increased Caution</strong> — Greece is a stable NATO member; this level reflects the broader Eastern-Mediterranean security environment rather than country-specific instability. [SHELL — verify level & text.]',
+        rhetoricLabel:'Griechenland-Rhetorik-Tracker — Live',
+        rhetoricLink:'Tracker öffnen →',
+        contextLabel:'📡 STRATEGISCHES SIGNAL',
+        contextHeadline:'Aegean Friction · Eastern-Med Energy · NATO Forward Posture',
+        contextSub:'Greece sits at the intersection of Aegean Greece-Turkey friction, Eastern-Mediterranean energy and EEZ delimitation disputes, NATO forward basing and Evros migration pressure. [SHELL — replace with live signal.]',
+        contextTagLabel:'Quelle:',
+        contextQuote:'"Eastern Mediterranean — standing watch"',
+        rhetoricCardTitle:'GRIECHENLAND-DRUCKTRACKER',
+        rhetoricCardDesc:'Multi-vector pressure score — Aegean / Greece-Turkey · Eastern-Med Energy & EEZ · NATO Posture · Cyprus Reinforcement · Evros Border · Updated every 6h',
+        loading:'Lade…', viewFullTracker:'Vollständige Druckanalyse anzeigen →',
+        commodityTitle:'ROHSTOFF-EXPOSITION — GRIECHENLAND',
+        commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →',
+        commoditySubtitle:'Strategische Rohstoff-Exposition mit Live-Nachrichtensignalzählung.',
+        commodityLinkage:'Strategic Linkage: Greece is a maritime and energy-transit hub rather than a producer — one of the world’s largest merchant shipping fleets, a Southern Gas Corridor terminus (TAP), and a prospective Eastern-Mediterranean interconnector node (Great Sea Interconnector). Exposure concentrates in shipping, refined fuels and energy-transit infrastructure rather than upstream commodities. [SHELL — expand with live exposure pegs.]',
+        mapTitle:'GRIECHENLAND — STRATEGISCHER ÜBERBLICK',
+        mapSubtitle:'Greece commands the Aegean and a gateway between the Balkans, Anatolia and the Eastern Mediterranean — bordering Turkey across the Aegean and at the Evros land frontier (east), Bulgaria and North Macedonia (north) and Albania (northwest). Souda Bay (Crete) is a forward US/NATO naval-air hub; Alexandroupoli is an emerging logistics corridor. Maritime jurisdiction and continental-shelf delimitation are the long-running flashpoints.',
+        knowledgeTitle:'WISSENSBIBLIOTHEK',
+        knowledgeDisclaimer:'Hintergrundinformationen aus Open-Source-Forschung, Think-Tank-Analysen und öffentlichen Regierungsberichten zusammengestellt.',
+        catAegean:'Ägäis-Streit Griechenland-Türkei', catSouda:'Souda Bay & NATO/US-Basierung', catEastMed:'Energie & AWZ im östlichen Mittelmeer', catEvros:'Evros-Grenze & Migration',
+        articlesTitle:'AKTUELLE ARTIKEL — GRIECHENLAND',
+        articlesDesc:'Englisch · Russisch · Französisch · Soziale Signale · Letzte 7 Tage · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
+        tabEN:'🇬🇧 Englisch', tabRU:'🇷🇺 Russisch', tabFR:'🇫🇷 Französisch', tabSocial:'📡 Sozial',
+        articlesLoading:'Lade Artikel...',
+        footSourcesTitle:'Datenquellen',
+        footSourcesText:'NewsAPI, GDELT, RSS-Feeds (EN, RU, FR), Telegram OSINT, Bluesky, Reddit und travel.state.gov-Reisehinweise.',
+        footMethodTitle:'Methodik',
+        footMethodText:'Quellengewichtete OSINT-Aggregation mit zeitlich abnehmender Bewertung. Nur quelloffene Signale — keine klassifizierten Daten.',
+        footContactTitle:'Kontakt',
+        footDisclaimerLabel:'⚠️ HAFTUNGSAUSSCHLUSS',
+        footDisclaimerText:'Diese Seite liefert analytische Schätzungen auf Basis der Aggregation quelloffener Geheimdienstinformationen. Nicht für den operativen Einsatz bestimmt.',
+        footBmacText:'Wenn Sie Asifah Analytics nützlich finden und die Entwicklung unterstützen möchten, können Sie',
+        footBmacButton:'mir einen Kaffee spendieren',
+        footBackend:'Backend: asifa-europe-backend.onrender.com · Scans aktualisieren ~alle 6 Stunden', footSignals:'Open-Source-Signale: GDELT (EN/EL/FR/DE), NewsAPI, RSS, Telegram, Bluesky, Reddit · einschätzend, konvergenzbasiert — keine Vorhersage', footCoffee:'☕ Spendier mir einen Kaffee', footContactBtn:'✉️ Asifah kontaktieren', footAwareness:'Nur zur Lageorientierung. Nicht für den operativen Einsatz. Die Zahlen sind vorläufig und stammen aus offenen Quellen.', footMission:'Leitbild', footPrivacy:'Datenschutzrichtlinie', footHome:'Startseite',
+        footCopy:'Alle Rechte vorbehalten. Griechenland-Stabilitätsindex v1.0.0 — Vertraulich.',
+    }
+};
+
+function setLang(lang, btn) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const t = T[lang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        if (t[k] !== undefined) el.textContent = t[k];
+    });
+}
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+    startLoading();
+    loadArticles();
+    loadCommodity();
+    loadRhetoric();
+});
+</script>
+</body>
+</html>
