@@ -555,6 +555,25 @@
             --ca-conv-bg-strong: rgba(194,65,12,0.12);
         }
         .convergence-panel { margin-bottom: 28px; }
+        /* --- Slice 3 redesign: clickable square tiles + expand-in-place detail --- */
+        .conv-tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
+        .conv-tile {
+            aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 6px; text-align: center; cursor: pointer; font-family: inherit; color: var(--text-primary);
+            background: var(--ca-conv-bg); border: 1px solid rgba(249,115,22,0.30); border-radius: 12px; padding: 10px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .conv-tile:hover { transform: translateY(-3px); background: var(--ca-conv-bg-strong); box-shadow: 0 6px 18px rgba(249,115,22,0.18); }
+        .conv-tile-icon { font-size: 2rem; line-height: 1; }
+        .conv-tile-name { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+        .conv-tile-count { font-size: 0.72rem; font-weight: 700; color: var(--ca-conv); background: var(--ca-conv-bg-strong); border: 1px solid rgba(249,115,22,0.35); border-radius: 999px; padding: 2px 9px; }
+        .conv-detail { animation: convExpand 0.22s ease-out; }
+        @keyframes convExpand { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+        .conv-detail-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 12px; }
+        .conv-detail-title { font-size: 1.15rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .conv-detail-count { font-size: 0.78rem; font-weight: 700; color: var(--ca-conv); background: var(--ca-conv-bg-strong); border: 1px solid rgba(249,115,22,0.35); border-radius: 999px; padding: 3px 10px; }
+        .conv-back { margin-left: auto; cursor: pointer; font-family: inherit; font-size: 0.82rem; font-weight: 700; color: var(--ca-conv); background: transparent; border: 1px solid rgba(249,115,22,0.45); border-radius: 8px; padding: 6px 12px; transition: background 0.15s ease; }
+        .conv-back:hover { background: var(--ca-conv-bg-strong); }
         .conv-intro {
             font-size: 0.86rem; line-height: 1.55; color: var(--text-primary);
             background: var(--ca-conv-bg); border-left: 3px solid var(--ca-conv);
@@ -1747,6 +1766,17 @@
             </div>
         </div>
 
+        <!-- ========== FAO FOOD PRICE INDEX (FFPI) — Stage 1b ========== -->
+        <div class="section-header">
+            <span class="section-icon">🍞</span>
+            <span class="section-title">FAO Food Price Index</span>
+            <span class="section-desc">The global "food VIX" — monthly headline index + five sub-indices, parsed live from FAO (2014-2016=100 base)</span>
+        </div>
+
+        <div id="ffpiCard" class="ffpi-card">
+            <div class="ffpi-unavailable">Awaiting FAO Food Price Index data…</div>
+        </div>
+
         <!-- ========== STATUS STRIP ========== -->
         <div class="status-strip">
             <div class="status-card">
@@ -1816,16 +1846,6 @@
             </leader-signals-card>
         </div>
 
-        <!-- ========== FAO FOOD PRICE INDEX (FFPI) — Stage 1b ========== -->
-        <div class="section-header">
-            <span class="section-icon">🍞</span>
-            <span class="section-title">FAO Food Price Index</span>
-            <span class="section-desc">The global "food VIX" — monthly headline index + five sub-indices, parsed live from FAO (2014-2016=100 base)</span>
-        </div>
-
-        <div id="ffpiCard" class="ffpi-card">
-            <div class="ffpi-unavailable">Awaiting FAO Food Price Index data…</div>
-        </div>
 
         <!-- ========== COMMODITY CARDS ========== -->
         <div class="section-header">
@@ -2270,46 +2290,93 @@ function renderConvergence() {
         el.innerHTML = '<div class="conv-empty">⚠️ Structural-stress feed warming up — no convergence computed yet. (Missing data, not an all-clear.)</div>';
         return;
     }
-    var commodities = Array.isArray(d.commodities) ? d.commodities : [];
+    var commodities = Array.isArray(d.commodities) ? d.commodities.slice() : [];
     if (commodities.length === 0) {
         el.innerHTML = '<div class="conv-empty">No commodity currently shows an exposed-and-structurally-stressed cell at the gate. Calm by this measure.</div>';
         return;
     }
 
+    // Highest convergence count first -- guarantees the busiest commodity leads,
+    // independent of backend ordering. (Verbiage scrub: nothing pinned.)
+    commodities.sort(function(a, b){
+        var na = a.cell_count || (a.cells ? a.cells.length : 0);
+        var nb = b.cell_count || (b.cells ? b.cells.length : 0);
+        return nb - na;
+    });
+
     var html = '';
     if (d.bluf) html += '<div class="conv-intro">' + _convEsc(d.bluf) + '</div>';
     if (d.disclaimer) html += '<div class="conv-disclaimer">' + _convEsc(d.disclaimer) + '</div>';
 
+    // Square tiles -- only commodities with cells (backend gates), sorted desc.
+    html += '<div class="conv-tile-grid" id="convTileGrid">';
     commodities.forEach(function(c){
-        var secId = 'convSec_' + c.commodity;
         var icon = c.icon || '•';
         var n = c.cell_count || (c.cells ? c.cells.length : 0);
-        var plural = (n === 1) ? 'player' : 'players';
-        html += '<div class="ca-section convergence" id="' + secId + '">';
-        html +=   '<div class="ca-section-toggle" onclick="toggleCaSection(\'' + secId + '\')">';
-        html +=     '<div class="ca-section-title">' + icon + ' <span>' + _convEsc(c.name) + '</span> ';
-        html +=       '<span class="ca-section-count">' + n + ' stressed ' + plural + '</span></div>';
-        html +=     '<span class="ca-chevron">▾</span>';
+        html += '<button type="button" class="conv-tile" onclick="convShow(\'' + c.commodity + '\')">';
+        html +=   '<span class="conv-tile-icon">' + icon + '</span>';
+        html +=   '<span class="conv-tile-name">' + _convEsc(c.name) + '</span>';
+        html +=   '<span class="conv-tile-count">' + n + '</span>';
+        html += '</button>';
+    });
+    html += '</div>';
+
+    // Detail container -- populated on tile click (expand-in-place).
+    html += '<div class="conv-detail" id="convDetail" style="display:none;"></div>';
+    el.innerHTML = html;
+}
+
+// One commodity's stressed-cell detail (reused from the old accordion body).
+function _convCellsHtml(c){
+    var html = '';
+    (c.cells || []).forEach(function(cell){
+        var flag = CONV_FLAGS[cell.country] || '';
+        var sev = cell.stress_severity || 0;
+        var roleLabel = (cell.role || '').replace(/_/g,' ');
+        html += '<div class="conv-cell">';
+        html +=   '<div class="conv-cell-head">';
+        html +=     '<span class="conv-country">' + (flag ? flag + ' ' : '') + _convEsc(cell.country_name) + '</span>';
+        html +=     '<span class="conv-pill">' + _convEsc(roleLabel) + '</span>';
+        html +=     '<span class="conv-sev sev-' + (sev >= 3 ? '3' : '2') + '">severity ' + sev + '</span>';
         html +=   '</div>';
-        html +=   '<div class="ca-section-body">';
-        (c.cells || []).forEach(function(cell){
-            var flag = CONV_FLAGS[cell.country] || '';
-            var sev = cell.stress_severity || 0;
-            var roleLabel = (cell.role || '').replace(/_/g,' ');
-            html += '<div class="conv-cell">';
-            html +=   '<div class="conv-cell-head">';
-            html +=     '<span class="conv-country">' + (flag ? flag + ' ' : '') + _convEsc(cell.country_name) + '</span>';
-            html +=     '<span class="conv-pill">' + _convEsc(roleLabel) + '</span>';
-            html +=     '<span class="conv-sev sev-' + (sev >= 3 ? '3' : '2') + '">severity ' + sev + '</span>';
-            html +=   '</div>';
-            if (cell.stress_summary) html += '<div class="conv-stress">⚠ ' + _convEsc(cell.stress_summary) + '</div>';
-            if (cell.read) html += '<div class="conv-read">' + _convEsc(cell.read) + '</div>';
-            html += '</div>';
-        });
-        html +=   '</div>';
+        if (cell.stress_summary) html += '<div class="conv-stress">⚠ ' + _convEsc(cell.stress_summary) + '</div>';
+        if (cell.read) html += '<div class="conv-read">' + _convEsc(cell.read) + '</div>';
         html += '</div>';
     });
-    el.innerHTML = html;
+    return html;
+}
+
+// Tile click -> hide the grid, expand this commodity's detail in place.
+function convShow(commodityKey){
+    var d = convergenceData;
+    if (!d || !Array.isArray(d.commodities)) return;
+    var c = d.commodities.find(function(x){ return x.commodity === commodityKey; });
+    if (!c) return;
+    var grid = document.getElementById('convTileGrid');
+    var detail = document.getElementById('convDetail');
+    if (!grid || !detail) return;
+    var icon = c.icon || '•';
+    var n = c.cell_count || (c.cells ? c.cells.length : 0);
+    var plural = (n === 1) ? 'stressed player' : 'stressed players';
+    var html = '';
+    html += '<div class="conv-detail-head">';
+    html +=   '<span class="conv-detail-title">' + icon + ' ' + _convEsc(c.name) + '</span>';
+    html +=   '<span class="conv-detail-count">' + n + ' ' + plural + '</span>';
+    html +=   '<button type="button" class="conv-back" onclick="convBack()">&larr; All commodities</button>';
+    html += '</div>';
+    html += _convCellsHtml(c);
+    detail.innerHTML = html;
+    grid.style.display = 'none';
+    detail.style.display = '';
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Back -> hide detail, restore the full tile grid.
+function convBack(){
+    var grid = document.getElementById('convTileGrid');
+    var detail = document.getElementById('convDetail');
+    if (detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
+    if (grid) grid.style.display = '';
 }
 
 // Freshness helpers — turn an ISO timestamp into a human age, so the analysis
@@ -2391,11 +2458,7 @@ function renderCommodityAnalysis() {
     } else {
         butterflySection.style.display = '';
         butterflyCount.textContent = '(' + convKeys.length + ')';
-        // Auto-expand butterfly section on first render — these are rare
-        // cross-region cascades and load-bearing for the dashboard.
-        if (!butterflySection.classList.contains('user-toggled')) {
-            butterflySection.classList.add('expanded');
-        }
+        // Default collapsed -- user expands for headlines (per design).
         // Sort by priority descending — most-severe first
         var sortedKeys = convKeys.sort(function(a, b) {
             var pa = (convergences[a] || {}).priority || 0;
@@ -2429,8 +2492,8 @@ function renderCommodityAnalysis() {
 
     // ── Regional pressure (canonical alert palette) ──
     // Renders ALL 6 regions in alphabetical canon order even at baseline,
-    // so the user always sees the full regional layout. Auto-expand on
-    // first render if any region is high/surge.
+    // so the user always sees the full regional layout. Default collapsed --
+    // user expands for headlines (per design).
     var regionalSection = document.getElementById('caRegionalSection');
     var regionalBody    = document.getElementById('caRegionalBody');
     var regionalCount   = document.getElementById('caRegionalCount');
@@ -2442,13 +2505,7 @@ function renderCommodityAnalysis() {
 
     regionalCount.textContent = '(' + presentRegions.length + ')';
 
-    var anyHot = presentRegions.some(function(r) {
-        var lvl = (regionals[r].level || '').toLowerCase();
-        return (lvl === 'high' || lvl === 'surge');
-    });
-    if (anyHot && !regionalSection.classList.contains('user-toggled')) {
-        regionalSection.classList.add('expanded');
-    }
+    // Default collapsed -- user expands for headlines (per design).
 
     var rHtml = '';
     for (var i = 0; i < presentRegions.length; i++) {
