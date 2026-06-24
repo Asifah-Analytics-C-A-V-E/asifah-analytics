@@ -803,7 +803,7 @@
                     <span class="step-icon">⏳</span> Waking up server (cold starts take ~30s)...
                 </div>
                 <div class="loading-step" id="loadStep3">
-                    <span class="step-icon">⏳</span> Loading cached threat scores for 8 countries...
+                    <span class="step-icon">⏳</span> Loading cached threat scores for all monitored countries...
                 </div>
                 <div class="loading-step" id="loadStep4">
                     <span class="step-icon">⏳</span> Fetching NOTAMs & flight disruptions...
@@ -819,7 +819,7 @@
                 ℹ️ First visit builds your intelligence cache — this takes about 1-2 minutes. Subsequent visits load instantly!
             </div>
             <div class="loading-error" id="loadingError" style="background: rgba(0, 180, 255, 0.08); border: 1px solid rgba(0, 180, 255, 0.25); color: #67e8f9;">
-                ⏳ Still loading — scanning 8 countries across multiple intelligence sources. This is normal for a first visit. Almost there!
+                ⏳ Still loading — scanning all monitored countries across multiple intelligence sources. This is normal for a first visit. Almost there!
             <div style="margin-top: 20px; font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 2px;">
                 FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT
             </div>
@@ -848,14 +848,14 @@
         </header>
 
         <!-- ════════════════════════════════════════════════════════════ -->
-        <!-- WORLDWIDE CAUTION BANNER (canonical, Feb 28 2026 State Dept) -->
+        <!-- WORLDWIDE CAUTION BANNER (canonical; current State Dept text, Security Alert Mar 22 2026, page last updated May 28 2026) -->
         <!-- ════════════════════════════════════════════════════════════ -->
         <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
             <div style="font-size:28px;flex-shrink:0;">🚨</div>
             <div style="flex:1;">
                 <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
-                <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow the guidance in the latest security alerts issued by the nearest U.S. embassy or consulate. They may experience travel disruptions due to periodic airspace closures. The Department of State advises Americans worldwide to exercise increased caution.</div>
-                <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: February 28, 2026</div>
+                <div style="font-size:13px;color:#fde8e8;line-height:1.5;">The Department of State advises Americans worldwide, and especially in the Middle East, to exercise increased caution. Americans abroad should follow the guidance in security alerts issued by the nearest U.S. embassy or consulate. Periodic airspace closures may cause travel disruptions. U.S. diplomatic facilities, including outside the Middle East, have been targeted. Groups supportive of Iran may target other U.S. interests overseas or locations associated with the United States and/or Americans throughout the world.</div>
+                <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: May 28, 2026</div>
             </div>
             <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">VIEW ADVISORY →</a>
         </div>
@@ -1343,6 +1343,82 @@
                         <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
                     </div>
                     <div class="headlines-section" id="cyprus-headlines">
+                        <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
+                        <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GREECE -->
+            <div class="target-card collapsed" id="greece-card" data-target="greece">
+                <div class="card-collapsed-view">
+                    <div class="collapsed-header">
+                        <div class="collapsed-title">🇬🇷 <span data-i18n="targetGreece">GREECE</span></div>
+                        <button class="collapse-toggle-btn" onclick="event.stopPropagation(); toggleCard('greece-card');" data-i18n="expandBtn">Expand ▼</button>
+                    </div>
+                    <div class="collapsed-metric">
+                        <div class="collapsed-metric-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="collapsed-metric-value">
+                            <div class="collapsed-percentage" id="greeceCollapsedScore">--</div>
+                            <div class="collapsed-bar"><div class="collapsed-bar-fill" id="greeceCollapsedBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="collapsed-timestamp" id="greeceCollapsedTimestamp">Loading...</div>
+                    <a class="collapsed-travel-advisory hidden" id="greeceCollapsedTA" href="#" target="_blank" onclick="event.stopPropagation();"></a>
+                    <div class="expand-instructions" data-i18n="expandInstructions">Click "Expand" to update data and view full analysis</div>
+                </div>
+                <div class="card-expanded-view">
+                    <h3>🇬🇷 <span data-i18n="targetGreece">GREECE</span></h3>
+                    <button class="collapse-toggle-btn" onclick="toggleCard('greece-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
+                    <a href="greece-stability.html" class="country-stability-btn">
+                        🇬🇷 Greece Stability Index
+                    </a>
+                    <div class="card-scan-controls">
+                        <div class="card-time-window">
+                            <label><input type="radio" name="greece-timeWindow" value="1"> <span data-i18n="hours24">24h</span></label>
+                            <label><input type="radio" name="greece-timeWindow" value="2"> <span data-i18n="hours48">48h</span></label>
+                            <label><input type="radio" name="greece-timeWindow" value="7" checked> <span data-i18n="days7">7 Days</span></label>
+                            <label><input type="radio" name="greece-timeWindow" value="30"> <span data-i18n="days30">30 Days</span></label>
+                        </div>
+                        <button class="card-scan-button" onclick="scanSingleTarget('greece')"><span data-i18n="scanButton">Scan OSINT — Update Forecast</span></button>
+                        <div class="loading" id="greece-loading"><div class="loading-spinner"></div><span data-i18n="loadingText">Scanning open sources...</span></div>
+                    </div>
+                    <div class="probability-display">
+                        <div class="probability-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="gauge-background" cx="100" cy="100" r="85"></circle>
+                                <circle class="gauge-progress medium" id="greece-gauge" cx="100" cy="100" r="85" stroke-dasharray="0 534"></circle>
+                            </svg>
+                            <div class="gauge-text medium" id="greece-prob">--</div>
+                        </div>
+                    </div>
+                    <div class="intel-sources" id="greece-intel-sources">
+                        <span class="intel-sources-label">Signals:</span>
+                        <span class="intel-pill inactive">🌐 GDELT</span>
+                        <span class="intel-pill inactive">📰 RSS</span>
+                        <span class="intel-pill inactive">🦋 Bluesky</span>
+                        <span class="intel-pill inactive">✈️ Telegram</span>
+                        <span class="intel-pill inactive">💬 Reddit</span>
+                    </div>
+                    <div class="weather-section" id="greece-weather">
+                        <div class="weather-title">🌤️ 7-Day Forecast — Athens</div>
+                        <div class="weather-forecast" id="greece-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
+                    </div>
+                    <div class="timeline-display">
+                        <div class="timeline-label" data-i18n="projectedTimeline">Projected Timeline</div>
+                        <div class="timeline-value" id="greece-timeline" data-i18n="awaitingScan">Awaiting scan...</div>
+                        <div class="timeline-bar" id="greece-bar">
+                            <div class="timeline-segment">0-30d</div><div class="timeline-segment">31-90d</div>
+                            <div class="timeline-segment">91-180d</div><div class="timeline-segment">180+d</div>
+                        </div>
+                    </div>
+                    <div class="travel-advisory-container" id="greece-travel-advisory"><div class="ta-loading">🏛️ Loading State Dept travel advisory...</div></div>
+                    <div class="mil-posture-awaiting" id="greece-mil-posture">
+                        🎖️ <span>Military Posture — <em>Scan OSINT to load</em></span>
+                        <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
+                    </div>
+                    <div class="headlines-section" id="greece-headlines">
                         <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
                         <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
                     </div>
@@ -2177,7 +2253,7 @@
             hours24: "24h", hours48: "48h", days7: "7 Days", days30: "30 Days",
             targetAlbania: "ALBANIA", targetBelgium: "BELGIUM", targetArmenia: "ARMENIA", targetAzerbaijan: "AZERBAIJAN",
             targetBelarus: "BELARUS",
-            targetCyprus: "CYPRUS", targetGreenland: "GREENLAND",
+            targetGreece: "GREECE", targetCyprus: "CYPRUS", targetGreenland: "GREENLAND",
             targetHungary: "HUNGARY",
             targetPoland: "POLAND", targetRussia: "RUSSIA",
             targetTurkey: "TURKEY", targetUkraine: "UKRAINE",
@@ -2201,7 +2277,7 @@
             hours24: "24ч", hours48: "48ч", days7: "7 дней", days30: "30 дней",
             targetAlbania: "АЛБАНИЯ", targetBelgium: "БЕЛЬГИЯ", targetArmenia: "АРМЕНИЯ", targetAzerbaijan: "АЗЕРБАЙДЖАН",
             targetBelarus: "БЕЛАРУСЬ",
-            targetCyprus: "КИПР", targetGreenland: "ГРЕНЛАНДИЯ",
+            targetGreece: "ГРЕЦИЯ", targetCyprus: "КИПР", targetGreenland: "ГРЕНЛАНДИЯ",
             targetHungary: "ВЕНГРИЯ",
             targetPoland: "ПОЛЬША", targetRussia: "РОССИЯ",
             targetTurkey: "ТУРЦИЯ", targetUkraine: "УКРАИНА",
@@ -2223,7 +2299,7 @@
             hours24: "24h", hours48: "48h", days7: "7 Jours", days30: "30 Jours",
             targetAlbania: "ALBANIE", targetBelgium: "BELGIQUE", targetArmenia: "ARMÉNIE", targetAzerbaijan: "AZERBAÏDJAN",
             targetBelarus: "BIÉLORUSSIE",
-            targetCyprus: "CHYPRE", targetGreenland: "GROENLAND",
+            targetGreece: "GRÈCE", targetCyprus: "CHYPRE", targetGreenland: "GROENLAND",
             targetHungary: "HONGRIE",
             targetPoland: "POLOGNE", targetRussia: "RUSSIE",
             targetTurkey: "TURQUIE", targetUkraine: "UKRAINE",
@@ -2245,7 +2321,7 @@
             hours24: "24h", hours48: "48h", days7: "7 Tage", days30: "30 Tage",
             targetAlbania: "ALBANIEN", targetBelgium: "BELGIEN", targetArmenia: "ARMENIEN", targetAzerbaijan: "ASERBAIDSCHAN",
             targetBelarus: "BELARUS",
-            targetCyprus: "ZYPERN", targetGreenland: "GRÖNLAND",
+            targetGreece: "GRIECHENLAND", targetCyprus: "ZYPERN", targetGreenland: "GRÖNLAND",
             targetHungary: "UNGARN",
             targetPoland: "POLEN", targetRussia: "RUSSLAND",
             targetTurkey: "TÜRKEI", targetUkraine: "UKRAINE",
@@ -2308,7 +2384,7 @@
     // ===== CACHE/PRELOAD SYSTEM =====
     // Loads cached scores from the backend on page load so collapsed cards show last-known %
     async function loadCachedScores() {
-    // Single bundle fetch — one round trip for all 8 countries (v1.2.0)
+    // Single bundle fetch — one round trip for all monitored countries (v1.2.0)
     try {
         const response = await fetch(`${API_BASE}/api/europe/dashboard`);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -2728,6 +2804,7 @@ async function loadCachedScoresFallback() {
         'belarus':      { name: 'Minsk', lat: 53.90, lon: 27.57 },
         'belgium':      { name: 'Brussels', lat: 50.85, lon: 4.35 },
         'cyprus':       { name: 'Nicosia', lat: 35.17, lon: 33.36 },
+        'greece':       { name: 'Athens', lat: 37.98, lon: 23.73 },
         'greenland':    { name: 'Nuuk', lat: 64.17, lon: -51.74 },
         'hungary':      { name: 'Budapest', lat: 47.49, lon: 19.04 },
         'kazakhstan':   { name: 'Astana', lat: 51.17, lon: 71.45 },
