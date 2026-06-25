@@ -498,25 +498,19 @@
     <div id="azerbaijanRhetoricScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
 </div>
 
-<!-- COMMODITY EXPOSURE CARD (above map per spec) -->
-<div class="card" id="commodityCard" style="display:none;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
-        <div class="card-title" style="margin-bottom:0;">🛢️ <span data-i18n="commodityTitle">COMMODITY EXPOSURE — AZERBAIJAN</span></div>
+<!-- ═══ COMMODITY EXPOSURE CARD — Gold Standard tile pattern (individual commodity tiles) ═══ -->
+<div class="commodity-card" id="azerbaijanCommodityCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;">
+        <div class="commodity-card-title">🛢️ <span data-i18n="commodityTitle">COMMODITY EXPOSURE — AZERBAIJAN</span></div>
         <a href="commodities.html" class="commodity-full-link" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
     </div>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-style:italic;" data-i18n="commoditySubtitle">Strategic commodity exposure with live news signal counts. Click any row to deep-dive on commodities tracker.</div>
-
-    <!-- Pressure summary strip -->
-    <div id="commodityPressureStrip" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;"></div>
-
-    <!-- Per-commodity rows -->
-    <div id="commodityRows"></div>
-
-    <!-- Strategic linkage footer -->
+    <div class="commodity-prose" id="commodityProse">Loading exposure profile…</div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
     <div id="commodityLinkage" style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">
         <strong style="color:#fbbf24;">Strategic Linkage:</strong> Azerbaijan produces ~700K bbl/day of Caspian crude (BTC pipeline — the only major non-Russian, non-Iranian westbound oil corridor from the Caspian basin). The TANAP–TAP gas system carries Azerbaijani natural gas to Europe via Turkey (Southern Gas Corridor). Sangachal Terminal at Baku is the sole export node for both. Iran sanctions-circumvention transit — Caspian shipping plus rail through Astara — adds a transit-hub vector beyond pure production exposure.
     </div>
-
     <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
 </div>
 
@@ -530,46 +524,151 @@
 .commodity-full-link:hover {
     background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.7);
 }
-.commodity-row {
-    display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px; align-items: center;
-    padding: 10px 14px; margin-bottom: 8px;
-    background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.18);
-    border-radius: 8px; cursor: pointer; transition: all 0.2s;
-    text-decoration: none; color: var(--text);
-}
-.commodity-row:hover {
-    background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.4);
-    transform: translateX(2px);
-}
-.commodity-row .c-icon { font-size: 18px; }
-.commodity-row .c-meta { display: flex; flex-direction: column; gap: 2px; }
-.commodity-row .c-name { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
-.commodity-row .c-note { font-size: 10.5px; color: var(--text-muted); line-height: 1.4; }
-.commodity-row .c-role-pill {
-    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px;
-    letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-right: 5px;
-}
-.role-producer { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.role-consumer { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-.role-transit  { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
-.commodity-row .c-rank { font-size: 9.5px; color: #93c5fd; font-weight: 600; letter-spacing: 0.5px; }
-.commodity-row .c-spark { font-family: 'Courier New', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; }
-.commodity-row .c-signals {
-    font-size: 10.5px; color: var(--text-2); white-space: nowrap;
-    padding: 4px 9px; background: rgba(56,189,248,0.08); border-radius: 4px;
-}
-.commodity-pressure-pill {
-    padding: 5px 12px; border-radius: 16px; font-weight: 700; letter-spacing: 1px;
-}
-.alert-normal   { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.alert-elevated { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-.alert-high     { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
-.alert-critical { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
-@media (max-width: 768px) {
-    .commodity-row { grid-template-columns: auto 1fr; gap: 8px; }
-    .commodity-row .c-spark, .commodity-row .c-signals { grid-column: 2; }
-}
-</style>
+        .commodity-card {
+            background: var(--card-bg, #0f172a);
+            border: 2px solid var(--card-border, #1e293b);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .commodity-card {
+            border-color: rgba(245,158,11,0.25);
+            box-shadow: 0 0 10px rgba(245,158,11,0.06);
+        }
+        .commodity-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-primary, #e2e8f0);
+            margin-bottom: 8px;
+        }
+        .commodity-prose {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--text-secondary, #94a3b8);
+            margin: 10px 0 16px 0;
+            padding: 12px 14px;
+            background: var(--bg-color, #020617);
+            border-left: 3px solid #f59e0b;
+            border-radius: 6px;
+        }
+        .commodity-alert-banner {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            display: none;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted, #64748b); font-weight: 400; margin-left: 10px; }
+
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: var(--bg-color, #020617);
+            border: 1px solid var(--card-border, #1e293b);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #f59e0b;
+            box-shadow: 0 4px 12px rgba(245,158,11,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary, #e2e8f0); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted, #64748b); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(245,158,11,0.12);
+            color: #f59e0b;
+            border: 1px solid rgba(245,158,11,0.25);
+        }
+        .commodity-pill-signal-count {
+            font-size: 10px;
+            color: var(--text-muted, #64748b);
+            font-weight: 600;
+        }
+        .commodity-pill-price {
+            font-size: 12px;
+            color: var(--text-primary, #e2e8f0);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+        .commodity-pill-note {
+            font-size: 11px;
+            color: var(--text-secondary, #94a3b8);
+            line-height: 1.45;
+            margin-top: 4px;
+        }
+        .commodity-top-signals {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: var(--bg-color, #020617);
+            border-radius: 6px;
+            border-left: 3px solid var(--text-muted, #64748b);
+            font-size: 11px;
+        }
+        .commodity-top-signals .ts-title {
+            color: var(--text-muted, #64748b);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        .commodity-top-signals a {
+            color: var(--text-secondary, #94a3b8);
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            line-height: 1.45;
+        }
+        .commodity-top-signals a:hover { color: #f59e0b; }
+        .commodity-top-signals .ts-source { color: var(--text-muted, #64748b); font-size: 10px; }
+        </style>
 
 
 <div class="card">
@@ -591,7 +690,7 @@
         <!-- Iran Transit Corridor (April 2026) — OPEN BY DEFAULT — anchor narrative -->
         <div class="knowledge-card" id="card-iran-transit">
             <div class="knowledge-header" onclick="toggleCard('iran-transit')">
-                <div class="knowledge-header-title"><span>🛣️</span> <span data-i18n="catIranTransit">Iran Transit Corridor — April 2026</span></div>
+                <div class="knowledge-header-title"><span>🛣️</span> <span data-i18n="catIranTransit">Iran Transit Corridor</span></div>
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="knowledge-content">
@@ -666,28 +765,53 @@
             </div>
         </div>
 
-        <!-- Armenia Tensions & Nagorno-Karabakh Aftermath -->
+        <!-- Armenia Peace Process & Post-Karabakh Order -->
         <div class="knowledge-card collapsed" id="card-armenia">
             <div class="knowledge-header" onclick="toggleCard('armenia')">
-                <div class="knowledge-header-title"><span>⚔️</span> <span data-i18n="catArmenia">Armenia Tensions & Nagorno-Karabakh Aftermath</span></div>
+                <div class="knowledge-header-title"><span>🕊️</span> <span data-i18n="catArmenia">Armenia Peace Process & Post-Karabakh Order</span></div>
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="knowledge-content">
-                <p><strong>The September 2023 Azerbaijani military operation in Nagorno-Karabakh ended three decades of de facto Armenian control, triggering the displacement of nearly the entire ethnic Armenian population (~100,000 people) from the territory.</strong> The aftermath has restructured the South Caucasus security order — and remains the dominant unresolved issue in Azerbaijan-Armenia relations.</p>
+                <p><strong>The Nagorno-Karabakh conflict is over.</strong> Azerbaijan's September 2023 offensive ended three decades of de facto Armenian control in a single day, displacing nearly the entire ethnic Armenian population (~100,000). What remains is a peace process — advanced but unratified — and a redrawn South Caucasus order in which Baku negotiates from decisive strength. This is a settled outcome, not an active front.</p>
                 <ul>
-                    <li><strong>September 2023 Operation:</strong> A 24-hour Azerbaijani military operation forced the dissolution of the breakaway Republic of Artsakh (Nagorno-Karabakh). Armenian forces and civilians evacuated en masse via the Lachin corridor; the territory has since been formally reintegrated into Azerbaijan.</li>
-                    <li><strong>Demining Burden:</strong> The former Nagorno-Karabakh territories — Aghdam, Aghdara, Fuzuli, Gubadli, Jabrayil, Kalbajar, Khankendi, Khojaly, Khojavend, Lachın, Shusha, and Zangilan — remain heavily contaminated with landmines. The US travel advisory designates these as "Do Not Travel" areas due to landmine risk.</li>
-                    <li><strong>Zangezur Corridor Question:</strong> Azerbaijan demands a transit route through Armenia's Syunik Province connecting the Azerbaijani mainland to Nakhchivan. Armenia and Iran have resisted any sovereignty-altering corridor; the issue has been the central sticking point in peace negotiations and creates direct friction with Tehran.</li>
-                    <li><strong>Peace Treaty Negotiations:</strong> Direct Armenia-Azerbaijan talks have proceeded intermittently since 2023, mediated variously by the EU, US, and Russia. A draft peace framework reportedly reached substantial agreement on borders and connectivity in 2024-2025, though formal signature remains delayed.</li>
-                    <li><strong>Russian Peacekeepers:</strong> The Russian peacekeeping contingent deployed to Nagorno-Karabakh under the November 2020 ceasefire withdrew in 2024. Their absence removed a long-standing Russian leverage point in the region — but also any neutral on-the-ground monitoring capacity.</li>
-                    <li><strong>Diaspora Politics:</strong> The Armenian diaspora — particularly in the US (California, Massachusetts), France, and Russia — exerts significant political influence on Western policy toward both Armenia and Azerbaijan. US Section 907 sanctions on Azerbaijan (Freedom Support Act, 1992) have been periodically waived but remain a structural friction in US-Azerbaijani relations.</li>
+                    <li><strong>September 2023 — Decisive Resolution:</strong> A roughly 24-hour Azerbaijani operation forced the dissolution of the breakaway Republic of Artsakh. Armenian forces and civilians evacuated via the Lachin corridor; the territory is fully reintegrated into Azerbaijan.</li>
+                    <li><strong>August 2025 — Washington Declaration:</strong> Aliyev, Pashinyan, and Trump unveiled a peace framework at the White House and the <strong>"TRIPP" corridor</strong> (Trump Route for International Peace and Prosperity) — the rebranded Zangezur route across Armenia's Syunik province linking mainland Azerbaijan to the Nakhchivan exclave, with the United States reportedly holding long-term (~99-year) development rights.</li>
+                    <li><strong>The Unratified Treaty (the live variable):</strong> The peace agreement is initialed but NOT signed or ratified. Baku conditions signature on Armenia amending its constitution to drop implicit territorial references — a step requiring an Armenian referendum. "Ready for signature" is not "signed"; this is the reversibility seam to watch, and the analyst layer where residual conflict rhetoric belongs.</li>
+                    <li><strong>Iran's Objection:</strong> Tehran opposes TRIPP as a US/Turkish wedge that would sever its short border with Armenia and its overland access to the South Caucasus, warning of a "harsh response." Iran's sizeable ethnic-Azeri population adds a second sensitivity.</li>
+                    <li><strong>Russia Displaced:</strong> Russian peacekeepers withdrew in 2024, and a US-brokered corridor on post-Soviet ground marks a strategic displacement of Moscow — which is seeking re-entry. Their departure also removed the last neutral on-the-ground monitoring presence.</li>
+                    <li><strong>US Section 907 & Diaspora:</strong> The Armenian diaspora (US, France, Russia) shapes Western policy. US Section 907 restrictions on assistance to Azerbaijan (Freedom Support Act, 1992) — periodically waived — were waived again alongside the 2025 normalization track. Demining of the former Karabakh districts remains a multi-year "Do Not Travel" hazard.</li>
                 </ul>
-                <div class="kl-note">* Sources: ICG, OSCE Minsk Group archives, HRW, UN OCHA, Caucasus Watch</div>
+                <div class="kl-note">* Sources: White House (Aug 2025), ICG, OSCE Minsk Group archives, Caucasus Watch, HRW, UN OCHA</div>
                 <div class="report-links-grid">
                     <a href="https://www.crisisgroup.org/europe-central-asia/caucasus" target="_blank" class="report-link">📑 ICG Caucasus</a>
                     <a href="https://www.hrw.org/europe/central-asia/azerbaijan" target="_blank" class="report-link">📑 HRW Azerbaijan</a>
                     <a href="https://caucasuswatch.de/" target="_blank" class="report-link">📑 Caucasus Watch</a>
                     <a href="https://www.osce.org/" target="_blank" class="report-link">📑 OSCE</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aliyev Family Rule & Political System -->
+        <div class="knowledge-card collapsed" id="card-aliyev">
+            <div class="knowledge-header" onclick="toggleCard('aliyev')">
+                <div class="knowledge-header-title"><span>🏛️</span> <span data-i18n="catAliyev">Aliyev Family Rule & Political System</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Azerbaijan is a personalist, dynastic state.</strong> Ilham Aliyev has ruled since 2003, when he succeeded his father Heydar Aliyev — a former Soviet-era KGB general and Politburo member — in the post-Soviet space's first hereditary presidential succession. Power is concentrated in the family and a narrow elite financed by hydrocarbon rents.</p>
+                <ul>
+                    <li><strong>Ilham Aliyev (President, 2003– ):</strong> Re-elected in tightly controlled votes, most recently a February 2024 snap election (~92%). OSCE/ODIHR monitors have repeatedly cited the absence of genuine competition, a constrained media environment, and pressure on civil society.</li>
+                    <li><strong>Mehriban Aliyeva (First Vice President, 2017– ):</strong> The president's wife was appointed to the newly created post of First Vice President in 2017 — institutionalizing family co-rule and widely read as succession-positioning. She also chairs the Heydar Aliyev Foundation.</li>
+                    <li><strong>Constitutional Engineering:</strong> A 2016 referendum extended presidential terms from 5 to 7 years and removed the minimum-age requirement for the presidency, while creating the First Vice President post. The constitution concentrates executive authority with weak legislative and judicial checks.</li>
+                    <li><strong>Rentier Patronage:</strong> SOCAR hydrocarbon revenue and the State Oil Fund (SOFAZ) underwrite a patronage system. The September 2023 Karabakh victory delivered a substantial domestic legitimacy dividend, reinforcing the leadership's standing.</li>
+                    <li><strong>Stability Read:</strong> Durable but brittle in the classic petrostate sense — stable while energy rents and the security narrative hold. Succession mechanics and the oil-revenue trajectory (ACG decline) are the long-horizon variables; no organized domestic challenger is currently visible. <em>Convergence-not-prediction: this describes structure, not a forecast of change.</em></li>
+                </ul>
+                <div class="kl-note">* Sources: OSCE/ODIHR election reports, Freedom House, ICG, Eurasianet, BBC country profiles</div>
+                <div class="report-links-grid">
+                    <a href="https://www.osce.org/odihr/elections/azerbaijan" target="_blank" class="report-link">📑 OSCE/ODIHR</a>
+                    <a href="https://freedomhouse.org/country/azerbaijan" target="_blank" class="report-link">📑 Freedom House</a>
+                    <a href="https://eurasianet.org/" target="_blank" class="report-link">📑 Eurasianet</a>
+                    <a href="https://www.crisisgroup.org/europe-central-asia/caucasus" target="_blank" class="report-link">📑 ICG Caucasus</a>
                 </div>
             </div>
         </div>
@@ -740,7 +864,7 @@
 </div><!-- /page-with-sidebar -->
 
 <!-- FOOTER (canonical Asifah pattern) -->
-<footer style="background:var(--card, #0d1b2e);border:1px solid var(--border, #1e3a5f);border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:var(--text-2, #93c5fd);text-align:center;">
+<footer style="background:var(--card, #0d1b2e);border:1px solid var(--border, #1e3a5f);border-radius:12px;padding:30px;margin:30px auto;max-width:1400px;font-size:13px;color:var(--text-2, #93c5fd);text-align:center;">
     <div style="font-weight:800;font-size:15px;color:var(--text, #e2f0fb);letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — AZERBAIJAN</div>
     <div style="margin-bottom:6px;" data-i18n="footBackend">Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 6 hours</div>
     <div style="margin-bottom:16px;color:var(--text-muted, #64748b);" data-i18n="footSignals">Open-source signals: GDELT (EN/RU/AZ/TR), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimative, convergence-framed — not prediction</div>
@@ -948,21 +1072,121 @@ function displayFallback() {
 // ── COMMODITY EXPOSURE LOADER (calls Europe backend proxy with 12hr Redis cache) ──
 async function loadCommodity() {
     const COUNTRY_KEY = 'azerbaijan';
+    const card = document.getElementById('azerbaijanCommodityCard');
+    if (!card) return;
+
+    let data;
     try {
         const r = await fetch(`${API_BASE}/api/europe/commodity/${COUNTRY_KEY}`);
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        const d = await r.json();
-        if (d.success !== false && (d.commodity_summaries || []).length > 0) {
-            renderCommodityCard(d);
-            document.getElementById('commodityCard').style.display = 'block';
-        } else if (d.message) {
-            renderCommodityPlaceholder(d.message);
-            document.getElementById('commodityCard').style.display = 'block';
-        }
-    } catch(e) {
-        console.warn('[Azerbaijan] Commodity fetch failed:', e.message);
+        data = await r.json();
+    } catch (e) {
+        console.warn(`[Azerbaijan Commodity] Fetch failed:`, e.message);
+        const proseEl = document.getElementById('commodityProse');
+        if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+        return;
     }
+
+    // ── Prose paragraph (always rendered) ──
+    document.getElementById('commodityProse').textContent =
+        data.prose || 'No exposure profile available.';
+
+    // ── Adaptive alert banner ──
+    const banner = document.getElementById('commodityAlertBanner');
+    const alertLevel = (data.alert_level || 'normal').toLowerCase();
+    const alertLabels = {
+        normal:   '✓ NO ACTIVE COMMODITY PRESSURE',
+        elevated: '◐ ELEVATED COMMODITY PRESSURE',
+        high:     '▲ HIGH COMMODITY PRESSURE',
+        surge:    '🚨 COMMODITY PRESSURE SURGE'
+    };
+    const pressure = (data.commodity_pressure || 0);
+    banner.className = `commodity-alert-banner alert-${alertLevel} show`;
+    banner.innerHTML = `
+        <strong>${alertLabels[alertLevel] || alertLabels.normal}</strong>
+        <span class="ab-meta">Pressure score: ${pressure.toFixed(1)} · ${data.commodity_summaries?.length || 0} exposures tracked${data.has_live_data ? '' : ' · awaiting live signals'}</span>
+    `;
+
+    // ── Commodity tiles ──
+    const grid = document.getElementById('commodityGrid');
+    grid.innerHTML = '';
+    (data.commodity_summaries || []).forEach(c => {
+        const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+        const role = (c.role || 'producer').toLowerCase();
+        const rankText = c.rank ? `#${c.rank} globally` : '';
+        const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+
+        let sparklineHtml = '';
+        let priceHtml = '';
+        if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+            const spark = c.sparkline.spark;
+            const min = Math.min(...spark);
+            const max = Math.max(...spark);
+            const range = max - min || 1;
+            const points = spark.map((v, i) => {
+                const x = (i / (spark.length - 1)) * 100;
+                const y = 100 - ((v - min) / range) * 100;
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(' ');
+            const pctChange = c.sparkline.change_pct_30d || 0;
+            const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+            sparklineHtml = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/></svg>`;
+            const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+            const arrow = pctChange >= 0 ? '▲' : '▼';
+            priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+        }
+
+        const tile = document.createElement('a');
+        tile.className = 'commodity-pill';
+        tile.href = `commodities.html#${c.commodity}`;
+        tile.innerHTML = `
+            <div class="commodity-pill-header">
+                <div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                <div style="flex:1;">
+                    <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                    ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                </div>
+            </div>
+            <div class="commodity-pill-row">
+                <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                <span class="commodity-pill-role-badge">${role}</span>
+                ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+            </div>
+            ${priceHtml}
+            ${sparklineHtml}
+            ${c.note ? `<div class="commodity-pill-note">${c.note.slice(0, 180)}${c.note.length > 180 ? '…' : ''}</div>` : ''}
+        `;
+        grid.appendChild(tile);
+    });
+
+    // ── Top signals footer ──
+    const tsEl = document.getElementById('commodityTopSignals');
+    const topSignals = data.top_signals || [];
+    if (topSignals.length > 0) {
+        const items = topSignals.slice(0, 3).map(s => `
+            <a href="${s.article_url}" target="_blank" rel="noopener">
+                ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                <span class="ts-source">— ${s.source}</span>
+            </a>
+        `).join('');
+        tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+        tsEl.style.display = 'block';
+    } else {
+        tsEl.style.display = 'none';
+    }
+
+    // ── Cache freshness note (Europe proxy artifact) ──
+    const cacheStatus = data.cache_status || 'unknown';
+    const cachedAt = data.proxy_cached_at || data.last_updated;
+    let cacheText = '';
+    if (cachedAt) {
+        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
+        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
+    }
+    const cacheEl = document.getElementById('commodityCacheNote');
+    if (cacheEl) cacheEl.textContent = cacheText;
 }
+
 
 // ── RHETORIC PRESSURE — adapter for /api/europe/threat/<target> ──
 // Maps generic threat-scan output (probability, momentum, top_scoring_articles)
@@ -1052,84 +1276,7 @@ async function loadRhetoric() {
         }
     }
 }
-// ── COMMODITY HELPER RENDERERS ──
-function renderCommodityCard(d) {
-    const pressure = d.commodity_pressure || 0;
-    const alert = (d.alert_level || 'normal').toLowerCase();
-    const alertLabel = alert.toUpperCase();
-    const stripHtml = `
-        <div class="commodity-pressure-pill alert-${alert}">PRESSURE: ${Math.round(pressure)}</div>
-        <div class="commodity-pressure-pill alert-${alert}">ALERT: ${alertLabel}</div>
-        <div style="display:flex;align-items:center;color:var(--text-muted);font-size:10.5px;letter-spacing:1px;">
-            ${(d.commodity_summaries || []).length} commodities tracked
-        </div>
-    `;
-    document.getElementById('commodityPressureStrip').innerHTML = stripHtml;
-
-    const rowsContainer = document.getElementById('commodityRows');
-    rowsContainer.innerHTML = '';
-    (d.commodity_summaries || []).forEach(c => {
-        const role = (c.role || 'producer').toLowerCase();
-        const rolePill = `<span class="c-role-pill role-${role}">${role}</span>`;
-        const rankText = c.rank ? `#${c.rank} globally` : '';
-        const sparkline = renderSparkline(c.sparkline);
-        const signalCount = c.signal_count || 0;
-        const note = c.note || '';
-        const icon = c.icon || '📦';
-        const name = (c.name || c.commodity || '').toUpperCase();
-
-        const row = document.createElement('a');
-        row.className = 'commodity-row';
-        row.href = `commodities.html#${c.commodity}`;
-        row.innerHTML = `
-            <div class="c-icon">${icon}</div>
-            <div class="c-meta">
-                <div class="c-name">${name}</div>
-                <div>${rolePill}<span class="c-rank">${rankText}</span></div>
-                ${note ? `<div class="c-note">${note}</div>` : ''}
-            </div>
-            <div class="c-spark">${sparkline}</div>
-            <div class="c-signals">📰 ${signalCount} signals</div>
-        `;
-        rowsContainer.appendChild(row);
-    });
-
-    const cacheStatus = d.cache_status || 'unknown';
-    const cachedAt = d.proxy_cached_at || d.last_updated;
-    let cacheText = '';
-    if (cachedAt) {
-        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
-        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
-    }
-    document.getElementById('commodityCacheNote').textContent = cacheText;
-}
-
-function renderCommodityPlaceholder(msg) {
-    document.getElementById('commodityPressureStrip').innerHTML = '';
-    document.getElementById('commodityRows').innerHTML = `
-        <div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;font-size:12px;">
-            ${msg || 'Commodity scan pending — data will appear shortly.'}
-        </div>
-    `;
-}
-
-function renderSparkline(spark) {
-    if (!spark) return '';
-    let values = [];
-    if (Array.isArray(spark)) values = spark;
-    else if (spark.values && Array.isArray(spark.values)) values = spark.values;
-    else if (spark.points && Array.isArray(spark.points)) values = spark.points.map(p => typeof p === 'number' ? p : (p.y || p.close || 0));
-    if (values.length < 2) return '';
-    const blocks = '▁▂▃▄▅▆▇█';
-    const min = Math.min(...values), max = Math.max(...values);
-    const range = max - min || 1;
-    const sparkStr = values.map(v => blocks[Math.floor(((v - min) / range) * (blocks.length - 1))]).join('');
-    const trend = values[values.length - 1] - values[0];
-    const arrow = trend > 0 ? '↑' : (trend < 0 ? '↓' : '→');
-    const arrowColor = trend > 0 ? '#4ade80' : (trend < 0 ? '#f87171' : '#94a3b8');
-    return `${sparkStr} <span style="color:${arrowColor};font-weight:700;">${arrow}</span>`;
-}
-
+// (Legacy commodity row-renderers removed — tile rendering is inline in loadCommodity, Gold Standard)
 
 
 // ── TRANSLATIONS ──
@@ -1162,10 +1309,11 @@ const T = {
         mapSubtitle:"Azerbaijan's strategic position on the Caspian's western shore — bordered by Russia (north), Georgia (northwest), Armenia (west), Iran (south), and the Caspian Sea (east). The exclave of Nakhchivan abuts Iran, Armenia, and Turkey. BTC pipeline carries crude from Sangachal (Baku) to Ceyhan; TANAP feeds gas to Turkey and onward to Europe. NATO partner; quiet but consequential security relationship with Israel.",
         knowledgeTitle:'KNOWLEDGE LIBRARY',
         knowledgeDisclaimer:'Background information compiled from open-source research, think tank analyses, and public government reporting.',
-        catIranTransit:'Iran Transit Corridor — April 2026',
+        catIranTransit:'Iran Transit Corridor',
         catCaspian:'Caspian Sea & Maritime Strategic Position',
         catSocar:'SOCAR, BTC Pipeline & Iran Border',
-        catArmenia:'Armenia Tensions & Nagorno-Karabakh Aftermath',
+        catArmenia:'Armenia Peace Process & Post-Karabakh Order',
+        catAliyev:'Aliyev Family Rule & Political System',
         catIsrael:'Israel-Azerbaijan Defense Relationship',
         articlesTitle:'RECENT AZERBAIJAN STABILITY & STRATEGIC ARTICLES',
         articlesDesc:'English · Russian · French · Social signals · Last 7 days · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
@@ -1211,10 +1359,11 @@ const T = {
         mapSubtitle:"Position stratégique de l\u2019Azerbaïdjan sur la rive ouest de la Caspienne — bordé par la Russie (nord), la Géorgie (nord-ouest), l\u2019Arménie (ouest), l\u2019Iran (sud), et la mer Caspienne (est). L\u2019enclave du Nakhitchevan jouxte l\u2019Iran, l\u2019Arménie et la Turquie. L\u2019oléoduc BTC achemine le brut de Sangachal (Bakou) à Ceyhan ; le TANAP alimente la Turquie en gaz puis l\u2019Europe. Partenaire de l\u2019OTAN ; relation sécuritaire discrète mais conséquente avec Israël.",
         knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES',
         knowledgeDisclaimer:'Informations compilées à partir de recherches en sources ouvertes, d\u2019analyses de groupes de réflexion et de rapports gouvernementaux publics.',
-        catIranTransit:'Corridor de transit iranien — avril 2026',
+        catIranTransit:'Corridor de transit iranien',
         catCaspian:'Mer Caspienne et position stratégique maritime',
         catSocar:'SOCAR, oléoduc BTC et frontière iranienne',
-        catArmenia:'Tensions arméniennes et héritage du Haut-Karabakh',
+        catArmenia:'Processus de paix arménien et ordre post-Karabakh',
+        catAliyev:'Le pouvoir de la famille Aliyev et le système politique',
         catIsrael:'Relation défense Israël-Azerbaïdjan',
         articlesTitle:'ARTICLES RÉCENTS — AZERBAÏDJAN',
         articlesDesc:'Anglais · Russe · Français · Signaux sociaux · 7 derniers jours · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
@@ -1260,10 +1409,11 @@ const T = {
         mapSubtitle:'Стратегическое положение Азербайджана на западном побережье Каспия — граничит с Россией (север), Грузией (северо-запад), Арменией (запад), Ираном (юг) и Каспийским морем (восток). Анклав Нахичевань соседствует с Ираном, Арменией и Турцией. Нефтепровод БТД доставляет нефть из Сангачала (Баку) в Джейхан; TANAP подаёт газ в Турцию и далее в Европу. Партнёр НАТО; тихие, но значимые отношения безопасности с Израилем.',
         knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ',
         knowledgeDisclaimer:'Справочная информация составлена из открытых источников, аналитических работ исследовательских центров и публичных правительственных отчётов.',
-        catIranTransit:'Иранский транзитный коридор — апрель 2026',
+        catIranTransit:'Иранский транзитный коридор',
         catCaspian:'Каспийское море и морская стратегическая позиция',
         catSocar:'SOCAR, нефтепровод БТД и иранская граница',
-        catArmenia:'Армянские противоречия и наследие Нагорного Карабаха',
+        catArmenia:'Мирный процесс с Арменией и пост-карабахский порядок',
+        catAliyev:'Правление семьи Алиевых и политическая система',
         catIsrael:'Оборонные отношения Израиля и Азербайджана',
         articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ ОБ АЗЕРБАЙДЖАНЕ',
         articlesDesc:'Английский · Русский · Французский · Социальные сигналы · Последние 7 дней · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
@@ -1309,10 +1459,11 @@ const T = {
         mapSubtitle:'Aserbaidschans strategische Lage am Westufer des Kaspischen Meeres — grenzt an Russland (Norden), Georgien (Nordwesten), Armenien (Westen), Iran (Süden) und das Kaspische Meer (Osten). Die Exklave Nachitschewan grenzt an Iran, Armenien und die Türkei. Die BTC-Pipeline transportiert Rohöl von Sangachal (Baku) nach Ceyhan; TANAP versorgt die Türkei und weiter Europa mit Gas. NATO-Partner; stille, aber bedeutende Sicherheitsbeziehung zu Israel.',
         knowledgeTitle:'WISSENSBIBLIOTHEK',
         knowledgeDisclaimer:'Hintergrundinformationen aus Open-Source-Forschung, Think-Tank-Analysen und öffentlichen Regierungsberichten zusammengestellt.',
-        catIranTransit:'Iran-Transitkorridor — April 2026',
+        catIranTransit:'Iran-Transitkorridor',
         catCaspian:'Kaspisches Meer und maritime strategische Position',
         catSocar:'SOCAR, BTC-Pipeline und Iran-Grenze',
-        catArmenia:'Armenien-Spannungen und Bergkarabach-Nachwirkungen',
+        catArmenia:'Armenischer Friedensprozess und Nachkriegsordnung',
+        catAliyev:'Aliyev-Familienherrschaft und politisches System',
         catIsrael:'Israel-Aserbaidschan-Verteidigungsbeziehung',
         articlesTitle:'AKTUELLE ARTIKEL — ASERBAIDSCHAN',
         articlesDesc:'Englisch · Russisch · Französisch · Soziale Signale · Letzte 7 Tage · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
