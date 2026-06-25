@@ -374,10 +374,10 @@
 <!-- NAV SIDEBAR -->
 <nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <div class="nav-btn inactive-nav">
+    <a href="africa.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">🔒 Future</span>
-    </div>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <a href="asia.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
         <span class="nav-btn-status">● Live</span>
@@ -498,78 +498,6 @@
     <div id="cyprusRhetoricScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
 </div>
 
-<!-- COMMODITY EXPOSURE CARD (above map per spec) -->
-<div class="card" id="commodityCard" style="display:none;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
-        <div class="card-title" style="margin-bottom:0;">🛢️ <span data-i18n="commodityTitle">COMMODITY EXPOSURE — CYPRUS</span></div>
-        <a href="commodities.html" class="commodity-full-link" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
-    </div>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-style:italic;" data-i18n="commoditySubtitle">Strategic commodity exposure with live news signal counts. Click any row to deep-dive on commodities tracker.</div>
-
-    <!-- Pressure summary strip -->
-    <div id="commodityPressureStrip" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;"></div>
-
-    <!-- Per-commodity rows -->
-    <div id="commodityRows"></div>
-
-    <!-- Strategic linkage footer -->
-    <div id="commodityLinkage" style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">Strategic Linkage: Cyprus is an emerging Eastern-Mediterranean gas province rather than an established producer — offshore discoveries (Aphrodite, Calypso, Glaucus) await development and a settled export route (Egyptian LNG re-export versus pipeline concepts). Exposure concentrates in offshore hydrocarbons, EEZ rights and energy-transit positioning, overlaid by maritime-delimitation disputes with Turkey. [SHELL — expand with live exposure pegs.]</div>
-
-    <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
-</div>
-
-<!-- COMMODITY CARD STYLING -->
-<style>
-.commodity-full-link {
-    font-size: 11px; font-weight: 700; color: #fbbf24; text-decoration: none;
-    padding: 6px 12px; border: 1px solid rgba(245,158,11,0.4); border-radius: 6px;
-    background: rgba(245,158,11,0.06); transition: all 0.2s;
-}
-.commodity-full-link:hover {
-    background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.7);
-}
-.commodity-row {
-    display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px; align-items: center;
-    padding: 10px 14px; margin-bottom: 8px;
-    background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.18);
-    border-radius: 8px; cursor: pointer; transition: all 0.2s;
-    text-decoration: none; color: var(--text);
-}
-.commodity-row:hover {
-    background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.4);
-    transform: translateX(2px);
-}
-.commodity-row .c-icon { font-size: 18px; }
-.commodity-row .c-meta { display: flex; flex-direction: column; gap: 2px; }
-.commodity-row .c-name { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
-.commodity-row .c-note { font-size: 10.5px; color: var(--text-muted); line-height: 1.4; }
-.commodity-row .c-role-pill {
-    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px;
-    letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-right: 5px;
-}
-.role-producer { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.role-consumer { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-.role-transit  { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
-.commodity-row .c-rank { font-size: 9.5px; color: #93c5fd; font-weight: 600; letter-spacing: 0.5px; }
-.commodity-row .c-spark { font-family: 'Courier New', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; }
-.commodity-row .c-signals {
-    font-size: 10.5px; color: var(--text-2); white-space: nowrap;
-    padding: 4px 9px; background: rgba(56,189,248,0.08); border-radius: 4px;
-}
-.commodity-pressure-pill {
-    padding: 5px 12px; border-radius: 16px; font-weight: 700; letter-spacing: 1px;
-}
-.alert-normal   { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.alert-elevated { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-.alert-high     { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
-.alert-critical { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
-@media (max-width: 768px) {
-    .commodity-row { grid-template-columns: auto 1fr; gap: 8px; }
-    .commodity-row .c-spark, .commodity-row .c-signals { grid-column: 2; }
-}
-</style>
-
-
 <div class="card">
     <div class="card-title">🗺️ <span data-i18n="mapTitle">CYPRUS — STRATEGIC OVERVIEW</span></div>
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:11px;font-style:italic;" data-i18n="mapSubtitle">Cyprus sits at the strategic crossroads of the Eastern Mediterranean — roughly 100 km south of Turkey and west of the Levant. The island has been divided since 1974 between the Republic of Cyprus (south, an EU member) and the Turkish-occupied north, with a UN buffer zone (Green Line) bisecting the island and Nicosia. The UK retains two Sovereign Base Areas (Akrotiri & Dhekelia); RAF Akrotiri is a forward hub for regional operations. Offshore gas (Aphrodite, Calypso, Glaucus) and EEZ delimitation are the principal points of friction with Turkey.</div>
@@ -609,20 +537,45 @@
 
         <div class="knowledge-card collapsed" id="card-akrotiri">
             <div class="knowledge-header" onclick="toggleCard('akrotiri')">
-                <div class="knowledge-header-title"><span>🛡️</span> <span data-i18n="catAkrotiri">UK Sovereign Base Areas (Akrotiri &amp; Dhekelia)</span></div>
+                <div class="knowledge-header-title"><span>🛡️</span> <span data-i18n="catAkrotiri">British Influence &amp; the Sovereign Base Areas</span></div>
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="knowledge-content">
-                <p><strong>Under the 1960 independence settlement the United Kingdom retained two Sovereign Base Areas — Akrotiri and Dhekelia — which remain British territory and a standing element of Cyprus’s security geography.</strong></p>
+                <p><strong>Britain is woven into Cyprus’s sovereignty itself.</strong> Cyprus was under British rule from 1878 (a Crown Colony from 1925) until independence in 1960 — and that independence came with permanent British strings attached. Two Sovereign Base Areas remain British territory, and Britain sits as a guarantor power over the island’s constitutional order.</p>
                 <ul>
-                    <li><strong>RAF Akrotiri:</strong> A major forward air base that has supported UK and allied operations across the Middle East, including ISR and strike sorties over Syria and Iraq.</li>
-                    <li><strong>Strategic reach:</strong> The SBAs host listening and relay facilities that give the UK persistent regional coverage from the Eastern Mediterranean.</li>
-                    <li><strong>Footprint:</strong> The two areas total roughly 254 km² and are governed separately from the Republic of Cyprus.</li>
+                    <li><strong>The 1960 guarantor framework:</strong> The Treaty of Guarantee made the UK, Greece and Turkey guarantors of Cypriot independence — the same treaty Turkey later invoked to justify its 1974 intervention. British influence is therefore structural, not just military.</li>
+                    <li><strong>Sovereign Base Areas (Akrotiri &amp; Dhekelia):</strong> ~254 km² retained as British territory under the independence settlement, governed separately from the Republic of Cyprus.</li>
+                    <li><strong>RAF Akrotiri:</strong> A major forward air base supporting UK and allied operations across the Middle East — ISR and strike sorties over Syria and Iraq, and a standing logistics hub for regional contingencies.</li>
+                    <li><strong>Persistent reach:</strong> The SBAs host listening and relay facilities giving the UK durable signals coverage of the Eastern Mediterranean and Levant.</li>
                 </ul>
-                <div class="kl-note">* Background compiled from open-source research. Sources: UK MoD, RUSI, IISS.</div>
+                <div class="kl-note">* Background compiled from open-source research. Sources: UK MoD, FCDO, RUSI, IISS.</div>
                 <div class="report-links-grid">
                     <a href="https://www.gov.uk/government/organisations/ministry-of-defence" target="_blank" class="report-link">📑 UK MoD</a>
                     <a href="https://www.iiss.org/" target="_blank" class="report-link">📑 IISS</a>
+                    <a href="https://rusi.org/" target="_blank" class="report-link">📑 RUSI</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="knowledge-card collapsed" id="card-evacuation">
+            <div class="knowledge-header" onclick="toggleCard('evacuation')">
+                <div class="knowledge-header-title"><span>🛟</span> <span data-i18n="catEvacuation">Evacuation &amp; Crisis Hub (the &ldquo;Estia&rdquo; Plan)</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Cyprus is the West’s standing safe-haven and evacuation hub for the Eastern Mediterranean.</strong> Roughly 100–250 km from Lebanon, Israel and Syria, it is the natural reception point when a regional crisis forces non-combatant evacuations — and Nicosia has formalized the role under a dedicated national plan.</p>
+                <ul>
+                    <li><strong>The &ldquo;Estia&rdquo; plan:</strong> Cyprus’s Special National Plan turns the island into a staging post for mass evacuations from neighbouring conflict zones. Larnaca and Paphos airports plus Limassol port are designated reception points, coordinated through the Joint Rescue Coordination Centre (JRCC) in Larnaca, with transit visas issued on arrival and pre-contracted hotel capacity for short stays.</li>
+                    <li><strong>Track record:</strong> Principal hub for the 2006 Lebanon war (tens of thousands transited), the 2023 Sudan evacuation (~2,600 received) and the October 2023 outflow from Israel (1,000+). The plan has been repeatedly activated or placed on maximum readiness through 2024–2026 as Lebanon escalation risk recurs.</li>
+                    <li><strong>Multinational reliance:</strong> Around a dozen states have standing arrangements to route their nationals’ evacuation through Cyprus; the UK has forward-deployed troops to the island for Lebanon contingency planning, and energy majors pre-position extraction plans through it.</li>
+                    <li><strong>Amalthea maritime corridor:</strong> In 2024 Cyprus launched the Larnaca-based maritime humanitarian-aid corridor to Gaza — extending the hub role from evacuation to crisis logistics.</li>
+                    <li><strong>So what:</strong> When the platform’s Middle East trackers light up — a Lebanon militia signal, an Israel–Hezbollah escalation — Cyprus is the downstream pressure node. Estia activation tempo and reception build-up here are themselves Levant-escalation indicators.</li>
+                </ul>
+                <div class="kl-note">* Background compiled from open-source reporting. Sources: Republic of Cyprus (PIO/MFA), Cyprus Mail, Reuters, UK FCDO.</div>
+                <div class="report-links-grid">
+                    <a href="https://www.pio.gov.cy/en/" target="_blank" class="report-link">📑 RoC Press &amp; Info</a>
+                    <a href="https://mfa.gov.cy/" target="_blank" class="report-link">📑 Cyprus MFA</a>
+                    <a href="https://www.gov.uk/foreign-travel-advice" target="_blank" class="report-link">📑 UK FCDO</a>
                 </div>
             </div>
         </div>
@@ -689,7 +642,7 @@
 </div><!-- /page-with-sidebar -->
 
 <!-- FOOTER (canonical Asifah pattern) -->
-<footer style="background:var(--card, #0d1b2e);border:1px solid var(--border, #1e3a5f);border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:var(--text-2, #93c5fd);text-align:center;">
+<footer style="background:var(--card, #0d1b2e);border:1px solid var(--border, #1e3a5f);border-radius:12px;padding:30px;margin:30px auto;max-width:1400px;font-size:13px;color:var(--text-2, #93c5fd);text-align:center;">
     <div style="font-weight:800;font-size:15px;color:var(--text, #e2f0fb);letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — CYPRUS</div>
     <div style="margin-bottom:6px;" data-i18n="footBackend">Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 6 hours</div>
     <div style="margin-bottom:16px;color:var(--text-muted, #64748b);" data-i18n="footSignals">Open-source signals: GDELT (EN/EL/TR/FR), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimative, convergence-framed — not prediction</div>
@@ -894,25 +847,6 @@ function displayFallback() {
         '</div></div>';
 }
 
-// ── COMMODITY EXPOSURE LOADER (calls Europe backend proxy with 12hr Redis cache) ──
-async function loadCommodity() {
-    const COUNTRY_KEY = 'cyprus';
-    try {
-        const r = await fetch(`${API_BASE}/api/europe/commodity/${COUNTRY_KEY}`);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const d = await r.json();
-        if (d.success !== false && (d.commodity_summaries || []).length > 0) {
-            renderCommodityCard(d);
-            document.getElementById('commodityCard').style.display = 'block';
-        } else if (d.message) {
-            renderCommodityPlaceholder(d.message);
-            document.getElementById('commodityCard').style.display = 'block';
-        }
-    } catch(e) {
-        console.warn('[Cyprus] Commodity fetch failed:', e.message);
-    }
-}
-
 // ── RHETORIC PRESSURE — adapter for /api/europe/threat/<target> ──
 // Maps generic threat-scan output (probability, momentum, top_scoring_articles)
 // onto the canonical rhetoric banner + pressure detail card.
@@ -927,7 +861,7 @@ async function loadRhetoric() {
         } catch(e) { console.warn('[Cyprus] Rhetoric pressure fetch failed:', e.message); return; }
     }
 
-    // Awaiting first scan — show nothing; loadCommodity placeholder logic handles UI
+    // Awaiting first scan — show nothing until the threat scan returns data
     if (d.pending_scan || d.probability === null || d.probability === undefined) return;
 
     const score = d.probability || 0;
@@ -1001,84 +935,7 @@ async function loadRhetoric() {
         }
     }
 }
-// ── COMMODITY HELPER RENDERERS ──
-function renderCommodityCard(d) {
-    const pressure = d.commodity_pressure || 0;
-    const alert = (d.alert_level || 'normal').toLowerCase();
-    const alertLabel = alert.toUpperCase();
-    const stripHtml = `
-        <div class="commodity-pressure-pill alert-${alert}">PRESSURE: ${Math.round(pressure)}</div>
-        <div class="commodity-pressure-pill alert-${alert}">ALERT: ${alertLabel}</div>
-        <div style="display:flex;align-items:center;color:var(--text-muted);font-size:10.5px;letter-spacing:1px;">
-            ${(d.commodity_summaries || []).length} commodities tracked
-        </div>
-    `;
-    document.getElementById('commodityPressureStrip').innerHTML = stripHtml;
-
-    const rowsContainer = document.getElementById('commodityRows');
-    rowsContainer.innerHTML = '';
-    (d.commodity_summaries || []).forEach(c => {
-        const role = (c.role || 'producer').toLowerCase();
-        const rolePill = `<span class="c-role-pill role-${role}">${role}</span>`;
-        const rankText = c.rank ? `#${c.rank} globally` : '';
-        const sparkline = renderSparkline(c.sparkline);
-        const signalCount = c.signal_count || 0;
-        const note = c.note || '';
-        const icon = c.icon || '📦';
-        const name = (c.name || c.commodity || '').toUpperCase();
-
-        const row = document.createElement('a');
-        row.className = 'commodity-row';
-        row.href = `commodities.html#${c.commodity}`;
-        row.innerHTML = `
-            <div class="c-icon">${icon}</div>
-            <div class="c-meta">
-                <div class="c-name">${name}</div>
-                <div>${rolePill}<span class="c-rank">${rankText}</span></div>
-                ${note ? `<div class="c-note">${note}</div>` : ''}
-            </div>
-            <div class="c-spark">${sparkline}</div>
-            <div class="c-signals">📰 ${signalCount} signals</div>
-        `;
-        rowsContainer.appendChild(row);
-    });
-
-    const cacheStatus = d.cache_status || 'unknown';
-    const cachedAt = d.proxy_cached_at || d.last_updated;
-    let cacheText = '';
-    if (cachedAt) {
-        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
-        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
-    }
-    document.getElementById('commodityCacheNote').textContent = cacheText;
-}
-
-function renderCommodityPlaceholder(msg) {
-    document.getElementById('commodityPressureStrip').innerHTML = '';
-    document.getElementById('commodityRows').innerHTML = `
-        <div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;font-size:12px;">
-            ${msg || 'Commodity scan pending — data will appear shortly.'}
-        </div>
-    `;
-}
-
-function renderSparkline(spark) {
-    if (!spark) return '';
-    let values = [];
-    if (Array.isArray(spark)) values = spark;
-    else if (spark.values && Array.isArray(spark.values)) values = spark.values;
-    else if (spark.points && Array.isArray(spark.points)) values = spark.points.map(p => typeof p === 'number' ? p : (p.y || p.close || 0));
-    if (values.length < 2) return '';
-    const blocks = '▁▂▃▄▅▆▇█';
-    const min = Math.min(...values), max = Math.max(...values);
-    const range = max - min || 1;
-    const sparkStr = values.map(v => blocks[Math.floor(((v - min) / range) * (blocks.length - 1))]).join('');
-    const trend = values[values.length - 1] - values[0];
-    const arrow = trend > 0 ? '↑' : (trend < 0 ? '↓' : '→');
-    const arrowColor = trend > 0 ? '#4ade80' : (trend < 0 ? '#f87171' : '#94a3b8');
-    return `${sparkStr} <span style="color:${arrowColor};font-weight:700;">${arrow}</span>`;
-}
-
+// (Commodity card removed - Cyprus carries no commodity exposure per doctrine)
 
 
 // ── TRANSLATIONS ──
@@ -1111,7 +968,7 @@ const T = {
         mapSubtitle:"Cyprus sits at the strategic crossroads of the Eastern Mediterranean — divided since 1974 between the Republic of Cyprus (south, an EU member) and the Turkish-occupied north, with a UN buffer zone (Green Line) bisecting the island and Nicosia. The UK retains two Sovereign Base Areas (Akrotiri & Dhekelia). Offshore gas and EEZ delimitation are the principal points of friction with Turkey. [SHELL — expand.]",
         knowledgeTitle:'KNOWLEDGE LIBRARY',
         knowledgeDisclaimer:'Background information compiled from open-source research, think tank analyses, and public government reporting.',
-        catDivision:'Division & the Green Line (UNFICYP)', catAkrotiri:'UK Sovereign Base Areas (Akrotiri & Dhekelia)', catCyEnergy:'Eastern Mediterranean Gas & EEZ', catCyTurkey:'Turkey Tensions & Greece-Cyprus Axis',
+        catDivision:'Division & the Green Line (UNFICYP)', catAkrotiri:'British Influence & the Sovereign Base Areas', catCyEnergy:'Eastern Mediterranean Gas & EEZ', catCyTurkey:'Turkey Tensions & Greece-Cyprus Axis', catEvacuation:'Evacuation & Crisis Hub (Estia Plan)',
         articlesTitle:'RECENT CYPRUS STABILITY & STRATEGIC ARTICLES',
         articlesDesc:'English · Russian · French · Social signals · Last 7 days · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
         tabEN:'🇬🇧 English', tabRU:'🇷🇺 Russian', tabFR:'🇫🇷 French', tabSocial:'📡 Social',
@@ -1156,7 +1013,7 @@ const T = {
         mapSubtitle:"Cyprus sits at the strategic crossroads of the Eastern Mediterranean — divided since 1974 between the Republic of Cyprus (south, an EU member) and the Turkish-occupied north, with a UN buffer zone (Green Line) bisecting the island and Nicosia. The UK retains two Sovereign Base Areas (Akrotiri & Dhekelia). Offshore gas and EEZ delimitation are the principal points of friction with Turkey. [SHELL — expand.]",
         knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES',
         knowledgeDisclaimer:'Informations compilées à partir de recherches en sources ouvertes, d\u2019analyses de groupes de réflexion et de rapports gouvernementaux publics.',
-        catDivision:'Division et la Ligne verte (UNFICYP)', catAkrotiri:'Zones de souveraineté britannique (Akrotiri et Dhekelia)', catCyEnergy:'Gaz et ZEE en Méditerranée orientale', catCyTurkey:'Tensions avec la Turquie et axe Grèce-Chypre',
+        catDivision:'Division et la Ligne verte (UNFICYP)', catAkrotiri:'Influence britannique et zones de souveraineté', catCyEnergy:'Gaz et ZEE en Méditerranée orientale', catCyTurkey:'Tensions avec la Turquie et axe Grèce-Chypre', catEvacuation:'Pôle d’évacuation et de crise (plan Estia)',
         articlesTitle:'ARTICLES RÉCENTS — CHYPRE',
         articlesDesc:'Anglais · Russe · Français · Signaux sociaux · 7 derniers jours · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
         tabEN:'🇬🇧 Anglais', tabRU:'🇷🇺 Russe', tabFR:'🇫🇷 Français', tabSocial:'📡 Social',
@@ -1201,7 +1058,7 @@ const T = {
         mapSubtitle:'Cyprus sits at the strategic crossroads of the Eastern Mediterranean — divided since 1974 between the Republic of Cyprus (south, an EU member) and the Turkish-occupied north, with a UN buffer zone (Green Line) bisecting the island and Nicosia. The UK retains two Sovereign Base Areas (Akrotiri & Dhekelia). Offshore gas and EEZ delimitation are the principal points of friction with Turkey. [SHELL — expand.]',
         knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ',
         knowledgeDisclaimer:'Справочная информация составлена из открытых источников, аналитических работ исследовательских центров и публичных правительственных отчётов.',
-        catDivision:'Разделение и «Зелёная линия» (ВСООНК)', catAkrotiri:'Британские суверенные базы (Акротири и Декелия)', catCyEnergy:'Газ и ИЭЗ Вост. Средиземноморья', catCyTurkey:'Напряжённость с Турцией и ось Греция-Кипр',
+        catDivision:'Разделение и «Зелёная линия» (ВСООНК)', catAkrotiri:'Британское влияние и суверенные базы', catCyEnergy:'Газ и ИЭЗ Вост. Средиземноморья', catCyTurkey:'Напряжённость с Турцией и ось Греция-Кипр', catEvacuation:'Центр эвакуации и кризисного реагирования (план Estia)',
         articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О КИПРЕ',
         articlesDesc:'Английский · Русский · Французский · Социальные сигналы · Последние 7 дней · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
         tabEN:'🇬🇧 Английский', tabRU:'🇷🇺 Русский', tabFR:'🇫🇷 Французский', tabSocial:'📡 Социальные',
@@ -1246,7 +1103,7 @@ const T = {
         mapSubtitle:'Cyprus sits at the strategic crossroads of the Eastern Mediterranean — divided since 1974 between the Republic of Cyprus (south, an EU member) and the Turkish-occupied north, with a UN buffer zone (Green Line) bisecting the island and Nicosia. The UK retains two Sovereign Base Areas (Akrotiri & Dhekelia). Offshore gas and EEZ delimitation are the principal points of friction with Turkey. [SHELL — expand.]',
         knowledgeTitle:'WISSENSBIBLIOTHEK',
         knowledgeDisclaimer:'Hintergrundinformationen aus Open-Source-Forschung, Think-Tank-Analysen und öffentlichen Regierungsberichten zusammengestellt.',
-        catDivision:'Teilung & die Grüne Linie (UNFICYP)', catAkrotiri:'Brit. Hoheitszonen (Akrotiri & Dhekelia)', catCyEnergy:'Erdgas & AWZ im östlichen Mittelmeer', catCyTurkey:'Türkei-Spannungen & Achse Griechenland-Zypern',
+        catDivision:'Teilung & die Grüne Linie (UNFICYP)', catAkrotiri:'Britischer Einfluss & Hoheitszonen', catCyEnergy:'Erdgas & AWZ im östlichen Mittelmeer', catCyTurkey:'Türkei-Spannungen & Achse Griechenland-Zypern', catEvacuation:'Evakuierungs- und Krisendrehscheibe (Estia-Plan)',
         articlesTitle:'AKTUELLE ARTIKEL — ZYPERN',
         articlesDesc:'Englisch · Russisch · Französisch · Soziale Signale · Letzte 7 Tage · NewsAPI + GDELT + Telegram + Bluesky + Reddit',
         tabEN:'🇬🇧 Englisch', tabRU:'🇷🇺 Russisch', tabFR:'🇫🇷 Französisch', tabSocial:'📡 Sozial',
@@ -1278,7 +1135,6 @@ function setLang(lang, btn) {
 document.addEventListener('DOMContentLoaded', () => {
     startLoading();
     loadArticles();
-    loadCommodity();
     loadRhetoric();
 });
 </script>
