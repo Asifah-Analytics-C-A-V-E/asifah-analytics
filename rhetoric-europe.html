@@ -578,9 +578,32 @@
         5: { label:'Active Conflict', color:'#dc2626' },
     };
 
+    // ── LEVEL EXTRACTION (pattern-aware) ──
+    // Numeric-level trackers (Russia, Greenland, Hungary, Azerbaijan) emit
+    // theatre_level. The active-war / swing-state trackers (Ukraine, Belarus,
+    // Turkey) emit a STRING alert_level instead and have no numeric level, so
+    // map alert_level exactly as the Europe BLUF backend does (ALERT_TO_LEVEL)
+    // -- otherwise those banners and the page posture flatline to L0.
+    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4 };
+    function levelFromData(data) {
+        if (!data) return 0;
+        let lvl = data.theatre_level ?? data.theatre_escalation_level;
+        if (lvl == null) lvl = ALERT_TO_LEVEL[String(data.alert_level || '').toLowerCase()] ?? 0;
+        return lvl;
+    }
+
     // ── TRACKER DEFINITIONS ──
     // One entry per live tracker. Add Russia/Ukraine/Poland here when ready.
     const TRACKERS = [
+        {
+            id:         'azerbaijan',
+            name:       'Azerbaijan Four-Wheel Tracker',
+            flag:       '🇦🇿',
+            actors:     'Turkey Axis · Russia Rupture · Iran Friction · Israel Axis · Armenia/Corridor · Domestic Legitimacy',
+            vectors:    ['Turkey Axis', 'Russia Rupture', 'Iran Friction', 'Israel Axis', 'Armenia/Corridor'],
+            summaryUrl: EUROPE_BACKEND + '/api/rhetoric/azerbaijan/summary',
+            url:        'https://www.asifahanalytics.com/rhetoric-azerbaijan.html',
+        },
         {
             id:         'belarus',
             name:       'Belarus Pressure Tracker',
@@ -654,7 +677,7 @@
         let level = 0, color = '#6b7280', label = '---';
 
         if (data) {
-            level = data.theatre_level ?? data.theatre_escalation_level ?? 0;
+            level = levelFromData(data);
             const lv = ESCALATION_LEVELS[Math.min(level, 5)] || ESCALATION_LEVELS[0];
             color = data.theatre_color || data.theatre_escalation_color || lv.color;
             label = data.theatre_label || data.theatre_escalation_label || lv.label;
@@ -710,7 +733,7 @@
         const loaded = resolved.filter(r => r.data);
         if (loaded.length === 0) return;
 
-        const levels  = loaded.map(r => r.data.theatre_level ?? r.data.theatre_escalation_level ?? 0);
+        const levels  = loaded.map(r => levelFromData(r.data));
         const maxLevel = Math.max(...levels);
         const avgScore = Math.round(
             loaded.reduce((s, r) => s + (r.data.theatre_score || 0), 0) / loaded.length
