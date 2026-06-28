@@ -1,0 +1,1325 @@
+<!-- Asifah Analytics — Cyprus Rhetoric & Pressure Tracker v1.0.0 — June 2026 -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Cyprus Rhetoric Tracker — Asifah Analytics</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    /* ── ARCTIC THEME VARIABLES (canonical for all Europe trackers) ── */
+    :root {
+        --bg-color:       #e8f0f8;
+        --container-bg:   #ffffff;
+        --card-bg:        #ffffff;
+        --card-border:    #b0c8e0;
+        --text-primary:   #0a1628;
+        --text-secondary: #1e3a5f;
+        --text-muted:     #4a6080;
+        --article-bg:     #f0f6fc;
+        --accent:         #0ea5e9;
+        --accent-glow:    rgba(14,165,233,0.2);
+        --card-glow:      none;
+        --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
+        --watermark-opacity: 0.07;
+        --watermark-filter:  none;
+    }
+    [data-theme="dark"] {
+        --bg-color:       #060d1a;
+        --container-bg:   #0d1b2e;
+        --card-bg:        #0d1b2e;
+        --card-border:    #1e3a5f;
+        --text-primary:   #e2f0fb;
+        --text-secondary: #93c5fd;
+        --text-muted:     #4a7090;
+        --article-bg:     #0a1525;
+        --accent:         #38bdf8;
+        --accent-glow:    rgba(56,189,248,0.18);
+        --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
+        --card-hover-glow: 0 0 22px rgba(56,189,248,0.2), 0 8px 25px rgba(0,0,0,0.5);
+        --watermark-opacity: 0.18;
+        --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        min-height: 100vh;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body::before {
+        content: '';
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110vmin; height: 110vmin;
+        min-width: 800px; min-height: 800px;
+        max-width: 1400px; max-height: 1400px;
+        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+        background-size: contain; background-repeat: no-repeat; background-position: center;
+        opacity: var(--watermark-opacity); filter: var(--watermark-filter);
+        z-index: 0; pointer-events: none; user-select: none;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+    /* ── HEADER ── */
+    header {
+        background: linear-gradient(135deg, #060d1a, #0a1628);
+        border: 1px solid #1e3a5f;
+        border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;
+        display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(56,189,248,0.08);
+        border-bottom: 1px solid rgba(56,189,248,0.2);
+    }
+    [data-theme="light"] header { background: linear-gradient(135deg, #dbeafe, #eff6ff); border-color: #93c5fd; }
+    .header-logo { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(56,189,248,0.4); flex-shrink: 0; }
+    .header-left { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .back-link {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3);
+        color: #38bdf8; font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: all 0.2s;
+    }
+    .back-link:hover { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+    .header-center { flex: 1; text-align: center; }
+    .header-flag { font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; color: #38bdf8; text-transform: uppercase; }
+    .header-title { font-family: 'Times New Roman', Times, serif; font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e2f0fb; margin: 4px 0; }
+    [data-theme="light"] .header-title { color: #0a1628; }
+    .header-subtitle { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; }
+    .header-timestamp { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .pressure-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 6px;
+        background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.4);
+        font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; color: #38bdf8;
+        text-transform: uppercase; animation: pulse-arctic 3s ease-in-out infinite;
+    }
+    @keyframes pulse-arctic { 0%,100%{opacity:0.7;} 50%{opacity:1;} }
+    .lang-group { display: flex; gap: 6px; }
+    .lang-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--card-border); background: transparent; color: var(--text-muted); font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Courier New', monospace; }
+    .lang-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+    .lang-btn.active { background: #38bdf8; color: #060d1a; border-color: #38bdf8; }
+    .theme-row { display: flex; align-items: center; gap: 8px; }
+    .theme-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .theme-toggle { position: relative; width: 38px; height: 20px; }
+    .theme-toggle input { opacity: 0; width: 0; height: 0; }
+    .theme-slider { position: absolute; cursor: pointer; inset: 0; background: #4a6080; border-radius: 20px; transition: 0.3s; }
+    .theme-slider::before { position: absolute; content: ''; height: 14px; width: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+    .theme-toggle input:checked + .theme-slider { background: #38bdf8; }
+    .theme-toggle input:checked + .theme-slider::before { transform: translateX(18px); }
+
+    /* ── PAGE WITH SIDEBAR ── */
+    .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+    .nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+    .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+    .nav-btn {
+        position: relative; display: flex; flex-direction: column; gap: 3px;
+        padding: 9px 11px; border-radius: 7px; background: rgba(13,27,46,0.6);
+        border: 1px solid rgba(56,189,248,0.18); color: #e2f0fb; font-family: 'Times New Roman', serif;
+        font-weight: 700; font-size: 11px; letter-spacing: 0.3px; text-decoration: none;
+        transition: all 0.2s; overflow: hidden;
+    }
+    [data-theme="light"] .nav-btn { color: var(--text-secondary); }
+    .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+    .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #38bdf8; }
+    .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); border-color: rgba(56,189,248,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(56,189,248,0.12); }
+    .nav-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); border-color: rgba(34,197,94,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+    .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+    .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+    [data-theme="light"] .nav-btn.inactive-nav { color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
+    .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+    .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+    .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+    .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+    .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+    .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+    .nav-btn.commodities-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+    /* ── Canonical mobile drawer (Jun 2026 retrofit) ── */
+    .mobile-hamburger { display: none; }
+    .mobile-drawer-backdrop { display: none; }
+    @media (max-width: 1199px) {
+        .page-with-sidebar { display: block; }
+        .mobile-hamburger {
+            display: flex; position: fixed; top: 16px; left: 16px;
+            width: 44px; height: 44px;
+            background: var(--card-bg, #0d1b2e);
+            border: 1px solid var(--card-border, #1e3a5f);
+            border-radius: 8px; cursor: pointer; z-index: 1001;
+            align-items: center; justify-content: center;
+            font-size: 22px; color: var(--text-primary, #e2f0fb);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-family: monospace;
+        }
+        .mobile-hamburger:active { transform: scale(0.95); }
+        .nav-sidebar {
+            display: flex; position: fixed; top: 0; left: 0;
+            width: min(82vw, 280px); max-width: 280px; height: 100dvh;
+            background: var(--card-bg, #0d1b2e);
+            border-right: 1px solid var(--card-border, #1e3a5f);
+            padding: 70px 12px 20px 12px; overflow-y: auto;
+            z-index: 1000; transform: translateX(-105%);
+            transition: transform 0.25s ease-in-out;
+            box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+        }
+        .nav-sidebar.open { transform: translateX(0); }
+        .mobile-drawer-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 999; backdrop-filter: blur(2px);
+        }
+        .mobile-drawer-backdrop.open { display: block; }
+    }
+
+    /* ── THEATRE BANNER ── */
+    .theatre-banner { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px 28px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--card-glow); }
+    .theatre-score-big { font-size: 3.4rem; font-weight: 900; line-height: 1; font-family: 'Times New Roman', serif; }
+    .theatre-score-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .theatre-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; color: white; margin-top: 8px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .theatre-right { text-align: right; }
+    .theatre-escalation-label-text { font-size: 0.55rem; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .theatre-level-display { font-size: 1.5rem; font-weight: 900; margin: 4px 0; font-family: 'Times New Roman', serif; }
+    .theatre-level-desc { font-size: 0.7rem; color: var(--text-muted); font-style: italic; max-width: 240px; }
+    .theatre-scan-info { font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; line-height: 1.4; font-family: 'Courier New', monospace; }
+
+    /* ── SECTION CARDS ── */
+    .section-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .section-title { font-size: 0.75rem; font-weight: 800; color: #38bdf8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(56,189,248,0.2); font-family: 'Courier New', monospace; }
+
+    /* ── DUAL PANEL ACTORS ── */
+    .dual-panel-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    @media (max-width: 900px) { .dual-panel-wrapper { grid-template-columns: 1fr; } }
+    .actor-panel { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--card-glow); }
+    .actor-panel-header { font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; margin-bottom: 12px; font-family: 'Courier New', monospace; }
+    .actor-panel-header.outbound { background: rgba(220,38,38,0.12); color: #fca5a5; border: 1px solid rgba(220,38,38,0.3); }
+    .actor-panel-header.inbound  { background: rgba(56,189,248,0.10); color: #93c5fd; border: 1px solid rgba(56,189,248,0.3); }
+    .actor-card { background: var(--article-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; margin-bottom: 10px; transition: all 0.3s; }
+    .actor-card:last-child { margin-bottom: 0; }
+    .actor-card:hover { box-shadow: var(--card-hover-glow); transform: translateY(-1px); }
+    .actor-card.outbound-actor { border-left: 3px solid rgba(239,68,68,0.5); }
+    .actor-card.inbound-actor  { border-left: 3px solid rgba(56,189,248,0.5); }
+    .actor-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .actor-flag { font-size: 1.3rem; flex-shrink: 0; }
+    .actor-name { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.5px; }
+    .actor-role { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; margin-top: 1px; font-family: 'Courier New', monospace; }
+    .actor-stats { display: flex; gap: 14px; flex-wrap: wrap; padding: 6px 0 8px; font-size: 0.7rem; color: var(--text-muted); border-bottom: 1px dashed rgba(56,189,248,0.15); margin-bottom: 8px; font-family: 'Courier New', monospace; }
+    .actor-stat span { color: #38bdf8; font-weight: 700; }
+    .silence-alert { font-size: 0.65rem; color: #f59e0b; padding: 5px 8px; background: rgba(245,158,11,0.06); border-left: 2px solid rgba(245,158,11,0.5); border-radius: 0 4px 4px 0; margin-bottom: 6px; font-family: 'Courier New', monospace; }
+    .article-item { padding: 5px 0; border-top: 1px dashed rgba(56,189,248,0.1); }
+    .article-item:first-of-type { border-top: none; }
+    .article-link { color: #38bdf8; font-size: 0.72rem; text-decoration: none; line-height: 1.4; font-family: 'Times New Roman', serif; }
+    .article-link:hover { text-decoration: underline; }
+    .article-meta { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; font-family: 'Courier New', monospace; }
+    .level-badge { padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: 800; color: white; letter-spacing: 1px; text-transform: uppercase; font-family: 'Courier New', monospace; flex-shrink: 0; }
+
+    /* ── INTERPRETATION CARDS ── */
+    .interp-so-what {
+        background: linear-gradient(180deg, rgba(56,189,248,0.05), rgba(14,165,233,0.02));
+        border: 1px solid rgba(56,189,248,0.3); border-left: 4px solid #38bdf8;
+        border-radius: 10px; padding: 16px 20px; margin-bottom: 18px;
+    }
+    .interp-scenario-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .interp-scenario-icon { font-size: 1.3rem; }
+    .interp-scenario-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .interp-scenario-value { font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; font-family: 'Times New Roman', serif; }
+    .interp-section-title { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; font-family: 'Courier New', monospace; margin: 12px 0 6px; border-bottom: 1px solid rgba(56,189,248,0.2); padding-bottom: 4px; }
+    .interp-text { font-size: 0.82rem; line-height: 1.65; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .interp-indicator { font-size: 0.78rem; line-height: 1.5; color: var(--text-secondary); padding: 5px 10px; border-left: 3px solid #38bdf8; background: rgba(56,189,248,0.06); border-radius: 0 6px 6px 0; margin: 5px 0; font-family: 'Times New Roman', serif; }
+    .interp-indicator.nuclear-ind { color: #fca5a5; border-left-color: #dc2626; background: rgba(220,38,38,0.06); }
+    .interp-indicator.deesc-ind   { color: #86efac; border-left-color: #10b981; background: rgba(16,185,129,0.06); }
+    .interp-watch-item { font-size: 0.72rem; color: #38bdf8; padding: 3px 0 3px 10px; border-left: 2px solid rgba(56,189,248,0.4); margin: 3px 0; font-family: 'Courier New', monospace; }
+    .interp-confidence-note { font-size: 0.65rem; color: var(--text-muted); font-style: italic; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(56,189,248,0.15); font-family: 'Courier New', monospace; }
+
+    /* ── RED LINES CARD ── */
+    .red-lines-card { background: var(--container-bg); border: 1px solid rgba(220,38,38,0.3); border-radius: 12px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .interp-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .interp-card-title { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; font-family: 'Courier New', monospace; margin-bottom: 2px; }
+    .interp-card-subtitle { font-size: 0.85rem; font-weight: 800; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .red-line-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(56,189,248,0.1); }
+    .red-line-item.breached { border-left: 3px solid #dc2626; background: rgba(220,38,38,0.06); }
+    .red-line-item.approaching { border-left: 3px solid #38bdf8; background: rgba(56,189,248,0.05); }
+    .red-line-item.inactive { border-left: 3px solid rgba(100,116,139,0.4); background: rgba(100,116,139,0.04); opacity: 0.7; }
+    .red-line-icon { font-size: 1.05rem; flex-shrink: 0; }
+    .red-line-label { font-size: 0.78rem; font-weight: 700; color: var(--text-primary); font-family: 'Times New Roman', serif; }
+    .red-line-status-badge { font-size: 0.55rem; letter-spacing: 1px; padding: 1px 6px; border-radius: 3px; font-weight: 800; color: white; font-family: 'Courier New', monospace; }
+    .red-line-status-badge.breached { background: #dc2626; }
+    .red-line-status-badge.approaching { background: #38bdf8; }
+    .red-line-status-badge.inactive { background: #64748b; }
+    .red-line-status-badge.watching { background: #f59e0b; }
+    .red-line-trigger { font-size: 0.7rem; color: var(--text-secondary); margin-top: 3px; font-family: 'Times New Roman', serif; }
+    .red-line-source { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; font-family: 'Courier New', monospace; font-style: italic; }
+
+    /* ── DIPLOMATIC TRACK / GREEN LINES ── */
+    /* Multi-dimensional analyst read (D) */
+    .so-what-narrative { display:flex; flex-direction:column; gap:8px; margin:4px 0 6px; }
+    .narr-thread { border-left:3px solid var(--card-border); padding:6px 10px; background:rgba(148,163,184,0.05); border-radius:0 6px 6px 0; }
+    .narr-thread .narr-label { font-size:0.58rem; font-family:'Courier New',monospace; letter-spacing:1.5px; text-transform:uppercase; color:#94a3b8; margin-bottom:2px; }
+    .narr-thread .narr-text { font-size:0.8rem; line-height:1.45; }
+    .narr-thread.tone-calm     { border-left-color:#10b981; }
+    .narr-thread.tone-watch    { border-left-color:#f59e0b; }
+    .narr-thread.tone-elevated { border-left-color:#f97316; }
+    .narr-thread.tone-alert    { border-left-color:#ef4444; }
+    .diplomatic-track-card { background: linear-gradient(180deg, rgba(16,185,129,0.04), rgba(16,185,129,0.01)); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .green-line-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(16,185,129,0.15); }
+    .green-line-item.active   { border-left: 3px solid #10b981; background: rgba(16,185,129,0.06); }
+    .green-line-item.signaled { border-left: 3px solid #84cc16; background: rgba(132,204,22,0.04); }
+    .green-line-item.dormant  { border-left: 3px solid rgba(100,116,139,0.4); background: rgba(100,116,139,0.04); opacity: 0.65; }
+    .green-line-status-badge { font-size: 0.55rem; letter-spacing: 1px; padding: 1px 6px; border-radius: 3px; font-weight: 800; color: white; font-family: 'Courier New', monospace; }
+    .green-line-status-badge.active   { background: #10b981; }
+    .green-line-status-badge.signaled { background: #84cc16; color: #052e16; }
+    .green-line-status-badge.dormant  { background: #64748b; }
+
+    /* ── SCROLLABLE SIGNAL LISTS (cap at ~5 visible, scroll for more) ── */
+    .signal-list-scroll {
+        max-height: 340px;
+        overflow-y: auto;
+        padding-right: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(56,189,248,0.4) rgba(56,189,248,0.08);
+    }
+    .signal-list-scroll::-webkit-scrollbar { width: 8px; }
+    .signal-list-scroll::-webkit-scrollbar-track { background: rgba(56,189,248,0.05); border-radius: 4px; }
+    .signal-list-scroll::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.35); border-radius: 4px; }
+    .signal-list-scroll::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.55); }
+    .signal-list-scroll-hint {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 6px;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-style: italic;
+    }
+    .diplomatic-score-bar { height: 8px; background: rgba(100,116,139,0.2); border-radius: 4px; overflow: hidden; margin: 4px 0 8px; }
+    .diplomatic-score-fill { height: 100%; background: linear-gradient(90deg, #10b981, #84cc16); transition: width 0.5s ease; }
+    .max-pressure-alert { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.3); border-left: 3px solid #dc2626; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
+
+    /* ── TOP BLUF STRIP ── */
+    .bluf-strip { display:none; background: linear-gradient(180deg, rgba(56,189,248,0.07), rgba(56,189,248,0.02)); border:1px solid #1e3a5f; border-left:4px solid #38bdf8; border-radius:10px; padding:12px 18px; margin-bottom:18px; box-shadow: var(--card-glow); }
+    .bluf-strip .bluf-label { font-size:0.6rem; font-family:'Courier New',monospace; letter-spacing:2px; color:#38bdf8; text-transform:uppercase; margin-bottom:4px; }
+    .bluf-strip .bluf-text { font-size:0.88rem; line-height:1.5; font-weight:600; }
+
+    /* ── COMMODITY CARD ── */
+    .commodity-card { background: linear-gradient(180deg, rgba(245,158,11,0.05), rgba(217,119,6,0.02)); border: 1px solid rgba(245,158,11,0.3); border-left: 4px solid #f59e0b; border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .commodity-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .commodity-pressure-pill { padding: 4px 12px; border-radius: 16px; font-weight: 800; letter-spacing: 1px; font-size: 0.65rem; color: white; font-family: 'Courier New', monospace; text-transform: uppercase; }
+    .commodity-headline { font-size: 0.95rem; font-weight: 800; color: var(--text-primary); font-family: 'Times New Roman', serif; line-height: 1.4; margin: 6px 0; }
+    .commodity-detail { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.55; font-family: 'Times New Roman', serif; }
+    .commodity-link { display: inline-block; margin-top: 10px; padding: 4px 12px; border: 1px solid rgba(245,158,11,0.5); border-radius: 6px; color: #f59e0b; font-size: 0.7rem; font-weight: 700; text-decoration: none; font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase; }
+    .commodity-link:hover { background: rgba(245,158,11,0.1); }
+
+    /* ── ARTICLES SECTION + TABS ── */
+    .articles-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .article-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 14px; border-bottom: 1px solid rgba(56,189,248,0.15); padding-bottom: 8px; }
+    .article-tab { padding: 6px 12px; border-radius: 6px 6px 0 0; background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.1); border-bottom: none; color: var(--text-muted); font-size: 0.68rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+    .article-tab:hover { background: rgba(56,189,248,0.1); color: #38bdf8; }
+    .article-tab.active { background: #38bdf8; color: #060d1a; border-color: #38bdf8; }
+    .article-tab-count { background: rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 8px; font-size: 0.6rem; }
+    .article-tab.active .article-tab-count { background: rgba(6,13,26,0.3); color: #060d1a; }
+    .article-list-item { padding: 8px 0; border-top: 1px dashed rgba(56,189,248,0.1); display: flex; gap: 8px; align-items: flex-start; }
+    .article-list-item:first-of-type { border-top: none; }
+    .article-list-source-pill { padding: 1px 7px; border-radius: 4px; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px; flex-shrink: 0; font-family: 'Courier New', monospace; text-transform: uppercase; }
+    .article-list-source-pill.rss      { background: #38bdf8; color: #060d1a; }
+    .article-list-source-pill.gdelt    { background: #a78bfa; color: white; }
+    .article-list-source-pill.newsapi  { background: #f59e0b; color: white; }
+    .article-list-source-pill.brave    { background: #ef4444; color: white; }
+    .article-list-source-pill.telegram { background: #2dd4bf; color: #042f2e; }
+    .article-list-source-pill.bluesky  { background: #60a5fa; color: white; }
+    .article-list-source-pill.reddit   { background: #fb923c; color: white; }
+
+    /* ── ESCALATION LADDER ── */
+    .ladder-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .ladder-step { padding: 10px 6px; border-radius: 6px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s; }
+    .ladder-step.active { border-color: currentColor; box-shadow: 0 0 12px rgba(56,189,248,0.25); }
+    .ladder-step-num { font-size: 1.4rem; font-weight: 900; font-family: 'Times New Roman', serif; }
+    .ladder-step-label { font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; font-family: 'Courier New', monospace; }
+    .scan-btn { padding: 7px 16px; border-radius: 6px; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; font-weight: 700; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+    .scan-btn:hover { background: rgba(56,189,248,0.2); }
+    .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── HISTORY CHART ── */
+    .history-chart-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .history-chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+    .history-chart-title { font-size: 0.75rem; font-weight: 800; color: #38bdf8; letter-spacing: 2px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .history-toggle-group { display: flex; gap: 4px; }
+    .history-toggle-btn { padding: 4px 10px; border-radius: 5px; background: transparent; border: 1px solid rgba(56,189,248,0.25); color: var(--text-muted); font-size: 0.65rem; font-weight: 700; cursor: pointer; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+    .history-toggle-btn.active { background: #38bdf8; color: #060d1a; border-color: #38bdf8; }
+    .history-chart-wrap { position: relative; height: 260px; }
+    .history-empty { text-align: center; padding: 50px 20px; color: var(--text-muted); font-size: 0.85rem; font-family: 'Times New Roman', serif; font-style: italic; }
+    .history-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; font-size: 0.65rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .history-legend-item { display: flex; align-items: center; gap: 6px; }
+    .history-legend-dot { width: 18px; height: 3px; border-radius: 2px; }
+
+    /* ── FOOTER ── */
+    .page-footer { text-align: center; padding: 22px 16px; color: var(--text-muted); font-size: 0.7rem; font-family: 'Courier New', monospace; border-top: 1px solid rgba(56,189,248,0.1); margin-top: 32px; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; max-width: 1100px; margin: 0 auto 18px; text-align: left; padding: 16px 22px; }
+    .footer-col-title { font-size: 0.7rem; font-weight: 800; color: #38bdf8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .footer-col-list { font-size: 0.68rem; color: var(--text-muted); line-height: 1.6; font-family: 'Times New Roman', serif; }
+    .coffee-link { color: #38bdf8; text-decoration: none; }
+    .coffee-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+<!-- ── Mobile drawer (hamburger + backdrop, inside .container for stacking) ── -->
+<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-left">
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+        <a href="cyprus-stability.html" class="back-link" data-i18n="backLink">← Back to Cyprus Stability</a>
+    </div>
+    <div class="header-center">
+        <div class="header-flag">🇨🇾 <span data-i18n="pageFlag">CYPRUS</span></div>
+        <div class="header-title" data-i18n="pageTitle">CYPRUS RHETORIC TRACKER</div>
+        <div class="header-subtitle" data-i18n="pageSubtitle">Turkish Posture · EEZ/Maritime · Green Line · TRNC Politics · Settlement Track</div>
+        <div class="header-timestamp" data-i18n="lastUpdated">Last updated: <span id="lastUpdated">Loading...</span></div>
+    </div>
+    <div class="header-right">
+        <div class="pressure-badge" data-i18n="badgeLabel">🎯 INBOUND DIVISION PRESSURE</div>
+        <div class="lang-group">
+            <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+            <button class="lang-btn" onclick="setLang('fr',this)">FR</button>
+            <button class="lang-btn" onclick="setLang('de',this)">DE</button>
+            <button class="lang-btn" onclick="setLang('ru',this)">RU</button>
+        </div>
+        <div class="theme-row">
+            <span class="theme-label" data-i18n="themeLabel">THEME</span>
+            <label class="theme-toggle">
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()"/>
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+</header>
+
+<div class="page-with-sidebar">
+
+<!-- NAV SIDEBAR -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="navRegional">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Azerbaijan</div>
+    <a href="rhetoric-azerbaijan.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇦🇿 Rhetoric Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="azerbaijan-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇦🇿 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Belarus</div>
+    <a href="rhetoric-belarus.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇧🇾 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Cyprus</div>
+    <a href="rhetoric-cyprus.html" class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">🇨🇾 Rhetoric Tracker</span><span class="nav-btn-status">◉ You are here</span></a>
+    <a href="cyprus-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇨🇾 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Greenland</div>
+    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🧊 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Hungary</div>
+    <a href="rhetoric-hungary.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇭🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Russia</div>
+    <a href="rhetoric-russia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇷🇺 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Turkey</div>
+    <a href="rhetoric-turkey.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇹🇷 Alignment Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="navUkraine">Ukraine</div>
+    <a href="rhetoric-ukraine.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇺🇦 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="ukraine.html" class="nav-btn active-nav"><span class="nav-btn-label">🇺🇦 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div style="flex:1;min-width:0;">
+
+<!-- THEATRE BANNER -->
+<div class="theatre-banner" id="theatreBanner">
+    <div>
+        <div class="theatre-score-big" id="theatreScore" style="color:#38bdf8;">--</div>
+        <div class="theatre-score-label" data-i18n="scoreLabel">PRESSURE SCORE / 100</div>
+        <div class="theatre-badge" id="theatreBadge" style="background:#6b7280;">--</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+        <!-- Five vector pills -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+            <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);">
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecTurkey">🇹🇷 TURKISH POSTURE</div>
+                <div style="font-size:0.8rem;font-weight:800;" id="frontlinePill">--</div>
+            </div>
+            <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.06);">
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecRussia">🛢️ EEZ / MARITIME</div>
+                <div style="font-size:0.8rem;font-weight:800;" id="aidPill">--</div>
+            </div>
+            <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(127,29,29,0.4);background:rgba(127,29,29,0.06);">
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecIran">🚧 GREEN LINE</div>
+                <div style="font-size:0.8rem;font-weight:800;" id="strikesPill">--</div>
+            </div>
+            <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(161,98,7,0.4);background:rgba(161,98,7,0.06);">
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecIsrael">🏛️ TRNC POLITICS</div>
+                <div style="font-size:0.8rem;font-weight:800;" id="dibPill">--</div>
+            </div>
+            <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(16,185,129,0.4);background:rgba(16,185,129,0.06);">
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecCorridor">🕊️ SETTLEMENT TRACK</div>
+                <div style="font-size:0.8rem;font-weight:800;" id="ceasefirePill">--</div>
+            </div>
+        </div>
+    </div>
+    <div class="theatre-right">
+        <div class="theatre-escalation-label-text" data-i18n="theatreLevel">THEATRE LEVEL</div>
+        <div class="theatre-level-display" id="theatreLevelDisplay" style="color:#38bdf8;">--</div>
+        <div class="theatre-level-desc" id="theatreLevelDesc">--</div>
+        <div class="theatre-scan-info">
+            <span data-i18n="scanLabel">Last scan</span>: <span id="scanTime">--</span><br>
+            <span id="articleCount">--</span> <span data-i18n="articlesLabel">articles analyzed</span>
+        </div>
+    </div>
+</div>
+
+<!-- ESCALATION LADDER -->
+<div class="section-card">
+    <div class="section-title" data-i18n="ladderTitle">🪜 INTENSITY LADDER</div>
+    <div class="ladder-row" id="ladderRow"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;">
+        <div style="font-size:11px;color:var(--text-muted);" id="articlesClassified" data-i18n="articlesClassified">Articles classified:</div>
+        <button class="scan-btn" id="scanBtn" onclick="triggerScan()">
+            🔄 <span data-i18n="refreshScan">Refresh Scan</span>
+        </button>
+    </div>
+</div>
+
+<!-- TOP BLUF STRIP -->
+<div class="bluf-strip" id="blufStrip">
+    <div class="bluf-label" data-i18n="blufLabel">BLUF</div>
+    <div class="bluf-text" id="blufText"></div>
+</div>
+
+<!-- SO WHAT CARD -->
+<div class="interp-so-what" id="soWhatCard" style="display:none;">
+    <div class="interp-scenario-header">
+        <span class="interp-scenario-icon" id="soWhatIcon">⚪</span>
+        <div>
+            <div class="interp-scenario-label" data-i18n="soWhatLabel">CYPRUS DIVISION ASSESSMENT</div>
+            <div class="interp-scenario-value" id="soWhatScenario">--</div>
+        </div>
+    </div>
+    <!-- Diplomatic scenario line -->
+    <div id="diplomaticScenarioLine" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:6px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);">
+        <span style="font-size:0.6rem;font-family:'Courier New',monospace;color:#10b981;letter-spacing:1px;text-transform:uppercase;" data-i18n="diplomaticLabel">DIPLOMATIC TRACK — </span>
+        <span style="font-size:0.78rem;font-weight:700;" id="diplomaticScenarioText"></span>
+        <span style="font-size:0.72rem;font-weight:800;margin-left:8px;" id="diplomaticScoreText"></span>
+    </div>
+    <!-- Multi-dimensional analyst read (D) -->
+    <div class="interp-section-title" data-i18n="analystRead">ANALYST READ</div>
+    <div id="soWhatNarrative" class="so-what-narrative"></div>
+    <div class="interp-section-title" data-i18n="situation">SITUATION</div>
+    <div class="interp-text" id="soWhatSituation"></div>
+    <div id="soWhatIndicators"></div>
+    <div class="interp-section-title" style="margin-top:14px;" data-i18n="assessment">ASSESSMENT</div>
+    <div class="interp-text" id="soWhatAssessment"></div>
+    <div class="interp-section-title" style="margin-top:14px;" data-i18n="watchFor">WATCH FOR</div>
+    <div id="soWhatWatchList"></div>
+    <div class="interp-confidence-note" id="soWhatNote"></div>
+</div>
+
+<!-- DUAL PANEL ACTORS -->
+<div class="dual-panel-wrapper">
+    <!-- LEFT PANEL: inbound Turkish-driven friction (Turkey posture / EEZ / Green Line) -->
+    <div class="actor-panel">
+        <div class="actor-panel-header outbound" data-i18n="outboundPanel">🎯 INBOUND PRESSURE — Turkey · EEZ · Green Line</div>
+        <div id="outboundActors">
+            <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:20px;" data-i18n="loading">Loading...</div>
+        </div>
+    </div>
+    <!-- RIGHT PANEL: division politics (TRNC north / settlement track) -->
+    <div class="actor-panel">
+        <div class="actor-panel-header inbound" data-i18n="inboundPanel">🏛️ DIVISION TRACK — TRNC · Settlement</div>
+        <div id="inboundActors">
+            <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:20px;" data-i18n="loading">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- COMMODITY EXPOSURE CARD -->
+<div class="commodity-card" id="commodityCard" style="display:none;">
+    <div class="commodity-header">
+        <span style="font-size:1.05rem;">🛢️</span>
+        <div style="flex:1;">
+            <div class="interp-card-title" data-i18n="commodityTitle">COMMODITY EXPOSURE — CYPRUS</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="commoditySub">Strategic commodities · Live signal counts</div>
+        </div>
+        <span class="commodity-pressure-pill" id="commodityPill" style="background:#6b7280;">--</span>
+    </div>
+    <div class="commodity-headline" id="commodityHeadline">--</div>
+    <div class="commodity-detail" id="commodityDetail">--</div>
+    <a href="https://www.asifahanalytics.com/commodities.html" class="commodity-link" data-i18n="commodityLink">View Full Commodity Tracker →</a>
+</div>
+
+<!-- RED LINES CARD -->
+<div class="red-lines-card" id="redLinesCard" style="display:none;">
+    <div class="interp-card-header">
+        <span style="font-size:1rem;">🚨</span>
+        <div style="flex:1;">
+            <div class="interp-card-title" data-i18n="redLinesTitle">RED LINE PROXIMITY</div>
+            <div class="interp-card-subtitle" data-i18n="redLinesSub">Cyprus Red Lines — Turkish Troop Surge · EEZ Drillship Escort · Varosha Annexation · Settlement-Talk Collapse</div>
+        </div>
+        <div style="display:flex;gap:16px;">
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#dc2626;" id="redLineBreachedCount">0</div>
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="breached">BREACHED</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#38bdf8;" id="redLineApproachingCount">0</div>
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="approaching">APPROACHING</div>
+            </div>
+        </div>
+    </div>
+    <div id="redLineItems" class="signal-list-scroll"></div>
+    <div class="signal-list-scroll-hint" id="redLineScrollHint" style="display:none;" data-i18n="scrollHint">↕ scroll for full list</div>
+</div>
+
+<!-- DIPLOMATIC TRACK / GREEN LINES -->
+<div class="diplomatic-track-card" id="diplomaticTrackCard" style="display:none;">
+    <div class="interp-card-header">
+        <span style="font-size:1rem;">🕊️</span>
+        <div style="flex:1;">
+            <div class="interp-card-title" data-i18n="diplomaticTitle">DIPLOMATIC / DE-ESCALATION TRACK</div>
+            <div class="interp-card-subtitle" data-i18n="diplomaticSub">Diplomatic off-ramp track (inactive for Cyprus)</div>
+        </div>
+        <div style="display:flex;gap:16px;">
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#10b981;" id="greenLineActiveCount">0</div>
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="active">ACTIVE</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#84cc16;" id="greenLineSignaledCount">0</div>
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="signaled">SIGNALED</div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#065f46;font-family:'Courier New',monospace;" data-i18n="momentum">DIPLOMATIC MOMENTUM</span>
+            <span style="font-size:0.85rem;font-weight:800;color:#10b981;" id="diplomaticScoreDisplay">0/100</span>
+        </div>
+        <div class="diplomatic-score-bar">
+            <div class="diplomatic-score-fill" id="diplomaticScoreFill" style="width:0%;"></div>
+        </div>
+        <div style="font-size:0.72rem;font-weight:700;font-family:'Times New Roman',serif;" id="diplomaticScenarioLabel"></div>
+    </div>
+    <div class="max-pressure-alert" id="maxPressureAlert" style="display:none;">
+        <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
+        <div>
+            <div style="font-size:0.72rem;font-weight:800;color:#fca5a5;font-family:'Courier New',monospace;letter-spacing:1px;margin-bottom:4px;" data-i18n="maxPressureLabel">MAXIMUM PRESSURE — NO DIPLOMATIC TRACK</div>
+            <div style="font-size:0.75rem;color:#fecaca;font-family:'Times New Roman',serif;line-height:1.5;" data-i18n="maxPressureBody">
+                Multiple red lines elevated with no active diplomatic channel. This is the most dangerous configuration — pressure with no off-ramp.
+            </div>
+        </div>
+    </div>
+    <div id="greenLineItems" class="signal-list-scroll"></div>
+    <div class="signal-list-scroll-hint" id="greenLineScrollHint" style="display:none;" data-i18n="scrollHint">↕ scroll for full list</div>
+    <div style="font-size:0.62rem;color:#065f46;font-family:'Courier New',monospace;margin-top:10px;font-style:italic;" data-i18n="greenLinesNote">
+        Green lines track diplomatic off-ramp signals. ACTIVE = confirmed in current scan. SIGNALED = contextual signal present.
+    </div>
+</div>
+
+<!-- ARTICLES SECTION -->
+<div class="articles-card">
+    <div class="section-title" data-i18n="articlesTitle">📰 RHETORIC SIGNALS — ARTICLES</div>
+    <div class="article-tabs" id="articleTabs">
+        <div class="article-tab active" data-tab="all">ALL SIGNALS <span class="article-tab-count" id="cnt_all">0</span></div>
+    </div>
+    <div id="articleListBody"></div>
+</div>
+
+<!-- HISTORY CHART -->
+<div class="history-chart-card" id="historyCard">
+    <div class="history-chart-header">
+        <span class="history-chart-title" data-i18n="trendTitle">📈 PRESSURE TREND</span>
+        <div class="history-toggle-group">
+            <button class="history-toggle-btn active" id="btn7d" onclick="setHistoryView('7d')">7 DAY</button>
+            <button class="history-toggle-btn" id="btn30d" onclick="setHistoryView('30d')">30 DAY</button>
+            <button class="history-toggle-btn" id="btnCompare" onclick="setHistoryView('compare')">COMPARE</button>
+        </div>
+    </div>
+    <div class="history-chart-wrap"><canvas id="historyChart"></canvas>
+        <div class="history-empty" id="historyEmpty" style="display:none;" data-i18n="historyEmpty">📡 Collecting data — first snapshot saves on next scan cycle</div>
+    </div>
+    <div class="history-legend" id="historyLegend"></div>
+</div>
+
+<!-- FOOTER (canonical Asifah pattern) -->
+<footer style="background:var(--card, #0d1b2e);border:1px solid var(--border, #1e3a5f);border-radius:12px;padding:30px;margin:30px auto;max-width:1400px;font-size:13px;color:var(--text-2, #93c5fd);text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:var(--text, #e2f0fb);letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — CYPRUS</div>
+    <div style="margin-bottom:6px;" data-i18n="footBackend">Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:var(--text-muted, #64748b);" data-i18n="footSignals">Open-source signals: GDELT (EN/RU/AZ/TR), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimative, convergence-framed — not prediction</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:8px 18px;background:#f59e0b;color:#1a1a1a;border-radius:8px;text-decoration:none;font-weight:700;" data-i18n="footCoffee">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:8px 18px;background:#0284c7;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;" data-i18n="footContactBtn">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:var(--text-muted, #64748b);font-size:11px;margin-bottom:12px;" data-i18n="footAwareness">For situational awareness only. Not for operational use. Figures are preliminary and open-source.</div>
+    <div style="font-size:12px;">
+        <a href="mission.html" style="color:var(--text-2, #93c5fd);text-decoration:none;" data-i18n="footMission">Mission Statement</a> ·
+        <a href="privacy.html" style="color:var(--text-2, #93c5fd);text-decoration:none;" data-i18n="footPrivacy">Privacy Policy</a> ·
+        <a href="index.html" style="color:var(--text-2, #93c5fd);text-decoration:none;" data-i18n="footHome">Home</a>
+    </div>
+</footer>
+
+</div><!-- end main content -->
+</div><!-- end page-with-sidebar -->
+
+</div><!-- end container -->
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════════
+const API_BASE = 'https://asifa-europe-backend.onrender.com';
+const CYPRUS_API = API_BASE + '/api/rhetoric/cyprus';
+
+const ESCALATION_LEVELS = {
+    0: { label: 'Baseline',     color: '#6b7280', desc: 'Routine diplomatic noise -- no division pressure' },
+    1: { label: 'Rhetoric',     color: '#3b82f6', desc: 'Turkish / TRNC public statements -- no operational signals' },
+    2: { label: 'Pressure',     color: '#f59e0b', desc: 'Active Turkish coercion -- drillship, troop signaling, settlement hardening' },
+    3: { label: 'Crisis',       color: '#f97316', desc: 'Formal protests, UNFICYP incident, drillship standoff, talks collapse' },
+    4: { label: 'Confrontation',color: '#ef4444', desc: 'Military incident in buffer zone / EEZ, unilateral TRNC move' },
+    5: { label: 'Rupture',      color: '#b91c1c', desc: 'Armed clash, forced-partition move, buffer-zone abrogation' },
+};
+
+// Inbound Turkish-driven friction vectors (left panel)
+const WHEEL_ACTORS = ['turkey_posture', 'eez_maritime', 'green_line'];
+// Division-politics vectors (right panel)
+const CONVERGENCE_ACTORS = ['trnc_politics', 'settlement_track'];
+// Plain-language vector labels + hottest-vector ladder helper (Cyprus)
+const VECTOR_LABEL = { turkey_posture: 'Turkish posture', eez_maritime: 'EEZ / maritime', green_line: 'Green Line', trnc_politics: 'TRNC politics', settlement_track: 'Settlement track' };
+function cyprusPeak(d) {
+    const lv = [d.turkey_posture_level, d.eez_level, d.green_line_level, d.trnc_level, d.settlement_level].map(x => x || 0);
+    return Math.max(0, ...lv);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TRANSLATIONS (EN / FR / DE / RU)
+// ══════════════════════════════════════════════════════════════
+const T = {
+    en: {
+        footBackend: 'Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 6 hours', footSignals: 'Open-source signals: GDELT (EN/EL/TR), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimative, convergence-framed — not prediction', footCoffee: '☕ Buy Me a Coffee', footContactBtn: '✉️ Contact Asifah', footAwareness: 'For situational awareness only. Not for operational use. Figures are preliminary and open-source.', footMission: 'Mission Statement', footHome: 'Home',
+        backLink: '← Back to Cyprus Stability', pageFlag: 'CYPRUS', pageTitle: 'CYPRUS RHETORIC TRACKER',
+        pageSubtitle: 'Turkish Posture · EEZ/Maritime · Green Line · TRNC Politics · Settlement Track',
+        lastUpdated: 'Last updated:', badgeLabel: '🎯 INBOUND DIVISION PRESSURE', themeLabel: 'THEME',
+        scoreLabel: 'PRESSURE SCORE / 100', theatreLevel: 'THEATRE LEVEL',
+        scanLabel: 'Last scan', articlesLabel: 'articles analyzed',
+        vecTurkey: '🇹🇷 TURKISH POSTURE', vecRussia: '🛢️ EEZ / MARITIME', vecIran: '🚧 GREEN LINE',
+        vecIsrael: '🏛️ TRNC POLITICS', vecCorridor: '🕊️ SETTLEMENT TRACK',
+        navDashboards: 'Dashboards', navGlobalTrackers: 'Global Trackers', navRegional: 'Regional Rhetoric', navUkraine: 'Ukraine',
+        loading: 'Loading...',
+        outboundPanel: '🎯 INBOUND PRESSURE — Turkey · EEZ · Green Line',
+        inboundPanel: '🏛️ DIVISION TRACK — TRNC · Settlement',
+        soWhatLabel: 'CYPRUS DIVISION ASSESSMENT',
+        situation: 'SITUATION', assessment: 'ASSESSMENT', watchFor: 'WATCH FOR', analystRead: 'ANALYST READ', blufLabel: 'BLUF',
+        redLinesTitle: 'RED LINE PROXIMITY',
+        redLinesSub: 'Cyprus Red Lines — Turkish Troop Surge · EEZ Drillship Escort · Varosha Annexation · Settlement-Talk Collapse',
+        breached: 'BREACHED', approaching: 'APPROACHING',
+        ladderTitle: '🪜 INTENSITY LADDER', refreshScan: 'Refresh Scan',
+        articlesClassified: 'Articles classified:',
+        articlesTitle: '📰 RHETORIC SIGNALS — ARTICLES',
+        trendTitle: '📈 PRESSURE TREND',
+        historyEmpty: '📡 Collecting data — first snapshot saves on next scan cycle',
+        footPrivacy: 'Privacy Policy', scrollHint: '↕ scroll for full list',
+    },
+    fr: {
+        footBackend: 'Backend : asifa-europe-backend.onrender.com · Actualisation des analyses ~toutes les 6 heures', footSignals: 'Signaux open source : GDELT (EN/EL/TR), NewsAPI, RSS, Telegram, Bluesky, Reddit · estimatif, axé sur la convergence — pas une prédiction', footCoffee: '☕ Offrez-moi un café', footContactBtn: '✉️ Contacter Asifah', footAwareness: 'À des fins de sensibilisation situationnelle uniquement. Pas pour usage opérationnel. Les chiffres sont préliminaires et open source.', footMission: 'Énoncé de mission', footHome: 'Accueil',
+        backLink: '← Retour à la stabilité Chypre', pageFlag: 'CHYPRE', pageTitle: 'TRACKER RHÉTORIQUE CHYPRE',
+        pageSubtitle: 'Posture turque · ZEE/Maritime · Ligne verte · Politique RTCN · Voie de règlement',
+        lastUpdated: 'Dernière mise à jour :', badgeLabel: '🎯 PRESSION DE DIVISION ENTRANTE', themeLabel: 'THÈME',
+        scoreLabel: 'SCORE DE PRESSION / 100', theatreLevel: 'NIVEAU DU THÉÂTRE',
+        scanLabel: 'Dernier scan', articlesLabel: 'articles analysés',
+        vecTurkey: '🇹🇷 POSTURE TURQUE', vecRussia: '🛢️ ZEE / MARITIME', vecIran: '🚧 LIGNE VERTE',
+        vecIsrael: '🏛️ POLITIQUE RTCN', vecCorridor: '🕊️ VOIE DE RÈGLEMENT',
+        navDashboards: 'Tableaux de bord', navGlobalTrackers: 'Suivis mondiaux', navRegional: 'Rhétorique régionale', navUkraine: 'Ukraine',
+        loading: 'Chargement...',
+        outboundPanel: '🎯 PRESSION ENTRANTE — Turquie · ZEE · Ligne verte',
+        inboundPanel: '🏛️ AXE DE DIVISION — RTCN · Règlement',
+        soWhatLabel: 'ÉVALUATION DE LA DIVISION — CHYPRE',
+        situation: 'SITUATION', assessment: 'ÉVALUATION', watchFor: 'À SURVEILLER', analystRead: 'LECTURE ANALYTIQUE', blufLabel: 'BLUF',
+        redLinesTitle: 'PROXIMITÉ DES LIGNES ROUGES',
+        redLinesSub: 'Lignes rouges chypriotes — Renfort de troupes turques · Navire de forage en ZEE · Annexion de Varosha · Effondrement des pourparlers',
+        breached: 'FRANCHIE', approaching: 'APPROCHE',
+        ladderTitle: '🪜 ÉCHELLE D\'INTENSITÉ', refreshScan: 'Actualiser l\'analyse',
+        articlesClassified: 'Articles classés :',
+        articlesTitle: '📰 SIGNAUX RHÉTORIQUES — ARTICLES',
+        trendTitle: '📈 TENDANCE DE PRESSION',
+        historyEmpty: '📡 Collecte de données — premier instantané au prochain cycle',
+        footPrivacy: 'Politique de confidentialité', scrollHint: '↕ défiler pour la liste complète',
+    },
+    de: {
+        footBackend: 'Backend: asifa-europe-backend.onrender.com · Scans aktualisieren ~alle 6 Stunden', footSignals: 'Open-Source-Signale: GDELT (EN/EL/TR), NewsAPI, RSS, Telegram, Bluesky, Reddit · einschätzend, konvergenzbasiert — keine Vorhersage', footCoffee: '☕ Spendier mir einen Kaffee', footContactBtn: '✉️ Asifah kontaktieren', footAwareness: 'Nur zur Lageorientierung. Nicht für den operativen Einsatz. Die Zahlen sind vorläufig und stammen aus offenen Quellen.', footMission: 'Leitbild', footHome: 'Startseite',
+        backLink: '← Zurück zur Zypern-Stabilität', pageFlag: 'ZYPERN', pageTitle: 'ZYPERN-RHETORIK-TRACKER',
+        pageSubtitle: 'Türkische Haltung · AWZ/Maritim · Grüne Linie · TRNZ-Politik · Verhandlungsspur',
+        lastUpdated: 'Zuletzt aktualisiert:', badgeLabel: '🎯 EINGEHENDER TEILUNGSDRUCK', themeLabel: 'THEMA',
+        scoreLabel: 'DRUCKWERT / 100', theatreLevel: 'THEATER-NIVEAU',
+        scanLabel: 'Letzter Scan', articlesLabel: 'Artikel analysiert',
+        vecTurkey: '🇹🇷 TÜRKISCHE HALTUNG', vecRussia: '🛢️ AWZ / MARITIM', vecIran: '🚧 GRÜNE LINIE',
+        vecIsrael: '🏛️ TRNZ-POLITIK', vecCorridor: '🕊️ VERHANDLUNGSSPUR',
+        navDashboards: 'Übersichten', navGlobalTrackers: 'Globale Tracker', navRegional: 'Regionale Rhetorik', navUkraine: 'Ukraine',
+        loading: 'Laden...',
+        outboundPanel: '🎯 EINGEHENDER DRUCK — Türkei · AWZ · Grüne Linie',
+        inboundPanel: '🏛️ TEILUNGS-SPUR — TRNZ · Verhandlung',
+        soWhatLabel: 'ZYPERN TEILUNGS-BEWERTUNG',
+        situation: 'LAGE', assessment: 'BEWERTUNG', watchFor: 'BEOBACHTEN', analystRead: 'ANALYSTEN-LESART', blufLabel: 'BLUF',
+        redLinesTitle: 'ROTE-LINIEN-NÄHE',
+        redLinesSub: 'Zyprische rote Linien — Türkischer Truppenaufwuchs · Bohrschiff-Eskorte in der AWZ · Varosha-Annexion · Zusammenbruch der Gespräche',
+        breached: 'BERSCHRITTEN', approaching: 'ANNÄHERUNG',
+        ladderTitle: '🪜 INTENSITÄTSLEITER', refreshScan: 'Scan aktualisieren',
+        articlesClassified: 'Artikel klassifiziert:',
+        articlesTitle: '📰 RHETORIK-SIGNALE — ARTIKEL',
+        trendTitle: '📈 DRUCKTREND',
+        historyEmpty: '📡 Daten werden gesammelt — erste Momentaufnahme beim nächsten Scan',
+        footPrivacy: 'Datenschutz', scrollHint: '↕ scrollen für vollständige Liste',
+    },
+    ru: {
+        footBackend: 'Бэкенд: asifa-europe-backend.onrender.com · Обновление сканирований ~каждые 6 часов', footSignals: 'Сигналы из открытых источников: GDELT (EN/EL/TR), NewsAPI, RSS, Telegram, Bluesky, Reddit · оценочно, на основе конвергенции — не прогноз', footCoffee: '☕ Купить мне кофе', footContactBtn: '✉️ Связаться с Asifah', footAwareness: 'Только для ситуационной осведомлённости. Не для оперативного использования. Данные предварительные и из открытых источников.', footMission: 'Заявление о миссии', footHome: 'Главная',
+        backLink: '← Назад к стабильности Кипра', pageFlag: 'КИПР', pageTitle: 'ТРЕКЕР РИТОРИКИ КИПРА',
+        pageSubtitle: 'Турецкая позиция · ИЭЗ/Море · Зелёная линия · Политика ТРСК · Переговорный трек',
+        lastUpdated: 'Обновлено:', badgeLabel: '🎯 ВХОДЯЩЕЕ ДАВЛЕНИЕ РАЗДЕЛА', themeLabel: 'ТЕМА',
+        scoreLabel: 'ОЦЕНКА ДАВЛЕНИЯ / 100', theatreLevel: 'УРОВЕНЬ ТЕАТРА',
+        scanLabel: 'Последний скан', articlesLabel: 'статей проанализировано',
+        vecTurkey: '🇹🇷 ТУРЕЦКАЯ ПОЗИЦИЯ', vecRussia: '🛢️ ИЭЗ / МОРЕ', vecIran: '🚧 ЗЕЛЁНАЯ ЛИНИЯ',
+        vecIsrael: '🏛️ ПОЛИТИКА ТРСК', vecCorridor: '🕊️ ПЕРЕГОВОРНЫЙ ТРЕК',
+        navDashboards: 'Панели', navGlobalTrackers: 'Глобальные трекеры', navRegional: 'Региональная риторика', navUkraine: 'Украина',
+        loading: 'Загрузка...',
+        outboundPanel: '🎯 ВХОДЯЩЕЕ ДАВЛЕНИЕ — Турция · ИЭЗ · Зелёная линия',
+        inboundPanel: '🏛️ ЛИНИЯ РАЗДЕЛА — ТРСК · Урегулирование',
+        soWhatLabel: 'ОЦЕНКА РАЗДЕЛА — КИПР',
+        situation: 'СИТУАЦИЯ', assessment: 'ОЦЕНКА', watchFor: 'НАБЛЮДАТЬ', analystRead: 'АНАЛИТИКА', blufLabel: 'BLUF',
+        redLinesTitle: 'БЛИЗОСТЬ КРАСНЫХ ЛИНИЙ',
+        redLinesSub: 'Красные линии Кипра — Наращивание турецких войск · Буровое судно в ИЭЗ · Аннексия Вароши · Срыв переговоров',
+        breached: 'НАРУШЕНА', approaching: 'ПРИБЛИЖАЕТСЯ',
+        ladderTitle: '🪜 ШКАЛА ИНТЕНСИВНОСТИ', refreshScan: 'Обновить скан',
+        articlesClassified: 'Обработано статей:',
+        articlesTitle: '📰 РИТОРИЧЕСКИЕ СИГНАЛЫ — СТАТЬИ',
+        trendTitle: '📈 ДИНАМИКА ДАВЛЕНИЯ',
+        historyEmpty: '📡 Сбор данных — первый снимок при следующем скане',
+        footPrivacy: 'Конфиденциальность', scrollHint: '↕ прокрутите для полного списка',
+    },
+};
+
+// State (these sit between the T object and applyTranslations in the donor; the
+// TRANSLATIONS replacement span swallowed them, so they are restored here).
+let currentLang = 'en';
+let currentData = null;
+let currentArticleTab = 'all';
+let _historyChart = null;
+let _historyView = '7d';
+
+function applyTranslations() {
+    const t = T[currentLang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+            // For nodes that have children with id (e.g. lastUpdated has <span id="lastUpdated">), preserve them
+            if (el.children.length === 0) {
+                el.textContent = t[key];
+            } else {
+                // Take care: only replace the first text node
+                const firstText = Array.from(el.childNodes).find(n => n.nodeType === 3);
+                if (firstText) firstText.nodeValue = t[key] + ' ';
+            }
+        }
+    });
+}
+
+function setLang(lang, btn) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    applyTranslations();
+    if (currentData) renderAll(currentData);
+}
+
+// ══════════════════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════════════════
+function loadTheme() {
+    const saved = localStorage.getItem('asifah-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeToggle').checked = saved === 'light';
+}
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next    = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('asifah-theme', next);
+}
+
+// ══════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+function lvl(n) { return ESCALATION_LEVELS[Math.min(Math.max(n||0,0),5)] || ESCALATION_LEVELS[0]; }
+
+function levelBadge(level, label) {
+    const lv = lvl(level);
+    return `<span class="level-badge" style="background:${lv.color};">L${level} ${label || lv.label}</span>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER ACTORS — DUAL PANEL
+// ══════════════════════════════════════════════════════════════
+function renderActors(data) {
+    const actors = data.actors || {};
+    function buildActorHTML(key, panelClass) {
+        const a = actors[key];
+        if (!a) return '';
+        const articles = (a.top_articles || []).slice(0, 3);
+        const articlesHTML = articles.map(art => `
+            <div class="article-item">
+                <a href="${art.url || '#'}" target="_blank" class="article-link">${(art.title || '').slice(0, 90)}${art.title?.length > 90 ? '\u2026' : ''}</a>
+                <div class="article-meta">${art.source || ''} \u00b7 ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
+            </div>`).join('');
+        const level = a.level || 0;
+        const articleCount = a.article_hits || 0;
+        return `
+            <div class="actor-card ${panelClass}">
+                <div class="actor-header">
+                    <span class="actor-flag">${a.flag || ''}</span>
+                    <div style="flex:1;">
+                        <div class="actor-name">${a.name || key}</div>
+                        <div class="actor-role">${a.role || ''}</div>
+                    </div>
+                    ${levelBadge(level, a.label || '')}
+                </div>
+                <div class="actor-stats">
+                    <div class="actor-stat"><span>${articleCount}</span> articles</div>
+                </div>
+                ${articleCount === 0 ? '<div class="silence-alert">\u26a0\ufe0f No signals captured this scan</div>' : ''}
+                ${articlesHTML}
+            </div>`;
+    }
+    document.getElementById('outboundActors').innerHTML =
+        WHEEL_ACTORS.map(k => buildActorHTML(k, 'outbound-actor')).join('') ||
+        '<div style="color:var(--text-muted);font-size:0.75rem;padding:10px;">No data</div>';
+    document.getElementById('inboundActors').innerHTML =
+        CONVERGENCE_ACTORS.map(k => buildActorHTML(k, 'inbound-actor')).join('') ||
+        '<div style="color:var(--text-muted);font-size:0.75rem;padding:10px;">No data</div>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER THEATRE BANNER
+// ══════════════════════════════════════════════════════════════
+// Scenario-driven diplomatic tier (v1.3) -- single source of truth for every
+// diplomatic surface. Driven by SCENARIO + framework_active, NOT raw score
+// (diplomatic_track.score is a signal COUNT, not a 0-100 value).
+function dipTier(dt) {
+    const sc = (dt && dt.scenario) || 'No Active Track';
+    const fw = !!(dt && dt.framework_active);
+    if (sc === 'Active Ceasefire Track')
+        return { level: 5, fill: 90, color: '#10b981', label: sc, framework: fw, show: true };
+    if (sc === 'Tentative Diplomatic Signals')
+        return { level: 3, fill: 55, color: '#84cc16', label: sc, framework: fw, show: true };
+    if (sc === 'Limited De-escalation Indicators')
+        return { level: 1, fill: 25, color: '#3b82f6', label: sc, framework: fw, show: true };
+    return { level: 0, fill: 0, color: '#6b7280', label: 'No Active Track', framework: false, show: false };
+}
+
+// Top-of-page BLUF (one-line analyst headline; analysts should never have to
+// scroll to find the read). Synthesized from scenario + diplomatic + commodity
+// + convergence signal. Dynamic prose stays English by design.
+function renderBluf(data) {
+    const strip = document.getElementById('blufStrip');
+    const txt = document.getElementById('blufText');
+    if (!strip || !txt) return;
+    const parts = [];
+    const sw = data.so_what || {};
+    if (sw.bluf) {
+        parts.push(sw.bluf);
+    } else {
+        if (sw.scenario) parts.push(sw.scenario);
+        if (data.convergence_signal) parts.push(data.convergence_signal.replace(/^[^A-Za-z]+/, ''));
+    }
+    const rl = data.red_lines || {};
+    if (rl.breached_count) parts.push(`${rl.breached_count} red line${rl.breached_count === 1 ? '' : 's'} breached`);
+    else if (rl.approaching_count) parts.push(`${rl.approaching_count} approaching`);
+    if (parts.length) { txt.textContent = parts.join(' \u00b7 '); strip.style.display = 'block'; }
+    else strip.style.display = 'none';
+}
+
+function renderBanner(data) {
+    const score = data.theatre_score || 0;
+    const level = data.theatre_level || 0;
+    const lv = lvl(level);
+    const label = data.theatre_label || lv.label;
+
+    document.getElementById('theatreScore').textContent = score;
+    document.getElementById('theatreScore').style.color = lv.color;
+    const badge = document.getElementById('theatreBadge');
+    badge.textContent = label;
+    badge.style.background = lv.color;
+    document.getElementById('theatreLevelDisplay').textContent = `L${level} \u2014 ${label}`;
+    document.getElementById('theatreLevelDisplay').style.color = lv.color;
+    document.getElementById('theatreLevelDesc').textContent = data.convergence_signal || lv.desc;
+
+    const scanned = data.scanned_at || data.cached_at;
+    const scannedStr = scanned ? new Date(scanned).toLocaleString() : '--';
+    document.getElementById('scanTime').textContent = scannedStr;
+    document.getElementById('articleCount').textContent = data.total_articles || 0;
+    const lu = document.getElementById('lastUpdated');
+    if (lu) lu.textContent = scannedStr;
+
+    // Vector pills -- the five inbound division vectors (direct from vector levels)
+    const pillData = [
+        { id: 'frontlinePill', level: data.turkey_posture_level || 0 },
+        { id: 'aidPill',       level: data.eez_level || 0 },
+        { id: 'strikesPill',   level: data.green_line_level || 0 },
+        { id: 'dibPill',       level: data.trnc_level || 0 },
+        { id: 'ceasefirePill', level: data.settlement_level || 0 },
+    ];
+    pillData.forEach(v => {
+        const el = document.getElementById(v.id);
+        if (el) { const l2 = lvl(v.level); el.textContent = `L${v.level} ${l2.label}`; el.style.color = l2.color; }
+    });
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER COMMODITY CARD
+// ══════════════════════════════════════════════════════════════
+function renderCommodity(data) {
+    const cs = data.commodity_signal;
+    if (!cs || !cs.band) {
+        document.getElementById('commodityCard').style.display = 'none';
+        return;
+    }
+    document.getElementById('commodityCard').style.display = 'block';
+    const band = cs.band;
+    const alert = (cs.alert || 'normal').toLowerCase();
+    const colorMap = { normal: '#6b7280', elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
+    const pill = document.getElementById('commodityPill');
+    pill.textContent = alert.toUpperCase();
+    pill.style.background = colorMap[alert] || '#6b7280';
+    document.getElementById('commodityHeadline').textContent = band.short_text || '';
+    document.getElementById('commodityDetail').textContent = band.long_text || '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER INTERPRETATION (so_what + red_lines + diplomatic)
+// ══════════════════════════════════════════════════════════════
+function renderInterpretation(data) {
+    // SO WHAT
+    const sw = data.so_what;
+    if (sw) {
+        document.getElementById('soWhatCard').style.display = 'block';
+        document.getElementById('soWhatIcon').textContent = '\uD83C\uDFAF';
+        document.getElementById('soWhatScenario').textContent = sw.scenario || '--';
+        document.getElementById('soWhatSituation').textContent = sw.assessment || '';
+        const narrEl = document.getElementById('soWhatNarrative');
+        if (narrEl) narrEl.innerHTML = '';
+        const dLine = document.getElementById('diplomaticScenarioLine');
+        if (dLine) dLine.style.display = 'none';
+        const rl0 = data.red_lines || {};
+        const wlEl = document.getElementById('soWhatWatchList');
+        if (wlEl) {
+            wlEl.innerHTML = '';
+            (rl0.triggered || []).filter(r => r.status === 'APPROACHING').slice(0, 5).forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'interp-watch-item';
+                div.textContent = `\u2192 ${r.label}`;
+                wlEl.appendChild(div);
+            });
+        }
+        const aEl = document.getElementById('soWhatAssessment');
+        if (aEl) aEl.textContent =
+            `Active red lines: ${rl0.breached_count || 0} breached, ${rl0.approaching_count || 0} approaching.` +
+            (sw.dominant_vector ? ` Lead inbound vector: ${VECTOR_LABEL[sw.dominant_vector] || sw.dominant_vector} at L${sw.dominant_level || 0}.` : '');
+        const nEl = document.getElementById('soWhatNote');
+        if (nEl) nEl.textContent = '';
+    }
+
+    // RED LINES (Cyprus shape: label / precedent / vector -- heavy tier deferred)
+    const rl = data.red_lines;
+    if (rl && rl.triggered && rl.triggered.length) {
+        document.getElementById('redLinesCard').style.display = 'block';
+        document.getElementById('redLineBreachedCount').textContent = rl.breached_count || 0;
+        document.getElementById('redLineApproachingCount').textContent = rl.approaching_count || 0;
+        const rlEl = document.getElementById('redLineItems');
+        rlEl.innerHTML = '';
+        rl.triggered.forEach(r => {
+            const status = (r.status || 'INACTIVE').toUpperCase();
+            const itemClass = status === 'BREACHED' ? 'breached' : status === 'APPROACHING' ? 'approaching' : 'inactive';
+            const item = document.createElement('div');
+            item.className = `red-line-item ${itemClass}`;
+            item.innerHTML = `
+                <span class="red-line-icon">${r.severity >= 5 ? '\uD83D\uDEA8' : '\u26a0\ufe0f'}</span>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <span class="red-line-label">${r.label}</span>
+                        <span class="red-line-status-badge ${itemClass}">${status}</span>
+                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${r.vector || ''}</span>
+                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">SEV ${r.severity}/5</span>
+                    </div>
+                    <div class="red-line-trigger">${r.precedent || ''}</div>
+                </div>`;
+            rlEl.appendChild(item);
+        });
+        const rHint = document.getElementById('redLineScrollHint');
+        if (rHint) rHint.style.display = rl.triggered.length > 5 ? 'block' : 'none';
+    }
+    // Diplomatic / green-line track: Cyprus emits none -> card stays hidden.
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER ARTICLES (5 tabs)
+// ══════════════════════════════════════════════════════════════
+function renderArticles(data) {
+    const all = data.top_articles || [];
+    const cntAll = document.getElementById('cnt_all');
+    if (cntAll) cntAll.textContent = all.length;
+    const body = document.getElementById('articleListBody');
+    if (!body) return;
+    if (!all.length) {
+        body.innerHTML = `<div style="color:var(--text-muted);font-size:0.75rem;padding:14px;font-style:italic;">No articles for current scan.</div>`;
+        return;
+    }
+    body.innerHTML = all.slice(0, 40).map(a => {
+        const dt = a.published ? new Date(a.published).toLocaleDateString() : '';
+        return `
+            <div class="article-list-item">
+                <span class="article-list-source-pill rss">signal</span>
+                <div style="flex:1;">
+                    <a href="${a.url || '#'}" target="_blank" class="article-link">${(a.title || '').slice(0, 130)}${a.title?.length > 130 ? '\u2026' : ''}</a>
+                    <div class="article-meta">${a.source || ''} \u00b7 ${dt}</div>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function setArticleTab(tab) { /* single ALL view -- no-op */ }
+
+// ══════════════════════════════════════════════════════════════
+// RENDER ESCALATION LADDER
+// ══════════════════════════════════════════════════════════════
+function renderLadder(activeLevel) {
+    const row = document.getElementById('ladderRow');
+    row.innerHTML = '';
+    for (let i = 0; i <= 5; i++) {
+        const lv = ESCALATION_LEVELS[i];
+        const div = document.createElement('div');
+        div.className = 'ladder-step' + (i === activeLevel ? ' active' : '');
+        div.style.color = lv.color;
+        div.style.background = i === activeLevel ? lv.color + '22' : '';
+        div.innerHTML = `<div class="ladder-step-num" style="color:${lv.color}">${i}</div><div class="ladder-step-label" style="color:${lv.color}">${lv.label}</div>`;
+        row.appendChild(div);
+    }
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════════════════════════
+function renderAll(data) {
+    currentData = data;
+    // Hoist nested interpretation to top level so renderers find so_what / red_lines.
+    if (data.interpretation) {
+        data.so_what = data.so_what || data.interpretation.so_what;
+        data.red_lines = data.red_lines || data.interpretation.red_lines;
+    }
+    renderBanner(data);
+    renderBluf(data);
+    renderActors(data);
+    renderInterpretation(data);
+    renderArticles(data);
+    renderLadder(cyprusPeak(data));
+    const classified = Object.values(data.actors || {}).reduce((s, a) => s + (a.article_hits || 0), 0);
+    document.getElementById('articlesClassified').textContent =
+        `${T[currentLang].articlesClassified || 'Articles classified:'} ${classified}`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FETCH
+// ══════════════════════════════════════════════════════════════
+async function fetchData(force = false) {
+    try {
+        const url = force ? CYPRUS_API + '?force=true' : CYPRUS_API;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        renderAll(data);
+        loadHistoryData();
+    } catch (e) {
+        console.error('[Cyprus Tracker] Fetch error:', e);
+    }
+}
+
+async function triggerScan() {
+    const btn = document.getElementById('scanBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Scanning...';
+    await fetchData(true);
+    btn.disabled = false;
+    btn.innerHTML = '🔄 <span data-i18n="refreshScan">Refresh Scan</span>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// HISTORY CHART
+// ══════════════════════════════════════════════════════════════
+const LEVEL_ZONES = [
+    { yMin:0,  yMax:20,  color:'rgba(107,114,128,0.08)' },
+    { yMin:20, yMax:40,  color:'rgba(59,130,246,0.08)'  },
+    { yMin:40, yMax:60,  color:'rgba(245,158,11,0.10)'  },
+    { yMin:60, yMax:80,  color:'rgba(249,115,22,0.12)'  },
+    { yMin:80, yMax:100, color:'rgba(220,38,38,0.14)'   },
+];
+const zoneBandPlugin = {
+    id: 'zoneBands',
+    beforeDraw(chart) {
+        const { ctx, chartArea:{ left, right }, scales:{ y } } = chart;
+        LEVEL_ZONES.forEach(zone => {
+            const yTop = y.getPixelForValue(zone.yMax);
+            const yBot = y.getPixelForValue(zone.yMin);
+            ctx.save(); ctx.fillStyle = zone.color;
+            ctx.fillRect(left, Math.min(yTop,yBot), right-left, Math.abs(yBot-yTop));
+            ctx.restore();
+        });
+    }
+};
+function _fmtLabel(ts) { try { return new Date(ts).toLocaleDateString('en-US', {month:'short', day:'numeric'}); } catch { return ts; } }
+function _sliceEntries(entries, view) {
+    if (!entries || !entries.length) return [];
+    return view === '7d' ? entries.slice(-28) : entries;
+}
+function renderHistoryChart(datasets, labels) {
+    const canvas = document.getElementById('historyChart');
+    const emptyEl = document.getElementById('historyEmpty');
+    if (!canvas) return;
+    if (!datasets || !datasets.length || !datasets[0].data.length) {
+        canvas.style.display = 'none'; if (emptyEl) emptyEl.style.display = 'block'; return;
+    }
+    canvas.style.display = 'block'; if (emptyEl) emptyEl.style.display = 'none';
+    if (_historyChart) { _historyChart.destroy(); _historyChart = null; }
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = isDark ? 'rgba(56,189,248,0.05)' : 'rgba(0,0,0,0.06)';
+    const tickColor = isDark ? '#4a7090' : '#4a6080';
+    const fontFam = "'Times New Roman', Times, serif";
+    _historyChart = new Chart(canvas.getContext('2d'), {
+        type: 'line', plugins: [zoneBandPlugin],
+        data: { labels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: datasets.length > 1, labels: { color: tickColor, font: { family: fontFam, size: 10 }, boxWidth: 20, boxHeight: 2, usePointStyle: true, pointStyle: 'line' } },
+                tooltip: {
+                    backgroundColor: isDark ? '#0d1b2e' : '#fff',
+                    borderColor: isDark ? 'rgba(56,189,248,0.3)' : 'rgba(0,0,0,0.1)',
+                    borderWidth: 1, titleColor: isDark ? '#e2f0fb' : '#0a1628',
+                    bodyColor: isDark ? '#93c5fd' : '#1e3a5f',
+                    titleFont: { family: fontFam, size: 11, weight: 'bold' },
+                    bodyFont: { family: fontFam, size: 10 },
+                    callbacks: { label: ctx => `Score: ${ctx.parsed.y}` }
+                }
+            },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { family: fontFam, size: 9 }, maxRotation: 0, maxTicksLimit: 10 } },
+                y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor, font: { family: fontFam, size: 9 }, stepSize: 20 } }
+            }
+        }
+    });
+}
+async function loadHistoryData() {
+    try {
+        const resp = await fetch(API_BASE + '/api/rhetoric/cyprus/history?limit=120');
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const raw = data.entries || data.history || [];
+        const entries = _sliceEntries(raw, _historyView);
+        const legendEl = document.getElementById('historyLegend');
+        if (legendEl) legendEl.innerHTML = `<div class="history-legend-item"><div class="history-legend-dot" style="background:#fbbf24;"></div> Cyprus Pressure Score</div>`;
+        renderHistoryChart([{
+            label: 'Cyprus', data: entries.map(e => e.theatre_score ?? e.score ?? 0),
+            borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.07)',
+            borderWidth: 2, pointRadius: entries.length < 15 ? 3 : 0, pointHoverRadius: 4, fill: true, tension: 0.35
+        }], entries.map(e => _fmtLabel(e.timestamp || e.scanned_at)));
+    } catch (e) { console.warn('[HistoryChart]', e); }
+}
+async function loadCompareData() {
+    const compareTheatres = [
+        { label: 'Cyprus',     url: API_BASE + '/api/rhetoric/cyprus/history',     color: '#fbbf24' },
+        { label: 'Turkey',     url: API_BASE + '/api/rhetoric/turkey/history',     color: '#22c55e' },
+        { label: 'Azerbaijan', url: API_BASE + '/api/rhetoric/azerbaijan/history', color: '#f59e0b' },
+        { label: 'Russia',     url: API_BASE + '/api/rhetoric/russia/history',     color: '#ef4444' },
+    ];
+    const getHist  = v => (v && (v.entries || v.history)) || [];
+    const getScore = x => x.theatre_score ?? x.score ?? 0;
+    const getTs    = x => x.timestamp || x.scanned_at;
+    try {
+        const results = await Promise.allSettled(
+            compareTheatres.map(t => fetch(t.url + '?limit=120').then(r => r.ok ? r.json() : null))
+        );
+        let maxEntries = [];
+        results.forEach(r => {
+            const e = r.status === 'fulfilled' ? _sliceEntries(getHist(r.value), _historyView) : [];
+            if (e.length > maxEntries.length) maxEntries = e;
+        });
+        const labels = maxEntries.map(e => _fmtLabel(getTs(e)));
+        const datasets = compareTheatres.map((t, i) => {
+            const e = results[i].status === 'fulfilled' ? _sliceEntries(getHist(results[i].value), _historyView) : [];
+            return { label: t.label, data: e.map(getScore), borderColor: t.color, backgroundColor: 'transparent', borderWidth: 2, pointRadius: e.length < 15 ? 3 : 0, pointHoverRadius: 4, fill: false, tension: 0.35 };
+        });
+        const legendEl = document.getElementById('historyLegend');
+        if (legendEl) legendEl.innerHTML = compareTheatres.map(t => `<div class="history-legend-item"><div class="history-legend-dot" style="background:${t.color};"></div> ${t.label}</div>`).join('');
+        renderHistoryChart(datasets, labels);
+    } catch (e) { console.warn('[HistoryChart compare]', e); }
+}
+function setHistoryView(mode) {
+    _historyView = mode;
+    document.getElementById('btn7d').classList.toggle('active', mode === '7d');
+    document.getElementById('btn30d').classList.toggle('active', mode === '30d');
+    document.getElementById('btnCompare').classList.toggle('active', mode === 'compare');
+    if (mode === 'compare') loadCompareData(); else loadHistoryData();
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+loadTheme();
+applyTranslations();
+fetchData();
+</script>
+<script>
+// ── Canonical mobile drawer JS (Jun 2026 retrofit) ──
+function toggleMobileDrawer() {
+    const a = document.getElementById('navSidebar');
+    const b = document.getElementById('mobileDrawerBackdrop');
+    if (!a || !b) return;
+    if (a.classList.contains('open')) { closeMobileDrawer(); return; }
+    a.classList.add('open'); b.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileDrawer() {
+    const a = document.getElementById('navSidebar');
+    const b = document.getElementById('mobileDrawerBackdrop');
+    if (a) a.classList.remove('open');
+    if (b) b.classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
+</script>
+</body>
+</html>
