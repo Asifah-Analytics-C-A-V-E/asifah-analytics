@@ -512,6 +512,36 @@
     <!-- Per-commodity rows -->
     <div id="commodityRows"></div>
 
+    <!-- Ukraine-style per-commodity tiles (price index + sparkline + top signal) -->
+    <style>
+    .commodity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+    .commodity-pill { background: var(--bg, #060d1a); border: 1px solid var(--border, #1e3a5f); border-radius: 10px; padding: 14px; transition: all 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px; }
+    .commodity-pill:hover { transform: translateY(-2px); border-color: #f59e0b; box-shadow: 0 4px 12px rgba(245,158,11,0.15); }
+    .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+    .commodity-pill-icon { font-size: 22px; line-height: 1; }
+    .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text, #e2f0fb); flex: 1; }
+    .commodity-pill-rank { font-size: 9px; color: var(--text-muted, #4a7fa5); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .commodity-pill-alert { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+    .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+    .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+    .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+    .commodity-pill-role-badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+    .commodity-pill-signal-count { font-size: 10px; color: var(--text-muted, #4a7fa5); font-weight: 600; }
+    .commodity-pill-price { font-size: 12px; color: var(--text, #e2f0fb); font-weight: 600; font-family: 'Courier New', monospace; }
+    .commodity-pill-price .price-up   { color: #22c55e; }
+    .commodity-pill-price .price-down { color: #ef4444; }
+    .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+    .commodity-top-signals { margin-top: 14px; padding: 10px 14px; background: var(--bg, #060d1a); border-radius: 6px; border-left: 3px solid var(--text-muted, #4a7fa5); font-size: 11px; }
+    .commodity-top-signals .ts-title { color: var(--text-muted, #4a7fa5); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+    .commodity-top-signals a { color: var(--text-2, #93c5fd); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+    .commodity-top-signals a:hover { color: #f59e0b; }
+    .commodity-top-signals .ts-source { color: var(--text-muted, #4a7fa5); font-size: 10px; }
+    </style>
+    <div class="commodity-grid" id="commodityGrid"></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+
     <!-- Strategic linkage footer -->
     <div id="commodityLinkage" style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">Strategic Linkage: Greece is a maritime and energy-transit hub rather than a producer — one of the world’s largest merchant shipping fleets, a Southern Gas Corridor terminus (TAP), and a prospective Eastern-Mediterranean interconnector node (Great Sea Interconnector). Exposure concentrates in shipping, refined fuels and energy-transit infrastructure rather than upstream commodities.</div>
 
@@ -1131,6 +1161,67 @@ function renderCommodityCard(d) {
         `;
         rowsContainer.appendChild(row);
     });
+
+    // -- Ukraine-style per-commodity tiles (price index + sparkline + badges) --
+    const grid = document.getElementById('commodityGrid');
+    if (grid) {
+        grid.innerHTML = '';
+        (d.commodity_summaries || []).forEach(c => {
+            const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+            const role = (c.role || 'producer').toLowerCase();
+            const rankText = c.rank ? `#${c.rank} globally` : '';
+            const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+            let sparklineHtml = '', priceHtml = '';
+            if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+                const spark = c.sparkline.spark;
+                const min = Math.min(...spark), max = Math.max(...spark), range = (max - min) || 1;
+                const points = spark.map((v, i) => `${(i/(spark.length-1)*100).toFixed(1)},${(100-((v-min)/range)*100).toFixed(1)}`).join(' ');
+                const pctChange = c.sparkline.change_pct_30d || 0;
+                const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+                sparklineHtml = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/></svg>`;
+                const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+                const arrow = pctChange >= 0 ? '\u25b2' : '\u25bc';
+                priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+            }
+            const tile = document.createElement('a');
+            tile.className = 'commodity-pill';
+            tile.href = `commodities.html#${c.commodity}`;
+            tile.innerHTML = `
+                <div class="commodity-pill-header">
+                    <div class="commodity-pill-icon">${c.icon || '\ud83d\udcca'}</div>
+                    <div style="flex:1;">
+                        <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                        ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                    </div>
+                </div>
+                <div class="commodity-pill-row">
+                    <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                    <span class="commodity-pill-role-badge">${role}</span>
+                    ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+                </div>
+                ${priceHtml}
+                ${sparklineHtml}
+            `;
+            grid.appendChild(tile);
+        });
+    }
+
+    // -- Top live signals footer --
+    const tsEl = document.getElementById('commodityTopSignals');
+    if (tsEl) {
+        const topSignals = d.top_signals || [];
+        if (topSignals.length > 0) {
+            const items = topSignals.slice(0, 3).map(s => `
+                <a href="${s.article_url}" target="_blank" rel="noopener">
+                    ${s.commodity_icon || '\ud83d\udcf0'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                    <span class="ts-source">\u2014 ${s.source}</span>
+                </a>`).join('');
+            tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+            tsEl.style.display = 'block';
+        } else {
+            tsEl.style.display = 'none';
+        }
+    }
 
     const cacheStatus = d.cache_status || 'unknown';
     const cachedAt = d.proxy_cached_at || d.last_updated;
