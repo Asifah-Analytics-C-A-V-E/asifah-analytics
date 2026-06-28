@@ -493,43 +493,22 @@
     </div>
 </div>
 
+<!-- ESCALATION LADDER -->
+<div class="section-card">
+    <div class="section-title" data-i18n="ladderTitle">🪜 INTENSITY LADDER</div>
+    <div class="ladder-row" id="ladderRow"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;">
+        <div style="font-size:11px;color:var(--text-muted);" id="articlesClassified" data-i18n="articlesClassified">Articles classified:</div>
+        <button class="scan-btn" id="scanBtn" onclick="triggerScan()">
+            🔄 <span data-i18n="refreshScan">Refresh Scan</span>
+        </button>
+    </div>
+</div>
+
 <!-- TOP BLUF STRIP -->
 <div class="bluf-strip" id="blufStrip">
     <div class="bluf-label" data-i18n="blufLabel">BLUF</div>
     <div class="bluf-text" id="blufText"></div>
-</div>
-
-<!-- COMMODITY EXPOSURE CARD -->
-<div class="commodity-card" id="commodityCard" style="display:none;">
-    <div class="commodity-header">
-        <span style="font-size:1.05rem;">🛢️</span>
-        <div style="flex:1;">
-            <div class="interp-card-title" data-i18n="commodityTitle">COMMODITY EXPOSURE — AZERBAIJAN</div>
-            <div style="font-size:0.65rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="commoditySub">Strategic commodities · Live signal counts</div>
-        </div>
-        <span class="commodity-pressure-pill" id="commodityPill" style="background:#6b7280;">--</span>
-    </div>
-    <div class="commodity-headline" id="commodityHeadline">--</div>
-    <div class="commodity-detail" id="commodityDetail">--</div>
-    <a href="https://www.asifahanalytics.com/commodities.html" class="commodity-link" data-i18n="commodityLink">View Full Commodity Tracker →</a>
-</div>
-
-<!-- DUAL PANEL ACTORS -->
-<div class="dual-panel-wrapper">
-    <!-- LEFT PANEL: the four patron wheels (Turkey / Russia / Iran / Israel) -->
-    <div class="actor-panel">
-        <div class="actor-panel-header outbound" data-i18n="outboundPanel">🎯 THE FOUR WHEELS — Turkey · Russia · Iran · Israel</div>
-        <div id="outboundActors">
-            <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:20px;" data-i18n="loading">Loading...</div>
-        </div>
-    </div>
-    <!-- RIGHT PANEL: convergence object (Armenia / corridor) + domestic baseline -->
-    <div class="actor-panel">
-        <div class="actor-panel-header inbound" data-i18n="inboundPanel">🛣️ CONVERGENCE &amp; BASELINE — Armenia/Corridor · Domestic</div>
-        <div id="inboundActors">
-            <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:20px;" data-i18n="loading">Loading...</div>
-        </div>
-    </div>
 </div>
 
 <!-- SO WHAT CARD -->
@@ -560,16 +539,37 @@
     <div class="interp-confidence-note" id="soWhatNote"></div>
 </div>
 
-<!-- ESCALATION LADDER -->
-<div class="section-card">
-    <div class="section-title" data-i18n="ladderTitle">🪜 INTENSITY LADDER</div>
-    <div class="ladder-row" id="ladderRow"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;">
-        <div style="font-size:11px;color:var(--text-muted);" id="articlesClassified" data-i18n="articlesClassified">Articles classified:</div>
-        <button class="scan-btn" id="scanBtn" onclick="triggerScan()">
-            🔄 <span data-i18n="refreshScan">Refresh Scan</span>
-        </button>
+<!-- DUAL PANEL ACTORS -->
+<div class="dual-panel-wrapper">
+    <!-- LEFT PANEL: the four patron wheels (Turkey / Russia / Iran / Israel) -->
+    <div class="actor-panel">
+        <div class="actor-panel-header outbound" data-i18n="outboundPanel">🎯 THE FOUR WHEELS — Turkey · Russia · Iran · Israel</div>
+        <div id="outboundActors">
+            <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:20px;" data-i18n="loading">Loading...</div>
+        </div>
     </div>
+    <!-- RIGHT PANEL: convergence object (Armenia / corridor) + domestic baseline -->
+    <div class="actor-panel">
+        <div class="actor-panel-header inbound" data-i18n="inboundPanel">🛣️ CONVERGENCE &amp; BASELINE — Armenia/Corridor · Domestic</div>
+        <div id="inboundActors">
+            <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:20px;" data-i18n="loading">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- COMMODITY EXPOSURE CARD -->
+<div class="commodity-card" id="commodityCard" style="display:none;">
+    <div class="commodity-header">
+        <span style="font-size:1.05rem;">🛢️</span>
+        <div style="flex:1;">
+            <div class="interp-card-title" data-i18n="commodityTitle">COMMODITY EXPOSURE — AZERBAIJAN</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="commoditySub">Strategic commodities · Live signal counts</div>
+        </div>
+        <span class="commodity-pressure-pill" id="commodityPill" style="background:#6b7280;">--</span>
+    </div>
+    <div class="commodity-headline" id="commodityHeadline">--</div>
+    <div class="commodity-detail" id="commodityDetail">--</div>
+    <a href="https://www.asifahanalytics.com/commodities.html" class="commodity-link" data-i18n="commodityLink">View Full Commodity Tracker →</a>
 </div>
 
 <!-- RED LINES CARD -->
@@ -940,9 +940,13 @@ function renderBluf(data) {
     if (!strip || !txt) return;
     const parts = [];
     const sw = data.so_what || {};
-    if (sw.scenario) parts.push(sw.scenario);
-    if (data.is_contested_node) parts.push(`Contested node ${data.contested_node_score || 0}/4`);
-    else if (data.convergence_signal) parts.push(data.convergence_signal.replace(/^[^A-Za-z]+/, ''));
+    if (sw.bluf) {
+        parts.push(sw.bluf);
+    } else {
+        if (sw.scenario) parts.push(sw.scenario);
+        if (data.is_contested_node) parts.push(`Contested node ${data.contested_node_score || 0}/4`);
+        else if (data.convergence_signal) parts.push(data.convergence_signal.replace(/^[^A-Za-z]+/, ''));
+    }
     const rl = data.red_lines || {};
     if (rl.breached_count) parts.push(`${rl.breached_count} red line${rl.breached_count === 1 ? '' : 's'} breached`);
     else if (rl.approaching_count) parts.push(`${rl.approaching_count} approaching`);
@@ -1014,7 +1018,7 @@ function renderInterpretation(data) {
     const sw = data.so_what;
     if (sw) {
         document.getElementById('soWhatCard').style.display = 'block';
-        document.getElementById('soWhatIcon').textContent = '\U0001f3af';
+        document.getElementById('soWhatIcon').textContent = '\uD83C\uDFAF';
         document.getElementById('soWhatScenario').textContent = sw.scenario || '--';
         document.getElementById('soWhatSituation').textContent = sw.assessment || '';
         const narrEl = document.getElementById('soWhatNarrative');
@@ -1054,7 +1058,7 @@ function renderInterpretation(data) {
             const item = document.createElement('div');
             item.className = `red-line-item ${itemClass}`;
             item.innerHTML = `
-                <span class="red-line-icon">${r.severity >= 5 ? '\U0001f6a8' : '\u26a0\ufe0f'}</span>
+                <span class="red-line-icon">${r.severity >= 5 ? '\uD83D\uDEA8' : '\u26a0\ufe0f'}</span>
                 <div style="flex:1;">
                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                         <span class="red-line-label">${r.label}</span>
@@ -1132,7 +1136,7 @@ function renderAll(data) {
     renderActors(data);
     renderInterpretation(data);
     renderArticles(data);
-    renderLadder(data.theatre_level || 0);
+    renderLadder(data.peak_wheel_level != null ? data.peak_wheel_level : (data.theatre_level || 0));
     const classified = Object.values(data.actors || {}).reduce((s, a) => s + (a.article_hits || 0), 0);
     document.getElementById('articlesClassified').textContent =
         `${T[currentLang].articlesClassified || 'Articles classified:'} ${classified}`;
