@@ -589,6 +589,10 @@
         if (!data) return 0;
         let lvl = data.theatre_level ?? data.theatre_escalation_level;
         if (lvl == null) lvl = ALERT_TO_LEVEL[String(data.alert_level || '').toLowerCase()] ?? 0;
+        // Four-wheel spokes (Azerbaijan): the weighted composite can dilute genuine
+        // multi-front L1 activity to L0. Surface the hottest single wheel instead.
+        const peak = data.peak_wheel_level;
+        if (peak != null && peak > lvl) lvl = peak;
         return lvl;
     }
 
@@ -612,6 +616,15 @@
             vectors:    ['Nuclear Sharing', 'NATO Border', 'Russia Axis', 'Iran Axis', 'Regime Stability'],
             summaryUrl: EUROPE_BACKEND + '/api/rhetoric/belarus/summary',
             url:        'https://www.asifahanalytics.com/rhetoric-belarus.html',
+        },
+        {
+            id:         'cyprus',
+            name:       'Cyprus Division Tracker',
+            flag:       '🇨🇾',
+            actors:     'Turkish Posture · EEZ/Maritime · Green Line · TRNC Politics · Settlement Track',
+            vectors:    ['Turkish Posture', 'EEZ/Maritime', 'Green Line', 'TRNC Politics', 'Settlement Track'],
+            summaryUrl: EUROPE_BACKEND + '/api/rhetoric/cyprus/summary',
+            url:        'https://www.asifahanalytics.com/rhetoric-cyprus.html',
         },
         {
             id:         'greenland',
