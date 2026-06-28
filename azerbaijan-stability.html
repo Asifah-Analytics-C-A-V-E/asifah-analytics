@@ -490,7 +490,7 @@
         <div style="font-size:30px;font-weight:700;color:var(--text-primary);" id="azerbaijanRhetoricScoreFull">--</div>
         <span id="azerbaijanRhetoricLevelLabel" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:#6b7280;color:white;">--</span>
     </div>
-    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector pressure score — Iran Border · Armenia Tensions · Israel Defense Axis · Caspian Shipping · SOCAR Energy Politics · Updated every 6h</div>
+    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Four-wheel pressure read — Turkey Axis · Russia Rupture · Iran Friction · Israel Axis · Armenia/Corridor · Updated every 6h</div>
     <div id="azerbaijanRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;" data-i18n="loading">Loading…</span></div>
     <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
         <a href="rhetoric-azerbaijan.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="viewFullTracker">View Full Pressure Analysis →</a>
@@ -1316,90 +1316,82 @@ function renderPulse(fp) {
 // Maps generic threat-scan output (probability, momentum, top_scoring_articles)
 // onto the canonical rhetoric banner + pressure detail card.
 async function loadRhetoric() {
-    // Reuse payload fetched by loadArticles to avoid double-call
-    let d = window._threatPayload;
-    if (!d) {
-        try {
-            const r = await fetch(`${API_BASE}/api/europe/threat/azerbaijan`);
-            if (!r.ok) return;
-            d = await r.json();
-        } catch(e) { console.warn('[Azerbaijan] Rhetoric pressure fetch failed:', e.message); return; }
-    }
+    // Live four-wheel rhetoric tracker (Turkey axis | Russia rupture | Iran
+    // friction | Israel axis | Armenia/corridor). Sensor banner + detail card.
+    let d;
+    try {
+        const r = await fetch(`${API_BASE}/api/rhetoric/azerbaijan`);
+        if (!r.ok) return;
+        d = await r.json();
+    } catch(e) { console.warn('[Azerbaijan] Rhetoric fetch failed:', e.message); return; }
 
-    // Awaiting first scan — show nothing; loadCommodity placeholder logic handles UI
-    if (d.pending_scan || d.probability === null || d.probability === undefined) return;
+    // Awaiting first scan -- leave cards hidden until real data lands.
+    if (d.awaiting_scan || d.theatre_score === undefined || d.theatre_score === null) return;
 
-    const score = d.probability || 0;
+    const LVL_COLOR = ['#6b7280','#3b82f6','#f59e0b','#f97316','#ef4444','#b91c1c'];
+    const levelColor = l => LVL_COLOR[Math.max(0, Math.min(5, l|0))] || '#6b7280';
+    const cap = w => w ? w[0].toUpperCase() + w.slice(1) : w;
 
-    // Map momentum → alert level + color
-    const momentum = (d.momentum || 'stable').toLowerCase();
-    let alert, alertColor;
-    if (momentum === 'increasing' && score > 60) { alert = 'critical'; alertColor = '#dc2626'; }
-    else if (momentum === 'increasing')          { alert = 'high';     alertColor = '#f59e0b'; }
-    else if (momentum === 'decreasing')          { alert = 'normal';   alertColor = '#22c55e'; }
-    else                                         { alert = 'elevated'; alertColor = '#3b82f6'; }
+    const score       = d.theatre_score || 0;
+    const level       = d.theatre_level || 0;
+    const label       = d.theatre_label || d.theatre_escalation_label || 'Baseline';
+    const color       = d.theatre_escalation_color || levelColor(level);
+    const convergence = d.convergence_signal || '';
+    const contested   = d.contested_node_score || 0;
+    const isNode      = !!d.is_contested_node;
+    const active      = d.active_wheels || [];
 
-    // Map probability band → level label
-    let levelLabel;
-    if      (score >= 85) levelLabel = 'Critical';
-    else if (score >= 70) levelLabel = 'Elevated';
-    else if (score >= 50) levelLabel = 'Warning';
-    else if (score >= 30) levelLabel = 'Watch';
-    else                  levelLabel = 'Baseline';
-
-    // ── Green banner (top) ──
+    // -- Green banner (top) --
     const card = document.getElementById('rhetoricPressureCard');
     if (card) {
         card.style.display = 'flex';
-        document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
+        document.getElementById('rhetoricScore').textContent = `L${level} | ${score}/100`;
         const pill = document.getElementById('rhetoricPill');
-        pill.textContent = alert.toUpperCase();
-        pill.style.background = alertColor;
+        pill.textContent = (label || '').toUpperCase();
+        pill.style.background = color;
         document.getElementById('rhetoricHeadline').textContent =
-            `${levelLabel} pressure level · ${d.timeline || 'Timeline pending'} · momentum ${momentum}`;
+            convergence || `${label} -- four-wheel balancing posture`;
+        const wheelsTxt = isNode
+            ? `Four-wheel contested node (${contested}/4): ${active.map(cap).join(', ')}`
+            : (active.length ? `${active.length}/4 wheels active` : 'Wheels at baseline');
         document.getElementById('rhetoricDetail').textContent =
-            `${d.total_articles || 0} articles analyzed · ${d.recent_articles_48h || 0} in last 48h · ${d.deescalation_count || 0} de-escalation signals · Confidence: ${d.confidence || 'Unknown'}`;
+            `${wheelsTxt} | ${d.total_articles || 0} articles analyzed`;
     }
 
-    // ── Armenia pressure tracker detail card ──
+    // -- Four-wheel detail card --
     const detailCard = document.getElementById('azerbaijanRhetoricCard');
     if (detailCard) {
         detailCard.style.display = 'block';
         const scoreEl = document.getElementById('azerbaijanRhetoricScoreFull');
-        if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = alertColor; }
+        if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = color; }
         const lvlEl = document.getElementById('azerbaijanRhetoricLevelLabel');
-        if (lvlEl) { lvlEl.textContent = levelLabel; lvlEl.style.background = alertColor; }
+        if (lvlEl) { lvlEl.textContent = `L${level} -- ${label}`; lvlEl.style.background = color; }
 
-        // Body: top scoring article titles → signal rows
+        // Body: the four wheels + the corridor, each a signal-temperature row.
         const signalEl = document.getElementById('azerbaijanRhetoricSignalList');
         if (signalEl) {
-            const top = (d.top_scoring_articles || []).slice(0, 5);
-            if (top.length) {
-                signalEl.innerHTML = top.map(a => {
-                    const title = a.title || 'Untitled';
-                    const src = (typeof a.source === 'object' ? a.source?.name : a.source) || '';
-                    return `<div class="rhetoric-signal-row">${src ? `<span class="rhetoric-signal-label">${src}</span>` : ''}${title}</div>`;
-                }).join('');
-            } else {
-                // Fallback: scoring breakdown summary
-                const rows = [
-                    { label: '📈 Momentum',           val: momentum, color: alertColor },
-                    { label: '📊 Recent (48h)',       val: d.recent_articles_48h || 0, color: '#38bdf8' },
-                    { label: '📰 Total Articles',     val: d.total_articles || 0, color: '#38bdf8' },
-                    { label: '🕊️ De-escalation Hits', val: d.deescalation_count || 0, color: '#22c55e' },
-                ];
-                signalEl.innerHTML = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
-            }
+            const wheels = [
+                { label: '\uD83E\uDD1D Turkey axis',          lvl: d.turkey_axis_level || 0 },
+                { label: '\u26A1 Russia rupture',              lvl: d.russia_rupture_level || 0 },
+                { label: '\u2694\uFE0F Iran friction',        lvl: d.iran_friction_level || 0 },
+                { label: '\uD83D\uDEF0\uFE0F Israel axis',   lvl: d.israel_axis_level || 0 },
+                { label: '\uD83D\uDEE3\uFE0F Armenia / corridor', lvl: d.armenia_corridor_level || 0 },
+            ];
+            signalEl.innerHTML = wheels.map(w =>
+                `<div class="rhetoric-actor-row"><span>${w.label}</span>` +
+                `<span style="font-weight:700;color:${levelColor(w.lvl)};">L${w.lvl}</span></div>`
+            ).join('');
         }
 
         // Scan info footer
         const scanEl = document.getElementById('azerbaijanRhetoricScanInfo');
         if (scanEl) {
-            const ageStr = d.cache_age_human || (d.cached ? 'cached' : 'fresh scan');
-            scanEl.textContent = `${ageStr} · ${d.total_articles || 0} articles analyzed · ${d.confidence || 'Unknown'} confidence`;
+            const ageStr = d.cached ? 'cached' : 'fresh scan';
+            scanEl.textContent = `${ageStr} | ${d.total_articles || 0} articles analyzed | updated every 6h`;
         }
     }
 }
+
 // (Legacy commodity row-renderers removed — tile rendering is inline in loadCommodity, Gold Standard)
 
 
@@ -1424,7 +1416,7 @@ const T = {
         contextTagLabel:'Source:',
         contextQuote:'"WSJ — Iran\u2019s economic death spiral"',
         rhetoricCardTitle:'AZERBAIJAN PRESSURE TRACKER',
-        rhetoricCardDesc:'Multi-vector pressure score — Iran Border · Armenia Tensions · Israel Defense Axis · Caspian Shipping · SOCAR Energy Politics · Updated every 6h',
+        rhetoricCardDesc:'Four-wheel pressure read — Turkey Axis · Russia Rupture · Iran Friction · Israel Axis · Armenia/Corridor · Updated every 6h',
         loading:'Loading…', viewFullTracker:'View Full Pressure Analysis →',
         commodityTitle:'COMMODITY EXPOSURE — AZERBAIJAN',
         commodityFullLink:'View Full Commodity Tracker →',
@@ -1475,7 +1467,7 @@ const T = {
         contextTagLabel:'Source :',
         contextQuote:'« WSJ — Spirale économique mortelle de l\u2019Iran »',
         rhetoricCardTitle:'TRACKER DE PRESSION AZERBAÏDJAN',
-        rhetoricCardDesc:'Score de pression multi-vecteurs — Frontière iranienne · Tensions Arménie · Axe défense Israël · Fret caspien · Politique énergétique SOCAR · Mis à jour toutes les 6 h',
+        rhetoricCardDesc:'Pression à quatre roues — Axe turc · Rupture russe · Friction iranienne · Axe israélien · Arménie/Corridor · Mis à jour toutes les 6 h',
         loading:'Chargement…', viewFullTracker:'Voir l\u2019analyse complète →',
         commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES — AZERBAÏDJAN',
         commodityFullLink:'Voir le tracker complet →',
@@ -1526,7 +1518,7 @@ const T = {
         contextTagLabel:'Источник:',
         contextQuote:'«WSJ — Экономическая смертельная спираль Ирана»',
         rhetoricCardTitle:'ТРЕКЕР ДАВЛЕНИЯ АЗЕРБАЙДЖАНА',
-        rhetoricCardDesc:'Многовекторная оценка давления — Иранская граница · Армянские противоречия · Ось защиты Израиля · Каспийские поставки · Энергетическая политика SOCAR · Обновляется каждые 6 ч',
+        rhetoricCardDesc:'Оценка давления по четырём осям — Турецкая ось · Разрыв с Россией · Иранское трение · Израильская ось · Армения/Коридор · Обновляется каждые 6 ч',
         loading:'Загрузка…', viewFullTracker:'Посмотреть полный анализ →',
         commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ — АЗЕРБАЙДЖАН',
         commodityFullLink:'Полный трекер сырья →',
@@ -1577,7 +1569,7 @@ const T = {
         contextTagLabel:'Quelle:',
         contextQuote:'„WSJ — Irans wirtschaftliche Todesspirale"',
         rhetoricCardTitle:'ASERBAIDSCHAN-DRUCKTRACKER',
-        rhetoricCardDesc:'Multi-Vektor-Druck-Score — Iran-Grenze · Armenien-Spannungen · Israel-Verteidigungsachse · Kaspische Schifffahrt · SOCAR-Energiepolitik · Aktualisiert alle 6 h',
+        rhetoricCardDesc:'Vier-Rad-Druckanalyse — Türkei-Achse · Russland-Bruch · Iran-Reibung · Israel-Achse · Armenien/Korridor · Aktualisiert alle 6 h',
         loading:'Lade…', viewFullTracker:'Vollständige Druckanalyse anzeigen →',
         commodityTitle:'ROHSTOFF-EXPOSITION — ASERBAIDSCHAN',
         commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →',
