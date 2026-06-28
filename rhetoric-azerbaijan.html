@@ -814,6 +814,14 @@ const T = {
     },
 };
 
+// State (these sit between the T object and applyTranslations in the donor; the
+// TRANSLATIONS replacement span swallowed them, so they are restored here).
+let currentLang = 'en';
+let currentData = null;
+let currentArticleTab = 'all';
+let _historyChart = null;
+let _historyView = '7d';
+
 function applyTranslations() {
     const t = T[currentLang] || T.en;
     document.querySelectorAll('[data-i18n]').forEach(el => {
