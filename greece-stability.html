@@ -1036,87 +1036,74 @@ async function loadCommodity() {
 // Maps generic threat-scan output (probability, momentum, top_scoring_articles)
 // onto the canonical rhetoric banner + pressure detail card.
 async function loadRhetoric() {
-    // Reuse payload fetched by loadArticles to avoid double-call
-    let d = window._threatPayload;
-    if (!d) {
-        try {
-            const r = await fetch(`${API_BASE}/api/europe/threat/greece`);
-            if (!r.ok) return;
-            d = await r.json();
-        } catch(e) { console.warn('[Greece] Rhetoric pressure fetch failed:', e.message); return; }
-    }
+    // Greece rhetoric / pressure tracker -- convergence-framed, estimative voice.
+    // Reads the new /api/rhetoric/greece payload (theatre_* + so_what + top_signals
+    // + peak_vector). The PEAK vector is the headline -- it spills into the Europe
+    // Rhetoric BLUF (e.g. Turkey axis at Rupture even when the composite reads calm).
+    let d;
+    try {
+        const r = await fetch(`${API_BASE}/api/rhetoric/greece`);
+        if (!r.ok) return;
+        d = await r.json();
+    } catch (e) { console.warn('[Greece] Rhetoric fetch failed:', e.message); return; }
+    if (!d || d.success === false) return;
 
-    // Awaiting first scan — show nothing; loadCommodity placeholder logic handles UI
-    if (d.pending_scan || d.probability === null || d.probability === undefined) return;
+    const VLABEL = { turkey_axis: 'Turkey axis', migration_frontline: 'Migration frontline', domestic_pressure: 'Domestic pressure', eu_anchor: 'EU anchor', nato_us: 'NATO/US', regional_alignment: 'Regional alignment' };
+    const score   = d.theatre_score || 0;
+    const label   = d.theatre_label || 'Baseline';
+    const color   = d.theatre_color || '#6b7280';
+    const peakLvl = d.peak_vector_level || 0;
+    const peakVec = VLABEL[d.peak_vector] || d.peak_vector || '';
+    const sw      = d.so_what || {};
+    const sigs    = d.top_signals || [];
+    const dip     = (d.diplomatic_track && d.diplomatic_track.scenario) || d.diplomatic_scenario || 'No active track';
 
-    const score = d.probability || 0;
+    // Lead with the analyst BLUF / peak signal (the read that rolls into the Europe BLUF),
+    // NOT the diluted composite.
+    const headline = sw.bluf || (sigs[0] && sigs[0].short_text) || d.convergence_signal || `${label} -- peak vector at L${peakLvl}`;
 
-    // Map momentum → alert level + color
-    const momentum = (d.momentum || 'stable').toLowerCase();
-    let alert, alertColor;
-    if (momentum === 'increasing' && score > 60) { alert = 'critical'; alertColor = '#dc2626'; }
-    else if (momentum === 'increasing')          { alert = 'high';     alertColor = '#f59e0b'; }
-    else if (momentum === 'decreasing')          { alert = 'normal';   alertColor = '#22c55e'; }
-    else                                         { alert = 'elevated'; alertColor = '#3b82f6'; }
-
-    // Map probability band → level label
-    let levelLabel;
-    if      (score >= 85) levelLabel = 'Critical';
-    else if (score >= 70) levelLabel = 'Elevated';
-    else if (score >= 50) levelLabel = 'Warning';
-    else if (score >= 30) levelLabel = 'Watch';
-    else                  levelLabel = 'Baseline';
-
-    // ── Green banner (top) ──
+    // -- Green banner (top) --
     const card = document.getElementById('rhetoricPressureCard');
     if (card) {
         card.style.display = 'flex';
-        document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
         const pill = document.getElementById('rhetoricPill');
-        pill.textContent = alert.toUpperCase();
-        pill.style.background = alertColor;
-        document.getElementById('rhetoricHeadline').textContent =
-            `${levelLabel} pressure level · ${d.timeline || 'Timeline pending'} · momentum ${momentum}`;
-        document.getElementById('rhetoricDetail').textContent =
-            `${d.total_articles || 0} articles analyzed · ${d.recent_articles_48h || 0} in last 48h · ${d.deescalation_count || 0} de-escalation signals · Confidence: ${d.confidence || 'Unknown'}`;
+        if (pill) { pill.textContent = (label || '').toUpperCase(); pill.style.background = color; pill.style.color = '#fff'; }
+        const scEl = document.getElementById('rhetoricScore');
+        if (scEl) { scEl.textContent = `${score}/100`; }
+        const hEl = document.getElementById('rhetoricHeadline');
+        if (hEl) hEl.textContent = headline;
+        const dEl = document.getElementById('rhetoricDetail');
+        if (dEl) dEl.textContent =
+            `${d.total_articles || 0} articles analyzed${peakVec ? ` \u00b7 peak vector: ${peakVec} (L${peakLvl})` : ''} \u00b7 diplomatic track: ${dip}`;
     }
 
-    // ── Pressure tracker detail card ──
+    // -- Topline pressure card --
     const detailCard = document.getElementById('greeceRhetoricCard');
     if (detailCard) {
         detailCard.style.display = 'block';
         const scoreEl = document.getElementById('greeceRhetoricScoreFull');
-        if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = alertColor; }
+        if (scoreEl) { scoreEl.textContent = `${score}/100`; scoreEl.style.color = color; }
         const lvlEl = document.getElementById('greeceRhetoricLevelLabel');
-        if (lvlEl) { lvlEl.textContent = levelLabel; lvlEl.style.background = alertColor; }
-
-        // Body: top scoring article titles → signal rows
+        if (lvlEl) { lvlEl.textContent = label; lvlEl.style.background = color; }
         const signalEl = document.getElementById('greeceRhetoricSignalList');
         if (signalEl) {
-            const top = (d.top_scoring_articles || []).slice(0, 5);
-            if (top.length) {
-                signalEl.innerHTML = top.map(a => {
-                    const title = a.title || 'Untitled';
-                    const src = (typeof a.source === 'object' ? a.source?.name : a.source) || '';
-                    return `<div class="rhetoric-signal-row">${src ? `<span class="rhetoric-signal-label">${src}</span>` : ''}${title}</div>`;
+            if (sigs.length) {
+                signalEl.innerHTML = sigs.slice(0, 5).map(sgl => {
+                    const cat = (sgl.category || '').replace(/_/g, ' ');
+                    return `<div class="rhetoric-signal-row">${cat ? `<span class="rhetoric-signal-label">${cat}</span> ` : ''}${sgl.short_text || ''}</div>`;
                 }).join('');
             } else {
-                // Fallback: scoring breakdown summary
-                const rows = [
-                    { label: '📈 Momentum',           val: momentum, color: alertColor },
-                    { label: '📊 Recent (48h)',       val: d.recent_articles_48h || 0, color: '#38bdf8' },
-                    { label: '📰 Total Articles',     val: d.total_articles || 0, color: '#38bdf8' },
-                    { label: '🕊️ De-escalation Hits', val: d.deescalation_count || 0, color: '#22c55e' },
-                ];
-                signalEl.innerHTML = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
+                signalEl.innerHTML = `<div class="rhetoric-signal-row">${d.convergence_signal || 'No active signals this scan.'}</div>`;
             }
         }
-
-        // Scan info footer
         const scanEl = document.getElementById('greeceRhetoricScanInfo');
         if (scanEl) {
-            const ageStr = d.cache_age_human || (d.cached ? 'cached' : 'fresh scan');
-            scanEl.textContent = `${ageStr} · ${d.total_articles || 0} articles analyzed · ${d.confidence || 'Unknown'} confidence`;
+            let ageStr = 'fresh scan';
+            if (d.scanned_at) {
+                const mins = Math.max(0, Math.round((Date.now() - new Date(d.scanned_at).getTime()) / 60000));
+                ageStr = mins < 60 ? `${mins}m ago` : `${Math.round(mins / 60)}h ago`;
+            }
+            scanEl.textContent = `${ageStr} \u00b7 ${d.total_articles || 0} articles analyzed \u00b7 convergence, not prediction`;
         }
     }
 }
