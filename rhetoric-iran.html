@@ -504,6 +504,18 @@
     .otp-count { font-size: 2.5rem; font-weight: 900; color: #ef4444; line-height: 1; }
     .otp-item { background: rgba(220,38,38,0.06); border-left: 3px solid #dc2626; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 6px; font-size: 0.7rem; }
 
+    /* ── CEASEFIRE TRAJECTORY CARD (bidirectional 60-day-window read) ── */
+    .ceasefire-trajectory-card {
+        background: var(--card-bg, rgba(13,27,46,0.6));
+        border: 1px solid var(--card-border, #1e3a5f);
+        border-left: 4px solid #10b981;
+        border-radius: 12px; padding: 20px; margin-bottom: 18px;
+    }
+    .ceasefire-trajectory-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border, rgba(30,58,95,0.4)); }
+    .ceasefire-trajectory-headline { font-size: 1.02rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; color: #10b981; }
+    .ceasefire-trajectory-detail { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+    .ceasefire-trajectory-meters { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--card-border, rgba(30,58,95,0.4)); font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-family: 'Courier New', monospace; }
+
     /* ── DIPLOMATIC TRACK CARD ── */
     .diplomatic-track-card {
         background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.04));
@@ -977,6 +989,14 @@
     </div>
 
     <!-- PROXY ACTIVATION INDEX (Iran-specific) -->
+    <!-- CEASEFIRE TRAJECTORY CARD (bidirectional 60-day-window read) -->
+    <div class="ceasefire-trajectory-card" id="ceasefireTrajectoryCard" style="display:none;">
+        <div class="ceasefire-trajectory-title">🧭 <span data-i18n="ceasefireTrajectoryTitle">Ceasefire Trajectory</span></div>
+        <div class="ceasefire-trajectory-headline" id="ceasefireTrajectoryHeadline">--</div>
+        <div class="ceasefire-trajectory-detail" id="ceasefireTrajectoryDetail">--</div>
+        <div class="ceasefire-trajectory-meters" id="ceasefireTrajectoryMeters"></div>
+    </div>
+
     <div class="proxy-activation-card" id="proxyActivationCard">
         <div class="proxy-activation-title">🔗 <span data-i18n="proxyTitle">PROXY NETWORK ACTIVATION INDEX</span></div>
         <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
@@ -988,6 +1008,7 @@
             <div style="flex:1;">
                 <div id="proxySyncSignal" style="display:none;padding:8px 12px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:6px;font-size:0.65rem;color:var(--proxy-color);margin-bottom:8px;"></div>
                 <div class="proxy-grid" id="proxyGrid"></div>
+                <div id="proxySyriaRupture" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(148,163,184,0.06);border-left:3px solid rgba(148,163,184,0.4);border-radius:6px;font-size:0.65rem;color:var(--text-secondary);line-height:1.5;"></div>
             </div>
         </div>
     </div>
@@ -1211,6 +1232,7 @@
             historicalFooter:'Sources: RAND, IISS, CSIS, ISW, INSS post-event analysis. Pattern match is analytical, not predictive.',
             // Diplomatic Track
             diplomaticTrackTitle:'Diplomatic Track Active',
+            ceasefireTrajectoryTitle:'Ceasefire Trajectory',
             diplomaticPressureLabel:'Pressure',
             diplomaticDefaultExplainer:'Active negotiations are reducing the rhetoric score. Threat vectors above remain ground truth.',
             diplomaticNote:'ⓘ Diplomacy and threats coexist — IRGC posture, nuclear program, and proxy activation remain tracked independently above.',
@@ -1291,6 +1313,7 @@
             historicalSubtitle:'تشابه الإشارات مع ظروف ما قبل الإجراء الموثقة',
             historicalFooter:'المصادر: RAND, IISS, CSIS, ISW, INSS تحليل ما بعد الأحداث. مطابقة الأنماط تحليلية، وليست تنبؤية.',
             diplomaticTrackTitle:'المسار الدبلوماسي نشط',
+            ceasefireTrajectoryTitle:'مسار وقف إطلاق النار',
             diplomaticPressureLabel:'الضغط',
             diplomaticDefaultExplainer:'المفاوضات النشطة تخفض درجة الخطاب. تظل محاور التهديد أعلاه هي الواقع الميداني.',
             diplomaticNote:'ⓘ الدبلوماسية والتهديدات تتعايشان — موقف الحرس الثوري والبرنامج النووي وتفعيل الوكلاء تظل مُتَتَبَّعة بشكل مستقل أعلاه.',
@@ -1367,6 +1390,7 @@
             historicalSubtitle:'דמיון אותות לתנאי טרום-פעולה מתועדים',
             historicalFooter:'מקורות: RAND, IISS, CSIS, ISW, INSS ניתוח לאחר אירוע. התאמת תבנית היא אנליטית, לא תחזיתית.',
             diplomaticTrackTitle:'מסלול דיפלומטי פעיל',
+            ceasefireTrajectoryTitle:'מסלול הפסקת האש',
             diplomaticPressureLabel:'לחץ',
             diplomaticDefaultExplainer:'משא ומתן פעיל מפחית את ציון הרטוריקה. וקטורי האיום למעלה נשארים אמת קרקעית.',
             diplomaticNote:'ⓘ דיפלומטיה ואיומים מתקיימים יחד — תנוחת משמרות המהפכה, התוכנית הגרעינית, ופעולות פרוקסי נשארים מנוטרים בנפרד למעלה.',
@@ -1443,6 +1467,7 @@
             historicalSubtitle:'شباهت سیگنال به شرایط پیش از اقدام مستند',
             historicalFooter:'منابع: RAND، IISS، CSIS، ISW، INSS تحلیل پس از رویداد. تطابق الگو تحلیلی است، نه پیش‌بینی‌کننده.',
             diplomaticTrackTitle:'مسیر دیپلماتیک فعال',
+            ceasefireTrajectoryTitle:'مسیر آتش‌بس',
             diplomaticPressureLabel:'فشار',
             diplomaticDefaultExplainer:'مذاکرات فعال در حال کاهش امتیاز خطاب است. بردارهای تهدید بالا واقعیت زمینی باقی می‌مانند.',
             diplomaticNote:'ⓘ دیپلماسی و تهدیدها همزیستی دارند — موضع سپاه، برنامه هسته‌ای، و فعال‌سازی نیابتی به طور مستقل بالا ردیابی می‌شوند.',
@@ -1847,10 +1872,11 @@
         const elevated = detail.elevated_proxies || {};
         const fresh = detail.fresh_proxies || [];
         const theaters = [
-            { id:'lebanon', label:'Lebanon', icon:'🇱🇧' },
-            { id:'iraq',    label:'Iraq',    icon:'🇮🇶' },
-            { id:'yemen',   label:'Yemen',   icon:'🇾🇪' },
-            { id:'syria',   label:'Syria',   icon:'🇸🇾' },
+            { id:'lebanon',   label:'Lebanon',   icon:'🇱🇧' },
+            { id:'iraq',      label:'Iraq',      icon:'🇮🇶' },
+            { id:'yemen',     label:'Yemen',     icon:'🇾🇪' },
+            { id:'gaza',      label:'Gaza',      icon:'🇵🇸' },
+            { id:'west_bank', label:'West Bank', icon:'🇵🇸' },
         ];
         grid.innerHTML = theaters.map(theater => {
             const lvl = elevated[theater.id] || 0;
@@ -1863,6 +1889,17 @@
                 ${!isFresh?'<div style="font-size:0.5rem;color:var(--text-muted);margin-top:2px;">stale</div>':''}
             </div>`;
         }).join('');
+
+        // Syria -- severed corridor (ruptured post-Dec-2024; counted OUT of activation)
+        const syriaEl = document.getElementById('proxySyriaRupture');
+        if (syriaEl) {
+            const ruptured = detail.syria_ruptured === true;
+            syriaEl.style.display = 'block';
+            syriaEl.style.borderLeftColor = ruptured ? '#f97316' : 'rgba(148,163,184,0.4)';
+            syriaEl.innerHTML = ruptured
+                ? '\u26d3\ufe0f <strong>Syria \u2014 severed corridor (active):</strong> signal present in the former land bridge, now forces hostile to Tehran. Counted OUT of Axis activation \u2014 the corridor is ruptured, not a live proxy.'
+                : '\u26d3\ufe0f <strong>Syria \u2014 severed corridor:</strong> land bridge ruptured (post-Dec 2024); not counted as a live Iran proxy.';
+        }
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -2118,6 +2155,37 @@
     }
 
     // ══════════════════════════════════════════════════════════════
+    // CEASEFIRE TRAJECTORY CARD (bidirectional 60-day-window read)
+    // ══════════════════════════════════════════════════════════════
+    function renderCeasefireTrajectory(data) {
+        const card = document.getElementById('ceasefireTrajectoryCard');
+        if (!card) return;
+        const traj = (data && data.ceasefire_trajectory) || {};
+        const lean = traj.lean || 'quiet';
+        if (!lean || lean === 'quiet') { card.style.display = 'none'; return; }
+
+        const COLORS = {
+            consolidating: '#10b981', holding: '#10b981',
+            strained: '#f59e0b', fraying: '#f97316', breach_risk: '#ef4444'
+        };
+        const color = COLORS[lean] || '#10b981';
+        card.style.display = 'block';
+        card.style.borderLeftColor = color;
+
+        const headEl = document.getElementById('ceasefireTrajectoryHeadline');
+        if (headEl) { headEl.textContent = traj.headline || 'Ceasefire trajectory'; headEl.style.color = color; }
+
+        const detEl = document.getElementById('ceasefireTrajectoryDetail');
+        if (detEl) detEl.textContent = traj.detail || '';
+
+        const metersEl = document.getElementById('ceasefireTrajectoryMeters');
+        if (metersEl) {
+            const fwd = traj.forward_signal || 0, br = traj.breach_signal || 0;
+            metersEl.textContent = 'Consolidation signal: ' + fwd + '  \u00b7  Breach signal: ' + br;
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════
     // COORDINATION SIGNALS
     // ══════════════════════════════════════════════════════════════
     function renderCoordination(signals) {
@@ -2231,6 +2299,7 @@
         renderStrikeWindow(data);          // v2.0.0: between banner and So What
         renderInterpretation(data);
         renderDiplomaticTrack(data);
+        renderCeasefireTrajectory(data);
         renderProxyActivation(data);
         renderUnityOfFronts(data);
         renderOTP(data);
