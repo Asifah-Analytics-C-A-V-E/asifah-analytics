@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Houthi Rhetoric Tracker | Asifah Analytics v1.0.0</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -76,7 +76,7 @@
             width: 110vmin; height: 110vmin;
             min-width: 800px; min-height: 800px;
             max-width: 1400px; max-height: 1400px;
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -737,11 +737,68 @@
             transform: translateY(-2px);
         }
         .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+        .nav-btn.commodities-btn .nav-btn-status { color: #fbbf24; }
+
+        /* ── MOBILE HAMBURGER (gold standard from india-stability.html) ── */
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(56,189,248,0.10); border: 1px solid var(--card-border);
+            border-radius: 6px; padding: 6px 10px; cursor: pointer;
+            font-size: 18px; line-height: 1; color: var(--text-primary);
+            font-family: inherit;
+        }
+        .mobile-menu-btn:hover { border-color: var(--accent); background: rgba(56,189,248,0.20); }
+
+        /* Mobile drawer (sidebar substitute) + backdrop */
+        .mobile-drawer-backdrop {
+            display: none;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 9998; backdrop-filter: blur(2px);
+        }
+        .mobile-drawer-backdrop.open { display: block; }
+        .mobile-drawer {
+            display: none;
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: 84%; max-width: 320px;
+            background: var(--card-bg); border-right: 2px solid var(--accent);
+            z-index: 9999; padding: 18px 16px;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+        }
+        .mobile-drawer.open { display: block; transform: translateX(0); }
+        .mobile-drawer-close {
+            position: absolute; top: 10px; right: 10px;
+            background: transparent; border: 1px solid var(--card-border);
+            border-radius: 6px; width: 32px; height: 32px;
+            cursor: pointer; color: var(--text-primary); font-size: 16px;
+            line-height: 1; font-family: inherit;
+        }
+        .mobile-drawer-close:hover { border-color: var(--accent); color: var(--accent); }
+        .mobile-drawer-title {
+            font-size: 14px; font-weight: 700; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            margin: 0 0 14px 4px; padding-right: 40px;
+        }
+
+        /* Canonical footer */
+        footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+        footer .footer-disclaimer {
+            padding: 12px 14px; background: var(--article-bg); border-left: 3px solid #f59e0b;
+            border-radius: 6px; font-size: 0.78rem; margin-bottom: 14px;
+        }
+        footer .footer-support { text-align: center; padding: 10px; font-size: 0.85rem; }
+        footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+        footer .footer-copyright { text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 14px; line-height: 1.6; }
 
         @media (max-width: 1199px) {
             .nav-sidebar { display: none; }
             .page-with-sidebar { display: block; }
+            .mobile-menu-btn { display: inline-flex; align-items: center; gap: 6px; }
         }
+        @media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
 
         /* ── LOADING ── */
         .loading-placeholder {
@@ -763,6 +820,80 @@
     </style>
 </head>
 <body>
+
+<!-- Mobile drawer backdrop + drawer (gold standard, hidden on desktop) -->
+<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<aside class="mobile-drawer" id="mobileDrawer" aria-label="Navigation menu">
+    <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu">✕</button>
+    <div class="mobile-drawer-title" data-i18n="mobile_drawer_title">Navigation</div>
+
+    <div class="nav-sidebar-label">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Africa</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+
+    <div class="nav-divider"></div>
+    <a href="military.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🎖️ Military Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🌐 Global Pressure</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="commodities.html" class="nav-btn commodities-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Yemen</div>
+    <div class="nav-btn rhetoric-btn current-page">
+        <span class="nav-btn-label">🇾🇪 Yemen Rhetoric</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </div>
+    <a href="yemen-stability.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🇾🇪 Yemen Stability</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+</aside>
+
 <div class="container">
 
     <!-- HEADER -->
@@ -770,7 +901,10 @@
         <!-- Left: back link stacked above logo -->
         <div class="header-logo-wrap">
             <a href="yemen-stability.html" class="back-link" data-i18n="backLink">← Back to Yemen</a>
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+            <button class="mobile-menu-btn" onclick="openMobileDrawer()" aria-label="Open navigation menu">
+                <span style="font-size:20px;">☰</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;" data-i18n="mobile_menu">Menu</span>
+            </button>
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
                  alt="Asifah Analytics Logo" class="header-logo">
         </div>
 
@@ -805,10 +939,10 @@
     <nav class="nav-sidebar">
         <div class="nav-sidebar-label">Dashboards</div>
 
-        <div class="nav-btn inactive-nav">
+        <a href="africa.html" class="nav-btn active-nav">
             <span class="nav-btn-label">🌍 Africa</span>
-            <span class="nav-btn-status">🔒 Future</span>
-        </div>
+            <span class="nav-btn-status">● Live</span>
+        </a>
 
         <a href="asia.html" class="nav-btn active-nav">
             <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
@@ -837,6 +971,16 @@
             <span class="nav-btn-status">● Live</span>
         </a>
 
+        <a href="gpi.html" class="nav-btn military-btn">
+            <span class="nav-btn-label">🌐 Global Pressure</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+
+        <a href="commodities.html" class="nav-btn commodities-btn">
+            <span class="nav-btn-label">🛢️ Commodities</span>
+            <span class="nav-btn-status">● Live</span>
+        </a>
+
         <div class="nav-divider"></div>
         <div class="nav-sidebar-label">Regional Rhetoric</div>
 
@@ -861,6 +1005,7 @@
         </a>
 
         <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Yemen</div>
         <div class="nav-btn rhetoric-btn current-page">
             <span class="nav-btn-label">🇾🇪 Yemen Rhetoric</span>
             <span class="nav-btn-status">◉ You are here</span>
@@ -934,6 +1079,8 @@
                 <div class="interp-scenario-value" id="soWhatScenario">--</div>
             </div>
         </div>
+        <div class="interp-section-title">ACTION CONVERGENCE READ</div>
+        <div id="soWhatActionReads"></div>
         <div class="interp-section-title">SITUATION</div>
         <div class="interp-text" id="soWhatSituation"></div>
         <div id="soWhatIndicators"></div>
@@ -1123,33 +1270,33 @@
     <!-- FOOTER -->
     <!-- FOOTER (canonical multi-section) -->
     <footer style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:30px;margin-top:30px;margin-bottom:30px;font-size:13px;color:var(--text-secondary);">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:20px;">
+        <div class="footer-grid">
             <div>
-                <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">Data Sources</h4>
-                <p style="font-size:12px;line-height:1.5;">Aggregated open-source signals from Ansar Allah (Houthi) media, KSA-Houthi negotiation channels, IDF / Red Sea OSINT (OSINTdefender, WarMonitors, ClashReport), GDELT global event database, Google News RSS (English / Arabic), and Yemen-Oman migration corridor monitoring.</p>
+                <h4 data-i18n="footerMethodology">Methodology</h4>
+                <p data-i18n="footerMethodologyBody">Dual-vector model: Maritime Threat (Bab el-Mandeb / Red Sea / Suez) plus Direct Strike Threat (Israel / KSA / UAE / US). Bidirectional migration tracking and a diplomatic-track modifier (KSA-Houthi negotiations). Cross-theater fingerprint with Iran for Hormuz + Bab el-Mandeb dual-chokepoint detection. Refresh every 12 hours. Open-source only — no classified data.</p>
             </div>
             <div>
-                <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">Methodology</h4>
-                <p style="font-size:12px;line-height:1.5;">Dual-vector model: Maritime Threat (Bab el-Mandeb / Red Sea / Suez) + Direct Strike Threat (Israel / KSA / UAE / US). Bidirectional migration tracking. Diplomatic track modifier (KSA-Houthi negotiations). Cross-theater fingerprint with Iran (Hormuz dual chokepoint detection). Open-source only — no classified data.</p>
+                <h4 data-i18n="footerSources">Data Sources</h4>
+                <p data-i18n="footerSourcesBody">Aggregated open-source signals from Ansar Allah (Houthi) media, KSA-Houthi negotiation channels, Red Sea / IDF OSINT (OSINTdefender, WarMonitors, ClashReport), the GDELT global event database, Google News RSS (English / Arabic), and Yemen-Oman migration-corridor monitoring.</p>
             </div>
             <div>
-                <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">Contact</h4>
-                <p style="font-size:12px;line-height:1.5;">Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a></p>
+                <h4 data-i18n="footerContact">Contact</h4>
+                <p>Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a><br>
+                <a href="mailto:contact@asifahanalytics.com" style="color:var(--accent);">contact@asifahanalytics.com</a></p>
             </div>
         </div>
-        <div style="margin-top:20px;padding:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;font-size:12px;line-height:1.5;">
-            <strong style="color:#f59e0b;">⚠️ DISCLAIMER</strong> &mdash; This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.
+        <div class="footer-disclaimer">
+            <strong style="color:#f59e0b;">⚠️ <span data-i18n="footerDisclaimerLabel">DISCLAIMER:</span></strong> <span data-i18n="footerDisclaimerBody">This dashboard provides analytical estimates based on open-source intelligence aggregation. Asifah Analytics is a personal-time open-source OSINT project. Analysis reflects open-source signal aggregation only — does NOT reflect classified intelligence and is NOT an official U.S. Government product. Asifah methodology is proprietary and should not be cited as official assessment. Not for operational use.</span>
         </div>
-        <div style="margin-top:20px;padding:14px 18px;background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.2);border-radius:8px;text-align:center;font-size:13px;">
-            If you find Asifah Analytics useful and want to support ongoing development, you can ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:bold;">buy me a coffee</a>
+        <div class="footer-support">
+            <span data-i18n="footerSupportText">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" data-i18n="footerSupportLink">buy me a coffee</a>
         </div>
-        <div style="text-align:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--card-border);font-size:12px;">
-            <a href="privacy.html" style="color:var(--accent);text-decoration:none;">Privacy Policy</a>
-            <span style="color:var(--text-muted);margin:0 12px;">|</span>
-            <a href="contact.html" style="color:var(--accent);text-decoration:none;">Contact</a>
-        </div>
-        <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 RCGG. All Rights Reserved. Yemen Rhetoric Tracker v2.0.0 — Proprietary and Confidential.
+        <div class="footer-copyright">
+            © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — Yemen Rhetoric Tracker v2.0.0<br>
+            <span data-i18n="footerCopyrightLine2">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span><br>
+            <a href="privacy.html" style="color:var(--accent);" data-i18n="footerPrivacy">Privacy Policy</a>
+            <span style="color:var(--text-muted);margin:0 10px;">|</span>
+            <a href="index.html" style="color:var(--accent);" data-i18n="footerBackToMain">← Back to Main Dashboard</a>
         </div>
     </footer>
 
@@ -1339,9 +1486,20 @@
             somalilandInd3: "Socotra Island — Yemeni territory, UAE-administered since 2018",
             somalilandInd4: "Perim Island — controls Bab el-Mandeb narrows (12.5km wide)",
             somalilandInd5: "Camp Lemonnier (Djibouti) — primary US Horn of Africa base",
-            footerSources: "Data Sources: Google News RSS (EN/AR), GDELT, Telegram (OSINTdefender, WarMonitors, ClashReport, C_Military1)",
-            footerOsint: "Dual-vector analysis: Maritime Threat + Direct Strike Threat. Somaliland/Horn of Africa ground op watch. Updated every 12 hours.",
-            footerUpdate: "Updated every 12 hours | Not for operational use",
+            footerMethodology: "Methodology",
+            footerMethodologyBody: "Dual-vector model: Maritime Threat (Bab el-Mandeb / Red Sea / Suez) plus Direct Strike Threat (Israel / KSA / UAE / US). Bidirectional migration tracking and a diplomatic-track modifier (KSA-Houthi negotiations). Cross-theater fingerprint with Iran for Hormuz + Bab el-Mandeb dual-chokepoint detection. Refresh every 12 hours. Open-source only — no classified data.",
+            footerSources: "Data Sources",
+            footerSourcesBody: "Aggregated open-source signals from Ansar Allah (Houthi) media, KSA-Houthi negotiation channels, Red Sea / IDF OSINT (OSINTdefender, WarMonitors, ClashReport), the GDELT global event database, Google News RSS (English / Arabic), and Yemen-Oman migration-corridor monitoring.",
+            footerContact: "Contact",
+            footerDisclaimerLabel: "DISCLAIMER:",
+            footerDisclaimerBody: "This dashboard provides analytical estimates based on open-source intelligence aggregation. Asifah Analytics is a personal-time open-source OSINT project. Analysis reflects open-source signal aggregation only — does NOT reflect classified intelligence and is NOT an official U.S. Government product. Asifah methodology is proprietary and should not be cited as official assessment. Not for operational use.",
+            footerSupportText: "If you find Asifah Analytics useful and want to support ongoing development, you can",
+            footerSupportLink: "buy me a coffee",
+            footerCopyrightLine2: "Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.",
+            footerPrivacy: "Privacy Policy",
+            footerBackToMain: "← Back to Main Dashboard",
+            mobile_menu: "Menu",
+            mobile_drawer_title: "Navigation",
             scanInProgress: "Scan in progress — retrying...",
             articles: "articles",
         },
@@ -1372,9 +1530,20 @@
             somalilandInd3: "האי סוקוטרה — טריטוריה תימנית, בניהול אמירתי מ-2018",
             somalilandInd4: "האי פרים — שולט במיצר באב אל-מנדב (רוחב 12.5 ק\"מ)",
             somalilandInd5: "קמפ למוניה (ג'יבוטי) — בסיס אמריקאי ראשי בקרן אפריקה",
-            footerSources: "מקורות: Google News RSS (אנגלית/ערבית), GDELT, Telegram",
-            footerOsint: "ניתוח דו-וקטורי: איום ימי + איום תקיפה ישירה. מעקב מבצע קרקעי. מתעדכן כל 12 שעות.",
-            footerUpdate: "מתעדכן כל 12 שעות | לא לשימוש מבצעי",
+            footerMethodology: "מתודולוגיה",
+            footerMethodologyBody: "מודל דו-וקטורי: איום ימי (באב אל-מנדב / ים סוף / סואץ) בתוספת איום תקיפה ישירה (ישראל / סעודיה / איחוד האמירויות / ארה\"ב). מעקב הגירה דו-כיווני ומקדם למסלול הדיפלומטי (משא ומתן סעודיה-חות'ים). טביעת אצבע חוצת-זירות עם איראן לזיהוי חסימה כפולה של מצרי הורמוז ובאב אל-מנדב. עדכון כל 12 שעות. מקורות פתוחים בלבד.",
+            footerSources: "מקורות נתונים",
+            footerSourcesBody: "אותות ממקורות פתוחים שנאספו מתקשורת אנצאר אללה (חות'ים), ערוצי המשא ומתן סעודיה-חות'ים, מקורות פתוחים של ים סוף / צה\"ל (OSINTdefender, WarMonitors, ClashReport), מאגר האירועים העולמי GDELT, פיד Google News (אנגלית / ערבית), וניטור מסדרון ההגירה תימן-עומאן.",
+            footerContact: "יצירת קשר",
+            footerDisclaimerLabel: "הודעת אחריות:",
+            footerDisclaimerBody: "לוח מחוונים זה מספק הערכות אנליטיות המבוססות על איסוף מודיעין ממקורות פתוחים. Asifah Analytics הוא פרויקט OSINT אישי בקוד פתוח. הניתוח משקף איסוף אותות ממקורות פתוחים בלבד — אינו משקף מודיעין מסווג ואינו מוצר רשמי של ממשלת ארה\"ב. מתודולוגיית אסיפה היא קניינית ולא צריכה להיות מצוטטת כהערכה רשמית. לא לשימוש מבצעי.",
+            footerSupportText: "אם אתה מוצא את Asifah Analytics שימושי ורוצה לתמוך בפיתוח המתמשך, אתה יכול",
+            footerSupportLink: "לקנות לי קפה",
+            footerCopyrightLine2: "קנייני וסודי. שימוש, רפרודוקציה או הפצה בלתי מורשים אסורים.",
+            footerPrivacy: "מדיניות פרטיות",
+            footerBackToMain: "← חזרה ללוח המחוונים הראשי",
+            mobile_menu: "תפריט",
+            mobile_drawer_title: "ניווט",
             scanInProgress: "סריקה בתהליך — מנסה שוב...",
             articles: "כתבות",
         },
@@ -1405,9 +1574,20 @@
             somalilandInd3: "جزيرة سقطرى — أراضٍ يمنية تحت الإدارة الإماراتية منذ 2018",
             somalilandInd4: "جزيرة بريم — تتحكم في مضيق باب المندب (عرض 12.5 كم)",
             somalilandInd5: "معسكر ليمونييه (جيبوتي) — القاعدة الأمريكية الرئيسية في القرن الأفريقي",
-            footerSources: "المصادر: RSS لأخبار غوغل (إنجليزي/عربي)، GDELT، Telegram",
-            footerOsint: "تحليل ثنائي المتجه: التهديد البحري + تهديد الضربات المباشرة. مراقبة عمليات برية. يتم التحديث كل 12 ساعة.",
-            footerUpdate: "يتم التحديث كل 12 ساعة | ليس للاستخدام العملياتي",
+            footerMethodology: "المنهجية",
+            footerMethodologyBody: "نموذج ثنائي المسار: تهديد بحري (باب المندب / البحر الأحمر / السويس) إضافةً إلى تهديد الضرب المباشر (إسرائيل / السعودية / الإمارات / الولايات المتحدة). تتبّع ثنائي الاتجاه للهجرة ومُعدِّل للمسار الدبلوماسي (مفاوضات السعودية-الحوثيين). بصمة عابرة للساحات مع إيران لرصد إغلاق مزدوج لمضيقَي هرمز وباب المندب. تحديث كل 12 ساعة. مصادر مفتوحة فقط.",
+            footerSources: "مصادر البيانات",
+            footerSourcesBody: "إشارات مفتوحة المصدر مجمّعة من إعلام أنصار الله (الحوثيين)، وقنوات مفاوضات السعودية-الحوثيين، ومصادر مفتوحة للبحر الأحمر/الجيش الإسرائيلي (OSINTdefender وWarMonitors وClashReport)، وقاعدة بيانات GDELT العالمية للأحداث، وخلاصات Google News (الإنجليزية / العربية)، ومراقبة ممر الهجرة بين اليمن وعُمان.",
+            footerContact: "اتصل بنا",
+            footerDisclaimerLabel: "إخلاء مسؤولية:",
+            footerDisclaimerBody: "توفر هذه اللوحة تقديرات تحليلية تستند إلى تجميع المعلومات مفتوحة المصدر. أصيفة أناليتيكس مشروع OSINT مفتوح المصدر يُنفَّذ في الوقت الشخصي. التحليل يعكس تجميع الإشارات مفتوحة المصدر فقط — لا يعكس استخبارات سرية وليس منتجًا رسميًا للحكومة الأمريكية. منهجية أصيفة ملكية ولا ينبغي الاستشهاد بها كتقييم رسمي. ليست للاستخدام التشغيلي.",
+            footerSupportText: "إذا وجدت Asifah Analytics مفيدًا وتريد دعم التطوير المستمر، يمكنك",
+            footerSupportLink: "شراء قهوة لي",
+            footerCopyrightLine2: "مملوك وسري. الاستخدام أو الإنتاج أو التوزيع غير المصرح به محظور.",
+            footerPrivacy: "سياسة الخصوصية",
+            footerBackToMain: "← العودة إلى اللوحة الرئيسية",
+            mobile_menu: "القائمة",
+            mobile_drawer_title: "التنقل",
             scanInProgress: "المسح جارٍ — إعادة المحاولة...",
             articles: "مقالات",
         },
@@ -1438,9 +1618,20 @@
             somalilandInd3: "جزیره سقطری — سرزمین یمن، تحت اداره امارات از ۲۰۱۸",
             somalilandInd4: "جزیره پریم — کنترل تنگه باب‌المندب (عرض ۱۲.۵ کیلومتر)",
             somalilandInd5: "کمپ لمونیه (جیبوتی) — پایگاه اصلی آمریکا در شاخ آفریقا",
-            footerSources: "منابع: RSS اخبار گوگل (انگلیسی/عربی)، GDELT، Telegram",
-            footerOsint: "تحلیل دو‌وجهی: تهدید دریایی + تهدید ضربه مستقیم. پایش عملیات زمینی. هر ۱۲ ساعت به‌روز می‌شود.",
-            footerUpdate: "هر ۱۲ ساعت به‌روز می‌شود | برای استفاده عملیاتی نیست",
+            footerMethodology: "روش‌شناسی",
+            footerMethodologyBody: "مدل دو-برداری: تهدید دریایی (باب المندب / دریای سرخ / سوئز) به‌علاوه تهدید حمله مستقیم (اسرائیل / عربستان / امارات / آمریکا). ردیابی دوسویه مهاجرت و اصلاح‌کننده مسیر دیپلماتیک (مذاکرات عربستان-حوثی‌ها). اثرانگشت فرا-عرصه‌ای با ایران برای شناسایی بستن دوگانه تنگه‌های هرمز و باب المندب. به‌روزرسانی هر ۱۲ ساعت. فقط منابع باز.",
+            footerSources: "منابع داده",
+            footerSourcesBody: "سیگنال‌های منبع باز گردآوری‌شده از رسانه‌های انصارالله (حوثی‌ها)، کانال‌های مذاکرات عربستان-حوثی، منابع باز دریای سرخ / ارتش اسرائیل (OSINTdefender، WarMonitors، ClashReport)، پایگاه داده رویدادهای جهانی GDELT، فید Google News (انگلیسی / عربی)، و پایش کریدور مهاجرت یمن-عمان.",
+            footerContact: "تماس",
+            footerDisclaimerLabel: "سلب مسئولیت:",
+            footerDisclaimerBody: "این داشبورد تخمین‌های تحلیلی مبتنی بر تجمیع اطلاعات منبع باز ارائه می‌دهد. آصفه آنالیتیکس یک پروژه OSINT منبع باز شخصی است. تحلیل صرفاً تجمیع سیگنال‌های منبع باز را منعکس می‌کند — هیچ اطلاعات طبقه‌بندی شده‌ای را منعکس نمی‌کند و یک محصول رسمی دولت آمریکا نیست. روش‌شناسی آصفه اختصاصی است و نباید به عنوان ارزیابی رسمی نقل شود. برای استفاده عملیاتی نیست.",
+            footerSupportText: "اگر Asifah Analytics را مفید می‌یابید و می‌خواهید از توسعه مداوم حمایت کنید، می‌توانید",
+            footerSupportLink: "یک قهوه برایم بخرید",
+            footerCopyrightLine2: "اختصاصی و محرمانه. استفاده، تکثیر یا توزیع غیرمجاز ممنوع است.",
+            footerPrivacy: "سیاست حفظ حریم خصوصی",
+            footerBackToMain: "← بازگشت به داشبورد اصلی",
+            mobile_menu: "منو",
+            mobile_drawer_title: "ناوبری",
             scanInProgress: "اسکن در حال انجام — تلاش مجدد...",
             articles: "مقاله",
         }
@@ -1484,6 +1675,19 @@
         });
     }
 
+    // ── MOBILE DRAWER (gold standard) ──
+    function openMobileDrawer() {
+        document.getElementById('mobileDrawer')?.classList.add('open');
+        document.getElementById('mobileDrawerBackdrop')?.classList.add('open');
+    }
+    function closeMobileDrawer() {
+        document.getElementById('mobileDrawer')?.classList.remove('open');
+        document.getElementById('mobileDrawerBackdrop')?.classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeMobileDrawer();
+    });
+
     // ── ESCALATION LADDER ──
     function renderInterpretation(data) {
         const interp = data.interpretation;
@@ -1497,6 +1701,29 @@
             const scenEl = document.getElementById('soWhatScenario');
             scenEl.textContent = sw.scenario || '--';
             scenEl.style.color = sw.scenario_color || '#dc2626';
+
+            // Action Convergence Read -- the two founding questions, estimative voice
+            const arEl = document.getElementById('soWhatActionReads');
+            if (arEl) {
+                arEl.innerHTML = '';
+                (sw.action_reads || []).forEach(ar => {
+                    const c = ar.color || '#6b7280';
+                    const wrap = document.createElement('div');
+                    wrap.style.cssText = 'border-left:3px solid ' + c + ';padding:8px 12px;margin:6px 0;border-radius:4px;background:rgba(148,163,184,0.07);';
+                    const head = document.createElement('div');
+                    head.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;';
+                    head.innerHTML = '<span style="font-size:1rem;">' + (ar.icon || '') + '</span>' +
+                        '<span style="font-weight:700;color:' + c + ';font-size:0.82rem;">' + ar.question + '</span>' +
+                        '<span style="font-size:0.62rem;font-weight:700;color:#fff;background:' + c + ';padding:1px 7px;border-radius:8px;">L' + (ar.level || 0) + '</span>';
+                    const body = document.createElement('div');
+                    body.className = 'interp-text';
+                    body.textContent = ar.read || '';
+                    wrap.appendChild(head);
+                    wrap.appendChild(body);
+                    arEl.appendChild(wrap);
+                });
+            }
+
             document.getElementById('soWhatSituation').textContent = sw.situation || '';
 
             // Key indicators -- dual chokepoint gets special styling
