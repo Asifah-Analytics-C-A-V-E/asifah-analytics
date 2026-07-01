@@ -520,6 +520,18 @@
     .card-body { font-size: 15px; color: var(--text-primary); line-height: 1.7; }
     .card-body p { margin-bottom: 10px; }
 
+    /* Coalition Threat Framework (multi-hub) */
+    .coalition-badge { padding: 3px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+    .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 12px; }
+    .hub-card { border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; background: var(--card-bg); }
+    .hub-card.elevated { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-glow); }
+    .hub-name { font-weight: 700; font-size: 14px; color: var(--accent); }
+    .hub-level { font-size: 26px; font-weight: 800; line-height: 1.1; }
+    .hub-role { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .hub-traj { font-size: 12px; margin-top: 6px; color: var(--text-secondary); }
+    .hub-relief { display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; background: rgba(220,38,38,0.15); color: #dc2626; border: 1px solid #dc2626; }
+    .coalition-disclaimer { margin-top: 14px; font-size: 11px; font-style: italic; color: var(--text-muted); border-top: 1px dashed var(--card-border); padding-top: 10px; }
+
     /* Commodity coupling mini-card */
     .commodity-strip {
         background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(239,68,68,0.05));
@@ -914,6 +926,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-section">
             <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
+            <a href="africa.html" class="sidebar-link" data-i18n="sb_africa">🌍 Africa</a>
             <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
             <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
             <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
@@ -1006,6 +1019,20 @@
                     <p style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;" data-i18n="so_what_watch_for">Watch for:</p>
                     <ul id="soWhatWatchFor" style="margin-left:20px; font-size:13px; color:var(--text-secondary);"></ul>
                 </div>
+            </div>
+        </section>
+
+        <!-- COALITION THREAT FRAMEWORK (multi-hub node) -->
+        <section class="card" id="coalitionCard" style="display:none;">
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                <span data-i18n="coalition_title">🕸️ Coalition Threat Framework</span>
+                <span class="coalition-badge" id="coalitionBadge">—</span>
+            </div>
+            <div class="card-body">
+                <p id="coalitionReading" style="font-weight:600; color:var(--accent); margin-bottom:4px;">—</p>
+                <div class="hub-grid" id="hubGrid"></div>
+                <p id="earthquakeStrain" style="display:none; margin-top:14px; color:#dc2626; font-size:13px; font-weight:600;"></p>
+                <div class="coalition-disclaimer" data-i18n="coalition_disclaimer">This is a CONVERGENCE indicator of external-sponsor presence, NOT a probability of action. Each hub is independently sourced; the reader completes the inference.</div>
             </div>
         </section>
 
@@ -1160,6 +1187,7 @@ const T = {
 
         // Sidebar
         sb_regional: 'REGIONAL LANDINGS',
+        sb_africa: '🌍 Africa',
         sb_me: '🌍 Middle East',
         sb_asia: '🌏 Asia-Pacific',
         sb_europe: '🌍 Europe',
@@ -1246,6 +1274,19 @@ const T = {
         ftr_coffee_link: 'buy me a coffee',
         ftr_privacy: 'Privacy Policy',
         ftr_contact: 'Contact',
+        coalition_title: '🕸️ Coalition Threat Framework',
+        coalition_disclaimer: 'This is a CONVERGENCE indicator of external-sponsor presence, NOT a probability of action. Each hub is independently sourced; the reader completes the inference.',
+        coal_none: 'No Coalition',
+        coal_single: 'Single Patron',
+        coal_hedging: 'Hedging Coalition',
+        coal_multipolar: 'Multipolar Foothold',
+        coal_no_reading: 'No sponsor coalition detected — single-patron access at most.',
+        traj_rising: 'rising',
+        traj_receding: 'receding',
+        traj_steady: 'steady',
+        hub_relief: '⚠ relief-as-access',
+        eq_strain: 'Post-quake legitimacy strain',
+        eq_strain_desc: 'the disaster is testing the transitional government\'s response capacity, an opening sponsors can exploit via relief-as-access.',
     },
 
     es: {
@@ -1265,6 +1306,7 @@ const T = {
         pending_banner: '⏳ Escaneo inicial en curso — normalmente toma 3-5 minutos tras un despliegue nuevo. Las señales aparecerán en breve.',
 
         sb_regional: 'PÁGINAS REGIONALES',
+        sb_africa: '🌍 África',
         sb_me: '🌍 Medio Oriente',
         sb_asia: '🌏 Asia-Pacífico',
         sb_europe: '🌍 Europa',
@@ -1343,6 +1385,19 @@ const T = {
         ftr_coffee_link: 'invitarme un café',
         ftr_privacy: 'Política de Privacidad',
         ftr_contact: 'Contacto',
+        coalition_title: '🕸️ Marco de Amenaza de Coalición',
+        coalition_disclaimer: 'Este es un indicador de CONVERGENCIA de presencia de patrocinadores externos, NO una probabilidad de acción. Cada centro tiene fuentes independientes; el lector completa la inferencia.',
+        coal_none: 'Sin Coalición',
+        coal_single: 'Patrón Único',
+        coal_hedging: 'Coalición de Cobertura',
+        coal_multipolar: 'Bastión Multipolar',
+        coal_no_reading: 'No se detecta coalición de patrocinadores — acceso de patrón único a lo sumo.',
+        traj_rising: 'en aumento',
+        traj_receding: 'en retroceso',
+        traj_steady: 'estable',
+        hub_relief: '⚠ ayuda-como-acceso',
+        eq_strain: 'Tensión de legitimidad post-sismo',
+        eq_strain_desc: 'el desastre está poniendo a prueba la capacidad de respuesta del gobierno de transición, una apertura que los patrocinadores pueden explotar mediante ayuda-como-acceso.',
     },
 
     pt: {
@@ -1362,6 +1417,7 @@ const T = {
         pending_banner: '⏳ Varredura inicial em andamento — normalmente leva 3-5 minutos após uma nova implantação. Os sinais aparecerão em breve.',
 
         sb_regional: 'PÁGINAS REGIONAIS',
+        sb_africa: '🌍 África',
         sb_me: '🌍 Oriente Médio',
         sb_asia: '🌏 Ásia-Pacífico',
         sb_europe: '🌍 Europa',
@@ -1440,6 +1496,19 @@ const T = {
         ftr_coffee_link: 'me pagar um café',
         ftr_privacy: 'Política de Privacidade',
         ftr_contact: 'Contato',
+        coalition_title: '🕸️ Estrutura de Ameaça de Coalizão',
+        coalition_disclaimer: 'Este é um indicador de CONVERGÊNCIA da presença de patrocinadores externos, NÃO uma probabilidade de ação. Cada polo tem fontes independentes; o leitor completa a inferência.',
+        coal_none: 'Sem Coalizão',
+        coal_single: 'Patrono Único',
+        coal_hedging: 'Coalizão de Hedge',
+        coal_multipolar: 'Bastião Multipolar',
+        coal_no_reading: 'Nenhuma coalizão de patrocinadores detectada — acesso de patrono único no máximo.',
+        traj_rising: 'em ascensão',
+        traj_receding: 'em recuo',
+        traj_steady: 'estável',
+        hub_relief: '⚠ ajuda-como-acesso',
+        eq_strain: 'Tensão de legitimidade pós-terremoto',
+        eq_strain_desc: 'o desastre está testando a capacidade de resposta do governo de transição, uma abertura que os patrocinadores podem explorar via ajuda-como-acesso.',
     }
 };
 
@@ -1608,6 +1677,9 @@ function renderData(d) {
     // L5 GATE
     renderL5Gate(d.l5_gate || {}, t);
 
+    // COALITION THREAT FRAMEWORK (multi-hub)
+    renderCoalition(d, t);
+
     // RED LINES
     renderRedLines(d.red_lines || [], t);
 
@@ -1619,6 +1691,69 @@ function renderData(d) {
 
     // SOURCES
     renderSources(d.source_counts || {}, d.articles_scanned, d.articles_classified, t);
+}
+
+function renderCoalition(d, t) {
+    const card = document.getElementById('coalitionCard');
+    if (!card) return;
+    const hp = d.hub_presence || {};
+    const coal = d.coalition || {};
+    const detail = coal.detail || {};
+    const hubs = ['iran', 'russia', 'china'];
+    // Show whenever we have hub data (honest even when receding under détente)
+    const hasData = hubs.some(h => hp[h]);
+    if (!hasData) { card.style.display = 'none'; return; }
+    card.style.display = '';
+
+    const level = coal.level || 0;
+    const n = detail.hub_count || 0;
+    const badgeMap = {
+        0: [t.coal_none || 'No Coalition', '#6b7280'],
+        1: [t.coal_single || 'Single Patron', '#38bdf8'],
+        2: [t.coal_hedging || 'Hedging Coalition', '#f59e0b'],
+        3: [t.coal_multipolar || 'Multipolar Foothold', '#dc2626'],
+    };
+    const [badgeText, badgeColor] = badgeMap[Math.min(n, 3)] || badgeMap[0];
+    const badge = document.getElementById('coalitionBadge');
+    badge.textContent = `L${level} · ${badgeText}`;
+    badge.style.background = `${badgeColor}22`;
+    badge.style.color = badgeColor;
+    badge.style.border = `1px solid ${badgeColor}`;
+
+    document.getElementById('coalitionReading').textContent =
+        detail.reading || (t.coal_no_reading || 'No sponsor coalition detected — single-patron access at most.');
+
+    const trajArrow = { rising: '↗', receding: '↘', steady: '→' };
+    const nameMap = { iran: '🇮🇷 Iran', russia: '🇷🇺 Russia', china: '🇨🇳 China' };
+    const grid = document.getElementById('hubGrid');
+    grid.innerHTML = '';
+    hubs.forEach(h => {
+        const hub = hp[h] || {};
+        const lvl = hub.level || 0;
+        const div = document.createElement('div');
+        div.className = 'hub-card' + (lvl >= 2 ? ' elevated' : '');
+        const trajRaw = hub.trajectory || 'steady';
+        const trajLabel = t['traj_' + trajRaw] || trajRaw;
+        let html = `<div class="hub-name">${nameMap[h] || h}</div>`;
+        html += `<div class="hub-level">L${lvl}</div>`;
+        html += `<div class="hub-role">${hub.role || ''}</div>`;
+        html += `<div class="hub-traj">${trajArrow[trajRaw] || '→'} ${trajLabel}</div>`;
+        if (hub.relief_foothold) {
+            html += `<div class="hub-relief">${t.hub_relief || '⚠ relief-as-access'}</div>`;
+        }
+        div.innerHTML = html;
+        grid.appendChild(div);
+    });
+
+    const eq = d.earthquake_political_level || 0;
+    const eqEl = document.getElementById('earthquakeStrain');
+    if (eq >= 2) {
+        eqEl.style.display = '';
+        eqEl.textContent = `🏚️ ${t.eq_strain || 'Post-quake legitimacy strain'} L${eq} — ` +
+            (t.eq_strain_desc || 'the disaster is testing the transitional government\'s response capacity, an opening sponsors can exploit via relief-as-access.');
+    } else {
+        eqEl.style.display = 'none';
+    }
 }
 
 function renderCommodityStrip(d) {
