@@ -308,6 +308,11 @@
         position: relative;
         z-index: 10;
         min-height: calc(100vh - 60px);
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 0 20px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* ════════ SIDEBAR ════════ */
@@ -940,6 +945,7 @@
             <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
             <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
             <a href="gpi.html" class="sidebar-link crosscut" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
+            <a href="market-watch.html" class="sidebar-link crosscut" data-i18n="sb_market_watch">📈 Market Watch</a>
         </div>
 
         <div class="sidebar-divider"></div>
@@ -1004,7 +1010,7 @@
             <div class="card-title" data-i18n="exec_summary_title">📋 Executive Summary</div>
             <div class="card-body" id="execSummaryBody">
                 <p id="execHeadline" style="font-weight:bold; font-size:16px; color:var(--accent); margin-bottom:12px;">—</p>
-                <p id="execParagraph">Loading executive summary...</p>
+                <p id="execParagraph"><span data-i18n="loading_exec">Loading executive summary...</span></p>
             </div>
         </section>
 
@@ -1127,10 +1133,10 @@
         <div>
             <h4 style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent-cyan,#38bdf8); margin-bottom:8px;" data-i18n="ftr_connected">CONNECTED TRACKERS</h4>
             <p style="font-size:12px; line-height:1.5;">
-                <a href="commodities.html" style="color:#38bdf8; text-decoration:none;">🌾 Commodities</a> ·
-                <a href="venezuela-stability.html" style="color:#38bdf8; text-decoration:none;">📊 VZ Stability</a> ·
-                <a href="rhetoric-wha.html" style="color:#38bdf8; text-decoration:none;">💬 WHA Rhetoric</a> ·
-                <a href="gpi.html" style="color:#38bdf8; text-decoration:none;">🌐 GPI</a>
+                <a href="commodities.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_link_commodities">🌾 Commodities</a> ·
+                <a href="venezuela-stability.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_link_stability">📊 VZ Stability</a> ·
+                <a href="rhetoric-wha.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_link_wha">💬 WHA Rhetoric</a> ·
+                <a href="gpi.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_link_gpi">🌐 GPI</a>
             </p>
         </div>
     </div>
@@ -1138,13 +1144,16 @@
         <strong style="color:#f59e0b;" data-i18n="ftr_disclaimer_label">⚠️ DISCLAIMER</strong> &mdash;
         <span data-i18n="ftr_disclaimer_text">This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.</span>
     </div>
-    <div style="margin-top:20px; padding:14px 18px; background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.2); border-radius:8px; text-align:center; font-size:13px;">
-        <span data-i18n="ftr_coffee">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6; text-decoration:none; font-weight:bold;" data-i18n="ftr_coffee_link">buy me a coffee</a>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);display:inline-flex;align-items:center;gap:6px;">☕ <span data-i18n="ftr_coffee_pill">Buy Me a Coffee</span></a>
+        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);display:inline-flex;align-items:center;gap:6px;">✉️ <span data-i18n="ftr_contact_pill">Contact Asifah</span></a>
     </div>
     <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color,#1e3a5f); font-size:12px;">
+        <a href="mission.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_mission">Mission Statement</a>
+        <span style="margin:0 12px;">·</span>
         <a href="privacy.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_privacy">Privacy Policy</a>
-        <span style="color:var(--text-muted,#4a7090); margin:0 12px;">|</span>
-        <a href="contact.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_contact">Contact</a>
+        <span style="margin:0 12px;">·</span>
+        <a href="index.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_home">Home</a>
     </div>
     <div style="text-align:center; margin-top:15px; font-size:11px; color:var(--text-muted,#4a7090);">
         © 2025-2026 RCGG. All Rights Reserved. Asifah Venezuela Rhetoric Tracker v1.0.0 — Proprietary and Confidential.
@@ -1169,6 +1178,20 @@ let currentLang = localStorage.getItem('asifah_lang') || 'en';
 // =============================================
 const T = {
     en: {
+        sb_market_watch: '📈 Market Watch',
+        loading_exec: 'Loading executive summary...',
+        ftr_coffee_pill: 'Buy Me a Coffee',
+        ftr_contact_pill: 'Contact Asifah',
+        ftr_mission: 'Mission Statement',
+        ftr_home: 'Home',
+        ftr_link_commodities: '🌾 Commodities',
+        ftr_link_stability: '📊 VZ Stability',
+        ftr_link_wha: '💬 WHA Rhetoric',
+        ftr_link_gpi: '🌐 GPI',
+        error_loading: 'Error loading data',
+        stats_statements: 'statements',
+        stats_sources: 'sources',
+        vec_levels: ['Stable', 'Active', 'Active+', 'Pressure Building', 'Pressure Peak', 'Active Crisis'],
         // Header / chrome
         home: '🏠 HOME',
         page_title: 'Rhetoric & Pressure Tracker',
@@ -1290,6 +1313,20 @@ const T = {
     },
 
     es: {
+        sb_market_watch: '📈 Monitor de Mercados',
+        loading_exec: 'Cargando resumen ejecutivo...',
+        ftr_coffee_pill: 'Invítame un café',
+        ftr_contact_pill: 'Contactar a Asifah',
+        ftr_mission: 'Declaración de Misión',
+        ftr_home: 'Inicio',
+        ftr_link_commodities: '🌾 Materias Primas',
+        ftr_link_stability: '📊 Estabilidad VZ',
+        ftr_link_wha: '💬 Retórica HO',
+        ftr_link_gpi: '🌐 IPG',
+        error_loading: 'Error al cargar datos',
+        stats_statements: 'declaraciones',
+        stats_sources: 'fuentes',
+        vec_levels: ['Estable', 'Activo', 'Activo+', 'Presión Creciente', 'Presión Máxima', 'Crisis Activa'],
         home: '🏠 INICIO',
         page_title: 'Rastreador de Retórica y Presión',
         page_subtitle: '16 Actores · 6 Vectores · Híbrido Nodo de Mando + Absorbedor · Contrato de Reserva L5',
@@ -1401,6 +1438,20 @@ const T = {
     },
 
     pt: {
+        sb_market_watch: '📈 Monitor de Mercados',
+        loading_exec: 'Carregando resumo executivo...',
+        ftr_coffee_pill: 'Compre-me um café',
+        ftr_contact_pill: 'Contatar Asifah',
+        ftr_mission: 'Declaração de Missão',
+        ftr_home: 'Início',
+        ftr_link_commodities: '🌾 Commodities',
+        ftr_link_stability: '📊 Estabilidade VZ',
+        ftr_link_wha: '💬 Retórica HO',
+        ftr_link_gpi: '🌐 IPG',
+        error_loading: 'Erro ao carregar dados',
+        stats_statements: 'declarações',
+        stats_sources: 'fontes',
+        vec_levels: ['Estável', 'Ativo', 'Ativo+', 'Pressão Crescente', 'Pico de Pressão', 'Crise Ativa'],
         home: '🏠 INÍCIO',
         page_title: 'Rastreador de Retórica e Pressão',
         page_subtitle: '16 Atores · 6 Vetores · Híbrido Nó de Comando + Absorvedor · Contrato de Reserva L5',
@@ -1571,7 +1622,7 @@ async function fetchData(force = false) {
         return data;
     } catch (err) {
         console.error('Fetch error:', err);
-        document.getElementById('updatedBar').textContent = `⚠️ Error loading data: ${err.message}`;
+        document.getElementById('updatedBar').textContent = `⚠️ ${(T[currentLang]||{}).error_loading || 'Error loading data'}: ${err.message}`;
         return null;
     } finally {
         btn.disabled = false;
@@ -1848,7 +1899,7 @@ function renderVectors(vectors, descriptions, t) {
         ['migration_outflow', 'Migration Outflow'],
         ['essequibo_dispute', 'Essequibo'],
     ];
-    const levelLabels = ['Stable', 'Active', 'Active+', 'Pressure Building', 'Pressure Peak', 'Active Crisis'];
+    const levelLabels = (T[currentLang] && T[currentLang].vec_levels) || ['Stable', 'Active', 'Active+', 'Pressure Building', 'Pressure Peak', 'Active Crisis'];
 
     vectorOrder.forEach(([key, displayName]) => {
         const level = vectors[key] ?? 0;
@@ -1937,8 +1988,8 @@ function buildActorCard(key, a) {
         </div>
         <div class="actor-role">${a.role || ''}</div>
         <div class="actor-stats">
-            <span>📰 ${a.statement_count ?? 0} statements</span>
-            <span>${articles.length ? '🔗 ' + articles.length + ' sources' : ''}</span>
+            <span>📰 ${a.statement_count ?? 0} ${(T[currentLang]||{}).stats_statements || 'statements'}</span>
+            <span>${articles.length ? '🔗 ' + articles.length + ' ' + ((T[currentLang]||{}).stats_sources || 'sources') : ''}</span>
         </div>
     `;
 
