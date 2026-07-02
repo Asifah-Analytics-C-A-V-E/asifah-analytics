@@ -152,6 +152,8 @@ body::after {
     z-index: 90;
 }
 .drawer-backdrop.open { display: block; }
+.nav-btn.tracker-btn { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+.nav-btn.tracker-btn .nav-btn-status { color: #fbbf24; }
 .drawer-close-btn {
     display: none;
     background: var(--article-bg);
@@ -592,10 +594,10 @@ footer {
         <span class="drawer-title" data-i18n="navDrawerTitle">Navigation</span>
         <button class="drawer-close-btn" onclick="closeMobileDrawer()" aria-label="Close navigation">✕</button>
         <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
-        <div class="nav-btn inactive-nav">
+        <a href="africa.html" class="nav-btn active-nav">
             <span class="nav-btn-label">🌍 <span data-i18n="navAfrica">Africa</span></span>
-            <span class="nav-btn-status" data-i18n="navFuture">🔒 Future</span>
-        </div>
+            <span class="nav-btn-status" data-i18n="navLive">● Live</span>
+        </a>
         <a href="asia.html" class="nav-btn active-nav">
             <span class="nav-btn-label">🌏 <span data-i18n="navAsia">Asia &amp; Pacific</span></span>
             <span class="nav-btn-status" data-i18n="navLive">● Live</span>
@@ -614,8 +616,16 @@ footer {
         </a>
 
         <div class="nav-divider"></div>
-
-        <a href="military.html" class="nav-btn military-btn">
+        <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+        <a href="commodities.html" class="nav-btn tracker-btn">
+            <span class="nav-btn-label">🌾 <span data-i18n="navCommodities">Commodities</span></span>
+            <span class="nav-btn-status" data-i18n="navLive">● Live</span>
+        </a>
+        <a href="gpi.html" class="nav-btn tracker-btn">
+            <span class="nav-btn-label">🌐 <span data-i18n="navGPI">Global Pressure Index</span></span>
+            <span class="nav-btn-status" data-i18n="navLive">● Live</span>
+        </a>
+        <a href="military.html" class="nav-btn tracker-btn">
             <span class="nav-btn-label">🎖️ <span data-i18n="navMilitary">Military Tracker</span></span>
             <span class="nav-btn-status" data-i18n="navLive">● Live</span>
         </a>
@@ -758,6 +768,31 @@ footer {
             </div>
         </div>
 
+        <!-- === RHETORIC CARD -- Gold Standard baseline (ukraine.html canon; spec May 8 2026, built Jul 2026) === -->
+        <div class="commodity-card" id="vzRhetoricCard" style="display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 🇻🇪 <span data-i18n="rhet_card_title">VENEZUELA RHETORIC MONITOR</span></div>
+            <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:5px;">
+                <div style="font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--text-primary);" id="vzRhetScore">--</div>
+                <span id="vzRhetLevelPill" style="font-size:12px;font-weight:800;padding:4px 12px;border-radius:5px;background:#6b7280;color:white;letter-spacing:0.5px;">--</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhet_card_desc">16-actor · 6-vector composite — updated every 12h</div>
+            <div id="vzRhetBluf" style="font-size:12px;color:var(--text-secondary);line-height:1.55;padding:10px 12px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.18);border-radius:8px;margin-bottom:10px;display:none;"></div>
+            <div id="vzRhetSignals" style="font-size:12px;color:var(--text-secondary);"></div>
+            <div id="vzRhetWatch" style="font-size:11px;color:var(--text-muted);margin-top:10px;font-style:italic;display:none;"></div>
+            <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="rhetoric-venezuela.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="rhet_view_full">View Full Rhetoric Analysis →</a>
+            </div>
+            <div id="vzRhetScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
+        </div>
+
+        <!-- === DISASTER SENSOR CARD -- venezuela_humanitarian.py (USGS bounding-box; Jul 2026) === -->
+        <div class="commodity-card" id="vzDisasterCard" style="display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">🌋 <span data-i18n="eq_card_title">DISASTER SENSOR — SEISMIC WATCH</span></div>
+            <div id="vzDisasterHead" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;"></div>
+            <div id="vzDisasterEvents" style="font-size:12px;color:var(--text-secondary);"></div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text-muted);" data-i18n="eq_source_note">Sensor: USGS bounding-box seismic record (30-day window) · GDACS · ReliefWeb · raw facts — the reader completes the inference</div>
+        </div>
+
         <!-- ════════════════════════════════════════════════════════════ COMMODITY EXPOSURE CARD (Gold Standard v2.0 — arctic palette) ════════════════════════════════════════════════════════════ -->
         <div class="commodity-card" id="commodityCard">
             <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
@@ -789,6 +824,14 @@ footer {
             <div class="strategic-linkage" data-i18n-html="strategic_linkage">
                 <strong>🎯 Strategic Linkage:</strong> Venezuela's commodity exposure operates on three reinforcing axes that the post-Maduro transition is actively reshaping: <strong>(1) Oil recovery</strong> (303B barrel reserves, sanctions-target → sanctions-lift trajectory under Rodriguez/Trump alignment; Chevron + heavy-crude refiner re-entry), <strong>(2) Gold/illicit finance corridor</strong> (Orinoco Mining Arc → UAE/Türkiye/Russia sanctions evasion routes; pivot point for whether adversary access continues under interim government), and <strong>(3) Food import dependency</strong> (~90% of wheat imported; arepas-corn supply is the canonical Caracas protest trigger). The 303B-barrel reserve number is hotly debated — Peter's analytical pushback noted: reserve QUALITY (Orinoco extra-heavy ~8.5° API) materially constrains how much is economically extractable at current price decks vs. Saudi/Permian light sweet.
             </div>
+        </div>
+
+        <!-- === FINANCIAL PULSE CARD -- oil + strategic commodity spot prices (reads /api/wha/commodity/venezuela; Jul 2026) === -->
+        <div class="commodity-card" id="vzFinancialPulseCard" style="display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📈 <span data-i18n="fp_card_title">FINANCIAL PULSE — OIL &amp; STRATEGIC COMMODITIES</span></div>
+            <div id="vzFpTiles" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;"></div>
+            <div id="vzFpAlert" style="margin-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text-muted);" data-i18n="fp_source_note">Spot prices via the commodity tracker feed · oil is Venezuela's fiscal spine — price moves are state-capacity moves</div>
         </div>
 
         <!-- ════════════════════════════════════════════════════════════ GOVERNMENT COMPOSITION CARD (Israel-style 4-figure pattern — interim post-Maduro reality) ════════════════════════════════════════════════════════════ -->
@@ -1190,6 +1233,20 @@ var WHA_API = 'https://asifah-wha-backend.onrender.com';
 // ════════════════════════════════════════════════════════════════
 var TRANSLATIONS = {
     en: {
+        rhet_card_title: 'VENEZUELA RHETORIC MONITOR',
+        rhet_card_desc: '16-actor \u00b7 6-vector composite \u2014 updated every 12h',
+        rhet_view_full: 'View Full Rhetoric Analysis \u2192',
+        eq_card_title: 'DISASTER SENSOR \u2014 SEISMIC WATCH',
+        eq_quiet_pill: 'QUIET',
+        eq_quiet: 'No active disaster \u2014 seismic baseline quiet (30-day window)',
+        eq_source_note: 'Sensor: USGS bounding-box seismic record (30-day window) \u00b7 GDACS \u00b7 ReliefWeb \u00b7 raw facts \u2014 the reader completes the inference',
+        fp_card_title: 'FINANCIAL PULSE \u2014 OIL & STRATEGIC COMMODITIES',
+        fp_source_note: 'Spot prices via the commodity tracker feed \u00b7 oil is Venezuela\u2019s fiscal spine \u2014 price moves are state-capacity moves',
+        fp_pressure_label: 'Commodity news-signal pressure',
+        fp_pressure_note: 'weighted news volume/severity, not price',
+        navGlobalTrackers: 'Global Trackers',
+        navCommodities: 'Commodities',
+        navGPI: 'Global Pressure Index',
         // Loading + generic
         loadingText: 'Loading Venezuela stability data...',
         loading: 'Loading...',
@@ -1328,6 +1385,20 @@ var TRANSLATIONS = {
         footerDisclaimerText: 'This index is an analytical tool for educational and research purposes only. Pressure scores are based on open-source news aggregation and keyword analysis. Measures pressure buildup toward instability, conflict, or political rupture. This tool does not represent official U.S. government assessments or policy positions. Users should consult official intelligence sources for operational decision-making.',
     },
     es: {
+        rhet_card_title: 'MONITOR DE RET\u00d3RICA DE VENEZUELA',
+        rhet_card_desc: 'Compuesto de 16 actores \u00b7 6 vectores \u2014 actualizado cada 12h',
+        rhet_view_full: 'Ver an\u00e1lisis completo de ret\u00f3rica \u2192',
+        eq_card_title: 'SENSOR DE DESASTRES \u2014 VIGILANCIA S\u00cdSMICA',
+        eq_quiet_pill: 'TRANQUILO',
+        eq_quiet: 'Sin desastre activo \u2014 l\u00ednea base s\u00edsmica tranquila (ventana de 30 d\u00edas)',
+        eq_source_note: 'Sensor: registro s\u00edsmico USGS por coordenadas (ventana de 30 d\u00edas) \u00b7 GDACS \u00b7 ReliefWeb \u00b7 hechos crudos \u2014 el lector completa la inferencia',
+        fp_card_title: 'PULSO FINANCIERO \u2014 PETR\u00d3LEO Y MATERIAS PRIMAS ESTRAT\u00c9GICAS',
+        fp_source_note: 'Precios spot v\u00eda el rastreador de materias primas \u00b7 el petr\u00f3leo es la columna fiscal de Venezuela',
+        fp_pressure_label: 'Presi\u00f3n de se\u00f1ales de noticias de materias primas',
+        fp_pressure_note: 'volumen/severidad ponderada de noticias, no precio',
+        navGlobalTrackers: 'Rastreadores Globales',
+        navCommodities: 'Materias Primas',
+        navGPI: '\u00cdndice de Presi\u00f3n Global',
         loadingText: 'Cargando datos de estabilidad de Venezuela...',
         loading: 'Cargando...',
         themeLabel: 'TEMA',
@@ -1450,6 +1521,20 @@ var TRANSLATIONS = {
         footerDisclaimerText: 'Este índice es una herramienta analítica solo para fines educativos y de investigación. Los puntajes de presión se basan en agregación de noticias de código abierto y análisis de palabras clave. Mide la acumulación de presión hacia inestabilidad, conflicto, o ruptura política. Esta herramienta no representa evaluaciones oficiales o posiciones políticas del gobierno de EE.UU. Los usuarios deben consultar fuentes oficiales de inteligencia para la toma de decisiones operacionales.',
     },
     pt: {
+        rhet_card_title: 'MONITOR DE RET\u00d3RICA DA VENEZUELA',
+        rhet_card_desc: 'Composto de 16 atores \u00b7 6 vetores \u2014 atualizado a cada 12h',
+        rhet_view_full: 'Ver an\u00e1lise completa de ret\u00f3rica \u2192',
+        eq_card_title: 'SENSOR DE DESASTRES \u2014 VIGIL\u00c2NCIA S\u00cdSMICA',
+        eq_quiet_pill: 'TRANQUILO',
+        eq_quiet: 'Sem desastre ativo \u2014 linha de base s\u00edsmica tranquila (janela de 30 dias)',
+        eq_source_note: 'Sensor: registro s\u00edsmico USGS por coordenadas (janela de 30 dias) \u00b7 GDACS \u00b7 ReliefWeb \u00b7 fatos brutos \u2014 o leitor completa a infer\u00eancia',
+        fp_card_title: 'PULSO FINANCEIRO \u2014 PETR\u00d3LEO E COMMODITIES ESTRAT\u00c9GICAS',
+        fp_source_note: 'Pre\u00e7os spot via o rastreador de commodities \u00b7 o petr\u00f3leo \u00e9 a espinha fiscal da Venezuela',
+        fp_pressure_label: 'Press\u00e3o de sinais de not\u00edcias de commodities',
+        fp_pressure_note: 'volume/severidade ponderada de not\u00edcias, n\u00e3o pre\u00e7o',
+        navGlobalTrackers: 'Rastreadores Globais',
+        navCommodities: 'Commodities',
+        navGPI: '\u00cdndice de Press\u00e3o Global',
         loadingText: 'Carregando dados de estabilidade da Venezuela...',
         loading: 'Carregando...',
         themeLabel: 'TEMA',
@@ -1978,6 +2063,11 @@ async function loadVenezuelaData() {
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         var data = await resp.json();
 
+        // Gold Standard rhetoric card (Jul 2026) -- reuses this same payload
+        if (!data.scan_in_progress) {
+            try { renderVzRhetoricCard(data); } catch(e) { console.warn('rhetoric card render:', e); }
+        }
+
         if (data.scan_in_progress) {
             document.getElementById('loadingText').textContent = t('loadingText');
             setTimeout(loadVenezuelaData, 90000);
@@ -2123,6 +2213,122 @@ document.addEventListener('keydown', function(e) {
 // ════════════════════════════════════════════════════════════════
 // BOOT
 // ════════════════════════════════════════════════════════════════
+// ================================================================
+// GOLD STANDARD CARDS (Jul 2026): rhetoric / disaster sensor / financial pulse
+// ================================================================
+var VZ_LVL_COLORS = { 0:'#6b7280', 1:'#3b82f6', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444', 5:'#dc2626' };
+
+function renderVzRhetoricCard(d) {
+    var card = document.getElementById('vzRhetoricCard');
+    if (!card) return;
+    card.style.display = 'block';
+    var score = d.theatre_score || 0;
+    var level = (typeof d.theatre_level === 'number') ? d.theatre_level : 0;
+    var label = d.theatre_label || 'Stable';
+    // Calm-blue baseline canon: healthy L0 renders arctic, never gray (gray = no data)
+    var color = (level === 0) ? '#38bdf8' : (VZ_LVL_COLORS[level] || '#6b7280');
+    var scoreEl = document.getElementById('vzRhetScore');
+    scoreEl.textContent = score + '/100'; scoreEl.style.color = color;
+    var pill = document.getElementById('vzRhetLevelPill');
+    pill.textContent = 'L' + level + ' \u2014 ' + label; pill.style.background = color;
+
+    // BLUF: dedicated field preferred; fallback to so_what scenario, then top signal
+    var sw = d.so_what || {};
+    var bluf = d.bluf || sw.scenario || ((d.top_signals || [])[0] || {}).short_text || '';
+    var blufEl = document.getElementById('vzRhetBluf');
+    if (bluf) { blufEl.style.display = 'block'; blufEl.textContent = '\u26a1 ' + bluf; }
+
+    // Top signals (2) -- each row carries its own temperature (chip + left border)
+    var sigs = (d.top_signals || []).slice(0, 2);
+    document.getElementById('vzRhetSignals').innerHTML = sigs.length
+        ? sigs.map(function(x){
+            var c = VZ_LVL_COLORS[x.level] || '#38bdf8';
+            return '<div style="padding:6px 0 6px 10px;border-left:3px solid ' + c + ';border-bottom:1px solid var(--card-border);line-height:1.5;">'
+                 + '<span style="display:inline-block;padding:1px 7px;border-radius:4px;background:' + c + ';color:#fff;font-size:10px;font-weight:700;margin-right:7px;">L' + (x.level||0) + '</span>'
+                 + (x.short_text || '') + '</div>';
+          }).join('')
+        : '<span style="font-style:italic;color:var(--text-muted);">' + t('loading') + '</span>';
+
+    // Watch line: dedicated field or so_what watch_for fallback
+    var watch = d.watch_indicators || sw.watch_for || '';
+    if (watch) {
+        var w = document.getElementById('vzRhetWatch');
+        w.style.display = 'block';
+        w.textContent = '\U0001f440 ' + (Array.isArray(watch) ? watch.slice(0,2).join(' \u00b7 ') : watch);
+    }
+    var ts = d.scanned_at || d.updated_at || '';
+    document.getElementById('vzRhetScanInfo').textContent = ts ? ('Last scan: ' + ts.replace('T',' ').slice(0,16) + 'Z') : '';
+}
+
+async function loadVzDisasterSensor() {
+    try {
+        var r = await fetch(WHA_API + '/api/venezuela/humanitarian');
+        if (!r.ok) return;
+        var d = await r.json();
+        var st = d.disaster_state || {};
+        var card = document.getElementById('vzDisasterCard');
+        if (!card) return;
+        card.style.display = 'block';
+        var band = (st.severity_band || 'none').toLowerCase();
+        var bandColors = { none:'#38bdf8', minor:'#f59e0b', major:'#f97316', catastrophic:'#dc2626' };
+        var head = document.getElementById('vzDisasterHead');
+        if (band === 'none' || !st.event_count_30d) {
+            head.innerHTML = '<span style="padding:4px 12px;border-radius:5px;background:#38bdf8;color:#fff;font-size:12px;font-weight:800;">' + t('eq_quiet_pill') + '</span>'
+                           + '<span style="font-size:12px;color:var(--text-secondary);">' + t('eq_quiet') + '</span>';
+            document.getElementById('vzDisasterEvents').innerHTML = '';
+            return;
+        }
+        var days = st.days_since_peak_event;
+        head.innerHTML =
+            '<span style="padding:4px 12px;border-radius:5px;background:' + (bandColors[band] || '#6b7280') + ';color:#fff;font-size:12px;font-weight:800;text-transform:uppercase;">' + band + '</span>'
+          + '<span style="font-size:26px;font-weight:800;color:' + (bandColors[band] || '#6b7280') + ';">M' + (st.peak_magnitude_30d || '--') + '</span>'
+          + '<span style="font-size:12px;color:var(--text-secondary);">' + (st.event_count_30d || 0) + ' events / 30d \u00b7 peak ' + (days != null ? days + 'd ago' : '--') + ' \u00b7 recency ' + Math.round((st.recency_weight || 0) * 100) + '%</span>';
+        var evs = (d.usgs_events || []).slice(0, 4);
+        document.getElementById('vzDisasterEvents').innerHTML = evs.map(function(e){
+            var c = (e.mag >= 7.0 || e.pager === 'red') ? '#dc2626' : (e.mag >= 6.0 ? '#f97316' : '#f59e0b');
+            return '<div style="padding:6px 0 6px 10px;border-left:3px solid ' + c + ';border-bottom:1px solid var(--card-border);line-height:1.5;">'
+                 + '<strong style="color:' + c + ';">M' + e.mag + '</strong> \u2014 ' + (e.place || '')
+                 + (e.tsunami ? ' \u00b7 \U0001f30a tsunami flag' : '')
+                 + (e.pager ? ' \u00b7 PAGER ' + e.pager.toUpperCase() : '')
+                 + ' <span style="color:var(--text-muted);font-size:10px;">' + (e.ts || '').slice(0,10) + '</span></div>';
+        }).join('');
+    } catch(e) { console.warn('disaster sensor:', e); }
+}
+
+async function loadVzFinancialPulse() {
+    try {
+        var r = await fetch(WHA_API + '/api/wha/commodity/venezuela');
+        if (!r.ok) return;
+        var d = await r.json();
+        var items = d.commodity_summaries || d.commodities || [];
+        if (!items.length) return;
+        var ORDER = ['oil','crude','brent','wti','gold','wheat','corn'];
+        items = items.slice().sort(function(a,b){
+            function rank(x){ var n = ((x.commodity || x.name || '') + '').toLowerCase();
+                for (var i=0;i<ORDER.length;i++){ if (n.indexOf(ORDER[i]) !== -1) return i; } return 99; }
+            return rank(a) - rank(b);
+        }).slice(0, 6);
+        var card = document.getElementById('vzFinancialPulseCard');
+        card.style.display = 'block';
+        document.getElementById('vzFpTiles').innerHTML = items.map(function(it){
+            var sp = it.spot || it;
+            var price = (sp && typeof sp.price === 'number') ? '$' + sp.price.toFixed(2) : '\u2014';
+            var name = (it.commodity || it.name || '?').toUpperCase();
+            var alert = ((it.alert_level || it.global_alert_level || 'normal') + '').toLowerCase();
+            var ac = { normal:'#38bdf8', low:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', surge:'#ef4444', critical:'#dc2626' }[alert] || '#38bdf8';
+            return '<div style="background:rgba(56,189,248,0.05);border:1px solid var(--card-border);border-radius:8px;padding:10px 12px;">'
+                 + '<div style="font-size:10px;letter-spacing:1px;color:var(--text-muted);">' + name + '</div>'
+                 + '<div style="font-size:20px;font-weight:800;color:var(--text-primary);">' + price + '</div>'
+                 + '<div style="font-size:10px;font-weight:700;color:' + ac + ';text-transform:uppercase;">' + alert + '</div></div>';
+        }).join('');
+        var press = d.commodity_pressure;
+        if (press != null) {
+            document.getElementById('vzFpAlert').textContent =
+                t('fp_pressure_label') + ': ' + press + ' (' + (d.alert_level || 'normal') + ') \u2014 ' + t('fp_pressure_note');
+        }
+    } catch(e) { console.warn('financial pulse:', e); }
+}
+
 window.addEventListener('DOMContentLoaded', function(){
     var savedLang = 'en';
     try { savedLang = localStorage.getItem('asifah-venezuela-lang') || 'en'; } catch(e){}
@@ -2135,6 +2341,8 @@ window.addEventListener('DOMContentLoaded', function(){
     initMap();
     loadVenezuelaData();
     loadCommodityVenezuela();  // ← Gold Standard v1.0 commodity card fetch
+    loadVzDisasterSensor();    // ← Disaster sensor card (venezuela_humanitarian.py, Jul 2026)
+    loadVzFinancialPulse();    // ← Financial pulse card (commodity spot feed, Jul 2026)
 });
 </script>
 
