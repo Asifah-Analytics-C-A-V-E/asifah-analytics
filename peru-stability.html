@@ -90,6 +90,14 @@ body {
 .page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
 .main-content { flex: 1; min-width: 0; }
 /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+/* Gold Standard ambient layers: grid 40 + scanlines 2 (canon item 3) */
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px); }
+
 .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
     background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
     color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
@@ -1066,6 +1074,15 @@ footer .footer-copyright {
 </div>
 
 <!-- ── MAP SECTION ── -->
+<div class="card" id="govTransitionCard" style="margin-bottom:24px;">
+    <div class="subsection-title" data-i18n="gov_card_title">🏛️ Government — Post-Election Transition</div>
+    <div style="font-size:0.85rem;color:var(--text-primary);line-height:1.6;" data-i18n-html="gov_card_text">
+        <strong>Keiko Fujimori (Fuerza Popular)</strong> was declared the winner of the June 2026 presidential runoff — her first victory after three prior runoff defeats (2011, 2016, 2021). The result did not produce major post-electoral upheaval; transition from the outgoing Boluarte administration is underway.
+        <br><br>
+        <em style="color:var(--text-muted);">Watch posture: leftist-opposition mobilization (Juntos por el Perú and allied movements) and mining-region community response (Las Bambas, Cuajone corridors) remain the primary domestic pressure vectors — tracked live on the rhetoric card above. Election-runoff watch retired July 2026.</em>
+    </div>
+</div>
+
 <div class="map-section">
     <h2 data-i18n="map_title">🗺️ Peru — Strategic Overview</h2>
     <div class="map-subtitle" data-i18n="map_subtitle">Interactive map centered on Lima. Las Bambas (Apurímac), Antamina (Áncash), the VRAEM zone, and the Loreto-Colombia border are key monitoring zones.</div>
@@ -1258,6 +1275,8 @@ const ME_BACKEND  = 'https://asifah-backend.onrender.com';
 // ════════════════════════════════════════════════════════════
 const TRANSLATIONS = {
     en: {
+        gov_card_title: '🏛️ Government — Post-Election Transition',
+        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> was declared the winner of the June 2026 presidential runoff — her first victory after three prior runoff defeats (2011, 2016, 2021). The result did not produce major post-electoral upheaval; transition from the outgoing Boluarte administration is underway.<br><br><em style="color:var(--text-muted);">Watch posture: leftist-opposition mobilization (Juntos por el Perú and allied movements) and mining-region community response (Las Bambas, Cuajone corridors) remain the primary domestic pressure vectors — tracked live on the rhetoric card above. Election-runoff watch retired July 2026.</em>',
         // Header
         back_to_wha:            '← W. Hemisphere',
         page_title:             '🇵🇪 PERU STABILITY INDEX',
@@ -1362,6 +1381,8 @@ const TRANSLATIONS = {
     },
 
     es: {
+        gov_card_title: '🏛️ Gobierno — Transición Postelectoral',
+        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> fue declarada ganadora de la segunda vuelta presidencial de junio de 2026 — su primera victoria tras tres derrotas previas en segunda vuelta (2011, 2016, 2021). El resultado no produjo una convulsión postelectoral mayor; la transición desde la administración saliente de Boluarte está en curso.<br><br><em style="color:var(--text-muted);">Postura de vigilancia: la movilización de la oposición de izquierda (Juntos por el Perú y movimientos aliados) y la respuesta comunitaria en regiones mineras (corredores de Las Bambas y Cuajone) siguen siendo los principales vectores de presión interna — seguidos en vivo en la tarjeta de retórica superior. Vigilancia electoral retirada en julio de 2026.</em>',
         // Header
         back_to_wha:            '← Hem. Occidental',
         page_title:             '🇵🇪 ÍNDICE DE ESTABILIDAD DE PERÚ',
@@ -1466,6 +1487,8 @@ const TRANSLATIONS = {
     },
 
     pt: {
+        gov_card_title: '🏛️ Governo — Transição Pós-Eleitoral',
+        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> foi declarada vencedora do segundo turno presidencial de junho de 2026 — sua primeira vitória após três derrotas anteriores em segundo turno (2011, 2016, 2021). O resultado não produziu grande convulsão pós-eleitoral; a transição da administração Boluarte está em curso.<br><br><em style="color:var(--text-muted);">Postura de vigilância: a mobilização da oposição de esquerda (Juntos por el Perú e movimentos aliados) e a resposta comunitária nas regiões de mineração (corredores de Las Bambas e Cuajone) continuam sendo os principais vetores de pressão interna — acompanhados ao vivo no cartão de retórica acima. Vigilância eleitoral retirada em julho de 2026.</em>',
         // Header
         back_to_wha:            '← Hem. Ocidental',
         page_title:             '🇵🇪 ÍNDICE DE ESTABILIDADE DO PERU',
