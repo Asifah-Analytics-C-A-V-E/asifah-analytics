@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Afghanistan Stability Index v1.0.0 -->
-<html lang="en">
+<!-- Asifah Analytics — Afghanistan Stability Index v1.0.0 — May 2026 -->
+<!-- Gold Standard shell: Arctic scheme + sidebar + rhetoric placeholder + commodity card + EN/ES/PT -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" data-theme="dark">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
     <script>
@@ -12,748 +14,2110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Afghanistan Stability Index | Asifah Analytics v1.0.0</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 
-        :root {
-            --bg-color: #f5f5f5;
-            --container-bg: #ffffff;
-            --card-bg: #ffffff;
-            --card-border: #e1e8ed;
-            --text-primary: #2c3e50;
-            --text-secondary: #7f8c8d;
-            --text-muted: #95a5a6;
-            --header-gradient-start: #1e3a5f;
-            --header-gradient-end: #2c5282;
-            --header-text: #ffffff;
-            --metric-bg: #ffffff;
-            --metric-hover-shadow: rgba(0,0,0,0.15);
-            --article-bg: #f8f9fa;
-            --article-hover: #e8f4f8;
-            --watermark-opacity: 0.03;
-            --loading-overlay-bg: rgba(245, 245, 245, 0.98);
-            --loading-spinner-bg: rgba(100, 149, 237, 0.2);
-            --accent: #6495ED;
-        }
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
+    --watermark-opacity: 0.5;
+    --watermark-size: 500px;
+    --loading-overlay-bg: rgba(248,250,252,0.98);
+    --loading-spinner-bg: rgba(14,165,233,0.2);
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
+    --watermark-opacity: 1;
+    --watermark-size: 800px;
+    --loading-overlay-bg: rgba(6,13,26,0.98);
+    --loading-spinner-bg: rgba(56,189,248,0.2);
+}
 
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --container-bg: #2d2d2d;
-            --card-bg: #2d2d2d;
-            --card-border: #404040;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
-            --header-gradient-start: #1e3a5f;
-            --header-gradient-end: #2c5282;
-            --header-text: #ffffff;
-            --metric-bg: #2d2d2d;
-            --metric-hover-shadow: rgba(255,255,255,0.1);
-            --article-bg: #353535;
-            --article-hover: #404040;
-            --watermark-opacity: 0.02;
-            --loading-overlay-bg: rgba(26, 26, 26, 0.98);
-            --loading-spinner-bg: rgba(100, 149, 237, 0.3);
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+.watermark {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--watermark-size); height: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    pointer-events: none; z-index: 0;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: 135%; background-repeat: no-repeat; background-position: center;
+    border-radius: 50%; transition: all 0.4s ease;
+}
 
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 14px;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            position: relative;
-        }
+/* ── CONTAINER + LAYOUT ── */
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+/* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+/* Gold Standard ambient layers: grid 40 + scanlines 2 (canon item 3) */
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px); }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: var(--watermark-opacity);
-            z-index: 0;
-            pointer-events: none;
-            user-select: none;
-        }
+.menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+    background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+    color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+.sidebar-backdrop.show { display: block; }
+@media (max-width: 1199px) {
+    .menu-toggle { display: block; }
+    .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+        overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+        background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+        z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+    .nav-sidebar.open { transform: translateX(0); }
+}
 
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--loading-overlay-bg);
-            backdrop-filter: blur(10px);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .loading-overlay.hidden { opacity: 0; visibility: hidden; }
-        .loading-spinner {
-            width: 60px; height: 60px;
-            border: 5px solid var(--loading-spinner-bg);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 30px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-status { text-align: center; max-width: 500px; padding: 0 20px; }
-        .loading-title { font-size: 24px; font-weight: bold; color: var(--accent); margin-bottom: 20px; letter-spacing: 1px; }
-        .loading-steps { margin-top: 20px; }
-        .loading-step {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            padding: 12px; font-size: 15px; color: var(--text-secondary); transition: all 0.3s ease;
-        }
-        .loading-step.active { color: var(--accent); font-weight: bold; }
-        .loading-step.complete { color: #4ade80; }
-        .step-icon { font-size: 18px; min-width: 20px; }
-        .loading-progress { margin-top: 25px; font-size: 13px; color: var(--text-secondary); font-style: italic; }
-        .loading-error {
-            color: #f87171; font-size: 16px; margin-top: 20px; padding: 15px;
-            background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px;
-        }
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    padding: 22px 30px;
+    margin-bottom: 22px;
+    border-radius: 0 0 12px 12px;
+    color: var(--header-text);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; gap: 24px;
+}
+.header-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.header-logo {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    object-fit: cover;
+}
+.back-link {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    transition: all 0.3s;
+}
+.back-link:hover { background: rgba(56,189,248,0.08); }
+.header-content { flex: 1; }
+header h1 {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--header-text);
+    margin-bottom: 4px;
+}
+.subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+.header-controls { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-label { font-size: 11px; color: var(--text-muted); }
+.theme-toggle-switch {
+    width: 44px; height: 22px; border-radius: 22px;
+    background: var(--card-border); position: relative; cursor: pointer;
+    transition: background 0.3s;
+}
+[data-theme="dark"] .theme-toggle-switch { background: var(--accent); }
+.theme-toggle-slider {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; position: absolute; top: 2px; left: 2px;
+    transition: left 0.3s;
+}
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
 
-        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; align-self: flex-start; }
+.nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+.nav-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 8px;
+    background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.18);
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 12px; font-weight: 600;
+    transition: all 0.25s;
+}
+.nav-btn-label { flex: 1; }
+.nav-btn-status { font-size: 10px; color: var(--text-muted); margin-left: 8px; }
+.nav-btn:hover { transform: translateY(-1px); border-color: var(--accent); color: var(--text-primary); }
+.nav-btn.active-nav { background: linear-gradient(135deg, rgba(0,180,255,0.15), rgba(0,120,200,0.10)); border-color: rgba(0,200,255,0.5); color: var(--text-primary); }
+.nav-btn.active-nav:hover { box-shadow: 0 0 18px rgba(0,180,255,0.25); }
+.nav-btn.current-page { background: linear-gradient(135deg, rgba(0,200,255,0.20), rgba(0,150,200,0.15)); border-color: rgba(0,220,255,0.7); color: var(--text-primary); box-shadow: 0 0 16px rgba(0,200,255,0.22); }
+.nav-btn.inactive-nav { opacity: 0.4; cursor: default; border-color: rgba(100,100,100,0.2); background: transparent; }
+.nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(21,128,61,0.05)); }
+.nav-btn.rhetoric-btn:hover { border-color: rgba(34,197,94,0.8); box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+.nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+.nav-btn.rhetoric-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(21,128,61,0.12)); }
+.nav-btn.military-btn { border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(91,33,182,0.05)); }
+.nav-btn.military-btn:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 18px rgba(139,92,246,0.2); }
+.nav-btn.military-btn .nav-btn-status { color: #a78bfa; }
+.nav-btn.commodity-btn { border-color: rgba(250,204,21,0.4); background: linear-gradient(135deg, rgba(250,204,21,0.08), rgba(202,138,4,0.05)); }
+.nav-btn.commodity-btn:hover { border-color: rgba(250,204,21,0.8); box-shadow: 0 0 18px rgba(250,204,21,0.2); }
+.nav-btn.commodity-btn .nav-btn-status { color: #fde047; }
+.nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.05)); }
+.nav-btn.tracker-btn:hover { border-color: rgba(245,158,11,0.8); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
+.nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+.nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
 
-        header {
-            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
-            color: var(--header-text);
-            padding: 35px; border-radius: 12px; margin-bottom: 30px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            position: relative; display: flex; align-items: center; gap: 30px;
-        }
-        .header-logo { width: 80px; height: 80px; flex-shrink: 0; border-radius: 50%; margin-top: 48px; }
-        .header-content { flex: 1; text-align: center; }
-        h1 { font-size: 28px; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .subtitle { font-size: 16px; font-weight: normal; opacity: 0.95; letter-spacing: 0.5px; }
-        .last-updated { font-size: 13px; opacity: 0.85; margin-top: 10px; }
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--loading-overlay-bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s; backdrop-filter: blur(8px);
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner {
+    width: 70px; height: 70px;
+    border: 4px solid var(--loading-spinner-bg);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-status {
+    text-align: center; color: var(--text-primary);
+    max-width: 460px; padding: 22px 28px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; box-shadow: var(--card-glow);
+}
+.loading-title {
+    font-size: 1rem; font-weight: 700; letter-spacing: 1.5px;
+    margin-bottom: 14px; color: var(--accent);
+    text-transform: uppercase;
+}
+.loading-progress { font-size: 0.85rem; color: var(--text-secondary); }
 
-        .header-controls {
-            position: absolute; top: 35px; right: 35px;
-            display: flex; flex-direction: column; gap: 10px; z-index: 1000;
-        }
-        [dir="rtl"] .header-controls { right: auto; left: 35px; }
+/* ── TRAVEL ADVISORY BANNERS ── */
+.advisory-row { margin-bottom: 12px; }
 
-        .language-switcher {
-            display: flex; gap: 8px;
-            background: rgba(255,255,255,0.15); padding: 8px 12px;
-            border-radius: 8px; backdrop-filter: blur(10px);
-        }
-        .theme-toggle {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: rgba(255,255,255,0.15); padding: 8px 12px;
-            border-radius: 8px; backdrop-filter: blur(10px);
-        }
-        .theme-toggle-label {
-            font-size: 11px; color: rgba(255,255,255,0.9); margin-right: 8px;
-            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
-        }
-        .theme-toggle-switch {
-            position: relative; width: 50px; height: 26px;
-            background: rgba(255,255,255,0.2); border-radius: 13px; cursor: pointer;
-            transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3);
-        }
-        .theme-toggle-switch:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
-        .theme-toggle-slider {
-            position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
-            background: white; border-radius: 50%; transition: transform 0.3s ease;
-            display: flex; align-items: center; justify-content: center; font-size: 10px;
-        }
-        .theme-toggle-slider::before { content: '\2600\FE0F'; }
-        [data-theme="dark"] .theme-toggle-slider { transform: translateX(24px); }
-        [data-theme="dark"] .theme-toggle-slider::before { content: '\1F319'; }
+/* ── RHETORIC PLACEHOLDER (no tracker yet — flag-only) ── */
+.rhetoric-placeholder {
+    background: linear-gradient(135deg, rgba(100,116,139,0.10), rgba(71,85,105,0.05));
+    border: 1px dashed rgba(100,116,139,0.35);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+}
 
-        .lang-btn {
-            background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);
-            color: white; padding: 6px 14px; font-family: 'Times New Roman', Times, serif;
-            font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .lang-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
-        .lang-btn.active { background: white; color: #1e3a5f; border-color: white; }
+/* ── GENERIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+.subsection-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
 
-        .back-link {
-            display: inline-block; position: absolute; top: 20px; left: 20px; margin: 0;
-            padding: 12px 24px; background: rgba(255,255,255,0.2); color: white;
-            text-decoration: none; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);
-            transition: all 0.2s ease; font-size: 14px; font-weight: bold;
-        }
-        .back-link:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+/* ── STABILITY SCORE PLACEHOLDER ── */
+.stability-score-big {
+    font-size: 3rem; font-weight: 700; line-height: 1;
+    color: var(--accent);
+}
+.stability-score-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px;
+}
+.stability-label {
+    font-size: 0.8rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;
+    color: white;
+}
+.stability-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 0.8rem;
+}
+.stability-meta-item {
+    padding: 8px 10px;
+    background: var(--article-bg);
+    border-radius: 6px;
+}
+.stability-meta-label {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.stability-meta-value { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
 
-        .map-section {
-            background: var(--container-bg); border: 2px solid var(--card-border);
-            border-radius: 12px; padding: 25px; margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .map-section h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-primary); }
-        .map-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; font-style: italic; }
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
 
-        .knowledge-library {
-            background: var(--container-bg); border: 2px solid var(--card-border);
-            border-radius: 12px; padding: 25px; margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .knowledge-library h2 { font-size: 24px; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
-        .library-icon { font-size: 28px; }
-        .knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .knowledge-card { background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; }
-        .knowledge-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px var(--metric-hover-shadow); }
-        .knowledge-header {
-            background: linear-gradient(135deg, rgba(100, 149, 237, 0.1) 0%, rgba(30, 82, 130, 0.1) 100%);
-            padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between;
-            align-items: center; transition: background 0.3s ease;
-        }
-        .knowledge-header:hover { background: linear-gradient(135deg, rgba(100, 149, 237, 0.15) 0%, rgba(30, 82, 130, 0.15) 100%); }
-        .knowledge-header-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: bold; color: var(--text-primary); }
-        .category-icon { font-size: 22px; }
-        .collapse-icon { font-size: 20px; color: var(--accent); transition: transform 0.3s ease; }
-        .knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
-        .knowledge-content { padding: 20px; max-height: 500px; overflow-y: auto; transition: max-height 0.3s ease, padding 0.3s ease; }
-        .knowledge-card.collapsed .knowledge-content { max-height: 0; padding: 0 20px; overflow: hidden; }
-        .knowledge-content p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 12px; }
-        .knowledge-content ul { margin-left: 20px; margin-bottom: 12px; }
-        .knowledge-content li { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 6px; }
-        .knowledge-content strong { color: var(--text-primary); }
-        .open-source-disclaimer { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--card-border); }
-        .report-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; }
-        .report-link {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 16px; background: var(--accent); color: white;
-            text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .report-link:hover { background: #4169E1; transform: translateX(3px); box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3); }
-        [dir="rtl"] .report-link:hover { transform: translateX(-3px); }
-        .knowledge-content::-webkit-scrollbar { width: 8px; }
-        .knowledge-content::-webkit-scrollbar-track { background: var(--article-bg); border-radius: 4px; }
-        .knowledge-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
-        .knowledge-content::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.knowledge-library h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+}
+.library-icon { font-size: 1.2rem; }
+.open-source-disclaimer {
+    font-size: 0.78rem; color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 14px;
+}
+.knowledge-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+}
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.knowledge-card:hover { border-color: var(--accent); box-shadow: var(--card-glow); }
+.knowledge-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+}
+.knowledge-card.collapsed .knowledge-header { border-bottom: none; }
+.knowledge-header-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
+}
+.category-icon { font-size: 1.2rem; }
+.collapse-icon {
+    color: var(--text-muted); font-size: 0.7rem;
+    transition: transform 0.3s;
+}
+.knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+.knowledge-content { padding: 14px 16px; font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); }
+.knowledge-card.collapsed .knowledge-content { display: none; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content strong { color: var(--text-primary); }
+.knowledge-content ul { padding-left: 22px; margin-bottom: 10px; }
+.knowledge-content ul li { margin-bottom: 6px; }
+.report-links-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+.report-link {
+    padding: 5px 10px;
+    background: rgba(56,189,248,0.10);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 5px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.72rem; font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: rgba(56,189,248,0.18); transform: translateY(-1px); }
 
-        .articles-section {
-            background: var(--container-bg); border-radius: 12px; padding: 25px; margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border);
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .section-title { font-size: 20px; margin-bottom: 20px; color: var(--text-primary); font-weight: bold; letter-spacing: 0.5px; }
-        .article-item {
-            background: var(--article-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px;
-            transition: background 0.2s ease, transform 0.2s; border-left: 4px solid #1e3a5f;
-        }
-        [dir="rtl"] .article-item { border-left: none; border-right: 4px solid #1e3a5f; }
-        .article-item:hover { background: var(--article-hover); transform: translateX(4px); }
-        [dir="rtl"] .article-item:hover { transform: translateX(-4px); }
-        .article-title { color: var(--text-primary); font-size: 14px; margin-bottom: 5px; font-weight: 500; }
-        .article-meta { font-size: 12px; color: var(--text-secondary); }
-        .article-link { color: var(--accent); text-decoration: none; font-size: 13px; }
-        .article-link:hover { text-decoration: underline; }
+/* ── ARTICLES SECTION (tabbed) ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.article-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+}
+.article-tab {
+    padding: 6px 14px;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.article-tab:hover { border-color: var(--accent); color: var(--accent); }
+.article-tab.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.article-tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    background: rgba(56,189,248,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.articles-list { list-style: none; padding: 0; max-height: 600px; overflow-y: auto; }
+.articles-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85rem; line-height: 1.5;
+}
+.articles-list li:last-child { border-bottom: none; }
+.articles-list a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.articles-list a:hover { color: var(--accent); }
+.articles-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+.article-source-pill {
+    display: inline-block;
+    padding: 1px 7px; border-radius: 3px;
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    margin-right: 6px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
 
-        footer {
-            background: var(--container-bg); padding: 25px; border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border);
-            font-size: 12px; text-align: center; margin-top: 40px; color: var(--text-secondary);
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
+/* ── FOOTER ── */
+footer {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+@media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+footer .footer-disclaimer {
+    padding: 12px 14px;
+    background: var(--article-bg); border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+}
+footer .footer-support { text-align: center; padding: 10px; font-size: 0.85rem; }
+footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+footer .footer-copyright {
+    text-align: center; font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+}
 
-        @media (max-width: 768px) {
-            header { flex-direction: column; gap: 20px; padding: 25px 20px; }
-            .header-logo { width: 60px; height: 60px; }
-            .header-content { text-align: center; }
-            .header-controls { position: static; align-items: center; }
-            h1 { font-size: 24px; }
-            .back-link { position: static; display: block; width: fit-content; margin: 0 auto 15px; }
-            .knowledge-categories { grid-template-columns: 1fr; }
-        }
-    </style>
+/* ── LEVEL COLORS ── */
+.level-0 { background: #6b7280; color: white; }
+.level-1 { background: #3b82f6; color: white; }
+.level-2 { background: #f59e0b; color: white; }
+.level-3 { background: #f97316; color: white; }
+.level-4 { background: #ef4444; color: white; }
+.level-5 { background: #dc2626; color: white; }
+
+/* ── LOADING DOTS ── */
+.loading-dot { display: inline-block; animation: pulse 1.4s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+   ═══════════════════════════════════════════════════════════ */
+.language-switcher {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.lang-btn {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.lang-btn:hover {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.45);
+}
+.lang-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+[data-theme="light"] .lang-btn { background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.30); color: var(--text-primary); }
+[data-theme="light"] .lang-btn:hover { background: rgba(14,165,233,0.18); }
+[data-theme="light"] .lang-btn.active { background: var(--accent); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+   ═══════════════════════════════════════════════════════════ */
+.commodity-card {
+    background: var(--container-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .commodity-card {
+    box-shadow: 0 0 6px rgba(56,189,248,0.15);
+}
+.commodity-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--card-border);
+}
+.commodity-prose {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 10px 0 16px 0;
+    padding: 12px 14px;
+    background: rgba(2,6,23,0.5);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+}
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+
+.commodity-convergence-alert {
+    display: none;
+    margin: 10px 0 14px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+}
+.commodity-convergence-alert.active { display: block; }
+.cca-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f59e0b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.cca-detail {
+    font-size: 11px;
+    color: #fbbf24;
+    line-height: 1.5;
+}
+
+.commodity-alert-banner {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-size: 12px;
+    display: none;
+}
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+.commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.commodity-pill {
+    background: rgba(2,6,23,0.5);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+}
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 22px; line-height: 1; }
+.commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+.commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.commodity-pill-alert {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-pill-role-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.25);
+}
+.commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+.commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+.commodity-pill-price .price-up   { color: #22c55e; }
+.commodity-pill-price .price-down { color: #ef4444; }
+.commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+.commodity-top-signals {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(2,6,23,0.5);
+    border-radius: 6px;
+    border-left: 3px solid var(--text-muted);
+    font-size: 11px;
+}
+[data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+.commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+.commodity-top-signals a { color: var(--text-secondary); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+.commodity-top-signals a:hover { color: #38bdf8; }
+.commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+.strategic-linkage {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(56,189,248,0.05);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+/* ── RHETORIC TRACKER BANNER (canonical green pointer) ── */
+.rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+.rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+.rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+.rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+</style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-status">
-            <div class="loading-title">Loading Afghanistan Stability Data</div>
-            <div class="loading-steps" id="loadingSteps">
-                <div class="loading-step active" id="step1">
-                    <span class="step-icon">&#x23F3;</span>
-                    <span>Fetching OSINT articles on Afghanistan...</span>
-                </div>
-                <div class="loading-step" id="step2">
-                    <span class="step-icon">&#x23F3;</span>
-                    <span>Scanning Taliban governance signals...</span>
-                </div>
-                <div class="loading-step" id="step3">
-                    <span class="step-icon">&#x23F3;</span>
-                    <span>Analyzing Pakistan border incidents...</span>
-                </div>
-                <div class="loading-step" id="step4">
-                    <span class="step-icon">&#x23F3;</span>
-                    <span>Compiling ISIS-K activity reports...</span>
-                </div>
-                <div class="loading-step" id="step5">
-                    <span class="step-icon">&#x23F3;</span>
-                    <span>Rendering dashboard...</span>
-                </div>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+     LOADING OVERLAY
+     ════════════════════════════════════════════════════════════ -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-status">
+        <div class="loading-title" data-i18n="loading_title">Loading Afghanistan Stability Data</div>
+        <div class="loading-progress" id="loadingProgress">
+            <span data-i18n="loading_progress">Connecting to backend... This may take 20-40 seconds on cold cache.</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════════ -->
+<header>
+    <div class="header-logo-wrap">
+        <a href="asia.html" class="back-link" data-i18n="back_to_wha">← W. Hemisphere</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1 data-i18n="page_title">🇦🇫 AFGHANISTAN STABILITY INDEX</h1>
+        <div class="subtitle" data-i18n="page_subtitle">Kandahar–Kabul dual power · Durand Line kinetics · ISKP export · Hindu Kush seismic watch · four-wheel contested node</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('ko', this)">한국어</button>
+            <button class="lang-btn" onclick="switchLanguage('zh', this)">中文</button>
+            <button class="lang-btn" onclick="switchLanguage('ja', this)">日本語</button>
+        </div>
+        <div class="theme-toggle">
+            <span class="theme-toggle-label" data-i18n="theme_label">Theme</span>
+            <div class="theme-toggle-switch" onclick="toggleTheme()">
+                <div class="theme-toggle-slider"></div>
             </div>
-            <div class="loading-progress" id="loadingProgress">This may take 20-40 seconds...</div>
-            <div class="loading-error" id="loadingError" style="display: none;"></div>
+        </div>
+    </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE WITH SIDEBAR
+     ════════════════════════════════════════════════════════════ -->
+<div class="page-with-sidebar">
+
+<!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="asia.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_asia_pacific">🌏 Asia &amp; Pacific</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="europe.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_europe">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_me">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="wha.html" class="nav-btn active-nav">
+        <span class="nav-btn-label" data-i18n="nav_wha">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_global_trackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label" data-i18n="nav_commodities">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label" data-i18n="nav_gpi">🌐 Global Pressure</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="market-watch.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label" data-i18n="nav_market_watch">📈 Market Watch</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="military.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label" data-i18n="nav_military">🎖️ Military Tracker</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_rhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_me">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_asia">🌏 Asia</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_europe">🌍 Europe</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label" data-i18n="nav_rhetoric_wha">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_peru">Afghanistan</div>
+    <a href="afghanistan-stability.html" class="nav-btn current-page">
+        <span class="nav-btn-label" data-i18n="nav_peru_stability">🇦🇫 Afghanistan Stability</span>
+        <span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span>
+    </a>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ════════════════════════════════════════════════════════════ -->
+<div class="main-content">
+
+<!-- ── U.S. STATE DEPARTMENT WORLDWIDE CAUTION ── -->
+<div class="advisory-row" style="
+    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
+    border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+">
+    <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+    <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+</div>
+
+<!-- ── AFGHANISTAN TRAVEL ADVISORY (dynamic — fetched from WHA backend) ── -->
+<div class="advisory-row" id="afgTravelAdvisory" style="
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+">
+    <div style="font-size: 24px; flex-shrink: 0;">🇦🇫</div>
+    <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Afghanistan Travel Advisory</span>
+            <span id="afgTravelLevel" style="background: #f59e0b; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;" data-i18n="travel_level">LOADING…</span>
+        </div>
+        <div id="afgTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n="travel_text"><strong style='color: #f59e0b;'>Exercise Increased Caution.</strong>Level 4: Do Not Travel — terrorism, risk of wrongful detention, and civil unrest. There is no U.S. diplomatic presence in Afghanistan; the U.S. government cannot provide routine or emergency services to U.S. citizens.</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/afghanistan-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="travel_button">VIEW ADVISORY →</a>
+</div>
+
+<!-- ── RHETORIC TRACKER BANNER (canonical green pointer) ── -->
+<div class="rhetoric-banner-canonical" id="rhetoricBanner" style="display:none;">
+    <div style="font-size:24px;flex-shrink:0;">📡</div>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;">Afghanistan Rhetoric Tracker — Live</span>
+            <span class="rhet-banner-badge" id="rhetoricBannerPill">LOADING</span>
+            <span class="rhet-banner-badge" id="rhetoricBannerScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+        </div>
+        <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="rhetoricBannerHeadline">Loading Afghanistan pressure assessment…</div>
+    </div>
+    <a href="rhetoric-afghanistan.html" class="rhet-banner-link">Open Tracker →</a>
+</div>
+
+<!-- ── AFGHANISTAN RHETORIC TRACKER LIVE CARD (v1.0.0 May 9 2026) ── -->
+<!-- Pulls /api/rhetoric/afghanistan — composite gauge + top signals + link to full tracker -->
+<div class="metric-card" id="afgRhetoricCard" style="border-left: 4px solid #4ade80;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+        <div>
+            <div class="section-title" style="margin-bottom:4px;" data-i18n="afg_rhetoric_title">📡 🇦🇫 Afghanistan Rhetoric &amp; Pressure Tracker</div>
+            <div style="font-size:11px; color:var(--text-secondary);" data-i18n="afg_rhetoric_subtitle">Multi-actor · 4-vector composite · four-wheel contested node · tracker deploying soon</div>
+        </div>
+        <a href="rhetoric-afghanistan.html" style="font-size:12px; padding:6px 14px; background:rgba(74,222,128,0.10); border:1px solid rgba(74,222,128,0.30); color:#4ade80; border-radius:6px; text-decoration:none; font-weight:700; letter-spacing:0.5px;" data-i18n="afg_rhetoric_full">View full tracker →</a>
+    </div>
+
+    <!-- Composite gauge strip — 1 composite + 4 vectors -->
+    <div id="afgRhetoricGauges" style="display:grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+        <div class="afg-gauge composite" data-vector="composite">
+            <div class="afg-gauge-label" data-i18n="afg_rh_composite">Composite</div>
+            <div class="afg-gauge-value">—</div>
+            <div class="afg-gauge-pill">—</div>
+        </div>
+        <div class="afg-gauge" data-vector="kinetic_afpak">
+            <div class="afg-gauge-label" data-i18n="afg_rh_vec_kinetic">Af-Pak Kinetic</div>
+            <div class="afg-gauge-value">—</div>
+            <div class="afg-gauge-pill">—</div>
+        </div>
+        <div class="afg-gauge" data-vector="repression_rights">
+            <div class="afg-gauge-label" data-i18n="afg_rh_vec_repression">Repression</div>
+            <div class="afg-gauge-value">—</div>
+            <div class="afg-gauge-pill">—</div>
+        </div>
+        <div class="afg-gauge" data-vector="external_friction">
+            <div class="afg-gauge-label" data-i18n="afg_rh_vec_external">External Wheels</div>
+            <div class="afg-gauge-value">—</div>
+            <div class="afg-gauge-pill">—</div>
+        </div>
+        <div class="afg-gauge" data-vector="illicit_economy">
+            <div class="afg-gauge-label" data-i18n="afg_rh_vec_illicit">Illicit Economy</div>
+            <div class="afg-gauge-value">—</div>
+            <div class="afg-gauge-pill">—</div>
         </div>
     </div>
 
-    <div class="container">
-        <header>
-            <a href="asia.html" class="back-link" data-i18n="backLink">&#8592; Back to Dashboard</a>
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
-            <div class="header-content">
-                <h1 data-i18n="pageTitle">🇦🇫 AFGHANISTAN STABILITY INDEX</h1>
-                <div class="subtitle" data-i18n="pageSubtitle">Multi-Factor Analysis: Taliban Governance, ISIS-K Activity, Pakistan Border Tensions &amp; Humanitarian Crisis</div>
-                <div class="last-updated" id="lastUpdated" data-i18n="lastUpdated">Last updated: Loading...</div>
-            </div>
-            <div class="header-controls">
-                <div class="language-switcher">
-                    <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
-                    <button class="lang-btn" onclick="switchLanguage('ps', this)">پښ</button>
-                    <button class="lang-btn" onclick="switchLanguage('fa', this)">دری</button>
-                    <button class="lang-btn" onclick="switchLanguage('ar', this)">ع</button>
-                </div>
-                <div class="theme-toggle">
-                    <span class="theme-toggle-label" data-i18n="themeToggle">Theme</span>
-                    <div class="theme-toggle-switch" onclick="toggleTheme()">
-                        <div class="theme-toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- U.S. STATE DEPARTMENT — WORLDWIDE CAUTION -->
-        <div style="
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
-            border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
-            margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        ">
-            <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
-            <div style="flex: 1;">
-                <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;">⚠️ U.S. State Department — Worldwide Caution</div>
-                <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
-            </div>
-            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW CAUTION →</a>
-        </div>
-
-        <!-- AFGHANISTAN TRAVEL ADVISORY — Level 4 -->
-        <div style="
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
-            border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
-            margin-bottom: 15px; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        ">
-            <div style="font-size: 24px; flex-shrink: 0;">🇦🇫</div>
-            <div style="flex: 1;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                    <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;">U.S. State Department — Afghanistan Travel Advisory</span>
-                    <span style="background: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LEVEL 4</span>
-                </div>
-                <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;"><strong style='color: #ef4444;'>Do Not Travel to Afghanistan</strong> due to terrorism, kidnapping, armed conflict, civil unrest, and the absence of a U.S. Embassy. The U.S. Embassy in Kabul suspended operations in August 2021. U.S. citizens in Afghanistan should depart immediately.</div>
-            </div>
-            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/afghanistan-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW ADVISORY →</a>
-        </div>
-
-        <!-- MAP SECTION -->
-        <div class="map-section">
-            <h2>&#x1F5FA;&#xFE0F; <span data-i18n="mapTitle">Afghanistan &#8212; Regional Overview</span></h2>
-            <div class="map-subtitle" data-i18n="mapSubtitle">Interactive map centered on Kabul. Provincial control overlays and incident markers coming soon.</div>
-            <div style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden;">
-                <iframe
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=60.5%2C29.3%2C74.9%2C38.5&layer=mapnik&marker=34.52%2C69.18"
-                    width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
-                </iframe>
-            </div>
-        </div>
-
-        <!-- KNOWLEDGE LIBRARY -->
-        <div class="knowledge-library">
-            <h2>
-                <span class="library-icon">&#x1F4DA;</span>
-                <span data-i18n="knowledgeLibraryTitle">Knowledge Library</span>
-            </h2>
-            <p class="open-source-disclaimer">
-                Note: Background information is compiled from open-source research and analysis. One-pager documents for each category are under development.
-            </p>
-
-            <div class="knowledge-categories">
-
-                <!-- Taliban Governance &amp; Control -->
-                <div class="knowledge-card collapsed" id="card-taliban">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('taliban')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">⚔️</span>
-                            <span>Taliban Governance &amp; Control</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>The Taliban (Islamic Emirate of Afghanistan)</strong> seized control of Afghanistan in August 2021 following the U.S. withdrawal. The group functions as a de facto government with ministries and courts but lacks international recognition.</p>
-                        <p><strong>Key Governance Dynamics:</strong></p>
-                        <ul>
-                            <li><strong>Supreme Leader:</strong> Haibatullah Akhundzada rules from Kandahar; rarely appears publicly</li>
-                            <li><strong>Women's Rights:</strong> Banned from secondary and university education, most employment, and public spaces — the most severe restrictions globally</li>
-                            <li><strong>International Isolation:</strong> No country formally recognizes the Taliban government; sanctions restrict economic activity</li>
-                            <li><strong>Internal Divisions:</strong> Tensions between Kandahari hardliners and more pragmatic Kabul-based officials persist</li>
-                            <li><strong>Economic Collapse:</strong> GDP fell 20-30% post-2021; foreign reserves frozen; banking system severely constrained</li>
-                        </ul>
-                        <p><strong>International Engagement:</strong> Some countries maintain limited diplomatic presence; Qatar serves as a key intermediary. Taliban seeks sanctions relief and international recognition in exchange for security guarantees.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.crisisgroup.org/asia/south-asia/afghanistan" target="_blank" class="report-link">&#x1F4D1; Crisis Group - Afghanistan</a>
-<a href="https://www.unocha.org/afghanistan" target="_blank" class="report-link">&#x1F4D1; UN OCHA - Afghanistan</a>
-<a href="https://www.sigar.mil/" target="_blank" class="report-link">&#x1F4D1; SIGAR - Inspector General</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ISIS-K &amp; Terrorism Landscape -->
-                <div class="knowledge-card collapsed" id="card-isis_k">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('isis_k')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">💣</span>
-                            <span>ISIS-K &amp; Terrorism Landscape</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>Islamic State Khorasan Province (ISIS-K)</strong> is the primary terrorist threat in Afghanistan, conducting attacks against Taliban forces, Shia minorities, foreign interests, and regional targets.</p>
-                        <p><strong>Operational Profile:</strong></p>
-                        <ul>
-                            <li><strong>High-Profile Attacks:</strong> Abbey Gate bombing (2021, 182 killed), Kabul hotel attack, Kandahar mosque bombings targeting Hazara community</li>
-                            <li><strong>External Reach:</strong> Claimed attacks in Russia (Moscow concert hall, 2024), Iran, and Europe; expanding recruitment beyond Afghanistan</li>
-                            <li><strong>Taliban-ISIS Conflict:</strong> Taliban conducts regular counterterrorism operations against ISIS-K; both groups are adversaries</li>
-                            <li><strong>Recruitment:</strong> Draws from disaffected former Afghan security forces, Pakistani Taliban (TTP) defectors, and Central Asian militants</li>
-                        </ul>
-                        <p><strong>Regional Threat:</strong> U.S. and allied intelligence assess ISIS-K as the most significant near-term external attack planning threat from the Afghanistan-Pakistan region.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.dni.gov/" target="_blank" class="report-link">&#x1F4D1; ODNI - Threat Assessment</a>
-<a href="https://www.acleddata.com/" target="_blank" class="report-link">&#x1F4D1; ACLED - Conflict Data</a>
-<a href="https://ctc.westpoint.edu/" target="_blank" class="report-link">&#x1F4D1; CTC - West Point</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pakistan Border &amp; Regional Dynamics -->
-                <div class="knowledge-card collapsed" id="card-pakistan_border">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('pakistan_border')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">🗺️</span>
-                            <span>Pakistan Border &amp; Regional Dynamics</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>The Afghanistan-Pakistan border</strong> remains one of the world's most volatile frontiers, shaped by the unresolved Durand Line dispute and cross-border militant activity.</p>
-                        <p><strong>Key Issues:</strong></p>
-                        <ul>
-                            <li><strong>TTP Sanctuary:</strong> Tehrik-i-Taliban Pakistan (TTP) operates from Afghan territory, launching attacks into Pakistan; Taliban refuses extradition or crackdown</li>
-                            <li><strong>Pakistan Airstrikes:</strong> Pakistan has conducted multiple strikes inside Afghanistan targeting TTP positions in Khost, Paktika, and Kunar provinces</li>
-                            <li><strong>Torkham &amp; Spin Boldak:</strong> Key border crossings subject to periodic closure during tensions; critical for trade and aid</li>
-                            <li><strong>Afghan Refugees:</strong> Pakistan hosts ~3 million Afghan refugees; deportation campaigns create humanitarian strain</li>
-                            <li><strong>Durand Line:</strong> Afghanistan does not recognize the border as the permanent international boundary</li>
-                        </ul>
-                        <p><strong>Iran Border:</strong> Western Afghanistan sees cross-border tensions with Iran over water rights (Helmand River) and drug trafficking routes.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.crisisgroup.org/asia/south-asia/pakistan" target="_blank" class="report-link">&#x1F4D1; Crisis Group - Pakistan</a>
-<a href="https://gandhara.rferl.org/" target="_blank" class="report-link">&#x1F4D1; RFE/RL Gandhara</a>
-<a href="https://www.longwarjournal.org/" target="_blank" class="report-link">&#x1F4D1; Long War Journal</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Humanitarian Crisis -->
-                <div class="knowledge-card collapsed" id="card-humanitarian">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('humanitarian')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">🏥</span>
-                            <span>Humanitarian Crisis</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>Afghanistan faces one of the world's worst humanitarian crises</strong>, with economic collapse, drought, and governance failures producing acute need across the country.</p>
-                        <p><strong>Key Indicators:</strong></p>
-                        <ul>
-                            <li><strong>Food Insecurity:</strong> 23+ million Afghans face acute food insecurity; IPC Phase 3+ (crisis or worse)</li>
-                            <li><strong>Displacement:</strong> 3.5+ million internally displaced persons (IDPs); millions more as refugees in Pakistan and Iran</li>
-                            <li><strong>Healthcare:</strong> System severely degraded; maternal mortality among the highest globally; polio persists</li>
-                            <li><strong>Women &amp; Girls:</strong> Banned from most healthcare jobs and education; female-led aid organizations restricted</li>
-                            <li><strong>Economy:</strong> 97% of population below poverty line by some estimates; liquidity crisis in banking sector</li>
-                        </ul>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.wfp.org/emergencies/afghanistan-emergency" target="_blank" class="report-link">&#x1F4D1; WFP - Afghanistan</a>
-<a href="https://www.unicef.org/afghanistan/" target="_blank" class="report-link">&#x1F4D1; UNICEF - Afghanistan</a>
-<a href="https://www.unocha.org/afghanistan" target="_blank" class="report-link">&#x1F4D1; UN OCHA - Afghanistan</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Regional Powers &amp; Geopolitics -->
-                <div class="knowledge-card collapsed" id="card-regional">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('regional')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">🌏</span>
-                            <span>Regional Powers &amp; Geopolitics</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>Afghanistan sits at the crossroads</strong> of South Asia, Central Asia, and the Middle East, making it a contested arena for regional power competition.</p>
-                        <p><strong>Key External Actors:</strong></p>
-                        <ul>
-                            <li><strong>China:</strong> Engaged with Taliban on economic interests (copper, lithium); concerned about Uyghur militant presence; Belt and Road ambitions</li>
-                            <li><strong>Russia:</strong> Maintains Taliban engagement; concerned about ISIS-K northward expansion into Central Asia</li>
-                            <li><strong>Iran:</strong> Complex relationship with Taliban (Shia-Sunni tensions; water disputes); hosts Afghan refugees; opposes ISIS-K</li>
-                            <li><strong>Pakistan:</strong> Created Taliban but now threatened by TTP blowback; seeking leverage while managing instability</li>
-                            <li><strong>Central Asian States:</strong> Uzbekistan and Tajikistan host U.S./NATO logistics; concerned about spillover</li>
-                        </ul>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.brookings.edu/topic/afghanistan/" target="_blank" class="report-link">&#x1F4D1; Brookings - Afghanistan</a>
-<a href="https://carnegieendowment.org/" target="_blank" class="report-link">&#x1F4D1; Carnegie Endowment</a>
-<a href="https://www.rusi.org/" target="_blank" class="report-link">&#x1F4D1; RUSI - Afghanistan Analysis</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- RECENT ARTICLES -->
-        <div class="articles-section">
-            <div class="section-title" data-i18n="recentArticles">&#x1F4F0; Recent Afghanistan &amp; Regional Security Articles (Last 7 Days)</div>
-            <div id="articlesContainer">
-                <div style="text-align: center; color: var(--text-secondary); padding: 30px;">Loading articles...</div>
-            </div>
-        </div>
-
-        <footer>
-            <div>Data Sources: NewsAPI, GDELT, UN OCHA, ACLED, SIGAR, and OSINT sources</div>
-            <div style="margin-top:15px; font-size:0.85em;">
-                Pashto, Dari, and Arabic feeds via GDELT. Reddit intelligence from r/afghanistan, r/geopolitics, r/WarCollege.
-            </div>
-            <div style="margin-top:15px;">For inquiries, contact: <a href="mailto:asifahanalytics@gmail.com" style="color:var(--accent);">asifahanalytics@gmail.com</a></div>
-
-            <div style="margin-top:25px; padding:15px; background:var(--article-bg); border-radius:8px;">
-                <div style="font-size:0.9em; margin-bottom:8px;">Asifah Analytics v1.0.0</div>
-                <div style="font-size:0.8em;">Updated every 30 minutes | Not for operational use</div>
-            </div>
-
-            <div style="margin-top:20px; padding:15px; background:rgba(139,0,0,0.2); border-radius:8px;">
-                <span style="font-size:0.9em;">
-                    If you find Asifah Analytics useful and want to support ongoing development, you can
-                    <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--accent);">&#x2615; buy me a coffee</a>
-                </span>
-            </div>
-
-            <div style="margin-top:25px; font-size:0.75em; color:var(--text-muted);">
-                &copy; 2026 RCGG. All Rights Reserved. Proprietary and Confidential.<br>
-                Unauthorized use, reproduction, or distribution prohibited.
-            </div>
-        </footer>
+    <!-- Executive summary line -->
+    <div id="afgRhetoricSummary" style="font-size:13px; line-height:1.55; color:var(--text-primary); padding:10px 14px; background:rgba(74,222,128,0.05); border:1px solid rgba(74,222,128,0.15); border-radius:6px; margin-bottom:12px;">
+        <span style="color:var(--text-muted);" data-i18n="afg_rhetoric_loading">Loading rhetoric snapshot…</span>
     </div>
 
-    <script>
-        const BACKEND_URL = 'https://asifah-asia-backend.onrender.com';
-        const RTL_LANGS = ["ps", "fa", "ar"];
+    <!-- Top 3 signals (compact) -->
+    <div id="afgRhetoricTopSignals" style="display:flex; flex-direction:column; gap:8px;"></div>
+</div>
 
-        // Theme
-        function initTheme() {
-            const savedTheme = localStorage.getItem('asifah-theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
+<style>
+    /* ── Gold Standard baseline treatment (Jun 9 2026 canon) ── */
+    .afg-gauge.composite .afg-gauge-value { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+    .afg-gauge.composite .afg-gauge-value.calm-baseline { color: #38bdf8; }
+    .afg-gauge-pill.calm-baseline { background: rgba(56,189,248,0.15) !important; color: #38bdf8 !important; border-color: rgba(56,189,248,0.4) !important; }
+    .afg-rh-signal { border-left: 3px solid #38bdf8; padding-left: 9px; }
+    .afg-rh-signal.lvl-elevated { border-left-color: #f59e0b; }
+    .afg-rh-signal.lvl-high     { border-left-color: #f97316; }
+    .afg-rh-signal.lvl-surge    { border-left-color: #ef4444; }
+
+    /* Afghanistan rhetoric card gauges — compact arctic styling */
+    .afg-gauge {
+        background: rgba(13,27,46,0.5);
+        border: 1px solid rgba(56,189,248,0.20);
+        border-radius: 8px;
+        padding: 10px 12px;
+        text-align: left;
+    }
+    body[data-theme="light"] .afg-gauge {
+        background: rgba(240,245,250,0.7);
+        border-color: rgba(56,189,248,0.30);
+    }
+    .afg-gauge.composite { border-color: rgba(74,222,128,0.35); }
+    .afg-gauge-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+    .afg-gauge-value {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1.1;
+    }
+    .afg-gauge.composite .afg-gauge-value { font-size: 1.4rem; color: #4ade80; }
+    .afg-gauge-pill {
+        display: inline-block;
+        font-size: 9px;
+        padding: 1px 7px;
+        border-radius: 10px;
+        margin-top: 4px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: 1px solid var(--card-border);
+        color: var(--text-muted);
+    }
+    .afg-gauge-pill.lvl-low      { background: rgba(16,185,129,0.10); border-color: #10b981; color: #10b981; }
+    .afg-gauge-pill.lvl-normal   { background: rgba(56,189,248,0.10); border-color: #38bdf8; color: #38bdf8; }
+    .afg-gauge-pill.lvl-elevated { background: rgba(245,158,11,0.10); border-color: #f59e0b; color: #f59e0b; }
+    .afg-gauge-pill.lvl-high     { background: rgba(249,115,22,0.10); border-color: #f97316; color: #f97316; }
+    .afg-gauge-pill.lvl-surge    { background: rgba(239,68,68,0.12);  border-color: #ef4444; color: #ef4444; }
+
+    .afg-rh-signal {
+        background: rgba(13,27,46,0.4);
+        border-left: 3px solid var(--card-border);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+    body[data-theme="light"] .afg-rh-signal { background: rgba(240,245,250,0.6); }
+    .afg-rh-signal.lvl-low      { border-left-color: #10b981; }
+    .afg-rh-signal.lvl-normal   { border-left-color: #38bdf8; }
+    .afg-rh-signal.lvl-elevated { border-left-color: #f59e0b; }
+    .afg-rh-signal.lvl-high     { border-left-color: #f97316; }
+    .afg-rh-signal.lvl-surge    { border-left-color: #ef4444; }
+    .afg-rh-signal-short { color: var(--text-primary); font-weight: 700; margin-bottom: 3px; }
+    .afg-rh-signal-type {
+        display: inline-block;
+        font-size: 9px;
+        padding: 1px 6px;
+        border-radius: 3px;
+        background: rgba(56,189,248,0.10);
+        color: var(--accent);
+        margin-right: 6px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    @media (max-width: 760px) {
+        #afgRhetoricGauges { grid-template-columns: 1fr 1fr !important; }
+    }
+</style>
+
+<!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 ── -->
+<div class="commodity-card" id="commodityCard">
+    <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+
+    <div class="commodity-prose" id="commodityProse">
+        <span data-i18n="commodity_prose_loading">Loading commodity exposure profile…</span>
+    </div>
+
+    <!-- COPPER × CHINA DEMAND CONVERGENCE ALERT -->
+    <div class="commodity-convergence-alert" id="commodityConvergenceAlertCopper">
+        <div class="cca-title" data-i18n="cca_copper_title">⚡ Copper × Mining-Region Conflict Convergence</div>
+        <div class="cca-detail" data-i18n="cca_copper_detail">Afghanistan is a net commodity importer at the household level — wheat and fuel dependence transmit global price shocks straight into humanitarian strain — while its export story (minerals, Mes Aynak copper) is potential rather than production.</div>
+    </div>
+
+    <!-- SILVER × PRESIDENTIAL INSTABILITY CONVERGENCE ALERT -->
+    <div class="commodity-convergence-alert" id="commodityConvergenceAlertSilver" style="background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(139,92,246,0.18) 100%); border-color: #a855f7;">
+        <div class="cca-title" data-i18n="cca_silver_title" style="color: #c4b5fd;">🪙 Silver × Presidential Instability</div>
+        <div class="cca-detail" data-i18n="cca_silver_detail" style="color: #ddd6fe;">Wheat import dependence is the primary commodity coupling; Central Asia export policy and Pakistan border closures are the transmission channels.</div>
+    </div>
+
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+
+    <div class="commodity-grid" id="commodityGrid">
+        <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;" data-i18n="commodity_loading">
+            ⏳ Loading commodity exposure tiles…
+        </div>
+    </div>
+
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;">
+        <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
+        <div id="commodityTopSignalsList"></div>
+    </div>
+
+    <div class="strategic-linkage" data-i18n-html="strategic_linkage">
+        <strong>🎯 Strategic Linkage:</strong> Afghanistan's commodity exposure runs import-side (wheat, fuel) into humanitarian strain, and extraction-side (Mes Aynak copper, lithium narrative) into the China wheel — both feed the contested-node read rather than a producer-shock read.</strong> (legacy note removed — Moz, ~13% global) with the largest silver reserves per USGS, plus a top-tier copper producer (Antamina, Toromocho, Las Bambas). Mining accounts for ~60% of export earnings and ~10% of GDP. The structural risk is political: <strong>presidential instability since 2022</strong>Watch the China-wheel extraction file (Mes Aynak timelines, Amu Darya oil) and wheat-corridor policy in Central Asia — the two commodity channels that move the Afghanistan read.</div>
+</div>
+
+<!-- ── STABILITY SCORE PLACEHOLDER (scaffolding for future afghanistan_stability.py) ── -->
+<div class="metric-card">
+    <div class="subsection-title" data-i18n="stability_card_title">🇦🇫 Afghanistan Stability Index</div>
+    <div class="stability-score-row">
+        <div class="stability-score-big" id="stabilityScore">--</div>
+        <span id="stabilityLevelLabel" class="stability-label level-0">Pending</span>
+    </div>
+    <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.55;" data-i18n-html="stability_card_text">
+        Multi-factor stability assessment combining Af-Pak border kinetics, Taliban governance cohesion (Kandahar emirate vs Kabul cabinet), ISKP activity, humanitarian/seismic strain, and external-wheel engagement (Iran · Pakistan · Russia · China).<br><br><em style="color:var(--text-muted);">Detailed stability scoring backend (afghanistan_stability.py) is in development. Until then, draw stability inferences from the sensor cards below and the Knowledge Library. When the rhetoric tracker ships, this card will populate with a theatre score (inbound + outbound max levels).</em>
+    </div>
+    <div class="stability-meta-grid">
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_mil_posture">Military Posture</div>
+            <div class="stability-meta-value" id="metaMilPosture">--</div>
+        </div>
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_rhetoric">Rhetoric Tier</div>
+            <div class="stability-meta-value" id="metaRhetoric">Pending</div>
+        </div>
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_commodity">Commodity Pressure</div>
+            <div class="stability-meta-value" id="metaCommodity">--</div>
+        </div>
+        <div class="stability-meta-item">
+            <div class="stability-meta-label" data-i18n="meta_alert">Alert Level</div>
+            <div class="stability-meta-value" id="metaAlert">--</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MAP SECTION ── -->
+<!-- === DISASTER SENSOR CARD -- afghanistan_humanitarian.py (USGS Hindu Kush bbox; Jul 2026) === -->
+<div class="card" id="afgDisasterCard" style="margin-bottom:24px; display:none;">
+    <div class="subsection-title">🌋 <span data-i18n="eq_card_title">DISASTER SENSOR — HINDU KUSH SEISMIC WATCH</span></div>
+    <div id="afgDisasterHead" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;"></div>
+    <div id="afgDisasterEvents" style="font-size:12px;color:var(--text-secondary);"></div>
+    <div style="margin-top:10px;font-size:10px;color:var(--text-muted);" data-i18n="eq_source_note">Sensor: USGS bounding-box seismic record (30-day window) · GDACS · ReliefWeb · raw facts — the reader completes the inference. Mud-brick construction drives catastrophic fatality ratios at moderate magnitudes.</div>
+</div>
+
+<!-- === REFUGEE / RETURNS SENSOR CARD -- IOM DTM + UNHCR live feeds (Jul 2026) === -->
+<div class="card" id="afgRefugeeCard" style="margin-bottom:24px; display:none;">
+    <div class="subsection-title">🧭 <span data-i18n="ref_card_title">DISPLACEMENT SENSOR — REFUGEES &amp; RETURNS</span></div>
+    <div id="afgRefugeeHead" style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px;"></div>
+    <div id="afgRefugeeHosts" style="font-size:12px;color:var(--text-secondary);"></div>
+    <div id="afgRefugeeNote" style="margin-top:8px;font-size:11px;color:var(--text-secondary);font-style:italic;"></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--text-muted);" data-i18n="ref_source_note">Live: UNHCR Population API · IOM DTM (attempted each sweep) · static sourced baseline as honest floor · 12h refresh</div>
+</div>
+
+<div class="card" id="govTransitionCard" style="margin-bottom:24px;">
+    <div class="subsection-title" data-i18n="gov_card_title">🏛️ Taliban Government — Dual-Power Structure</div>
+    <div style="font-size:0.85rem;color:var(--text-primary);line-height:1.6;" data-i18n-html="gov_card_text">
+        The Islamic Emirate operates on a <strong>Kandahar–Kabul dual axis</strong>: supreme authority rests with Emir <strong>Haibatullah Akhundzada</strong> and the Kandahar clerical circle, while the Kabul cabinet administers day-to-day governance — PM <strong>Mohammad Hasan Akhund</strong>, Interior Minister <strong>Sirajuddin Haqqani</strong> (Haqqani network), Defense Minister <strong>Mohammad Yaqoob</strong> (Omar's son), FM <strong>Amir Khan Muttaqi</strong>. Kandahar has consistently won internal disputes (girls' education, morality enforcement), and the Haqqani–Kandahar friction is the regime's principal internal fault line.
+        <br><br>
+        <em style="color:var(--text-muted);">No state has recognized the Emirate except Russia (2025); China and others maintain accredited-ambassador engagement without recognition. Repression — particularly the erasure of women from public life — is both a governance instrument and the primary barrier to normalization. Verify roster details against current reporting; cabinet composition shifts by decree.</em>
+    </div>
+</div>
+
+<div class="map-section">
+    <h2 data-i18n="map_title">🗺️ Afghanistan — Strategic Overview</h2>
+    <div class="map-subtitle" data-i18n="map_subtitle">Interactive map centered on Kabul. The Durand Line frontier, Wakhan Corridor, Herat–Iran border, Badakhshan (Hindu Kush seismic zone), and the Helmand River basin are key monitoring zones.</div>
+    <div style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden;">
+        <iframe
+            src="https://www.openstreetmap.org/export/embed.html?bbox=-82%2C-19%2C-68%2C0&layer=mapnik&marker=-12.0464%2C-77.0428"
+            width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
+        </iframe>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     KNOWLEDGE LIBRARY
+     ════════════════════════════════════════════════════════════ -->
+<div class="knowledge-library">
+    <h2>
+        <span class="library-icon">📚</span>
+        <span data-i18n="kl_title">Knowledge Library</span>
+    </h2>
+    <p class="open-source-disclaimer" data-i18n="kl_disclaimer">
+        Background information compiled from open-source research and analysis. One-pager documents for each category are under development.
+    </p>
+
+    <div class="knowledge-categories">
+
+        <!-- Silver, Copper & Mining-Region Conflict -->
+                <div class="knowledge-card collapsed" id="card-governance">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('governance')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🏛️</span>
+                    <span data-i18n="kl_governance_title">Taliban Governance — the Kandahar–Kabul Split</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_governance_body">
+                <p><strong>The Emirate runs on a dual axis.</strong> Supreme authority sits with Emir Haibatullah Akhundzada and the Kandahar clerical circle; the Kabul cabinet (Akhund, Haqqani, Yaqoob, Muttaqi) administers. Kandahar has won every major internal dispute — girls' education, morality law, media policy — and edicts flow by decree, not process.</p>
+                <p><strong>Repression as governance:</strong> the systematic erasure of women from education, work, and public space is both an ideological project and the binding constraint on aid, recognition, and normalization. The Haqqani–Kandahar friction (pragmatists vs. clerics) is the regime's principal internal fault line and a standing succession-risk watch item.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-afpak">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('afpak')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">⚔️</span>
+                    <span data-i18n="kl_afpak_title">Af-Pak — the Durand Line &amp; TTP</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_afpak_body">
+                <p><strong>The kinetic frontier.</strong> Pakistan accuses Kabul of sheltering Tehrik-e-Taliban Pakistan (TTP); cross-border strikes, artillery exchanges, and border-crossing closures (Torkham, Chaman) recur. Islamabad's mass deportation of Afghan refugees doubles as a pressure lever.</p>
+                <p><strong>The Durand Line itself</strong> — the 1893 colonial boundary — has never been formally accepted by any Afghan government, Taliban included. Fencing disputes and checkpoint clashes are structural, not incidental. This is the platform's primary Afghanistan kinetic vector.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-iskp">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('iskp')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">💣</span>
+                    <span data-i18n="kl_iskp_title">ISIS-Khorasan — the Terror-Export Vector</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_iskp_body">
+                <p><strong>Afghanistan's most direct line to global pressure.</strong> ISKP has struck Moscow (Crocus City Hall, Mar 2024), Kerman, Iran (Jan 2024 — Iran's deadliest attack since 1979), Kabul repeatedly, and has driven plot disruptions across Europe. It is the Taliban's principal armed rival and the shared reason Russia, China, and Iran engage Kabul on security.</p>
+                <p><strong>Watch logic:</strong> external ISKP attacks attributed to Afghan-based planning raise pressure in the target theater AND on the Kabul relationship simultaneously — a two-theater signal by construction.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-drugs">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('drugs')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">💊</span>
+                    <span data-i18n="kl_drugs_title">The Drug Economy — After the Poppy Ban</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_drugs_body">
+                <p><strong>The classic opium story is outdated.</strong> The Taliban's 2022 cultivation ban collapsed poppy by roughly 95% (2023). The current economy: <strong>methamphetamine</strong> (ephedra-based) surging along the same corridors, opium <strong>stockpile drawdown</strong> enriching holders, and farmer immiseration in former poppy provinces driving rural instability.</p>
+                <p><strong>Corridor geography persists:</strong> Balkan route via Iran, southern route via Pakistan, northern route via Central Asia — trafficking revenue and border friction remain live regardless of which commodity moves.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-water">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('water')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">💧</span>
+                    <span data-i18n="kl_water_title">Water — Helmand Treaty &amp; the Qosh Tepa Canal</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_water_body">
+                <p><strong>Two water disputes with theater implications.</strong> The Helmand River treaty dispute with Iran (Sistan-Baluchestan's lifeline) has produced actual border firefights and feeds the Iran-friction spoke directly. The <strong>Qosh Tepa Canal</strong> — the Emirate's flagship project — threatens to divert a significant share of Amu Darya flow from Uzbekistan and Turkmenistan.</p>
+                <p><strong>Read:</strong> Afghanistan quietly destabilizing two neighboring regions through irrigation policy — chronically underreported, structurally escalating with climate stress.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-wheels">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('wheels')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🛞</span>
+                    <span data-i18n="kl_wheels_title">The Four Wheels — Iran, Pakistan, Russia, China</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_wheels_body">
+                <p><strong>Afghanistan is a contested node on four wheels</strong> (Azerbaijan-schema): <strong>Iran = friction</strong> (water, deportations, sectarian frictions, yet pragmatic trade); <strong>Pakistan = kinetic</strong> (TTP, Durand Line); <strong>Russia = normalization</strong> (first state to formally recognize the Emirate, 2025 — driven by ISKP counterterrorism and Central Asia buffer logic); <strong>China = extraction</strong> (Mes Aynak copper, Amu Darya oil, first accredited Taliban ambassador, Wakhan security anxieties).</p>
+                <p><strong>Read:</strong> mixed-polarity engagement — no coalition, four separate wheels each managing Kabul for its own reasons. Multi-wheel convergence is the GPI-relevant signal.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-aftermath">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('aftermath')">
+                <div class="knowledge-header-title">
+                    <span class="category-icon">🏦</span>
+                    <span data-i18n="kl_aftermath_title">Withdrawal Aftermath — Frozen Reserves &amp; Aid Collapse</span>
+                </div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content" data-i18n-html="kl_aftermath_body">
+                <p><strong>The economic architecture never recovered from Aug 2021.</strong> Roughly $7B in central-bank reserves frozen (half in the Swiss-based Afghan Fund), the banking sector isolated from correspondent networks, and donor flows compressed further by Taliban restrictions on female aid workers.</p>
+                <p><strong>Paradox worth tracking:</strong> the afghani has been surprisingly stable — UN cash shipments, import compression, and remittances prop it up — a stability that measures isolation, not health. Humanitarian need remains among the world's largest.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── RECENT ARTICLES (tabbed: EN / ES / Social) ── -->
+<div class="articles-section">
+    <div class="section-title" data-i18n="articles_title">📰 Recent Afghanistan &amp; Regional Security Articles</div>
+    <div class="article-tabs" id="articleTabs">
+        <div class="article-tab active" data-tab="all" onclick="filterArticles('all')" data-i18n="tab_all">All</div>
+        <div class="article-tab" data-tab="en" onclick="filterArticles('en')" data-i18n="tab_en">English</div>
+        <div class="article-tab" data-tab="es" onclick="filterArticles('es')" data-i18n="tab_es">Local</div>
+        <div class="article-tab" data-tab="social" onclick="filterArticles('social')" data-i18n="tab_social">Social</div>
+    </div>
+    <ul class="articles-list" id="articlesList">
+        <li style="text-align: center; color: var(--text-muted); padding: 30px;">
+            <span class="loading-dot">●</span><span class="loading-dot">●</span><span class="loading-dot">●</span>
+            <span data-i18n="articles_loading">Loading articles...</span>
+        </li>
+    </ul>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════════ -->
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — PERU</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Comercio, La República, Gestión, RPP, Ojo Público, Reuters) · NewsAPI · Brave</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+</footer>
+
+</div> <!-- /main-content -->
+</div> <!-- /page-with-sidebar -->
+</div> <!-- /container -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// PERU STABILITY — Frontend Logic v1.0.0
+// EN / ES / PT i18n + Gold Standard commodity card
+// Backends: WHA (asifah-wha-backend) + ME (asifah-backend) for commodity
+// ════════════════════════════════════════════════════════════
+const ASIA_BACKEND = 'https://asifah-asia-backend.onrender.com';
+const ME_BACKEND  = 'https://asifah-backend.onrender.com';
+
+// ════════════════════════════════════════════════════════════
+// TRANSLATIONS — EN / ES / PT
+// ════════════════════════════════════════════════════════════
+const TRANSLATIONS = {
+    en: {
+        page_title: '🇦🇫 AFGHANISTAN STABILITY INDEX',
+        page_subtitle: 'Contested node · four wheels · sensor-first coverage',
+        loading_title: 'Loading Afghanistan data…',
+        loading_progress: 'Contacting Asia backend…',
+        back_to_wha: '← Asia Dashboard',
+        theme_label: 'Theme',
+        nav_dashboards: 'Dashboards',
+        nav_africa: '🌍 Africa',
+        nav_asia_pacific: '🌏 Asia & Pacific',
+        nav_europe: '🌍 Europe',
+        nav_me: '🕌 Middle East',
+        nav_wha: '🌎 Western Hemisphere',
+        nav_global_trackers: 'Global Trackers',
+        nav_commodities: '🌾 Commodities',
+        nav_gpi: '🌐 Global Pressure Index',
+        nav_market_watch: '📈 Market Watch',
+        nav_military: '🎖️ Military Tracker',
+        nav_rhetoric: 'Regional Rhetoric',
+        nav_rhetoric_asia: '📡 Asia Rhetoric',
+        nav_rhetoric_europe: '📡 Europe Rhetoric',
+        nav_rhetoric_me: '📡 Middle East Rhetoric',
+        nav_rhetoric_wha: '📡 Western Hemisphere Rhetoric',
+        nav_peru: '🇦🇫 Afghanistan Rhetoric',
+        nav_peru_stability: '📊 Afghanistan Stability',
+        nav_here: '◉ You are here',
+        afg_rhetoric_title: '📡 🇦🇫 Afghanistan Rhetoric & Pressure Tracker',
+        afg_rhetoric_subtitle: 'Multi-actor · 4-vector composite · four-wheel contested node · tracker deploying soon',
+        afg_rhetoric_full: 'View full tracker →',
+        afg_rhetoric_loading: 'Rhetoric tracker not yet deployed — this shell goes live automatically when /api/rhetoric/afghanistan ships.',
+        afg_rh_composite: 'Composite',
+        afg_rh_vec_kinetic: 'Af-Pak Kinetic',
+        afg_rh_vec_repression: 'Repression',
+        afg_rh_vec_external: 'External Wheels',
+        afg_rh_vec_illicit: 'Illicit Economy',
+        commodity_title: '🌾 Commodity Exposure',
+        commodity_loading: 'Loading commodity data…',
+        commodity_prose_loading: 'Loading commodity analysis…',
+        cca_silver_title: 'Wheat Import Dependence',
+        cca_silver_detail: 'Afghanistan imports the bulk of its wheat and flour (Kazakhstan, Pakistan). Price shocks and Central Asia export policy transmit directly into food insecurity — the primary commodity-to-humanitarian coupling.',
+        cca_copper_title: 'Minerals — Mes Aynak & Lithium',
+        cca_copper_detail: 'Mes Aynak copper (Chinese MCC lease) is finally moving; lithium and rare-earth potential remain largely narrative. Extraction is the China wheel’s primary economic vector into Kabul.',
+        stability_card_title: '🇦🇫 Afghanistan Stability Index',
+        eq_card_title: 'DISASTER SENSOR — HINDU KUSH SEISMIC WATCH',
+        eq_quiet_pill: 'QUIET',
+        eq_quiet: 'No active disaster — seismic baseline quiet (30-day window)',
+        eq_source_note: 'Sensor: USGS bounding-box seismic record (30-day window) · GDACS · ReliefWeb · raw facts — the reader completes the inference. Mud-brick construction drives catastrophic fatality ratios at moderate magnitudes.',
+        ref_card_title: 'DISPLACEMENT SENSOR — REFUGEES & RETURNS',
+        ref_unhcr_label: 'refugees abroad',
+        ref_hosts_label: 'Top hosts',
+        ref_baseline_note: 'Live feeds warming — static baseline: one of the world’s largest displacement crises; mass forced returns from Iran and Pakistan since 2023.',
+        ref_source_note: 'Live: UNHCR Population API · IOM DTM (attempted each sweep) · static sourced baseline as honest floor · 12h refresh',
+        gov_card_title: '🏛️ Taliban Government — Dual-Power Structure',
+        map_title: '🗺️ Afghanistan — Strategic Overview',
+        map_subtitle: 'Interactive map centered on Kabul. The Durand Line frontier, Wakhan Corridor, Herat–Iran border, Badakhshan (Hindu Kush seismic zone), and the Helmand River basin are key monitoring zones.',
+        kl_title: '📚 Knowledge Library',
+        kl_disclaimer: 'Educational baseline context · verify details against current reporting',
+        kl_governance_title: 'Taliban Governance — the Kandahar–Kabul Split',
+        kl_afpak_title: 'Af-Pak — the Durand Line & TTP',
+        kl_iskp_title: 'ISIS-Khorasan — the Terror-Export Vector',
+        kl_drugs_title: 'The Drug Economy — After the Poppy Ban',
+        kl_water_title: 'Water — Helmand Treaty & the Qosh Tepa Canal',
+        kl_wheels_title: 'The Four Wheels — Iran, Pakistan, Russia, China',
+        kl_aftermath_title: 'Withdrawal Aftermath — Frozen Reserves & Aid Collapse',
+        articles_title: '📰 Recent Afghanistan & Regional Security Articles',
+        articles_loading: 'Loading articles…',
+        tab_all: 'All',
+        tab_en: 'English',
+        tab_es: 'Local',
+        tab_social: 'Social',
+        travel_label: 'Travel Advisory',
+        travel_level: 'Level 4: Do Not Travel',
+        travel_text: 'U.S. State Department: do not travel to Afghanistan due to terrorism, wrongful detention, and civil unrest.',
+        travel_button: 'State.gov →',
+        ww_caution_label: 'Worldwide Caution',
+        ww_caution_text: 'Worldwide Caution advisory in effect — exercise increased vigilance.',
+        ww_caution_button: 'Read →',
+        meta_rhetoric: 'Rhetoric',
+        meta_commodity: 'Commodity',
+        meta_mil_posture: 'Military Posture',
+        meta_alert: 'Alert',
+        ts_title: '⚡ Top Signals',
+        strategic_linkage: 'Strategic Linkage',
+    },
+    ko: {
+        page_title: '🇦🇫 아프가니스탄 안정성 지수',
+        page_subtitle: '경합 노드 · 4개 휠 · 센서 우선 커버리지',
+        loading_title: '아프가니스탄 데이터 로딩 중…',
+        loading_progress: '아시아 백엔드 연결 중…',
+        back_to_wha: '← 아시아 대시보드',
+        theme_label: '테마',
+        nav_dashboards: '대시보드',
+        nav_africa: '🌍 아프리카',
+        nav_asia_pacific: '🌏 아시아 태평양',
+        nav_europe: '🌍 유럽',
+        nav_me: '🕌 중동',
+        nav_wha: '🌎 서반구',
+        nav_global_trackers: '글로벌 트래커',
+        nav_commodities: '🌾 원자재',
+        nav_gpi: '🌐 글로벌 압력 지수',
+        nav_market_watch: '📈 마켓 워치',
+        nav_military: '🎖️ 군사 트래커',
+        nav_rhetoric: '지역 레토릭',
+        nav_rhetoric_asia: '📡 아시아 레토릭',
+        nav_rhetoric_europe: '📡 유럽 레토릭',
+        nav_rhetoric_me: '📡 중동 레토릭',
+        nav_rhetoric_wha: '📡 서반구 레토릭',
+        nav_peru: '🇦🇫 아프가니스탄 레토릭',
+        nav_peru_stability: '📊 아프가니스탄 안정성',
+        nav_here: '◉ 현재 위치',
+        afg_rhetoric_title: '📡 🇦🇫 아프가니스탄 레토릭 및 압력 트래커',
+        afg_rhetoric_subtitle: '다중 행위자 · 4벡터 종합 · 4휠 경합 노드 · 트래커 공개 예정',
+        afg_rhetoric_full: '전체 트래커 보기 →',
+        afg_rhetoric_loading: '레토릭 트래커 미배포 — API 가동 시 자동 활성화됩니다.',
+        afg_rh_composite: '종합',
+        afg_rh_vec_kinetic: '아파탄 군사',
+        afg_rh_vec_repression: '억압',
+        afg_rh_vec_external: '외부 휠',
+        afg_rh_vec_illicit: '불법 경제',
+        commodity_title: '🌾 원자재 노출',
+        commodity_loading: '원자재 데이터 로딩 중…',
+        commodity_prose_loading: '원자재 분석 로딩 중…',
+        cca_silver_title: '밀 수입 의존도',
+        cca_silver_detail: '아프가니스탄은 밀과 밀가루 대부분을 수입합니다(카자흥스탄, 파키스탄). 가격 충격은 식량 불안으로 직결됩니다.',
+        cca_copper_title: '광물 — 메스 아이나크와 리튜버',
+        cca_copper_detail: '메스 아이나크 구리(중국 MCC)가 진행 중이며, 리튜버는 아직 잠재력 단계입니다. 추출은 중국 휠의 핵심 경제 벡터입니다.',
+        stability_card_title: '🇦🇫 아프가니스탄 안정성 지수',
+        eq_card_title: '재난 센서 — 힌두쿠시 지진 감시',
+        eq_quiet_pill: '안정',
+        eq_quiet: '활성 재난 없음 — 30일 기준 지진 기준선 안정',
+        eq_source_note: '센서: USGS 경계 상자 지진 기록(30일) · GDACS · ReliefWeb · 원시 데이터 — 판단은 독자의 몶.',
+        ref_card_title: '이주 센서 — 난민 및 귀환',
+        ref_unhcr_label: '해외 난민',
+        ref_hosts_label: '주요 수용국',
+        ref_baseline_note: '라이브 피드 준비 중 — 세계 최대 규모의 이주 위기.',
+        ref_source_note: '라이브: UNHCR · IOM DTM · 12시간 갱신',
+        gov_card_title: '🏛️ 탈레반 정부 — 이중 권력 구조',
+        map_title: '🗺️ 아프가니스탄 — 전략 개관',
+        map_subtitle: '카불 중심 지도. 두란드 라인, 와한 회랑, 헤라트-이란 국경, 바다흐샨(지진대), 헬만드강 유역이 핵심 감시 구역입니다.',
+        kl_title: '📚 지식 라이브러리',
+        kl_disclaimer: '교육용 기초 맥락 · 최신 보도로 검증 요망',
+        kl_governance_title: '탈레반 통치 — 칸다하르-카불 분열',
+        kl_afpak_title: '아파탄 — 두란드 라인과 TTP',
+        kl_iskp_title: 'ISIS-호라산 — 테러 수출 벡터',
+        kl_drugs_title: '마약 경제 — 양귀비 금지 이후',
+        kl_water_title: '물 — 헬만드 조약과 코쉬 테파 운하',
+        kl_wheels_title: '4개의 휠 — 이란, 파키스탄, 러시아, 중국',
+        kl_aftermath_title: '철군 이후 — 동결 준비금과 원조 붕괴',
+        articles_title: '📰 최근 아프가니스탄 및 지역 안보 기사',
+        articles_loading: '기사 로딩 중…',
+        tab_all: '전체',
+        tab_en: '영어',
+        tab_es: '현지어',
+        tab_social: '소셜',
+        travel_label: '여행 경보',
+        travel_level: '4단계: 여행 금지',
+        travel_text: '미 국무부: 테러·부당 구금·소요 사태로 인해 여행 금지.',
+        travel_button: 'State.gov →',
+        ww_caution_label: '전 세계 주의보',
+        ww_caution_text: '전 세계 주의보 발령 중 — 경계 강화 요망.',
+        ww_caution_button: '보기 →',
+        meta_rhetoric: '레토릭',
+        meta_commodity: '원자재',
+        meta_mil_posture: '군사 태세',
+        meta_alert: '경보',
+        ts_title: '⚡ 주요 신호',
+        strategic_linkage: '전략적 연계',
+    },
+    zh: {
+        page_title: '🇦🇫 阿富汗稳定指数',
+        page_subtitle: '争夺节点 · 四轮交汇 · 传感器优先',
+        loading_title: '正在加载阿富汗数据…',
+        loading_progress: '正在连接亚洲后端…',
+        back_to_wha: '← 亚洲仪表盘',
+        theme_label: '主题',
+        nav_dashboards: '仪表盘',
+        nav_africa: '🌍 非洲',
+        nav_asia_pacific: '🌏 亚太',
+        nav_europe: '🌍 欧洲',
+        nav_me: '🕌 中东',
+        nav_wha: '🌎 西半球',
+        nav_global_trackers: '全球追踪器',
+        nav_commodities: '🌾 大宗商品',
+        nav_gpi: '🌐 全球压力指数',
+        nav_market_watch: '📈 市场监测',
+        nav_military: '🎖️ 军事追踪器',
+        nav_rhetoric: '区域言论',
+        nav_rhetoric_asia: '📡 亚洲言论',
+        nav_rhetoric_europe: '📡 欧洲言论',
+        nav_rhetoric_me: '📡 中东言论',
+        nav_rhetoric_wha: '📡 西半球言论',
+        nav_peru: '🇦🇫 阿富汗言论',
+        nav_peru_stability: '📊 阿富汗稳定',
+        nav_here: '◉ 当前位置',
+        afg_rhetoric_title: '📡 🇦🇫 阿富汗言论与压力追踪器',
+        afg_rhetoric_subtitle: '多行为体 · 四向量综合 · 四轮争夺节点 · 追踪器即将上线',
+        afg_rhetoric_full: '查看完整追踪器 →',
+        afg_rhetoric_loading: '言论追踪器尚未部署 — API 上线后自动启用。',
+        afg_rh_composite: '综合',
+        afg_rh_vec_kinetic: '阿巴军事',
+        afg_rh_vec_repression: '镇压',
+        afg_rh_vec_external: '外部轮辐',
+        afg_rh_vec_illicit: '非法经济',
+        commodity_title: '🌾 大宗商品敞口',
+        commodity_loading: '正在加载商品数据…',
+        commodity_prose_loading: '正在加载商品分析…',
+        cca_silver_title: '小麦进口依赖',
+        cca_silver_detail: '阿富汗大部分小麦与面粉依赖进口（哈萨克斯坦、巴基斯坦）。价格冲击直接传导至粮食不安全。',
+        cca_copper_title: '矿产 — 艾纳克铜矿与锂',
+        cca_copper_detail: '艾纳克铜矿（中国 MCC 租约）正在推进；锂与稀土仍处于潜力阶段。开采是中国轮辐的核心经济向量。',
+        stability_card_title: '🇦🇫 阿富汗稳定指数',
+        eq_card_title: '灾害传感器 — 兴都库什地震监测',
+        eq_quiet_pill: '平静',
+        eq_quiet: '无活跃灾害 — 30天地震基线平静',
+        eq_source_note: '传感器：USGS 边界框地震记录（30天）· GDACS · ReliefWeb · 原始事实 — 结论由读者得出。',
+        ref_card_title: '流离失所传感器 — 难民与遣返',
+        ref_unhcr_label: '境外难民',
+        ref_hosts_label: '主要接收国',
+        ref_baseline_note: '实时数据预热中 — 全球最大规模流离失所危机之一。',
+        ref_source_note: '实时：UNHCR · IOM DTM · 12小时刷新',
+        gov_card_title: '🏛️ 塔利班政府 — 双重权力结构',
+        map_title: '🗺️ 阿富汗 — 战略概览',
+        map_subtitle: '以喀布尔为中心。杜兰尼线、瓦罕走廊、赫拉特—伊朗边境、巴达赫尚（地震带）与赫尔曼德河流域为重点监测区。',
+        kl_title: '📚 知识库',
+        kl_disclaimer: '教育性基础背景 · 请以最新报道校验',
+        kl_governance_title: '塔利班治理 — 坎大哈—喀布尔分裂',
+        kl_afpak_title: '阿巴关系 — 杜兰尼线与 TTP',
+        kl_iskp_title: 'ISIS-呆罗珊 — 恐怖输出向量',
+        kl_drugs_title: '毒品经济 — 罂粟禁令之后',
+        kl_water_title: '水 — 赫尔曼德条约与科什特帕运河',
+        kl_wheels_title: '四个轮辐 — 伊朗、巴基斯坦、俄罗斯、中国',
+        kl_aftermath_title: '撤军之后 — 冻结储备与援助崩塌',
+        articles_title: '📰 阿富汗及地区安全最新报道',
+        articles_loading: '正在加载文章…',
+        tab_all: '全部',
+        tab_en: '英文',
+        tab_es: '当地',
+        tab_social: '社交',
+        travel_label: '旅行警告',
+        travel_level: '第四级：请勿前往',
+        travel_text: '美国国务院：因恐怖主义、非法拘押与动乱，请勿前往阿富汗。',
+        travel_button: 'State.gov →',
+        ww_caution_label: '全球警示',
+        ww_caution_text: '全球警示生效中 — 请提高警惕。',
+        ww_caution_button: '阅读 →',
+        meta_rhetoric: '言论',
+        meta_commodity: '商品',
+        meta_mil_posture: '军事态势',
+        meta_alert: '警报',
+        ts_title: '⚡ 重点信号',
+        strategic_linkage: '战略关联',
+    },
+    ja: {
+        page_title: '🇦🇫 アフガニスタン安定指数',
+        page_subtitle: '俟選ノード · 4輪交錯 · センサー優先',
+        loading_title: 'アフガニスタンのデータを読み込み中…',
+        loading_progress: 'アジアバックエンドに接続中…',
+        back_to_wha: '← アジアダッシュボード',
+        theme_label: 'テーマ',
+        nav_dashboards: 'ダッシュボード',
+        nav_africa: '🌍 アフリカ',
+        nav_asia_pacific: '🌏 アジア太平洋',
+        nav_europe: '🌍 ヨーロッパ',
+        nav_me: '🕌 中東',
+        nav_wha: '🌎 西半球',
+        nav_global_trackers: 'グローバルトラッカー',
+        nav_commodities: '🌾 コモディティ',
+        nav_gpi: '🌐 グローバル圧力指数',
+        nav_market_watch: '📈 マーケットウォッチ',
+        nav_military: '🎖️ 軍事トラッカー',
+        nav_rhetoric: '地域レトリック',
+        nav_rhetoric_asia: '📡 アジア・レトリック',
+        nav_rhetoric_europe: '📡 ヨーロッパ・レトリック',
+        nav_rhetoric_me: '📡 中東レトリック',
+        nav_rhetoric_wha: '📡 西半球レトリック',
+        nav_peru: '🇦🇫 アフガニスタン・レトリック',
+        nav_peru_stability: '📊 アフガニスタン安定性',
+        nav_here: '◉ 現在地',
+        afg_rhetoric_title: '📡 🇦🇫 アフガニスタン・レトリック＆圧力トラッカー',
+        afg_rhetoric_subtitle: '多アクター · 4ベクトル総合 · 4輪俟選ノード · トラッカー近日公開',
+        afg_rhetoric_full: 'フルトラッカーを見る →',
+        afg_rhetoric_loading: 'レトリック・トラッカー未展開 — API 稼働時に自動有効化。',
+        afg_rh_composite: '総合',
+        afg_rh_vec_kinetic: '阿パ軍事',
+        afg_rh_vec_repression: '弾圧',
+        afg_rh_vec_external: '外部ホイール',
+        afg_rh_vec_illicit: '違法経済',
+        commodity_title: '🌾 コモディティ・エクスポージャー',
+        commodity_loading: '商品データを読み込み中…',
+        commodity_prose_loading: '商品分析を読み込み中…',
+        cca_silver_title: '小麦輸入依存',
+        cca_silver_detail: 'アフガニスタンは小麦・小麦粉の大半を輸入（カザフスタン、パキスタン）。価格ショックは食糧不安に直結。',
+        cca_copper_title: '鉱物 — メス・アイナクとリチウム',
+        cca_copper_detail: 'メス・アイナク銅山（中国 MCC）が進行中。リチウムは依然として潜在段階。採掘は中国ホイールの主要経済ベクトル。',
+        stability_card_title: '🇦🇫 アフガニスタン安定指数',
+        eq_card_title: '災害センサー — ヒンズークシ地震監視',
+        eq_quiet_pill: '静穏',
+        eq_quiet: '活発な災害なし — 30日間の地震ベースラインは静穏',
+        eq_source_note: 'センサー：USGS 境界ボックス地震記録（30日）· GDACS · ReliefWeb · 生データ — 推論は読者に委ねる。',
+        ref_card_title: '離散センサー — 難民と帰還',
+        ref_unhcr_label: '国外難民',
+        ref_hosts_label: '主要受入国',
+        ref_baseline_note: 'ライブフィード準備中 — 世界最大級の離散危機。',
+        ref_source_note: 'ライブ：UNHCR · IOM DTM · 12時間更新',
+        gov_card_title: '🏛️ タリバン政権 — 二重権力構造',
+        map_title: '🗺️ アフガニスタン — 戦略概観',
+        map_subtitle: 'カブール中心。デュランド・ライン、ワハーン回廊、ヘラート－イラン国境、バダフシャーン（地震帯）、ヘルマンド川流域が重点監視区域。',
+        kl_title: '📚 ナレッジライブラリ',
+        kl_disclaimer: '教育用の基礎背景 · 最新報道で検証のこと',
+        kl_governance_title: 'タリバン統治 — カンダハル－カブール分裂',
+        kl_afpak_title: '阿パ関係 — デュランド・ラインと TTP',
+        kl_iskp_title: 'ISISホラサン — テロ輸出ベクトル',
+        kl_drugs_title: '麻薬経済 — ケシ禁止令の後',
+        kl_water_title: '水 — ヘルマンド条約とコシュテパ運河',
+        kl_wheels_title: '四つのホイール — イラン・パキスタン・ロシア・中国',
+        kl_aftermath_title: '撤退の後 — 凍結準備金と援助崩壊',
+        articles_title: '📰 アフガニスタン・地域安全保障の最新記事',
+        articles_loading: '記事を読み込み中…',
+        tab_all: 'すべて',
+        tab_en: '英語',
+        tab_es: '現地語',
+        tab_social: 'ソーシャル',
+        travel_label: '渡航警告',
+        travel_level: 'レベル4：渡航禁止',
+        travel_text: '米国務省：テロ・不当拘束・騒乱のため渡航しないこと。',
+        travel_button: 'State.gov →',
+        ww_caution_label: '世界警戒情報',
+        ww_caution_text: '世界警戒情報発令中 — 警戒を強化のこと。',
+        ww_caution_button: '読む →',
+        meta_rhetoric: 'レトリック',
+        meta_commodity: 'コモディティ',
+        meta_mil_posture: '軍事態勢',
+        meta_alert: '警報',
+        ts_title: '⚡ 主要シグナル',
+        strategic_linkage: '戦略的連関',
+    },
+};
+
+// ════════════════════════════════════════════════════════════
+// LANGUAGE SWITCHING
+// ════════════════════════════════════════════════════════════
+let currentLang = 'en';
+
+function applyTranslations() {
+    const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+        const key = el.getAttribute('data-i18n-html');
+        if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.documentElement.setAttribute('lang', currentLang);
+}
+
+function switchLanguage(lang, button) {
+    currentLang = lang;
+    try { localStorage.setItem('asifah-afghanistan-lang', lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.remove('active'); });
+    if (button) button.classList.add('active');
+    applyTranslations();
+}
+
+(function initLang() {
+    try {
+        const saved = localStorage.getItem('asifah-afghanistan-lang');
+        if (saved && TRANSLATIONS[saved]) currentLang = saved;
+    } catch (e) {}
+})();
+
+// ════════════════════════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════════════════════════
+function initTheme() {
+    try {
+        const saved = localStorage.getItem('asifah-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) {}
+}
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch (e) {}
+}
+initTheme();
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatDate(iso) {
+    if (!iso) return '';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return iso.slice(0, 10);
+        const now = new Date();
+        const diffMin = Math.round((now - d) / 60000);
+        if (diffMin < 60) return diffMin + 'm ago';
+        if (diffMin < 1440) return Math.round(diffMin / 60) + 'h ago';
+        return Math.round(diffMin / 1440) + 'd ago';
+    } catch (e) { return ''; }
+}
+
+function toggleKnowledgeCard(cardId) {
+    const card = document.getElementById('card-' + cardId);
+    if (card) card.classList.toggle('collapsed');
+}
+
+function hideLoadingOverlay() {
+    const overlay = el('loadingOverlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        setTimeout(function () { overlay.style.display = 'none'; }, 600);
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// TRAVEL ADVISORY (dynamic from WHA backend)
+// ════════════════════════════════════════════════════════════
+async function loadTravelAdvisory() {
+    try {
+        const r = await fetch(ASIA_BACKEND + '/api/asia/travel-advisories');
+        if (!r.ok) return;
+        const data = await r.json();
+        if (!data.success || !data.advisories) return;
+        const ad = data.advisories.afghanistan;
+        if (!ad) return;
+        const lvl = ad.level || 2;
+        const lvlEl = el('afgTravelLevel');
+        const containerEl = el('afgTravelAdvisory');
+        if (lvlEl) {
+            lvlEl.textContent = 'LEVEL ' + lvl;
+            const colors = {1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'};
+            lvlEl.style.background = colors[lvl] || '#6b7280';
         }
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('asifah-theme', next);
-        }
-        initTheme();
+        if (containerEl) containerEl.style.borderColor = ({1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'})[lvl] || '#6b7280';
+    } catch (e) {
+        console.warn('[Afghanistan Stability] Travel advisory load failed:', e);
+    }
+}
 
-        // Knowledge Library Toggle
-        function toggleKnowledgeCard(cardId) {
-            const card = document.getElementById('card-' + cardId);
-            if (card) card.classList.toggle('collapsed');
-        }
+// ════════════════════════════════════════════════════════════
+// COMMODITY CARD — Gold Standard v2.0
+// ════════════════════════════════════════════════════════════
+async function loadCommodity() {
+    let data = null;
+    try {
+        const r = await fetch(ASIA_BACKEND + '/api/asia/commodity/afghanistan');
+        if (r.ok) data = await r.json();
+    } catch (e) {
+        console.warn('[AFG Commodity] ME backend failed:', e);
+    }
+    if (!data) {
+        const grid = el('commodityGrid');
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">⚠️ Commodity data unavailable</div>';
+        return;
+    }
 
-        // Loading Overlay
-        let loadingStepIndex = 0;
-        let loadingInterval = null;
-        let loadingTimeout = null;
-        const STEP_COUNT = 5;
+    renderCommodityProse(data);
+    renderCommodityAlertBanner(data);
+    renderCommodityTiles(data);
+    renderCommodityTopSignals(data);
 
-        function startLoadingProgress() {
-            const steps = Array.from({length: STEP_COUNT}, (_, i) => 'step' + (i + 1));
-            loadingInterval = setInterval(() => {
-                if (loadingStepIndex < steps.length - 1) {
-                    const cur = document.getElementById(steps[loadingStepIndex]);
-                    if (cur) { cur.classList.remove('active'); cur.classList.add('complete'); cur.querySelector('.step-icon').textContent = '\u2713'; }
-                    loadingStepIndex++;
-                    const next = document.getElementById(steps[loadingStepIndex]);
-                    if (next) next.classList.add('active');
-                }
-            }, 5000);
-            loadingTimeout = setTimeout(() => {
-                document.getElementById('loadingError').style.display = 'block';
-                document.getElementById('loadingError').textContent = '\u26A0\uFE0F Loading is taking longer than expected. Please wait or refresh.';
-            }, 60000);
-        }
+    // Update stability scaffold meta
+    const cm = el('metaCommodity');
+    if (cm) {
+        const al = (data.alert_level || 'normal').toUpperCase();
+        cm.textContent = al + ' (' + (data.commodity_pressure || 0).toFixed(1) + ')';
+    }
+    const ma = el('metaAlert');
+    if (ma) ma.textContent = (data.alert_level || 'normal').toUpperCase();
 
-        function hideLoadingOverlay() {
-            if (loadingInterval) clearInterval(loadingInterval);
-            if (loadingTimeout) clearTimeout(loadingTimeout);
-            document.querySelectorAll('.loading-step').forEach(step => {
-                step.classList.remove('active');
-                step.classList.add('complete');
-                step.querySelector('.step-icon').textContent = '\u2713';
-            });
-            setTimeout(() => {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) overlay.classList.add('hidden');
-            }, 500);
-        }
+    // Show convergence alerts based on top signals (heuristic: if copper or silver has elevated+ alert)
+    const tiles = data.commodity_summaries || [];
+    const copperTile = tiles.find(t => t.commodity === 'copper');
+    const silverTile = tiles.find(t => t.commodity === 'silver');
+    const copperAlert = el('commodityConvergenceAlertCopper');
+    const silverAlert = el('commodityConvergenceAlertSilver');
+    if (copperAlert && copperTile && copperTile.global_alert_level && copperTile.global_alert_level !== 'normal') {
+        copperAlert.classList.add('active');
+    }
+    if (silverAlert && silverTile && silverTile.global_alert_level && silverTile.global_alert_level !== 'normal') {
+        silverAlert.classList.add('active');
+    }
+}
 
-        // Fetch articles from backend
-        async function loadArticles() {
-            try {
-                const response = await fetch(BACKEND_URL + '/scan-afghanistan');
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                const data = await response.json();
-                if (data.success && data.articles && data.articles.length > 0) {
-                    displayArticles(data.articles);
-                } else {
-                    await loadArticlesFallback();
-                }
-            } catch (error) {
-                console.warn('Primary endpoint failed:', error.message);
-                await loadArticlesFallback();
-            }
-        }
+function renderCommodityProse(data) {
+    const proseEl = el('commodityProse');
+    if (!proseEl) return;
+    const prose = data.prose || data.profile_prose || '';
+    if (prose) proseEl.textContent = prose;
+}
 
-        async function loadArticlesFallback() {
-            try {
-                const q = encodeURIComponent('Afghanistan');
-                const response = await fetch(BACKEND_URL + '/scan-osint?q=' + q);
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                const data = await response.json();
-                if (data.articles && data.articles.length > 0) {
-                    displayArticles(data.articles);
-                } else {
-                    displayArticlesFallbackStatic();
-                }
-            } catch (error) {
-                console.warn('Fallback also failed:', error.message);
-                displayArticlesFallbackStatic();
-            }
-        }
+function renderCommodityAlertBanner(data) {
+    const banner = el('commodityAlertBanner');
+    if (!banner) return;
+    const alertLevel = (data.alert_level || 'normal').toLowerCase();
+    if (alertLevel === 'normal') {
+        banner.classList.remove('show');
+        return;
+    }
+    banner.className = 'commodity-alert-banner show alert-' + alertLevel;
+    banner.innerHTML = '<strong>' + alertLevel.toUpperCase() + '</strong> Composite commodity pressure: ' + alertLevel +
+        '<span class="ab-meta">' + ((data.commodity_pressure || 0).toFixed(1)) + ' pts · ' + (data.profile_count || 0) + ' commodities tracked</span>';
+}
 
-        function displayArticles(articles) {
-            const container = document.getElementById('articlesContainer');
-            if (!articles || articles.length === 0) { displayArticlesFallbackStatic(); return; }
-            container.innerHTML = articles.slice(0, 20).map(article => {
-                const title = article.title || 'Untitled';
-                const source = article.source || article.source_name || '';
-                const published = article.published || article.publishedAt || article.date || '';
-                const url = article.url || article.link || '#';
-                const description = article.description || '';
-                let dateStr = 'Recent';
-                if (published) {
-                    try { dateStr = new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
-                    catch(e) { dateStr = published; }
-                }
-                return '<div class="article-item">' +
-                    '<div class="article-title">' + title + '</div>' +
-                    (description ? '<div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px; line-height:1.5;">' + description.substring(0, 200) + (description.length > 200 ? '...' : '') + '</div>' : '') +
-                    '<div class="article-meta">' + source + ' &bull; ' + dateStr + '</div>' +
-                    (url !== '#' ? '<a href="' + url + '" target="_blank" class="article-link">Read article &rarr;</a>' : '') +
-                    '</div>';
-            }).join('');
-        }
-
-        function displayArticlesFallbackStatic() {
-            const container = document.getElementById('articlesContainer');
-            container.innerHTML =
-                '<div style="text-align:center; padding:30px; color:var(--text-secondary);">' +
-                '<p style="font-size:16px; margin-bottom:15px;">&#x1F4E1; Live article feed loading for Afghanistan.</p>' +
-                '<p style="font-size:13px; margin-bottom:20px;">Check these curated OSINT sources:</p>' +
-                '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px;">' +
-                '<a href="https://www.reuters.com/world/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">Reuters - World</a>' +
-                '<a href="https://www.aljazeera.com/asia-pacific/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">Al Jazeera - Asia</a>' +
-                '<a href="https://thediplomat.com/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">The Diplomat</a>' +
-                '<a href="https://www.acleddata.com/dashboard/#/dashboard" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">ACLED Dashboard</a>' +
-                '</div>' +
+function renderCommodityTiles(data) {
+    const grid = el('commodityGrid');
+    if (!grid) return;
+    const tiles = data.commodity_summaries || [];
+    if (!tiles.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure profile available</div>';
+        return;
+    }
+    grid.innerHTML = tiles.map(function (t) {
+        const alertCls = 'commodity-alert-' + (t.global_alert_level || 'normal').toLowerCase();
+        const role = (t.role || '').toUpperCase();
+        const rank = t.rank ? '#' + t.rank : '';
+        const sigCount = t.signal_count || 0;
+        const note = t.note || '';
+        const sp = t.sparkline;
+        let priceHtml = '';
+        if (sp && sp.price != null) {
+            const ch = sp.change_pct_1d;
+            const dir = ch > 0 ? 'price-up' : ch < 0 ? 'price-down' : '';
+            const sign = ch >= 0 ? '+' : '';
+            priceHtml = '<div class="commodity-pill-price">$' + Number(sp.price).toFixed(2) +
+                (typeof ch === 'number' ? ' <span class="' + dir + '">' + sign + ch.toFixed(1) + '%</span>' : '') +
                 '</div>';
         }
+        return '<div class="commodity-pill">' +
+            '<div class="commodity-pill-header">' +
+                '<span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+                '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+                (rank ? '<span class="commodity-pill-rank">' + rank + '</span>' : '') +
+            '</div>' +
+            '<div class="commodity-pill-row">' +
+                '<span class="commodity-pill-alert ' + alertCls + '">' + (t.global_alert_level || 'normal') + '</span>' +
+                (role ? '<span class="commodity-pill-role-badge">' + role + '</span>' : '') +
+                (sigCount ? '<span class="commodity-pill-signal-count">' + sigCount + ' sig</span>' : '') +
+            '</div>' +
+            priceHtml +
+            (note ? '<div class="commodity-pill-note">' + escapeHtml(note) + '</div>' : '') +
+        '</div>';
+    }).join('');
+}
 
-        // Translation system
-        const translations = {
-            en: {"pageTitle": "🇦🇫 AFGHANISTAN STABILITY INDEX", "pageSubtitle": "Multi-Factor Analysis: Taliban Governance, ISIS-K Activity, Pakistan Border Tensions & Humanitarian Crisis", "backLink": "← Back to Dashboard", "themeToggle": "Theme", "lastUpdated": "Last updated: ", "mapTitle": "Afghanistan — Regional Overview", "mapSubtitle": "Interactive map centered on Kabul. Provincial control overlays coming soon.", "knowledgeLibraryTitle": "Knowledge Library", "recentArticles": "📰 Recent Afghanistan & Regional Security Articles (Last 7 Days)"},
-            ps: {"pageTitle": "🇦🇫 د افغانستان د ثبات شاخص", "pageSubtitle": "د طالبانو حکومتداري، د داعش-خراسان فعالیتونه، د پاکستان سرحدي تاوتریخوالی", "backLink": "← شاته لاړ شئ", "themeToggle": "تیم", "lastUpdated": "وروستی ځل تازه شو: ", "mapTitle": "افغانستان — سیمه ایز لید", "mapSubtitle": "د کابل مرکز انټرایکتیو نقشه.", "knowledgeLibraryTitle": "د پوهې کتابتون", "recentArticles": "📰 د افغانستان وروستي مقالې"},
-            fa: {"pageTitle": "🇦🇫 شاخص ثبات افغانستان", "pageSubtitle": "تحلیل چندعاملی: حکومت طالبان، فعالیت داعش-خراسان، تنش‌های مرزی پاکستان", "backLink": "→ بازگشت به داشبورد", "themeToggle": "پوسته", "lastUpdated": "آخرین به‌روزرسانی: ", "mapTitle": "افغانستان — نمای منطقه‌ای", "mapSubtitle": "نقشه تعاملی. لایه‌های کنترل به زودی.", "knowledgeLibraryTitle": "کتابخانه دانش", "recentArticles": "📰 جدیدترین مقالات درباره افغانستان"},
-            ar: {"pageTitle": "🇦🇫 مؤشر استقرار أفغانستان", "pageSubtitle": "تحليل متعدد العوامل: حكم طالبان، نشاط داعش-خراسان، توترات الحدود الباكستانية", "backLink": "→ العودة إلى لوحة التحكم", "themeToggle": "السمة", "lastUpdated": "آخر تحديث: ", "mapTitle": "أفغانستان — نظرة إقليمية", "mapSubtitle": "خريطة تفاعلية. طبقات السيطرة قريباً.", "knowledgeLibraryTitle": "مكتبة المعرفة", "recentArticles": "📰 أحدث المقالات عن أفغانستان"}
-        };
+function renderCommodityTopSignals(data) {
+    const wrap = el('commodityTopSignals');
+    const list = el('commodityTopSignalsList');
+    if (!wrap || !list) return;
+    const sigs = data.top_signals || [];
+    if (!sigs.length || data.alert_level === 'normal') {
+        wrap.style.display = 'none';
+        return;
+    }
+    wrap.style.display = 'block';
+    list.innerHTML = sigs.slice(0, 5).map(function (s) {
+        const url = s.article_url || s.url || '#';
+        const title = s.article_title || s.title || 'Signal';
+        const src = s.source || s.feed_type || '';
+        return '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">▸ ' +
+            escapeHtml(title) + ' <span class="ts-source">' + escapeHtml(src) + '</span></a>';
+    }).join('');
+}
 
-        function switchLanguage(lang, button) {
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
+// ════════════════════════════════════════════════════════════
+// MILITARY POSTURE (scaffold — pulls from ME backend if available)
+// ════════════════════════════════════════════════════════════
+async function loadMilitaryPosture() {
+    try {
+        const r = await fetch(ME_BACKEND + '/api/military-posture/afghanistan');
+        if (!r.ok) return;
+        const data = await r.json();
+        const mp = el('metaMilPosture');
+        if (mp) {
+            const lvl = (data.alert_level || 'normal').toUpperCase();
+            mp.textContent = lvl + ' (' + (data.military_bonus || 0).toFixed(1) + ')';
+        }
+    } catch (e) {
+        // silent fail — military backend may not have Afghanistan yet
+    }
+}
 
-            if (RTL_LANGS.includes(lang)) {
-                document.documentElement.setAttribute('dir', 'rtl');
-            } else {
-                document.documentElement.setAttribute('dir', 'ltr');
+// ════════════════════════════════════════════════════════════
+// ARTICLES (from WHA backend threat scan)
+// ════════════════════════════════════════════════════════════
+let allArticles = [];
+
+async function loadArticles() {
+    try {
+        const r = await fetch(ASIA_BACKEND + '/api/asia/threat/afghanistan');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        allArticles = data.top_signals || [];
+        renderArticles('all');
+        if (data.last_updated) {
+            el('lastUpdated').textContent = 'Last scan: ' + formatDate(data.last_updated);
+        }
+    } catch (e) {
+        console.warn('[Afghanistan Stability] Articles load failed:', e);
+        const list = el('articlesList');
+        if (list) list.innerHTML = '<li style="color:var(--text-muted); font-style:italic; padding:20px; text-align:center;">Backend unavailable — refresh in 60 seconds.</li>';
+    }
+}
+
+function filterArticles(tab) {
+    document.querySelectorAll('.article-tab').forEach(function (t) {
+        t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    renderArticles(tab);
+}
+
+function renderArticles(tab) {
+    const list = el('articlesList');
+    if (!list) return;
+    if (!allArticles || !allArticles.length) {
+        list.innerHTML = '<li style="color:var(--text-muted); font-style:italic; padding:20px; text-align:center;">No articles available yet — cache may be warming up. Refresh in 60 seconds.</li>';
+        return;
+    }
+    let filtered = allArticles;
+    if (tab !== 'all') {
+        filtered = allArticles.filter(function (a) {
+            const ft = (a.feed_type || '').toLowerCase();
+            const url = (a.url || '').toLowerCase();
+            if (tab === 'social') {
+                return ft === 'bluesky' || ft === 'telegram' || ft === 'reddit' ||
+                       url.indexOf('bsky.app') !== -1 || url.indexOf('t.me') !== -1 || url.indexOf('reddit.com') !== -1;
             }
+            if (tab === 'es') {
+                // Heuristic: Spanish-source articles. GDELT lang or domain hint.
+                const src = (a.source || '').toLowerCase();
+                return /\b(es|spa|spanish)\b/.test(ft) || /\.pe\b|\.es\b|comercio|rpp|larepublica|gestion|andina|infobae/.test(src + ' ' + url);
+            }
+            if (tab === 'en') {
+                const src = (a.source || '').toLowerCase();
+                const isSocial = ft === 'bluesky' || ft === 'telegram' || ft === 'reddit';
+                const isSpanish = /\.pe\b|\.es\b|comercio|rpp|larepublica|gestion|andina|infobae/.test(src + ' ' + url);
+                return !isSocial && !isSpanish;
+            }
+            return true;
+        });
+    }
+    if (!filtered.length) {
+        list.innerHTML = '<li style="color:var(--text-muted); font-style:italic; padding:20px; text-align:center;">No articles in this category yet.</li>';
+        return;
+    }
+    list.innerHTML = '';
+    filtered.slice(0, 50).forEach(function (a) {
+        const li = document.createElement('li');
+        li.innerHTML =
+            '<a href="' + escapeHtml(a.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(a.title || 'Untitled') + '</a>' +
+            '<div class="articles-meta">' +
+                '<span class="article-source-pill">' + (a.feed_type || 'src').toUpperCase() + '</span>' +
+                escapeHtml(a.source || '') + ' · ' + formatDate(a.published) +
+            '</div>';
+        list.appendChild(li);
+    });
+}
 
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) {
-                    if (key === 'lastUpdated' && element.id === 'lastUpdated') {
-                        const currentText = element.textContent;
-                        if (currentText.includes(':')) {
-                            const timestamp = currentText.split(': ').slice(1).join(': ');
-                            element.textContent = translations[lang][key] + timestamp;
-                        } else {
-                            element.textContent = translations[lang][key] + 'Loading...';
-                        }
-                    } else {
-                        element.textContent = translations[lang][key];
-                    }
-                }
-            });
+// ════════════════════════════════════════════════════════════
+// AFGHANISTAN RHETORIC TRACKER LIVE CARD (v1.0.0 May 9 2026)
+// ════════════════════════════════════════════════════════════
+async function loadAfgRhetoric() {
+    const card = document.getElementById('afgRhetoricCard');
+    if (!card) return;
+    try {
+        const resp = await fetch(ASIA_BACKEND + '/api/rhetoric/afghanistan');
+        const data = await resp.json();
+        if (!data.success) return;
+
+        // ── Green banner (canonical pointer) ──
+        const _bnr = document.getElementById('rhetoricBanner');
+        if (_bnr) {
+            const _lvl = (data.composite_level || 'low').toLowerCase();
+            const _LVLC = { low:'#38bdf8', normal:'#38bdf8', elevated:'#f59e0b', high:'#ef4444', surge:'#dc2626' };
+            const _c = _LVLC[_lvl] || '#38bdf8';
+            _bnr.style.display = 'flex';
+            const _bp = document.getElementById('rhetoricBannerPill');
+            if (_bp) { _bp.textContent = _lvl.toUpperCase(); _bp.style.background = _c; }
+            const _bs = document.getElementById('rhetoricBannerScore');
+            if (_bs) _bs.textContent = 'Score: ' + (data.composite_score || 0).toFixed(1);
+            const _bh = document.getElementById('rhetoricBannerHeadline');
+            if (_bh) _bh.textContent = (data.executive_summary || '').slice(0, 170) || 'Afghanistan Rhetoric Tracker — Live';
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            startLoadingProgress();
-            document.getElementById('lastUpdated').textContent =
-                'Last updated: ' + new Date().toLocaleString('en-US', {
-                    month: 'short', day: 'numeric', year: 'numeric',
-                    hour: 'numeric', minute: '2-digit', hour12: true
-                });
-            loadArticles().then(() => {
-                hideLoadingOverlay();
-            }).catch(err => {
-                console.error('Error loading Afghanistan data:', err);
-                hideLoadingOverlay();
-            });
+        // Composite gauge
+        const composite = data.composite_score || 0;
+        const compositeLevel = data.composite_level || 'low';
+        const compositeGauge = card.querySelector('.afg-gauge.composite');
+        if (compositeGauge) {
+            const LEVEL_ORDER = ['low', 'normal', 'elevated', 'high', 'surge'];
+            // Calm-blue baseline (GS Jun 2026): gray reads as no-data; healthy
+            // baseline renders arctic blue. Elevated+ keep canonical palette.
+            const calm = (compositeLevel === 'low' || compositeLevel === 'normal');
+            const valEl = compositeGauge.querySelector('.afg-gauge-value');
+            valEl.textContent = composite.toFixed(1);
+            valEl.classList.toggle('calm-baseline', calm);
+            const pill = compositeGauge.querySelector('.afg-gauge-pill');
+            pill.className = 'afg-gauge-pill lvl-' + compositeLevel + (calm ? ' calm-baseline' : '');
+            const li = LEVEL_ORDER.indexOf(compositeLevel);
+            pill.textContent = 'L' + (li < 0 ? 0 : li) + ' \u2014 ' + compositeLevel.toUpperCase();
+        }
+
+        // Vector gauges
+        const vs = data.vector_scores || {};
+        const vl = data.vector_levels || {};
+        ['domestic_stability', 'resource_sector', 'us_alignment', 'china_alignment'].forEach(function (vec) {
+            const g = card.querySelector('.afg-gauge[data-vector="' + vec + '"]');
+            if (!g) return;
+            g.querySelector('.afg-gauge-value').textContent = (vs[vec] || 0).toFixed(1);
+            const pill = g.querySelector('.afg-gauge-pill');
+            const lvl = vl[vec] || 'low';
+            pill.className = 'afg-gauge-pill lvl-' + lvl;
+            pill.textContent = lvl.toUpperCase();
         });
-    </script>
+
+        // Executive summary
+        const summaryEl = document.getElementById('afgRhetoricSummary');
+        if (summaryEl) {
+            summaryEl.textContent = data.executive_summary || '';
+            summaryEl.style.color = 'var(--text-primary)';
+        }
+
+        // Top 3 signals (compact)
+        const signalsEl = document.getElementById('afgRhetoricTopSignals');
+        if (signalsEl) {
+            const signals = (data.top_signals || []).slice(0, 3);
+            if (signals.length === 0) {
+                signalsEl.innerHTML = '<div style="font-size:11px; color:var(--text-muted); font-style:italic;">No active signals this scan.</div>';
+            } else {
+                signalsEl.innerHTML = signals.map(function (sig) {
+                    const lvl = sig.level || 'low';
+                    const type = (sig.type || 'actor_signal').replace(/_/g, ' ');
+                    return '<div class="afg-rh-signal lvl-' + lvl + '">' +
+                        '<span class="afg-rh-signal-type">' + escapeHtml(type) + '</span>' +
+                        '<span class="afg-rh-signal-short">' + escapeHtml(sig.short_text || '') + '</span>' +
+                        '</div>';
+                }).join('');
+            }
+        }
+    } catch (e) {
+        console.warn('Afghanistan rhetoric load failed:', e);
+    }
+}
+
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN LOAD
+// ════════════════════════════════════════════════════════════
+async function loadAfgSensor() {
+    try {
+        const r = await fetch(ASIA_BACKEND + '/api/afghanistan/humanitarian');
+        if (!r.ok) return;
+        const d = await r.json();
+        // seismic dial
+        const st = d.disaster_state || {};
+        const dc = document.getElementById('afgDisasterCard');
+        if (dc) {
+            dc.style.display = 'block';
+            const band=(st.severity_band||'none').toLowerCase();
+            const bc={none:'#38bdf8',minor:'#f59e0b',major:'#f97316',catastrophic:'#dc2626'};
+            const head=document.getElementById('afgDisasterHead');
+            if (band==='none'||!st.event_count_30d){
+                head.innerHTML='<span style="padding:4px 12px;border-radius:5px;background:#38bdf8;color:#fff;font-size:12px;font-weight:800;">'+t('eq_quiet_pill')+'</span><span style="font-size:12px;color:var(--text-secondary);">'+t('eq_quiet')+'</span>';
+                document.getElementById('afgDisasterEvents').innerHTML='';
+            } else {
+                head.innerHTML='<span style="padding:4px 12px;border-radius:5px;background:'+(bc[band]||'#6b7280')+';color:#fff;font-size:12px;font-weight:800;text-transform:uppercase;">'+band+'</span>'
+                    +'<span style="font-size:26px;font-weight:800;color:'+(bc[band]||'#6b7280')+';">M'+(st.peak_magnitude_30d||'--')+'</span>'
+                    +'<span style="font-size:12px;color:var(--text-secondary);">'+(st.event_count_30d||0)+' events / 30d \u00b7 peak '+(st.days_since_peak_event!=null?st.days_since_peak_event+'d ago':'--')+' \u00b7 recency '+Math.round((st.recency_weight||0)*100)+'%</span>';
+                document.getElementById('afgDisasterEvents').innerHTML=(d.usgs_events||[]).slice(0,4).map(function(e){
+                    const c=(e.mag>=7.0||e.pager==='red')?'#dc2626':(e.mag>=6.0?'#f97316':'#f59e0b');
+                    return '<div style="padding:6px 0 6px 10px;border-left:3px solid '+c+';border-bottom:1px solid var(--card-border);line-height:1.5;"><strong style="color:'+c+';">M'+e.mag+'</strong> \u2014 '+(e.place||'')+(e.pager?' \u00b7 PAGER '+e.pager.toUpperCase():'')+' <span style="color:var(--text-muted);font-size:10px;">'+(e.ts||'').slice(0,10)+'</span></div>';
+                }).join('');
+            }
+        }
+        // refugee dial
+        const rs = d.refugee_state || {};
+        const rc = document.getElementById('afgRefugeeCard');
+        if (rc) {
+            rc.style.display='block';
+            const un=rs.unhcr||{}; const iom=rs.iom||{};
+            let head='';
+            if (un.refugees_total) head+='<span style="font-size:26px;font-weight:800;color:#38bdf8;">'+Number(un.refugees_total).toLocaleString()+'</span><span style="font-size:12px;color:var(--text-secondary);">'+t('ref_unhcr_label')+' ('+(un.year||'')+') \u00b7 '+(un.source||'UNHCR')+'</span>';
+            if (iom.idp_total||iom.returnee_total) head+='<span style="font-size:12px;color:var(--text-secondary);">\u00b7 IOM DTM: '+(iom.idp_total?Number(iom.idp_total).toLocaleString()+' IDPs ':'')+(iom.returnee_total?Number(iom.returnee_total).toLocaleString()+' returnees':'')+'</span>';
+            if (!head) head='<span style="font-size:12px;color:var(--text-secondary);">'+t('ref_baseline_note')+'</span>';
+            document.getElementById('afgRefugeeHead').innerHTML=head;
+            const hosts=(un.top_hosts||[]).filter(function(h){return h.country && h.country!=='-';});
+            document.getElementById('afgRefugeeHosts').innerHTML=hosts.length?('<strong>'+t('ref_hosts_label')+':</strong> '+hosts.map(function(h){return h.country+' ('+Number(h.refugees).toLocaleString()+')';}).join(' \u00b7 ')):'';
+            document.getElementById('afgRefugeeNote').textContent=rs.read_note||'';
+        }
+    } catch(e) { console.warn('[AFG sensor]', e); }
+}
+
+async function loadData() {
+    applyTranslations();
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+        b.classList.remove('active');
+        if ((currentLang === 'en' && b.textContent === 'EN') ||
+            (currentLang === 'es' && b.textContent === 'ES') ||
+            (currentLang === 'pt' && b.textContent === 'PT')) {
+            b.classList.add('active');
+        }
+    });
+
+    await Promise.allSettled([
+        loadTravelAdvisory(),
+        loadAfgRhetoric(),
+        loadCommodity(),
+        loadMilitaryPosture(),
+        loadAfgSensor(),
+        loadArticles(),
+    ]);
+
+    hideLoadingOverlay();
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+
+
+<script>
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
 </body>
 </html>
