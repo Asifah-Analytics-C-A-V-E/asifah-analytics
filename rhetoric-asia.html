@@ -543,6 +543,15 @@
             summaryUrl: API_BASE + '/api/rhetoric/vietnam/summary',
             url:        'rhetoric-vietnam.html',
         },
+        {
+            id:         'afghanistan',
+            name:       'Afghanistan Contested-Node Tracker',
+            flag:       '🇦🇫',
+            actors:     'Taliban Kabul · Kandahar/Emir · Haqqani · ISKP · TTP · Pakistan · Iran Friction · Russia · China · UN Rights · Illicit Economy',
+            vectors:    ['Af-Pak Kinetic', 'Repression', 'External Wheels', 'Illicit Economy'],
+            summaryUrl: API_BASE + '/api/rhetoric/afghanistan',   // main endpoint (cache-first; no /summary route yet)
+            url:        'rhetoric-afghanistan.html',
+        },
     ];
 
     // ── THEME ──
@@ -599,6 +608,10 @@
                 const out = data.outbound_score ?? 0;
                 const inb = data.inbound_score ?? 0;
                 scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Outbound ${out}/100 · China SCS Pressure ${inb}/100 · ${data.total_articles ?? 0} articles</span>`;
+            } else if (tracker.id === 'afghanistan') {
+                const comp = (data.composite_score ?? 0).toFixed(1);
+                const lvl  = (data.composite_level ?? 'low').toUpperCase();
+                scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Composite ${comp}/10 · ${lvl} · four-wheel contested node · ${data.total_articles ?? 0} articles</span>`;
             }
         }
 
@@ -703,6 +716,7 @@
     const _ASIA_RHET_PAGE = {
         china:'rhetoric-china.html', taiwan:'rhetoric-taiwan.html', japan:'rhetoric-japan.html',
         india:'rhetoric-india.html', pakistan:'rhetoric-pakistan.html', vietnam:'rhetoric-vietnam.html',
+        afghanistan:'rhetoric-afghanistan.html',
     };
     const _AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
     function _lvlChip(sig) {
@@ -728,7 +742,7 @@
     function _locName(theatre) {
         const t = String(theatre||'').toLowerCase();
         const map = { china:'China', taiwan:'Taiwan', japan:'Japan', india:'India',
-                      pakistan:'Pakistan', vietnam:'Vietnam', regional:'Asia-Pacific' };
+                      pakistan:'Pakistan', vietnam:'Vietnam', afghanistan:'Afghanistan', regional:'Asia-Pacific' };
         return map[t] || (t ? t.charAt(0).toUpperCase()+t.slice(1) : 'Asia-Pacific');
     }
     function _splitBody(sig, locName) {
