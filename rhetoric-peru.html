@@ -864,16 +864,6 @@
         </div>
 
         <!-- ── ELECTION RUNOFF WATCH (Jun 2026 cycle; hidden when quiet) ── -->
-        <div id="electionWatchCard" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.07), rgba(56,189,248,0.05)); border:1px solid rgba(245,158,11,0.45); border-radius:12px; padding:18px 22px; margin-bottom:18px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
-                <div style="font-weight:800; letter-spacing:1.5px; color:#f59e0b; font-size:13px; text-transform:uppercase;">🗳️ <span data-i18n="ew_title">Election Runoff Watch</span></div>
-                <span id="ewPhasePill" style="font-size:11px; font-weight:800; padding:4px 12px; border-radius:5px; background:#f59e0b; color:#1a1206; letter-spacing:0.5px;">—</span>
-            </div>
-            <div id="ewMomentum" style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--text-primary);"></div>
-            <div id="ewCandidates" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px;"></div>
-            <div id="ewDisclaimer" style="font-size:10.5px; color:var(--text-muted); font-style:italic;"></div>
-        </div>
-
         <!-- TOP SIGNALS -->
         <div class="section-header">
             <span class="section-icon">⚡</span>
@@ -1357,7 +1347,6 @@ function renderEverything() {
     renderComposite();
     renderExecSummary();
     renderTopSignals();
-    renderElectionWatch();
     renderSoWhat();
     renderVectors();
     renderCommodityCoupling();
@@ -1420,42 +1409,7 @@ function renderExecSummary() {
     card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
 }
 
-function renderElectionWatch() {
-    const card = document.getElementById('electionWatchCard');
-    if (!card) return;
-    const e = scanData.election_watch;
-    if (!e || !e.active) { card.style.display = 'none'; return; }
-    card.style.display = 'block';
-    const PHASE = { count_in_progress: { txt: 'COUNT IN PROGRESS', bg: '#f59e0b', fg: '#1a1206' },
-                    count_disputed:    { txt: 'COUNT DISPUTED',    bg: '#ef4444', fg: '#fff' },
-                    decided:           { txt: 'DECISION SIGNALS',  bg: '#10b981', fg: '#06281c' } };
-    const ph = PHASE[e.phase] || PHASE.count_in_progress;
-    const pill = document.getElementById('ewPhasePill');
-    pill.textContent = ph.txt; pill.style.background = ph.bg; pill.style.color = ph.fg;
-    const mom = e.momentum_signals;
-    const momEl = document.getElementById('ewMomentum');
-    if (mom === 'balanced' || !e.candidates[mom]) {
-        momEl.textContent = 'Lead-language signals balanced across both candidates this scan.';
-    } else {
-        const c = e.candidates[mom];
-        momEl.textContent = 'Current-scan lead language clusters around ' + c.display +
-            ' — implied market posture if trajectory holds: ' + c.market_read + '. A snapshot of coverage, not a result.';
-    }
-    const MR = { stabilizing: '#10b981', volatile: '#ef4444' };
-    document.getElementById('ewCandidates').innerHTML = ['fujimori', 'sanchez'].map(function (cid) {
-        const c = e.candidates[cid]; if (!c) return '';
-        const col = MR[c.market_read] || '#38bdf8';
-        return '<div style="background:rgba(13,27,46,0.5); border:1px solid var(--border-color,#1e3a5f); border-left:4px solid ' + col + '; border-radius:8px; padding:10px 14px;">' +
-            '<div style="font-weight:800; font-size:13px; margin-bottom:3px;">' + escapeHtml(c.display) + '</div>' +
-            '<div style="font-size:10.5px; color:var(--text-muted); margin-bottom:6px;">' + escapeHtml(c.party) + '</div>' +
-            '<div style="font-size:11px;">Market read: <span style="color:' + col + '; font-weight:800; text-transform:uppercase;">' + escapeHtml(c.market_read) + '</span></div>' +
-            '<div style="font-size:11px; color:var(--text-secondary);">Count base: ' + escapeHtml(c.count_base) + '</div>' +
-            '<div style="font-size:11px; color:var(--text-secondary);">Mentions: ' + (c.mention_count || 0) + ' · Lead signals: ' + (c.lead_signal_count || 0) + '</div>' +
-            '</div>';
-    }).join('');
-    document.getElementById('ewDisclaimer').textContent = e.disclaimer || '';
-}
-
+// renderElectionWatch RETIRED Jul 2026 (runoff concluded -- Fujimori declared winner)
 function renderTopSignals() {
     const t = T[currentLang] || T.en;
     const grid = document.getElementById('topSignalsGrid');
