@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics -- Afghanistan Rhetoric Tracker v1.0.0 -- Jul 2026
+     Contested-node tracker: 11 actors, 4 vectors, four wheels (Iran/Pakistan/Russia/China).
+     Backend: asifah-asia-backend.onrender.com /api/rhetoric/afghanistan
+     Cloned from rhetoric-peru.html (payload-contract donor). -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<!-- Arctic palette · 8 actors · 4-vector composite · en/es/pt full i18n -->
+<html lang="en" dir="ltr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Afghanistan Rhetoric Tracker | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* ARCTIC PALETTE — canonical for rhetoric trackers */
+            --bg-primary: #060d1a;
+            --bg-card: #0d1b2e;
+            --bg-signal: #0a1626;
+            --bg-elevated: #112338;
+            --border-color: #1e3a5f;
+            --border-strong: #2a5288;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #5d7ea3;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #a78bfa;
+
+            /* Levels */
+            --level-low-bg: rgba(16,185,129,0.10);
+            --level-low-border: #10b981;
+            --level-normal-bg: rgba(56,189,248,0.10);
+            --level-normal-border: #38bdf8;
+            --level-elevated-bg: rgba(245,158,11,0.10);
+            --level-elevated-border: #f59e0b;
+            --level-high-bg: rgba(249,115,22,0.10);
+            --level-high-border: #f97316;
+            --level-surge-bg: rgba(239,68,68,0.12);
+            --level-surge-border: #ef4444;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px rgba(56,189,248,0.15);
+
+            --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+            --loading-bg: rgba(6,13,26,0.95);
+            --header-gradient: linear-gradient(135deg, #0d1b2e 0%, #112338 50%, #1e3a5f 100%);
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.55;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 700px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+            filter: var(--watermark-filter);
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--loading-bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner {
+            width: 48px; height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--header-gradient);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-width: 1800px;          /* match .main-layout column width */
+            margin: 0 auto;
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .header-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .header-logo { height: 50px; width: auto; }
+        .header-right-controls { display: flex; gap: 12px; align-items: center; }
+        .home-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .home-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .header-row-2 { text-align: center; margin-bottom: 10px; }
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-top: 6px;
+        }
+        .header-row-3 {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .lang-toggle {
+            display: flex;
+            gap: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .lang-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .lang-btn:hover { background: rgba(56,189,248,0.10); }
+        .lang-btn.active { background: rgba(56,189,248,0.20); color: var(--accent-cyan); }
+        .toggle-container { display: flex; align-items: center; gap: 8px; }
+        .toggle-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1.5px; }
+        .toggle-switch {
+            width: 40px; height: 22px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 1px; left: 1px;
+            width: 18px; height: 18px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        body[data-theme="light"] .toggle-switch::after { transform: translateX(18px); }
+        .refresh-btn {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .refresh-btn:hover {
+            background: rgba(56,189,248,0.1);
+            box-shadow: var(--shadow-glow);
+        }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Layout */
+        .main-layout {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 24px;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar — gold-standard pattern */
+        .sidebar {
+            position: sticky;
+            top: 130px;
+            align-self: start;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+        .sidebar-section { margin-bottom: 14px; }
+        .sidebar-link {
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            background: var(--bg-signal);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-link:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateX(2px);
+        }
+        .sidebar-link.crosscut {
+            border-left-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(16,185,129,0.05);
+        }
+        .sidebar-link.rhetoric { border-left-color: var(--accent-orange); }
+        .sidebar-link.rhetoric:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .sidebar-link.active {
+            background: rgba(249,115,22,0.15);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+        .sidebar-divider { height: 1px; background: var(--border-color); margin: 10px 0; }
+
+        /* Content */
+        .content { min-width: 0; }
+        .updated-bar {
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            padding: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+
+        /* Composite gauge strip */
+        .composite-strip {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .gauge-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .gauge-card.composite { border-top: 3px solid var(--accent-cyan); }
+        .gauge-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .gauge-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1.1;
+        }
+        .gauge-value.composite { font-size: 1.7rem; }
+        .gauge-sub {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .level-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            border: 1px solid;
+        }
+        .level-pill.level-low { background: var(--level-low-bg); border-color: var(--level-low-border); color: var(--level-low-border); }
+        .level-pill.level-normal { background: var(--level-normal-bg); border-color: var(--level-normal-border); color: var(--level-normal-border); }
+        .level-pill.level-elevated { background: var(--level-elevated-bg); border-color: var(--level-elevated-border); color: var(--level-elevated-border); }
+        .level-pill.level-high { background: var(--level-high-bg); border-color: var(--level-high-border); color: var(--level-high-border); }
+        .level-pill.level-surge { background: var(--level-surge-bg); border-color: var(--level-surge-border); color: var(--level-surge-border); }
+
+        /* Section header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 22px 0 12px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .section-icon { font-size: 1.3rem; }
+        .section-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 8px;
+            font-style: italic;
+        }
+
+        /* Executive summary card */
+        .exec-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .exec-summary p {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        .drift-block {
+            background: var(--bg-signal);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-orange);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+        .drift-band-row { margin-bottom: 10px; }
+        .drift-band-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+        .drift-sowhat {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        .drift-li-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+        .drift-li-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+        .drift-li-list li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            padding: 4px 0 4px 18px;
+            position: relative;
+        }
+        .drift-li-list li::before {
+            content: '\25B8';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+        .drift-disclaimer {
+            font-size: 0.75rem;
+            line-height: 1.45;
+            color: var(--text-muted);
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin: 0;
+        }
+
+        /* So What card */
+        .so-what {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-orange);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .so-what-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .so-what-item {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+        .so-what-bullet {
+            flex-shrink: 0;
+            font-size: 1rem;
+            color: var(--accent-orange);
+            line-height: 1.4;
+        }
+
+        /* Top signals */
+        .top-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .top-signals-grid { grid-template-columns: 1fr; } }
+        .signal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .signal-card:hover { border-color: var(--accent-cyan); transform: translateY(-1px); }
+        .signal-card.level-surge { border-left-color: var(--level-surge-border); }
+        .signal-card.level-high { border-left-color: var(--level-high-border); }
+        .signal-card.level-elevated { border-left-color: var(--level-elevated-border); }
+        .signal-card.level-normal { border-left-color: var(--level-normal-border); }
+        .signal-card.level-low { border-left-color: var(--level-low-border); }
+        .signal-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+        .signal-type-pill {
+            font-size: 0.55rem;
+            padding: 2px 8px;
+            border-radius: 3px;
+            background: rgba(56,189,248,0.10);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56,189,248,0.30);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .signal-type-pill.t-tripwire { background: rgba(239,68,68,0.10); color: #fca5a5; border-color: rgba(239,68,68,0.30); }
+        .signal-type-pill.t-convergence { background: rgba(167,139,250,0.10); color: #c4b5fd; border-color: rgba(167,139,250,0.30); }
+        .signal-type-pill.t-commodity_coupling { background: rgba(245,158,11,0.10); color: #fcd34d; border-color: rgba(245,158,11,0.30); }
+        .signal-type-pill.t-election { background: rgba(245,158,11,0.14); color: #fbbf24; border-color: rgba(245,158,11,0.45); }
+        .signal-type-pill.t-crosstheater { background: rgba(16,185,129,0.10); color: #6ee7b7; border-color: rgba(16,185,129,0.30); }
+        .signal-short {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .signal-long {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+        .signal-sources {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .signal-source-row {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .signal-source-row a { color: var(--text-secondary); text-decoration: none; }
+        .signal-source-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+
+        /* Actor cards */
+        .actor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .actor-grid { grid-template-columns: 1fr; } }
+        .actor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+        .actor-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .actor-card.level-surge { border-top-color: var(--level-surge-border); }
+        .actor-card.level-high { border-top-color: var(--level-high-border); }
+        .actor-card.level-elevated { border-top-color: var(--level-elevated-border); }
+        .actor-card.level-normal { border-top-color: var(--level-normal-border); }
+        .actor-card.level-low { border-top-color: var(--level-low-border); }
+        .actor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .actor-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .actor-icon { font-size: 1.4rem; line-height: 1; }
+        .actor-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .actor-role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-style: italic;
+        }
+        .actor-stats {
+            display: flex;
+            gap: 14px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+        .actor-stats span { color: var(--text-muted); }
+        .actor-stats strong { color: var(--text-primary); font-weight: 700; }
+        .actor-articles-toggle {
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            user-select: none;
+            margin-top: 6px;
+        }
+        .actor-articles-toggle:hover { text-decoration: underline; }
+        .actor-articles {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+        .actor-articles.visible { display: block; }
+        .actor-article-row {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(30,58,95,0.4);
+            line-height: 1.45;
+        }
+        .actor-article-row:last-child { border-bottom: none; }
+        .actor-article-row a { color: var(--text-secondary); text-decoration: none; }
+        .actor-article-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+        .article-source-tag {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
+        /* Vector breakdown card */
+        .vector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 600px) { .vector-grid { grid-template-columns: 1fr; } }
+        .vector-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .vector-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .vector-actors {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Commodity coupling card */
+        .commodity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .commodity-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .commodity-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .commodity-card-detail {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Empty / pending */
+        .pending-banner {
+            background: rgba(245,158,11,0.10);
+            border: 1px solid var(--level-elevated-border);
+            color: var(--accent-yellow);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Light theme overrides */
+        body[data-theme="light"] {
+            --bg-primary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-signal: #f0f5fa;
+            --bg-elevated: #e8eef5;
+            --border-color: #d1dce6;
+            --border-strong: #a8b8cc;
+            --text-primary: #1e3a5f;
+            --text-secondary: #2c5282;
+            --text-muted: #5d7ea3;
+            --watermark-filter: saturate(2) brightness(1.1) hue-rotate(190deg);
+            --shadow-sm: 0 1px 3px rgba(30,58,95,0.08);
+            --shadow-md: 0 4px 12px rgba(30,58,95,0.12);
+            --shadow-glow: 0 0 12px rgba(56,189,248,0.2);
+            --header-gradient: linear-gradient(135deg, #ffffff 0%, #f0f5fa 50%, #e8eef5 100%);
+            --loading-bg: rgba(240,244,247,0.95);
+        }
+
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--bg-card, #0d1b2e); border: 1px solid var(--border-color, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
+            .composite-strip { grid-template-columns: 1fr 1fr; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100vh; max-height: 100vh;
+                width: 264px; overflow-y: auto; margin: 0; padding: 56px 14px 24px;
+                background: var(--bg-card, #0d1b2e); border-right: 1px solid var(--border-color, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .sidebar.open { transform: translateX(0); }
+        }
+        @media (max-width: 600px) {
+            .composite-strip { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<div class="watermark"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">SCANNING AFGHANISTAN RHETORIC...</div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-row-1">
+        <a href="index.html">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
+        </a>
+        <div class="header-right-controls">
+            <a href="afghanistan-stability.html" class="home-btn" data-i18n="back_to_stability">← AFGHANISTAN STABILITY</a>
+            <a href="index.html" class="home-btn" data-i18n="home">🏠 HOME</a>
+        </div>
+    </div>
+    <div class="header-row-2">
+        <div class="header-title" data-i18n="page_title">AFGHANISTAN RHETORIC TRACKER</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">11-Actor · 4-Vector Composite · Four-Wheel Contested Node (Iran · Pakistan · Russia · China)</div>
+    </div>
+    <div class="header-row-3">
+        <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" data-lang="ko" onclick="setLang('ko')">한국어</button>
+            <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中文</button>
+            <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日本語</button>
+        </div>
+        <div class="toggle-container">
+            <span class="toggle-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+            <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+        </div>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" data-i18n="refresh">⟳ REFRESH</button>
+    </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="navSidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
+            <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
+            <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
+            <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
+            <a href="wha.html" class="sidebar-link" data-i18n="sb_wha">🌎 Western Hemisphere</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
+            <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
+            <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
+            <a href="gpi.html" class="sidebar-link crosscut" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
+            <a href="market-watch.html" class="sidebar-link crosscut" data-i18n="sb_market">📈 Market Watch</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_rhetoric">RHETORIC LANDINGS</div>
+            <a href="rhetoric-index.html" class="sidebar-link rhetoric" data-i18n="sb_rh_me">💬 Middle East Rhetoric</a>
+            <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
+            <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
+            <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_peru">AFGHANISTAN PAGES</div>
+            <a href="rhetoric-afghanistan.html" class="sidebar-link rhetoric active" data-i18n="sb_peru_rhetoric">💬 Afghanistan Rhetoric</a>
+            <a href="afghanistan-stability.html" class="sidebar-link" data-i18n="sb_peru_stability">📊 Afghanistan Stability</a>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <div class="updated-bar" id="updatedBar" data-i18n="initializing">Initializing...</div>
+
+        <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">
+            ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.
+        </div>
+
+        <!-- EXECUTIVE SUMMARY -->
+        <div class="section-header">
+            <span class="section-icon">📰</span>
+            <span class="section-title" data-i18n="sec_exec">Executive Summary</span>
+        </div>
+        <div class="exec-summary" id="execSummary">
+            <p class="empty-state" data-i18n="loading">Loading...</p>
+        </div>
+
+        
+        <div class="top-signals-grid" id="topSignalsGrid">
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+
+        <!-- SO WHAT -->
+        <div class="section-header">
+            <span class="section-icon">🎯</span>
+            <span class="section-title" data-i18n="sec_so_what">So What Factor</span>
+            <span class="section-desc" data-i18n="sec_so_what_desc">Strategic implications for the next 7-14 days</span>
+        </div>
+        <div class="so-what" id="soWhatCard">
+            <p class="empty-state" data-i18n="loading">Loading...</p>
+        </div>
+
+        <!-- COMMODITY COUPLING (only shown if pressure exists) -->
+        <div id="commoditySection" style="display: none;">
+            <div class="section-header">
+                <span class="section-icon">⛏️</span>
+                <span class="section-title" data-i18n="sec_commodity">Commodity Coupling</span>
+                <span class="section-desc" data-i18n="sec_commodity_desc">Live supply-risk fingerprints from the commodity tracker</span>
+            </div>
+            <!-- Convergence banners + composite strip (mirror afghanistan-stability.html) -->
+            <div id="ccaCopper" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.10)); border:1px solid #f59e0b; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
+                <div style="font-weight:800; color:#fbbf24; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">⚡ <span data-i18n="cca_copper_title">Copper × Mining-Region Conflict Convergence</span></div>
+                <div style="font-size:12px; line-height:1.55; color:var(--text-primary);">Wheat import dependence is Afghanistan's tightest commodity-to-humanitarian coupling -- price shocks transmit straight into food insecurity in a collapsed formal economy. Watch Kazakh export policy and Torkham/Chaman closures.</div>
+            </div>
+            <div id="ccaSilver" style="display:none; background:linear-gradient(135deg, rgba(168,85,247,0.18), rgba(139,92,246,0.18)); border:1px solid #a855f7; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
+                <div style="font-weight:800; color:#c4b5fd; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">🪙 <span data-i18n="cca_silver_title">Silver × Presidential Instability</span></div>
+                <div style="font-size:12px; line-height:1.55; color:#ddd6fe;">Extraction is the China wheel's economic vector: Mes Aynak copper (MCC lease) finally moving, Amu Darya oil producing, lithium still narrative-stage. Project milestones move the normalization-drift read.</div>
+            </div>
+            <div id="ccaComposite" style="display:none; border:1px solid #ef4444; border-left:4px solid #ef4444; border-radius:8px; background:rgba(239,68,68,0.07); padding:10px 16px; margin-bottom:12px; font-size:12.5px;">
+                <span id="ccaCompositeLabel" style="font-weight:800; letter-spacing:2px; color:#ef4444; margin-right:10px;">SURGE</span>
+                <span id="ccaCompositeText" style="color:var(--text-primary);"></span>
+                <span id="ccaCompositeMeta" style="color:var(--text-muted); margin-left:8px;"></span>
+            </div>
+
+        </div>
+
+        <!-- COMPOSITE STRIP — Afghanistan pressure + 4 vector cards -->
+        <div class="composite-strip">
+            <div class="gauge-card composite">
+                <div class="gauge-label" data-i18n="composite_label">Afghanistan Composite Pressure</div>
+                <div class="gauge-value composite" id="compositeScore">—</div>
+                <span class="level-pill" id="compositeLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_kinetic">Af-Pak Kinetic</div>
+                <div class="gauge-value" id="vecKineticScore">—</div>
+                <span class="level-pill" id="vecKineticLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_repression">Repression &amp; Rights</div>
+                <div class="gauge-value" id="vecRepressionScore">—</div>
+                <span class="level-pill" id="vecRepressionLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_external">External Wheels</div>
+                <div class="gauge-value" id="vecExternalScore">—</div>
+                <span class="level-pill" id="vecExternalLevel">—</span>
+            </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_illicit">Illicit Economy</div>
+                <div class="gauge-value" id="vecIllicitScore">—</div>
+                <span class="level-pill" id="vecIllicitLevel">—</span>
+            </div>
+        </div>
+
+        <!-- VECTOR BREAKDOWN -->
+        <div class="section-header">
+            <span class="section-icon">🧭</span>
+            <span class="section-title" data-i18n="sec_vectors">Vector Breakdown</span>
+            <span class="section-desc" data-i18n="sec_vectors_desc">4 analytical vectors — composition + scoring</span>
+        </div>
+        <div class="vector-grid" id="vectorGrid">
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+
+        <!-- ACTORS -->
+        <div class="section-header">
+            <span class="section-icon">🎭</span>
+            <span class="section-title" data-i18n="sec_actors">Actor Breakdown</span>
+            <span class="section-desc" data-i18n="sec_actors_desc">8 tracked actors across 4 vectors</span>
+        </div>
+        <div class="actor-grid" id="actorGrid">
+            <div class="empty-state" data-i18n="loading">Loading...</div>
+        </div>
+
+    </main>
+</div>
+
+<!-- FOOTER (canonical Asifah pattern) -->
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — AFGHANISTAN</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Comercio, La República, Gestión, RPP, Ojo Público, Reuters) · NewsAPI · Brave</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+</footer>
+
+<script>
+// =============================================
+// CONFIGURATION
+// =============================================
+const API_BASE = 'https://asifah-asia-backend.onrender.com';
+const ENDPOINT = `${API_BASE}/api/rhetoric/afghanistan`;
+
+// =============================================
+// I18N — English / Spanish / Portuguese
+// =============================================
+const T = {
+    en: {
+        // Header / chrome
+        home: '🏠 HOME',
+        back_to_stability: '← AFGHANISTAN STABILITY',
+        page_title: 'AFGHANISTAN RHETORIC TRACKER',
+        page_subtitle: '11-Actor · 4-Vector Composite · Four-Wheel Contested Node (Iran · Pakistan · Russia · China)',
+        theme_toggle: 'DARK / LIGHT',
+        refresh: '⟳ REFRESH',
+        loading: 'Loading...',
+        initializing: 'Initializing...',
+        pending_banner: '⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.',
+
+        // Sidebar
+        sb_regional: 'REGIONAL LANDINGS',
+        sb_me: '🌍 Middle East',
+        sb_asia: '🌏 Asia-Pacific',
+        sb_europe: '🌍 Europe',
+        sb_wha: '🌎 Western Hemisphere',
+        sb_crosscut: 'CROSS-CUTTING TOOLS',
+        sb_commodities: '🌾 Commodities Tracker',
+        sb_military: '🪖 Military Tracker',
+        sb_gpi: '🌐 Global Pressure Index',
+        sb_market: '📈 Market Watch',
+        sb_rhetoric: 'RHETORIC LANDINGS',
+        sb_rh_me: '💬 Middle East Rhetoric',
+        sb_rh_asia: '💬 Asia Rhetoric',
+        sb_rh_europe: '💬 Europe Rhetoric',
+        sb_rh_wha: '💬 Western Hemisphere Rhetoric',
+        sb_peru: 'AFGHANISTAN PAGES',
+        sb_peru_rhetoric: '💬 Afghanistan Rhetoric',
+        sb_peru_stability: '📊 Afghanistan Stability',
+
+        // Composite gauge
+        composite_label: 'Afghanistan Composite Pressure',
+        vec_kinetic: 'Af-Pak Kinetic',
+        vec_repression: 'Repression & Rights',
+        vec_external: 'External Wheels',
+        vec_illicit: 'Illicit Economy',
+
+        // Sections
+        sec_exec: 'Executive Summary',
+        sec_signals: 'Top Signals',
+        sec_signals_desc: 'Tripwires, convergence, commodity coupling, cross-theater',
+        cca_copper_title: 'Wheat \u00d7 Humanitarian Coupling', cca_silver_title: 'Minerals \u00d7 China Extraction Track',
+        sec_so_what: 'So What Factor',
+        sec_so_what_desc: 'Strategic implications for the next 7-14 days',
+        drift_label: 'Alignment Drift',
+        leading_indicators: 'Leading Indicators',
+        sec_vectors: 'Vector Breakdown',
+        sec_vectors_desc: '4 analytical vectors — composition + scoring',
+        sec_commodity: 'Commodity Coupling',
+        sec_commodity_desc: 'Live supply-risk fingerprints from the commodity tracker',
+        sec_actors: 'Actor Breakdown',
+        sec_actors_desc: '11 tracked actors across 4 vectors',
+
+        // Levels
+        level_low: 'Low',
+        level_normal: 'Normal',
+        level_elevated: 'Elevated',
+        level_high: 'High',
+        level_surge: 'Surge',
+
+        // Actor card labels
+        actor_score: 'Score',
+        actor_signals: 'Signals',
+        actor_baseline: 'Baseline',
+        actor_show_articles: 'Show top articles',
+        actor_hide_articles: 'Hide articles',
+        actor_no_articles: 'No articles this scan.',
+
+        // Signal types
+        type_tripwire: 'Tripwire',
+        type_convergence: 'Convergence',
+        type_actor_signal: 'Actor Signal',
+        type_commodity_coupling: 'Commodity Coupling', type_natural_disaster_strain: 'Disaster Strain', type_contested_node: 'Contested Node', type_alignment_drift: 'Normalization Drift',
+        type_crosstheater: 'Cross-Theater',
+
+        // Footer
+        ftr_sources: 'DATA SOURCES',
+        ftr_sources_text: 'TOLOnews, Pajhwok, Hasht-e Subh (native Dari/Pashto + English RSS); BBC Pashto & BBC Persian/Afghanistan; Google News (EN/Dari/Pashto); GDELT (English + Farsi queries); NewsAPI; Brave fallback. Cross-reads: humanitarian disaster sensor (USGS Hindu Kush) + Asia commodity proxy (wheat/copper).',
+        ftr_method: 'METHODOLOGY',
+        ftr_method_text: '11-actor frame: Taliban Kabul cabinet, Kandahar emirate, Haqqani/Interior, ISKP, TTP, Pakistan state, Iran, Russia, China, UN rights reporting, illicit-economy watch. 4-vector composite: Af-Pak Kinetic, Repression & Rights, External Wheels, Illicit Economy. Azerbaijan-schema contested node: four mixed-polarity wheels; contested-node signal fires at 3+ wheels active. Tripwires flag low-base-rate high-impact events. Scan refreshes every 12 hours.',
+        ftr_connected: 'CONNECTED TRACKERS',
+        ftr_disclaimer_label: '⚠️ DISCLAIMER',
+        ftr_disclaimer_text: 'This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute investment advice, intelligence assessments, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.',
+        ftr_coffee: 'If you find Asifah Analytics useful and want to support ongoing development, you can',
+        ftr_coffee_link: 'buy me a coffee',
+        ftr_privacy: 'Privacy Policy',
+        ftr_contact: 'Contact',
+
+        // Updated bar
+        updated_prefix: 'LAST UPDATED',
+        updated_cached: 'CACHED',
+        updated_live: 'LIVE',
+        updated_stale: ' (stale, refresh in progress)',
+    },
+
+    ko: {
+        home: '🏠 홈',
+        back_to_stability: '← 아프가니스탄 안정성',
+        page_title: '레토릭 트래커 — 아프가니스탄',
+        page_subtitle: '11개 행위자 · 4벡터 종합 · 4휠 경합 노드 (이란 · 파키스탄 · 러시아 · 중국)',
+        theme_toggle: '다크 / 라이트',
+        refresh: '⟳ 새로고침',
+        loading: '로딩 중...',
+        initializing: '초기화 중...',
+        pending_banner: '⏳ 초기 스캔 진행 중 — 배포 후 보통 3–5분 소요됩니다.',
+        sb_regional: '지역 랜딩',
+        sb_me: '🌍 중동',
+        sb_asia: '🌏 아시아 태평양',
+        sb_europe: '🌍 유럽',
+        sb_wha: '🌎 서반구',
+        sb_crosscut: '크로스컷 도구',
+        sb_commodities: '🌾 원자재 트래커',
+        sb_military: '🪖 군사 트래커',
+        sb_gpi: '🌐 글로벌 압력 지수',
+        sb_market: '📈 마켓 워치',
+        sb_rhetoric: '레토릭 랜딩',
+        sb_rh_me: '💬 중동 레토릭',
+        sb_rh_asia: '💬 아시아 레토릭',
+        sb_rh_europe: '💬 유럽 레토릭',
+        sb_rh_wha: '💬 서반구 레토릭',
+        sb_peru: '아프가니스탄 페이지',
+        sb_peru_rhetoric: '💬 아프가니스탄 레토릭',
+        sb_peru_stability: '📊 아프가니스탄 안정성',
+        composite_label: '아프가니스탄 종합 압력',
+        vec_kinetic: '아파탄 군사',
+        vec_repression: '억압·인권',
+        vec_external: '외부 휠',
+        vec_illicit: '불법 경제',
+        sec_exec: '요약 보고',
+        sec_signals: '주요 신호',
+        sec_signals_desc: '트립와이어 · 수렴 · 원자재 연계 · 교차 전장',
+        cca_copper_title: '밀 × 인도적 연계',
+        cca_silver_title: '광물 × 중국 추출 트랙',
+        sec_so_what: 'So What 팩터',
+        sec_so_what_desc: '향후 7–14일 전략적 함의',
+        drift_label: '정상화 드리프트',
+        leading_indicators: '선행 지표',
+        sec_vectors: '벡터 분석',
+        sec_vectors_desc: '4개 분석 벡터 — 구성 + 점수',
+        sec_commodity: '원자재 연계',
+        sec_commodity_desc: '원자재 트래커의 실시간 공급 위험 지문',
+        sec_actors: '행위자 분석',
+        sec_actors_desc: '4개 벡터에 걸친 11개 추적 행위자',
+        level_low: '낮음',
+        level_normal: '보통',
+        level_elevated: '상승',
+        level_high: '높음',
+        level_surge: '급증',
+        actor_score: '점수',
+        actor_signals: '신호',
+        actor_baseline: '기준선',
+        actor_show_articles: '주요 기사 보기',
+        actor_hide_articles: '기사 숨기기',
+        actor_no_articles: '이번 스캔에 기사 없음.',
+        type_tripwire: '트립와이어',
+        type_convergence: '수렴',
+        type_actor_signal: '행위자 신호',
+        type_commodity_coupling: '원자재 연계',
+        type_natural_disaster_strain: '재난 부하',
+        type_contested_node: '경합 노드',
+        type_alignment_drift: '정상화 드리프트',
+        type_crosstheater: '교차 전장',
+        ftr_sources: '데이터 출처',
+        ftr_sources_text: 'TOLOnews, Pajhwok, Hasht-e Subh (다리어/파슈토어/영어 RSS); BBC 파슈토·페르시아어; Google News (EN/다리/파슈토); GDELT; NewsAPI; Brave. 교차 판독: 인도적 재난 센서(USGS) + 아시아 원자재 프록시.',
+        ftr_method: '방법론',
+        ftr_method_text: '11개 행위자 · 4벡터 종합 · 아제르바이잔 스키마 경합 노드(4휠 혼합 극성; 3개 이상 활성 시 경합 신호). 트립와이어는 저빈도 고영향 사건을 표시. 12시간마다 스캔.',
+        ftr_connected: '연결된 트래커',
+        ftr_disclaimer_label: '⚠️ 면책 조항',
+        ftr_disclaimer_text: '본 페이지는 공개출처 정보 집계에 기반한 분석적 추정치입니다. 투자 조언·정보 평가·정책 권고가 아닙니다. 작전용 사용 불가.',
+        ftr_coffee: 'Asifah Analytics가 유용하다면',
+        ftr_coffee_link: '커피 한 잔 사주세요',
+        ftr_privacy: '개인정보 처리방침',
+        ftr_contact: '문의',
+        updated_prefix: '마지막 업데이트',
+        updated_cached: '캐시됨',
+        updated_live: '라이브',
+        updated_stale: ' (오래됨, 새로고침 중)',
+    },
+    zh: {
+        home: '🏠 首页',
+        back_to_stability: '← 阿富汗稳定',
+        page_title: '言论追踪器 — 阿富汗',
+        page_subtitle: '11个行为体 · 四向量综合 · 四轮争夺节点（伊朗 · 巴基斯坦 · 俄罗斯 · 中国）',
+        theme_toggle: '深色 / 浅色',
+        refresh: '⟳ 刷新',
+        loading: '加载中...',
+        initializing: '初始化中...',
+        pending_banner: '⏳ 首次扫描进行中 — 部署后通常需要3–5分钟。',
+        sb_regional: '区域页面',
+        sb_me: '🌍 中东',
+        sb_asia: '🌏 亚太',
+        sb_europe: '🌍 欧洲',
+        sb_wha: '🌎 西半球',
+        sb_crosscut: '跨域工具',
+        sb_commodities: '🌾 大宗商品追踪器',
+        sb_military: '🪖 军事追踪器',
+        sb_gpi: '🌐 全球压力指数',
+        sb_market: '📈 市场监测',
+        sb_rhetoric: '言论页面',
+        sb_rh_me: '💬 中东言论',
+        sb_rh_asia: '💬 亚洲言论',
+        sb_rh_europe: '💬 欧洲言论',
+        sb_rh_wha: '💬 西半球言论',
+        sb_peru: '阿富汗页面',
+        sb_peru_rhetoric: '💬 阿富汗言论',
+        sb_peru_stability: '📊 阿富汗稳定',
+        composite_label: '阿富汗综合压力',
+        vec_kinetic: '阿巴军事',
+        vec_repression: '镇压与权利',
+        vec_external: '外部轮辐',
+        vec_illicit: '非法经济',
+        sec_exec: '执行摘要',
+        sec_signals: '重点信号',
+        sec_signals_desc: '触发线 · 汇聚 · 商品耦合 · 跨战区',
+        cca_copper_title: '小麦 × 人道耦合',
+        cca_silver_title: '矿产 × 中国开采轨道',
+        sec_so_what: 'So What 因素',
+        sec_so_what_desc: '未来7–14天的战略含义',
+        drift_label: '正常化漂移',
+        leading_indicators: '先行指标',
+        sec_vectors: '向量分解',
+        sec_vectors_desc: '四个分析向量 — 构成与评分',
+        sec_commodity: '商品耦合',
+        sec_commodity_desc: '来自商品追踪器的实时供应风险指纹',
+        sec_actors: '行为体分解',
+        sec_actors_desc: '四个向量下的11个追踪行为体',
+        level_low: '低',
+        level_normal: '正常',
+        level_elevated: '升高',
+        level_high: '高',
+        level_surge: '激增',
+        actor_score: '分数',
+        actor_signals: '信号',
+        actor_baseline: '基线',
+        actor_show_articles: '查看重点文章',
+        actor_hide_articles: '隐藏文章',
+        actor_no_articles: '本次扫描无文章。',
+        type_tripwire: '触发线',
+        type_convergence: '汇聚',
+        type_actor_signal: '行为体信号',
+        type_commodity_coupling: '商品耦合',
+        type_natural_disaster_strain: '灾害负荷',
+        type_contested_node: '争夺节点',
+        type_alignment_drift: '正常化漂移',
+        type_crosstheater: '跨战区',
+        ftr_sources: '数据来源',
+        ftr_sources_text: 'TOLOnews、Pajhwok、Hasht-e Subh（达里语/普什图语/英语 RSS）；BBC 普什图语与波斯语；Google News（英/达里/普什图）；GDELT；NewsAPI；Brave。交叉读取：人道灾害传感器（USGS）+亚洲商品代理。',
+        ftr_method: '方法论',
+        ftr_method_text: '11行为体 · 四向量综合 · 阿塞拜疆模式争夺节点（四轮混合极性；3轮以上活跃时触发争夺信号）。触发线标记低频高影响事件。每12小时扫描。',
+        ftr_connected: '关联追踪器',
+        ftr_disclaimer_label: '⚠️ 免责声明',
+        ftr_disclaimer_text: '本页基于开源情报聚合提供分析估计，不构成投资建议、情报评估或政策建议。不得用于作战用途。',
+        ftr_coffee: '如果您觉得 Asifah Analytics 有用',
+        ftr_coffee_link: '请我喝杯咖啡',
+        ftr_privacy: '隐私政策',
+        ftr_contact: '联系',
+        updated_prefix: '最后更新',
+        updated_cached: '已缓存',
+        updated_live: '实时',
+        updated_stale: '（已过时，刷新中）',
+    },
+    ja: {
+        home: '🏠 ホーム',
+        back_to_stability: '← アフガニスタン安定性',
+        page_title: 'レトリック・トラッカー — アフガニスタン',
+        page_subtitle: '11アクター · 4ベクトル総合 · 4輪俟選ノード（イラン · パキスタン · ロシア · 中国）',
+        theme_toggle: 'ダーク / ライト',
+        refresh: '⟳ 更新',
+        loading: '読み込み中...',
+        initializing: '初期化中...',
+        pending_banner: '⏳ 初回スキャン実行中 — デプロイ後通常3〜5分かかります。',
+        sb_regional: '地域ページ',
+        sb_me: '🌍 中東',
+        sb_asia: '🌏 アジア太平洋',
+        sb_europe: '🌍 ヨーロッパ',
+        sb_wha: '🌎 西半球',
+        sb_crosscut: '横断ツール',
+        sb_commodities: '🌾 コモディティ・トラッカー',
+        sb_military: '🪖 軍事トラッカー',
+        sb_gpi: '🌐 グローバル圧力指数',
+        sb_market: '📈 マーケットウォッチ',
+        sb_rhetoric: 'レトリックページ',
+        sb_rh_me: '💬 中東レトリック',
+        sb_rh_asia: '💬 アジア・レトリック',
+        sb_rh_europe: '💬 ヨーロッパ・レトリック',
+        sb_rh_wha: '💬 西半球レトリック',
+        sb_peru: 'アフガニスタン・ページ',
+        sb_peru_rhetoric: '💬 アフガニスタン・レトリック',
+        sb_peru_stability: '📊 アフガニスタン安定性',
+        composite_label: 'アフガニスタン総合圧力',
+        vec_kinetic: '阿パ軍事',
+        vec_repression: '弾圧・人権',
+        vec_external: '外部ホイール',
+        vec_illicit: '違法経済',
+        sec_exec: 'エグゼクティブサマリー',
+        sec_signals: '主要シグナル',
+        sec_signals_desc: 'トリップワイヤ · 収束 · 商品連動 · 戦域横断',
+        cca_copper_title: '小麦 × 人道連動',
+        cca_silver_title: '鉱物 × 中国採掘トラック',
+        sec_so_what: 'So What ファクター',
+        sec_so_what_desc: '今後7〜14日の戦略的含意',
+        drift_label: '正常化ドリフト',
+        leading_indicators: '先行指標',
+        sec_vectors: 'ベクトル分解',
+        sec_vectors_desc: '4つの分析ベクトル — 構成とスコア',
+        sec_commodity: '商品連動',
+        sec_commodity_desc: 'コモディティ・トラッカーのリアルタイム供給リスク指紋',
+        sec_actors: 'アクター分解',
+        sec_actors_desc: '4ベクトルにまたがる11アクター',
+        level_low: '低',
+        level_normal: '正常',
+        level_elevated: '上昇',
+        level_high: '高',
+        level_surge: '急増',
+        actor_score: 'スコア',
+        actor_signals: 'シグナル',
+        actor_baseline: 'ベースライン',
+        actor_show_articles: '主要記事を表示',
+        actor_hide_articles: '記事を隠す',
+        actor_no_articles: '今回のスキャンでは記事なし。',
+        type_tripwire: 'トリップワイヤ',
+        type_convergence: '収束',
+        type_actor_signal: 'アクターシグナル',
+        type_commodity_coupling: '商品連動',
+        type_natural_disaster_strain: '災害負荷',
+        type_contested_node: '俟選ノード',
+        type_alignment_drift: '正常化ドリフト',
+        type_crosstheater: '戦域横断',
+        ftr_sources: 'データソース',
+        ftr_sources_text: 'TOLOnews、Pajhwok、Hasht-e Subh（ダリー語/パシュトー語/英語 RSS）；BBC パシュトー語・ペルシア語；Google News（英/ダリー/パシュトー）；GDELT；NewsAPI；Brave。クロスリード：人道災害センサー（USGS）+アジア商品プロキシ。',
+        ftr_method: '方法論',
+        ftr_method_text: '11アクター · 4ベクトル総合 · アゼルバイジャン型俟選ノード（4輪混合極性；3輪以上で俟選シグナル）。トリップワイヤは低頻度・高影響事象を検出。12時間ごとにスキャン。',
+        ftr_connected: '接続トラッカー',
+        ftr_disclaimer_label: '⚠️ 免責事項',
+        ftr_disclaimer_text: '本ページはオープンソース情報の集約に基づく分析的推定です。投資助言・情報評価・政策勧告ではありません。作戦目的での使用不可。',
+        ftr_coffee: 'Asifah Analytics が役立つと思ったら',
+        ftr_coffee_link: 'コーヒーを一杯',
+        ftr_privacy: 'プライバシーポリシー',
+        ftr_contact: 'お問い合わせ',
+        updated_prefix: '最終更新',
+        updated_cached: 'キャッシュ',
+        updated_live: 'ライブ',
+        updated_stale: '（古い、更新中）',
+    },
+};
+
+// =============================================
+// STATE
+// =============================================
+let currentLang = localStorage.getItem('asifah_afghanistan_lang') || 'en';
+let scanData = null;
+
+// =============================================
+// THEME / LANG TOGGLES
+// =============================================
+function toggleTheme() {
+    const body = document.body;
+    const cur = body.getAttribute('data-theme') || 'dark';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', next);
+    localStorage.setItem('asifah_theme', next);
+}
+(function initTheme() {
+    const saved = localStorage.getItem('asifah_theme');
+    if (saved === 'light') document.body.setAttribute('data-theme', 'light');
+})();
+
+function setLang(lang) {
+    if (!T[lang]) return;
+    currentLang = lang;
+    localStorage.setItem('asifah_afghanistan_lang', lang);
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    applyI18n();
+    if (scanData) renderEverything();
+}
+
+function applyI18n() {
+    const t = T[currentLang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+    });
+}
+
+// Apply initial i18n on load
+applyI18n();
+
+// =============================================
+// FETCH
+// =============================================
+async function loadAll(forceRefresh = false) {
+    const refreshBtn = document.getElementById('refreshBtn');
+    refreshBtn.disabled = true;
+    const t = T[currentLang] || T.en;
+    refreshBtn.textContent = '⟳ ' + t.loading;
+
+    try {
+        const url = forceRefresh ? `${ENDPOINT}?refresh=true` : ENDPOINT;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.success) {
+            scanData = data;
+            renderEverything();
+        } else {
+            console.warn('Afghanistan fetch failed:', data);
+            document.getElementById('updatedBar').textContent = '⚠️ Error loading data — please retry';
+        }
+    } catch (err) {
+        console.error('loadAll error:', err);
+        document.getElementById('updatedBar').textContent = '⚠️ Error loading data — please retry';
+    } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = (T[currentLang] || T.en).refresh;
+        document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+}
+
+function refreshData() { loadAll(true); }
+
+// =============================================
+// RENDER
+// =============================================
+function renderEverything() {
+    const t = T[currentLang] || T.en;
+    if (!scanData) return;
+
+    renderUpdatedBar();
+    renderComposite();
+    renderExecSummary();
+    renderTopSignals();
+    renderSoWhat();
+    renderVectors();
+    renderCommodityCoupling();
+    renderActors();
+    maybeShowPendingBanner();
+}
+
+function renderUpdatedBar() {
+    const t = T[currentLang] || T.en;
+    const bar = document.getElementById('updatedBar');
+    if (scanData && scanData.last_updated) {
+        const dt = new Date(scanData.last_updated);
+        const formatted = dt.toLocaleString(currentLang === 'pt' ? 'pt-BR' : currentLang === 'es' ? 'es' : 'en-US',
+                                              { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+        const tag = scanData.cached ? t.updated_cached : t.updated_live;
+        const stale = scanData.stale ? t.updated_stale : '';
+        bar.textContent = `${t.updated_prefix} ${formatted} UTC · ${tag}${stale}`;
+    }
+}
+
+function maybeShowPendingBanner() {
+    const banner = document.getElementById('pendingBanner');
+    const noData = !scanData || !scanData.total_articles_scanned || scanData.total_articles_scanned === 0;
+    banner.style.display = noData ? 'block' : 'none';
+}
+
+function renderComposite() {
+    const t = T[currentLang] || T.en;
+    document.getElementById('compositeScore').textContent = (scanData.composite_score || 0).toFixed(1);
+    setPill('compositeLevel', scanData.composite_level || 'low');
+
+    const vs = scanData.vector_scores || {};
+    const vl = scanData.vector_levels || {};
+    document.getElementById('vecKineticScore').textContent = (vs.kinetic_afpak || 0).toFixed(1);
+    setPill('vecKineticLevel', vl.kinetic_afpak || 'low');
+    document.getElementById('vecRepressionScore').textContent = (vs.repression_rights || 0).toFixed(1);
+    setPill('vecRepressionLevel', vl.repression_rights || 'low');
+    document.getElementById('vecExternalScore').textContent = (vs.external_friction || 0).toFixed(1);
+    setPill('vecExternalLevel', vl.external_friction || 'low');
+    document.getElementById('vecIllicitScore').textContent = (vs.illicit_economy || 0).toFixed(1);
+    setPill('vecIllicitLevel', vl.illicit_economy || 'low');
+}
+
+function setPill(elemId, level) {
+    const t = T[currentLang] || T.en;
+    const el = document.getElementById(elemId);
+    if (!el) return;
+    el.className = 'level-pill level-' + (level || 'low');
+    el.textContent = t['level_' + (level || 'low')] || level;
+}
+
+function renderExecSummary() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('execSummary');
+    const summary = scanData.executive_summary;
+    if (!summary) {
+        card.innerHTML = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
+        return;
+    }
+    card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
+}
+
+// renderElectionWatch RETIRED Jul 2026 (runoff concluded -- Fujimori declared winner)
+function renderTopSignals() {
+    const t = T[currentLang] || T.en;
+    const grid = document.getElementById('topSignalsGrid');
+    const signals = scanData.top_signals || [];
+    if (!signals.length) {
+        grid.innerHTML = `<div class="empty-state">${escapeHtml(t.loading)}</div>`;
+        return;
+    }
+
+    let html = '';
+    signals.forEach(sig => {
+        const level = sig.level || 'low';
+        const type = sig.type || 'actor_signal';
+        const typeLabel = t['type_' + type] || type;
+        let sourcesHtml = '';
+        if (sig.sources && sig.sources.length) {
+            sourcesHtml = '<div class="signal-sources">';
+            sig.sources.forEach(src => {
+                const url = src.url || '#';
+                const linkOpen = url && url !== '#' ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">` : '';
+                const linkClose = url && url !== '#' ? '</a>' : '';
+                sourcesHtml += `
+                    <div class="signal-source-row">
+                        ${linkOpen}${escapeHtml(src.title || '')}${linkClose}
+                        <span style="color:var(--text-muted)"> — ${escapeHtml(src.source || '')}</span>
+                    </div>`;
+            });
+            sourcesHtml += '</div>';
+        }
+
+        html += `
+            <div class="signal-card level-${level}">
+                <div class="signal-meta-row">
+                    <span class="signal-type-pill t-${type}">${escapeHtml(typeLabel)}</span>
+                    <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
+                </div>
+                <div class="signal-short">${escapeHtml(sig.short_text || '')}</div>
+                <div class="signal-long">${escapeHtml(sig.long_text || '')}</div>
+                ${sourcesHtml}
+            </div>`;
+    });
+    grid.innerHTML = html;
+}
+
+function renderSoWhat() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('soWhatCard');
+    const bullets = scanData.so_what || [];
+    const drift = scanData.alignment_drift || null;
+    const em = s => (s || '').replace(/--/g, '\u2014');
+    let html = '';
+
+    // Lead: great-power alignment-drift factor (BRI inroad read)
+    if (drift && drift.band) {
+        const bc = drift.color || 'var(--accent-orange)';
+        html += `<div class="drift-block" style="border-left-color:${escapeHtml(bc)};">`;
+        html += `<div class="drift-band-row"><span class="drift-band-badge" style="background:${escapeHtml(bc)}22; color:${escapeHtml(bc)}; border:1px solid ${escapeHtml(bc)};">${escapeHtml(t.drift_label || 'Alignment Drift')}: ${escapeHtml(drift.band)}</span></div>`;
+        html += `<p class="drift-sowhat">${escapeHtml(em(drift.so_what_factor || ''))}</p>`;
+        if (drift.leading_indicators && drift.leading_indicators.length) {
+            html += `<div class="drift-li-header">${escapeHtml(t.leading_indicators || 'Leading Indicators')}</div>`;
+            html += '<ul class="drift-li-list">';
+            drift.leading_indicators.forEach(li => {
+                html += `<li>${escapeHtml(em(li))}</li>`;
+            });
+            html += '</ul>';
+        }
+        if (drift.disclaimer) {
+            html += `<p class="drift-disclaimer">${escapeHtml(em(drift.disclaimer))}</p>`;
+        }
+        html += '</div>';
+    }
+
+    // Remaining strategic bullets (exclude the alignment-drift lead bullet to avoid duplication)
+    const others = bullets.filter(b => !(b.bullet || '').toUpperCase().startsWith('ALIGNMENT DRIFT'));
+    if (others.length) {
+        html += '<ul class="so-what-list">';
+        others.forEach(b => {
+            html += `<li class="so-what-item"><span class="so-what-bullet">\u25B8</span><span>${escapeHtml(em(b.bullet || ''))}</span></li>`;
+        });
+        html += '</ul>';
+    }
+
+    if (!html) html = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
+    card.innerHTML = html;
+}
+
+function renderVectors() {
+    const t = T[currentLang] || T.en;
+    const grid = document.getElementById('vectorGrid');
+    const vs = scanData.vector_scores || {};
+    const vl = scanData.vector_levels || {};
+    const actors = scanData.actor_summaries || {};
+
+    const vectorMembers = {
+        'kinetic_afpak':      ['ttp', 'pakistan_state', 'iskp', 'haqqani_interior'],
+        'repression_rights':  ['taliban_kandahar', 'un_rights'],
+        'external_friction':  ['iran_afghanistan', 'russia_engagement', 'china_engagement', 'taliban_kabul'],
+        'illicit_economy':    ['drug_economy'],
+    };
+    const vectorLabels = {
+        'kinetic_afpak':      t.vec_kinetic,
+        'repression_rights':  t.vec_repression,
+        'external_friction':  t.vec_external,
+        'illicit_economy':    t.vec_illicit,
+    };
+
+    let html = '';
+    Object.entries(vectorMembers).forEach(([vid, members]) => {
+        const memberNames = members.map(a => (actors[a] && actors[a].name) || a).join(', ');
+        const score = (vs[vid] || 0).toFixed(1);
+        const level = vl[vid] || 'low';
+        html += `
+            <div class="vector-card">
+                <div class="vector-name">${escapeHtml(vectorLabels[vid] || vid)}</div>
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span style="font-size:1.4rem; font-weight:700; color:var(--accent-cyan);">${score}</span>
+                    <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
+                </div>
+                <div class="vector-actors">${escapeHtml(memberNames)}</div>
+            </div>`;
+    });
+    grid.innerHTML = html;
+}
+
+function renderCommodityCoupling() {
+    const section = document.getElementById('commoditySection');
+    const pressure = scanData.commodity_pressure || {};
+    const story = pressure._pressure_story || null;
+    // Composite story only -- per-commodity fingerprint cards removed Jun 9 2026
+    // (redundant with the convergence banners + composite strip; the NORMAL
+    // per-commodity pills visually contradicted the composite band).
+    if (!story) {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = 'block';
+
+    const sc = story.commodities || {};
+    const copperHot = sc.copper && sc.copper !== 'normal';
+    const silverHot = sc.silver && sc.silver !== 'normal';
+    document.getElementById('ccaCopper').style.display = copperHot ? 'block' : 'none';
+    document.getElementById('ccaSilver').style.display = silverHot ? 'block' : 'none';
+    const comp = document.getElementById('ccaComposite');
+    if (story.alert && story.alert !== 'normal') {
+        const COLORS = { elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
+        const col = COLORS[story.alert] || '#ef4444';
+        comp.style.display = 'block';
+        comp.style.borderColor = col; comp.style.borderLeftColor = col;
+        const lab = document.getElementById('ccaCompositeLabel');
+        lab.textContent = story.alert.toUpperCase(); lab.style.color = col;
+        document.getElementById('ccaCompositeText').textContent =
+            'Composite commodity pressure: ' + story.alert;
+        document.getElementById('ccaCompositeMeta').textContent =
+            (story.points || 0) + ' pts \u00b7 ' + (story.profile_count || 0) + ' commodities tracked';
+    } else {
+        comp.style.display = 'none';
+    }
+}
+
+function renderActors() {
+    const t = T[currentLang] || T.en;
+    const grid = document.getElementById('actorGrid');
+    const actors = scanData.actor_summaries || {};
+
+    // Order: domestic first, then resource, then alignment
+    const actorOrder = ['taliban_kabul', 'taliban_kandahar', 'haqqani_interior', 'iskp', 'ttp', 'pakistan_state', 'iran_afghanistan', 'russia_engagement', 'china_engagement', 'un_rights', 'drug_economy'];
+
+    let html = '';
+    actorOrder.forEach(aid => {
+        const a = actors[aid];
+        if (!a) return;
+        const level = a.level || 'low';
+        const articles = a.top_articles || [];
+        let articlesHtml = '';
+        if (articles.length) {
+            articlesHtml = articles.map(art => {
+                const url = art.url || '#';
+                const linkOpen = url && url !== '#' ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">` : '';
+                const linkClose = url && url !== '#' ? '</a>' : '';
+                const lang = (art.language || '').toUpperCase();
+                return `
+                    <div class="actor-article-row">
+                        ${linkOpen}${escapeHtml(art.title || '')}${linkClose}
+                        <span class="article-source-tag">[${escapeHtml(art.source || '')}${lang ? ' · ' + escapeHtml(lang) : ''}]</span>
+                    </div>`;
+            }).join('');
+        } else {
+            articlesHtml = `<div class="actor-article-row"><em style="color:var(--text-muted)">${escapeHtml(t.actor_no_articles)}</em></div>`;
+        }
+
+        html += `
+            <div class="actor-card level-${level}">
+                <div class="actor-header">
+                    <div class="actor-title">
+                        <span class="actor-icon">${escapeHtml(a.icon || '📊')}</span>
+                        <span class="actor-name">${escapeHtml(a.name || aid)}</span>
+                    </div>
+                    <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
+                </div>
+                <div class="actor-role">${escapeHtml(a.role || '')}</div>
+                <div class="actor-stats">
+                    <div><span>${escapeHtml(t.actor_score)}:</span> <strong>${(a.score || 0).toFixed(1)}</strong></div>
+                    <div><span>${escapeHtml(t.actor_signals)}:</span> <strong>${a.article_count || 0}</strong></div>
+                    <div><span>${escapeHtml(t.actor_baseline)}:</span> <strong>${a.baseline || 0}/wk</strong></div>
+                </div>
+                <div class="actor-articles-toggle" onclick="toggleArticles('${aid}', this)">${escapeHtml(t.actor_show_articles)}</div>
+                <div class="actor-articles" id="articles-${aid}">
+                    ${articlesHtml}
+                </div>
+            </div>`;
+    });
+    grid.innerHTML = html;
+}
+
+function toggleArticles(aid, toggleEl) {
+    const t = T[currentLang] || T.en;
+    const div = document.getElementById('articles-' + aid);
+    if (!div) return;
+    const isVisible = div.classList.toggle('visible');
+    toggleEl.textContent = isVisible ? t.actor_hide_articles : t.actor_show_articles;
+}
+
+// =============================================
+// HELPERS
+// =============================================
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+// =============================================
+// INITIAL LOAD
+// =============================================
+// Set initial active language button
+document.querySelector(`.lang-btn[data-lang="${currentLang}"]`)?.classList.add('active');
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    if (btn.dataset.lang !== currentLang) btn.classList.remove('active');
+});
+loadAll(false);
+</script>
+
+
+<script>
+// ── Canonical mobile drawer (Gold Standard, Jun 2026) ──
+function toggleSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (!sb) return;
+    var open = sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    var sb = document.getElementById('navSidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('open');
+    if (bd) bd.classList.remove('show');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    var sb = document.getElementById('navSidebar');
+    if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
+</body>
+</html>
