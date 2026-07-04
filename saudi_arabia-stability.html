@@ -963,9 +963,10 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-title" data-i18n="navCore">Core Trackers</div>
-                <a href="gpi.html" class="sidebar-link core" data-i18n="navGPI">Global Pressure Index</a>
-                <a href="military.html" class="sidebar-link core" data-i18n="navMil">Military Tracker</a>
                 <a href="commodities.html" class="sidebar-link core" data-i18n="navCom">Commodities</a>
+                <a href="gpi.html" class="sidebar-link core" data-i18n="navGPI">Global Pressure Index</a>
+                <a href="market-watch.html" class="sidebar-link core" data-i18n="navMkt">Market Watch</a>
+                <a href="military.html" class="sidebar-link core" data-i18n="navMil">Military Tracker</a>
             </div>
 
             <div class="sidebar-section">
@@ -1016,16 +1017,26 @@
                 </div>
             </div>
 
-            <!-- COMING SOON: SAUDI RHETORIC TRACKER -->
-            <div class="rhetoric-coming-soon">
-                <div class="rcs-icon">🕊️</div>
+            <!-- RHETORIC BANNER + LIVE SHELL (Jul 2026; goes live when /api/rhetoric/saudi_arabia ships) -->
+            <div class="rhetoric-coming-soon" id="ksaRhetBanner" style="border-left:4px solid #22c55e;">
+                <div class="rcs-icon">📡</div>
                 <div class="rcs-body">
-                    <div class="rcs-title" data-i18n="rhetoricSoonTitle">Saudi Rhetoric Tracker</div>
-                    <div class="rcs-text" data-i18n="rhetoricSoonText">
-                        Coming soon: actor-level escalation scoring for the Royal Court, MbS, Royal Saudi Air Defense, Aramco leadership, and clerical establishment — with Hormuz, Yemen, and Iran-relations tripwires. Will mirror the canonical Iraq/Iran/Lebanon rhetoric tracker pattern (0–5 escalation scale).
-                    </div>
+                    <div class="rcs-title" data-i18n="rhetoricSoonTitle">Saudi Rhetoric &amp; Pressure Tracker</div>
+                    <div class="rcs-text" id="ksaRhetBannerText" data-i18n="rhetoricSoonText">Tracker deploying — Royal Court / MBS jawboning, Houthi-Iran kinetics, Accords normalization watch, and Vision 2030 signals. This shell goes live automatically when the tracker ships.</div>
                 </div>
-                <div class="rcs-pill" data-i18n="rhetoricSoonPill">In Development</div>
+                <div class="rcs-pill" id="ksaRhetPill" data-i18n="rhetoricSoonPill">DEPLOYING</div>
+            </div>
+
+            <div class="commodity-card" id="ksaRhetCard" style="margin-bottom:24px;">
+                <div class="commodity-card-title">📡 <span data-i18n="rhetCardTitle">RHETORIC VECTOR GAUGES</span></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:10px;">
+                    <div style="text-align:center;"><div style="font-size:11px;color:var(--text-muted);" data-i18n="rhetVecComposite">Composite</div><div id="ksaVecComposite" style="font-size:26px;font-weight:800;color:#38bdf8;">—</div></div>
+                    <div style="text-align:center;"><div style="font-size:11px;color:var(--text-muted);" data-i18n="rhetVecKinetic">Kinetic Inbound</div><div id="ksaVecKinetic" style="font-size:22px;font-weight:700;">—</div></div>
+                    <div style="text-align:center;"><div style="font-size:11px;color:var(--text-muted);" data-i18n="rhetVecEnergy">Energy Infrastructure</div><div id="ksaVecEnergy" style="font-size:22px;font-weight:700;">—</div></div>
+                    <div style="text-align:center;"><div style="font-size:11px;color:var(--text-muted);" data-i18n="rhetVecNorm">Normalization Watch</div><div id="ksaVecNorm" style="font-size:22px;font-weight:700;">—</div></div>
+                    <div style="text-align:center;"><div style="font-size:11px;color:var(--text-muted);" data-i18n="rhetVecDomestic">Domestic Transformation</div><div id="ksaVecDomestic" style="font-size:22px;font-weight:700;">—</div></div>
+                </div>
+                <div id="ksaRhetSummary" style="margin-top:12px;font-size:12px;color:var(--text-secondary);"></div>
             </div>
 
             <!-- COMMODITY EXPOSURE CARD -->
@@ -1273,6 +1284,13 @@
     /* ──────────────── TRANSLATIONS (EN/AR/HE/FA) ──────────────── */
     const TRANSLATIONS = {
         en: {
+            navMkt: 'Market Watch',
+            rhetCardTitle: 'RHETORIC VECTOR GAUGES',
+            rhetVecComposite: 'Composite',
+            rhetVecKinetic: 'Kinetic Inbound',
+            rhetVecEnergy: 'Energy Infrastructure',
+            rhetVecNorm: 'Normalization Watch',
+            rhetVecDomestic: 'Domestic Transformation',
             // Sidebar
             navRegional: "Regional Dashboards", navME: "Middle East", navAsia: "Asia", navEurope: "Europe", navWHA: "Western Hemisphere", navAfrica: "Africa",
             navCore: "Core Trackers", navGPI: "Global Pressure Index", navMil: "Military Tracker", navCom: "Commodities",
@@ -1339,6 +1357,13 @@
             footerMission: "Mission Statement", footerPrivacy: "Privacy Policy", footerHome: "Home"
         },
         ar: {
+            navMkt: 'مراقبة الأسواق',
+            rhetCardTitle: 'مؤشرات الخطاب',
+            rhetVecComposite: 'مركّب',
+            rhetVecKinetic: 'تهديد حركي وارد',
+            rhetVecEnergy: 'بنية الطاقة',
+            rhetVecNorm: 'مراقبة التطبيع',
+            rhetVecDomestic: 'التحول الداخلي',
             navRegional: "اللوحات الإقليمية", navME: "الشرق الأوسط", navAsia: "آسيا", navEurope: "أوروبا", navWHA: "نصف الكرة الغربي", navAfrica: "أفريقيا",
             navCore: "أدوات التتبع الأساسية", navGPI: "مؤشر الضغط العالمي", navMil: "متعقب عسكري", navCom: "السلع",
             navRhetoric: "الخطاب الإقليمي", navRhetME: "الشرق الأوسط", navRhetAsia: "آسيا", navRhetEu: "أوروبا", navRhetWHA: "نصف الكرة الغربي",
@@ -1395,6 +1420,13 @@
             footerMission: "بيان المهمة", footerPrivacy: "سياسة الخصوصية", footerHome: "الرئيسية"
         },
         he: {
+            navMkt: 'מעקב שווקים',
+            rhetCardTitle: 'מדי וקטור רטוריקה',
+            rhetVecComposite: 'משוקלל',
+            rhetVecKinetic: 'איום קינטי נכנס',
+            rhetVecEnergy: 'תשתית אנרגיה',
+            rhetVecNorm: 'מעקב נורמליזציה',
+            rhetVecDomestic: 'תמורה פנימית',
             navRegional: "לוחות אזוריים", navME: "המזרח התיכון", navAsia: "אסיה", navEurope: "אירופה", navWHA: "חצי הכדור המערבי", navAfrica: "אפריקה",
             navCore: "כלי מעקב ליבה", navGPI: "מדד לחץ גלובלי", navMil: "מעקב צבאי", navCom: "סחורות",
             navRhetoric: "רטוריקה אזורית", navRhetME: "המזרח התיכון", navRhetAsia: "אסיה", navRhetEu: "אירופה", navRhetWHA: "חצי הכדור המערבי",
@@ -1451,6 +1483,13 @@
             footerMission: "הצהרת משימה", footerPrivacy: "מדיניות פרטיות", footerHome: "בית"
         },
         fa: {
+            navMkt: 'رصد بازارها',
+            rhetCardTitle: 'سنجه‌های بردار گفتمان',
+            rhetVecComposite: 'ترکیبی',
+            rhetVecKinetic: 'تهدید جنبشی ورودی',
+            rhetVecEnergy: 'زیرساخت انرژی',
+            rhetVecNorm: 'پایش عادی‌سازی',
+            rhetVecDomestic: 'دگرگونی داخلی',
             navRegional: "داشبوردهای منطقه‌ای", navME: "خاورمیانه", navAsia: "آسیا", navEurope: "اروپا", navWHA: "نیمکره غربی", navAfrica: "آفریقا",
             navCore: "ردیاب‌های اصلی", navGPI: "شاخص فشار جهانی", navMil: "ردیاب نظامی", navCom: "کالاها",
             navRhetoric: "گفتمان منطقه‌ای", navRhetME: "خاورمیانه", navRhetAsia: "آسیا", navRhetEu: "اروپا", navRhetWHA: "نیمکره غربی",
@@ -1591,6 +1630,33 @@
     }
 
     /* ──────────────── FINANCIAL PULSE RENDER ──────────────── */
+    async function loadKsaRhetoric() {
+        // Vector keys = the blessed tracker contract (Jul 2026):
+        // kinetic_inbound / energy_infrastructure / normalization_watch / domestic_transformation
+        try {
+            const r = await fetch('https://asifah-backend.onrender.com/api/rhetoric/saudi_arabia');
+            if (!r.ok) return;   // absence-honest: DEPLOYING state stands
+            const d = await r.json();
+            if (!d || !d.success) return;
+            const pill = document.getElementById('ksaRhetPill');
+            const lvl = (d.composite_level || 'low').toUpperCase();
+            if (pill) { pill.textContent = lvl; }
+            const bt = document.getElementById('ksaRhetBannerText');
+            if (bt && d.executive_summary) bt.textContent = d.executive_summary;
+            const comp = document.getElementById('ksaVecComposite');
+            if (comp && d.composite_score != null) comp.textContent = Number(d.composite_score).toFixed(1);
+            const vs = d.vector_scores || {};
+            const map = { ksaVecKinetic: 'kinetic_inbound', ksaVecEnergy: 'energy_infrastructure',
+                          ksaVecNorm: 'normalization_watch', ksaVecDomestic: 'domestic_transformation' };
+            Object.keys(map).forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el && vs[map[id]] != null) el.textContent = Number(vs[map[id]]).toFixed(1);
+            });
+            const summ = document.getElementById('ksaRhetSummary');
+            if (summ && d.executive_summary) summ.textContent = d.executive_summary;
+        } catch (e) { /* tracker not deployed yet -- shell stands honestly */ }
+    }
+
     function renderFinancialPulse(data) {
         const fp = (data && data.financial_pulse) || {};
         const tiles = fp.tiles || {};
@@ -1756,6 +1822,7 @@
 
             // Financial pulse
             renderFinancialPulse(data);
+            loadKsaRhetoric();
 
             // Articles
             allArticles = data.articles || [];
