@@ -583,6 +583,24 @@
             url:        'rhetoric-libya.html',
         },
         {
+            id:         'qatar',
+            name:       'Qatar Rhetoric & Mediation Tracker',
+            flag:       '🇶🇦',
+            actors:     'MOFA Mediation · Emir · QatarEnergy · Al Udeid · Turkey · GCC · Iran · Gaza File',
+            vectors:    ['Mediation', 'GCC Cohesion', 'Gas', 'Base Posture'],
+            summaryUrl: ME_BACKEND + '/api/rhetoric/qatar',
+            url:        'rhetoric-qatar.html',
+        },
+        {
+            id:         'saudi_arabia',
+            name:       'Saudi Rhetoric & Pressure Tracker',
+            flag:       '🇸🇦',
+            actors:     'Royal Court/MBS · MOD · Aramco · OPEC+ · Houthi · Iran · Accords Watch · US',
+            vectors:    ['Kinetic Inbound', 'Energy Infra', 'Normalization', 'Domestic'],
+            summaryUrl: ME_BACKEND + '/api/rhetoric/saudi_arabia',
+            url:        'rhetoric-saudi_arabia.html',
+        },
+        {
             id:         'syria',
             name:       'Syria Rhetoric Tracker',
             flag:       '🇸🇾',
@@ -590,6 +608,15 @@
             vectors:    ['HTS', 'Kurdish', 'ISIS'],
             summaryUrl: ME_BACKEND + '/api/rhetoric/syria/summary',
             url:        'rhetoric-syria.html',
+        },
+        {
+            id:         'uae',
+            name:       'UAE Rhetoric & Alignment Tracker',
+            flag:       '🇦🇪',
+            actors:     'Leadership/MBZ · MOD · Israel Axis · Iran Dual · ADNOC · DP World · Houthi · US',
+            vectors:    ['Kinetic Inbound', 'Israel Axis', 'Iran Dual', 'Economic Hub'],
+            summaryUrl: ME_BACKEND + '/api/rhetoric/uae',
+            url:        'rhetoric-uae.html',
         },
         {
             id:         'yemen',
@@ -899,6 +926,13 @@
                     const resp = await fetch(tracker.summaryUrl, { cache: 'no-store' });
                     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                     const data = await resp.json();
+                    // Composite-family adapter (Gulf trio, Jul 2026): these trackers emit
+                    // composite_score (0-10) + composite_level (low..surge), not ME theatre_* fields.
+                    if (data && data.composite_level !== undefined && data.theatre_score === undefined) {
+                        const compMap = { low: 0, normal: 1, elevated: 2, high: 3, surge: 4 };
+                        data.theatre_score = Math.round((data.composite_score || 0) * 10);
+                        data.theatre_level = compMap[String(data.composite_level).toLowerCase()] ?? 0;
+                    }
                     return { tracker, data };
                 } catch(e) {
                     console.warn(`[${tracker.id}] fetch error:`, e);
