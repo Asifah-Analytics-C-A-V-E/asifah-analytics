@@ -394,6 +394,41 @@
         .vector-tabs { flex-direction: column; }
         .regime-signal-meta { margin-left: 0; }
     }
+
+    /* ═══ Mobile drawer (hamburger) — cloned from russia.html, vars remapped to this page ═══ */
+    .menu-toggle { display:none; position:fixed; top:14px; left:14px; z-index:200; background:var(--card-bg); border:1.5px solid rgba(56,189,248,0.4); border-radius:8px; width:44px; height:44px; font-size:22px; cursor:pointer; color:var(--accent); align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,0.25); transition:all 0.2s ease; }
+    .menu-toggle:hover { background:rgba(56,189,248,0.15); transform:scale(1.05); }
+    .menu-toggle:active { transform:scale(0.95); }
+    .sidebar-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(2px); z-index:150; }
+    @media (max-width: 1199px) {
+        .menu-toggle { display:flex; }
+        .nav-sidebar { display:flex; position:fixed; top:0; left:-300px; width:260px; height:100vh; z-index:180; overflow-y:auto; transition:left 0.25s ease; border-radius:0; background:var(--card-bg); padding:60px 14px 20px; border-right:1px solid var(--card-border); box-shadow:2px 0 24px rgba(0,0,0,0.4); }
+        .nav-sidebar.open { left:0; }
+        .sidebar-backdrop.open { display:block; }
+        .nav-sidebar::before { content:'\2715 Close'; position:absolute; top:14px; right:14px; font-size:12px; color:var(--text-muted); cursor:pointer; padding:4px 10px; border:1px solid var(--card-border); border-radius:6px; background:rgba(56,189,248,0.05); }
+    }
+    /* Global Trackers gold buttons (cloned from russia.html) */
+    .nav-btn.markets-btn { border-color:rgba(245,158,11,0.4); background:linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.markets-btn .nav-btn-status { color:#fbbf24; }
+    .nav-btn.gpi-btn { border-color:rgba(56,189,248,0.55); background:linear-gradient(135deg, rgba(56,189,248,0.16) 0%, rgba(14,165,233,0.10) 100%); box-shadow:0 0 14px rgba(56,189,248,0.10); }
+    .nav-btn.gpi-btn .nav-btn-status { color:#38bdf8; }
+    .nav-btn.gpi-btn:hover { background:linear-gradient(135deg, rgba(56,189,248,0.22) 0%, rgba(14,165,233,0.14) 100%); }
+    /* ═══ Canonical Asifah footer (cloned from russia.html, vars remapped) ═══ */
+    .asifah-footer { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:22px 24px; margin-top:24px; margin-bottom:24px; text-align:center; }
+    .asifah-footer-title { font-size:0.95rem; font-weight:700; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
+    .asifah-footer-backend { font-size:0.75rem; color:var(--text-muted); font-family:'Courier New', monospace; margin-bottom:6px; }
+    .asifah-footer-cadence { font-size:0.72rem; color:var(--text-muted); font-style:italic; margin-bottom:10px; }
+    .asifah-footer-sources { font-size:0.78rem; color:var(--text-secondary); margin-bottom:14px; line-height:1.5; }
+    .asifah-footer-pills { display:flex; justify-content:center; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+    .asifah-footer-pill { padding:8px 16px; border-radius:20px; font-size:0.82rem; font-weight:600; text-decoration:none; transition:all 0.2s ease; border:1.5px solid; }
+    .asifah-footer-pill.bmc { background:rgba(251,191,36,0.12); color:#f59e0b; border-color:rgba(251,191,36,0.5); }
+    .asifah-footer-pill.bmc:hover { background:rgba(251,191,36,0.22); transform:translateY(-1px); }
+    .asifah-footer-pill.contact { background:rgba(56,189,248,0.12); color:var(--accent); border-color:rgba(56,189,248,0.5); }
+    .asifah-footer-pill.contact:hover { background:rgba(56,189,248,0.22); transform:translateY(-1px); }
+    .asifah-footer-disclaimer { font-size:0.7rem; color:var(--text-muted); font-style:italic; margin-bottom:10px; max-width:700px; margin-left:auto; margin-right:auto; line-height:1.5; }
+    .asifah-footer-links { display:flex; justify-content:center; gap:14px; font-size:0.75rem; flex-wrap:wrap; }
+    .asifah-footer-links a { color:var(--text-muted); text-decoration:none; border-bottom:1px dotted var(--text-muted); }
+    .asifah-footer-links a:hover { color:var(--accent); border-bottom-color:var(--accent); }
 </style>
 </head>
 <body>
@@ -430,15 +465,19 @@
 </header>
 
 <!-- PAGE WITH SIDEBAR -->
+<!-- MOBILE DRAWER TOGGLE -->
+<button class="menu-toggle" id="menuToggle" aria-label="Open navigation" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
 <div class="page-with-sidebar">
 
 <!-- NAV SIDEBAR (v2.0.0 canonical: GPI link added) -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <div class="nav-btn inactive-nav">
+    <a href="africa.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">🔒 Future</span>
-    </div>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <a href="asia.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
         <span class="nav-btn-status">● Live</span>
@@ -456,16 +495,21 @@
         <span class="nav-btn-status">● Live</span>
     </a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🎖️ Military Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
-    <a href="gpi.html" class="nav-btn military-btn">
-        <span class="nav-btn-label">🌐 Global Pressure</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
+    <div class="nav-sidebar-label">Global Trackers</div>
     <a href="commodities.html" class="nav-btn commodities-btn">
         <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn gpi-btn">
+        <span class="nav-btn-label">🌐 Global Pressure Index</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="market-watch.html" class="nav-btn markets-btn">
+        <span class="nav-btn-label">📈 Market Watch</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="military.html" class="nav-btn military-btn">
+        <span class="nav-btn-label">🎖️ Military Tracker</span>
         <span class="nav-btn-status">● Live</span>
     </a>
     <div class="nav-divider"></div>
@@ -765,31 +809,24 @@
 <!-- ════════════════════════════════════════════════════════════
      FOOTER (v2.0.0 — class-based, Japan canonical pattern)
      ════════════════════════════════════════════════════════════ -->
-<footer>
-    <div class="footer-grid">
-        <div>
-            <h4 data-i18n="footerMethodology">Methodology</h4>
-            <p data-i18n="footerMethodologyBody">Source-weighted OSINT aggregation with time-decay scoring. Five-vector pressure model (Nuclear · Ground Ops · NATO Flank · Arctic · Hybrid) plus regime-level signals (Arms Export · Dedollarization · Shadow Fleet · BRICS Alignment · Yuan Settlement). 12-hour background refresh, cross-theater fingerprint reads from Iran, Belarus, and DPRK trackers. Open-source signals only — no classified data.</p>
-        </div>
-        <div>
-            <h4 data-i18n="footerSources">Data Sources</h4>
-            <p data-i18n="footerSourcesBody">RSS (Meduza, Moscow Times, TASS, RIA Novosti, RT, ISW, USNI, War on the Rocks), GDELT (English + Russian language queries), NewsAPI, Brave Search (tertiary fallback), Telegram channels (state and opposition), travel.state.gov advisory data, Reddit OSINT aggregators.</p>
-        </div>
-        <div>
-            <h4 data-i18n="footerContact">Contact</h4>
-            <p>Asifah Analytics — <a href="https://asifahanalytics.com" style="color:var(--accent);">asifahanalytics.com</a></p>
-        </div>
+<footer class="asifah-footer">
+    <div class="asifah-footer-title" data-i18n="footerTitle">Asifah Analytics — Russia Module</div>
+    <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/rhetoric/russia</div>
+    <div class="asifah-footer-cadence" data-i18n="footerCadence">12-hour refresh cycle · Live force-scan available · Last update timestamp above</div>
+    <div class="asifah-footer-sources" data-i18n="footerSourcesList">
+        GDELT (EN+RU) · NewsAPI · Brave Search · RSS (Meduza · Moscow Times · TASS · RIA Novosti · RT · ISW · USNI · War on the Rocks) · Telegram (state + opposition) · Reddit OSINT · travel.state.gov
     </div>
-    <div class="footer-disclaimer">
-        <strong style="color:#f59e0b;">⚠️ <span data-i18n="footerDisclaimerLabel">DISCLAIMER:</span></strong> <span data-i18n="footerDisclaimerBody">This dashboard provides analytical estimates based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Posture indicators reflect media signal intensity and should not be interpreted as ground-truth predictions of operational deployments. Always consult authoritative sources for decision-making.</span>
+    <div class="asifah-footer-pills">
+        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc" data-i18n="footerBMC">☕ Buy Me a Coffee</a>
+        <a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact" data-i18n="footerContactPill">✉️ Contact Asifah</a>
     </div>
-    <div class="footer-support">
-        <span data-i18n="footerSupportText">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" data-i18n="footerSupportLink">buy me a coffee</a>
+    <div class="asifah-footer-disclaimer" data-i18n="footerDisclaimer">
+        Asifah Analytics is an open-source OSINT platform. All scoring and assessments are convergence indicators based on publicly observable signals — not predictions of action. Not for operational use.
     </div>
-    <div class="footer-copyright">
-        © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v2.0.0<br>
-        <span data-i18n="footerCopyrightLine2">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span><br>
-        <a href="index.html" style="color:var(--accent);" data-i18n="footerBackToMain">← Back to Main Dashboard</a>
+    <div class="asifah-footer-links">
+        <a href="mission.html" data-i18n="footerMission">Mission Statement</a>
+        <a href="privacy.html" data-i18n="footerPrivacy">Privacy Policy</a>
+        <a href="index.html" data-i18n="footerHome">Home</a>
     </div>
 </footer>
 
@@ -807,8 +844,8 @@ const ESCALATION_LEVELS = {
     1: { label: 'Rhetoric',        color: '#3b82f6', desc: 'Standard pressure language, formulaic warnings' },
     2: { label: 'Warning',         color: '#f59e0b', desc: 'Elevated exercise tempo, escalatory language' },
     3: { label: 'Confrontation',   color: '#f97316', desc: 'Named exercises, explicit threat signals' },
-    4: { label: 'Coercion',        color: '#ef4444', desc: 'Active nuclear signaling, Baltic/Arctic incident' },
-    5: { label: 'Active Conflict', color: '#dc2626', desc: 'Confirmed military action, Article 5 territory' },
+    4: { label: 'Active Conflict',     color: '#ef4444', desc: 'Sustained ground combat in Ukraine: daily strikes, advances, casualties (war baseline)' },
+    5: { label: 'Strategic Escalation',color: '#dc2626', desc: 'Above the war baseline: nuclear use/threat, mobilization, NATO/Article 5, front collapse' },
 };
 
 const OUTBOUND_ACTORS = ['russia_military', 'russia_government', 'belarus'];
@@ -828,6 +865,15 @@ const REGIME_DIMENSIONS_RUSSIA = [
 // ══════════════════════════════════════════════════════════════
 const T = {
     en: {
+        footerTitle: 'Asifah Analytics — Russia Module',
+        footerCadence: '12-hour refresh cycle · Live force-scan available · Last update timestamp above',
+        footerSourcesList: 'GDELT (EN+RU) · NewsAPI · Brave Search · RSS (Meduza · Moscow Times · TASS · RIA Novosti · RT · ISW · USNI · War on the Rocks) · Telegram (state + opposition) · Reddit OSINT · travel.state.gov',
+        footerBMC: '☕ Buy Me a Coffee',
+        footerContactPill: '✉️ Contact Asifah',
+        footerDisclaimer: 'Asifah Analytics is an open-source OSINT platform. All scoring and assessments are convergence indicators based on publicly observable signals — not predictions of action. Not for operational use.',
+        footerMission: 'Mission Statement',
+        footerPrivacy: 'Privacy Policy',
+        footerHome: 'Home',
         // Header
         backLink: '← Back to Russia',
         pageFlag: 'RUSSIA',
@@ -927,6 +973,15 @@ const T = {
         footerBackToMain: '← Back to Main Dashboard',
     },
     ru: {
+        footerTitle: 'Asifah Analytics — Модуль России',
+        footerCadence: '12-часовой цикл обновления · Доступно принудительное сканирование в реальном времени',
+        footerSourcesList: 'GDELT (EN+RU) · NewsAPI · Brave Search · RSS (Meduza · Moscow Times · TASS · RIA Novosti · RT · ISW · USNI · War on the Rocks) · Telegram (state + opposition) · Reddit OSINT · travel.state.gov',
+        footerBMC: '☕ Купите мне кофе',
+        footerContactPill: '✉️ Связаться с Asifah',
+        footerDisclaimer: 'Asifah Analytics — это OSINT-платформа с открытым исходным кодом. Все оценки являются индикаторами конвергенции на основе общедоступных сигналов, а не прогнозами действий. Не для оперативного использования.',
+        footerMission: 'Миссия',
+        footerPrivacy: 'Конфиденциальность',
+        footerHome: 'Главная',
         backLink: '← Назад к России',
         pageFlag: 'РОССИЯ',
         pageTitle: 'ТРЕКЕР ДАВЛЕНИЯ РОССИИ',
@@ -1014,6 +1069,15 @@ const T = {
         footerBackToMain: '← Назад к главной панели',
     },
     fr: {
+        footerTitle: 'Asifah Analytics — Module Russie',
+        footerCadence: 'Cycle de rafraîchissement de 12 heures · Force-scan en direct disponible',
+        footerSourcesList: 'GDELT (EN+RU) · NewsAPI · Brave Search · RSS (Meduza · Moscow Times · TASS · RIA Novosti · RT · ISW · USNI · War on the Rocks) · Telegram (state + opposition) · Reddit OSINT · travel.state.gov',
+        footerBMC: '☕ Offrez-moi un café',
+        footerContactPill: '✉️ Contacter Asifah',
+        footerDisclaimer: 'Asifah Analytics est une plateforme OSINT open-source. Tous les scores sont des indicateurs de convergence basés sur des signaux observables — pas des prédictions d\'action. Pas pour usage opérationnel.',
+        footerMission: 'Mission',
+        footerPrivacy: 'Confidentialité',
+        footerHome: 'Accueil',
         backLink: '← Retour à la Russie',
         pageFlag: 'RUSSIE',
         pageTitle: 'SUIVI DE PRESSION RUSSE',
@@ -1101,6 +1165,15 @@ const T = {
         footerBackToMain: '← Retour au tableau principal',
     },
     de: {
+        footerTitle: 'Asifah Analytics — Russland-Modul',
+        footerCadence: '12-Stunden-Aktualisierungszyklus · Live-Force-Scan verfügbar',
+        footerSourcesList: 'GDELT (EN+RU) · NewsAPI · Brave Search · RSS (Meduza · Moscow Times · TASS · RIA Novosti · RT · ISW · USNI · War on the Rocks) · Telegram (state + opposition) · Reddit OSINT · travel.state.gov',
+        footerBMC: '☕ Kauf mir einen Kaffee',
+        footerContactPill: '✉️ Asifah kontaktieren',
+        footerDisclaimer: 'Asifah Analytics ist eine Open-Source-OSINT-Plattform. Alle Bewertungen sind Konvergenzindikatoren basierend auf öffentlich beobachtbaren Signalen — keine Vorhersagen von Aktionen. Nicht für den operativen Einsatz.',
+        footerMission: 'Leitbild',
+        footerPrivacy: 'Datenschutz',
+        footerHome: 'Startseite',
         backLink: '← Zurück zu Russland',
         pageFlag: 'RUSSLAND',
         pageTitle: 'RUSSLAND DRUCKTRACKER',
@@ -1769,6 +1842,19 @@ function setHistoryView(mode) {
 // ══════════════════════════════════════════════════════════════
 loadTheme();
 fetchData();
+
+// ═══ Mobile drawer toggle (hamburger) — cloned from russia.html ═══
+function toggleSidebar() {
+    const sb = document.getElementById('navSidebar');
+    const bd = document.getElementById('sidebarBackdrop');
+    if (sb && bd) { sb.classList.toggle('open'); bd.classList.toggle('open'); }
+}
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        const sb = document.getElementById('navSidebar');
+        if (sb && sb.classList.contains('open')) toggleSidebar();
+    }
+});
 </script>
 </body>
 </html>
