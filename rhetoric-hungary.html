@@ -331,6 +331,11 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 .footer-cta-pill.cta-bmc:hover { background: rgba(245,158,11,0.22); }
 .footer-cta-pill.cta-contact { background: rgba(56,189,248,0.10); border: 1px solid rgba(56,189,248,0.5); color: var(--accent); }
 .footer-cta-pill.cta-contact:hover { background: rgba(56,189,248,0.20); }
+
+    .mobile-hamburger { display: none; }  /* shown via 768px media query */
+    /* Global Trackers gold buttons (Canon v2) */
+    .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+    .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
 </style>
 </head>
 <body>
@@ -339,18 +344,19 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 <!-- MOBILE HAMBURGER + DRAWER BACKDROP -->
 <button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
 <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<button class="mobile-hamburger" onclick="toggleMobileDrawer()" aria-label="Open navigation">☰</button>
 
 <div class="container">
 
 <header>
     <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
         <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
-        <a href="hungary-stability.html" class="back-link">← Back to Hungary Stability</a>
+        <a href="hungary-stability.html" class="back-link" data-i18n="backLink">← Back to Hungary Stability</a>
     </div>
     <div class="header-center">
         <div class="header-flag">🇭🇺 HUNGARY</div>
-        <div class="header-title">HUNGARY PRESSURE TRACKER</div>
-        <div class="header-subtitle">Axis Reversal · Tisza Government · Orban Opposition · Druzhba Pipeline · Returned Assets</div>
+        <div class="header-title" data-i18n="pageTitle">HUNGARY PRESSURE TRACKER</div>
+        <div class="header-subtitle" data-i18n="pageSubtitle">Axis Reversal · Tisza Government · Orban Opposition · Druzhba Pipeline · Returned Assets</div>
         <div class="header-ts">Last updated: <span id="lastUpdated">Loading...</span></div>
     </div>
     <div class="header-right">
@@ -374,9 +380,9 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- NAV SIDEBAR (Gold Standard) -->
 <nav class="nav-sidebar" id="navSidebar">
-    <div class="nav-sidebar-label">Dashboards</div>
-    <a href="middle-east.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🕌 Middle East</span>
+    <div class="nav-sidebar-label" data-i18n="navDashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🌍 Africa</span>
         <span class="nav-btn-status">● Live</span>
     </a>
     <a href="asia.html" class="nav-btn active-nav">
@@ -387,23 +393,36 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
         <span class="nav-btn-label">🌍 Europe</span>
         <span class="nav-btn-status">● Live</span>
     </a>
+    <a href="middle-east.html" class="nav-btn active-nav">
+        <span class="nav-btn-label">🕌 Middle East</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <a href="wha.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌎 Western Hemisphere</span>
         <span class="nav-btn-status">● Live</span>
     </a>
-    <a href="africa.html" class="nav-btn active-nav">
-        <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
 
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
+    <div class="nav-sidebar-label" data-i18n="navGlobalTrackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label">🌐 Global Pressure Index</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="market-watch.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label">📈 Market Watch</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="military.html" class="nav-btn tracker-btn">
         <span class="nav-btn-label">🎖️ Military Tracker</span>
         <span class="nav-btn-status">● Live</span>
     </a>
 
     <div class="nav-divider"></div>
-    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <div class="nav-sidebar-label" data-i18n="navRegionalRhetoric">Regional Rhetoric</div>
     <a href="rhetoric-index.html" class="nav-btn rhetoric-btn">
         <span class="nav-btn-label">📡 Middle East</span>
         <span class="nav-btn-status">● Live</span>
@@ -432,11 +451,6 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
         <span class="nav-btn-status">● Live</span>
     </a>
 
-    <div class="nav-divider"></div>
-    <a href="commodities.html" class="nav-btn commodities-btn">
-        <span class="nav-btn-label">🛢️ Commodity Tracker</span>
-        <span class="nav-btn-status">● Live</span>
-    </a>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -446,7 +460,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 <div class="posture-banner baseline" id="postureBanner">
     <div class="posture-icon" id="postureIcon">⚪</div>
     <div class="posture-body">
-        <div class="posture-label">AXIS REVERSAL STATUS</div>
+        <div class="posture-label" data-i18n="postureLabel">AXIS REVERSAL STATUS</div>
         <div class="posture-headline" id="postureHeadline">Loading Hungary axis reversal status...</div>
         <div class="posture-detail" id="postureDetail">Hungary rhetoric tracker is initializing. First scan results will appear here once the post-April 2026 Tisza election signals are processed.</div>
     </div>
@@ -463,7 +477,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- HOW TO READ THIS TRACKER (plain-language key) -->
 <div class="card howto-card">
-    <div class="card-title">🧭 HOW TO READ THIS TRACKER</div>
+    <div class="card-title" data-i18n="cardHowTo">🧭 HOW TO READ THIS TRACKER</div>
     <div class="howto-intro">
         This tracker measures <b>rhetoric and pressure signals</b> around Hungary's political realignment &mdash; the weighted volume and severity of matched reporting across wire services, Hungarian and EU press, GDELT, and social channels (Telegram, Bluesky). It is a <b>convergence picture of what is being said and signaled, not a forecast that conflict will occur</b>. Social-only chatter can raise an early-warning flag, but it is weighted down and capped until established sources corroborate it.
     </div>
@@ -485,7 +499,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- SO-WHAT CARD -->
 <div class="card so-what-card">
-    <div class="card-title">⚡ SO-WHAT · ANALYTICAL SCENARIO</div>
+    <div class="card-title" data-i18n="cardSoWhat">⚡ SO-WHAT · ANALYTICAL SCENARIO</div>
     <div class="scenario-line" id="soWhatScenario">Scenario loading...</div>
     <div class="situation" id="soWhatSituation">Awaiting first scan from /api/rhetoric/hungary backend.</div>
     <div class="assessment" id="soWhatAssessment"></div>
@@ -497,7 +511,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- DIPLOMATIC TRACK / GREEN LINES CARD -->
 <div class="card">
-    <div class="card-title">🕊️ DIPLOMATIC TRACK · GREEN LINES</div>
+    <div class="card-title" data-i18n="cardDiplomatic">🕊️ DIPLOMATIC TRACK · GREEN LINES</div>
     <div class="diplomatic-track-header">
         <div class="diplomatic-track-score" id="diplomaticScore">--/100</div>
         <div class="diplomatic-track-scenario" id="diplomaticScenario">Loading diplomatic track score...</div>
@@ -511,7 +525,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- ACTORS CARD -->
 <div class="card">
-    <div class="card-title">🏛️ HUNGARY RHETORIC ACTORS · 5 TRACKERS</div>
+    <div class="card-title" data-i18n="cardActors">🏛️ HUNGARY RHETORIC ACTORS · 5 TRACKERS</div>
     <div class="actors-grid" id="actorsGrid">
         <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px; font-style: italic;">
             Loading 5 actor data from /api/rhetoric/hungary...
@@ -521,7 +535,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- RED LINES CARD -->
 <div class="card">
-    <div class="card-title">🚨 RED LINES</div>
+    <div class="card-title" data-i18n="cardRedLines">🚨 RED LINES</div>
     <div class="red-line-list" id="redLineList">
         <div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 12px;">
             Red lines (axis_reversal_in_progress, orban_revival_signal, eu_loan_unlock_active, druzhba_pipeline_dispute, seized_assets_returned) will appear here once first scan completes.
@@ -531,7 +545,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- HISTORICAL PRECEDENTS CARD -->
 <div class="card">
-    <div class="card-title">📜 HISTORICAL PRECEDENTS</div>
+    <div class="card-title" data-i18n="cardPrecedents">📜 HISTORICAL PRECEDENTS</div>
     <div class="historical-grid" id="historicalGrid">
         <!-- Statically populated as a backup; will be overridden by interpreter -->
         <div class="historical-card">
@@ -568,19 +582,19 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 <footer>
     <div class="footer-content">
         <div class="footer-section">
-            <h4>Live Backend:</h4>
+            <h4 data-i18n="footBackend">Live Backend:</h4>
             <span>asifa-europe-backend.onrender.com &middot; 12-hour refresh cadence &middot; append <code>?force=true</code> to any endpoint to force a fresh scan.</span>
         </div>
         <div class="footer-section">
-            <h4>Data Sources:</h4>
+            <h4 data-i18n="footSources">Data Sources:</h4>
             <span>GDELT (English/Hungarian/Russian), NewsAPI, RSS feeds (Magyar Nemzet, Telex, Index.hu, HVG, Reuters Europe, POLITICO EU, EURACTIV, EUObserver, AP), Brave Search API tertiary fallback, Telegram channels (telegram_signals_europe), Bluesky AppView (bluesky_signals_europe with govmirror handles), plus other OSINT sources. For inquiries: asifahanalytics@gmail.com</span>
         </div>
         <div class="footer-section">
-            <h4>Methodology:</h4>
+            <h4 data-i18n="footMethod">Methodology:</h4>
             <span>Five-actor analytical model (Tisza Government · Orban/Fidesz Opposition · EU Track · Russia Axis [reversing] · Ukraine Track). Five red lines tagged by pressure_type ('diplomatic' or 'economic') for GPI axis routing. Three historical precedents (1989 transition · 1956 revolution · Orban 2002-2010 wilderness) for analytical context. Cross-theater fingerprints emitted to shared Redis. 12-hour background refresh cadence.</span>
         </div>
         <div class="footer-section">
-            <h4>Last Updated:</h4>
+            <h4 data-i18n="footUpdated">Last Updated:</h4>
             <span id="footerLastUpdatedValue">Not yet scanned</span>
         </div>
     </div>
@@ -627,11 +641,86 @@ function loadTheme() {
     if (checkbox) checkbox.checked = (saved === 'dark');
 }
 
-// ── LANGUAGE STUB ──
+// ── I18N (v1.1 -- full 4-language support, Jul 2026) ──
+const T = {
+    en: {
+        backLink: '← Back to Hungary Stability',
+        pageTitle: 'HUNGARY PRESSURE TRACKER',
+        pageSubtitle: 'Axis Reversal · Tisza Government · Orban Opposition · Druzhba Pipeline · Returned Assets',
+        postureLabel: 'AXIS REVERSAL STATUS',
+        cardHowTo: '🧭 HOW TO READ THIS TRACKER',
+        cardSoWhat: '⚡ SO-WHAT · ANALYTICAL SCENARIO',
+        cardDiplomatic: '🕊️ DIPLOMATIC TRACK · GREEN LINES',
+        cardActors: '🏛️ HUNGARY RHETORIC ACTORS · 5 TRACKERS',
+        cardRedLines: '🚨 RED LINES',
+        cardPrecedents: '📜 HISTORICAL PRECEDENTS',
+        footBackend: 'Live Backend:', footSources: 'Data Sources:',
+        footMethod: 'Methodology:', footUpdated: 'Last Updated:',
+        navDashboards: 'Dashboards', navGlobalTrackers: 'Global Trackers',
+        navRegionalRhetoric: 'Regional Rhetoric',
+    },
+    fr: {
+        backLink: '← Retour à la stabilité Hongrie',
+        pageTitle: 'SUIVI DE PRESSION — HONGRIE',
+        pageSubtitle: 'Renversement d\'axe · Gouvernement Tisza · Opposition Orban · Oléoduc Droujba · Actifs restitués',
+        postureLabel: 'STATUT DU RENVERSEMENT D\'AXE',
+        cardHowTo: '🧭 COMMENT LIRE CE SUIVI',
+        cardSoWhat: '⚡ SO-WHAT · SCÉNARIO ANALYTIQUE',
+        cardDiplomatic: '🕊️ VOIE DIPLOMATIQUE · LIGNES VERTES',
+        cardActors: '🏛️ ACTEURS RHÉTORIQUES — 5 TRACEURS',
+        cardRedLines: '🚨 LIGNES ROUGES',
+        cardPrecedents: '📜 PRÉCÉDENTS HISTORIQUES',
+        footBackend: 'Backend en direct :', footSources: 'Sources de données :',
+        footMethod: 'Méthodologie :', footUpdated: 'Dernière mise à jour :',
+        navDashboards: 'Tableaux de bord', navGlobalTrackers: 'Suivis mondiaux',
+        navRegionalRhetoric: 'Rhétorique régionale',
+    },
+    de: {
+        backLink: '← Zurück zu Ungarn-Stabilität',
+        pageTitle: 'UNGARN DRUCKTRACKER',
+        pageSubtitle: 'Achsenumkehr · Tisza-Regierung · Orban-Opposition · Druschba-Pipeline · Zurückgegebene Vermögen',
+        postureLabel: 'STATUS DER ACHSENUMKEHR',
+        cardHowTo: '🧭 SO LIEST MAN DIESEN TRACKER',
+        cardSoWhat: '⚡ SO-WHAT · ANALYTISCHES SZENARIO',
+        cardDiplomatic: '🕊️ DIPLOMATISCHE SPUR · GRÜNE LINIEN',
+        cardActors: '🏛️ UNGARN RHETORIK-AKTEURE · 5 TRACKER',
+        cardRedLines: '🚨 ROTE LINIEN',
+        cardPrecedents: '📜 HISTORISCHE PRÄZEDENZFÄLLE',
+        footBackend: 'Live-Backend:', footSources: 'Datenquellen:',
+        footMethod: 'Methodik:', footUpdated: 'Zuletzt aktualisiert:',
+        navDashboards: 'Dashboards', navGlobalTrackers: 'Globale Tracker',
+        navRegionalRhetoric: 'Regionale Rhetorik',
+    },
+    ru: {
+        backLink: '← Назад к стабильности Венгрии',
+        pageTitle: 'ТРЕКЕР ДАВЛЕНИЯ — ВЕНГРИЯ',
+        pageSubtitle: 'Разворот оси · Правительство Тисы · Оппозиция Орбана · Нефтепровод Дружба · Возвращённые активы',
+        postureLabel: 'СТАТУС РАЗВОРОТА ОСИ',
+        cardHowTo: '🧭 КАК ЧИТАТЬ ЭТОТ ТРЕКЕР',
+        cardSoWhat: '⚡ SO-WHAT · АНАЛИТИЧЕСКИЙ СЦЕНАРИЙ',
+        cardDiplomatic: '🕊️ ДИПЛОМАТИЧЕСКИЙ ТРЕК · ЗЕЛЁНЫЕ ЛИНИИ',
+        cardActors: '🏛️ РИТОРИЧЕСКИЕ АКТОРЫ ВЕНГРИИ · 5 ТРЕКЕРОВ',
+        cardRedLines: '🚨 КРАСНЫЕ ЛИНИИ',
+        cardPrecedents: '📜 ИСТОРИЧЕСКИЕ ПРЕЦЕДЕНТЫ',
+        footBackend: 'Рабочий бэкенд:', footSources: 'Источники данных:',
+        footMethod: 'Методология:', footUpdated: 'Последнее обновление:',
+        navDashboards: 'Дашборды', navGlobalTrackers: 'Глобальные трекеры',
+        navRegionalRhetoric: 'Региональная риторика',
+    },
+};
+let currentLang = 'en';
+function applyTranslations() {
+    const tr = T[currentLang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        if (tr[k] !== undefined) el.textContent = tr[k];
+    });
+}
 function setLang(lang, btn) {
+    currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    // i18n full support deferred to v1.1 -- for now we render in English
+    applyTranslations();
 }
 
 // ── MOBILE DRAWER ──
