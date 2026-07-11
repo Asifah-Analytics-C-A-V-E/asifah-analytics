@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Kazakhstan Stability Index v2.0.0 — July 2026 (Gold Standard retrofit: Canon v2 sidebar + drawer, canonical footer/logos, donor-shrapnel sweep, new KB cards) -->
+<!-- Asifah Analytics - Kazakhstan Stability Index v2.0.0 — July 2026 (Gold Standard retrofit: Canon v2 sidebar + drawer, canonical footer/logos, donor-shrapnel sweep, tile commodity card, new KB cards) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -496,77 +496,62 @@
     <div id="kazakhstanRhetoricScanInfo" style="margin-top:7px;font-size:10px;color:var(--text-muted);text-align:center;">--</div>
 </div>
 
-<!-- COMMODITY EXPOSURE CARD (above map per spec) -->
-<div class="card" id="commodityCard" style="display:none;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
-        <div class="card-title" style="margin-bottom:0;">🛢️ <span data-i18n="commodityTitle">COMMODITY EXPOSURE — KAZAKHSTAN</span></div>
-        <a href="commodities.html" class="commodity-full-link" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
-    </div>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-style:italic;" data-i18n="commoditySubtitle">Strategic commodity exposure with live news signal counts. Click any row to deep-dive on commodities tracker.</div>
-
-    <!-- Pressure summary strip -->
-    <div id="commodityPressureStrip" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;font-size:11px;"></div>
-
-    <!-- Per-commodity rows -->
-    <div id="commodityRows"></div>
-
-    <!-- Strategic linkage footer -->
-    <div id="commodityLinkage" style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">
+<!-- ═══ COMMODITY EXPOSURE CARD — Gold Standard tile pattern (Ukraine module clone, Jul 2026) ═══ -->
+<div class="commodity-card" id="kazakhstanCommodityCard">
+    <div class="commodity-card-title">🛢️ <span data-i18n="commodityTitle">COMMODITY EXPOSURE — KAZAKHSTAN</span></div>
+    <div class="commodity-prose" id="commodityProse">Loading exposure profile…</div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">
         <strong style="color:#fbbf24;">Strategic Linkage:</strong> Kazakhstan is <strong>Central Asia's indispensable commodity state</strong>. <strong>World #1 uranium producer</strong> (Kazatomprom, ~40% of global supply) — strategically critical to Western nuclear renaissance. Major oil producer: Tengiz (TCO/Chevron), Karachaganak, Kashagan supergiant fields. <strong>CPC pipeline</strong> (Caspian Pipeline Consortium) carries Kazakh crude through Russian territory to Novorossiysk on the Black Sea — single biggest Russia-exposure vector. KazTransOil routes crude east to China via Atasu-Alashankou. Aktau port is the western terminus of the <strong>Middle Corridor / Trans-Caspian International Transport Route (TITR)</strong> — Russia/Iran-bypassing trade route to Azerbaijan, Georgia, Turkey, Europe.
     </div>
-
+    <div style="text-align:center;margin-top:10px;">
+        <a href="commodities.html" style="color:#f59e0b;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
+    </div>
     <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
 </div>
 
-<!-- COMMODITY CARD STYLING -->
+<!-- COMMODITY CARD STYLING (Gold Standard tile pattern) -->
 <style>
-.commodity-full-link {
-    font-size: 11px; font-weight: 700; color: #fbbf24; text-decoration: none;
-    padding: 6px 12px; border: 1px solid rgba(245,158,11,0.4); border-radius: 6px;
-    background: rgba(245,158,11,0.06); transition: all 0.2s;
-}
-.commodity-full-link:hover {
-    background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.7);
-}
-.commodity-row {
-    display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px; align-items: center;
-    padding: 10px 14px; margin-bottom: 8px;
-    background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.18);
-    border-radius: 8px; cursor: pointer; transition: all 0.2s;
-    text-decoration: none; color: var(--text);
-}
-.commodity-row:hover {
-    background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.4);
-    transform: translateX(2px);
-}
-.commodity-row .c-icon { font-size: 18px; }
-.commodity-row .c-meta { display: flex; flex-direction: column; gap: 2px; }
-.commodity-row .c-name { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
-.commodity-row .c-note { font-size: 10.5px; color: var(--text-muted); line-height: 1.4; }
-.commodity-row .c-role-pill {
-    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px;
-    letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-right: 5px;
-}
-.role-producer { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.role-consumer { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-.role-transit  { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
-.commodity-row .c-rank { font-size: 9.5px; color: #93c5fd; font-weight: 600; letter-spacing: 0.5px; }
-.commodity-row .c-spark { font-family: 'Courier New', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; }
-.commodity-row .c-signals {
-    font-size: 10.5px; color: var(--text-2); white-space: nowrap;
-    padding: 4px 9px; background: rgba(56,189,248,0.08); border-radius: 4px;
-}
-.commodity-pressure-pill {
-    padding: 5px 12px; border-radius: 16px; font-weight: 700; letter-spacing: 1px;
-}
-.alert-normal   { background: rgba(34,197,94,0.12);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-.alert-elevated { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-.alert-high     { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
-.alert-critical { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
-@media (max-width: 768px) {
-    .commodity-row { grid-template-columns: auto 1fr; gap: 8px; }
-    .commodity-row .c-spark, .commodity-row .c-signals { grid-column: 2; }
-}
+.commodity-card { background: var(--card); border: 2px solid rgba(245,158,11,0.35); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+.commodity-card-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f59e0b; margin-bottom: 12px; padding-bottom: 9px; border-bottom: 1px solid rgba(245,158,11,0.25); }
+.commodity-prose { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; }
+.commodity-alert-banner { display: none; padding: 9px 14px; border-radius: 6px; border-left: 4px solid; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+.commodity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.commodity-pill { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 8px; background: rgba(6,13,26,0.6); border: 1px solid var(--border); text-decoration: none; transition: all 0.2s; }
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover { border-color: rgba(245,158,11,0.5); transform: translateY(-2px); }
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 22px; line-height: 1; }
+.commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+.commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.commodity-pill-alert { font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-pill-role-badge { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+.commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+.commodity-pill-price { font-size: 12px; color: var(--text); font-weight: 600; font-family: 'Courier New', monospace; }
+.commodity-pill-price .price-up   { color: #22c55e; }
+.commodity-pill-price .price-down { color: #ef4444; }
+.commodity-pill-spark { width: 100%; height: 28px; display: block; }
+.commodity-pill-note { font-size: 11px; color: var(--text-2); line-height: 1.45; margin-top: 4px; }
+.commodity-top-signals { margin-top: 14px; padding: 10px 14px; background: rgba(6,13,26,0.7); border-radius: 6px; border-left: 3px solid var(--text-muted); font-size: 11px; }
+[data-theme="light"] .commodity-top-signals { background: #eef4fa; }
+.commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+.commodity-top-signals a { color: var(--text-2); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+.commodity-top-signals a:hover { color: #f59e0b; }
+.commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
 </style>
 
 
@@ -1011,23 +996,117 @@ function displayFallback() {
         '</div></div>';
 }
 
-// ── COMMODITY EXPOSURE LOADER (calls Europe backend proxy with 12hr Redis cache) ──
+// ── COMMODITY EXPOSURE LOADER (Gold Standard tile pattern — Europe backend proxy, 12hr Redis cache) ──
 async function loadCommodity() {
     const COUNTRY_KEY = 'kazakhstan';
+    const card = document.getElementById('kazakhstanCommodityCard');
+    if (!card) return;
+
+    let data;
     try {
         const r = await fetch(`${API_BASE}/api/europe/commodity/${COUNTRY_KEY}`);
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        const d = await r.json();
-        if (d.success !== false && (d.commodity_summaries || []).length > 0) {
-            renderCommodityCard(d);
-            document.getElementById('commodityCard').style.display = 'block';
-        } else if (d.message) {
-            renderCommodityPlaceholder(d.message);
-            document.getElementById('commodityCard').style.display = 'block';
-        }
-    } catch(e) {
-        console.warn('[Kazakhstan] Commodity fetch failed:', e.message);
+        data = await r.json();
+    } catch (e) {
+        console.warn('[Kazakhstan Commodity] Fetch failed:', e.message);
+        const proseEl = document.getElementById('commodityProse');
+        if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+        return;
     }
+
+    document.getElementById('commodityProse').textContent =
+        data.prose || 'No exposure profile available.';
+
+    const banner = document.getElementById('commodityAlertBanner');
+    const alertLevel = (data.alert_level || 'normal').toLowerCase();
+    const alertLabels = {
+        normal:   '✓ NO ACTIVE COMMODITY PRESSURE',
+        elevated: '◐ ELEVATED COMMODITY PRESSURE',
+        high:     '▲ HIGH COMMODITY PRESSURE',
+        surge:    '🚨 COMMODITY PRESSURE SURGE'
+    };
+    const pressure = (data.commodity_pressure || 0);
+    banner.className = `commodity-alert-banner alert-${alertLevel} show`;
+    banner.innerHTML = `
+        <strong>${alertLabels[alertLevel] || alertLabels.normal}</strong>
+        <span class="ab-meta">Pressure score: ${pressure.toFixed(1)} · ${data.commodity_summaries?.length || 0} exposures tracked${data.has_live_data ? '' : ' · awaiting live signals'}</span>
+    `;
+
+    const grid = document.getElementById('commodityGrid');
+    grid.innerHTML = '';
+    (data.commodity_summaries || []).forEach(c => {
+        const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+        const role = (c.role || 'producer').toLowerCase();
+        const rankText = c.rank ? `#${c.rank} globally` : '';
+        const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+
+        let sparklineHtml = '';
+        let priceHtml = '';
+        if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+            const spark = c.sparkline.spark;
+            const min = Math.min(...spark);
+            const max = Math.max(...spark);
+            const range = max - min || 1;
+            const points = spark.map((v, i) => {
+                const x = (i / (spark.length - 1)) * 100;
+                const y = 100 - ((v - min) / range) * 100;
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(' ');
+            const pctChange = c.sparkline.change_pct_30d || 0;
+            const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+            sparklineHtml = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/></svg>`;
+            const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+            const arrow = pctChange >= 0 ? '▲' : '▼';
+            priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+        }
+
+        const tile = document.createElement('a');
+        tile.className = 'commodity-pill';
+        tile.href = `commodities.html#${c.commodity}`;
+        tile.innerHTML = `
+            <div class="commodity-pill-header">
+                <div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                <div style="flex:1;">
+                    <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                    ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                </div>
+            </div>
+            <div class="commodity-pill-row">
+                <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                <span class="commodity-pill-role-badge">${role}</span>
+                ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+            </div>
+            ${priceHtml}
+            ${sparklineHtml}
+            ${c.note ? `<div class="commodity-pill-note">${c.note.slice(0, 180)}${c.note.length > 180 ? '…' : ''}</div>` : ''}
+        `;
+        grid.appendChild(tile);
+    });
+
+    const tsEl = document.getElementById('commodityTopSignals');
+    const topSignals = data.top_signals || [];
+    if (topSignals.length > 0) {
+        const items = topSignals.slice(0, 3).map(s => `
+            <a href="${s.article_url}" target="_blank" rel="noopener">
+                ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                <span class="ts-source">— ${s.source}</span>
+            </a>
+        `).join('');
+        tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+        tsEl.style.display = 'block';
+    } else {
+        tsEl.style.display = 'none';
+    }
+
+    const cacheStatus = data.cache_status || 'unknown';
+    const cachedAt = data.proxy_cached_at || data.last_updated;
+    let cacheText = '';
+    if (cachedAt) {
+        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
+        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
+    }
+    const cacheEl = document.getElementById('commodityCacheNote');
+    if (cacheEl) cacheEl.textContent = cacheText;
 }
 
 // ── RHETORIC PRESSURE — adapter for /api/europe/threat/<target> ──
@@ -1044,7 +1123,7 @@ async function loadRhetoric() {
         } catch(e) { console.warn('[Kazakhstan] Rhetoric pressure fetch failed:', e.message); return; }
     }
 
-    // Awaiting first scan — show nothing; loadCommodity placeholder logic handles UI
+    // Awaiting first scan — show nothing until the background daemon populates cache
     if (d.pending_scan || d.probability === null || d.probability === undefined) return;
 
     const score = d.probability || 0;
@@ -1119,84 +1198,6 @@ async function loadRhetoric() {
     }
 }
 
-
-// ── COMMODITY HELPER RENDERERS ──
-function renderCommodityCard(d) {
-    const pressure = d.commodity_pressure || 0;
-    const alert = (d.alert_level || 'normal').toLowerCase();
-    const alertLabel = alert.toUpperCase();
-    const stripHtml = `
-        <div class="commodity-pressure-pill alert-${alert}">PRESSURE: ${Math.round(pressure)}</div>
-        <div class="commodity-pressure-pill alert-${alert}">ALERT: ${alertLabel}</div>
-        <div style="display:flex;align-items:center;color:var(--text-muted);font-size:10.5px;letter-spacing:1px;">
-            ${(d.commodity_summaries || []).length} commodities tracked
-        </div>
-    `;
-    document.getElementById('commodityPressureStrip').innerHTML = stripHtml;
-
-    const rowsContainer = document.getElementById('commodityRows');
-    rowsContainer.innerHTML = '';
-    (d.commodity_summaries || []).forEach(c => {
-        const role = (c.role || 'producer').toLowerCase();
-        const rolePill = `<span class="c-role-pill role-${role}">${role}</span>`;
-        const rankText = c.rank ? `#${c.rank} globally` : '';
-        const sparkline = renderSparkline(c.sparkline);
-        const signalCount = c.signal_count || 0;
-        const note = c.note || '';
-        const icon = c.icon || '📦';
-        const name = (c.name || c.commodity || '').toUpperCase();
-
-        const row = document.createElement('a');
-        row.className = 'commodity-row';
-        row.href = `commodities.html#${c.commodity}`;
-        row.innerHTML = `
-            <div class="c-icon">${icon}</div>
-            <div class="c-meta">
-                <div class="c-name">${name}</div>
-                <div>${rolePill}<span class="c-rank">${rankText}</span></div>
-                ${note ? `<div class="c-note">${note}</div>` : ''}
-            </div>
-            <div class="c-spark">${sparkline}</div>
-            <div class="c-signals">📰 ${signalCount} signals</div>
-        `;
-        rowsContainer.appendChild(row);
-    });
-
-    const cacheStatus = d.cache_status || 'unknown';
-    const cachedAt = d.proxy_cached_at || d.last_updated;
-    let cacheText = '';
-    if (cachedAt) {
-        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
-        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
-    }
-    document.getElementById('commodityCacheNote').textContent = cacheText;
-}
-
-function renderCommodityPlaceholder(msg) {
-    document.getElementById('commodityPressureStrip').innerHTML = '';
-    document.getElementById('commodityRows').innerHTML = `
-        <div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;font-size:12px;">
-            ${msg || 'Commodity scan pending — data will appear shortly.'}
-        </div>
-    `;
-}
-
-function renderSparkline(spark) {
-    if (!spark) return '';
-    let values = [];
-    if (Array.isArray(spark)) values = spark;
-    else if (spark.values && Array.isArray(spark.values)) values = spark.values;
-    else if (spark.points && Array.isArray(spark.points)) values = spark.points.map(p => typeof p === 'number' ? p : (p.y || p.close || 0));
-    if (values.length < 2) return '';
-    const blocks = '▁▂▃▄▅▆▇█';
-    const min = Math.min(...values), max = Math.max(...values);
-    const range = max - min || 1;
-    const sparkStr = values.map(v => blocks[Math.floor(((v - min) / range) * (blocks.length - 1))]).join('');
-    const trend = values[values.length - 1] - values[0];
-    const arrow = trend > 0 ? '↑' : (trend < 0 ? '↓' : '→');
-    const arrowColor = trend > 0 ? '#4ade80' : (trend < 0 ? '#f87171' : '#94a3b8');
-    return `${sparkStr} <span style="color:${arrowColor};font-weight:700;">${arrow}</span>`;
-}
 
 // ── TRANSLATIONS ──
 const T = {
