@@ -210,9 +210,22 @@
         .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
         .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
         @media (max-width: 1199px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+        /* ═══ Mobile drawer (Jul 2026 retrofit) — overrides the hide rule above ═══ */
+        .menu-toggle { display:none; position:fixed; top:14px; left:14px; z-index:200; background:var(--card-bg, #0d1b2e); border:1.5px solid rgba(56,189,248,0.4); border-radius:8px; width:44px; height:44px; font-size:22px; cursor:pointer; color:var(--accent, #38bdf8); align-items:center; justify-content:center; }
+        .sidebar-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:150; }
+        .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display:flex; }
+            .nav-sidebar { display:flex; flex-direction:column; position:fixed; top:0; left:-300px; width:260px; height:100vh; z-index:180; overflow-y:auto; transition:left 0.25s ease; background:var(--card-bg, #0d1b2e); padding:60px 14px 20px; border-right:1px solid var(--card-border, #1e3a5f); }
+            .nav-sidebar.open { left:0; }
+            .sidebar-backdrop.open { display:block; }
+        }
     </style>
 </head>
 <body>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Open navigation">☰</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-status">
@@ -254,12 +267,12 @@
 <div class="page-with-sidebar">
 
 <!-- CANONICAL NAV SIDEBAR -->
-<nav class="nav-sidebar">
+<nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <div class="nav-btn inactive-nav">
+    <a href="africa.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌍 Africa</span>
-        <span class="nav-btn-status">🔒 Future</span>
-    </div>
+        <span class="nav-btn-status">● Live</span>
+    </a>
     <a href="asia.html" class="nav-btn active-nav">
         <span class="nav-btn-label">🌏 Asia &amp; Pacific</span>
         <span class="nav-btn-status">● Live</span>
@@ -277,7 +290,20 @@
         <span class="nav-btn-status">● Live</span>
     </a>
     <div class="nav-divider"></div>
-    <a href="military.html" class="nav-btn military-btn">
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label">🛢️ Commodities</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="gpi.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label">🌐 Global Pressure Index</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="market-watch.html" class="nav-btn tracker-btn">
+        <span class="nav-btn-label">📈 Market Watch</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <a href="military.html" class="nav-btn tracker-btn">
         <span class="nav-btn-label">🎖️ Military Tracker</span>
         <span class="nav-btn-status">● Live</span>
     </a>
@@ -297,6 +323,16 @@
     </a>
     <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn">
         <span class="nav-btn-label">🌎 W. Hemisphere</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Greenland</div>
+    <a href="greenland.html" class="nav-btn active-nav current-page">
+        <span class="nav-btn-label">🇬🇱 Stability Index</span>
+        <span class="nav-btn-status">◉ You are here</span>
+    </a>
+    <a href="rhetoric-greenland.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🇬🇱 Pressure Tracker</span>
         <span class="nav-btn-status">● Live</span>
     </a>
 </nav>
@@ -336,6 +372,30 @@
         </div>
 
         <!-- MAP -->
+        <!-- ═══ TRAVEL ADVISORY (Jul 2026 retrofit) ═══ -->
+        <div style="background:var(--card-bg, #0d1b2e);border:1px solid rgba(245,158,11,0.45);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+            <div style="font-size:16px;font-weight:bold;color:#f59e0b;margin-bottom:10px;" data-i18n="advisoryTitle">⚠️ U.S. Travel Advisories</div>
+            <div style="font-size:13px;line-height:1.6;margin-bottom:8px;"><strong data-i18n="advisoryWWLabel">Worldwide Caution:</strong> <span data-i18n="advisoryWWText">Exercise increased caution overseas due to the potential for terrorist attacks, demonstrations, or violent actions against U.S. citizens and interests.</span> <a href="https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html" target="_blank" rel="noopener" style="color:var(--accent, #38bdf8);">travel.state.gov</a></div>
+            <div style="font-size:13px;line-height:1.6;"><strong data-i18n="advisoryDKLabel">Denmark (incl. Greenland) — Level 1:</strong> <span data-i18n="advisoryDKText">Exercise Normal Precautions. Greenland travel is covered under the Denmark advisory.</span> <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/denmark-travel-advisory.html" target="_blank" rel="noopener" style="color:var(--accent, #38bdf8);">Denmark advisory</a></div>
+        </div>
+
+        <!-- ═══ COMMODITY PRESSURE (Jul 2026 retrofit — critical minerals) ═══ -->
+        <div style="background:var(--card-bg, #0d1b2e);border:1px solid var(--card-border, #1e3a5f);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+            <div style="font-size:16px;font-weight:bold;margin-bottom:4px;" data-i18n="commodityTitle">⛏️ Commodity Pressure — Critical Minerals</div>
+            <div style="font-size:12px;color:var(--text-secondary, #93c5fd);margin-bottom:12px;" data-i18n="commoditySub">Rare earths (Kvanefjeld · Tanbreez) and gold (Nalunaq) exposure — news-signal pressure, not price. Fed by the commodity tracker.</div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;">
+                <div style="flex:1;min-width:200px;padding:12px;border:1px solid var(--card-border, #1e3a5f);border-radius:8px;">
+                    <div style="font-size:12px;color:var(--text-secondary, #93c5fd);" data-i18n="commodityREE">🧲 Rare Earths — Producer (potential)</div>
+                    <div style="font-size:11px;line-height:1.5;margin-top:4px;">Kvanefjeld frozen (2021 uranium ban · Chinese-linked stake) · Tanbreez advancing (US-aligned). The US–China–EU critical-minerals contest, on Greenlandic ground.</div>
+                </div>
+                <div style="flex:1;min-width:200px;padding:12px;border:1px solid var(--card-border, #1e3a5f);border-radius:8px;">
+                    <div style="font-size:12px;color:var(--text-secondary, #93c5fd);" data-i18n="commodityGold">🥇 Gold — Producer</div>
+                    <div style="font-size:11px;line-height:1.5;margin-top:4px;">Nalunaq (Amaroq) restarted — Greenland's only active metals mine; bellwether for extraction investability.</div>
+                </div>
+            </div>
+            <div id="commodityPressureLive" style="font-size:13px;color:var(--text-secondary, #93c5fd);" data-i18n="commodityLoading">Loading live commodity pressure…</div>
+        </div>
+
         <div class="map-section">
             <h2>🗺️ <span data-i18n="mapTitle">Greenland — Strategic Overview</span></h2>
             <div class="map-subtitle" data-i18n="mapSubtitle">Interactive map centered on Greenland. Pituffik Space Base, mineral deposits, and shipping route overlays coming soon.</div>
@@ -514,7 +574,7 @@
         If you find Asifah Analytics useful and want to support ongoing development, you can ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:bold;">buy me a coffee</a>
     </div>
     <div style="text-align:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--card-border, var(--border, #1e3a5f));font-size:12px;">
-        <a href="privacy.html" style="color:var(--accent, #38bdf8);text-decoration:none;">Privacy Policy</a>
+        <a href="mission.html" style="color:var(--accent, #38bdf8);">Mission Statement</a> · <a href="privacy.html" style="color:var(--accent, #38bdf8);text-decoration:none;">Privacy Policy</a>
         <span style="color:var(--text-muted, #4a7090);margin:0 12px;">|</span>
         <a href="contact.html" style="color:var(--accent, #38bdf8);text-decoration:none;">Contact</a>
     </div>
@@ -626,10 +686,10 @@
     }
 
     const translations = {
-        en: { pageTitle:"🇬🇱 GREENLAND STABILITY INDEX", pageSubtitle:"Multi-Factor Analysis: Sovereignty & Self-Governance, Arctic Security, Critical Minerals & Great Power Competition", backLink:"← Back to Europe Dashboard", themeToggle:"Theme", lastUpdated:"Last updated: ", mapTitle:"Greenland — Strategic Overview", mapSubtitle:"Interactive map centered on Greenland. Pituffik Space Base, mineral deposits, and shipping route overlays coming soon.", knowledgeLibraryTitle:"Knowledge Library", catGovernance:"Governance & Self-Rule", catMinerals:"Critical Minerals & Rare Earths", catArctic:"Arctic Strategic Position", catInuit:"Inuit Self-Determination & Indigenous Rights", catClimate:"Climate Change & Environmental Security", catUS:"U.S.-Denmark-Greenland Relations & Great Power Competition", recentArticles:"📰 Recent Greenland Security & Stability Articles (Last 7 Days)" },
-        fr: { pageTitle:"🇬🇱 INDICE DE STABILITÉ DU GROENLAND", pageSubtitle:"Analyse multifactorielle : Souveraineté, sécurité arctique, minéraux critiques et compétition entre grandes puissances", backLink:"← Retour au tableau de bord Europe", themeToggle:"Thème", lastUpdated:"Dernière mise à jour : ", mapTitle:"Groenland — Vue stratégique", mapSubtitle:"Carte interactive centrée sur le Groenland.", knowledgeLibraryTitle:"Bibliothèque de connaissances", catGovernance:"Gouvernance et autonomie", catMinerals:"Minéraux critiques et terres rares", catArctic:"Position stratégique arctique", catInuit:"Autodétermination inuite et droits autochtones", catClimate:"Changement climatique et sécurité environnementale", catUS:"Relations É.-U.-Danemark-Groenland", recentArticles:"📰 Articles récents sur le Groenland" },
-        ru: { pageTitle:"🇬🇱 ИНДЕКС СТАБИЛЬНОСТИ ГРЕНЛАНДИИ", pageSubtitle:"Многофакторный анализ: суверенитет, арктическая безопасность, критические минералы и конкуренция великих держав", backLink:"← Назад к панели Европы", themeToggle:"Тема", lastUpdated:"Последнее обновление: ", mapTitle:"Гренландия — Стратегический обзор", mapSubtitle:"Интерактивная карта Гренландии.", knowledgeLibraryTitle:"Библиотека знаний", catGovernance:"Управление и самоуправление", catMinerals:"Критические минералы и редкоземельные элементы", catArctic:"Стратегическое положение в Арктике", catInuit:"Самоопределение инуитов и права коренных народов", catClimate:"Изменение климата и экологическая безопасность", catUS:"Отношения США-Дания-Гренландия", recentArticles:"📰 Последние статьи о Гренландии" },
-        de: { pageTitle:"🇬🇱 GRÖNLAND-STABILITÄTSINDEX", pageSubtitle:"Mehrfaktorenanalyse: Souveränität, arktische Sicherheit, kritische Mineralien und Großmächtekonkurrenz", backLink:"← Zurück zum Europa-Dashboard", themeToggle:"Design", lastUpdated:"Letzte Aktualisierung: ", mapTitle:"Grönland — Strategischer Überblick", mapSubtitle:"Interaktive Karte von Grönland.", knowledgeLibraryTitle:"Wissensbibliothek", catGovernance:"Regierung und Selbstverwaltung", catMinerals:"Kritische Mineralien und Seltene Erden", catArctic:"Strategische Position in der Arktis", catInuit:"Inuit-Selbstbestimmung und indigene Rechte", catClimate:"Klimawandel und Umweltsicherheit", catUS:"Beziehungen USA-Dänemark-Grönland", recentArticles:"📰 Aktuelle Artikel über Grönland" }
+        en: { pageTitle:"🇬🇱 GREENLAND STABILITY INDEX", pageSubtitle:"Multi-Factor Analysis: Sovereignty & Self-Governance, Arctic Security, Critical Minerals & Great Power Competition", backLink:"← Back to Europe Dashboard", themeToggle:"Theme", lastUpdated:"Last updated: ", mapTitle:"Greenland — Strategic Overview", mapSubtitle:"Interactive map centered on Greenland. Pituffik Space Base, mineral deposits, and shipping route overlays coming soon.", knowledgeLibraryTitle:"Knowledge Library", catGovernance:"Governance & Self-Rule", catMinerals:"Critical Minerals & Rare Earths", catArctic:"Arctic Strategic Position", catInuit:"Inuit Self-Determination & Indigenous Rights", catClimate:"Climate Change & Environmental Security", catUS:"U.S.-Denmark-Greenland Relations & Great Power Competition", recentArticles:"📰 Recent Greenland Security & Stability Articles (Last 7 Days)", advisoryTitle:"⚠️ U.S. Travel Advisories", advisoryWWLabel:"Worldwide Caution:", advisoryWWText:"Exercise increased caution overseas due to the potential for terrorist attacks, demonstrations, or violent actions against U.S. citizens and interests.", advisoryDKLabel:"Denmark (incl. Greenland) — Level 1:", advisoryDKText:"Exercise Normal Precautions. Greenland travel is covered under the Denmark advisory.", commodityTitle:"⛏️ Commodity Pressure — Critical Minerals", commoditySub:"Rare earths (Kvanefjeld · Tanbreez) and gold (Nalunaq) exposure — news-signal pressure, not price. Fed by the commodity tracker.", commodityREE:"🧲 Rare Earths — Producer (potential)", commodityGold:"🥇 Gold — Producer", commodityLoading:"Loading live commodity pressure…" },
+        fr: { pageTitle:"🇬🇱 INDICE DE STABILITÉ DU GROENLAND", pageSubtitle:"Analyse multifactorielle : Souveraineté, sécurité arctique, minéraux critiques et compétition entre grandes puissances", backLink:"← Retour au tableau de bord Europe", themeToggle:"Thème", lastUpdated:"Dernière mise à jour : ", mapTitle:"Groenland — Vue stratégique", mapSubtitle:"Carte interactive centrée sur le Groenland.", knowledgeLibraryTitle:"Bibliothèque de connaissances", catGovernance:"Gouvernance et autonomie", catMinerals:"Minéraux critiques et terres rares", catArctic:"Position stratégique arctique", catInuit:"Autodétermination inuite et droits autochtones", catClimate:"Changement climatique et sécurité environnementale", catUS:"Relations É.-U.-Danemark-Groenland", recentArticles:"📰 Articles récents sur le Groenland", advisoryTitle:"⚠️ Avis aux voyageurs américains", advisoryWWLabel:"Mise en garde mondiale :", advisoryWWText:"Faire preuve d'une prudence accrue à l'étranger en raison du risque d'attentats terroristes, de manifestations ou d'actions violentes.", advisoryDKLabel:"Danemark (incl. Groenland) — Niveau 1 :", advisoryDKText:"Précautions normales. Le Groenland relève de l'avis du Danemark.", commodityTitle:"⛏️ Pression sur les matières premières — Minéraux critiques", commoditySub:"Terres rares (Kvanefjeld · Tanbreez) et or (Nalunaq) — pression médiatique, pas les prix.", commodityREE:"🧲 Terres rares — Producteur (potentiel)", commodityGold:"🥇 Or — Producteur", commodityLoading:"Chargement de la pression en direct…" },
+        ru: { pageTitle:"🇬🇱 ИНДЕКС СТАБИЛЬНОСТИ ГРЕНЛАНДИИ", pageSubtitle:"Многофакторный анализ: суверенитет, арктическая безопасность, критические минералы и конкуренция великих держав", backLink:"← Назад к панели Европы", themeToggle:"Тема", lastUpdated:"Последнее обновление: ", mapTitle:"Гренландия — Стратегический обзор", mapSubtitle:"Интерактивная карта Гренландии.", knowledgeLibraryTitle:"Библиотека знаний", catGovernance:"Управление и самоуправление", catMinerals:"Критические минералы и редкоземельные элементы", catArctic:"Стратегическое положение в Арктике", catInuit:"Самоопределение инуитов и права коренных народов", catClimate:"Изменение климата и экологическая безопасность", catUS:"Отношения США-Дания-Гренландия", recentArticles:"📰 Последние статьи о Гренландии", advisoryTitle:"⚠️ Рекомендации Госдепа США", advisoryWWLabel:"Всемирное предупреждение:", advisoryWWText:"Проявляйте повышенную осторожность за рубежом из-за угрозы терактов, демонстраций и насильственных действий.", advisoryDKLabel:"Дания (вкл. Гренландию) — Уровень 1:", advisoryDKText:"Обычные меры предосторожности. Гренландия подпадает под рекомендацию по Дании.", commodityTitle:"⛏️ Сырьевое давление — критические минералы", commoditySub:"Редкоземельные элементы (Кванефьельд · Танбриз) и золото (Налунак) — новостное давление, не цены.", commodityREE:"🧲 Редкоземельные — производитель (потенциал)", commodityGold:"🥇 Золото — производитель", commodityLoading:"Загрузка данных о давлении…" },
+        de: { pageTitle:"🇬🇱 GRÖNLAND-STABILITÄTSINDEX", pageSubtitle:"Mehrfaktorenanalyse: Souveränität, arktische Sicherheit, kritische Mineralien und Großmächtekonkurrenz", backLink:"← Zurück zum Europa-Dashboard", themeToggle:"Design", lastUpdated:"Letzte Aktualisierung: ", mapTitle:"Grönland — Strategischer Überblick", mapSubtitle:"Interaktive Karte von Grönland.", knowledgeLibraryTitle:"Wissensbibliothek", catGovernance:"Regierung und Selbstverwaltung", catMinerals:"Kritische Mineralien und Seltene Erden", catArctic:"Strategische Position in der Arktis", catInuit:"Inuit-Selbstbestimmung und indigene Rechte", catClimate:"Klimawandel und Umweltsicherheit", catUS:"Beziehungen USA-Dänemark-Grönland", recentArticles:"📰 Aktuelle Artikel über Grönland", advisoryTitle:"⚠️ US-Reisehinweise", advisoryWWLabel:"Weltweite Warnung:", advisoryWWText:"Erhöhte Vorsicht im Ausland wegen der Gefahr von Terroranschlägen, Demonstrationen oder Gewaltakten.", advisoryDKLabel:"Dänemark (inkl. Grönland) — Stufe 1:", advisoryDKText:"Normale Vorsichtsmaßnahmen. Grönland fällt unter den Dänemark-Hinweis.", commodityTitle:"⛏️ Rohstoffdruck — Kritische Mineralien", commoditySub:"Seltene Erden (Kvanefjeld · Tanbreez) und Gold (Nalunaq) — Nachrichtendruck, nicht Preise.", commodityREE:"🧲 Seltene Erden — Produzent (Potenzial)", commodityGold:"🥇 Gold — Produzent", commodityLoading:"Live-Rohstoffdruck wird geladen…" }
     };
     function switchLanguage(lang, button) {
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -651,6 +711,42 @@
         document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true });
         loadArticles().then(() => hideLoadingOverlay()).catch(() => hideLoadingOverlay());
     });
+
+        // ═══ Mobile drawer (Jul 2026 retrofit) ═══
+        function toggleSidebar() {
+            const sb = document.getElementById('navSidebar');
+            const bd = document.getElementById('sidebarBackdrop');
+            if (sb && bd) { sb.classList.toggle('open'); bd.classList.toggle('open'); }
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const sb = document.getElementById('navSidebar');
+                if (sb && sb.classList.contains('open')) toggleSidebar();
+            }
+        });
+
+        // ═══ Commodity pressure — critical minerals (ME backend, single-source) ═══
+        async function loadCommodityPressure() {
+            const el = document.getElementById('commodityPressureLive');
+            if (!el) return;
+            try {
+                const r = await fetch('https://asifah-backend.onrender.com/api/commodity-pressure/greenland');
+                const d = await r.json();
+                const score = d.total_score ?? d.commodity_pressure ?? d.pressure_score ?? null;
+                const sigs = d.signals || d.active_signals || [];
+                let html = '';
+                if (score !== null) html += `<strong style="color:var(--accent, #38bdf8);">Pressure score: ${score}</strong> <span style="font-size:11px;">(weighted news-signal volume/severity — not price)</span><br>`;
+                if (sigs.length) {
+                    html += sigs.slice(0, 4).map(s => `• ${typeof s === 'string' ? s : (s.title || s.headline || s.text || JSON.stringify(s).slice(0, 90))}`).join('<br>');
+                } else {
+                    html += '<span style="font-style:italic;">No active commodity pressure signals in the current scan window — quiet is reported as quiet.</span>';
+                }
+                el.innerHTML = html;
+            } catch (e) {
+                el.innerHTML = '<span style="font-style:italic;">Commodity pressure feed unavailable (tracker may be cold-starting) — absence reported honestly, not invented.</span>';
+            }
+        }
+        loadCommodityPressure();
     </script>
 </body>
 </html>
