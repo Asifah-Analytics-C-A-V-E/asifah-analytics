@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Armenia Stability Index v2.0.0 — July 2026 (Gold Standard retrofit: Canon v2 sidebar + drawer, canonical footer/logos, donor-shrapnel sweep, new KB cards) -->
+<!-- Asifah Analytics - Armenia Stability Index v2.1.0 — July 2026 (rhetoric tracker LIVE: real /api/rhetoric/armenia loader, Gold Standard card, sidebar Live) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -413,7 +413,7 @@
     <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Armenia</div>
-    <a href="rhetoric-armenia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇦🇲 Pressure Tracker</span><span class="nav-btn-status">○ In Dev</span></a>
+    <a href="rhetoric-armenia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇦🇲 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
     <a href="armenia-stability.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇦🇲 Stability Index</span><span class="nav-btn-status">◉ You are here</span></a>
 </nav>
 
@@ -475,10 +475,10 @@
 <div class="rhetoric-card" id="armeniaRhetoricCard" style="display:none;">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 <span data-i18n="rhetoricCardTitle">ARMENIA PRESSURE TRACKER</span></div>
     <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:5px;">
-        <div style="font-size:30px;font-weight:700;color:var(--text-primary);" id="armeniaRhetoricScoreFull">--</div>
+        <div style="font-size:40px;font-weight:800;color:var(--text-primary);" id="armeniaRhetoricScoreFull">--</div>
         <span id="armeniaRhetoricLevelLabel" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:#6b7280;color:white;">--</span>
     </div>
-    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector pressure score — Russia Pivot · EU Accession · Azerbaijan Border · Iran Transit · June 2026 Elections · Updated every 6h</div>
+    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector pressure — TRIPP Corridor · Treaty/Referendum · Russia Pressure · Westward Drift · Iran Buffer · Türkiye Track · Updated every 6h</div>
     <div id="armeniaRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;" data-i18n="loading">Loading…</span></div>
     <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
         <a href="rhetoric-armenia.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="viewFullTracker">View Full Pressure Analysis →</a>
@@ -706,7 +706,7 @@
 <!-- FOOTER (canonical Asifah pattern) -->
 <footer class="asifah-footer">
     <div class="asifah-footer-title">Asifah Analytics &mdash; Armenia Module</div>
-    <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/europe/threat/armenia</div>
+    <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/rhetoric/armenia &middot; /api/europe/threat/armenia</div>
     <div class="asifah-footer-cadence">4-hour background OSINT refresh &middot; Live Scan available &middot; Last update timestamp above</div>
     <div class="asifah-footer-sources">NewsAPI &middot; GDELT (EN/RU/FR) &middot; Google News RSS &middot; Reddit &middot; travel.state.gov &middot; Armstat &middot; Eurasianet &middot; Caucasus Watch &middot; OC Media &middot; RFE/RL</div>
     <div class="asifah-footer-pills">
@@ -893,40 +893,27 @@ function displayFallback() {
         '</div></div>';
 }
 
-// ── RHETORIC PRESSURE — adapter for /api/europe/threat/<target> ──
-// Maps generic threat-scan output (probability, momentum, top_scoring_articles)
-// onto the canonical rhetoric banner + pressure detail card.
+// ── RHETORIC PRESSURE — real tracker payload (/api/rhetoric/armenia, live Jul 12 2026) ──
+// Replaces the interim threat-endpoint adapter. Renders the canonical green
+// banner + Gold Standard detail card from theatre_score / alert_level /
+// so_what / top_signals. Calm-blue baseline: alert=normal renders arctic
+// #38bdf8 (gray means NO DATA, never a healthy baseline).
 async function loadRhetoric() {
-    // Reuse payload fetched by loadArticles to avoid double-call
-    let d = window._threatPayload;
-    if (!d) {
-        try {
-            const r = await fetch(`${API_BASE}/api/europe/threat/armenia`);
-            if (!r.ok) return;
-            d = await r.json();
-        } catch(e) { console.warn('[Armenia] Rhetoric pressure fetch failed:', e.message); return; }
-    }
+    let d;
+    try {
+        const r = await fetch(`${API_BASE}/api/rhetoric/armenia`);
+        if (!r.ok) return;
+        d = await r.json();
+    } catch(e) { console.warn('[Armenia] Rhetoric fetch failed:', e.message); return; }
+    if (d.theatre_score === undefined || d.theatre_score === null) return;
 
-    // Awaiting first scan — show nothing until the background daemon populates cache
-    if (d.pending_scan || d.probability === null || d.probability === undefined) return;
-
-    const score = d.probability || 0;
-
-    // Map momentum → alert level + color
-    const momentum = (d.momentum || 'stable').toLowerCase();
-    let alert, alertColor;
-    if (momentum === 'increasing' && score > 60) { alert = 'critical'; alertColor = '#dc2626'; }
-    else if (momentum === 'increasing')          { alert = 'high';     alertColor = '#f59e0b'; }
-    else if (momentum === 'decreasing')          { alert = 'normal';   alertColor = '#22c55e'; }
-    else                                         { alert = 'elevated'; alertColor = '#3b82f6'; }
-
-    // Map probability band → level label
-    let levelLabel;
-    if      (score >= 85) levelLabel = 'Critical';
-    else if (score >= 70) levelLabel = 'Elevated';
-    else if (score >= 50) levelLabel = 'Warning';
-    else if (score >= 30) levelLabel = 'Watch';
-    else                  levelLabel = 'Baseline';
+    const score = d.theatre_score || 0;
+    const alert = (d.alert_level || 'normal').toLowerCase();
+    const ALERT_COLORS = { normal: '#38bdf8', elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626' };
+    const ALERT_LEVEL_NUM = { normal: 1, elevated: 2, high: 3, critical: 4 };
+    const ALERT_LABEL = { normal: 'Baseline', elevated: 'Elevated', high: 'High', critical: 'Critical' };
+    const alertColor = ALERT_COLORS[alert] || '#38bdf8';
+    const sw = d.so_what || {};
 
     // ── Green banner (top) ──
     const card = document.getElementById('rhetoricPressureCard');
@@ -937,47 +924,69 @@ async function loadRhetoric() {
         pill.textContent = alert.toUpperCase();
         pill.style.background = alertColor;
         document.getElementById('rhetoricHeadline').textContent =
-            `${levelLabel} pressure level · ${d.timeline || 'Timeline pending'} · momentum ${momentum}`;
+            sw.scenario || 'Armenia Pressure Tracker — Live';
+        const detail = (sw.assessment || '');
         document.getElementById('rhetoricDetail').textContent =
-            `${d.total_articles || 0} articles analyzed · ${d.recent_articles_48h || 0} in last 48h · ${d.deescalation_count || 0} de-escalation signals · Confidence: ${d.confidence || 'Unknown'}`;
+            detail.length > 190 ? detail.slice(0, 190) + '…' : detail;
     }
 
-    // ── Armenia pressure tracker detail card ──
+    // ── Detail card (Gold Standard rhetoric card) ──
     const detailCard = document.getElementById('armeniaRhetoricCard');
     if (detailCard) {
         detailCard.style.display = 'block';
         const scoreEl = document.getElementById('armeniaRhetoricScoreFull');
-        if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = alertColor; }
+        if (scoreEl) { scoreEl.textContent = score; scoreEl.style.color = alertColor; }
         const lvlEl = document.getElementById('armeniaRhetoricLevelLabel');
-        if (lvlEl) { lvlEl.textContent = levelLabel; lvlEl.style.background = alertColor; }
+        if (lvlEl) {
+            const n = ALERT_LEVEL_NUM[alert] || 1;
+            lvlEl.textContent = `L${n} — ${ALERT_LABEL[alert] || 'Baseline'}`;
+            lvlEl.style.background = alertColor;
+        }
 
-        // Body: top scoring article titles → signal rows
+        // Body: top BLUF items from the interpreter (top_signals), each row
+        // bordered in its own priority color; diplomatic green lines read
+        // green even at baseline (Gold Standard rhetoric-card spec).
         const signalEl = document.getElementById('armeniaRhetoricSignalList');
         if (signalEl) {
-            const top = (d.top_scoring_articles || []).slice(0, 5);
+            const PRIORITY_COLORS = { 1: '#dc2626', 2: '#f59e0b', 3: '#38bdf8' };
+            const top = (d.top_signals || []).slice(0, 5);
             if (top.length) {
-                signalEl.innerHTML = top.map(a => {
-                    const title = a.title || 'Untitled';
-                    const src = (typeof a.source === 'object' ? a.source?.name : a.source) || '';
-                    return `<div class="rhetoric-signal-row">${src ? `<span class="rhetoric-signal-label">${src}</span>` : ''}${title}</div>`;
+                signalEl.innerHTML = top.map(s => {
+                    const isDip = (s.pressure_type === 'diplomatic'
+                        && String(s.short_text || '').indexOf('GREEN') === 0);
+                    const rowColor = isDip ? '#10b981' : (PRIORITY_COLORS[s.priority] || '#38bdf8');
+                    return `<div class="rhetoric-signal-row" style="border-left:3px solid ${rowColor};padding-left:9px;">`
+                        + `<span class="rhetoric-signal-label" style="color:${rowColor};">P${s.priority || 3}</span>`
+                        + `${s.short_text || ''}</div>`;
                 }).join('');
             } else {
-                // Fallback: scoring breakdown summary
+                // Absence-honest quiet-tape read: vector states, not manufactured signal
+                const tripp = d.tripp_corridor || {};
+                const drift = d.westward_drift || {};
+                const iran = d.iran_buffer || {};
+                const ru = d.russia_pressure || {};
                 const rows = [
-                    { label: '📈 Momentum',           val: momentum, color: alertColor },
-                    { label: '📊 Recent (48h)',       val: d.recent_articles_48h || 0, color: '#38bdf8' },
-                    { label: '📰 Total Articles',     val: d.total_articles || 0, color: '#38bdf8' },
-                    { label: '🕊️ De-escalation Hits', val: d.deescalation_count || 0, color: '#22c55e' },
+                    { label: '🛤️ TRIPP Corridor',  val: tripp.stage_name || 'Dormant', color: '#38bdf8' },
+                    { label: '🐻 Russia Pressure', val: (ru.band || 'quiet'),          color: '#38bdf8' },
+                    { label: '🧭 Alignment Drift', val: (drift.band || 'contested').replace('_',' '), color: '#38bdf8' },
+                    { label: '⚖️ Iran Buffer',     val: (iran.posture || 'quiet').replace('_',' '),   color: '#22c55e' },
                 ];
-                signalEl.innerHTML = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
+                signalEl.innerHTML = rows.map(r =>
+                    `<div class="rhetoric-actor-row"><span>${r.label}</span>`
+                    + `<span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('')
+                    + `<div style="font-size:10px;color:var(--text-muted);font-style:italic;padding-top:6px;">All vectors quiet this cycle — no manufactured signal.</div>`;
             }
         }
 
         // Scan info footer
         const scanEl = document.getElementById('armeniaRhetoricScanInfo');
         if (scanEl) {
-            const ageStr = d.cache_age_human || (d.cached ? 'cached' : 'fresh scan');
-            scanEl.textContent = `${ageStr} · ${d.total_articles || 0} articles analyzed · ${d.confidence || 'Unknown'} confidence`;
+            let ageStr = '';
+            if (d.cached_at) {
+                const ageMin = Math.floor((Date.now() - new Date(d.cached_at).getTime()) / 60000);
+                ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ${ageMin%60}m ago`;
+            }
+            scanEl.textContent = `Scanned ${ageStr} · ${d.total_articles || 0} articles · interpreter v${d.interpreter_version || '--'}`;
         }
     }
 }
@@ -1003,7 +1012,7 @@ const T = {
         contextTagLabel:'Pashinyan:',
         contextQuote:'"Choice between war and peace"',
         rhetoricCardTitle:'ARMENIA PRESSURE TRACKER',
-        rhetoricCardDesc:'Multi-vector pressure score — Russia Pivot · EU Accession · Azerbaijan Border · Iran Transit · June 2026 Elections · Updated every 6h',
+        rhetoricCardDesc:'Multi-vector pressure — TRIPP Corridor · Treaty/Referendum · Russia Pressure · Westward Drift · Iran Buffer · Türkiye Track · Updated every 6h',
         loading:'Loading…', viewFullTracker:'View Full Pressure Analysis →',
         commodityTitle:'COMMODITY EXPOSURE — ARMENIA',
         commodityFullLink:'View Full Commodity Tracker →',
@@ -1052,7 +1061,7 @@ const T = {
         contextTagLabel:'Pashinyan :',
         contextQuote:'« Choix entre guerre et paix »',
         rhetoricCardTitle:'TRACKER DE PRESSION ARMÉNIE',
-        rhetoricCardDesc:'Score de pression multi-vecteurs — Pivot Russie · Adhésion UE · Frontière Azerbaïdjan · Transit iranien · Élections juin 2026 · Mis à jour toutes les 6 h',
+        rhetoricCardDesc:'Pression multi-vecteurs — Corridor TRIPP · Traité/Référendum · Pression russe · Dérive vers l\'Ouest · Tampon iranien · Mise à jour 6h',
         loading:'Chargement…', viewFullTracker:'Voir l\u2019analyse complète →',
         commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES — ARMÉNIE',
         commodityFullLink:'Voir le tracker complet →',
@@ -1101,7 +1110,7 @@ const T = {
         contextTagLabel:'Пашинян:',
         contextQuote:'«Выбор между войной и миром»',
         rhetoricCardTitle:'ТРЕКЕР ДАВЛЕНИЯ АРМЕНИИ',
-        rhetoricCardDesc:'Многовекторная оценка давления — Поворот от России · Вступление в ЕС · Азербайджанская граница · Иранский транзит · Выборы в июне 2026 · Обновляется каждые 6 ч',
+        rhetoricCardDesc:'Многовекторное давление — Коридор TRIPP · Договор/Референдум · Давление России · Дрейф на Запад · Иранский буфер · Обновление каждые 6ч',
         loading:'Загрузка…', viewFullTracker:'Посмотреть полный анализ →',
         commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ — АРМЕНИЯ',
         commodityFullLink:'Полный трекер сырья →',
@@ -1150,7 +1159,7 @@ const T = {
         contextTagLabel:'Paschinjan:',
         contextQuote:'„Wahl zwischen Krieg und Frieden"',
         rhetoricCardTitle:'ARMENIEN-DRUCKTRACKER',
-        rhetoricCardDesc:'Multi-Vektor-Druck-Score — Russland-Pivot · EU-Beitritt · Aserbaidschan-Grenze · Iran-Transit · Wahlen Juni 2026 · Aktualisiert alle 6 h',
+        rhetoricCardDesc:'Multi-Vektor-Druck — TRIPP-Korridor · Vertrag/Referendum · Russland-Druck · Westdrift · Iran-Puffer · Aktualisierung alle 6h',
         loading:'Lade…', viewFullTracker:'Vollständige Druckanalyse anzeigen →',
         commodityTitle:'ROHSTOFF-EXPOSITION — ARMENIEN',
         commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →',
