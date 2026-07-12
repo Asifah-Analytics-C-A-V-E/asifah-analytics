@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Kazakhstan Stability Index v2.0.0 — July 2026 (Gold Standard retrofit: Canon v2 sidebar + drawer, canonical footer/logos, donor-shrapnel sweep, tile commodity card, new KB cards) -->
+<!-- Asifah Analytics - Kazakhstan Stability Index v2.1.0 — July 2026 (canonical 4-tile Financial Pulse: Brent+CPC route dependency, USD/KZT inverted, Kazatomprom uranium, Halyk banking) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -319,16 +319,63 @@
         .asifah-footer-links { display: flex; justify-content: center; gap: 14px; font-size: 0.75rem; flex-wrap: wrap; }
         .asifah-footer-links a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
         .asifah-footer-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-        /* ── FINANCIAL PULSE (shell) ── */
-        .financial-card { background: var(--card); border: 2px solid rgba(34,197,94,0.3); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
-        .financial-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .financial-tile { padding: 12px 14px; border-radius: 8px; background: rgba(6,13,26,0.6); border: 1px solid var(--border); }
-        [data-theme="light"] .financial-tile { background: #f8fbfe; }
-        .financial-tile-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
-        .financial-tile-value { font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Courier New', monospace; }
-        .financial-tile-change { font-size: 11px; font-weight: 700; font-family: 'Courier New', monospace; }
-        .financial-tile-change.up { color: #22c55e; }
-        .financial-tile-change.down { color: #ef4444; }
+        /* ═══ CANONICAL FINANCIAL PULSE CARD (Saudi/Nigeria/Russia Gold Standard) ═══ */
+        .nyse-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px 22px; margin-bottom: 20px;
+            box-shadow: 0 0 14px rgba(56,189,248,0.06); position: relative;
+        }
+        [data-theme="dark"] .nyse-card { background: linear-gradient(135deg, rgba(13,27,46,0.85), rgba(6,13,26,0.92)); }
+        .nyse-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            border-radius: 12px 12px 0 0;
+        }
+        .nyse-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+        .nyse-card-title { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .nyse-status-pill {
+            background: rgba(56,189,248,0.18); color: var(--accent);
+            padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(56,189,248,0.4);
+        }
+        .nyse-status-pill.market-open        { background: rgba(34,197,94,0.18);   color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed      { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-pre-market  { background: rgba(234,179,8,0.18);   color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-after-hours { background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .nyse-prose { font-size: 0.85rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+        .nyse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        @media (max-width: 1100px) { .nyse-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px)  { .nyse-grid { grid-template-columns: 1fr; } }
+        .nyse-tile {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 13px;
+            display: flex; flex-direction: column; gap: 7px; position: relative;
+        }
+        [data-theme="dark"] .nyse-tile { background: rgba(6,13,26,0.55); border-color: rgba(56,189,248,0.18); }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+        .nyse-tile.tile-unavailable { border-left: 3px solid #6b7280; opacity: 0.7; }
+        .nyse-tile-header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+        .nyse-tile-name { font-size: 0.70rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .nyse-tile-ticker { font-size: 0.62rem; color: var(--text-muted); font-family: 'Courier New', monospace; opacity: 0.7; white-space: nowrap; }
+        .nyse-tile-value { font-size: 1.35rem; font-weight: 700; color: var(--text); font-family: 'Courier New', monospace; line-height: 1; }
+        .nyse-tile-change { font-size: 0.82rem; font-weight: 600; font-family: 'Courier New', monospace; }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+        .nyse-tile-spark { height: 30px; margin-top: 3px; }
+        .nyse-tile-spark svg { display: block; width: 100%; height: 30px; }
+        .nyse-tile-meta { font-size: 0.63rem; color: var(--text-muted); font-style: italic; line-height: 1.3; }
+        .nyse-tile-extra {
+            font-size: 0.68rem; color: var(--text-2);
+            padding-top: 5px; margin-top: 3px;
+            border-top: 1px dashed rgba(56,189,248,0.15);
+            font-family: 'Courier New', monospace; line-height: 1.4;
+        }
+        .nyse-tile-extra .route-label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.58rem; }
+        .nyse-empty-state { text-align: center; padding: 18px; color: var(--text-muted); font-style: italic; grid-column: 1 / -1; }
 
         /* ── RHETORIC TRACKER BANNER (canonical green pattern, matches Israel) ── */
         .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
@@ -564,12 +611,17 @@
     </iframe>
 </div>
 
-<!-- FINANCIAL PULSE CARD (shell — hidden until kazakhstan_financial_pulse.py ships; contract: /api/europe/financial/kazakhstan) -->
-<div class="financial-card" id="kazakhstanFinancialCard" style="display:none;">
-    <div class="card-title" style="border-bottom-color:rgba(34,197,94,0.25);color:#22c55e;">📈 <span data-i18n="financialTitle">KAZAKHSTAN FINANCIAL PULSE</span></div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;" data-i18n="financialDesc">KASE Index · USD/KZT Tenge · Market signal as pressure sensor</div>
-    <div class="financial-grid" id="financialGrid"></div>
-    <div id="financialCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+<!-- CANONICAL FINANCIAL PULSE CARD (v1.0.0 — live, /api/europe/financial/kazakhstan) -->
+<div class="nyse-card" id="kazakhstanFinancialCard" style="display:none;">
+    <div class="nyse-card-header">
+        <div class="nyse-card-title">📈 <span data-i18n="financialTitle">Kazakhstan Financial Pulse</span></div>
+        <span class="nyse-status-pill" id="pulseStatusPill">Loading…</span>
+    </div>
+    <div class="nyse-prose" data-i18n="financialDesc">Four live signals, each answering a different question. <strong>Brent</strong> is the state oil-revenue baseline — with the <strong>CPC route dependency</strong> shown inline: roughly four-fifths of Kazakh crude exits through Russian territory, so the route, not the price, is the leverage. <strong>USD/KZT</strong> shows tenge FX stress (rising = weaker tenge — INVERTED polarity). <strong>Kazatomprom</strong> is the world's largest uranium producer (~40% of global supply) — the nuclear-fuel chokepoint, priced live. <strong>Halyk Bank</strong> proxies domestic capital-market structural integrity. Updated every 12 hours.</div>
+    <div class="nyse-grid" id="pulseGrid">
+        <div class="nyse-empty-state" data-i18n="pulseLoading">Loading market data…</div>
+    </div>
+    <div id="financialCacheNote" style="margin-top:10px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
 </div>
 
 <!-- KNOWLEDGE LIBRARY -->
@@ -823,27 +875,109 @@ function toggleSidebar(){const sb=document.getElementById('navSidebar');const bd
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){const sb=document.getElementById('navSidebar');if(sb&&sb.classList.contains('open'))toggleSidebar();}});
 
 /* ── FINANCIAL PULSE (shell — activates when backend module ships) ── */
+// ── CANONICAL FINANCIAL PULSE (v1.0.0) ──
+// Renders the 4-tile .nyse-card from the dict payload emitted by
+// kazakhstan_financial_pulse.py. Tiles are a DICT keyed by name (BRENT /
+// KZTUSD / KAZATOMPROM / HALYK), NOT an array — the old shell assumed an
+// array and bailed silently, which is why it never rendered.
+// Sparklines are inline SVG (same pattern as the commodity pills) — no
+// Chart.js dependency on this page.
+function _pulseSpark(sparkline, chg) {
+    const pts = (sparkline || []).map(p => p.value).filter(v => v !== null && v !== undefined);
+    if (pts.length < 2) return '';
+    const min = Math.min(...pts), max = Math.max(...pts);
+    const range = (max - min) || 1;
+    const points = pts.map((v, i) => {
+        const x = (i / (pts.length - 1)) * 100;
+        const y = 100 - ((v - min) / range) * 100;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const color = (chg >= 0) ? '#22c55e' : '#ef4444';
+    return `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${color}" stroke-width="2.5" points="${points}"/></svg>`;
+}
+
 async function loadFinancial() {
+    let d;
     try {
         const r = await fetch(`${API_BASE}/api/europe/financial/kazakhstan`);
         if (!r.ok) return;
-        const d = await r.json();
-        const tiles = d.tiles || [];
-        if (!tiles.length) return;
-        const card = document.getElementById('kazakhstanFinancialCard');
-        const grid = document.getElementById('financialGrid');
-        grid.innerHTML = tiles.map(t => {
-            const up = (t.change_pct || 0) >= 0;
-            return `<div class="financial-tile">
-                <div class="financial-tile-label">${t.label || ''}</div>
-                <div class="financial-tile-value">${t.value !== undefined && t.value !== null ? t.value : '--'}</div>
-                ${t.change_pct !== undefined && t.change_pct !== null ? `<div class="financial-tile-change ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${t.change_pct.toFixed(2)}%</div>` : ''}
+        d = await r.json();
+    } catch(e) { console.warn('[Kazakhstan] Financial pulse fetch failed:', e.message); return; }
+
+    const grid = document.getElementById('pulseGrid');
+    const pill = document.getElementById('pulseStatusPill');
+    const card = document.getElementById('kazakhstanFinancialCard');
+    if (!grid || !pill || !card) return;
+
+    const tiles = d.tiles || {};
+    if (!Object.keys(tiles).length) return;
+    card.style.display = 'block';
+
+    // Card-level market-status pill (canonical colour classes)
+    const agg = d.market_status || 'closed';
+    pill.className = 'nyse-status-pill market-' + agg;
+    pill.textContent = { open:'Open', closed:'Closed', 'pre-market':'Pre-Market',
+                         'after-hours':'After-Hours' }[agg] || agg;
+
+    // Tile order: oil → FX → uranium → banking
+    const order = ['BRENT', 'KZTUSD', 'KAZATOMPROM', 'HALYK'];
+    const cards = order.map(key => {
+        const t = tiles[key];
+        if (!t) return '';
+        // Absence-honest: an unavailable tile renders as unavailable, never as a fake number
+        if (t.unavailable || t.value === null || t.value === undefined) {
+            return `<div class="nyse-tile tile-unavailable">
+                <div class="nyse-tile-header">
+                    <span class="nyse-tile-name">${t.name || key}</span>
+                    <span class="nyse-tile-ticker">${t.ticker || ''}</span>
+                </div>
+                <div class="nyse-tile-value">N/A</div>
+                <div class="nyse-tile-change flat">no data</div>
+                <div class="nyse-tile-meta">Feed unavailable this cycle</div>
             </div>`;
-        }).join('');
-        const noteEl = document.getElementById('financialCacheNote');
-        if (noteEl && d.as_of) noteEl.textContent = `As of ${d.as_of}`;
-        card.style.display = 'block';
-    } catch(e) { console.warn('[Kazakhstan] Financial pulse fetch failed (expected until module ships):', e.message); }
+        }
+        const tier = t.tier || 'stable';
+        const chg = t.change_pct_24h;
+        const chgClass = (chg > 0.05) ? 'up' : (chg < -0.05) ? 'down' : 'flat';
+        const chgStr = (chg !== null && chg !== undefined)
+            ? `${chg >= 0 ? '+' : ''}${Number(chg).toFixed(2)}%` : '--';
+        const val = Number(t.value).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        const prefix = (key === 'BRENT') ? '$' : '';
+        const suffix = (key === 'KZTUSD') ? ' ₸' : '';
+
+        // CPC route-dependency inline — the Kazakh analog of Russia's Urals
+        // discount. Russia's signature spread is a PRICE discount; Kazakhstan's
+        // is a ROUTE dependency. Same slot, opposite logic.
+        let routeBlock = '';
+        if (key === 'BRENT' && t.route_share_pct) {
+            routeBlock = `<div class="nyse-tile-extra">
+                <span class="route-label">Route dependency:</span> ~${t.route_share_pct}% via ${t.route_name || 'CPC'}
+                <div style="font-size:0.58rem;color:var(--text-muted);font-style:italic;margin-top:2px;font-family:inherit;">Exports transit Russian territory — the route is the leverage</div>
+            </div>`;
+        }
+        return `<div class="nyse-tile tile-${tier}">
+            <div class="nyse-tile-header">
+                <span class="nyse-tile-name">${t.name || key}</span>
+                <span class="nyse-tile-ticker">${t.ticker || ''}</span>
+            </div>
+            <div class="nyse-tile-value">${prefix}${val}${suffix}</div>
+            <div class="nyse-tile-change ${chgClass}">${chgStr}</div>
+            <div class="nyse-tile-spark">${_pulseSpark(t.sparkline, chg)}</div>
+            <div class="nyse-tile-meta">${t.source || ''}</div>
+            ${routeBlock}
+        </div>`;
+    }).filter(Boolean);
+
+    grid.innerHTML = cards.length
+        ? cards.join('')
+        : '<div class="nyse-empty-state">Market data unavailable this cycle.</div>';
+
+    const noteEl = document.getElementById('financialCacheNote');
+    if (noteEl && d.last_refreshed) {
+        const ageMin = Math.floor((Date.now() - new Date(d.last_refreshed).getTime()) / 60000);
+        const ageStr = ageMin < 60 ? `${ageMin}m ago` : `${Math.floor(ageMin/60)}h ${ageMin%60}m ago`;
+        noteEl.textContent = `Refreshed ${ageStr} · KASE ${d.kase_status || '--'} · pulse v${d.version || '--'}`;
+    }
 }
 
 // ── KNOWLEDGE CARDS ──
@@ -1201,7 +1335,7 @@ async function loadRhetoric() {
 
 // ── TRANSLATIONS ──
 const T = {
-    en: { financialTitle:'KAZAKHSTAN FINANCIAL PULSE', financialDesc:'KASE Index · USD/KZT Tenge · Market signal as pressure sensor', catSanctions:'Sanctions Rerouting & Parallel-Import Corridor', catBaikonur:'Baikonur & the Russian Lease to 2050',
+    en: { pulseLoading:'Loading market data…', financialTitle:'Kazakhstan Financial Pulse', financialDesc:'Four live signals. Brent = state oil-revenue baseline, with the CPC route dependency inline (~80% of crude exits via Russian territory — the route, not the price, is the leverage). USD/KZT = tenge FX stress (INVERTED: rising = weaker tenge). Kazatomprom = the uranium chokepoint (~40% of world supply), priced live. Halyk Bank = domestic capital-market structural integrity. Updated every 12 hours.', catSanctions:'Sanctions Rerouting & Parallel-Import Corridor', catBaikonur:'Baikonur & the Russian Lease to 2050',
         pageFlag:'KAZAKHSTAN', pageTitle:'KAZAKHSTAN STABILITY INDEX',
         pageSubtitle:'Constitutional Reform · CPC Pipeline · World #1 Uranium · Middle Corridor · Russia/China Hedging',
         backLink:'← Back to Europe',
@@ -1250,7 +1384,7 @@ const T = {
         footPrivacy:'Privacy Policy', footContact:'Contact',
         footCopy:'All Rights Reserved. Kazakhstan Stability Index v1.0.0 — Proprietary and Confidential.',
     },
-    fr: { financialTitle:'POULS FINANCIER — KAZAKHSTAN', financialDesc:'Indice KASE · USD/KZT · Signal de marché comme capteur de pression', catSanctions:'Contournement des sanctions et importations parallèles', catBaikonur:'Baïkonour et le bail russe jusqu\'en 2050',
+    fr: { pulseLoading:'Chargement des données…', financialTitle:'Pouls financier — Kazakhstan', financialDesc:'Quatre signaux en direct. Brent = base des revenus pétroliers, avec la dépendance à la route CPC (~80% du brut transite par la Russie — la route, et non le prix, est le levier). USD/KZT = tension sur le tenge (INVERSÉ : hausse = tenge plus faible). Kazatomprom = point d\'étranglement de l\'uranium (~40% de l\'offre mondiale). Halyk = intégrité du marché des capitaux. Mise à jour toutes les 12 heures.', catSanctions:'Contournement des sanctions et importations parallèles', catBaikonur:'Baïkonour et le bail russe jusqu\'en 2050',
         pageFlag:'KAZAKHSTAN', pageTitle:'INDICE DE STABILITÉ — KAZAKHSTAN',
         pageSubtitle:'Pivot Russie · Voie d\u2019adhésion UE · Carrefour de transit iranien · Reconstruction post-Karabakh · Vulnérabilité Syunik',
         backLink:'← Retour à l\u2019Europe',
@@ -1299,7 +1433,7 @@ const T = {
         footPrivacy:'Politique de confidentialité', footContact:'Contact',
         footCopy:'Tous droits réservés. Indice de stabilité Kazakhstan v1.0.0 — Propriétaire et Confidentiel.',
     },
-    ru: { financialTitle:'ФИНАНСОВЫЙ ПУЛЬС КАЗАХСТАНА', financialDesc:'Индекс KASE · USD/KZT · Рыночный сигнал как датчик давления', catSanctions:'Обход санкций и параллельный импорт', catBaikonur:'Байконур и российская аренда до 2050 года',
+    ru: { pulseLoading:'Загрузка рыночных данных…', financialTitle:'Финансовый пульс Казахстана', financialDesc:'Четыре живых сигнала. Brent — база нефтяных доходов, с показателем зависимости от маршрута КТК (~80% нефти идёт через территорию России — рычагом является маршрут, а не цена). USD/KZT — давление на тенге (ИНВЕРСИЯ: рост = ослабление тенге). Казатомпром — урановая точка контроля (~40% мировых поставок). Халык — структурная целостность рынка капитала. Обновление каждые 12 часов.', catSanctions:'Обход санкций и параллельный импорт', catBaikonur:'Байконур и российская аренда до 2050 года',
         pageFlag:'КАЗАХСТАН', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ КАЗАХСТАНА',
         pageSubtitle:'Конституционная реформа · Трубопровод КТК · Уран #1 в мире · Срединный коридор · Хеджирование Россия/Китай',
         backLink:'← Назад к Европе',
@@ -1348,7 +1482,7 @@ const T = {
         footPrivacy:'Политика конфиденциальности', footContact:'Контакт',
         footCopy:'Все права защищены. Индекс стабильности Казахстана v1.0.0 — Собственность и конфиденциально.',
     },
-    de: { financialTitle:'FINANZPULS KASACHSTAN', financialDesc:'KASE-Index · USD/KZT · Marktsignal als Drucksensor', catSanctions:'Sanktionsumgehung & Parallelimport-Korridor', catBaikonur:'Baikonur & russischer Pachtvertrag bis 2050',
+    de: { pulseLoading:'Marktdaten werden geladen…', financialTitle:'Finanzpuls Kasachstan', financialDesc:'Vier Live-Signale. Brent = Basis der Öleinnahmen, mit der CPC-Routenabhängigkeit (~80% des Rohöls über russisches Territorium — die Route, nicht der Preis, ist der Hebel). USD/KZT = Tenge-Stress (INVERTIERT: steigend = schwächerer Tenge). Kazatomprom = Uran-Engpass (~40% des Weltangebots). Halyk = Kapitalmarkt-Integrität. Alle 12 Stunden aktualisiert.', catSanctions:'Sanktionsumgehung & Parallelimport-Korridor', catBaikonur:'Baikonur & russischer Pachtvertrag bis 2050',
         pageFlag:'KASACHSTAN', pageTitle:'KASACHSTAN-STABILITÄTSINDEX',
         pageSubtitle:'Verfassungsreform · CPC-Pipeline · Uran #1 weltweit · Mittlerer Korridor · Russland/China-Absicherung',
         backLink:'← Zurück zu Europa',
