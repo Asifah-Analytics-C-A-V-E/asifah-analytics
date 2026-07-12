@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Poland Stability Index v2.1.0 — July 2026 (canonical 4-tile Financial Pulse w/ attrition tile, placed between commodity and refugee cards) -->
+<!-- Asifah Analytics - Poland Stability Index v2.2.0 — July 2026 (rhetoric LIVE: /api/rhetoric/poland, consensus-integrity card + casualty Black Swan banner; articles endpoint fixed) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -105,6 +105,17 @@
         .level-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: white; }
 
         /* ── RHETORIC TRACKER BANNER (canonical green pattern) ── */
+        .pl-casualty-banner { display:flex; align-items:center; gap:13px; background:linear-gradient(135deg, rgba(220,38,38,0.12), rgba(13,27,46,0.9)); border:2px solid rgba(239,68,68,0.45); border-radius:10px; padding:13px 18px; margin-bottom:15px; flex-wrap:wrap; }
+        .pl-casualty-banner.cas-breached { border-color:#dc2626; box-shadow:0 0 22px rgba(220,38,38,0.35); animation:plCasPulse 2.2s ease-in-out infinite; }
+        @keyframes plCasPulse { 0%,100% { box-shadow:0 0 16px rgba(220,38,38,0.25); } 50% { box-shadow:0 0 32px rgba(220,38,38,0.55); } }
+        .pl-casualty-banner.cas-elevated { background:linear-gradient(135deg, rgba(245,158,11,0.10), rgba(13,27,46,0.9)); border-color:rgba(245,158,11,0.45); }
+        .pl-cas-pill { padding:3px 10px; border-radius:11px; font-size:9.5px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+        .rhetoric-card { background:var(--card); border:2px solid rgba(34,197,94,0.3); border-radius:12px; padding:20px; margin-bottom:18px; }
+        .rhetoric-level-pill { padding:5px 13px; border-radius:12px; font-size:11px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+        .pl-consensus-block { padding-left:16px; border-left:1px solid var(--border); }
+        .rhetoric-signal-row { font-size:12px; color:var(--text-2); padding:6px 0 6px 9px; line-height:1.45; display:flex; gap:8px; align-items:baseline; }
+        .rhetoric-signal-label { font-size:9.5px; font-weight:800; font-family:'Courier New',monospace; flex-shrink:0; }
+        .rhetoric-actor-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text-2); padding:5px 0; border-bottom:1px solid rgba(56,189,248,0.08); }
         .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
         .rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
         .rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
@@ -382,7 +393,7 @@
     <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Poland</div>
-    <a href="rhetoric-poland.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇵🇱 Pressure Tracker</span><span class="nav-btn-status">○ In Dev</span></a>
+    <a href="rhetoric-poland.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇵🇱 Consensus Tracker</span><span class="nav-btn-status">● Live</span></a>
     <a href="poland.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇵🇱 Stability Index</span><span class="nav-btn-status">◉ You are here</span></a>
 </nav>
 
@@ -425,6 +436,40 @@
         <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="rhetoricDetail"></div>
     </div>
     <a href="rhetoric-poland.html" class="rhet-banner-link" data-i18n="rhetoricLink">Open Tracker →</a>
+</div>
+
+<!-- ══ CASUALTY TRIPWIRE BANNER — the Black Swan. Hidden at QUIET. ══
+     Sub-threshold deniability is what has made Russia's campaign in Poland
+     sustainable. A casualty event is where deniability stops being cheap. -->
+<div class="pl-casualty-banner" id="polandCasualtyBanner" style="display:none;">
+    <span id="polandCasualtyIcon" style="font-size:20px;">⚠️</span>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:3px;">
+            <span style="font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#fca5a5;" data-i18n="casualtyLabel">Casualty Tripwire</span>
+            <span class="pl-cas-pill" id="polandCasualtyPill">--</span>
+        </div>
+        <div style="font-size:11.5px;color:#fecaca;line-height:1.5;" id="polandCasualtyBody"></div>
+    </div>
+</div>
+
+<!-- ══ RHETORIC DETAIL CARD (Gold Standard — /api/rhetoric/poland) ══ -->
+<div class="rhetoric-card" id="polandRhetoricCard" style="display:none;">
+    <div class="card-title">📡 <span data-i18n="rhetoricCardTitle">🇵🇱 POLAND CONSENSUS TRACKER</span></div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;" data-i18n="rhetoricCardDesc">Consensus Integrity · Hybrid Tempo (Kinetic/Cyber/Cognitive) · Casualty Tripwire · Ukraine Wedge · Logistics Spine · Cohabitation · Updated every 12h</div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+        <div>
+            <div style="font-size:40px;font-weight:800;line-height:1;color:var(--text);" id="polandRhetoricScoreFull">--</div>
+            <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;" data-i18n="pressureLabel">Pressure</div>
+        </div>
+        <div class="pl-consensus-block">
+            <div style="font-size:26px;font-weight:800;line-height:1;" id="polandConsensusValue">--</div>
+            <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;" data-i18n="consensusLabel">Consensus Integrity</div>
+        </div>
+        <span class="rhetoric-level-pill" id="polandRhetoricLevelLabel">--</span>
+    </div>
+    <div id="polandRhetoricSignalList"></div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:10px;font-style:italic;" id="polandRhetoricScanInfo"></div>
+    <a href="rhetoric-poland.html" class="commodity-link" data-i18n="rhetoricFullLink">Open Full Consensus Tracker →</a>
 </div>
 
 <!-- COMMODITY EXPOSURE CARD (Gold Standard clone — /api/europe/commodity/poland) -->
@@ -736,10 +781,12 @@ function hideLoading() {
 /* ── ARTICLES ── */
 async function loadArticles() {
     try {
-        const r = await fetch(`${API_BASE}/api/europe/articles/poland`);
+        // LEDGER FIX (Jul 12 2026): /api/europe/articles/poland does not exist.
+        // The threat endpoint is the real source, and it keys articles as articles_en.
+        const r = await fetch(`${API_BASE}/api/europe/threat/poland`);
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const d = await r.json();
-        const articles = d.articles || d.recent_headlines || [];
+        const articles = d.articles_en || d.articles || d.recent_headlines || [];
         if (articles.length > 0) { displayArticles(articles); } else { displayFallback(); }
     } catch(e) {
         console.warn('[Poland] Articles failed:', e.message);
@@ -972,31 +1019,145 @@ async function loadRefugees() {
 }
 
 /* ── RHETORIC PRESSURE (404-tolerant shell — activates when /api/rhetoric/poland ships) ── */
+// ── RHETORIC (v1.0 LIVE — /api/rhetoric/poland) ──
+// Banner + Gold Standard detail card + the CASUALTY BLACK SWAN banner.
+// The headline number here is CONSENSUS INTEGRITY: Poland is not drifting, so
+// the question is not "which way" but "is the consensus holding, and at what
+// rate is it being spent."
 async function loadRhetoric() {
-    const ALERT_COLORS = { normal: '#6b7280', elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
+    let d;
     try {
         const r = await fetch(`${API_BASE}/api/rhetoric/poland`);
         if (!r.ok) return;
-        const d = await r.json();
-        const score = d.theatre_score || d.pressure_score || 0;
-        const alert = (d.alert_level || 'normal').toLowerCase();
-        const alertColor = ALERT_COLORS[alert] || '#6b7280';
-        // Calm-blue baseline: gray reads as "no data"; healthy baseline renders arctic blue.
-        const displayColor = (alert === 'normal') ? '#38bdf8' : alertColor;
+        d = await r.json();
+    } catch(e) { console.warn('[Poland] Rhetoric fetch failed:', e.message); return; }
+    if (d.theatre_score === undefined || d.theatre_score === null) return;
 
-        const card = document.getElementById('rhetoricPressureCard');
-        if (card) {
-            card.style.display = 'flex';
-            document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
-            const pill = document.getElementById('rhetoricPill');
-            pill.textContent = alert.toUpperCase();
-            pill.style.background = displayColor;
-            const sw = d.so_what || {};
-            document.getElementById('rhetoricHeadline').textContent = sw.scenario || 'Poland Pressure Tracker — Live';
-            document.getElementById('rhetoricDetail').textContent = sw.assessment || '';
+    const score = d.theatre_score || 0;
+    const alert = (d.alert_level || 'normal').toLowerCase();
+    const ALERT_COLORS    = { normal:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', critical:'#dc2626' };
+    const ALERT_LEVEL_NUM = { normal:1, elevated:2, high:3, critical:4 };
+    const ALERT_LABEL     = { normal:'Baseline', elevated:'Elevated', high:'High', critical:'Critical' };
+    const alertColor = ALERT_COLORS[alert] || '#38bdf8';
+    const sw   = d.so_what || {};
+    const cons = d.consensus_integrity || {};
+
+    // ── Green banner ──
+    const card = document.getElementById('rhetoricPressureCard');
+    if (card) {
+        card.style.display = 'flex';
+        const sEl = document.getElementById('rhetoricScore');
+        if (sEl) sEl.textContent = (cons.integrity !== undefined && cons.integrity !== null)
+            ? `Consensus: ${cons.integrity}/100` : `Score: ${score}`;
+        const pill = document.getElementById('rhetoricPill');
+        if (pill) { pill.textContent = alert.toUpperCase(); pill.style.background = alertColor; }
+        const hEl = document.getElementById('rhetoricHeadline');
+        if (hEl) hEl.textContent = sw.scenario || 'Poland Consensus Tracker — Live';
+        const dEl = document.getElementById('rhetoricDetail');
+        if (dEl) {
+            const a = sw.assessment || '';
+            dEl.textContent = a.length > 200 ? a.slice(0, 200) + '\u2026' : a;
         }
-    } catch(e) { console.warn('[Poland] Rhetoric fetch failed (expected until tracker ships):', e.message); }
+    }
+
+    // ── CASUALTY BLACK SWAN banner — hidden at QUIET ──
+    const cas = d.casualty_tripwire || {};
+    const casBanner = document.getElementById('polandCasualtyBanner');
+    if (casBanner) {
+        if (!cas.state || cas.state === 'QUIET') {
+            casBanner.style.display = 'none';
+        } else {
+            casBanner.style.display = 'flex';
+            casBanner.classList.remove('cas-breached', 'cas-elevated');
+            const CAS = {
+                BREACHED:    ['\u26d4 BREACHED', '#dc2626', '\ud83d\udd34', 'cas-breached'],
+                APPROACHING: ['APPROACHING',      '#ef4444', '\u26a0\ufe0f', ''],
+                ELEVATED:    ['ELEVATED',         '#f59e0b', '\u26a0\ufe0f', 'cas-elevated'],
+            };
+            const [cl, cc, ci, ccls] = CAS[cas.state] || CAS.ELEVATED;
+            if (ccls) casBanner.classList.add(ccls);
+            const iEl = document.getElementById('polandCasualtyIcon');
+            const pEl = document.getElementById('polandCasualtyPill');
+            const bEl = document.getElementById('polandCasualtyBody');
+            if (iEl) iEl.textContent = ci;
+            if (pEl) { pEl.textContent = cl; pEl.style.background = cc; }
+            if (bEl) bEl.textContent = cas.reading || '';
+        }
+    }
+
+    // ── Gold Standard detail card ──
+    const detail = document.getElementById('polandRhetoricCard');
+    if (!detail) return;
+    detail.style.display = 'block';
+
+    const scoreEl = document.getElementById('polandRhetoricScoreFull');
+    if (scoreEl) { scoreEl.textContent = score; scoreEl.style.color = alertColor; }
+
+    // Consensus integrity — the instrument. HIGH is GOOD here (inverted from a
+    // pressure score), so the colour scale runs the other way.
+    const consEl = document.getElementById('polandConsensusValue');
+    if (consEl) {
+        const CS = { holding:'#22c55e', strained:'#f59e0b', fracturing:'#ef4444', contested:'#dc2626' };
+        consEl.textContent = (cons.integrity !== undefined && cons.integrity !== null)
+            ? `${cons.integrity}/100` : '--';
+        consEl.style.color = CS[cons.state] || '#6b7280';
+    }
+
+    const lvlEl = document.getElementById('polandRhetoricLevelLabel');
+    if (lvlEl) {
+        const n = ALERT_LEVEL_NUM[alert] || 1;
+        lvlEl.textContent = cons.state
+            ? `L${n} \u2014 ${cons.state.toUpperCase()}`
+            : `L${n} \u2014 ${ALERT_LABEL[alert] || 'Baseline'}`;
+        lvlEl.style.background = alertColor;
+    }
+
+    const listEl = document.getElementById('polandRhetoricSignalList');
+    if (listEl) {
+        const PC = { 1:'#dc2626', 2:'#f59e0b', 3:'#38bdf8' };
+        const top = (d.top_signals || []).slice(0, 5);
+        if (top.length) {
+            listEl.innerHTML = top.map(s => {
+                const isGreen = String(s.short_text || '').indexOf('GREEN') === 0;
+                const isSwan  = s.category === 'casualty_tripwire';
+                const col = isGreen ? '#10b981' : isSwan ? '#dc2626' : (PC[s.priority] || '#38bdf8');
+                const tag = isSwan ? '\u26d4' : `P${s.priority || 3}`;
+                return `<div class="rhetoric-signal-row" style="border-left:3px solid ${col};">`
+                    + `<span class="rhetoric-signal-label" style="color:${col};">${tag}</span>`
+                    + `<span>${s.short_text || ''}</span></div>`;
+            }).join('');
+        } else {
+            // Absence-honest: the vector states, no manufactured signal.
+            const h = d.hybrid_tempo || {}, w = d.ukraine_wedge || {};
+            const sp = d.logistics_spine || {}, ch = d.cohabitation || {};
+            const rows = [
+                { l:'\u2694\ufe0f Hybrid Tempo',   v:(h.band || 'quiet') + (h.dominant_domain ? ` (${h.dominant_domain})` : '') },
+                { l:'\ud83e\ude78 Ukraine Wedge',  v:(w.band || 'quiet') + ((w.axes || []).length ? ` \u00b7 ${w.axes.length} axes` : '') },
+                { l:'\ud83d\ude82 Logistics Spine', v:(sp.stage_name || 'Dormant') },
+                { l:'\ud83c\udfdb\ufe0f Cohabitation', v:(ch.band || 'quiet') },
+            ];
+            listEl.innerHTML = rows.map(r =>
+                `<div class="rhetoric-actor-row"><span>${r.l}</span>`
+                + `<span style="font-weight:700;color:#38bdf8;">${r.v}</span></div>`).join('')
+                + `<div style="font-size:10px;color:var(--text-muted);font-style:italic;padding-top:6px;">All vectors quiet this cycle \u2014 no manufactured signal.</div>`;
+        }
+    }
+
+    const scanEl = document.getElementById('polandRhetoricScanInfo');
+    if (scanEl) {
+        let age = '';
+        if (d.cached_at) {
+            const m = Math.floor((Date.now() - new Date(d.cached_at).getTime()) / 60000);
+            age = m < 60 ? `${m}m ago` : `${Math.floor(m/60)}h ${m%60}m ago`;
+        }
+        const tb = d.tempo_baseline || {};
+        const tempo = tb.ready ? ' \u00b7 tempo baseline ready'
+                     : ' \u00b7 tempo baseline accumulating';
+        scanEl.textContent = `Scanned ${age} \u00b7 ${d.total_articles || 0} articles \u00b7 `
+            + `tracker v${d.tracker_version || '--'}${tempo}`;
+    }
 }
+
 
 /* ── FINANCIAL PULSE (shell — activates when poland_financial_pulse.py ships; contract: /api/europe/financial/poland) ── */
 // ── CANONICAL FINANCIAL PULSE (v1.0.1) ──
@@ -1107,10 +1268,10 @@ async function loadFinancial() {
 
 /* ── i18n (EN/FR/RU/DE — key parity enforced) ── */
 const T = {
-    en: { pulseLoading:'Loading market data…', pageFlag:'POLAND', pageTitle:'POLAND STABILITY INDEX', pageSubtitle:'NATO Eastern Flank · Defense Modernization · Border Security · Refugee Absorption · EU-Poland Dynamics', backLink:'← Back to Europe', cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION', cautionText:'U.S. citizens worldwide should remain vigilant. Monitor local media and enroll in STEP.', viewCaution:'VIEW CAUTION →', advisoryLabel:'U.S. STATE DEPARTMENT — POLAND TRAVEL ADVISORY', advisoryLevel:'LEVEL 2', viewAdvisory:'VIEW ADVISORY →', advisoryText:'Exercise Increased Caution in Poland due to proximity to the Russia-Ukraine war.', rhetoricLabel:'Poland Pressure Tracker — Live', rhetoricLink:'Open Tracker →', commodityTitle:'POLAND COMMODITY EXPOSURE', commodityLinkage:'Strategic Linkage: Poland is the world\'s #2 silver producer (KGHM) and a top-10 copper producer. As the primary overland grain-transit corridor from the war zone, Polish logistics chokepoints couple regional commodity pressure to domestic politics.', commodityFullLink:'View Full Commodity Tracker →', refugeeTitle:'REFUGEE PRESSURE — UKRAINE SITUATION', refugeeDesc:'People displaced from Ukraine currently hosted in Poland · UNHCR + Eurostat · Refreshed daily', financialTitle:'POLAND FINANCIAL PULSE', financialDesc:'Four live signals. WIG20 = Warsaw blue-chips (domestic risk appetite). USD/PLN = zloty FX stress (INVERTED: rising = weaker zloty). The attrition tile is the cost of the armament spiral — 4.83% of GDP on defence against a 6.3% deficit, debt-financed, so the market prices the cost imposed whether or not a shot is fired. Orlen = energy security after the break with Russian gas: achieved, and paid for.', mapTitle:'POLAND — STRATEGIC OVERVIEW', mapSubtitle:"NATO's primary eastern frontier — bordering Russia (Kaliningrad), Belarus, Ukraine, and Lithuania.", knowledgeTitle:'KNOWLEDGE LIBRARY', catGovernment:'Government & Political Dynamics', catCohabitation:'Cohabitation & Veto Politics', catMilitary:'Military Modernization & NATO Eastern Flank', catBorder:'Border Security & Belarus Migration Crisis', catEconomy:'Economy & EU Relations', catRefugees:'Ukraine Refugee Integration', catUS:'U.S.-Poland Defense Partnership', articlesTitle:'RECENT POLAND SECURITY & STABILITY ARTICLES', articlesDesc:'NewsAPI + GDELT · Last 7 days' },
-    fr: { pulseLoading:'Chargement des données…', pageFlag:'POLOGNE', pageTitle:'INDICE DE STABILITÉ — POLOGNE', pageSubtitle:'Flanc est OTAN · Modernisation militaire · Sécurité frontalière · Absorption des réfugiés · Dynamiques UE-Pologne', backLink:'← Retour à l\'Europe', cautionLabel:'DÉPARTEMENT D\'ÉTAT — MISE EN GARDE MONDIALE', cautionText:'Les citoyens américains doivent rester vigilants.', viewCaution:'VOIR →', advisoryLabel:'DÉPARTEMENT D\'ÉTAT — AVIS POLOGNE', advisoryLevel:'NIVEAU 2', viewAdvisory:'VOIR →', advisoryText:'Précautions renforcées en Pologne en raison de la proximité de la guerre.', rhetoricLabel:'Traqueur de pression — Pologne', rhetoricLink:'Ouvrir →', commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES', commodityLinkage:'Lien stratégique : la Pologne est le 2e producteur mondial d\'argent (KGHM) et un producteur majeur de cuivre. Corridor terrestre principal du transit céréalier depuis la zone de guerre.', commodityFullLink:'Voir le traqueur complet →', refugeeTitle:'PRESSION MIGRATOIRE — SITUATION UKRAINIENNE', refugeeDesc:'Personnes déplacées d\'Ukraine accueillies en Pologne · UNHCR + Eurostat · Actualisé quotidiennement', financialTitle:'POULS FINANCIER — POLOGNE', financialDesc:'Quatre signaux. WIG20 = valeurs vedettes de Varsovie. USD/PLN = tension sur le zloty (INVERSÉ : hausse = zloty plus faible). La tuile d\'attrition mesure le coût de la spirale d\'armement — 4,83% du PIB pour la défense face à un déficit de 6,3%, financé par la dette. Orlen = sécurité énergétique après la rupture avec le gaz russe.', mapTitle:'POLOGNE — VUE STRATÉGIQUE', mapSubtitle:'Frontière orientale principale de l\'OTAN.', knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES', catGovernment:'Gouvernement et dynamiques politiques', catCohabitation:'Cohabitation et politique du veto', catMilitary:'Modernisation militaire et flanc est OTAN', catBorder:'Sécurité frontalière et crise migratoire', catEconomy:'Économie et relations UE', catRefugees:'Intégration des réfugiés ukrainiens', catUS:'Partenariat de défense É.-U.-Pologne', articlesTitle:'ARTICLES RÉCENTS — POLOGNE', articlesDesc:'NewsAPI + GDELT · 7 derniers jours' },
-    ru: { pulseLoading:'Загрузка рыночных данных…', pageFlag:'ПОЛЬША', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ ПОЛЬШИ', pageSubtitle:'Восточный фланг НАТО · Модернизация обороны · Безопасность границ · Приём беженцев · Динамика ЕС-Польша', backLink:'← Назад к Европе', cautionLabel:'ГОСДЕПАРТАМЕНТ — МИРОВОЕ ПРЕДУПРЕЖДЕНИЕ', cautionText:'Гражданам США следует сохранять бдительность.', viewCaution:'СМОТРЕТЬ →', advisoryLabel:'ГОСДЕПАРТАМЕНТ — ПРЕДУПРЕЖДЕНИЕ ПО ПОЛЬШЕ', advisoryLevel:'УРОВЕНЬ 2', viewAdvisory:'СМОТРЕТЬ →', advisoryText:'Повышенная осторожность в Польше из-за близости к войне.', rhetoricLabel:'Трекер давления — Польша', rhetoricLink:'Открыть →', commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ ПОЛЬШИ', commodityLinkage:'Стратегическая связь: Польша — 2-й в мире производитель серебра (KGHM) и крупный производитель меди. Главный сухопутный коридор транзита зерна из зоны войны.', commodityFullLink:'Полный трекер сырья →', refugeeTitle:'МИГРАЦИОННОЕ ДАВЛЕНИЕ — УКРАИНСКАЯ СИТУАЦИЯ', refugeeDesc:'Перемещённые лица из Украины в Польше · УВКБ + Евростат · Ежедневное обновление', financialTitle:'ФИНАНСОВЫЙ ПУЛЬС ПОЛЬШИ', financialDesc:'Четыре сигнала. WIG20 — «голубые фишки» Варшавы. USD/PLN — давление на злотый (ИНВЕРСИЯ: рост = ослабление злотого). Плитка истощения — цена гонки вооружений: 4,83% ВВП на оборону при дефиците 6,3%, в долг. Orlen — энергобезопасность после разрыва с российским газом.', mapTitle:'ПОЛЬША — СТРАТЕГИЧЕСКИЙ ОБЗОР', mapSubtitle:'Главный восточный рубеж НАТО.', knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ', catGovernment:'Правительство и политическая динамика', catCohabitation:'Сосуществование и политика вето', catMilitary:'Военная модернизация и восточный фланг НАТО', catBorder:'Безопасность границ и миграционный кризис', catEconomy:'Экономика и отношения с ЕС', catRefugees:'Интеграция украинских беженцев', catUS:'Оборонное партнёрство США-Польша', articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О ПОЛЬШЕ', articlesDesc:'NewsAPI + GDELT · Последние 7 дней' },
-    de: { pulseLoading:'Marktdaten werden geladen…', pageFlag:'POLEN', pageTitle:'POLEN-STABILITÄTSINDEX', pageSubtitle:'NATO-Ostflanke · Verteidigungsmodernisierung · Grenzsicherheit · Flüchtlingsaufnahme · EU-Polen-Dynamik', backLink:'← Zurück zu Europa', cautionLabel:'AUSSENMINISTERIUM — WELTWEITE WARNUNG', cautionText:'US-Bürger weltweit sollten wachsam bleiben.', viewCaution:'WARNUNG ANZEIGEN →', advisoryLabel:'AUSSENMINISTERIUM — POLEN-REISEWARNUNG', advisoryLevel:'STUFE 2', viewAdvisory:'WARNUNG ANZEIGEN →', advisoryText:'Erhöhte Vorsicht in Polen wegen der Nähe zum Krieg.', rhetoricLabel:'Druck-Tracker — Polen', rhetoricLink:'Öffnen →', commodityTitle:'ROHSTOFF-EXPOSITION POLENS', commodityLinkage:'Strategische Verbindung: Polen ist der zweitgrößte Silberproduzent der Welt (KGHM) und ein bedeutender Kupferproduzent. Hauptlandkorridor für Getreidetransit aus dem Kriegsgebiet.', commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →', refugeeTitle:'FLÜCHTLINGSDRUCK — UKRAINE-SITUATION', refugeeDesc:'Aus der Ukraine Vertriebene in Polen · UNHCR + Eurostat · Täglich aktualisiert', financialTitle:'FINANZPULS POLEN', financialDesc:'Vier Signale. WIG20 = Warschauer Blue Chips. USD/PLN = Zloty-Stress (INVERTIERT: steigend = schwächerer Zloty). Die Attritions-Kachel ist der Preis der Rüstungsspirale — 4,83% des BIP für Verteidigung bei 6,3% Defizit, schuldenfinanziert. Orlen = Energiesicherheit nach dem Bruch mit russischem Gas.', mapTitle:'POLEN — STRATEGISCHER ÜBERBLICK', mapSubtitle:'NATO\'s wichtigste Ostgrenze.', knowledgeTitle:'WISSENSBIBLIOTHEK', catGovernment:'Regierung und politische Dynamik', catCohabitation:'Kohabitation und Veto-Politik', catMilitary:'Militärmodernisierung und NATO-Ostflanke', catBorder:'Grenzsicherheit und Belarus-Migrationskrise', catEconomy:'Wirtschaft und EU-Beziehungen', catRefugees:'Integration ukrainischer Flüchtlinge', catUS:'Verteidigungspartnerschaft USA-Polen', articlesTitle:'AKTUELLE ARTIKEL — POLEN', articlesDesc:'NewsAPI + GDELT · Letzte 7 Tage' }
+    en: { casualtyLabel:'Casualty Tripwire', rhetoricCardTitle:'🇵🇱 POLAND CONSENSUS TRACKER', rhetoricCardDesc:'Consensus Integrity · Hybrid Tempo (Kinetic/Cyber/Cognitive) · Casualty Tripwire · Ukraine Wedge · Logistics Spine · Cohabitation · Updated every 12h', pressureLabel:'Pressure', consensusLabel:'Consensus Integrity', rhetoricFullLink:'Open Full Consensus Tracker →', pulseLoading:'Loading market data…', pageFlag:'POLAND', pageTitle:'POLAND STABILITY INDEX', pageSubtitle:'NATO Eastern Flank · Defense Modernization · Border Security · Refugee Absorption · EU-Poland Dynamics', backLink:'← Back to Europe', cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION', cautionText:'U.S. citizens worldwide should remain vigilant. Monitor local media and enroll in STEP.', viewCaution:'VIEW CAUTION →', advisoryLabel:'U.S. STATE DEPARTMENT — POLAND TRAVEL ADVISORY', advisoryLevel:'LEVEL 2', viewAdvisory:'VIEW ADVISORY →', advisoryText:'Exercise Increased Caution in Poland due to proximity to the Russia-Ukraine war.', rhetoricLabel:'Poland Pressure Tracker — Live', rhetoricLink:'Open Tracker →', commodityTitle:'POLAND COMMODITY EXPOSURE', commodityLinkage:'Strategic Linkage: Poland is the world\'s #2 silver producer (KGHM) and a top-10 copper producer. As the primary overland grain-transit corridor from the war zone, Polish logistics chokepoints couple regional commodity pressure to domestic politics.', commodityFullLink:'View Full Commodity Tracker →', refugeeTitle:'REFUGEE PRESSURE — UKRAINE SITUATION', refugeeDesc:'People displaced from Ukraine currently hosted in Poland · UNHCR + Eurostat · Refreshed daily', financialTitle:'POLAND FINANCIAL PULSE', financialDesc:'Four live signals. WIG20 = Warsaw blue-chips (domestic risk appetite). USD/PLN = zloty FX stress (INVERTED: rising = weaker zloty). The attrition tile is the cost of the armament spiral — 4.83% of GDP on defence against a 6.3% deficit, debt-financed, so the market prices the cost imposed whether or not a shot is fired. Orlen = energy security after the break with Russian gas: achieved, and paid for.', mapTitle:'POLAND — STRATEGIC OVERVIEW', mapSubtitle:"NATO's primary eastern frontier — bordering Russia (Kaliningrad), Belarus, Ukraine, and Lithuania.", knowledgeTitle:'KNOWLEDGE LIBRARY', catGovernment:'Government & Political Dynamics', catCohabitation:'Cohabitation & Veto Politics', catMilitary:'Military Modernization & NATO Eastern Flank', catBorder:'Border Security & Belarus Migration Crisis', catEconomy:'Economy & EU Relations', catRefugees:'Ukraine Refugee Integration', catUS:'U.S.-Poland Defense Partnership', articlesTitle:'RECENT POLAND SECURITY & STABILITY ARTICLES', articlesDesc:'NewsAPI + GDELT · Last 7 days' },
+    fr: { casualtyLabel:'Seuil de victimes', rhetoricCardTitle:'🇵🇱 TRAQUEUR DE CONSENSUS — POLOGNE', rhetoricCardDesc:'Intégrité du consensus · Tempo hybride · Seuil de victimes · Coin ukrainien · Colonne logistique · Cohabitation · Toutes les 12h', pressureLabel:'Pression', consensusLabel:'Intégrité du consensus', rhetoricFullLink:'Ouvrir le traqueur complet →', pulseLoading:'Chargement des données…', pageFlag:'POLOGNE', pageTitle:'INDICE DE STABILITÉ — POLOGNE', pageSubtitle:'Flanc est OTAN · Modernisation militaire · Sécurité frontalière · Absorption des réfugiés · Dynamiques UE-Pologne', backLink:'← Retour à l\'Europe', cautionLabel:'DÉPARTEMENT D\'ÉTAT — MISE EN GARDE MONDIALE', cautionText:'Les citoyens américains doivent rester vigilants.', viewCaution:'VOIR →', advisoryLabel:'DÉPARTEMENT D\'ÉTAT — AVIS POLOGNE', advisoryLevel:'NIVEAU 2', viewAdvisory:'VOIR →', advisoryText:'Précautions renforcées en Pologne en raison de la proximité de la guerre.', rhetoricLabel:'Traqueur de pression — Pologne', rhetoricLink:'Ouvrir →', commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES', commodityLinkage:'Lien stratégique : la Pologne est le 2e producteur mondial d\'argent (KGHM) et un producteur majeur de cuivre. Corridor terrestre principal du transit céréalier depuis la zone de guerre.', commodityFullLink:'Voir le traqueur complet →', refugeeTitle:'PRESSION MIGRATOIRE — SITUATION UKRAINIENNE', refugeeDesc:'Personnes déplacées d\'Ukraine accueillies en Pologne · UNHCR + Eurostat · Actualisé quotidiennement', financialTitle:'POULS FINANCIER — POLOGNE', financialDesc:'Quatre signaux. WIG20 = valeurs vedettes de Varsovie. USD/PLN = tension sur le zloty (INVERSÉ : hausse = zloty plus faible). La tuile d\'attrition mesure le coût de la spirale d\'armement — 4,83% du PIB pour la défense face à un déficit de 6,3%, financé par la dette. Orlen = sécurité énergétique après la rupture avec le gaz russe.', mapTitle:'POLOGNE — VUE STRATÉGIQUE', mapSubtitle:'Frontière orientale principale de l\'OTAN.', knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES', catGovernment:'Gouvernement et dynamiques politiques', catCohabitation:'Cohabitation et politique du veto', catMilitary:'Modernisation militaire et flanc est OTAN', catBorder:'Sécurité frontalière et crise migratoire', catEconomy:'Économie et relations UE', catRefugees:'Intégration des réfugiés ukrainiens', catUS:'Partenariat de défense É.-U.-Pologne', articlesTitle:'ARTICLES RÉCENTS — POLOGNE', articlesDesc:'NewsAPI + GDELT · 7 derniers jours' },
+    ru: { casualtyLabel:'Порог жертв', rhetoricCardTitle:'🇵🇱 ТРЕКЕР КОНСЕНСУСА — ПОЛЬША', rhetoricCardDesc:'Целостность консенсуса · Гибридный темп · Порог жертв · Украинский клин · Логистический хребет · Сосуществование · Каждые 12ч', pressureLabel:'Давление', consensusLabel:'Целостность консенсуса', rhetoricFullLink:'Открыть полный трекер →', pulseLoading:'Загрузка рыночных данных…', pageFlag:'ПОЛЬША', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ ПОЛЬШИ', pageSubtitle:'Восточный фланг НАТО · Модернизация обороны · Безопасность границ · Приём беженцев · Динамика ЕС-Польша', backLink:'← Назад к Европе', cautionLabel:'ГОСДЕПАРТАМЕНТ — МИРОВОЕ ПРЕДУПРЕЖДЕНИЕ', cautionText:'Гражданам США следует сохранять бдительность.', viewCaution:'СМОТРЕТЬ →', advisoryLabel:'ГОСДЕПАРТАМЕНТ — ПРЕДУПРЕЖДЕНИЕ ПО ПОЛЬШЕ', advisoryLevel:'УРОВЕНЬ 2', viewAdvisory:'СМОТРЕТЬ →', advisoryText:'Повышенная осторожность в Польше из-за близости к войне.', rhetoricLabel:'Трекер давления — Польша', rhetoricLink:'Открыть →', commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ ПОЛЬШИ', commodityLinkage:'Стратегическая связь: Польша — 2-й в мире производитель серебра (KGHM) и крупный производитель меди. Главный сухопутный коридор транзита зерна из зоны войны.', commodityFullLink:'Полный трекер сырья →', refugeeTitle:'МИГРАЦИОННОЕ ДАВЛЕНИЕ — УКРАИНСКАЯ СИТУАЦИЯ', refugeeDesc:'Перемещённые лица из Украины в Польше · УВКБ + Евростат · Ежедневное обновление', financialTitle:'ФИНАНСОВЫЙ ПУЛЬС ПОЛЬШИ', financialDesc:'Четыре сигнала. WIG20 — «голубые фишки» Варшавы. USD/PLN — давление на злотый (ИНВЕРСИЯ: рост = ослабление злотого). Плитка истощения — цена гонки вооружений: 4,83% ВВП на оборону при дефиците 6,3%, в долг. Orlen — энергобезопасность после разрыва с российским газом.', mapTitle:'ПОЛЬША — СТРАТЕГИЧЕСКИЙ ОБЗОР', mapSubtitle:'Главный восточный рубеж НАТО.', knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ', catGovernment:'Правительство и политическая динамика', catCohabitation:'Сосуществование и политика вето', catMilitary:'Военная модернизация и восточный фланг НАТО', catBorder:'Безопасность границ и миграционный кризис', catEconomy:'Экономика и отношения с ЕС', catRefugees:'Интеграция украинских беженцев', catUS:'Оборонное партнёрство США-Польша', articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О ПОЛЬШЕ', articlesDesc:'NewsAPI + GDELT · Последние 7 дней' },
+    de: { casualtyLabel:'Opfer-Schwelle', rhetoricCardTitle:'🇵🇱 POLEN-KONSENS-TRACKER', rhetoricCardDesc:'Konsens-Integrität · Hybrid-Tempo · Opfer-Schwelle · Ukraine-Keil · Logistik-Rückgrat · Kohabitation · Alle 12h', pressureLabel:'Druck', consensusLabel:'Konsens-Integrität', rhetoricFullLink:'Vollständigen Tracker öffnen →', pulseLoading:'Marktdaten werden geladen…', pageFlag:'POLEN', pageTitle:'POLEN-STABILITÄTSINDEX', pageSubtitle:'NATO-Ostflanke · Verteidigungsmodernisierung · Grenzsicherheit · Flüchtlingsaufnahme · EU-Polen-Dynamik', backLink:'← Zurück zu Europa', cautionLabel:'AUSSENMINISTERIUM — WELTWEITE WARNUNG', cautionText:'US-Bürger weltweit sollten wachsam bleiben.', viewCaution:'WARNUNG ANZEIGEN →', advisoryLabel:'AUSSENMINISTERIUM — POLEN-REISEWARNUNG', advisoryLevel:'STUFE 2', viewAdvisory:'WARNUNG ANZEIGEN →', advisoryText:'Erhöhte Vorsicht in Polen wegen der Nähe zum Krieg.', rhetoricLabel:'Druck-Tracker — Polen', rhetoricLink:'Öffnen →', commodityTitle:'ROHSTOFF-EXPOSITION POLENS', commodityLinkage:'Strategische Verbindung: Polen ist der zweitgrößte Silberproduzent der Welt (KGHM) und ein bedeutender Kupferproduzent. Hauptlandkorridor für Getreidetransit aus dem Kriegsgebiet.', commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →', refugeeTitle:'FLÜCHTLINGSDRUCK — UKRAINE-SITUATION', refugeeDesc:'Aus der Ukraine Vertriebene in Polen · UNHCR + Eurostat · Täglich aktualisiert', financialTitle:'FINANZPULS POLEN', financialDesc:'Vier Signale. WIG20 = Warschauer Blue Chips. USD/PLN = Zloty-Stress (INVERTIERT: steigend = schwächerer Zloty). Die Attritions-Kachel ist der Preis der Rüstungsspirale — 4,83% des BIP für Verteidigung bei 6,3% Defizit, schuldenfinanziert. Orlen = Energiesicherheit nach dem Bruch mit russischem Gas.', mapTitle:'POLEN — STRATEGISCHER ÜBERBLICK', mapSubtitle:'NATO\'s wichtigste Ostgrenze.', knowledgeTitle:'WISSENSBIBLIOTHEK', catGovernment:'Regierung und politische Dynamik', catCohabitation:'Kohabitation und Veto-Politik', catMilitary:'Militärmodernisierung und NATO-Ostflanke', catBorder:'Grenzsicherheit und Belarus-Migrationskrise', catEconomy:'Wirtschaft und EU-Beziehungen', catRefugees:'Integration ukrainischer Flüchtlinge', catUS:'Verteidigungspartnerschaft USA-Polen', articlesTitle:'AKTUELLE ARTIKEL — POLEN', articlesDesc:'NewsAPI + GDELT · Letzte 7 Tage' }
 };
 function setLang(lang, btn) {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
