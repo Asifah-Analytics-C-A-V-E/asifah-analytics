@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Kazakhstan Stability Index v2.1.0 — July 2026 (canonical 4-tile Financial Pulse: Brent+CPC route dependency, USD/KZT inverted, Kazatomprom uranium, Halyk banking) -->
+<!-- Asifah Analytics - Kazakhstan Stability Index v2.2.0 — July 2026 (rhetoric LIVE: /api/rhetoric/kazakhstan, Gold Standard card w/ convergence row; FR advisory shrapnel fixed) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -470,7 +470,7 @@
     <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label">Kazakhstan</div>
-    <a href="rhetoric-kazakhstan.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇰🇿 Pressure Tracker</span><span class="nav-btn-status">○ In Dev</span></a>
+    <a href="rhetoric-kazakhstan.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇰🇿 Multi-Vector Tracker</span><span class="nav-btn-status">● Live</span></a>
     <a href="kazakhstan-stability.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇰🇿 Stability Index</span><span class="nav-btn-status">◉ You are here</span></a>
 </nav>
 
@@ -532,10 +532,10 @@
 <div class="rhetoric-card" id="kazakhstanRhetoricCard" style="display:none;">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#38bdf8;margin-bottom:11px;">📡 <span data-i18n="rhetoricCardTitle">KAZAKHSTAN PRESSURE TRACKER</span></div>
     <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:5px;">
-        <div style="font-size:30px;font-weight:700;color:var(--text-primary);" id="kazakhstanRhetoricScoreFull">--</div>
+        <div style="font-size:40px;font-weight:800;color:var(--text-primary);" id="kazakhstanRhetoricScoreFull">--</div>
         <span id="kazakhstanRhetoricLevelLabel" style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:#6b7280;color:white;">--</span>
     </div>
-    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector pressure score — Constitutional Reform · CPC Pipeline · Uranium Politics · Russia/China Hedging · Middle Corridor · Updated every 6h</div>
+    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:11px;" data-i18n="rhetoricCardDesc">Multi-vector hedging sensor — Hedge Integrity · Middle Corridor · Russia Levers · China Dual-Track · Jan-2022 Tripwire · Commodity Convergence · Updated every 6h</div>
     <div id="kazakhstanRhetoricSignalList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;" data-i18n="loading">Loading…</span></div>
     <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--card-border);text-align:center;">
         <a href="rhetoric-kazakhstan.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="viewFullTracker">View Full Pressure Analysis →</a>
@@ -1246,88 +1246,107 @@ async function loadCommodity() {
 // ── RHETORIC PRESSURE — adapter for /api/europe/threat/<target> ──
 // Maps generic threat-scan output (probability, momentum, top_scoring_articles)
 // onto the canonical rhetoric banner + pressure detail card.
+// ── RHETORIC — real tracker payload (/api/rhetoric/kazakhstan, live Jul 12 2026) ──
+// Replaces the interim threat-endpoint adapter. Green banner + Gold Standard
+// detail card from theatre_score / alert_level / so_what / top_signals.
+// Calm-blue baseline: alert=normal renders arctic #38bdf8 (gray = NO DATA only).
 async function loadRhetoric() {
-    // Reuse payload fetched by loadArticles to avoid double-call
-    let d = window._threatPayload;
-    if (!d) {
-        try {
-            const r = await fetch(`${API_BASE}/api/europe/threat/kazakhstan`);
-            if (!r.ok) return;
-            d = await r.json();
-        } catch(e) { console.warn('[Kazakhstan] Rhetoric pressure fetch failed:', e.message); return; }
-    }
+    let d;
+    try {
+        const r = await fetch(`${API_BASE}/api/rhetoric/kazakhstan`);
+        if (!r.ok) return;
+        d = await r.json();
+    } catch(e) { console.warn('[Kazakhstan] Rhetoric fetch failed:', e.message); return; }
+    if (d.theatre_score === undefined || d.theatre_score === null) return;
 
-    // Awaiting first scan — show nothing until the background daemon populates cache
-    if (d.pending_scan || d.probability === null || d.probability === undefined) return;
+    const score = d.theatre_score || 0;
+    const alert = (d.alert_level || 'normal').toLowerCase();
+    const ALERT_COLORS    = { normal:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', critical:'#dc2626' };
+    const ALERT_LEVEL_NUM = { normal:1, elevated:2, high:3, critical:4 };
+    const ALERT_LABEL     = { normal:'Baseline', elevated:'Elevated', high:'High', critical:'Critical' };
+    const alertColor = ALERT_COLORS[alert] || '#38bdf8';
+    const sw = d.so_what || {};
 
-    const score = d.probability || 0;
-
-    // Map momentum → alert level + color
-    const momentum = (d.momentum || 'stable').toLowerCase();
-    let alert, alertColor;
-    if (momentum === 'increasing' && score > 60) { alert = 'critical'; alertColor = '#dc2626'; }
-    else if (momentum === 'increasing')          { alert = 'high';     alertColor = '#f59e0b'; }
-    else if (momentum === 'decreasing')          { alert = 'normal';   alertColor = '#22c55e'; }
-    else                                         { alert = 'elevated'; alertColor = '#3b82f6'; }
-
-    // Map probability band → level label
-    let levelLabel;
-    if      (score >= 85) levelLabel = 'Critical';
-    else if (score >= 70) levelLabel = 'Elevated';
-    else if (score >= 50) levelLabel = 'Warning';
-    else if (score >= 30) levelLabel = 'Watch';
-    else                  levelLabel = 'Baseline';
-
-    // ── Green banner (top) ──
+    // ── Green banner (immediately below the travel advisory) ──
     const card = document.getElementById('rhetoricPressureCard');
     if (card) {
         card.style.display = 'flex';
-        document.getElementById('rhetoricScore').textContent = `Score: ${score}`;
+        const sEl = document.getElementById('rhetoricScore');
+        if (sEl) sEl.textContent = `Score: ${score}`;
         const pill = document.getElementById('rhetoricPill');
-        pill.textContent = alert.toUpperCase();
-        pill.style.background = alertColor;
-        document.getElementById('rhetoricHeadline').textContent =
-            `${levelLabel} pressure level · ${d.timeline || 'Timeline pending'} · momentum ${momentum}`;
-        document.getElementById('rhetoricDetail').textContent =
-            `${d.total_articles || 0} articles analyzed · ${d.recent_articles_48h || 0} in last 48h · ${d.deescalation_count || 0} de-escalation signals · Confidence: ${d.confidence || 'Unknown'}`;
+        if (pill) { pill.textContent = alert.toUpperCase(); pill.style.background = alertColor; }
+        const hEl = document.getElementById('rhetoricHeadline');
+        if (hEl) hEl.textContent = sw.scenario || 'Kazakhstan Multi-Vector Tracker — Live';
+        const dEl = document.getElementById('rhetoricDetail');
+        if (dEl) {
+            const a = sw.assessment || '';
+            dEl.textContent = a.length > 190 ? a.slice(0, 190) + '\u2026' : a;
+        }
     }
 
-    // ── Kazakhstan pressure tracker detail card ──
+    // ── Gold Standard detail card (below banner, above commodities) ──
     const detailCard = document.getElementById('kazakhstanRhetoricCard');
     if (detailCard) {
         detailCard.style.display = 'block';
         const scoreEl = document.getElementById('kazakhstanRhetoricScoreFull');
-        if (scoreEl) { scoreEl.textContent = score + '/100'; scoreEl.style.color = alertColor; }
+        if (scoreEl) { scoreEl.textContent = score; scoreEl.style.color = alertColor; }
         const lvlEl = document.getElementById('kazakhstanRhetoricLevelLabel');
-        if (lvlEl) { lvlEl.textContent = levelLabel; lvlEl.style.background = alertColor; }
+        if (lvlEl) {
+            const n = ALERT_LEVEL_NUM[alert] || 1;
+            lvlEl.textContent = `L${n} \u2014 ${ALERT_LABEL[alert] || 'Baseline'}`;
+            lvlEl.style.background = alertColor;
+        }
 
-        // Body: top scoring article titles → signal rows
         const signalEl = document.getElementById('kazakhstanRhetoricSignalList');
         if (signalEl) {
-            const top = (d.top_scoring_articles || []).slice(0, 5);
+            const PRIORITY_COLORS = { 1:'#dc2626', 2:'#f59e0b', 3:'#38bdf8' };
+            const top = (d.top_signals || []).slice(0, 5);
             if (top.length) {
-                signalEl.innerHTML = top.map(a => {
-                    const title = a.title || 'Untitled';
-                    const src = (typeof a.source === 'object' ? a.source?.name : a.source) || '';
-                    return `<div class="rhetoric-signal-row">${src ? `<span class="rhetoric-signal-label">${src}</span>` : ''}${title}</div>`;
+                signalEl.innerHTML = top.map(s => {
+                    const isGreen = (s.pressure_type === 'diplomatic'
+                        && String(s.short_text || '').indexOf('GREEN') === 0);
+                    // The convergence signal gets its own colour: it is the compound read,
+                    // and it only exists when the gate opened.
+                    const isConv = s.category === 'commodity_convergence';
+                    const rowColor = isGreen ? '#10b981'
+                        : isConv ? '#a855f7'
+                        : (PRIORITY_COLORS[s.priority] || '#38bdf8');
+                    const tag = isConv ? '\u26d3\ufe0f' : `P${s.priority || 3}`;
+                    return `<div class="rhetoric-signal-row" style="border-left:3px solid ${rowColor};padding-left:9px;">`
+                        + `<span class="rhetoric-signal-label" style="color:${rowColor};">${tag}</span>`
+                        + `${s.short_text || ''}</div>`;
                 }).join('');
             } else {
-                // Fallback: scoring breakdown summary
+                // Absence-honest quiet-tape read: the five vector states. No invented signal.
+                const hedge = d.hedging_integrity || {};
+                const corr  = d.middle_corridor   || {};
+                const ru    = d.russia_levers     || {};
+                const cn    = d.china_dual_track  || {};
+                const dom   = d.domestic_tripwire || {};
                 const rows = [
-                    { label: '📈 Momentum',           val: momentum, color: alertColor },
-                    { label: '📊 Recent (48h)',       val: d.recent_articles_48h || 0, color: '#38bdf8' },
-                    { label: '📰 Total Articles',     val: d.total_articles || 0, color: '#38bdf8' },
-                    { label: '🕊️ De-escalation Hits', val: d.deescalation_count || 0, color: '#22c55e' },
+                    { label:'\ud83e\udded Hedge Integrity',  val:(hedge.integrity || 'unread'),                    color:'#22c55e' },
+                    { label:'\ud83d\udea2 Middle Corridor',  val:(corr.stage_name || 'Dormant'),                   color:'#38bdf8' },
+                    { label:'\ud83d\udc3b Russia Levers',    val:(ru.band || 'quiet'),                             color:'#38bdf8' },
+                    { label:'\ud83d\udc09 China Dual-Track', val:String(cn.track || 'quiet').replace('_',' '),     color:'#38bdf8' },
+                    { label:'\u26a1 Jan-2022 Chain',          val:`${dom.chain_stage || 0}/3`,                      color:'#38bdf8' },
                 ];
-                signalEl.innerHTML = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
+                signalEl.innerHTML = rows.map(r =>
+                    `<div class="rhetoric-actor-row"><span>${r.label}</span>`
+                    + `<span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('')
+                    + `<div style="font-size:10px;color:var(--text-muted);font-style:italic;padding-top:6px;">All vectors quiet this cycle \u2014 no manufactured signal.</div>`;
             }
         }
 
-        // Scan info footer
         const scanEl = document.getElementById('kazakhstanRhetoricScanInfo');
         if (scanEl) {
-            const ageStr = d.cache_age_human || (d.cached ? 'cached' : 'fresh scan');
-            scanEl.textContent = `${ageStr} · ${d.total_articles || 0} articles analyzed · ${d.confidence || 'Unknown'} confidence`;
+            let ageStr = '';
+            if (d.cached_at) {
+                const m = Math.floor((Date.now() - new Date(d.cached_at).getTime()) / 60000);
+                ageStr = m < 60 ? `${m}m ago` : `${Math.floor(m/60)}h ${m%60}m ago`;
+            }
+            const cc = d.commodity_convergence || {};
+            const gate = cc.gate ? ` \u00b7 commodity gate: ${String(cc.gate).replace('_',' ')}` : '';
+            scanEl.textContent = `Scanned ${ageStr} \u00b7 ${d.total_articles || 0} articles \u00b7 interpreter v${d.interpreter_version || '--'}${gate}`;
         }
     }
 }
@@ -1353,7 +1372,7 @@ const T = {
         contextTagLabel:'Tokayev framing:',
         contextQuote:'"New Kazakhstan"',
         rhetoricCardTitle:'KAZAKHSTAN PRESSURE TRACKER',
-        rhetoricCardDesc:'Multi-vector pressure score — Constitutional Reform · CPC Pipeline · Uranium Politics · Russia/China Hedging · Middle Corridor · Updated every 6h',
+        rhetoricCardDesc:'Multi-vector hedging sensor — Hedge Integrity · Middle Corridor · Russia Levers · China Dual-Track · Jan-2022 Tripwire · Commodity Convergence · Updated every 6h',
         loading:'Loading…', viewFullTracker:'View Full Pressure Analysis →',
         commodityTitle:'COMMODITY EXPOSURE — KAZAKHSTAN',
         commodityFullLink:'View Full Commodity Tracker →',
@@ -1391,7 +1410,7 @@ const T = {
         cautionLabel:'DÉPARTEMENT D\u2019ÉTAT — MISE EN GARDE MONDIALE',
         cautionText:'Les citoyens américains dans le monde entier doivent rester vigilants face aux menaces terroristes et à la violence.',
         viewCaution:'VOIR LA MISE EN GARDE →',
-        advisoryLabel:'DÉPARTEMENT D\u2019ÉTAT — AVIS ARMÉNIE',
+        advisoryLabel:'DÉPARTEMENT D\u2019ÉTAT — AVIS KAZAKHSTAN',
         advisoryLevel:'NIVEAU 1', viewAdvisory:'VOIR L\u2019AVIS →',
         advisoryText:'Précautions normales au Kazakhstan. Réémis le 4 août 2024 après revue périodique sans changement. Avertissements importants : mandats d\u2019arrêt russes — la coopération policière Kazakhstan-Russie peut entraîner la détention de citoyens américains ayant précédemment travaillé en Russie. Zones frontalières avec la Chine — autorisation requise pour les déplacements près de la frontière chinoise ou des installations militaires. Des manifestations peuvent survenir; certaines ont entraîné des morts et arrestations massives historiquement (janvier 2022).',
         rhetoricLabel:'TRACKER RHÉTORIQUE KAZAKHSTAN — EN DIRECT',
@@ -1402,7 +1421,7 @@ const T = {
         contextTagLabel:'Cadrage Tokaïev :',
         contextQuote:'« Nouveau Kazakhstan »',
         rhetoricCardTitle:'TRACKER DE PRESSION KAZAKHSTAN',
-        rhetoricCardDesc:'Score de pression multi-vecteurs — Pivot Russie · Adhésion UE · Frontière Azerbaïdjan · Transit iranien · Élections juin 2026 · Mis à jour toutes les 6 h',
+        rhetoricCardDesc:'Capteur multi-vecteurs — Intégrité de couverture · Corridor médian · Leviers russes · Double voie chinoise · Déclencheur janv-2022 · Convergence · 6h',
         loading:'Chargement…', viewFullTracker:'Voir l\u2019analyse complète →',
         commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES — KAZAKHSTAN',
         commodityFullLink:'Voir le tracker complet →',
@@ -1451,7 +1470,7 @@ const T = {
         contextTagLabel:'Формулировка Токаева:',
         contextQuote:'«Новый Казахстан»',
         rhetoricCardTitle:'ТРЕКЕР ДАВЛЕНИЯ КАЗАХСТАНА',
-        rhetoricCardDesc:'Многовекторная оценка давления — Поворот от России · Вступление в ЕС · Азербайджанская граница · Иранский транзит · Выборы в июне 2026 · Обновляется каждые 6 ч',
+        rhetoricCardDesc:'Многовекторный сенсор — Целостность хеджа · Средний коридор · Рычаги России · Двойной трек Китая · Триггер янв-2022 · Конвергенция · 6ч',
         loading:'Загрузка…', viewFullTracker:'Посмотреть полный анализ →',
         commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ — КАЗАХСТАН',
         commodityFullLink:'Полный трекер сырья →',
@@ -1500,7 +1519,7 @@ const T = {
         contextTagLabel:'Tokajew-Rahmung:',
         contextQuote:'„Neues Kasachstan“',
         rhetoricCardTitle:'KASACHSTAN-DRUCKTRACKER',
-        rhetoricCardDesc:'Multi-Vektor-Druck-Score — Russland-Pivot · EU-Beitritt · Aserbaidschan-Grenze · Iran-Transit · Wahlen Juni 2026 · Aktualisiert alle 6 h',
+        rhetoricCardDesc:'Multi-Vektor-Sensor — Hedging-Integrität · Mittlerer Korridor · Russland-Hebel · China-Doppelspur · Jan-2022-Auslöser · Konvergenz · 6h',
         loading:'Lade…', viewFullTracker:'Vollständige Druckanalyse anzeigen →',
         commodityTitle:'ROHSTOFF-EXPOSITION — KASACHSTAN',
         commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →',
