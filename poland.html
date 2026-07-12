@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Poland Stability Index v2.0.0 — July 2026 (Gold Standard retrofit: Canon v2 sidebar + drawer, rhetoric shell, commodity card, refugee tracker, financial shell, canonical footer) -->
+<!-- Asifah Analytics - Poland Stability Index v2.1.0 — July 2026 (canonical 4-tile Financial Pulse w/ attrition tile, placed between commodity and refugee cards) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -171,16 +171,44 @@
         [data-theme="light"] .refugee-series-pill { background: #f8fbfe; }
         .refugee-source-tag { font-size: 10px; color: var(--text-muted); font-style: italic; padding-top: 8px; border-top: 1px solid var(--border); }
 
-        /* ── FINANCIAL PULSE CARD (shell — hidden until backend module ships) ── */
-        .financial-card { background: var(--card); border: 2px solid rgba(34,197,94,0.3); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
-        .financial-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .financial-tile { padding: 12px 14px; border-radius: 8px; background: rgba(6,13,26,0.6); border: 1px solid var(--border); }
-        [data-theme="light"] .financial-tile { background: #f8fbfe; }
-        .financial-tile-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
-        .financial-tile-value { font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Courier New', monospace; }
-        .financial-tile-change { font-size: 11px; font-weight: 700; font-family: 'Courier New', monospace; }
-        .financial-tile-change.up { color: #22c55e; }
-        .financial-tile-change.down { color: #ef4444; }
+        /* ═══ CANONICAL FINANCIAL PULSE CARD (Saudi/Nigeria/Russia/Kazakhstan Gold Standard) ═══ */
+        .nyse-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; box-shadow: 0 0 14px rgba(56,189,248,0.06); position: relative; }
+        [data-theme="dark"] .nyse-card { background: linear-gradient(135deg, rgba(13,27,46,0.85), rgba(6,13,26,0.92)); }
+        .nyse-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 12px 12px 0 0; }
+        .nyse-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+        .nyse-card-title { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .nyse-status-pill { background: rgba(56,189,248,0.18); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(56,189,248,0.4); }
+        .nyse-status-pill.market-open        { background: rgba(34,197,94,0.18);   color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed      { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-pre-market  { background: rgba(234,179,8,0.18);   color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-after-hours { background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .nyse-prose { font-size: 0.85rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+        .nyse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        @media (max-width: 1100px) { .nyse-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px)  { .nyse-grid { grid-template-columns: 1fr; } }
+        .nyse-tile { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px; display: flex; flex-direction: column; gap: 7px; position: relative; }
+        [data-theme="dark"] .nyse-tile { background: rgba(6,13,26,0.55); border-color: rgba(56,189,248,0.18); }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+        .nyse-tile.tile-unavailable { border-left: 3px solid #6b7280; opacity: 0.7; }
+        .nyse-tile.tile-throttled   { border-left: 3px solid #eab308; opacity: 0.85; }
+        .nyse-tile-header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+        .nyse-tile-name { font-size: 0.70rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .nyse-tile-ticker { font-size: 0.62rem; color: var(--text-muted); font-family: 'Courier New', monospace; opacity: 0.7; white-space: nowrap; }
+        .nyse-tile-value { font-size: 1.35rem; font-weight: 700; color: var(--text); font-family: 'Courier New', monospace; line-height: 1; }
+        .nyse-tile-change { font-size: 0.82rem; font-weight: 600; font-family: 'Courier New', monospace; }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+        .nyse-tile-spark { height: 30px; margin-top: 3px; }
+        .nyse-tile-spark svg { display: block; width: 100%; height: 30px; }
+        .nyse-tile-meta { font-size: 0.63rem; color: var(--text-muted); font-style: italic; line-height: 1.3; }
+        .nyse-tile-extra { font-size: 0.68rem; color: var(--text-2); padding-top: 5px; margin-top: 3px; border-top: 1px dashed rgba(56,189,248,0.15); font-family: 'Courier New', monospace; line-height: 1.4; }
+        .nyse-tile-extra .attr-label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.58rem; }
+        .nyse-sub-badge { font-size: 0.55rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; background: rgba(234,179,8,0.15); color: #eab308; border: 1px solid rgba(234,179,8,0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+        .nyse-empty-state { text-align: center; padding: 18px; color: var(--text-muted); font-style: italic; grid-column: 1 / -1; }
 
         /* ── MAP ── */
         .map-frame { width: 100%; height: 420px; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
@@ -415,6 +443,19 @@
     <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
 </div>
 
+<!-- CANONICAL FINANCIAL PULSE CARD (v1.0.1 — live, /api/europe/financial/poland) -->
+<div class="nyse-card" id="polandFinancialCard" style="display:none;">
+    <div class="nyse-card-header">
+        <div class="nyse-card-title">📈 <span data-i18n="financialTitle">Poland Financial Pulse</span></div>
+        <span class="nyse-status-pill" id="pulseStatusPill">Loading…</span>
+    </div>
+    <div class="nyse-prose" data-i18n="financialDesc">Four live signals, each answering a different question. <strong>WIG20</strong> is the Warsaw blue-chip index — domestic risk appetite. <strong>USD/PLN</strong> shows zloty FX stress (rising = weaker zloty — INVERTED polarity). The <strong>attrition tile</strong> is the cost of the armament spiral: Poland spends 4.83% of GDP on defence against a 6.3% deficit, and it is debt-financed — so the market's price on that debt is where cost-imposition shows up, whether or not a shot is fired. <strong>Orlen</strong> is the state energy champion — Poland cut Russian gas after 2022 and rebuilt supply via Baltic Pipe and LNG; independence was achieved, and paid for. Updated every 12 hours.</div>
+    <div class="nyse-grid" id="pulseGrid">
+        <div class="nyse-empty-state" data-i18n="pulseLoading">Loading market data…</div>
+    </div>
+    <div id="financialCacheNote" style="margin-top:10px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+</div>
+
 <!-- REFUGEE PRESSURE CARD (sensor — /api/europe/refugees/poland) -->
 <div class="refugee-card" id="polandRefugeeCard">
     <div class="card-title" style="border-bottom-color:rgba(56,189,248,0.25);">🕊️ <span data-i18n="refugeeTitle">REFUGEE PRESSURE — UKRAINE SITUATION</span></div>
@@ -428,14 +469,6 @@
     <div class="refugee-series" id="refugeeSeries"></div>
     <div class="refugee-sowhat" id="refugeeSoWhat" style="display:none;"></div>
     <div class="refugee-source-tag" id="refugeeSourceTag"></div>
-</div>
-
-<!-- FINANCIAL PULSE CARD (shell — hidden until poland_financial_pulse.py ships; contract: /api/europe/financial/poland) -->
-<div class="financial-card" id="polandFinancialCard" style="display:none;">
-    <div class="card-title" style="border-bottom-color:rgba(34,197,94,0.25);color:#22c55e;">📈 <span data-i18n="financialTitle">POLAND FINANCIAL PULSE</span></div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;" data-i18n="financialDesc">WIG20 / EPOL · USD/PLN · Market signal as pressure sensor</div>
-    <div class="financial-grid" id="financialGrid"></div>
-    <div id="financialCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
 </div>
 
 <!-- MAP -->
@@ -966,35 +999,118 @@ async function loadRhetoric() {
 }
 
 /* ── FINANCIAL PULSE (shell — activates when poland_financial_pulse.py ships; contract: /api/europe/financial/poland) ── */
+// ── CANONICAL FINANCIAL PULSE (v1.0.1) ──
+// Renders the 4-tile .nyse-card from the DICT payload emitted by
+// poland_financial_pulse.py (keys: WIG20 / PLNUSD / ATTRITION / ORLEN).
+// The old shell expected an ARRAY with change_pct and bailed silently —
+// which is why it never rendered. Sparklines are inline SVG; no Chart.js.
+function _pulseSpark(sparkline, chg) {
+    const pts = (sparkline || []).map(p => p.value).filter(v => v !== null && v !== undefined);
+    if (pts.length < 2) return '';
+    const min = Math.min(...pts), max = Math.max(...pts);
+    const range = (max - min) || 1;
+    const points = pts.map((v, i) => {
+        const x = (i / (pts.length - 1)) * 100;
+        const y = 100 - ((v - min) / range) * 100;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    return `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${(chg >= 0) ? '#22c55e' : '#ef4444'}" stroke-width="2.5" points="${points}"/></svg>`;
+}
+
 async function loadFinancial() {
+    let d;
     try {
         const r = await fetch(`${API_BASE}/api/europe/financial/poland`);
         if (!r.ok) return;
-        const d = await r.json();
-        const tiles = d.tiles || [];
-        if (!tiles.length) return;
-        const card = document.getElementById('polandFinancialCard');
-        const grid = document.getElementById('financialGrid');
-        grid.innerHTML = tiles.map(t => {
-            const up = (t.change_pct || 0) >= 0;
-            return `<div class="financial-tile">
-                <div class="financial-tile-label">${t.label || ''}</div>
-                <div class="financial-tile-value">${t.value !== undefined && t.value !== null ? t.value : '--'}</div>
-                ${t.change_pct !== undefined && t.change_pct !== null ? `<div class="financial-tile-change ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${t.change_pct.toFixed(2)}%</div>` : ''}
+        d = await r.json();
+    } catch(e) { console.warn('[Poland] Financial pulse fetch failed:', e.message); return; }
+
+    const grid = document.getElementById('pulseGrid');
+    const pill = document.getElementById('pulseStatusPill');
+    const card = document.getElementById('polandFinancialCard');
+    if (!grid || !pill || !card) return;
+
+    const tiles = d.tiles || {};
+    if (!Object.keys(tiles).length) return;
+    card.style.display = 'block';
+
+    const agg = d.market_status || 'closed';
+    pill.className = 'nyse-status-pill market-' + agg;
+    pill.textContent = { open:'Open', closed:'Closed', 'pre-market':'Pre-Market',
+                         'after-hours':'After-Hours' }[agg] || agg;
+
+    const order = ['WIG20', 'PLNUSD', 'ATTRITION', 'ORLEN'];
+    const cards = order.map(key => {
+        const t = tiles[key];
+        if (!t) return '';
+
+        // Absence-honest, and PRECISE about the kind of absence:
+        // "the feed rate-limited us" and "this instrument doesn't exist" are
+        // different facts, and the tile says which.
+        if (t.unavailable || t.value === null || t.value === undefined) {
+            const throttled = t.throttled || t.unavailable_reason === 'rate_limited';
+            return `<div class="nyse-tile ${throttled ? 'tile-throttled' : 'tile-unavailable'}">
+                <div class="nyse-tile-header">
+                    <span class="nyse-tile-name">${t.name || key}</span>
+                    <span class="nyse-tile-ticker">${t.ticker || ''}</span>
+                </div>
+                <div class="nyse-tile-value">${throttled ? '⏳' : 'N/A'}</div>
+                <div class="nyse-tile-change flat">${throttled ? 'rate-limited' : 'no data'}</div>
+                <div class="nyse-tile-meta">${throttled
+                    ? 'Market feed throttled this cycle — retrying. Not a missing instrument.'
+                    : 'Feed unavailable this cycle'}</div>
             </div>`;
-        }).join('');
-        const noteEl = document.getElementById('financialCacheNote');
-        if (noteEl && d.as_of) noteEl.textContent = `As of ${d.as_of}`;
-        card.style.display = 'block';
-    } catch(e) { console.warn('[Poland] Financial pulse fetch failed (expected until module ships):', e.message); }
+        }
+
+        const tier = t.tier || 'stable';
+        const chg = t.change_pct_24h;
+        const chgClass = (chg > 0.05) ? 'up' : (chg < -0.05) ? 'down' : 'flat';
+        const chgStr = (chg !== null && chg !== undefined)
+            ? `${chg >= 0 ? '+' : ''}${Number(chg).toFixed(2)}%` : '--';
+        const val = Number(t.value).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        const suffix = (key === 'PLNUSD') ? ' zł' : (t.is_yield ? '%' : '');
+        const subBadge = t.is_substitute ? ' <span class="nyse-sub-badge">sub</span>' : '';
+
+        // The attrition context rides inline — Poland's answer to Russia's Urals
+        // discount and Kazakhstan's CPC route dependency.
+        let extraBlock = '';
+        if (key === 'ATTRITION' && t.attrition_note) {
+            extraBlock = `<div class="nyse-tile-extra">
+                <span class="attr-label">Cost of the spiral:</span> ${t.attrition_note}
+            </div>`;
+        }
+        return `<div class="nyse-tile tile-${tier}">
+            <div class="nyse-tile-header">
+                <span class="nyse-tile-name">${t.name || key}${subBadge}</span>
+                <span class="nyse-tile-ticker">${t.ticker || ''}</span>
+            </div>
+            <div class="nyse-tile-value">${val}${suffix}</div>
+            <div class="nyse-tile-change ${chgClass}">${chgStr}</div>
+            <div class="nyse-tile-spark">${_pulseSpark(t.sparkline, chg)}</div>
+            <div class="nyse-tile-meta">${t.source || ''}</div>
+            ${extraBlock}
+        </div>`;
+    }).filter(Boolean);
+
+    grid.innerHTML = cards.length ? cards.join('')
+        : '<div class="nyse-empty-state">Market data unavailable this cycle.</div>';
+
+    const noteEl = document.getElementById('financialCacheNote');
+    if (noteEl && d.last_refreshed) {
+        const m = Math.floor((Date.now() - new Date(d.last_refreshed).getTime()) / 60000);
+        const ageStr = m < 60 ? `${m}m ago` : `${Math.floor(m/60)}h ${m%60}m ago`;
+        const rl = d.rate_limited ? ' · feed throttled, retrying' : '';
+        const held = d.cache_status === 'held_last_good' ? ' · holding last known good' : '';
+        noteEl.textContent = `Refreshed ${ageStr} · GPW ${d.gpw_status || '--'} · pulse v${d.version || '--'}${rl}${held}`;
+    }
 }
 
 /* ── i18n (EN/FR/RU/DE — key parity enforced) ── */
 const T = {
-    en: { pageFlag:'POLAND', pageTitle:'POLAND STABILITY INDEX', pageSubtitle:'NATO Eastern Flank · Defense Modernization · Border Security · Refugee Absorption · EU-Poland Dynamics', backLink:'← Back to Europe', cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION', cautionText:'U.S. citizens worldwide should remain vigilant. Monitor local media and enroll in STEP.', viewCaution:'VIEW CAUTION →', advisoryLabel:'U.S. STATE DEPARTMENT — POLAND TRAVEL ADVISORY', advisoryLevel:'LEVEL 2', viewAdvisory:'VIEW ADVISORY →', advisoryText:'Exercise Increased Caution in Poland due to proximity to the Russia-Ukraine war.', rhetoricLabel:'Poland Pressure Tracker — Live', rhetoricLink:'Open Tracker →', commodityTitle:'POLAND COMMODITY EXPOSURE', commodityLinkage:'Strategic Linkage: Poland is the world\'s #2 silver producer (KGHM) and a top-10 copper producer. As the primary overland grain-transit corridor from the war zone, Polish logistics chokepoints couple regional commodity pressure to domestic politics.', commodityFullLink:'View Full Commodity Tracker →', refugeeTitle:'REFUGEE PRESSURE — UKRAINE SITUATION', refugeeDesc:'People displaced from Ukraine currently hosted in Poland · UNHCR + Eurostat · Refreshed daily', financialTitle:'POLAND FINANCIAL PULSE', financialDesc:'WIG20 / EPOL · USD/PLN · Market signal as pressure sensor', mapTitle:'POLAND — STRATEGIC OVERVIEW', mapSubtitle:"NATO's primary eastern frontier — bordering Russia (Kaliningrad), Belarus, Ukraine, and Lithuania.", knowledgeTitle:'KNOWLEDGE LIBRARY', catGovernment:'Government & Political Dynamics', catCohabitation:'Cohabitation & Veto Politics', catMilitary:'Military Modernization & NATO Eastern Flank', catBorder:'Border Security & Belarus Migration Crisis', catEconomy:'Economy & EU Relations', catRefugees:'Ukraine Refugee Integration', catUS:'U.S.-Poland Defense Partnership', articlesTitle:'RECENT POLAND SECURITY & STABILITY ARTICLES', articlesDesc:'NewsAPI + GDELT · Last 7 days' },
-    fr: { pageFlag:'POLOGNE', pageTitle:'INDICE DE STABILITÉ — POLOGNE', pageSubtitle:'Flanc est OTAN · Modernisation militaire · Sécurité frontalière · Absorption des réfugiés · Dynamiques UE-Pologne', backLink:'← Retour à l\'Europe', cautionLabel:'DÉPARTEMENT D\'ÉTAT — MISE EN GARDE MONDIALE', cautionText:'Les citoyens américains doivent rester vigilants.', viewCaution:'VOIR →', advisoryLabel:'DÉPARTEMENT D\'ÉTAT — AVIS POLOGNE', advisoryLevel:'NIVEAU 2', viewAdvisory:'VOIR →', advisoryText:'Précautions renforcées en Pologne en raison de la proximité de la guerre.', rhetoricLabel:'Traqueur de pression — Pologne', rhetoricLink:'Ouvrir →', commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES', commodityLinkage:'Lien stratégique : la Pologne est le 2e producteur mondial d\'argent (KGHM) et un producteur majeur de cuivre. Corridor terrestre principal du transit céréalier depuis la zone de guerre.', commodityFullLink:'Voir le traqueur complet →', refugeeTitle:'PRESSION MIGRATOIRE — SITUATION UKRAINIENNE', refugeeDesc:'Personnes déplacées d\'Ukraine accueillies en Pologne · UNHCR + Eurostat · Actualisé quotidiennement', financialTitle:'POULS FINANCIER — POLOGNE', financialDesc:'WIG20 / EPOL · USD/PLN · Signal de marché comme capteur de pression', mapTitle:'POLOGNE — VUE STRATÉGIQUE', mapSubtitle:'Frontière orientale principale de l\'OTAN.', knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES', catGovernment:'Gouvernement et dynamiques politiques', catCohabitation:'Cohabitation et politique du veto', catMilitary:'Modernisation militaire et flanc est OTAN', catBorder:'Sécurité frontalière et crise migratoire', catEconomy:'Économie et relations UE', catRefugees:'Intégration des réfugiés ukrainiens', catUS:'Partenariat de défense É.-U.-Pologne', articlesTitle:'ARTICLES RÉCENTS — POLOGNE', articlesDesc:'NewsAPI + GDELT · 7 derniers jours' },
-    ru: { pageFlag:'ПОЛЬША', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ ПОЛЬШИ', pageSubtitle:'Восточный фланг НАТО · Модернизация обороны · Безопасность границ · Приём беженцев · Динамика ЕС-Польша', backLink:'← Назад к Европе', cautionLabel:'ГОСДЕПАРТАМЕНТ — МИРОВОЕ ПРЕДУПРЕЖДЕНИЕ', cautionText:'Гражданам США следует сохранять бдительность.', viewCaution:'СМОТРЕТЬ →', advisoryLabel:'ГОСДЕПАРТАМЕНТ — ПРЕДУПРЕЖДЕНИЕ ПО ПОЛЬШЕ', advisoryLevel:'УРОВЕНЬ 2', viewAdvisory:'СМОТРЕТЬ →', advisoryText:'Повышенная осторожность в Польше из-за близости к войне.', rhetoricLabel:'Трекер давления — Польша', rhetoricLink:'Открыть →', commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ ПОЛЬШИ', commodityLinkage:'Стратегическая связь: Польша — 2-й в мире производитель серебра (KGHM) и крупный производитель меди. Главный сухопутный коридор транзита зерна из зоны войны.', commodityFullLink:'Полный трекер сырья →', refugeeTitle:'МИГРАЦИОННОЕ ДАВЛЕНИЕ — УКРАИНСКАЯ СИТУАЦИЯ', refugeeDesc:'Перемещённые лица из Украины в Польше · УВКБ + Евростат · Ежедневное обновление', financialTitle:'ФИНАНСОВЫЙ ПУЛЬС ПОЛЬШИ', financialDesc:'WIG20 / EPOL · USD/PLN · Рыночный сигнал как датчик давления', mapTitle:'ПОЛЬША — СТРАТЕГИЧЕСКИЙ ОБЗОР', mapSubtitle:'Главный восточный рубеж НАТО.', knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ', catGovernment:'Правительство и политическая динамика', catCohabitation:'Сосуществование и политика вето', catMilitary:'Военная модернизация и восточный фланг НАТО', catBorder:'Безопасность границ и миграционный кризис', catEconomy:'Экономика и отношения с ЕС', catRefugees:'Интеграция украинских беженцев', catUS:'Оборонное партнёрство США-Польша', articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О ПОЛЬШЕ', articlesDesc:'NewsAPI + GDELT · Последние 7 дней' },
-    de: { pageFlag:'POLEN', pageTitle:'POLEN-STABILITÄTSINDEX', pageSubtitle:'NATO-Ostflanke · Verteidigungsmodernisierung · Grenzsicherheit · Flüchtlingsaufnahme · EU-Polen-Dynamik', backLink:'← Zurück zu Europa', cautionLabel:'AUSSENMINISTERIUM — WELTWEITE WARNUNG', cautionText:'US-Bürger weltweit sollten wachsam bleiben.', viewCaution:'WARNUNG ANZEIGEN →', advisoryLabel:'AUSSENMINISTERIUM — POLEN-REISEWARNUNG', advisoryLevel:'STUFE 2', viewAdvisory:'WARNUNG ANZEIGEN →', advisoryText:'Erhöhte Vorsicht in Polen wegen der Nähe zum Krieg.', rhetoricLabel:'Druck-Tracker — Polen', rhetoricLink:'Öffnen →', commodityTitle:'ROHSTOFF-EXPOSITION POLENS', commodityLinkage:'Strategische Verbindung: Polen ist der zweitgrößte Silberproduzent der Welt (KGHM) und ein bedeutender Kupferproduzent. Hauptlandkorridor für Getreidetransit aus dem Kriegsgebiet.', commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →', refugeeTitle:'FLÜCHTLINGSDRUCK — UKRAINE-SITUATION', refugeeDesc:'Aus der Ukraine Vertriebene in Polen · UNHCR + Eurostat · Täglich aktualisiert', financialTitle:'FINANZPULS POLEN', financialDesc:'WIG20 / EPOL · USD/PLN · Marktsignal als Drucksensor', mapTitle:'POLEN — STRATEGISCHER ÜBERBLICK', mapSubtitle:'NATO\'s wichtigste Ostgrenze.', knowledgeTitle:'WISSENSBIBLIOTHEK', catGovernment:'Regierung und politische Dynamik', catCohabitation:'Kohabitation und Veto-Politik', catMilitary:'Militärmodernisierung und NATO-Ostflanke', catBorder:'Grenzsicherheit und Belarus-Migrationskrise', catEconomy:'Wirtschaft und EU-Beziehungen', catRefugees:'Integration ukrainischer Flüchtlinge', catUS:'Verteidigungspartnerschaft USA-Polen', articlesTitle:'AKTUELLE ARTIKEL — POLEN', articlesDesc:'NewsAPI + GDELT · Letzte 7 Tage' }
+    en: { pulseLoading:'Loading market data…', pageFlag:'POLAND', pageTitle:'POLAND STABILITY INDEX', pageSubtitle:'NATO Eastern Flank · Defense Modernization · Border Security · Refugee Absorption · EU-Poland Dynamics', backLink:'← Back to Europe', cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION', cautionText:'U.S. citizens worldwide should remain vigilant. Monitor local media and enroll in STEP.', viewCaution:'VIEW CAUTION →', advisoryLabel:'U.S. STATE DEPARTMENT — POLAND TRAVEL ADVISORY', advisoryLevel:'LEVEL 2', viewAdvisory:'VIEW ADVISORY →', advisoryText:'Exercise Increased Caution in Poland due to proximity to the Russia-Ukraine war.', rhetoricLabel:'Poland Pressure Tracker — Live', rhetoricLink:'Open Tracker →', commodityTitle:'POLAND COMMODITY EXPOSURE', commodityLinkage:'Strategic Linkage: Poland is the world\'s #2 silver producer (KGHM) and a top-10 copper producer. As the primary overland grain-transit corridor from the war zone, Polish logistics chokepoints couple regional commodity pressure to domestic politics.', commodityFullLink:'View Full Commodity Tracker →', refugeeTitle:'REFUGEE PRESSURE — UKRAINE SITUATION', refugeeDesc:'People displaced from Ukraine currently hosted in Poland · UNHCR + Eurostat · Refreshed daily', financialTitle:'POLAND FINANCIAL PULSE', financialDesc:'Four live signals. WIG20 = Warsaw blue-chips (domestic risk appetite). USD/PLN = zloty FX stress (INVERTED: rising = weaker zloty). The attrition tile is the cost of the armament spiral — 4.83% of GDP on defence against a 6.3% deficit, debt-financed, so the market prices the cost imposed whether or not a shot is fired. Orlen = energy security after the break with Russian gas: achieved, and paid for.', mapTitle:'POLAND — STRATEGIC OVERVIEW', mapSubtitle:"NATO's primary eastern frontier — bordering Russia (Kaliningrad), Belarus, Ukraine, and Lithuania.", knowledgeTitle:'KNOWLEDGE LIBRARY', catGovernment:'Government & Political Dynamics', catCohabitation:'Cohabitation & Veto Politics', catMilitary:'Military Modernization & NATO Eastern Flank', catBorder:'Border Security & Belarus Migration Crisis', catEconomy:'Economy & EU Relations', catRefugees:'Ukraine Refugee Integration', catUS:'U.S.-Poland Defense Partnership', articlesTitle:'RECENT POLAND SECURITY & STABILITY ARTICLES', articlesDesc:'NewsAPI + GDELT · Last 7 days' },
+    fr: { pulseLoading:'Chargement des données…', pageFlag:'POLOGNE', pageTitle:'INDICE DE STABILITÉ — POLOGNE', pageSubtitle:'Flanc est OTAN · Modernisation militaire · Sécurité frontalière · Absorption des réfugiés · Dynamiques UE-Pologne', backLink:'← Retour à l\'Europe', cautionLabel:'DÉPARTEMENT D\'ÉTAT — MISE EN GARDE MONDIALE', cautionText:'Les citoyens américains doivent rester vigilants.', viewCaution:'VOIR →', advisoryLabel:'DÉPARTEMENT D\'ÉTAT — AVIS POLOGNE', advisoryLevel:'NIVEAU 2', viewAdvisory:'VOIR →', advisoryText:'Précautions renforcées en Pologne en raison de la proximité de la guerre.', rhetoricLabel:'Traqueur de pression — Pologne', rhetoricLink:'Ouvrir →', commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES', commodityLinkage:'Lien stratégique : la Pologne est le 2e producteur mondial d\'argent (KGHM) et un producteur majeur de cuivre. Corridor terrestre principal du transit céréalier depuis la zone de guerre.', commodityFullLink:'Voir le traqueur complet →', refugeeTitle:'PRESSION MIGRATOIRE — SITUATION UKRAINIENNE', refugeeDesc:'Personnes déplacées d\'Ukraine accueillies en Pologne · UNHCR + Eurostat · Actualisé quotidiennement', financialTitle:'POULS FINANCIER — POLOGNE', financialDesc:'Quatre signaux. WIG20 = valeurs vedettes de Varsovie. USD/PLN = tension sur le zloty (INVERSÉ : hausse = zloty plus faible). La tuile d\'attrition mesure le coût de la spirale d\'armement — 4,83% du PIB pour la défense face à un déficit de 6,3%, financé par la dette. Orlen = sécurité énergétique après la rupture avec le gaz russe.', mapTitle:'POLOGNE — VUE STRATÉGIQUE', mapSubtitle:'Frontière orientale principale de l\'OTAN.', knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES', catGovernment:'Gouvernement et dynamiques politiques', catCohabitation:'Cohabitation et politique du veto', catMilitary:'Modernisation militaire et flanc est OTAN', catBorder:'Sécurité frontalière et crise migratoire', catEconomy:'Économie et relations UE', catRefugees:'Intégration des réfugiés ukrainiens', catUS:'Partenariat de défense É.-U.-Pologne', articlesTitle:'ARTICLES RÉCENTS — POLOGNE', articlesDesc:'NewsAPI + GDELT · 7 derniers jours' },
+    ru: { pulseLoading:'Загрузка рыночных данных…', pageFlag:'ПОЛЬША', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ ПОЛЬШИ', pageSubtitle:'Восточный фланг НАТО · Модернизация обороны · Безопасность границ · Приём беженцев · Динамика ЕС-Польша', backLink:'← Назад к Европе', cautionLabel:'ГОСДЕПАРТАМЕНТ — МИРОВОЕ ПРЕДУПРЕЖДЕНИЕ', cautionText:'Гражданам США следует сохранять бдительность.', viewCaution:'СМОТРЕТЬ →', advisoryLabel:'ГОСДЕПАРТАМЕНТ — ПРЕДУПРЕЖДЕНИЕ ПО ПОЛЬШЕ', advisoryLevel:'УРОВЕНЬ 2', viewAdvisory:'СМОТРЕТЬ →', advisoryText:'Повышенная осторожность в Польше из-за близости к войне.', rhetoricLabel:'Трекер давления — Польша', rhetoricLink:'Открыть →', commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ ПОЛЬШИ', commodityLinkage:'Стратегическая связь: Польша — 2-й в мире производитель серебра (KGHM) и крупный производитель меди. Главный сухопутный коридор транзита зерна из зоны войны.', commodityFullLink:'Полный трекер сырья →', refugeeTitle:'МИГРАЦИОННОЕ ДАВЛЕНИЕ — УКРАИНСКАЯ СИТУАЦИЯ', refugeeDesc:'Перемещённые лица из Украины в Польше · УВКБ + Евростат · Ежедневное обновление', financialTitle:'ФИНАНСОВЫЙ ПУЛЬС ПОЛЬШИ', financialDesc:'Четыре сигнала. WIG20 — «голубые фишки» Варшавы. USD/PLN — давление на злотый (ИНВЕРСИЯ: рост = ослабление злотого). Плитка истощения — цена гонки вооружений: 4,83% ВВП на оборону при дефиците 6,3%, в долг. Orlen — энергобезопасность после разрыва с российским газом.', mapTitle:'ПОЛЬША — СТРАТЕГИЧЕСКИЙ ОБЗОР', mapSubtitle:'Главный восточный рубеж НАТО.', knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ', catGovernment:'Правительство и политическая динамика', catCohabitation:'Сосуществование и политика вето', catMilitary:'Военная модернизация и восточный фланг НАТО', catBorder:'Безопасность границ и миграционный кризис', catEconomy:'Экономика и отношения с ЕС', catRefugees:'Интеграция украинских беженцев', catUS:'Оборонное партнёрство США-Польша', articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О ПОЛЬШЕ', articlesDesc:'NewsAPI + GDELT · Последние 7 дней' },
+    de: { pulseLoading:'Marktdaten werden geladen…', pageFlag:'POLEN', pageTitle:'POLEN-STABILITÄTSINDEX', pageSubtitle:'NATO-Ostflanke · Verteidigungsmodernisierung · Grenzsicherheit · Flüchtlingsaufnahme · EU-Polen-Dynamik', backLink:'← Zurück zu Europa', cautionLabel:'AUSSENMINISTERIUM — WELTWEITE WARNUNG', cautionText:'US-Bürger weltweit sollten wachsam bleiben.', viewCaution:'WARNUNG ANZEIGEN →', advisoryLabel:'AUSSENMINISTERIUM — POLEN-REISEWARNUNG', advisoryLevel:'STUFE 2', viewAdvisory:'WARNUNG ANZEIGEN →', advisoryText:'Erhöhte Vorsicht in Polen wegen der Nähe zum Krieg.', rhetoricLabel:'Druck-Tracker — Polen', rhetoricLink:'Öffnen →', commodityTitle:'ROHSTOFF-EXPOSITION POLENS', commodityLinkage:'Strategische Verbindung: Polen ist der zweitgrößte Silberproduzent der Welt (KGHM) und ein bedeutender Kupferproduzent. Hauptlandkorridor für Getreidetransit aus dem Kriegsgebiet.', commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →', refugeeTitle:'FLÜCHTLINGSDRUCK — UKRAINE-SITUATION', refugeeDesc:'Aus der Ukraine Vertriebene in Polen · UNHCR + Eurostat · Täglich aktualisiert', financialTitle:'FINANZPULS POLEN', financialDesc:'Vier Signale. WIG20 = Warschauer Blue Chips. USD/PLN = Zloty-Stress (INVERTIERT: steigend = schwächerer Zloty). Die Attritions-Kachel ist der Preis der Rüstungsspirale — 4,83% des BIP für Verteidigung bei 6,3% Defizit, schuldenfinanziert. Orlen = Energiesicherheit nach dem Bruch mit russischem Gas.', mapTitle:'POLEN — STRATEGISCHER ÜBERBLICK', mapSubtitle:'NATO\'s wichtigste Ostgrenze.', knowledgeTitle:'WISSENSBIBLIOTHEK', catGovernment:'Regierung und politische Dynamik', catCohabitation:'Kohabitation und Veto-Politik', catMilitary:'Militärmodernisierung und NATO-Ostflanke', catBorder:'Grenzsicherheit und Belarus-Migrationskrise', catEconomy:'Wirtschaft und EU-Beziehungen', catRefugees:'Integration ukrainischer Flüchtlinge', catUS:'Verteidigungspartnerschaft USA-Polen', articlesTitle:'AKTUELLE ARTIKEL — POLEN', articlesDesc:'NewsAPI + GDELT · Letzte 7 Tage' }
 };
 function setLang(lang, btn) {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
