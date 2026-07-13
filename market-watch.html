@@ -488,7 +488,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                 <div class="fragility-top">
                     <div>
                         <div class="fragility-title">📊 Conflict Repricing</div>
-                        <div class="fragility-sub">Is informed capital pricing each diplomatic off-ramp as durable? · coherence across four instruments vs the rhetoric off-ramp · updated every 6h</div>
+                        <div class="fragility-sub">Does informed capital price each conflict the way the rhetoric layer describes it? · coherence across four instruments · Israel and Europe read the off-ramp; Korea reads whether the tape still flinches at all · updated every 6h</div>
                     </div>
                 </div>
                 <div class="fragility-frame">
@@ -603,6 +603,11 @@ const _marketState = { fragility: null, repricing: [] };
 const REPRICING_THEATERS = [
     { theater: 'israel',         drill: 'rhetoric-iran.html',    drillLabel: 'Iran rhetoric tracker',    hub: 'rhetoric-index.html',  hubLabel: 'Middle East BLUF' },
     { theater: 'europe_ukraine', drill: 'rhetoric-ukraine.html', drillLabel: 'Ukraine rhetoric tracker', hub: 'rhetoric-europe.html', hubLabel: 'Europe BLUF' },
+    // KOREA (Jul 12 2026) -- the first mode='habituation' theater. The other two ask
+    // whether the market believes a peace; Korea has none to believe (armistice since
+    // 1953), so it asks whether the tape still flinches when Pyongyang shouts.
+    // Reads 'rhetoric_pending' until rhetoric_tracker_dprk.py ships -- honestly.
+    { theater: 'korea',          drill: 'rhetoric-dprk.html',    drillLabel: 'DPRK leverage tracker',    hub: 'rhetoric-asia.html',   hubLabel: 'Asia BLUF' },
 ];
 
 // State -> display label + pill class + headline severity (loudest wins the banner).
@@ -614,6 +619,21 @@ const REPRICE_STATE = {
     calm_repricing:       { label: 'Calm repricing',        cls: 'rs-good', sev: 1 },
     insufficient_data:    { label: 'Insufficient data',     cls: 'rs-mut',  sev: 0 },
     no_read:              { label: 'No off-ramp read',      cls: 'rs-mut',  sev: 0 },
+
+    // ── HABITUATION STATES (Korea) ──
+    // Note the severity on 'numb'. It is deliberately HIGH (4) and it is the one
+    // counter-intuitive number on this page. A tape that does not react to a
+    // nuclear test looks like calm and is scored like alarm, because by the DPRK
+    // tracker's inverted read, a provocation that buys no attention is a
+    // provocation that bought no leverage — and Pyongyang escalates when it is
+    // being negotiated around, not when it is being courted. A numb tape is not
+    // a calm one.
+    numb:                 { label: 'Market numb',           cls: 'rs-bad',  sev: 4 },
+    market_alert:         { label: 'Tape woke up',          cls: 'rs-warn', sev: 3 },
+    partial_flinch:       { label: 'Partial flinch',        cls: 'rs-warn', sev: 2 },
+    unattributed_move:    { label: 'Move not attributable', cls: 'rs-mut',  sev: 1 },
+    quiet:                { label: 'Baseline',              cls: 'rs-good', sev: 0 },
+    rhetoric_pending:     { label: 'Rhetoric feed pending', cls: 'rs-mut',  sev: 0 },
 };
 
 function esc(s){ if(s==null) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
