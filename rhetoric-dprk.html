@@ -807,6 +807,52 @@ const T = {
     };
 
 // ══════════════════════════════════════════════════════════════
+// I18N + THEME  (restored — clipped during the i18n swap)
+// NOTE: localStorage is correct here — this is a live deployed page, not an
+// artifact. Do not swap it for in-memory state.
+// ══════════════════════════════════════════════════════════════
+let currentLang = 'en';
+let currentData = null;
+
+function applyTranslations() {
+    const t = T[currentLang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+            // Preserve child nodes with ids (e.g. lastUpdated wraps a <span>).
+            if (el.children.length === 0) {
+                el.textContent = t[key];
+            } else {
+                const firstText = Array.from(el.childNodes).find(n => n.nodeType === 3);
+                if (firstText) firstText.nodeValue = t[key] + ' ';
+            }
+        }
+    });
+}
+
+function setLang(lang, btn) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    applyTranslations();
+    if (currentData) renderAll(currentData);
+}
+
+function loadTheme() {
+    const saved = localStorage.getItem('asifah-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    const tg = document.getElementById('themeToggle');
+    if (tg) tg.checked = saved === 'light';
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next    = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('asifah-theme', next);
+}
+
+// ══════════════════════════════════════════════════════════════
 // RENDER BANNER — score, badge, scan meta, and the five vector pills
 // ══════════════════════════════════════════════════════════════
 function renderBanner(data) {
@@ -888,6 +934,21 @@ function renderBanner(data) {
         (border.band || 'quiet').toUpperCase()
         + (dm ? ` · ${dm.toUpperCase()}` : ''),
         BD[border.band] || '#6b7280');
+}
+
+// ══════════════════════════════════════════════════════════════
+// DIPLOMATIC TIER  (restored — clipped during the clone)
+// ══════════════════════════════════════════════════════════════
+function dipTier(dt) {
+    const sc = (dt && dt.scenario) || 'No Active Track';
+    const fw = !!(dt && dt.framework_active);
+    if (sc === 'Active Ceasefire Track')
+        return { level: 5, fill: 90, color: '#10b981', label: sc, framework: fw, show: true };
+    if (sc === 'Tentative Diplomatic Signals')
+        return { level: 3, fill: 55, color: '#84cc16', label: sc, framework: fw, show: true };
+    if (sc === 'Limited De-escalation Indicators')
+        return { level: 1, fill: 25, color: '#3b82f6', label: sc, framework: fw, show: true };
+    return { level: 0, fill: 0, color: '#6b7280', label: 'No Active Track', framework: false, show: false };
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1030,6 +1091,53 @@ function renderNuclearAudience(data) {
 // RENDER INTERPRETATION// ══════════════════════════════════════════════════════════════
 // RENDER INTERPRETATION (so_what + red_lines + diplomatic)
 // ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// RENDER ACTORS + level badge  (restored — clipped during the clone)
+// Generic: reads actor_summaries and the OUTBOUND/INBOUND actor arrays.
+// ══════════════════════════════════════════════════════════════
+function levelBadge(level, label) {
+    const lv = lvl(level);
+    return `<span class="level-badge" style="background:${lv.color};">L${level} ${label || lv.label}</span>`;
+}
+
+function renderActors(data) {
+    const actors = data.actor_summaries || data.actors || {};
+    function buildActorHTML(key, panelClass) {
+        const a = actors[key];
+        if (!a) return '';
+        const articles = (a.top_articles || a.articles || []).slice(0, 3);
+        const articlesHTML = articles.map(art => `
+            <div class="article-item">
+                <a href="${art.url || '#'}" target="_blank" class="article-link">${(art.title || '').slice(0, 90)}${art.title?.length > 90 ? '…' : ''}</a>
+                <div class="article-meta">${art.source || ''} · ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
+            </div>`).join('');
+        const score = a.actor_score || a.level || 0;
+        const articleCount = a.article_count || a.statement_count || 0;
+        return `
+            <div class="actor-card ${panelClass}">
+                <div class="actor-header">
+                    <span class="actor-flag">${a.flag || ''}</span>
+                    <div style="flex:1;">
+                        <div class="actor-name">${a.name || key}</div>
+                        <div class="actor-role">${a.role || ''}</div>
+                    </div>
+                    ${levelBadge(score, '')}
+                </div>
+                <div class="actor-stats">
+                    <div class="actor-stat"><span>${articleCount}</span> signals</div>
+                </div>
+                ${articleCount === 0 ? '<div class="silence-alert">⚠️ No signals captured this scan</div>' : ''}
+                ${articlesHTML}
+            </div>`;
+    }
+    document.getElementById('outboundActors').innerHTML =
+        OUTBOUND_ACTORS.map(k => buildActorHTML(k, 'outbound-actor')).join('') ||
+        '<div style="color:var(--text-muted);font-size:0.75rem;padding:10px;">No data</div>';
+    document.getElementById('inboundActors').innerHTML =
+        INBOUND_ACTORS.map(k => buildActorHTML(k, 'inbound-actor')).join('') ||
+        '<div style="color:var(--text-muted);font-size:0.75rem;padding:10px;">No data</div>';
+}
+
 function renderInterpretation(data) {
     // SO WHAT
     const sw = data.so_what;
