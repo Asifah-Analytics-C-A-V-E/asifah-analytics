@@ -526,6 +526,15 @@
             url:        'rhetoric-japan.html',
         },
         {
+            id:         'dprk',
+            name:       'North Korea Leverage Tracker',
+            flag:       '🇰🇵',
+            actors:     'Kim Jong Un · Kim Yo Jong · KCNA/State Media · KPA/Missile Forces · Russia (Patron) · China (Lifeline) · ROK-US (Adversary)',
+            vectors:    ['Leverage Integrity (inverted)', 'Nuclear Signaling', 'Nuclear-Test Tripwire', 'Leadership', 'Expeditionary Footprint', 'Border Dyads'],
+            summaryUrl: API_BASE + '/api/rhetoric/dprk/summary',
+            url:        'rhetoric-dprk.html',
+        },
+        {
             id:         'pakistan',
             name:       'Pakistan South Asia Tracker',
             flag:       '🇵🇰',
@@ -608,6 +617,16 @@
                 const out = data.outbound_score ?? 0;
                 const inb = data.inbound_score ?? 0;
                 scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Outbound ${out}/100 · China SCS Pressure ${inb}/100 · ${data.total_articles ?? 0} articles</span>`;
+            } else if (tracker.id === 'dprk') {
+                // DPRK score line — leverage is INVERTED (low = dangerous), so we
+                // show the leverage STATE, not just a number, plus any live provocation.
+                const lev   = data.leverage_integrity ?? '--';
+                const state = (data.leverage_state || 'unread').toUpperCase();
+                const axes  = [];
+                if (data.provocation_active)  axes.push('🚀');
+                if (data.nuclear_tripwire && data.nuclear_tripwire !== 'QUIET') axes.push('☢️');
+                const axisStr = axes.length ? ' · ' + axes.join(' ') : '';
+                scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Leverage ${lev}/100 · ${state}${axisStr} <span style="opacity:0.7;">(inverted: low = pressure)</span></span>`;
             } else if (tracker.id === 'afghanistan') {
                 const comp = (data.composite_score ?? 0).toFixed(1);
                 const lvl  = (data.composite_level ?? 'low').toUpperCase();
@@ -716,7 +735,7 @@
     const _ASIA_RHET_PAGE = {
         china:'rhetoric-china.html', taiwan:'rhetoric-taiwan.html', japan:'rhetoric-japan.html',
         india:'rhetoric-india.html', pakistan:'rhetoric-pakistan.html', vietnam:'rhetoric-vietnam.html',
-        afghanistan:'rhetoric-afghanistan.html',
+        afghanistan:'rhetoric-afghanistan.html', dprk:'rhetoric-dprk.html',
     };
     const _AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
     function _lvlChip(sig) {
@@ -742,7 +761,8 @@
     function _locName(theatre) {
         const t = String(theatre||'').toLowerCase();
         const map = { china:'China', taiwan:'Taiwan', japan:'Japan', india:'India',
-                      pakistan:'Pakistan', vietnam:'Vietnam', afghanistan:'Afghanistan', regional:'Asia-Pacific' };
+                      pakistan:'Pakistan', vietnam:'Vietnam', afghanistan:'Afghanistan',
+                      dprk:'North Korea', regional:'Asia-Pacific' };
         return map[t] || (t ? t.charAt(0).toUpperCase()+t.slice(1) : 'Asia-Pacific');
     }
     function _splitBody(sig, locName) {
