@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics - Moldova Stability Index v2.2.0 — July 2026 (rhetoric tracker PENDING — banner + detail card are 404-tolerant shells until /api/rhetoric/moldova ships) -->
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moldova Stability Index | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ── ARCTIC / ICE COLOR SCHEME ── */
+        :root {
+            --bg:           #060d1a;
+            --card:         #0d1b2e;
+            --border:       #1e3a5f;
+            --accent:       #38bdf8;
+            --accent-glow:  rgba(56,189,248,0.18);
+            --text:         #e2f0fb;
+            --text-2:       #93c5fd;
+            --text-muted:   #4a7fa5;
+            --red:          #ef4444;
+            --amber:        #f59e0b;
+            --green:        #22c55e;
+            --wm-filter:    saturate(3) brightness(0.8) hue-rotate(185deg);
+        }
+        [data-theme="light"] {
+            --bg:           #f0f5fa;
+            --card:         #ffffff;
+            --border:       #c8daea;
+            --text:         #1a2a3a;
+            --text-2:       #2c4a6e;
+            --text-muted:   #7a9ab8;
+            --wm-filter:    none;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; padding: 20px;
+            position: relative; line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+        body::before {
+            content: ''; position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110vmin; height: 110vmin;
+            min-width: 800px; min-height: 800px;
+            max-width: 1400px; max-height: 1400px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            opacity: 0.22; filter: var(--wm-filter); z-index: 0; pointer-events: none;
+        }
+        [data-theme="light"] body::before { opacity: 0.06; }
+
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* ── LOADING ── */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(6,13,26,0.97); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s, visibility 0.5s; }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-spinner { width: 56px; height: 56px; border: 4px solid rgba(56,189,248,0.2); border-top-color: #38bdf8; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 28px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-title { font-size: 20px; font-weight: 700; color: #38bdf8; margin-bottom: 18px; letter-spacing: 2px; }
+        .loading-step { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px; font-size: 13px; color: var(--text-2); }
+        .loading-step.active { color: #38bdf8; font-weight: 700; }
+        .loading-step.complete { color: #22c55e; }
+        .step-icon { font-size: 15px; min-width: 18px; }
+        .loading-error { color: #f87171; font-size: 13px; margin-top: 14px; padding: 10px 14px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 8px; display: none; }
+
+        /* ── HEADER ── */
+        header { background: linear-gradient(135deg, #060d1a, #0d1b2e); border: 1px solid var(--border); border-radius: 12px; padding: 26px 30px; margin-bottom: 18px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; box-shadow: 0 0 40px rgba(56,189,248,0.07); position: relative; }
+        [data-theme="light"] header { background: linear-gradient(135deg, #1c3a5c, #2a5080); }
+        .header-logo { width: 68px; height: 68px; border-radius: 50%; border: 2px solid rgba(56,189,248,0.35); flex-shrink: 0; }
+        .header-center { flex: 1; text-align: center; }
+        .header-flag { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; }
+        .header-title { font-size: clamp(1.2rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e2f0fb; margin: 4px 0; }
+        .header-subtitle { font-size: 0.73rem; color: var(--text-muted); letter-spacing: 1px; }
+        .header-ts { font-size: 0.63rem; color: var(--text-muted); margin-top: 4px; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3); color: var(--accent); font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: all 0.2s; }
+        .back-link:hover { border-color: var(--accent); background: rgba(56,189,248,0.08); }
+        .lang-group { display: flex; gap: 4px; }
+        .lang-btn { font-family: 'Times New Roman', serif; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 0.68rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .lang-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .theme-row { display: flex; align-items: center; gap: 7px; }
+        .theme-label { font-size: 0.58rem; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+        .theme-toggle { position: relative; width: 44px; height: 22px; cursor: pointer; }
+        .theme-toggle input { opacity: 0; width: 0; height: 0; }
+        .theme-slider { position: absolute; inset: 0; border-radius: 11px; background: var(--border); transition: 0.3s; display: flex; align-items: center; padding: 2px; }
+        .theme-slider::before { content: '☀️'; width: 18px; height: 18px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: 0.3s; }
+        [data-theme="light"] .theme-slider { background: var(--accent); }
+        [data-theme="light"] .theme-slider::before { content: '🌙'; margin-left: 22px; }
+
+        /* ── BANNERS ── */
+        .banner-red { background: linear-gradient(135deg, #1a0000, #2a0000); border: 1px solid rgba(239,68,68,0.5); border-radius: 12px; padding: 15px 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .banner-orange { background: linear-gradient(135deg, #1a0800, #2a1200); border: 1px solid rgba(249,115,22,0.5); border-radius: 12px; padding: 15px 18px; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .level-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: white; }
+
+        /* ── RHETORIC TRACKER BANNER (canonical green pattern) ── */
+        .pl-casualty-banner { display:flex; align-items:center; gap:13px; background:linear-gradient(135deg, rgba(220,38,38,0.12), rgba(13,27,46,0.9)); border:2px solid rgba(239,68,68,0.45); border-radius:10px; padding:13px 18px; margin-bottom:15px; flex-wrap:wrap; }
+        .pl-casualty-banner.cas-breached { border-color:#dc2626; box-shadow:0 0 22px rgba(220,38,38,0.35); animation:plCasPulse 2.2s ease-in-out infinite; }
+        @keyframes plCasPulse { 0%,100% { box-shadow:0 0 16px rgba(220,38,38,0.25); } 50% { box-shadow:0 0 32px rgba(220,38,38,0.55); } }
+        .pl-casualty-banner.cas-elevated { background:linear-gradient(135deg, rgba(245,158,11,0.10), rgba(13,27,46,0.9)); border-color:rgba(245,158,11,0.45); }
+        .pl-cas-pill { padding:3px 10px; border-radius:11px; font-size:9.5px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+        .rhetoric-card { background:var(--card); border:2px solid rgba(34,197,94,0.3); border-radius:12px; padding:20px; margin-bottom:18px; }
+        .rhetoric-level-pill { padding:5px 13px; border-radius:12px; font-size:11px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+        .pl-consensus-block { padding-left:16px; border-left:1px solid var(--border); }
+        .rhetoric-signal-row { font-size:12px; color:var(--text-2); padding:6px 0 6px 9px; line-height:1.45; display:flex; gap:8px; align-items:baseline; }
+        .rhetoric-signal-label { font-size:9.5px; font-weight:800; font-family:'Courier New',monospace; flex-shrink:0; }
+        .rhetoric-actor-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text-2); padding:5px 0; border-bottom:1px solid rgba(56,189,248,0.08); }
+        .rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+        .rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+        .rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+        .rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+
+        /* ── CARDS ── */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: 0 0 6px rgba(30,58,95,0.25); transition: background 0.3s, border-color 0.3s; }
+        .card-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; padding-bottom: 9px; border-bottom: 1px solid var(--border); }
+
+        /* ── COMMODITY CARD (Gold Standard clone) ── */
+        .commodity-card { background: var(--card); border: 2px solid rgba(245,158,11,0.35); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+        .commodity-card-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f59e0b; margin-bottom: 12px; padding-bottom: 9px; border-bottom: 1px solid rgba(245,158,11,0.25); }
+        .commodity-prose { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; }
+        .commodity-alert-banner { display: none; padding: 9px 14px; border-radius: 6px; border-left: 4px solid; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+        .commodity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .commodity-pill { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 8px; background: rgba(6,13,26,0.6); border: 1px solid var(--border); text-decoration: none; transition: all 0.2s; }
+        [data-theme="light"] .commodity-pill { background: #f8fbfe; }
+        .commodity-pill:hover { border-color: rgba(245,158,11,0.5); transform: translateY(-2px); }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert { font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+        .commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+        .commodity-pill-price { font-size: 12px; color: var(--text); font-weight: 600; font-family: 'Courier New', monospace; }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+        .commodity-pill-note { font-size: 11px; color: var(--text-2); line-height: 1.45; margin-top: 4px; }
+        .commodity-top-signals { margin-top: 14px; padding: 10px 14px; background: rgba(6,13,26,0.7); border-radius: 6px; border-left: 3px solid var(--text-muted); font-size: 11px; }
+        [data-theme="light"] .commodity-top-signals { background: #eef4fa; }
+        .commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+        .commodity-top-signals a { color: var(--text-2); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+        .commodity-top-signals a:hover { color: #f59e0b; }
+        .commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+
+        /* ── REFUGEE PRESSURE CARD (sensor) ── */
+        .refugee-card { background: var(--card); border: 2px solid rgba(56,189,248,0.35); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+        .refugee-headline-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+        .refugee-big-number { font-size: 40px; font-weight: 800; letter-spacing: -1px; color: var(--text); }
+        .refugee-trend { font-size: 13px; font-weight: 700; font-family: 'Courier New', monospace; }
+        .refugee-trend.up { color: #f59e0b; }
+        .refugee-trend.down { color: #22c55e; }
+        .refugee-trend.flat { color: var(--text-muted); }
+        .refugee-stale-badge { display: none; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); }
+        .refugee-stale-badge.show { display: inline-block; }
+        .refugee-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+        .refugee-sowhat { font-size: 12px; color: var(--text-2); font-style: italic; line-height: 1.55; padding: 10px 14px; background: rgba(56,189,248,0.05); border-left: 3px solid var(--accent); border-radius: 6px; margin-bottom: 10px; }
+        .refugee-series { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+        .refugee-series-pill { padding: 6px 12px; border-radius: 8px; background: rgba(6,13,26,0.6); border: 1px solid var(--border); font-size: 11px; color: var(--text-2); font-family: 'Courier New', monospace; }
+        [data-theme="light"] .refugee-series-pill { background: #f8fbfe; }
+        /* ── DUAL-READ GRID ── */
+        .dual-read-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 720px) { .dual-read-grid { grid-template-columns: 1fr; } }
+        .dual-read-col { padding: 14px; border: 1px solid rgba(56,189,248,0.18); border-radius: 10px; background: rgba(56,189,248,0.03); }
+        #outflowCol { border-color: rgba(245,158,11,0.22); background: rgba(245,158,11,0.03); }
+        .dual-read-label { font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+        .refugee-source-tag { font-size: 10px; color: var(--text-muted); font-style: italic; padding-top: 8px; border-top: 1px solid var(--border); }
+
+        /* ═══ CANONICAL FINANCIAL PULSE CARD (Saudi/Nigeria/Russia/Kazakhstan Gold Standard) ═══ */
+        .nyse-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; box-shadow: 0 0 14px rgba(56,189,248,0.06); position: relative; }
+        [data-theme="dark"] .nyse-card { background: linear-gradient(135deg, rgba(13,27,46,0.85), rgba(6,13,26,0.92)); }
+        .nyse-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 12px 12px 0 0; }
+        .nyse-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+        .nyse-card-title { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .nyse-status-pill { background: rgba(56,189,248,0.18); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid rgba(56,189,248,0.4); }
+        .nyse-status-pill.market-open        { background: rgba(34,197,94,0.18);   color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .nyse-status-pill.market-closed      { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .nyse-status-pill.market-pre-market  { background: rgba(234,179,8,0.18);   color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .nyse-status-pill.market-after-hours { background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .nyse-prose { font-size: 0.85rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+        .nyse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        @media (max-width: 1100px) { .nyse-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px)  { .nyse-grid { grid-template-columns: 1fr; } }
+        .nyse-tile { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px; display: flex; flex-direction: column; gap: 7px; position: relative; }
+        [data-theme="dark"] .nyse-tile { background: rgba(6,13,26,0.55); border-color: rgba(56,189,248,0.18); }
+        .nyse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .nyse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .nyse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .nyse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+        .nyse-tile.tile-unavailable { border-left: 3px solid #6b7280; opacity: 0.7; }
+        .nyse-tile.tile-throttled   { border-left: 3px solid #eab308; opacity: 0.85; }
+        .nyse-tile-header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+        .nyse-tile-name { font-size: 0.70rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .nyse-tile-ticker { font-size: 0.62rem; color: var(--text-muted); font-family: 'Courier New', monospace; opacity: 0.7; white-space: nowrap; }
+        .nyse-tile-value { font-size: 1.35rem; font-weight: 700; color: var(--text); font-family: 'Courier New', monospace; line-height: 1; }
+        .nyse-tile-change { font-size: 0.82rem; font-weight: 600; font-family: 'Courier New', monospace; }
+        .nyse-tile-change.up   { color: #22c55e; }
+        .nyse-tile-change.down { color: #ef4444; }
+        .nyse-tile-change.flat { color: var(--text-muted); }
+        .nyse-tile-spark { height: 30px; margin-top: 3px; }
+        .nyse-tile-spark svg { display: block; width: 100%; height: 30px; }
+        .nyse-tile-meta { font-size: 0.63rem; color: var(--text-muted); font-style: italic; line-height: 1.3; }
+        .nyse-tile-extra { font-size: 0.68rem; color: var(--text-2); padding-top: 5px; margin-top: 3px; border-top: 1px dashed rgba(56,189,248,0.15); font-family: 'Courier New', monospace; line-height: 1.4; }
+        .nyse-tile-extra .attr-label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.58rem; }
+        .nyse-sub-badge { font-size: 0.55rem; font-weight: 800; padding: 1px 5px; border-radius: 6px; background: rgba(234,179,8,0.15); color: #eab308; border: 1px solid rgba(234,179,8,0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+        .nyse-empty-state { text-align: center; padding: 18px; color: var(--text-muted); font-style: italic; grid-column: 1 / -1; }
+
+        /* ── MAP ── */
+        .map-frame { width: 100%; height: 420px; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+
+        /* ── KNOWLEDGE LIBRARY ── */
+        .knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+        .knowledge-card { background: rgba(6,13,26,0.6); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: all 0.3s; }
+        [data-theme="light"] .knowledge-card { background: #f8fbfe; }
+        .knowledge-card:hover { border-color: rgba(56,189,248,0.35); }
+        .knowledge-header { padding: 14px 17px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(30,58,95,0.2); transition: background 0.3s; }
+        [data-theme="light"] .knowledge-header { background: rgba(56,189,248,0.06); }
+        .knowledge-header:hover { background: rgba(30,58,95,0.32); }
+        .knowledge-header-title { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; color: var(--text); }
+        .collapse-icon { font-size: 14px; color: var(--accent); transition: transform 0.3s; }
+        .knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+        .knowledge-content { padding: 15px 17px; max-height: 520px; overflow-y: auto; transition: max-height 0.3s ease, padding 0.3s; }
+        .knowledge-card.collapsed .knowledge-content { max-height: 0; padding: 0 17px; overflow: hidden; }
+        .knowledge-content p { font-size: 13px; line-height: 1.6; color: var(--text-2); margin-bottom: 9px; }
+        .knowledge-content ul { margin-left: 17px; margin-bottom: 9px; }
+        .knowledge-content li { font-size: 13px; line-height: 1.6; color: var(--text-2); margin-bottom: 5px; }
+        .knowledge-content strong { color: var(--text); }
+        .kl-note { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
+        .report-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 7px; margin-top: 10px; }
+        .report-link { display: inline-flex; align-items: center; gap: 5px; padding: 7px 11px; background: rgba(56,189,248,0.1); color: var(--accent); text-decoration: none; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid rgba(56,189,248,0.22); transition: all 0.2s; }
+        .report-link:hover { background: rgba(56,189,248,0.18); }
+
+        /* ── ARTICLES ── */
+        .article-item { background: rgba(6,13,26,0.6); padding: 13px; border-radius: 8px; margin-bottom: 9px; border-left: 3px solid var(--accent); transition: all 0.2s; }
+        [data-theme="light"] .article-item { background: #f8fbfe; }
+        .article-item:hover { transform: translateX(4px); }
+        .article-title { color: var(--text); font-size: 13px; margin-bottom: 3px; font-weight: 500; line-height: 1.4; }
+        .article-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .article-link { color: var(--accent); text-decoration: none; font-size: 12px; }
+        .article-link:hover { text-decoration: underline; }
+
+        /* ── PAGE WITH SIDEBAR (Canon v2) ── */
+        .page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+        .nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+        .nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+        .nav-btn { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border-radius: 7px; background: rgba(13,27,46,0.6); border: 1px solid rgba(56,189,248,0.18); color: #e2f0fb; font-family: 'Times New Roman', serif; font-weight: 700; font-size: 11px; letter-spacing: 0.3px; text-decoration: none; transition: all 0.2s; overflow: hidden; }
+        [data-theme="light"] .nav-btn { color: var(--text-2); }
+        .nav-btn .nav-btn-label { position: relative; z-index: 2; font-size: 12px; line-height: 1.3; }
+        .nav-btn .nav-btn-status { position: relative; z-index: 2; font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px; opacity: 0.7; color: #38bdf8; }
+        .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); border-color: rgba(56,189,248,0.5); color: #ffffff; box-shadow: 0 0 14px rgba(56,189,248,0.12); }
+        [data-theme="light"] .nav-btn.active-nav { color: var(--text); }
+        .nav-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); border-color: rgba(34,197,94,0.6); color: #ffffff; box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+        [data-theme="light"] .nav-btn.current-page { color: var(--text); }
+        .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+        .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); cursor: default; }
+        [data-theme="light"] .nav-btn.inactive-nav { color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.1); }
+        .nav-btn.inactive-nav .nav-btn-status { color: rgba(255,255,255,0.2); }
+        .nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+        .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+        .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
+        .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+        .main-content { flex: 1; min-width: 0; }
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; background: var(--card); border: 1.5px solid rgba(56,189,248,0.4); border-radius: 8px; width: 44px; height: 44px; font-size: 22px; cursor: pointer; color: var(--accent); align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.25); transition: all 0.2s ease; }
+        .menu-toggle:hover { background: rgba(56,189,248,0.15); transform: scale(1.05); }
+        .menu-toggle:active { transform: scale(0.95); }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); z-index: 150; }
+        @media (max-width: 1199px) {
+            .page-with-sidebar { display: block; }
+            .menu-toggle { display: flex; }
+            .nav-sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100vh; z-index: 180; overflow-y: auto; transition: left 0.25s ease; border-radius: 0; background: var(--card); padding: 60px 14px 20px; border-right: 1px solid var(--border); box-shadow: 2px 0 24px rgba(0,0,0,0.4); }
+            .nav-sidebar.open { left: 0; }
+            .sidebar-backdrop.open { display: block; }
+            body { padding-top: 64px; }
+            .nav-sidebar::before { content: '\2715  Close'; position: absolute; top: 14px; right: 14px; font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: rgba(56,189,248,0.05); }
+        }
+
+        /* ── CANONICAL ASIFAH FOOTER ── */
+        .asifah-footer { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-top: 24px; margin-bottom: 24px; text-align: center; }
+        .asifah-footer-title { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .asifah-footer-backend { font-size: 0.75rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 6px; }
+        .asifah-footer-cadence { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; }
+        .asifah-footer-sources { font-size: 0.78rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+        .asifah-footer-pills { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+        .asifah-footer-pill { padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease; border: 1.5px solid; }
+        .asifah-footer-pill.bmc { background: rgba(251,191,36,0.12); color: #f59e0b; border-color: rgba(251,191,36,0.5); }
+        .asifah-footer-pill.bmc:hover { background: rgba(251,191,36,0.22); transform: translateY(-1px); }
+        .asifah-footer-pill.contact { background: rgba(56,189,248,0.12); color: var(--accent); border-color: rgba(56,189,248,0.5); }
+        .asifah-footer-pill.contact:hover { background: rgba(56,189,248,0.22); transform: translateY(-1px); }
+        .asifah-footer-disclaimer { font-size: 0.7rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+        .asifah-footer-links { display: flex; justify-content: center; gap: 14px; font-size: 0.75rem; flex-wrap: wrap; }
+        .asifah-footer-links a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
+        .asifah-footer-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: center; text-align: center; }
+            .header-right { align-items: center; }
+            .knowledge-categories { grid-template-columns: 1fr; }
+            .refugee-big-number { font-size: 32px; }
+        }
+    </style>
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
+    <script src="resources/asifah-standard-shell.js" defer></script>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div style="text-align:center;">
+        <div class="loading-title">Loading Moldova Stability Data</div>
+        <div>
+            <div class="loading-step active" id="step1"><span class="step-icon">⏳</span> Fetching OSINT articles on Moldova...</div>
+            <div class="loading-step" id="step2"><span class="step-icon">⏳</span> Scanning NATO eastern flank &amp; defense data...</div>
+            <div class="loading-step" id="step3"><span class="step-icon">⏳</span> Loading refugee &amp; commodity pressure feeds...</div>
+            <div class="loading-step" id="step4"><span class="step-icon">⏳</span> Rendering dashboard...</div>
+        </div>
+        <div style="margin-top:18px;font-size:11px;color:var(--text-muted);font-style:italic;">This may take 20–40 seconds...</div>
+        <div class="loading-error" id="loadingError"></div>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- HEADER -->
+<header>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+        <a href="europe.html" class="back-link" data-i18n="backLink">← Back to Europe</a>
+    </div>
+    <div class="header-center">
+        <div class="header-flag">🇲🇩 <span data-i18n="pageFlag">MOLDOVA</span></div>
+        <div class="header-title" data-i18n="pageTitle">MOLDOVA STABILITY INDEX</div>
+        <div class="header-subtitle" data-i18n="pageSubtitle">Russian Interference Frontline · Transnistria · Gagauzia · Energy Blackmail · Refugee Absorption · EU Accession</div>
+        <div class="header-ts">Last updated: <span id="lastUpdated">Loading...</span></div>
+    </div>
+    <div class="header-right">
+        <div class="lang-group">
+            <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+            <button class="lang-btn" onclick="setLang('fr',this)">FR</button>
+            <button class="lang-btn" onclick="setLang('ru',this)">RU</button>
+            <button class="lang-btn" onclick="setLang('de',this)">DE</button>
+        </div>
+        <div class="theme-row">
+            <span class="theme-label">THEME</span>
+            <label class="theme-toggle">
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()"/>
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+</header>
+
+<!-- MOBILE DRAWER TOGGLE -->
+<button class="menu-toggle" id="menuToggle" aria-label="Open navigation" onclick="toggleSidebar()">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<div class="page-with-sidebar">
+
+<!-- CANONICAL NAV SIDEBAR (Canon v2) -->
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label">Moldova</div>
+    <a href="rhetoric-moldova.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇲🇩 Rhetoric Tracker</span><span class="nav-btn-status">◌ Soon</span></a>
+    <a href="moldova.html" class="nav-btn active-nav current-page"><span class="nav-btn-label">🇲🇩 Stability Index</span><span class="nav-btn-status">◉ You are here</span></a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+<!-- WORLDWIDE CAUTION -->
+<div class="banner-red">
+    <div style="font-size:1.6rem;">🏛️</div>
+    <div style="flex:1;">
+        <div style="font-size:0.58rem;font-weight:700;letter-spacing:2px;color:#fca5a5;text-transform:uppercase;" data-i18n="cautionLabel">U.S. STATE DEPARTMENT — WORLDWIDE CAUTION</div>
+        <div style="font-size:0.72rem;color:#fecaca;margin-top:3px;" data-i18n="cautionText">U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in the Smart Traveler Enrollment Program (STEP).</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html" target="_blank" rel="noopener" style="padding:7px 14px;background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.45);border-radius:6px;color:#fca5a5;text-decoration:none;font-size:0.63rem;font-weight:700;white-space:nowrap;" data-i18n="viewCaution">VIEW CAUTION →</a>
+</div>
+
+<!-- MOLDOVA TRAVEL ADVISORY -->
+<div class="banner-orange">
+    <div style="font-size:1.3rem;font-weight:900;color:#fed7aa;">PL</div>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;">
+            <span style="font-size:0.58rem;font-weight:700;letter-spacing:2px;color:#fed7aa;text-transform:uppercase;" data-i18n="advisoryLabel">U.S. STATE DEPARTMENT — MOLDOVA TRAVEL ADVISORY</span>
+            <span class="level-badge" style="background:#f97316;" data-i18n="advisoryLevel">LEVEL 2</span>
+        </div>
+        <div style="font-size:0.72rem;color:#fdba74;" data-i18n="advisoryText"><strong>Exercise Increased Caution</strong> in Moldova due to the proximity to the Russia-Ukraine war. Remain alert to Russian drone and missile incidents near Polish airspace. Monitor official guidance from Polish authorities and U.S. Embassy Chisinau.</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/moldova-travel-advisory.html" target="_blank" rel="noopener" style="padding:7px 14px;background:rgba(249,115,22,0.18);border:1px solid rgba(249,115,22,0.45);border-radius:6px;color:#fed7aa;text-decoration:none;font-size:0.63rem;font-weight:700;white-space:nowrap;" data-i18n="viewAdvisory">VIEW ADVISORY →</a>
+</div>
+
+<!-- MOLDOVA RHETORIC TRACKER BANNER (canonical green shell — hidden until /api/rhetoric/moldova exists) -->
+<div class="rhetoric-banner-canonical" id="rhetoricPressureCard" style="display:none;">
+    <div style="font-size:24px;flex-shrink:0;">📡</div>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;" data-i18n="rhetoricLabel">Moldova Pressure Tracker — Live</span>
+            <span class="rhet-banner-badge" id="rhetoricPill">LOADING</span>
+            <span class="rhet-banner-badge" id="rhetoricScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+        </div>
+        <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="rhetoricHeadline">Loading Moldova pressure assessment...</div>
+        <div style="font-size:11px;color:#a7f3d0;line-height:1.4;margin-top:3px;" id="rhetoricDetail"></div>
+    </div>
+    <a href="rhetoric-moldova.html" class="rhet-banner-link" data-i18n="rhetoricLink">Open Tracker →</a>
+</div>
+
+<!-- ══ CASUALTY TRIPWIRE BANNER — the Black Swan. Hidden at QUIET. ══
+     Sub-threshold deniability is what has made Russia's campaign in Moldova
+     sustainable. A casualty event is where deniability stops being cheap. -->
+<div class="pl-casualty-banner" id="moldovaCasualtyBanner" style="display:none;">
+    <span id="moldovaCasualtyIcon" style="font-size:20px;">⚠️</span>
+    <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:3px;">
+            <span style="font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#fca5a5;" data-i18n="casualtyLabel">Casualty Tripwire</span>
+            <span class="pl-cas-pill" id="moldovaCasualtyPill">--</span>
+        </div>
+        <div style="font-size:11.5px;color:#fecaca;line-height:1.5;" id="moldovaCasualtyBody"></div>
+    </div>
+</div>
+
+<!-- ══ RHETORIC DETAIL CARD (Gold Standard — /api/rhetoric/moldova) ══ -->
+<div class="rhetoric-card" id="moldovaRhetoricCard" style="display:none;">
+    <div class="card-title">📡 <span data-i18n="rhetoricCardTitle">🇲🇩 MOLDOVA CONSENSUS TRACKER</span></div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;" data-i18n="rhetoricCardDesc">Consensus Integrity · Hybrid Tempo (Kinetic/Cyber/Cognitive) · Casualty Tripwire · Ukraine Wedge · Logistics Spine · Cohabitation · Updated every 12h</div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+        <div>
+            <div style="font-size:40px;font-weight:800;line-height:1;color:var(--text);" id="moldovaRhetoricScoreFull">--</div>
+            <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;" data-i18n="pressureLabel">Pressure</div>
+        </div>
+        <div class="pl-consensus-block">
+            <div style="font-size:26px;font-weight:800;line-height:1;" id="moldovaConsensusValue">--</div>
+            <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;" data-i18n="consensusLabel">Consensus Integrity</div>
+        </div>
+        <span class="rhetoric-level-pill" id="moldovaRhetoricLevelLabel">--</span>
+    </div>
+    <div id="moldovaRhetoricSignalList"></div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:10px;font-style:italic;" id="moldovaRhetoricScanInfo"></div>
+    <a href="rhetoric-moldova.html" class="commodity-link" data-i18n="rhetoricFullLink">Open Full Consensus Tracker →</a>
+</div>
+
+<!-- COMMODITY EXPOSURE CARD (Gold Standard clone — /api/europe/commodity/moldova) -->
+<div class="commodity-card" id="moldovaCommodityCard">
+    <div class="commodity-card-title">🛢️ <span data-i18n="commodityTitle">MOLDOVA COMMODITY EXPOSURE</span></div>
+    <div class="commodity-prose" id="commodityProse">Loading exposure profile…</div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11px;color:var(--text-2);line-height:1.55;" data-i18n="commodityLinkage">
+        <strong style="color:#f59e0b;">Strategic Linkage:</strong> Moldova is an acute ENERGY importer — historically ~100% dependent on Russian gas via Moldovagaz, with the Cuciurgan (MGRES) plant in Transnistria supplying most right-bank electricity until the January 2025 end of Russian gas transit through Ukraine. The tariff→inflation→street-protest chain is the most reliable pressure transmission in Moldovan politics, and Moscow pulls it deliberately (energy blackmail). Agriculture (wheat, corn, sunflower) is a net export — a buffer, not a vulnerability.
+    </div>
+    <div style="text-align:center;margin-top:10px;">
+        <a href="commodities.html" style="color:#f59e0b;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
+    </div>
+    <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+</div>
+
+<!-- (No Financial Pulse card: Moldova has no liquid market tape — absence-honesty. Leu/inflation folds into the rhetoric tracker.) -->
+
+<!-- DUAL-READ MIGRATION CARD (sensor — /api/europe/refugees/moldova)
+     Moldova's migration story runs BOTH ways and both are stability facts:
+     INFLOW (Ukrainians hosted) + OUTFLOW (Moldovan emigration + remittance
+     dependency). Bidirectional migration model — Syria/Lebanon/Sudan/Cuba family. -->
+<div class="refugee-card" id="moldovaRefugeeCard">
+    <div class="card-title" style="border-bottom-color:rgba(56,189,248,0.25);">🔀 <span data-i18n="refugeeTitle">MIGRATION PRESSURE — DUAL READ</span>
+        <span class="refugee-stale-badge" id="refugeeStaleBadge">⚠ Tracker Stale</span></div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:16px;" data-i18n="refugeeDesc">Two independent dials · UNHCR + Eurostat + World Bank · Refreshed daily · sensor voice: the dial, not the diagnosis</div>
+
+    <div class="dual-read-grid">
+        <!-- INFLOW: Ukrainians hosted in Moldova -->
+        <div class="dual-read-col" id="inflowCol">
+            <div class="dual-read-label">⬇️ <span data-i18n="inflowLabel">INFLOW · Ukrainians hosted</span></div>
+            <div class="refugee-headline-row">
+                <div class="refugee-big-number" id="inflowHeadline">--</div>
+                <div class="refugee-trend flat" id="inflowTrend"></div>
+            </div>
+            <div class="refugee-meta" id="inflowMeta">Loading…</div>
+            <div class="refugee-series" id="inflowSeries"></div>
+            <div class="refugee-sowhat" id="inflowSoWhat" style="display:none;"></div>
+            <div class="refugee-source-tag" id="inflowSourceTag"></div>
+        </div>
+        <!-- OUTFLOW: Moldovan emigration + remittance dependency -->
+        <div class="dual-read-col" id="outflowCol">
+            <div class="dual-read-label">⬆️ <span data-i18n="outflowLabel">OUTFLOW · Emigration &amp; remittances</span></div>
+            <div class="refugee-headline-row">
+                <div class="refugee-big-number" id="remittanceHeadline">--</div>
+                <div class="refugee-trend flat" id="outflowTrend"></div>
+            </div>
+            <div class="refugee-meta" id="outflowMeta">Loading…</div>
+            <div class="refugee-series" id="outflowSeries"></div>
+            <div class="refugee-sowhat" id="outflowSoWhat" style="display:none;"></div>
+            <div class="refugee-source-tag" id="outflowSourceTag"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MAP -->
+<div class="card">
+    <div class="card-title">🗺️ <span data-i18n="mapTitle">MOLDOVA — STRATEGIC OVERVIEW</span></div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:11px;font-style:italic;" data-i18n="mapSubtitle">Europe's highest-activity Russian-interference target — bordering Ukraine and Romania. The Transnistria breakaway region hosts a Russian garrison (OGRF ~1,500) and the Cobasna ammunition depot; Gagauzia is a second pressure axis.</div>
+    <iframe class="map-frame" title="Moldova map"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=14.1%2C49.0%2C24.2%2C55.0&layer=mapnik&marker=52.23%2C21.01"
+        frameborder="0" scrolling="no">
+    </iframe>
+</div>
+
+<!-- KNOWLEDGE LIBRARY -->
+<div class="card">
+    <div class="card-title">📚 <span data-i18n="knowledgeTitle">KNOWLEDGE LIBRARY</span></div>
+    <p style="font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:14px;">Background information compiled from open-source research, think tank analyses, and public government reporting.</p>
+
+    <div class="knowledge-categories">
+
+        <!-- Government & Politics -->
+        <div class="knowledge-card collapsed" id="card-government">
+            <div class="knowledge-header" onclick="toggleCard('government')">
+                <div class="knowledge-header-title"><span>🏛️</span> <span data-i18n="catGovernment">Government &amp; Political Dynamics</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova is a parliamentary republic in Eastern Europe</strong> with a population of approximately 2.4 million (excluding the breakaway Transnistria region). Landlocked between Ukraine and Romania, it is Europe's highest-activity target of Russian hybrid interference — election meddling, energy blackmail, and the frozen Transnistria conflict where a Russian garrison remains. It is an EU candidate (since June 2022) pursuing accession under President Maia Sandu.</p>
+                <ul>
+                    <li><strong>Government (2023–present):</strong> Prime Minister Donald Tusk leads a coalition government formed in December 2023 after defeating the Law and Justice (PiS) party. The coalition includes Civic Platform (KO), Third Way, and the New Left — united primarily by opposition to PiS's democratic backsliding.</li>
+                    <li><strong>PiS Legacy &amp; Tensions:</strong> The previous PiS government pursued judicial reforms the EU deemed a threat to rule of law, triggering Article 7 proceedings and freezing approximately €36 billion in EU recovery funds. Presidential veto power — first under Andrzej Duda, now under Karol Nawrocki (PiS-backed, inaugurated August 2025) — has repeatedly blocked Tusk government initiatives.</li>
+                    <li><strong>Media &amp; Civil Society:</strong> PiS transformed public media into a state propaganda outlet during its tenure. The Tusk government moved to restore independence to public broadcasting. Civil society organizations remain active and resilient.</li>
+                </ul>
+                <div class="kl-note">* Based on European Commission, Freedom House, Sejm official records, and Politico Europe</div>
+                <div class="report-links-grid">
+                    <a href="https://www.sejm.gov.pl/english.html" target="_blank" class="report-link">📑 Sejm (Parliament)</a>
+                    <a href="https://freedomhouse.org/country/moldova" target="_blank" class="report-link">📑 Freedom House</a>
+                    <a href="https://ec.europa.eu/commission/presscorner/home/en" target="_blank" class="report-link">📑 EU Commission</a>
+                    <a href="https://www.amnesty.org/en/location/europe-and-central-asia/moldova/" target="_blank" class="report-link">📑 Amnesty</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cohabitation & Veto Politics (NEW) -->
+        <div class="knowledge-card collapsed" id="card-cohabitation">
+            <div class="knowledge-header" onclick="toggleCard('cohabitation')">
+                <div class="knowledge-header-title"><span>🗳️</span> <span data-i18n="catCohabitation">Cohabitation &amp; Veto Politics</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova is governed under "cohabitation"</strong> — a pro-EU coalition government under Prime Minister Tusk facing an opposition-aligned presidency under Karol Nawrocki (PiS-backed, inaugurated August 2025). The structural friction between the two is the central dynamic of Polish domestic politics and a standing drag on the government's legislative agenda.</p>
+                <ul>
+                    <li><strong>The Veto Arithmetic:</strong> The Polish president can veto legislation, and overriding requires a three-fifths Sejm majority the Tusk coalition does not hold. This gives the presidency an effective blocking position on contested legislation — judicial reform, media governance, and social policy bills have all stalled at the presidential desk.</li>
+                    <li><strong>Judicial Reform Deadlock:</strong> Restoring rule-of-law standards (the condition for full EU fund flows) requires legislation the presidency is structurally positioned to block — leaving the government to rely on workarounds of contested legality.</li>
+                    <li><strong>Foreign Policy Friction:</strong> The president is commander-in-chief and holds treaty-ratification and nomination levers. Cohabitation friction extends to ambassadorial appointments and NATO/EU summit representation — a two-voices problem allies have learned to navigate.</li>
+                    <li><strong>What It Means for Stability:</strong> Cohabitation is institutional gridlock, not instability — Polish democracy is functioning, loudly. The signal to watch is whether friction migrates from legislative blocking into constitutional confrontation (refusals to swear in officials, dueling legal authorities), which historically precedes deeper institutional crisis.</li>
+                    <li><strong>Horizon:</strong> The next parliamentary elections (due 2027) are the release valve — until then, expect governance by decree-adjacent instruments, EU-level workarounds, and high-volume political theater.</li>
+                </ul>
+                <div class="kl-note">* Based on Sejm records, President.pl, OSW Centre for Eastern Studies, and Politico Europe</div>
+                <div class="report-links-grid">
+                    <a href="https://www.president.pl/" target="_blank" class="report-link">📑 President of Moldova</a>
+                    <a href="https://www.sejm.gov.pl/english.html" target="_blank" class="report-link">📑 Sejm</a>
+                    <a href="https://www.osw.waw.pl/en" target="_blank" class="report-link">📑 OSW Eastern Studies</a>
+                    <a href="https://www.politico.eu/" target="_blank" class="report-link">📑 Politico Europe</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Military & NATO -->
+        <div class="knowledge-card collapsed" id="card-military">
+            <div class="knowledge-header" onclick="toggleCard('military')">
+                <div class="knowledge-header-title"><span>⚔️</span> <span data-i18n="catMilitary">Military Modernization &amp; NATO Eastern Flank</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova is undertaking the most ambitious military modernization in Europe</strong>, driven by proximity to Russia and the Ukraine war. It is on track to field the largest conventional ground force in the EU.</p>
+                <ul>
+                    <li><strong>Defense Spending:</strong> Moldova committed to spending 4% of GDP on defense — the highest in NATO. Total defense budget exceeds $35 billion annually.</li>
+                    <li><strong>Troop Strength:</strong> Aiming to expand armed forces from ~150,000 to 300,000 active-duty — potentially the largest land army in the EU.</li>
+                    <li><strong>NATO Forward Presence:</strong> Moldova hosts the V Corps forward HQ, rotational U.S. armored brigades, and the NATO Force Integration Unit.</li>
+                    <li><strong>Transnistria:</strong> The breakaway region east of the Dniester hosts the Russian Operational Group of Forces (~1,500 troops) and the Cobasna depot (~20,000 tons of Soviet-era munitions, 2km from Ukraine) — the single largest in Eastern Europe.</li>
+                    <li><strong>Aegis Ashore Redzikowo:</strong> U.S. ballistic missile defense installation — operational since 2024 — provides BMD coverage for NATO's eastern flank.</li>
+                    <li><strong>Arms Procurement:</strong> Abrams tanks, Apaches, HIMARS, Patriot, F-35s — one of the largest FMS portfolios in Europe, exceeding $30 billion committed.</li>
+                </ul>
+                <div class="kl-note">* Based on Polish MOD, IISS Military Balance, CSIS, and NATO official statements</div>
+                <div class="report-links-grid">
+                    <a href="https://www.gov.pl/web/national-defence" target="_blank" class="report-link">📑 Polish MOD</a>
+                    <a href="https://www.iiss.org/" target="_blank" class="report-link">📑 IISS</a>
+                    <a href="https://www.nato.int/cps/en/natohq/topics_136388.htm" target="_blank" class="report-link">📑 NATO Enhanced FP</a>
+                    <a href="https://www.csis.org/" target="_blank" class="report-link">📑 CSIS</a>
+                    <a href="https://www.rand.org/" target="_blank" class="report-link">📑 RAND</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Border Security -->
+        <div class="knowledge-card collapsed" id="card-border">
+            <div class="knowledge-header" onclick="toggleCard('border')">
+                <div class="knowledge-header-title"><span>🛡️</span> <span data-i18n="catBorder">Border Security &amp; Belarus Migration Crisis</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova's eastern border is simultaneously the EU's external frontier and a NATO boundary</strong>. Since 2021, Belarus (under Lukashenko, with Russian backing) has weaponized migration flows as hybrid warfare.</p>
+                <ul>
+                    <li><strong>Belarus Hybrid Campaign:</strong> The Lukashenko regime deliberately facilitated transport of migrants to the Polish-Belarusian border, creating a humanitarian and security crisis beginning 2021.</li>
+                    <li><strong>Border Wall:</strong> Moldova constructed a 186-km steel barrier along the Belarus border (completed mid-2022), approximately €350 million, including surveillance systems and thermal cameras.</li>
+                    <li><strong>Pushback Controversy:</strong> Human rights organizations documented systematic pushbacks of asylum seekers, including cases where individuals were denied access to asylum procedures in dangerous conditions. Multiple deaths were reported in the border forest zone.</li>
+                    <li><strong>Ukraine Border:</strong> The Polish-Ukrainian border became Europe's largest refugee corridor in 2022 — over 1.5 million Ukrainians initially hosted in Moldova.</li>
+                </ul>
+                <div class="kl-note">* Based on Frontex, UNHCR, Amnesty International, Human Rights Watch</div>
+                <div class="report-links-grid">
+                    <a href="https://www.amnesty.org/en/" target="_blank" class="report-link">📑 Amnesty International</a>
+                    <a href="https://www.hrw.org/europe/central-asia/moldova" target="_blank" class="report-link">📑 Human Rights Watch</a>
+                    <a href="https://www.unhcr.org/" target="_blank" class="report-link">📑 UNHCR</a>
+                    <a href="https://frontex.europa.eu/" target="_blank" class="report-link">📑 Frontex</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Economy & EU -->
+        <div class="knowledge-card collapsed" id="card-economy">
+            <div class="knowledge-header" onclick="toggleCard('economy')">
+                <div class="knowledge-header-title"><span>📊</span> <span data-i18n="catEconomy">Economy &amp; EU Relations</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova has been Europe's economic success story</strong> — the only EU member state to avoid recession during the 2008 financial crisis and one of the fastest-growing economies in the bloc for three decades. GDP has more than tripled since EU accession in 2004.</p>
+                <ul>
+                    <li><strong>GDP:</strong> ~$750 billion (PPP) — EU's 6th-largest economy. Per capita income has risen from 49% of EU average at accession to over 80%.</li>
+                    <li><strong>EU Funds:</strong> Moldova is the largest net recipient of EU structural funds. Frozen €36B in recovery funds under PiS progressively unlocked under Tusk as rule-of-law conditions are addressed.</li>
+                    <li><strong>Energy Transition:</strong> ~70% of electricity from coal — an outlier in EU climate policy. LNG terminals, nuclear power plans (~2033–2035, Westinghouse), and growing renewable capacity underway.</li>
+                    <li><strong>Labor Market:</strong> Very low unemployment (~5%), growing labor shortages partially offset by Ukrainian refugee workforce integration.</li>
+                </ul>
+                <div class="kl-note">* Based on European Commission, World Bank, IMF, and NBP reporting</div>
+                <div class="report-links-grid">
+                    <a href="https://www.worldbank.org/en/country/moldova" target="_blank" class="report-link">📑 World Bank</a>
+                    <a href="https://www.imf.org/en/Countries/POL" target="_blank" class="report-link">📑 IMF — Moldova</a>
+                    <a href="https://www.nbp.pl/homen.aspx" target="_blank" class="report-link">📑 NBP Central Bank</a>
+                    <a href="https://ec.europa.eu/" target="_blank" class="report-link">📑 EU Commission</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ukraine Refugees -->
+        <div class="knowledge-card collapsed" id="card-refugees">
+            <div class="knowledge-header" onclick="toggleCard('refugees')">
+                <div class="knowledge-header-title"><span>🕊️</span> <span data-i18n="catRefugees">Ukraine Refugee Integration</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova has hosted the largest number of Ukrainian refugees in Europe</strong> — the largest refugee intake by any single European country since World War II. Current figures are tracked live in the Refugee Pressure card above (UNHCR + Eurostat).</p>
+                <ul>
+                    <li><strong>EU Temporary Protection:</strong> Ukrainian refugees received automatic temporary protection — granting work permits, healthcare, and school enrollment. Moldova's implementation was swift.</li>
+                    <li><strong>Labor Integration:</strong> A significant majority of working-age Ukrainian refugees found employment in construction, logistics, healthcare, and services — partially offsetting fiscal hosting costs.</li>
+                    <li><strong>Social Tensions:</strong> Initial solidarity has been tested by competition for housing, public services, and social benefits. Far-right parties have sought to exploit refugee fatigue.</li>
+                    <li><strong>Historical Context:</strong> The Polish-Ukrainian relationship carries deep historical complexity, including the Volhynia massacres of WWII. Despite this, wartime solidarity has generally strengthened bilateral relations.</li>
+                </ul>
+                <div class="kl-note">* Based on UNHCR, IOM, Polish Office for Foreigners, and OSW Centre for Eastern Studies</div>
+                <div class="report-links-grid">
+                    <a href="https://www.unhcr.org/emergencies/ukraine-emergency" target="_blank" class="report-link">📑 UNHCR Ukraine</a>
+                    <a href="https://www.iom.int/" target="_blank" class="report-link">📑 IOM</a>
+                    <a href="https://www.osw.waw.pl/en" target="_blank" class="report-link">📑 OSW Eastern Studies</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- U.S.-Moldova Defense -->
+        <div class="knowledge-card collapsed" id="card-us">
+            <div class="knowledge-header" onclick="toggleCard('us')">
+                <div class="knowledge-header-title"><span>🤝</span> <span data-i18n="catUS">U.S.-Moldova Defense Partnership</span></div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="knowledge-content">
+                <p><strong>Moldova has become the United States' most important bilateral defense partner in continental Europe</strong> — a transformation driven by Russia's invasion of Ukraine and Moldova's massive defense spending.</p>
+                <ul>
+                    <li><strong>U.S. Force Posture:</strong> ~10,000 U.S. troops permanently or rotationally based in Moldova — the largest sustained U.S. military presence in Central-Eastern Europe. Includes V Corps forward HQ in Poznań.</li>
+                    <li><strong>EDCA:</strong> The 2020 Enhanced Defense Cooperation Agreement formalized expanded U.S. presence — establishing division-level HQ, rotational forces, and infrastructure investments.</li>
+                    <li><strong>Arms Sales:</strong> Moldova's FMS portfolio: Abrams, Apaches, HIMARS, Patriot, F-35s. Total committed value exceeds $30 billion.</li>
+                    <li><strong>Ukraine Support Hub:</strong> Moldova serves as the primary corridor for Western military equipment into Ukraine — a massive logistics operation through rail, road, and air corridors.</li>
+                </ul>
+                <div class="kl-note">* Based on U.S. DoD, State Department, DSCA, CRS, and Polish MOD</div>
+                <div class="report-links-grid">
+                    <a href="https://www.state.gov/u-s-relations-with-moldova/" target="_blank" class="report-link">📑 State Dept — Moldova</a>
+                    <a href="https://www.dsca.mil/" target="_blank" class="report-link">📑 DSCA Arms Sales</a>
+                    <a href="https://www.eucom.mil/" target="_blank" class="report-link">📑 EUCOM</a>
+                    <a href="https://www.atlanticcouncil.org/" target="_blank" class="report-link">📑 Atlantic Council</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ARTICLES -->
+<div class="card">
+    <div class="card-title">📰 <span data-i18n="articlesTitle">RECENT MOLDOVA SECURITY &amp; STABILITY ARTICLES</span></div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:11px;" data-i18n="articlesDesc">NewsAPI + GDELT · Last 7 days</div>
+    <div id="articlesContainer">
+        <div style="text-align:center;color:var(--text-muted);padding:26px;font-style:italic;">Loading articles...</div>
+    </div>
+</div>
+
+</div><!-- /main-content -->
+</div><!-- /page-with-sidebar -->
+
+<!-- CANONICAL ASIFAH FOOTER -->
+<footer class="asifah-footer">
+    <div class="asifah-footer-title">Asifah Analytics &mdash; Moldova Module</div>
+    <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/europe/refugees/moldova</div>
+    <div class="asifah-footer-cadence">Daily refugee refresh &middot; 12-hour commodity cycle &middot; Last update timestamp above</div>
+    <div class="asifah-footer-sources">UNHCR Refugee Data Finder &middot; Eurostat &middot; Europe Article Gatherer (GDELT + NewsAPI + RSS + Reddit) &middot; travel.state.gov &middot; Polish MOD &middot; OSW &middot; NATO</div>
+    <div class="asifah-footer-pills">
+        <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" class="asifah-footer-pill contact">✉️ Contact Asifah</a>
+    </div>
+    <div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. All scoring and assessments are convergence indicators based on publicly observable signals &mdash; not predictions of action. Not for operational use.</div>
+    <div class="asifah-footer-links">
+        <a href="mission.html">Mission Statement</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="index.html">Home</a>
+    </div>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+const API_BASE = 'https://asifa-europe-backend.onrender.com';
+
+function initTheme() {
+    const s = localStorage.getItem('asifah-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', s);
+    document.getElementById('themeToggle').checked = (s === 'light');
+}
+function toggleTheme() {
+    const n = document.getElementById('themeToggle').checked ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', n);
+    localStorage.setItem('asifah-theme', n);
+}
+initTheme();
+
+/* ── Mobile drawer (canonical) ── */
+function toggleSidebar(){const sb=document.getElementById('navSidebar');const bd=document.getElementById('sidebarBackdrop');if(sb&&bd){sb.classList.toggle('open');bd.classList.toggle('open');}}
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){const sb=document.getElementById('navSidebar');if(sb&&sb.classList.contains('open'))toggleSidebar();}});
+
+function toggleCard(id) { const c = document.getElementById('card-' + id); if (c) c.classList.toggle('collapsed'); }
+
+let _step = 0, _loadInt = null;
+function startLoading() {
+    const steps = ['step1','step2','step3','step4'];
+    _loadInt = setInterval(() => {
+        if (_step < steps.length - 1) {
+            const c = document.getElementById(steps[_step]);
+            if (c) { c.classList.remove('active'); c.classList.add('complete'); c.querySelector('.step-icon').textContent = '✓'; }
+            _step++;
+            const n = document.getElementById(steps[_step]);
+            if (n) n.classList.add('active');
+        }
+    }, 4000);
+}
+function hideLoading() {
+    if (_loadInt) clearInterval(_loadInt);
+    document.querySelectorAll('.loading-step').forEach(s => { s.classList.remove('active'); s.classList.add('complete'); s.querySelector('.step-icon').textContent = '✓'; });
+    setTimeout(() => { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('hidden'); }, 500);
+}
+
+/* ── ARTICLES ── */
+async function loadArticles() {
+    try {
+        // LEDGER FIX (Jul 12 2026): /api/europe/articles/moldova does not exist.
+        // The threat endpoint is the real source, and it keys articles as articles_en.
+        const r = await fetch(`${API_BASE}/api/europe/threat/moldova`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        const articles = d.articles_en || d.articles || d.recent_headlines || [];
+        if (articles.length > 0) { displayArticles(articles); } else { displayFallback(); }
+    } catch(e) {
+        console.warn('[Moldova] Articles failed:', e.message);
+        displayFallback();
+    } finally {
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+    }
+}
+function displayArticles(articles) {
+    const c = document.getElementById('articlesContainer');
+    c.innerHTML = articles.slice(0, 20).map(a => {
+        const title = a.title || 'Untitled';
+        const source = typeof a.source === 'object' ? (a.source?.name || '') : (a.source || '');
+        const pub = a.published || a.publishedAt || '';
+        const url = a.url || '#';
+        const desc = a.description || '';
+        let ds = '';
+        if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds = pub; } }
+        return `<div class="article-item">
+            <div class="article-title">${title}</div>
+            ${desc ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${desc.substring(0,180)}${desc.length>180?'...':''}</div>` : ''}
+            <div class="article-meta">${source}${ds?' · '+ds:''}</div>
+            ${url !== '#' ? `<a href="${url}" target="_blank" class="article-link">Read article →</a>` : ''}
+        </div>`;
+    }).join('');
+}
+function displayFallback() {
+    document.getElementById('articlesContainer').innerHTML =
+        '<div style="text-align:center;padding:22px;color:var(--text-muted);"><p style="font-size:14px;margin-bottom:10px;">📡 Live article feed loading. Check these sources:</p>' +
+        '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:10px;">' +
+        ['Notes from Moldova|https://notesfrommoldova.com/','OSW|https://www.osw.waw.pl/en','Reuters Europe|https://www.reuters.com/world/europe/']
+            .map(s => { const [l,u] = s.split('|'); return `<a href="${u}" target="_blank" style="padding:7px 14px;background:rgba(56,189,248,0.14);color:#38bdf8;border-radius:6px;text-decoration:none;font-size:12px;font-weight:700;border:1px solid rgba(56,189,248,0.28);">${l}</a>`; })
+            .join('') +
+        '</div></div>';
+}
+
+/* ── COMMODITY EXPOSURE (Gold Standard clone — Europe proxy) ── */
+async function loadCommodity() {
+    const COUNTRY_KEY = 'moldova';
+    const card = document.getElementById('moldovaCommodityCard');
+    if (!card) return;
+
+    let data;
+    try {
+        const r = await fetch(`${API_BASE}/api/europe/commodity/${COUNTRY_KEY}`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        data = await r.json();
+    } catch (e) {
+        console.warn('[Moldova Commodity] Fetch failed:', e.message);
+        const proseEl = document.getElementById('commodityProse');
+        if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+        return;
+    }
+
+    document.getElementById('commodityProse').textContent =
+        data.prose || 'No exposure profile available.';
+
+    const banner = document.getElementById('commodityAlertBanner');
+    const alertLevel = (data.alert_level || 'normal').toLowerCase();
+    const alertLabels = {
+        normal:   '✓ NO ACTIVE COMMODITY PRESSURE',
+        elevated: '◐ ELEVATED COMMODITY PRESSURE',
+        high:     '▲ HIGH COMMODITY PRESSURE',
+        surge:    '🚨 COMMODITY PRESSURE SURGE'
+    };
+    const pressure = (data.commodity_pressure || 0);
+    banner.className = `commodity-alert-banner alert-${alertLevel} show`;
+    banner.innerHTML = `
+        <strong>${alertLabels[alertLevel] || alertLabels.normal}</strong>
+        <span class="ab-meta">Pressure score: ${pressure.toFixed(1)} · ${data.commodity_summaries?.length || 0} exposures tracked${data.has_live_data ? '' : ' · awaiting live signals'}</span>
+    `;
+
+    const grid = document.getElementById('commodityGrid');
+    grid.innerHTML = '';
+    (data.commodity_summaries || []).forEach(c => {
+        const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
+        const role = (c.role || 'producer').toLowerCase();
+        const rankText = c.rank ? `#${c.rank} globally` : '';
+        const signalText = c.signal_count > 0 ? `${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}` : '';
+
+        let sparklineHtml = '';
+        let priceHtml = '';
+        if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+            const spark = c.sparkline.spark;
+            const min = Math.min(...spark);
+            const max = Math.max(...spark);
+            const range = max - min || 1;
+            const points = spark.map((v, i) => {
+                const x = (i / (spark.length - 1)) * 100;
+                const y = 100 - ((v - min) / range) * 100;
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(' ');
+            const pctChange = c.sparkline.change_pct_30d || 0;
+            const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
+            sparklineHtml = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sparkColor}" stroke-width="2" points="${points}"/></svg>`;
+            const priceClass = pctChange >= 0 ? 'price-up' : 'price-down';
+            const arrow = pctChange >= 0 ? '▲' : '▼';
+            priceHtml = `<div class="commodity-pill-price">$${c.sparkline.price?.toFixed(2) || '--'} <span class="${priceClass}">${arrow} ${pctChange.toFixed(2)}% (30d)</span></div>`;
+        }
+
+        const tile = document.createElement('a');
+        tile.className = 'commodity-pill';
+        tile.href = `commodities.html#${c.commodity}`;
+        tile.innerHTML = `
+            <div class="commodity-pill-header">
+                <div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                <div style="flex:1;">
+                    <div class="commodity-pill-name">${c.name || c.commodity}</div>
+                    ${rankText ? `<div class="commodity-pill-rank">${rankText}</div>` : ''}
+                </div>
+            </div>
+            <div class="commodity-pill-row">
+                <span class="commodity-pill-alert commodity-alert-${globalAlert}">${globalAlert}</span>
+                <span class="commodity-pill-role-badge">${role}</span>
+                ${signalText ? `<span class="commodity-pill-signal-count">${signalText}</span>` : ''}
+            </div>
+            ${priceHtml}
+            ${sparklineHtml}
+            ${c.note ? `<div class="commodity-pill-note">${c.note.slice(0, 180)}${c.note.length > 180 ? '…' : ''}</div>` : ''}
+        `;
+        grid.appendChild(tile);
+    });
+
+    const tsEl = document.getElementById('commodityTopSignals');
+    const topSignals = data.top_signals || [];
+    if (topSignals.length > 0) {
+        const items = topSignals.slice(0, 3).map(s => `
+            <a href="${s.article_url}" target="_blank" rel="noopener">
+                ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
+                <span class="ts-source">— ${s.source}</span>
+            </a>
+        `).join('');
+        tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
+        tsEl.style.display = 'block';
+    } else {
+        tsEl.style.display = 'none';
+    }
+
+    const cacheStatus = data.cache_status || 'unknown';
+    const cachedAt = data.proxy_cached_at || data.last_updated;
+    let cacheText = '';
+    if (cachedAt) {
+        const ageMin = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000);
+        cacheText = `Cache: ${cacheStatus} · ${ageMin < 60 ? ageMin + 'm' : Math.floor(ageMin/60) + 'h ' + (ageMin%60) + 'm'} ago`;
+    }
+    const cacheEl = document.getElementById('commodityCacheNote');
+    if (cacheEl) cacheEl.textContent = cacheText;
+}
+
+/* ── REFUGEE PRESSURE (sensor — absence-honest rendering) ── */
+async function loadRefugees() {
+    const card = document.getElementById('moldovaRefugeeCard');
+    if (!card) return;
+    let d;
+    try {
+        const r = await fetch(`${API_BASE}/api/europe/refugees/moldova`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        d = await r.json();
+    } catch (e) {
+        console.warn('[Moldova Refugees] Fetch failed:', e.message);
+        document.getElementById('inflowMeta').textContent = 'Migration tracker temporarily unavailable — endpoint may still be deploying.';
+        document.getElementById('outflowMeta').textContent = '';
+        return;
+    }
+
+    const staleEl = document.getElementById('refugeeStaleBadge');
+    if (d.stale) staleEl.classList.add('show'); else staleEl.classList.remove('show');
+
+    const fmt = n => (n || 0).toLocaleString('en-US');
+    const trendText = (t) => {
+        if (!t || t.delta === null || t.delta === undefined || !t.basis) return ['', 'flat'];
+        const arrow = t.direction === 'rising' ? '▲' : (t.direction === 'falling' ? '▼' : '◆');
+        const cls = t.direction === 'rising' ? 'up' : (t.direction === 'falling' ? 'down' : 'flat');
+        const pct = (t.delta_pct !== null && t.delta_pct !== undefined) ? ` (${t.delta_pct > 0 ? '+' : ''}${t.delta_pct}%)` : '';
+        return [`${arrow} ${t.delta > 0 ? '+' : ''}${fmt(t.delta)}${pct} ${t.basis}`, cls];
+    };
+
+    // ── INFLOW (Ukrainians hosted) ──
+    const inflow = d.inflow;
+    if (inflow && inflow.headline) {
+        document.getElementById('inflowHeadline').textContent = fmt(inflow.headline.value);
+        document.getElementById('inflowMeta').textContent = `Data as of ${inflow.headline.data_as_of || '--'}`;
+        const [txt, cls] = trendText(inflow.trend);
+        const iTrend = document.getElementById('inflowTrend');
+        iTrend.textContent = txt; iTrend.className = `refugee-trend ${cls}`;
+        const sEl = document.getElementById('inflowSeries'); sEl.innerHTML = '';
+        (inflow.annual_series || []).slice(-4).forEach(row => {
+            const pill = document.createElement('div');
+            pill.className = 'refugee-series-pill';
+            pill.textContent = `${row.year}: ${fmt(row.total)}`;
+            sEl.appendChild(pill);
+        });
+        if (d.so_what && d.so_what.inflow) {
+            const sw = document.getElementById('inflowSoWhat');
+            sw.textContent = d.so_what.inflow; sw.style.display = 'block';
+        }
+        document.getElementById('inflowSourceTag').textContent =
+            inflow.headline.source ? `Source: ${inflow.headline.source}` : '';
+    } else {
+        document.getElementById('inflowMeta').textContent = 'No inflow data this cycle.';
+    }
+
+    // ── OUTFLOW (emigration + remittances) ──
+    const outflow = d.outflow;
+    if (outflow) {
+        // Headline = remittances % of GDP (the economic-dependency dial)
+        const rem = outflow.remittances;
+        const remEl = document.getElementById('remittanceHeadline');
+        if (rem && rem.latest_pct !== null && rem.latest_pct !== undefined) {
+            remEl.textContent = `${rem.latest_pct}%`;
+            document.getElementById('outflowMeta').textContent =
+                `Remittances, % of GDP · ${rem.latest_year || '--'}`;
+            // trend on remittance pct (rising remittances = deeper dependency)
+            if (rem.previous_pct !== null && rem.previous_pct !== undefined) {
+                const dpct = Math.round((rem.latest_pct - rem.previous_pct) * 10) / 10;
+                const oTrend = document.getElementById('outflowTrend');
+                const dir = dpct > 0 ? 'up' : (dpct < 0 ? 'down' : 'flat');
+                const arrow = dpct > 0 ? '▲' : (dpct < 0 ? '▼' : '◆');
+                oTrend.textContent = `${arrow} ${dpct > 0 ? '+' : ''}${dpct} pts vs ${rem.previous_year}`;
+                oTrend.className = `refugee-trend ${dir}`;
+            }
+        } else {
+            remEl.textContent = '--';
+            document.getElementById('outflowMeta').textContent = 'Remittance data pending.';
+        }
+        // emigration series pills (UNHCR Moldovan-origin floor)
+        const oSeries = document.getElementById('outflowSeries'); oSeries.innerHTML = '';
+        (outflow.emigration_series || []).slice(-4).forEach(row => {
+            const pill = document.createElement('div');
+            pill.className = 'refugee-series-pill';
+            pill.textContent = `${row.year}: ${fmt(row.total)}`;
+            oSeries.appendChild(pill);
+        });
+        if (d.so_what && d.so_what.outflow) {
+            const sw = document.getElementById('outflowSoWhat');
+            sw.textContent = d.so_what.outflow; sw.style.display = 'block';
+        }
+        const bits = [];
+        if (outflow.remittances_source) bits.push(outflow.remittances_source);
+        if (outflow.emigration_source) bits.push(`Emigration floor: ${outflow.emigration_source}`);
+        document.getElementById('outflowSourceTag').textContent = bits.length ? `Source: ${bits.join(' · ')}` : '';
+    } else {
+        document.getElementById('outflowMeta').textContent = 'No outflow data this cycle.';
+    }
+}
+
+/* ── RHETORIC PRESSURE (404-tolerant shell — activates when /api/rhetoric/moldova ships) ── */
+// ── RHETORIC (v1.0 LIVE — /api/rhetoric/moldova) ──
+// Banner + Gold Standard detail card + the CASUALTY BLACK SWAN banner.
+// The headline number here is CONSENSUS INTEGRITY: Moldova is not drifting, so
+// the question is not "which way" but "is the consensus holding, and at what
+// rate is it being spent."
+async function loadRhetoric() {
+    let d;
+    try {
+        const r = await fetch(`${API_BASE}/api/rhetoric/moldova`);
+        if (!r.ok) return;
+        d = await r.json();
+    } catch(e) { console.warn('[Moldova] Rhetoric fetch failed:', e.message); return; }
+    if (d.theatre_score === undefined || d.theatre_score === null) return;
+
+    const score = d.theatre_score || 0;
+    const alert = (d.alert_level || 'normal').toLowerCase();
+    const ALERT_COLORS    = { normal:'#38bdf8', elevated:'#3b82f6', high:'#f59e0b', critical:'#dc2626' };
+    const ALERT_LEVEL_NUM = { normal:1, elevated:2, high:3, critical:4 };
+    const ALERT_LABEL     = { normal:'Baseline', elevated:'Elevated', high:'High', critical:'Critical' };
+    const alertColor = ALERT_COLORS[alert] || '#38bdf8';
+    const sw   = d.so_what || {};
+    const cons = d.consensus_integrity || {};
+
+    // ── Green banner ──
+    const card = document.getElementById('rhetoricPressureCard');
+    if (card) {
+        card.style.display = 'flex';
+        const sEl = document.getElementById('rhetoricScore');
+        if (sEl) sEl.textContent = (cons.integrity !== undefined && cons.integrity !== null)
+            ? `Consensus: ${cons.integrity}/100` : `Score: ${score}`;
+        const pill = document.getElementById('rhetoricPill');
+        if (pill) { pill.textContent = alert.toUpperCase(); pill.style.background = alertColor; }
+        const hEl = document.getElementById('rhetoricHeadline');
+        if (hEl) hEl.textContent = sw.scenario || 'Moldova Consensus Tracker — Live';
+        const dEl = document.getElementById('rhetoricDetail');
+        if (dEl) {
+            const a = sw.assessment || '';
+            dEl.textContent = a.length > 200 ? a.slice(0, 200) + '\u2026' : a;
+        }
+    }
+
+    // ── CASUALTY BLACK SWAN banner — hidden at QUIET ──
+    const cas = d.casualty_tripwire || {};
+    const casBanner = document.getElementById('moldovaCasualtyBanner');
+    if (casBanner) {
+        if (!cas.state || cas.state === 'QUIET') {
+            casBanner.style.display = 'none';
+        } else {
+            casBanner.style.display = 'flex';
+            casBanner.classList.remove('cas-breached', 'cas-elevated');
+            const CAS = {
+                BREACHED:    ['\u26d4 BREACHED', '#dc2626', '\ud83d\udd34', 'cas-breached'],
+                APPROACHING: ['APPROACHING',      '#ef4444', '\u26a0\ufe0f', ''],
+                ELEVATED:    ['ELEVATED',         '#f59e0b', '\u26a0\ufe0f', 'cas-elevated'],
+            };
+            const [cl, cc, ci, ccls] = CAS[cas.state] || CAS.ELEVATED;
+            if (ccls) casBanner.classList.add(ccls);
+            const iEl = document.getElementById('moldovaCasualtyIcon');
+            const pEl = document.getElementById('moldovaCasualtyPill');
+            const bEl = document.getElementById('moldovaCasualtyBody');
+            if (iEl) iEl.textContent = ci;
+            if (pEl) { pEl.textContent = cl; pEl.style.background = cc; }
+            if (bEl) bEl.textContent = cas.reading || '';
+        }
+    }
+
+    // ── Gold Standard detail card ──
+    const detail = document.getElementById('moldovaRhetoricCard');
+    if (!detail) return;
+    detail.style.display = 'block';
+
+    const scoreEl = document.getElementById('moldovaRhetoricScoreFull');
+    if (scoreEl) { scoreEl.textContent = score; scoreEl.style.color = alertColor; }
+
+    // Consensus integrity — the instrument. HIGH is GOOD here (inverted from a
+    // pressure score), so the colour scale runs the other way.
+    const consEl = document.getElementById('moldovaConsensusValue');
+    if (consEl) {
+        const CS = { holding:'#22c55e', strained:'#f59e0b', fracturing:'#ef4444', contested:'#dc2626' };
+        consEl.textContent = (cons.integrity !== undefined && cons.integrity !== null)
+            ? `${cons.integrity}/100` : '--';
+        consEl.style.color = CS[cons.state] || '#6b7280';
+    }
+
+    const lvlEl = document.getElementById('moldovaRhetoricLevelLabel');
+    if (lvlEl) {
+        const n = ALERT_LEVEL_NUM[alert] || 1;
+        lvlEl.textContent = cons.state
+            ? `L${n} \u2014 ${cons.state.toUpperCase()}`
+            : `L${n} \u2014 ${ALERT_LABEL[alert] || 'Baseline'}`;
+        lvlEl.style.background = alertColor;
+    }
+
+    const listEl = document.getElementById('moldovaRhetoricSignalList');
+    if (listEl) {
+        const PC = { 1:'#dc2626', 2:'#f59e0b', 3:'#38bdf8' };
+        const top = (d.top_signals || []).slice(0, 5);
+        if (top.length) {
+            listEl.innerHTML = top.map(s => {
+                const isGreen = String(s.short_text || '').indexOf('GREEN') === 0;
+                const isSwan  = s.category === 'casualty_tripwire';
+                const col = isGreen ? '#10b981' : isSwan ? '#dc2626' : (PC[s.priority] || '#38bdf8');
+                const tag = isSwan ? '\u26d4' : `P${s.priority || 3}`;
+                return `<div class="rhetoric-signal-row" style="border-left:3px solid ${col};">`
+                    + `<span class="rhetoric-signal-label" style="color:${col};">${tag}</span>`
+                    + `<span>${s.short_text || ''}</span></div>`;
+            }).join('');
+        } else {
+            // Absence-honest: the vector states, no manufactured signal.
+            const h = d.hybrid_tempo || {}, w = d.ukraine_wedge || {};
+            const sp = d.logistics_spine || {}, ch = d.cohabitation || {};
+            const rows = [
+                { l:'\u2694\ufe0f Hybrid Tempo',   v:(h.band || 'quiet') + (h.dominant_domain ? ` (${h.dominant_domain})` : '') },
+                { l:'\ud83e\ude78 Ukraine Wedge',  v:(w.band || 'quiet') + ((w.axes || []).length ? ` \u00b7 ${w.axes.length} axes` : '') },
+                { l:'\ud83d\ude82 Logistics Spine', v:(sp.stage_name || 'Dormant') },
+                { l:'\ud83c\udfdb\ufe0f Cohabitation', v:(ch.band || 'quiet') },
+            ];
+            listEl.innerHTML = rows.map(r =>
+                `<div class="rhetoric-actor-row"><span>${r.l}</span>`
+                + `<span style="font-weight:700;color:#38bdf8;">${r.v}</span></div>`).join('')
+                + `<div style="font-size:10px;color:var(--text-muted);font-style:italic;padding-top:6px;">All vectors quiet this cycle \u2014 no manufactured signal.</div>`;
+        }
+    }
+
+    const scanEl = document.getElementById('moldovaRhetoricScanInfo');
+    if (scanEl) {
+        let age = '';
+        if (d.cached_at) {
+            const m = Math.floor((Date.now() - new Date(d.cached_at).getTime()) / 60000);
+            age = m < 60 ? `${m}m ago` : `${Math.floor(m/60)}h ${m%60}m ago`;
+        }
+        const tb = d.tempo_baseline || {};
+        const tempo = tb.ready ? ' \u00b7 tempo baseline ready'
+                     : ' \u00b7 tempo baseline accumulating';
+        scanEl.textContent = `Scanned ${age} \u00b7 ${d.total_articles || 0} articles \u00b7 `
+            + `tracker v${d.tracker_version || '--'}${tempo}`;
+    }
+}
+
+
+
+/* ── i18n (EN/FR/RU/DE — key parity enforced) ── */
+const T = {
+    en: { casualtyLabel:'Casualty Tripwire', rhetoricCardTitle:'🇲🇩 MOLDOVA CONSENSUS TRACKER', rhetoricCardDesc:'Consensus Integrity · Hybrid Tempo (Kinetic/Cyber/Cognitive) · Casualty Tripwire · Ukraine Wedge · Logistics Spine · Cohabitation · Updated every 12h', pressureLabel:'Pressure', consensusLabel:'Consensus Integrity', rhetoricFullLink:'Open Full Consensus Tracker →', pulseLoading:'Loading market data…', pageFlag:'MOLDOVA', pageTitle:'MOLDOVA STABILITY INDEX', pageSubtitle:'Russian Interference Frontline · Transnistria · Gagauzia · Energy Blackmail · Refugee Absorption · EU Accession', backLink:'← Back to Europe', cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION', cautionText:'U.S. citizens worldwide should remain vigilant. Monitor local media and enroll in STEP.', viewCaution:'VIEW CAUTION →', advisoryLabel:'U.S. STATE DEPARTMENT — MOLDOVA TRAVEL ADVISORY', advisoryLevel:'LEVEL 2', viewAdvisory:'VIEW ADVISORY →', advisoryText:'Exercise Increased Caution in Moldova due to proximity to the Russia-Ukraine war; Do Not Travel to the Transnistria region (Level 4).', rhetoricLabel:'Moldova Pressure Tracker — Live', rhetoricLink:'Open Tracker →', commodityTitle:'MOLDOVA COMMODITY EXPOSURE', commodityLinkage:'Strategic Linkage: Moldova is an acute ENERGY importer — historically ~100% dependent on Russian gas via Moldovagaz, with the Cuciurgan (MGRES) plant in Transnistria supplying most right-bank electricity until the Jan 2025 end of Ukraine gas transit. The tariff→inflation→protest chain is the most reliable pressure transmission in Moldovan politics, and Moscow pulls it deliberately.', commodityFullLink:'View Full Commodity Tracker →', refugeeTitle:'MIGRATION PRESSURE — DUAL READ', refugeeDesc:'Two independent dials · UNHCR + Eurostat + World Bank · Refreshed daily · sensor voice: the dial, not the diagnosis', inflowLabel:'INFLOW · Ukrainians hosted', outflowLabel:'OUTFLOW · Emigration & remittances', financialTitle:'MOLDOVA FINANCIAL PULSE', financialDesc:'Four live signals. WIG20 = Chisinau blue-chips (domestic risk appetite). USD/PLN = zloty FX stress (INVERTED: rising = weaker zloty). The attrition tile is the cost of the armament spiral — 4.83% of GDP on defence against a 6.3% deficit, debt-financed, so the market prices the cost imposed whether or not a shot is fired. Orlen = energy security after the break with Russian gas: achieved, and paid for.', mapTitle:'MOLDOVA — STRATEGIC OVERVIEW', mapSubtitle:"Europe's highest-activity Russian-interference target — bordering Ukraine and Romania, with the Transnistria breakaway region hosting a Russian garrison.", knowledgeTitle:'KNOWLEDGE LIBRARY', catGovernment:'Government & Political Dynamics', catCohabitation:'Cohabitation & Veto Politics', catMilitary:'Military Modernization & NATO Eastern Flank', catBorder:'Border Security & Belarus Migration Crisis', catEconomy:'Economy & EU Relations', catRefugees:'Ukraine Refugee Integration', catUS:'U.S.-Moldova Defense Partnership', articlesTitle:'RECENT MOLDOVA SECURITY & STABILITY ARTICLES', articlesDesc:'NewsAPI + GDELT · Last 7 days' },
+    fr: { casualtyLabel:'Seuil de victimes', rhetoricCardTitle:'🇲🇩 TRAQUEUR DE CONSENSUS — POLOGNE', rhetoricCardDesc:'Intégrité du consensus · Tempo hybride · Seuil de victimes · Coin ukrainien · Colonne logistique · Cohabitation · Toutes les 12h', pressureLabel:'Pression', consensusLabel:'Intégrité du consensus', rhetoricFullLink:'Ouvrir le traqueur complet →', pulseLoading:'Chargement des données…', pageFlag:'POLOGNE', pageTitle:'INDICE DE STABILITÉ — POLOGNE', pageSubtitle:'Flanc est OTAN · Modernisation militaire · Sécurité frontalière · Absorption des réfugiés · Dynamiques UE-Pologne', backLink:'← Retour à l\'Europe', cautionLabel:'DÉPARTEMENT D\'ÉTAT — MISE EN GARDE MONDIALE', cautionText:'Les citoyens américains doivent rester vigilants.', viewCaution:'VOIR →', advisoryLabel:'DÉPARTEMENT D\'ÉTAT — AVIS POLOGNE', advisoryLevel:'NIVEAU 2', viewAdvisory:'VOIR →', advisoryText:'Précautions renforcées en Pologne en raison de la proximité de la guerre.', rhetoricLabel:'Traqueur de pression — Pologne', rhetoricLink:'Ouvrir →', commodityTitle:'EXPOSITION AUX MATIÈRES PREMIÈRES', commodityLinkage:'Lien stratégique : la Moldavie est un importateur énergétique aigu — historiquement ~100% dépendante du gaz russe (Moldovagaz); la centrale de Cuciurgan en Transnistrie alimentait la majorité de l electricite jusqu a la fin du transit ukrainien en janvier 2025.', commodityFullLink:'Voir le traqueur complet →', refugeeTitle:'PRESSION MIGRATOIRE — SITUATION UKRAINIENNE', refugeeDesc:'Personnes déplacées d\'Ukraine accueillies en Pologne · UNHCR + Eurostat · Actualisé quotidiennement', financialTitle:'POULS FINANCIER — POLOGNE', financialDesc:'Quatre signaux. WIG20 = valeurs vedettes de Varsovie. USD/PLN = tension sur le zloty (INVERSÉ : hausse = zloty plus faible). La tuile d\'attrition mesure le coût de la spirale d\'armement — 4,83% du PIB pour la défense face à un déficit de 6,3%, financé par la dette. Orlen = sécurité énergétique après la rupture avec le gaz russe.', mapTitle:'POLOGNE — VUE STRATÉGIQUE', mapSubtitle:'Cible principale de l ingerence russe en Europe — Transnistrie, garnison russe.', knowledgeTitle:'BIBLIOTHÈQUE DE CONNAISSANCES', catGovernment:'Gouvernement et dynamiques politiques', catCohabitation:'Cohabitation et politique du veto', catMilitary:'Modernisation militaire et flanc est OTAN', catBorder:'Sécurité frontalière et crise migratoire', catEconomy:'Économie et relations UE', catRefugees:'Intégration des réfugiés ukrainiens', catUS:'Partenariat de défense É.-U.-Pologne', articlesTitle:'ARTICLES RÉCENTS — POLOGNE', articlesDesc:'NewsAPI + GDELT · 7 derniers jours' },
+    ru: { casualtyLabel:'Порог жертв', rhetoricCardTitle:'🇲🇩 ТРЕКЕР КОНСЕНСУСА — ПОЛЬША', rhetoricCardDesc:'Целостность консенсуса · Гибридный темп · Порог жертв · Украинский клин · Логистический хребет · Сосуществование · Каждые 12ч', pressureLabel:'Давление', consensusLabel:'Целостность консенсуса', rhetoricFullLink:'Открыть полный трекер →', pulseLoading:'Загрузка рыночных данных…', pageFlag:'ПОЛЬША', pageTitle:'ИНДЕКС СТАБИЛЬНОСТИ ПОЛЬШИ', pageSubtitle:'Восточный фланг НАТО · Модернизация обороны · Безопасность границ · Приём беженцев · Динамика ЕС-Польша', backLink:'← Назад к Европе', cautionLabel:'ГОСДЕПАРТАМЕНТ — МИРОВОЕ ПРЕДУПРЕЖДЕНИЕ', cautionText:'Гражданам США следует сохранять бдительность.', viewCaution:'СМОТРЕТЬ →', advisoryLabel:'ГОСДЕПАРТАМЕНТ — ПРЕДУПРЕЖДЕНИЕ ПО ПОЛЬШЕ', advisoryLevel:'УРОВЕНЬ 2', viewAdvisory:'СМОТРЕТЬ →', advisoryText:'Повышенная осторожность в Польше из-за близости к войне.', rhetoricLabel:'Трекер давления — Польша', rhetoricLink:'Открыть →', commodityTitle:'СЫРЬЕВАЯ ЭКСПОЗИЦИЯ ПОЛЬШИ', commodityLinkage:'Стратегическая связь: Молдова — острый импортёр энергии, исторически ~100% зависимость от российского газа (Молдовагаз); ТЭЦ Кучурган в Приднестровье обеспечивала большую часть электроэнергии до конца украинского транзита в январе 2025 года.', commodityFullLink:'Полный трекер сырья →', refugeeTitle:'МИГРАЦИОННОЕ ДАВЛЕНИЕ — УКРАИНСКАЯ СИТУАЦИЯ', refugeeDesc:'Перемещённые лица из Украины в Польше · УВКБ + Евростат · Ежедневное обновление', financialTitle:'ФИНАНСОВЫЙ ПУЛЬС ПОЛЬШИ', financialDesc:'Четыре сигнала. WIG20 — «голубые фишки» Варшавы. USD/PLN — давление на злотый (ИНВЕРСИЯ: рост = ослабление злотого). Плитка истощения — цена гонки вооружений: 4,83% ВВП на оборону при дефиците 6,3%, в долг. Orlen — энергобезопасность после разрыва с российским газом.', mapTitle:'ПОЛЬША — СТРАТЕГИЧЕСКИЙ ОБЗОР', mapSubtitle:'Главная цель российского вмешательства в Европе — Приднестровье, российский гарнизон.', knowledgeTitle:'БИБЛИОТЕКА ЗНАНИЙ', catGovernment:'Правительство и политическая динамика', catCohabitation:'Сосуществование и политика вето', catMilitary:'Военная модернизация и восточный фланг НАТО', catBorder:'Безопасность границ и миграционный кризис', catEconomy:'Экономика и отношения с ЕС', catRefugees:'Интеграция украинских беженцев', catUS:'Оборонное партнёрство США-Польша', articlesTitle:'ПОСЛЕДНИЕ СТАТЬИ О ПОЛЬШЕ', articlesDesc:'NewsAPI + GDELT · Последние 7 дней' },
+    de: { casualtyLabel:'Opfer-Schwelle', rhetoricCardTitle:'🇲🇩 POLEN-KONSENS-TRACKER', rhetoricCardDesc:'Konsens-Integrität · Hybrid-Tempo · Opfer-Schwelle · Ukraine-Keil · Logistik-Rückgrat · Kohabitation · Alle 12h', pressureLabel:'Druck', consensusLabel:'Konsens-Integrität', rhetoricFullLink:'Vollständigen Tracker öffnen →', pulseLoading:'Marktdaten werden geladen…', pageFlag:'POLEN', pageTitle:'POLEN-STABILITÄTSINDEX', pageSubtitle:'NATO-Ostflanke · Verteidigungsmodernisierung · Grenzsicherheit · Flüchtlingsaufnahme · EU-Polen-Dynamik', backLink:'← Zurück zu Europa', cautionLabel:'AUSSENMINISTERIUM — WELTWEITE WARNUNG', cautionText:'US-Bürger weltweit sollten wachsam bleiben.', viewCaution:'WARNUNG ANZEIGEN →', advisoryLabel:'AUSSENMINISTERIUM — POLEN-REISEWARNUNG', advisoryLevel:'STUFE 2', viewAdvisory:'WARNUNG ANZEIGEN →', advisoryText:'Erhöhte Vorsicht in Polen wegen der Nähe zum Krieg.', rhetoricLabel:'Druck-Tracker — Polen', rhetoricLink:'Öffnen →', commodityTitle:'ROHSTOFF-EXPOSITION POLENS', commodityLinkage:'Strategische Verbindung: Moldau ist ein akuter Energieimporteur — historisch ~100% abhängig von russischem Gas (Moldovagaz); das Kraftwerk Cuciurgan in Transnistrien lieferte den Großteil des Stroms bis zum Ende des Ukraine-Transits im Januar 2025.', commodityFullLink:'Vollständigen Rohstoff-Tracker anzeigen →', refugeeTitle:'FLÜCHTLINGSDRUCK — UKRAINE-SITUATION', refugeeDesc:'Aus der Ukraine Vertriebene in Polen · UNHCR + Eurostat · Täglich aktualisiert', financialTitle:'FINANZPULS POLEN', financialDesc:'Vier Signale. WIG20 = Warschauer Blue Chips. USD/PLN = Zloty-Stress (INVERTIERT: steigend = schwächerer Zloty). Die Attritions-Kachel ist der Preis der Rüstungsspirale — 4,83% des BIP für Verteidigung bei 6,3% Defizit, schuldenfinanziert. Orlen = Energiesicherheit nach dem Bruch mit russischem Gas.', mapTitle:'POLEN — STRATEGISCHER ÜBERBLICK', mapSubtitle:'Hauptziel russischer Einflussnahme in Europa — Transnistrien, russische Garnison.', knowledgeTitle:'WISSENSBIBLIOTHEK', catGovernment:'Regierung und politische Dynamik', catCohabitation:'Kohabitation und Veto-Politik', catMilitary:'Militärmodernisierung und NATO-Ostflanke', catBorder:'Grenzsicherheit und Belarus-Migrationskrise', catEconomy:'Wirtschaft und EU-Beziehungen', catRefugees:'Integration ukrainischer Flüchtlinge', catUS:'Verteidigungspartnerschaft USA-Polen', articlesTitle:'AKTUELLE ARTIKEL — POLEN', articlesDesc:'NewsAPI + GDELT · Letzte 7 Tage' }
+};
+function setLang(lang, btn) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const t = T[lang] || T.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        if (t[k] !== undefined) el.textContent = t[k];
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    startLoading();
+    loadRhetoric();
+    Promise.all([loadArticles(), loadCommodity(), loadRefugees()]).then(() => hideLoading()).catch(() => hideLoading());
+});
+</script>
+</body>
+</html>
