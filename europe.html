@@ -1655,6 +1655,85 @@
                 </div>
             </div>
 
+            <div class="target-card collapsed" id="moldova-card" data-target="moldova">
+                <div class="card-collapsed-view">
+                    <div class="collapsed-header">
+                        <div class="collapsed-title">🇲🇩 <span data-i18n="targetMoldova">MOLDOVA</span></div>
+                        <button class="collapse-toggle-btn" onclick="event.stopPropagation(); toggleCard('moldova-card');" data-i18n="expandBtn">Expand ▼</button>
+                    </div>
+                    <div class="collapsed-metric">
+                        <div class="collapsed-metric-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="collapsed-metric-value">
+                            <div class="collapsed-percentage" id="moldovaCollapsedScore">--</div>
+                            <div class="collapsed-bar"><div class="collapsed-bar-fill" id="moldovaCollapsedBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="collapsed-timestamp" id="moldovaCollapsedTimestamp">Loading...</div>
+                    <a class="collapsed-travel-advisory hidden" id="moldovaCollapsedTA" href="#" target="_blank" onclick="event.stopPropagation();"></a>
+                    <div class="expand-instructions" data-i18n="expandInstructions">Click "Expand" to update data and view full analysis</div>
+                </div>
+                <div class="card-expanded-view">
+                    <h3>🇲🇩 <span data-i18n="targetMoldova">MOLDOVA</span></h3>
+                    <button class="collapse-toggle-btn" onclick="toggleCard('moldova-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
+                    <a href="moldova-stability.html" class="country-stability-btn">
+                        🇲🇩 Moldova Stability Index
+                    </a>
+                    <div class="card-scan-controls">
+                        <div class="card-time-window">
+                            <label><input type="radio" name="moldova-timeWindow" value="1"> <span data-i18n="hours24">24h</span></label>
+                            <label><input type="radio" name="moldova-timeWindow" value="2"> <span data-i18n="hours48">48h</span></label>
+                            <label><input type="radio" name="moldova-timeWindow" value="7" checked> <span data-i18n="days7">7 Days</span></label>
+                            <label><input type="radio" name="moldova-timeWindow" value="30"> <span data-i18n="days30">30 Days</span></label>
+                        </div>
+                        <button class="card-scan-button" onclick="scanSingleTarget('moldova')"><span data-i18n="scanButton">Scan OSINT — Update Forecast</span></button>
+                        <div class="loading" id="moldova-loading"><div class="loading-spinner"></div><span data-i18n="loadingText">Scanning open sources...</span></div>
+                    </div>
+                    <div class="probability-display">
+                        <div class="probability-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="gauge-background" cx="100" cy="100" r="85"></circle>
+                                <circle class="gauge-progress medium" id="moldova-gauge" cx="100" cy="100" r="85" stroke-dasharray="0 534"></circle>
+                            </svg>
+                            <div class="gauge-text medium" id="moldova-prob">--</div>
+                        </div>
+                    </div>
+                    <div class="intel-sources" id="moldova-intel-sources">
+                        <span class="intel-sources-label">Signals:</span>
+                        <span class="intel-pill inactive">🌐 GDELT</span>
+                        <span class="intel-pill inactive">📰 RSS</span>
+                        <span class="intel-pill inactive">🦋 Bluesky</span>
+                        <span class="intel-pill inactive">✈️ Telegram</span>
+                        <span class="intel-pill inactive">💬 Reddit</span>
+                    </div>
+                    <div class="weather-section" id="moldova-weather">
+                        <div class="weather-title">🌤️ 7-Day Forecast — Chisinau</div>
+                        <div class="weather-forecast" id="moldova-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
+                    </div>
+                    <div class="timeline-display">
+                        <div class="timeline-label" data-i18n="projectedTimeline">Projected Timeline</div>
+                        <div class="timeline-value" id="moldova-timeline" data-i18n="awaitingScan">Awaiting scan...</div>
+                        <div class="timeline-bar" id="moldova-bar">
+                            <div class="timeline-segment">0-30d</div><div class="timeline-segment">31-90d</div>
+                            <div class="timeline-segment">91-180d</div><div class="timeline-segment">180+d</div>
+                        </div>
+                    </div>
+                    <div class="travel-advisory-container" id="moldova-travel-advisory"><div class="ta-loading">🏛️ Loading State Dept travel advisory...</div></div>
+                    <div class="mil-posture-awaiting" id="moldova-mil-posture">
+                        🎖️ <span>Military Posture — <em>Scan OSINT to load</em></span>
+                        <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
+                    </div>
+                    <div class="headlines-section" id="moldova-headlines">
+                        <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
+                        <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOLDOVA (v1.5, Jul 16 2026 -- highest-activity Russian
+                 interference target in Europe: elections, Transnistria,
+                 Gagauzia, energy blackmail. Stability page = next build.) -->
+
             <!-- POLAND -->
             <div class="target-card collapsed" id="poland-card" data-target="poland">
                 <div class="card-collapsed-view">
@@ -2169,7 +2248,7 @@
        ================================================ */
 
     const API_BASE = 'https://asifa-europe-backend.onrender.com';
-    const TARGETS = ['albania', 'armenia', 'azerbaijan', 'belarus', 'belgium', 'cyprus', 'greece', 'greenland', 'hungary', 'kazakhstan', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'];
+    const TARGETS = ['albania', 'armenia', 'azerbaijan', 'belarus', 'belgium', 'cyprus', 'greece', 'greenland', 'hungary', 'kazakhstan', 'moldova', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'];
     const CIRCUMFERENCE = 2 * Math.PI * 85; // ~534
 
     // ===== LOADING OVERLAY =====
@@ -2808,6 +2887,7 @@ async function loadCachedScoresFallback() {
         'greenland':    { name: 'Nuuk', lat: 64.17, lon: -51.74 },
         'hungary':      { name: 'Budapest', lat: 47.49, lon: 19.04 },
         'kazakhstan':   { name: 'Astana', lat: 51.17, lon: 71.45 },
+        'moldova':      { name: 'Chisinau', lat: 47.01, lon: 28.86 },
         'poland':       { name: 'Warsaw', lat: 52.23, lon: 21.01 },
         'russia':       { name: 'Moscow', lat: 55.75, lon: 37.62 },
         'turkey':       { name: 'Ankara', lat: 39.93, lon: 32.86 },
