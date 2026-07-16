@@ -989,6 +989,89 @@ function _signalBody(s, locLabel) {
     return full;
 }
 
+// ── THEATRE GROUPING (v3.2, Jul 15 2026) ─────────────────────────────
+// Five separate Iran rows are five true statements hiding one compound truth.
+// Countries with 2+ signals in the visible pool collapse into ONE banner:
+// name + peak level + axis pills + the backend's convergence synthesis line,
+// with the original rows nested beneath (peel-off preserved). Global/regional/
+// synthesis theatres and multi-hub combos ('+') stay ungrouped by design.
+const _UNGROUPED_THEATRES_JS = new Set([
+    'global', 'regional', 'asia', 'europe', 'middle east', 'middle_east',
+    'western hemisphere', 'wha', 'africa', 'the western hemisphere', 'me',
+    'global_commodity', 'global_food', 'global_humanitarian', 'global_market',
+]);
+const _AXIS_PILL_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian'];
+
+function _groupSignalsByTheatre(signals) {
+    const buckets = new Map(), passthrough = [];
+    for (const s of signals) {
+        const th = String(s.theatre || s.region || '').trim().toLowerCase();
+        if (!th || _UNGROUPED_THEATRES_JS.has(th) || th.includes('+')) {
+            passthrough.push(s);
+            continue;
+        }
+        if (!buckets.has(th)) buckets.set(th, []);
+        buckets.get(th).push(s);
+    }
+    const groups = [];
+    for (const [th, sigs] of buckets) {
+        if (sigs.length < 2) { passthrough.push(...sigs); continue; }   // singletons render as before
+        const axes = [];
+        for (const sg of sigs) {
+            const ax = String(sg.pressure_type || 'kinetic').toLowerCase();
+            if (!axes.includes(ax)) axes.push(ax);
+        }
+        axes.sort((a, b) => {
+            const ia = _AXIS_PILL_ORDER.indexOf(a), ib = _AXIS_PILL_ORDER.indexOf(b);
+            return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+        });
+        const peak = Math.max(...sigs.map(sg => typeof sg.level === 'number' ? sg.level : 0));
+        groups.push({ theatre: th, sigs, axes, peak });
+    }
+    groups.sort((a, b) => (b.peak - a.peak) || (b.sigs.length - a.sigs.length));
+    return { groups, passthrough };
+}
+
+function _groupSynthesisFor(theatre, group) {
+    // Prefer the backend's convergence line (grouped_signals.groups, v3.2 GPI);
+    // fall back to a client-side read so the banner never renders empty.
+    const gs = ((_gpiState.apiData || {}).grouped_signals || {}).groups || [];
+    const hit = gs.find(g => (g.theatre || '').toLowerCase() === theatre);
+    if (hit && hit.synthesis) return hit.synthesis;
+    if (group.axes.length >= 2) {
+        return `${theatre.toUpperCase()} is running pressure on ${group.axes.length} axes `
+             + `simultaneously this scan (${group.axes.join(', ')}). Multi-axis simultaneity `
+             + `at the country level is the compound read.`;
+    }
+    return `${theatre.toUpperCase()}: ${group.sigs.length} distinct ${group.axes[0] || 'kinetic'} `
+         + `signals active in the same window (peak L${group.peak}). Breadth on a single axis `
+         + `reads as sustained pressure, not an isolated event.`;
+}
+
+function _renderGroupBanner(group, axisColor) {
+    const th = group.theatre;
+    const display = th.charAt(0).toUpperCase() + th.slice(1);
+    const page = _THEATRE_PAGE[th];
+    const nameHtml = page
+        ? `<a class="sig-location-link" style="color:${axisColor};font-weight:800;font-size:0.95rem;" href="${page}">${escapeHtmlGpi(display)}</a>`
+        : `<span style="color:${axisColor};font-weight:800;font-size:0.95rem;">${escapeHtmlGpi(display)}</span>`;
+    const peakChip = _gpiLevelChip({ level: group.peak });
+    const pills = group.axes.map(ax =>
+        `<span class="sig-axis-tag axis-tag-${ax}">${_AXIS_TAG_LABEL[ax] || ax}</span>`).join(' ');
+    const synthesis = escapeHtmlGpi(_groupSynthesisFor(th, group));
+    const rows = group.sigs.map(s => _renderSignalRow(s, axisColor)).join('');
+    return `<div class="sig-group" style="border:1px solid ${axisColor}44;border-left:4px solid ${axisColor};border-radius:10px;padding:12px 14px;margin-bottom:14px;background:rgba(13,27,46,0.55);">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+            ${peakChip}
+            ${nameHtml}
+            <span style="font-size:0.62rem;color:#94a3b8;font-family:'Courier New',monospace;">${group.sigs.length} signals</span>
+            <span style="display:flex;gap:6px;flex-wrap:wrap;">${pills}</span>
+        </div>
+        <div style="font-size:0.78rem;color:#93c5fd;font-style:italic;line-height:1.5;margin-bottom:10px;border-bottom:1px dashed rgba(56,189,248,0.18);padding-bottom:8px;">${synthesis}</div>
+        ${rows}
+    </div>`;
+}
+
 function _renderSignalRow(s, axisColor) {
     const icon = s.icon || '\u26a1';
     const color = s.color || axisColor;
@@ -1048,9 +1131,18 @@ function _renderHeroCard(axisName) {
     /* Build the expanded hero card HTML for the active axis. */
     const d = _buildCardData(axisName);
 
-    const signalsInner = d.signals.length > 0
-        ? d.signals.map(s => _renderSignalRow(s, d.axisColor)).join('')
-        : `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
+    // v3.2: theatre grouping -- countries with 2+ signals collapse into one
+    // banner (peak chip + axis pills + convergence synthesis + nested rows);
+    // singletons and global/regional signals render exactly as before.
+    let signalsInner;
+    if (d.signals.length > 0) {
+        const { groups, passthrough } = _groupSignalsByTheatre(d.signals);
+        signalsInner =
+            groups.map(g => _renderGroupBanner(g, d.axisColor)).join('') +
+            passthrough.map(s => _renderSignalRow(s, d.axisColor)).join('');
+    } else {
+        signalsInner = `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
+    }
     const signalsHtml = `<div class="signals-scroll">${signalsInner}</div>`;
 
     const regionsLine = Object.keys(d.regionLevels).length > 0
