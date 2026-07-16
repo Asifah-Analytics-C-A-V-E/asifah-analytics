@@ -886,6 +886,41 @@ const _REGION_DISPLAY = {
     global_humanitarian: 'Global Humanitarian', global_market: 'Global Markets',
 };
 
+// Countries the resolver can NAME even when no tracker page exists yet.
+// Rationale (Jul 16 2026): gatherer signals arrive tagged 'global_humanitarian'
+// etc. but their text names a country ("Somalia showing food price crisis...").
+// Without this set, the resolver finds the country and then throws it away
+// because only _THEATRE_PAGE members counted -- Somalia/DRC/Philippines/PNG all
+// rendered as 'Global Humanitarian'. Recognition must not depend on whether we
+// have built a page. Genuinely multi-country narratives have no single-country
+// lead and still fall through to the regional/global label, which is correct.
+// Multi-word names REQUIRED here (the lead-parse checks longest-match-first).
+const _KNOWN_COUNTRIES = new Set([
+  'afghanistan','albania','algeria','angola','argentina','armenia','azerbaijan',
+  'bahrain','bangladesh','belarus','belgium','benin','bolivia','bosnia','botswana',
+  'brazil','bulgaria','burkina faso','burma','burundi','cambodia','cameroon','canada',
+  'central african republic','car','chad','chile','china','colombia','comoros','congo',
+  'costa rica','cote d\'ivoire','ivory coast','croatia','cuba','cyprus','czechia',
+  'democratic republic of congo','democratic republic of the congo','dr congo','drc',
+  'denmark','djibouti','dominican republic','ecuador','egypt','el salvador','eritrea',
+  'estonia','eswatini','ethiopia','fiji','finland','france','gabon','gambia','georgia',
+  'germany','ghana','greece','greenland','guatemala','guinea','guinea-bissau','guyana',
+  'haiti','honduras','hungary','iceland','india','indonesia','iran','iraq','ireland',
+  'israel','italy','jamaica','japan','jordan','kazakhstan','kenya','kosovo','kuwait',
+  'kyrgyzstan','laos','latvia','lebanon','lesotho','liberia','libya','lithuania',
+  'madagascar','malawi','malaysia','maldives','mali','malta','mauritania','mauritius',
+  'mexico','moldova','mongolia','montenegro','morocco','mozambique','myanmar','namibia',
+  'nepal','netherlands','new zealand','nicaragua','niger','nigeria','north korea',
+  'north macedonia','norway','oman','pakistan','panama','papua new guinea','png',
+  'paraguay','peru','philippines','poland','portugal','qatar','romania','russia',
+  'rwanda','saudi arabia','senegal','serbia','sierra leone','singapore','slovakia',
+  'slovenia','solomon islands','somalia','somaliland','south africa','south korea',
+  'south sudan','spain','sri lanka','sudan','suriname','sweden','switzerland','syria',
+  'taiwan','tajikistan','tanzania','thailand','togo','tunisia','turkey','turkmenistan',
+  'uganda','ukraine','united arab emirates','uae','united kingdom','uk','united states',
+  'us','uruguay','uzbekistan','vanuatu','venezuela','vietnam','yemen','zambia','zimbabwe',
+]);
+
 // theatre -> source page. country theatres -> rhetoric page (default);
 // commodity/military/market -> their tracker; page-less -> null ('GPI Signal').
 const _THEATRE_PAGE = {
@@ -958,12 +993,28 @@ function _resolveLocation(s) {
     }
     // 2. theatre is actually a region code (the 'Me:' bug) OR a global bucket:
     //    try to parse a country name out of the text first.
+    //    v3.2.2 (Jul 16 2026): recognition no longer requires a built page, and
+    //    multi-word names match longest-first ("Papua New Guinea" before the old
+    //    regex could stop at "Papua"). Lead segment = text up to ':' or before
+    //    the gatherer verb ('showing'); candidate must be in _THEATRE_PAGE or
+    //    _KNOWN_COUNTRIES -- set membership is the guardrail that keeps
+    //    "Market fragility..." from becoming a country called Market.
     const full = (s.long_text || s.short_text || s.text || '').trim();
-    const m = full.match(/^[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F\s]*([A-Z][A-Za-z .'-]{2,30}?)[:\s]/u);
-    if ((isBareRegion || !theatre || _REGION_DISPLAY[theatre]) && m) {
-        const cand = m[1].trim().toLowerCase();
-        if (_THEATRE_PAGE[cand]) {
-            return { label: _titleCase(cand), href: _trackerPageFor(s) || _THEATRE_PAGE[cand] };
+    if (isBareRegion || !theatre || _REGION_DISPLAY[theatre]) {
+        const stripped = full.replace(/^[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F\s]+/u, '');
+        const leadM = stripped.match(/^([A-Za-z .,'-]{2,60}?)(?::|\s+showing\b|\s+at\s+L\d)/);
+        const lead = (leadM ? leadM[1] : stripped.split(/\s+/).slice(0, 5).join(' ')).trim();
+        const words = lead.split(/\s+/);
+        for (let n = Math.min(words.length, 5); n >= 1; n--) {           // longest match first
+            const cand = words.slice(0, n).join(' ').toLowerCase().replace(/[.,]$/, '');
+            if (_THEATRE_PAGE[cand]) {
+                return { label: _titleCase(cand), href: _trackerPageFor(s) || _THEATRE_PAGE[cand] };
+            }
+            if (_KNOWN_COUNTRIES.has(cand)) {
+                // acronym countries stay uppercase ('DRC', not 'Drc')
+                const ACRO = { drc:'DRC', png:'PNG', uae:'UAE', uk:'UK', us:'US', car:'CAR' };
+                return { label: ACRO[cand] || _titleCase(cand), href: _trackerPageFor(s) || null };
+            }
         }
     }
     // 3. tracker-page categories (commodity/market/military) regardless of theatre
