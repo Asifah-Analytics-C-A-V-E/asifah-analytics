@@ -1053,7 +1053,7 @@ const _UNGROUPED_THEATRES_JS = new Set([
 ]);
 const _AXIS_PILL_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian'];
 
-function _groupSignalsByTheatre(signals) {
+function _groupSignalsByTheatre(signals, exposureIndex) {
     // v3.2.1 (Jul 16 2026): bucket on the RESOLVED display identity, not the
     // raw theatre tag. GPI narratives are promoted into the pool with
     // theatre='global' even when they are single-country stories (the China
@@ -1078,7 +1078,12 @@ function _groupSignalsByTheatre(signals) {
     }
     const groups = [];
     for (const [th, sigs] of buckets) {
-        if (sigs.length < 2) { passthrough.push(...sigs); continue; }   // singletons render as before
+        // v3.3 (Jul 16 2026): a country with 1 resident signal STILL groups if
+        // it also carries commodity exposure -- the signal + linkage line
+        // together are the full story (Rachel: "India may pop Modi jawboning
+        // AND be exposed on 2 commodities; we want the whole picture").
+        const hasExposure = exposureIndex && exposureIndex.has(th);
+        if (sigs.length < 2 && !hasExposure) { passthrough.push(...sigs); continue; }
         const axes = [];
         for (const sg of sigs) {
             const ax = String(sg.pressure_type || 'kinetic').toLowerCase();
@@ -1090,6 +1095,18 @@ function _groupSignalsByTheatre(signals) {
         });
         const peak = Math.max(...sigs.map(sg => typeof sg.level === 'number' ? sg.level : 0));
         groups.push({ theatre: th, sigs, axes, peak });
+    }
+    // v3.3: EXPOSURE-ONLY groups -- a country with zero resident signals but
+    // 2+ commodity linkages still appears, clearly marked as exposure-watch.
+    // No L-chip is fabricated; exposure without voice is still exposure.
+    if (exposureIndex) {
+        for (const [country, entries] of exposureIndex) {
+            if (buckets.has(country)) continue;              // already grouped
+            if (nonCountry.has(country)) continue;           // regions never group
+            if ((entries || []).length < 2) continue;        // needs real breadth
+            groups.push({ theatre: country, sigs: [], axes: ['economic'],
+                          peak: 0, exposureOnly: true });
+        }
     }
     groups.sort((a, b) => (b.peak - a.peak) || (b.sigs.length - a.sigs.length));
     return { groups, passthrough };
@@ -1195,6 +1212,20 @@ function _groupSynthesisFor(theatre, group) {
 function _renderGroupBanner(group, axisColor, exposureIndex) {
     const th = group.theatre;
     const display = th.charAt(0).toUpperCase() + th.slice(1);
+    if (group.exposureOnly) {
+        const pg = _THEATRE_PAGE[th] || _THEATRE_PAGE[th.replace(/ /g, '_')];
+        const nm = pg ? `<a class="sig-location-link" style="color:${axisColor};font-weight:800;" href="${pg}">${escapeHtmlGpi(display)}</a>`
+                      : `<span style="color:${axisColor};font-weight:800;">${escapeHtmlGpi(display)}</span>`;
+        return `<div class="sig-group" style="border:1px dashed ${axisColor}55;border-left:4px solid #f59e0b;border-radius:10px;padding:10px 14px;margin-bottom:14px;background:rgba(13,27,46,0.35);">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+                <span class="sig-level-chip" style="background:#f59e0b;">EXPOSURE</span>
+                ${nm}
+                <span style="font-size:0.62rem;color:#94a3b8;font-family:'Courier New',monospace;">no direct signals this scan</span>
+            </div>
+            ${_exposureLineFor(th, exposureIndex)}
+            <div style="font-size:0.72rem;color:#93c5fd;font-style:italic;">${escapeHtmlGpi(display.toUpperCase())} carries commodity exposure without direct signals this scan -- exposure without voice is still exposure, and a direct signal here would compound.</div>
+        </div>`;
+    }
     const page = _THEATRE_PAGE[th] || _THEATRE_PAGE[th.replace(/ /g, '_')] || _THEATRE_PAGE[th.replace(/ /g, '')];
     const nameHtml = page
         ? `<a class="sig-location-link" style="color:${axisColor};font-weight:800;font-size:0.95rem;" href="${page}">${escapeHtmlGpi(display)}</a>`
@@ -1282,8 +1313,8 @@ function _renderHeroCard(axisName) {
     // singletons and global/regional signals render exactly as before.
     let signalsInner;
     if (d.signals.length > 0) {
-        const { groups, passthrough } = _groupSignalsByTheatre(d.signals);
         const exposureIndex = _buildCommodityExposure(d.signals);
+        const { groups, passthrough } = _groupSignalsByTheatre(d.signals, exposureIndex);
         signalsInner =
             groups.map(g => _renderGroupBanner(g, d.axisColor, exposureIndex)).join('') +
             passthrough.map(s => _renderSignalRow(s, d.axisColor)).join('');
