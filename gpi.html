@@ -1003,15 +1003,27 @@ const _UNGROUPED_THEATRES_JS = new Set([
 const _AXIS_PILL_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian'];
 
 function _groupSignalsByTheatre(signals) {
+    // v3.2.1 (Jul 16 2026): bucket on the RESOLVED display identity, not the
+    // raw theatre tag. GPI narratives are promoted into the pool with
+    // theatre='global' even when they are single-country stories (the China
+    // Hormuz narrative, the Iran chokepoint read) -- the row renderer already
+    // resolves those to "China:"/"Iran:" via _resolveLocation's text parse,
+    // so the grouper must use the SAME identity or the banner and its
+    // strays disagree. Rule: whatever renders as a country groups as that
+    // country; region/global display labels pass through ungrouped.
+    const nonCountry = new Set(
+        Object.values(_REGION_DISPLAY).map(v => v.toLowerCase()).concat(['global']));
     const buckets = new Map(), passthrough = [];
     for (const s of signals) {
         const th = String(s.theatre || s.region || '').trim().toLowerCase();
-        if (!th || _UNGROUPED_THEATRES_JS.has(th) || th.includes('+')) {
+        if (th.includes('+')) { passthrough.push(s); continue; }   // multi-hub combos stay separate
+        const key = (_resolveLocation(s).label || '').toLowerCase();
+        if (!key || nonCountry.has(key)) {
             passthrough.push(s);
             continue;
         }
-        if (!buckets.has(th)) buckets.set(th, []);
-        buckets.get(th).push(s);
+        if (!buckets.has(key)) buckets.set(key, []);
+        buckets.get(key).push(s);
     }
     const groups = [];
     for (const [th, sigs] of buckets) {
@@ -1051,7 +1063,7 @@ function _groupSynthesisFor(theatre, group) {
 function _renderGroupBanner(group, axisColor) {
     const th = group.theatre;
     const display = th.charAt(0).toUpperCase() + th.slice(1);
-    const page = _THEATRE_PAGE[th];
+    const page = _THEATRE_PAGE[th] || _THEATRE_PAGE[th.replace(/ /g, '_')] || _THEATRE_PAGE[th.replace(/ /g, '')];
     const nameHtml = page
         ? `<a class="sig-location-link" style="color:${axisColor};font-weight:800;font-size:0.95rem;" href="${page}">${escapeHtmlGpi(display)}</a>`
         : `<span style="color:${axisColor};font-weight:800;font-size:0.95rem;">${escapeHtmlGpi(display)}</span>`;
