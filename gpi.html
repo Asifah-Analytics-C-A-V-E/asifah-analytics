@@ -1095,6 +1095,87 @@ function _groupSignalsByTheatre(signals) {
     return { groups, passthrough };
 }
 
+// ── COMMODITY EXPOSURE REFERENCES (v3.2.3, Jul 16 2026) ──────────────
+// A commodity signal is a GLOBAL story that touches many countries in two
+// distinct roles (the platform's own producer-vs-importer doctrine):
+//   drivers  -- "Driver: Russia and Ukraine strike vessels..." (supply side)
+//   exposed  -- "most exposed: China, India, Indonesia" (import dependency)
+// Rather than duplicating the full signal into five country groups (wallpaper,
+// inflated counts, false peak levels), the signal RESIDES once in Global
+// Commodities and each tagged country's group gets a compact EXPOSURE LINE --
+// part of the country's story, excluded from its signal count and peak level.
+const _COMMODITY_WORDS = new Set(['wheat','rice','potash','oil','gas','natural gas','natural_gas',
+  'gold','silver','copper','lithium','semiconductors','semiconductor','sulfur','phosphate',
+  'fertilizer','corn','coffee','cocoa','uranium','nickel','aluminum','soy','soybeans','lng']);
+
+function _commodityOf(text) {
+    const t = (text || '').toLowerCase();
+    for (const w of _COMMODITY_WORDS) { if (t.includes(w)) return w.replace('_',' '); }
+    return 'commodity';
+}
+
+function _scanCountries(clause) {
+    // word-window scan of a short clause against the known-country sets
+    const found = [];
+    // strip punctuation INCLUDING commas -- 'china,' must tokenize as 'china'
+    const words = (clause || '').toLowerCase().replace(/[^a-z '-]/g, ' ').split(/\s+/).filter(Boolean);
+    for (let i = 0; i < words.length; i++) {
+        for (let n = Math.min(4, words.length - i); n >= 1; n--) {
+            const cand = words.slice(i, i + n).join(' ');
+            if (_KNOWN_COUNTRIES.has(cand) || _THEATRE_PAGE[cand]) {
+                if (!found.includes(cand)) found.push(cand);
+                i += n - 1;
+                break;
+            }
+        }
+    }
+    return found;
+}
+
+function _buildCommodityExposure(signals) {
+    // country(lowercase) -> [{role, commodity, level}]
+    const index = new Map();
+    const add = (c, entry) => {
+        if (!index.has(c)) index.set(c, []);
+        index.get(c).push(entry);
+    };
+    for (const s of signals) {
+        if (String(s.pressure_type || '').toLowerCase() !== 'economic') continue;
+        const text = `${s.short_text || ''} ${s.long_text || ''}`;
+        // exposure carries the signal's HEADLINE commodity (short_text first --
+        // the emitter names it there); the driver clause names its own commodity
+        // (the rice signal's driver is a WHEAT disruption -- different reads).
+        const headline = _commodityOf(s.short_text) !== 'commodity'
+            ? _commodityOf(s.short_text) : _commodityOf(text);
+        const expM = text.match(/(?:most exposed|exposed importers?)\s*[:\s]\s*([A-Za-z ,&']+)/i);
+        if (expM) {
+            for (const c of _scanCountries(expM[1])) add(c, { role: 'exposed', commodity: headline, level: s.level });
+        }
+        const drvM = text.match(/driver\s*:\s*([^.;]+)/i);
+        if (drvM) {
+            const drvCommodity = _commodityOf(drvM[1]) !== 'commodity' ? _commodityOf(drvM[1]) : headline;
+            for (const c of _scanCountries(drvM[1])) add(c, { role: 'driver', commodity: drvCommodity, level: s.level });
+        }
+    }
+    return index;
+}
+
+function _exposureLineFor(theatre, exposureIndex) {
+    const entries = exposureIndex.get(theatre);
+    if (!entries || !entries.length) return '';
+    const byRole = { exposed: [], driver: [] };
+    for (const e of entries) {
+        if (!byRole[e.role].includes(e.commodity)) byRole[e.role].push(e.commodity);
+    }
+    const bits = [];
+    if (byRole.driver.length)  bits.push(`supply-side driver: ${byRole.driver.join(', ')}`);
+    if (byRole.exposed.length) bits.push(`exposed importer: ${byRole.exposed.join(', ')}`);
+    return `<div style="font-size:0.7rem;color:#f59e0b;margin-bottom:8px;font-family:'Courier New',monospace;">
+        \u26cf\ufe0f Commodity linkage this scan \u2014 ${escapeHtmlGpi(bits.join(' \u00b7 '))}
+        <span style="color:#64748b;">(resides in Global Commodities; not counted in this group's signals)</span>
+    </div>`;
+}
+
 function _groupSynthesisFor(theatre, group) {
     // Prefer the backend's convergence line (grouped_signals.groups, v3.2 GPI);
     // fall back to a client-side read so the banner never renders empty.
@@ -1111,7 +1192,7 @@ function _groupSynthesisFor(theatre, group) {
          + `reads as sustained pressure, not an isolated event.`;
 }
 
-function _renderGroupBanner(group, axisColor) {
+function _renderGroupBanner(group, axisColor, exposureIndex) {
     const th = group.theatre;
     const display = th.charAt(0).toUpperCase() + th.slice(1);
     const page = _THEATRE_PAGE[th] || _THEATRE_PAGE[th.replace(/ /g, '_')] || _THEATRE_PAGE[th.replace(/ /g, '')];
@@ -1122,6 +1203,7 @@ function _renderGroupBanner(group, axisColor) {
     const pills = group.axes.map(ax =>
         `<span class="sig-axis-tag axis-tag-${ax}">${_AXIS_TAG_LABEL[ax] || ax}</span>`).join(' ');
     const synthesis = escapeHtmlGpi(_groupSynthesisFor(th, group));
+    const exposureLine = exposureIndex ? _exposureLineFor(th, exposureIndex) : '';
     const rows = group.sigs.map(s => _renderSignalRow(s, axisColor)).join('');
     return `<div class="sig-group" style="border:1px solid ${axisColor}44;border-left:4px solid ${axisColor};border-radius:10px;padding:12px 14px;margin-bottom:14px;background:rgba(13,27,46,0.55);">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
@@ -1131,6 +1213,7 @@ function _renderGroupBanner(group, axisColor) {
             <span style="display:flex;gap:6px;flex-wrap:wrap;">${pills}</span>
         </div>
         <div style="font-size:0.78rem;color:#93c5fd;font-style:italic;line-height:1.5;margin-bottom:10px;border-bottom:1px dashed rgba(56,189,248,0.18);padding-bottom:8px;">${synthesis}</div>
+        ${exposureLine}
         ${rows}
     </div>`;
 }
@@ -1200,8 +1283,9 @@ function _renderHeroCard(axisName) {
     let signalsInner;
     if (d.signals.length > 0) {
         const { groups, passthrough } = _groupSignalsByTheatre(d.signals);
+        const exposureIndex = _buildCommodityExposure(d.signals);
         signalsInner =
-            groups.map(g => _renderGroupBanner(g, d.axisColor)).join('') +
+            groups.map(g => _renderGroupBanner(g, d.axisColor, exposureIndex)).join('') +
             passthrough.map(s => _renderSignalRow(s, d.axisColor)).join('');
     } else {
         signalsInner = `<div class="pressure-axis-empty">No active signals on this axis.</div>`;
