@@ -1984,6 +1984,8 @@ const COUNTRY_META = {
     belarus:      { flag: '🇧🇾', name: 'Belarus' },
     belgium:      { flag: '🇧🇪', name: 'Belgium' },
     botswana:     { flag: '🇧🇼', name: 'Botswana' },
+    burkina_faso: { flag: '🇧🇫', name: 'Burkina Faso' },
+    car:          { flag: '🇨🇫', name: 'Central African Republic' },
     brazil:       { flag: '🇧🇷', name: 'Brazil' },
     canada:       { flag: '🇨🇦', name: 'Canada' },
     chile:        { flag: '🇨🇱', name: 'Chile' },
@@ -2008,10 +2010,14 @@ const COUNTRY_META = {
     kazakhstan:   { flag: '🇰🇿', name: 'Kazakhstan' },
     lebanon:      { flag: '🇱🇧', name: 'Lebanon' },
     libya:        { flag: '🇱🇾', name: 'Libya' },
+    madagascar:   { flag: '🇲🇬', name: 'Madagascar' },
+    mali:         { flag: '🇲🇱', name: 'Mali' },
     malaysia:     { flag: '🇲🇾', name: 'Malaysia' },
     mexico:       { flag: '🇲🇽', name: 'Mexico' },
     morocco:      { flag: '🇲🇦', name: 'Morocco' },
+    mozambique:   { flag: '🇲🇿', name: 'Mozambique' },
     netherlands:  { flag: '🇳🇱', name: 'Netherlands' },
+    niger:        { flag: '🇳🇪', name: 'Niger' },
     nigeria:      { flag: '🇳🇬', name: 'Nigeria' },
     norway:       { flag: '🇳🇴', name: 'Norway' },
     panama:       { flag: '🇵🇦', name: 'Panama' },
@@ -2020,6 +2026,7 @@ const COUNTRY_META = {
     philippines:  { flag: '🇵🇭', name: 'Philippines' },
     russia:       { flag: '🇷🇺', name: 'Russia' },
     saudi_arabia: { flag: '🇸🇦', name: 'Saudi Arabia' },
+    sudan:        { flag: '🇸🇩', name: 'Sudan' },
     south_africa: { flag: '🇿🇦', name: 'South Africa' },
     south_korea:  { flag: '🇰🇷', name: 'South Korea' },
     taiwan:       { flag: '🇹🇼', name: 'Taiwan' },
@@ -2029,10 +2036,12 @@ const COUNTRY_META = {
     uae:          { flag: '🇦🇪', name: 'United Arab Emirates' },
     ukraine:      { flag: '🇺🇦', name: 'Ukraine' },
     usa:          { flag: '🇺🇸', name: 'United States' },
-    venezuela:    { flag: '🇻🇪', name: 'Venezuela' }
+    venezuela:    { flag: '🇻🇪', name: 'Venezuela' },
+    vietnam:      { flag: '🇻🇳', name: 'Vietnam' }
 };
 
-// Frontend regional grouping (mirrors backend COUNTRY_REGIONS).
+// Frontend regional grouping (frontend-authoritative; no backend
+// COUNTRY_REGIONS exists — comment corrected Jul 18 2026).
 // EU bloc note: EU is treated as a single bloc-level actor because key
 // commodity policy (CAP wheat tariffs, EU Critical Raw Materials Act,
 // EU Chips Act, REPowerEU LNG procurement, gas storage mandates) is set
@@ -2040,7 +2049,7 @@ const COUNTRY_META = {
 // separately for its uniquely national nuclear/uranium exposure.
 // Order = Africa → Asia-Pacific → Europe → Middle East → Western Hemisphere
 const REGION_DEFAULTS = {
-    africa:       { name: 'Africa',              icon: '🌍', order: 1, countries: ['algeria', 'angola', 'botswana', 'drc', 'egypt', 'guinea', 'libya', 'morocco', 'nigeria', 'south_africa'] },
+    africa:       { name: 'Africa',              icon: '🌍', order: 1, countries: ['algeria', 'angola', 'botswana', 'burkina_faso', 'car', 'drc', 'egypt', 'guinea', 'libya', 'madagascar', 'mali', 'morocco', 'mozambique', 'niger', 'nigeria', 'south_africa', 'sudan'] },
     asia_pacific: { name: 'Asia-Pacific',        icon: '🌏', order: 2, countries: ['afghanistan', 'australia', 'china', 'india', 'indonesia', 'japan', 'malaysia', 'philippines', 'south_korea', 'taiwan', 'thailand', 'vietnam'] },
     europe:       { name: 'Europe',              icon: '🌍', order: 3, countries: ['azerbaijan', 'belarus', 'belgium', 'eu', 'france', 'germany', 'greece', 'greenland', 'hungary', 'kazakhstan', 'netherlands', 'norway', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'] },
     middle_east:  { name: 'Middle East',         icon: '🕌', order: 4, countries: ['iran', 'israel', 'jordan', 'lebanon', 'qatar', 'saudi_arabia', 'uae'] },
@@ -2054,7 +2063,7 @@ const EU_BLOC_TOOLTIP = "The European Union is tracked as a single bloc-level ac
 // v1.5.0 (May 23 2026): Phase 1A added pgm, chromium, manganese, phosphate, diamonds, bauxite
 const COMMODITY_ORDER = [
     'bauxite', 'chromium', 'coal', 'cobalt', 'coffee', 'copper', 'corn',
-    'diamonds', 'gold', 'iron_ore', 'lithium', 'manganese', 'natural_gas',
+    'diamonds', 'gold', 'graphite', 'gum_arabic', 'iron_ore', 'lithium', 'manganese', 'natural_gas',
     'nickel', 'nitrogen', 'oil', 'pgm', 'phosphate', 'potash', 'rare_earths',
     'rice', 'semiconductors', 'silicon', 'silver', 'soybeans', 'sugar',
     'sulfur', 'sunflower_oil', 'tantalum', 'uranium', 'wheat'
@@ -2277,6 +2286,7 @@ function toggleCaSection(sectionId) {
 const CONV_FLAGS = { afghanistan:'🇦🇫', greenland:'🇬🇱', egypt:'🇪🇬', nigeria:'🇳🇬', lebanon:'🇱🇧', turkey:'🇹🇷', argentina:'🇦🇷',
     iran:'🇮🇷', venezuela:'🇻🇪', libya:'🇱🇾', jordan:'🇯🇴', morocco:'🇲🇦', algeria:'🇩🇿',
     angola:'🇦🇴', guinea:'🇬🇳', drc:'🇨🇩', india:'🇮🇳', philippines:'🇵🇭', indonesia:'🇮🇩',
+    mali:'🇲🇱', burkina_faso:'🇧🇫', niger:'🇳🇪', sudan:'🇸🇩', car:'🇨🇫', mozambique:'🇲🇿', madagascar:'🇲🇬',
     kazakhstan:'🇰🇿', ukraine:'🇺🇦', russia:'🇷🇺', china:'🇨🇳', vietnam:'🇻🇳', thailand:'🇹🇭',
     mexico:'🇲🇽', peru:'🇵🇪', chile:'🇨🇱', botswana:'🇧🇼', south_africa:'🇿🇦',
     saudi_arabia:'🇸🇦', cuba:'🇨🇺', belarus:'🇧🇾', hungary:'🇭🇺' };
