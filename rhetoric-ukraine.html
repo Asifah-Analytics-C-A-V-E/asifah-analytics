@@ -253,6 +253,16 @@
     .red-line-trigger { font-size: 0.7rem; color: var(--text-secondary); margin-top: 3px; font-family: 'Times New Roman', serif; }
     .red-line-source { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; font-family: 'Courier New', monospace; font-style: italic; }
 
+    /* ── CRIMEA POSTURE / RUMINT CARD ── */
+    .crimea-card { background: linear-gradient(180deg, rgba(168,85,247,0.05), rgba(126,34,206,0.02)); border: 1px solid rgba(168,85,247,0.3); border-left: 4px solid #a855f7; border-radius: 12px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--card-glow); }
+    .rumint-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 4px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.5); color: #c084fc; font-size: 0.55rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+    .rumint-badge.unverified { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.5); color: #fbbf24; }
+    .crimea-level-pill { padding: 3px 11px; border-radius: 16px; font-weight: 800; letter-spacing: 1px; font-size: 0.62rem; color: white; font-family: 'Courier New', monospace; text-transform: uppercase; }
+    .crimea-reading { font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); font-family: 'Times New Roman', serif; margin: 8px 0 10px; }
+    .crimea-source-tag { display: inline-block; padding: 1px 8px; margin: 2px 4px 2px 0; border-radius: 4px; font-size: 0.58rem; font-family: 'Courier New', monospace; background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.25); color: var(--text-muted); }
+    .crimea-example { padding: 5px 0; border-top: 1px dashed rgba(168,85,247,0.15); }
+    .crimea-example:first-of-type { border-top: none; }
+
     /* ── DIPLOMATIC TRACK / GREEN LINES ── */
     /* Multi-dimensional analyst read (D) */
     .so-what-narrative { display:flex; flex-direction:column; gap:8px; margin:4px 0 6px; }
@@ -591,6 +601,27 @@
     </div>
     <div id="redLineItems" class="signal-list-scroll"></div>
     <div class="signal-list-scroll-hint" id="redLineScrollHint" style="display:none;" data-i18n="scrollHint">↕ scroll for full list</div>
+</div>
+
+<!-- CRIMEA POSTURE / RUMINT CARD -->
+<div class="crimea-card" id="crimeaCard" style="display:none;">
+    <div class="interp-card-header">
+        <span style="font-size:1rem;">🚢</span>
+        <div style="flex:1;">
+            <div class="interp-card-title" data-i18n="crimeaTitle">CRIMEA POSTURE — BLACK SEA FLEET DISPLACEMENT</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="crimeaSub">Occupied-territory pressure read · Partisan / leaked sourcing</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="rumint-badge unverified">⚠ RUMINT · UNVERIFIED</span>
+            <span class="crimea-level-pill" id="crimeaLevelPill" style="background:#6b7280;">--</span>
+        </div>
+    </div>
+    <div class="crimea-reading" id="crimeaReading">--</div>
+    <div id="crimeaSourceTags" style="margin-bottom:8px;"></div>
+    <div id="crimeaExamples"></div>
+    <div style="font-size:0.62rem;color:var(--text-muted);font-family:'Courier New',monospace;margin-top:10px;font-style:italic;" data-i18n="crimeaNote">
+        RUMINT sub-read: score-neutral by design (partisan/interested sourcing never inflates the theatre score). Consistent with sea-denial pressure on occupied Crimea — NOT a Russian concession signal or a change in stated war aims.
+    </div>
 </div>
 
 <!-- DIPLOMATIC TRACK / GREEN LINES -->
@@ -1137,8 +1168,52 @@ function renderCommodity(data) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// RENDER INTERPRETATION (so_what + red_lines + diplomatic)
+// RENDER CRIMEA POSTURE (RUMINT — absence-honest, score-neutral)
 // ══════════════════════════════════════════════════════════════
+function renderCrimeaPosture(data) {
+    const card = document.getElementById('crimeaCard');
+    if (!card) return;
+    const cp = data.crimea_posture;
+    // Absence-honest: no reports this scan → hide the card entirely.
+    if (!cp || !(cp.report_count > 0)) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    // Level pill (RUMINT caps at L3 — never a confirmed 4/5).
+    const LEVEL_COLORS = { 0: '#6b7280', 1: '#3b82f6', 2: '#f59e0b', 3: '#f97316' };
+    const lvln = cp.level || 0;
+    const pill = document.getElementById('crimeaLevelPill');
+    if (pill) {
+        pill.textContent = `L${lvln} · ${cp.report_count} REPORT${cp.report_count === 1 ? '' : 'S'}`;
+        pill.style.background = LEVEL_COLORS[lvln] || '#6b7280';
+    }
+
+    const reading = document.getElementById('crimeaReading');
+    if (reading) reading.textContent = cp.reading || '';
+
+    // Source-class tags (partisan/leaked vs strike-corroborated)
+    const tagsEl = document.getElementById('crimeaSourceTags');
+    if (tagsEl) {
+        const tags = cp.source_classes || [];
+        tagsEl.innerHTML = tags.length
+            ? 'Source class: ' + tags.map(t => `<span class="crimea-source-tag">${t}</span>`).join('')
+            : '';
+    }
+
+    // Example headlines (already capped at 4 by the backend)
+    const exEl = document.getElementById('crimeaExamples');
+    if (exEl) {
+        const ex = cp.examples || [];
+        exEl.innerHTML = ex.map(e => `
+            <div class="crimea-example">
+                <a href="${e.url || '#'}" target="_blank" class="article-link">${(e.title || '').slice(0, 130)}${e.title && e.title.length > 130 ? '…' : ''}</a>
+                <div class="article-meta">${e.source || ''}</div>
+            </div>`).join('');
+    }
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER INTERPRETATION (so_what + red_lines + diplomatic)
+// ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 function renderInterpretation(data) {
     // SO WHAT
     const sw = data.so_what;
@@ -1368,6 +1443,7 @@ function renderAll(data) {
     renderBanner(data);
     renderBluf(data);
     renderCommodity(data);
+    renderCrimeaPosture(data);
     renderActors(data);
     renderInterpretation(data);
     renderArticles(data);
