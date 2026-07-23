@@ -413,11 +413,36 @@
 
         .error-message { display:none; padding:14px; background:#fee2e2; color:#991b1b; border-radius:8px; margin-bottom:16px; border:1px solid #fca5a5; }
         .error-message.active { display:block; }
-    </style>
-    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
-    <script defer src="resources/asifah-standard-shell.js"></script>
+    
+        /* ── WATERMARK (Jul 23 2026 canonical spec) ──────────────────────
+           Half the page in both themes. LIGHT keeps the logo's own white
+           square backing at 30%. DARK zooms past 100% and clips to a circle,
+           which crops the white surround away entirely so the artwork's dark
+           navy field reads as black while the cyan stays bright.
+           Sits at z-index 0: above the page tint (-1), below content (1). */
+        .watermark {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50vmin; height: 50vmin;
+            min-width: 340px; min-height: 340px;
+            max-width: 900px; max-height: 900px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.30;
+            z-index: 0; pointer-events: none; user-select: none;
+            transition: opacity 0.4s ease;
+        }
+        [data-theme="dark"] .watermark {
+            background-size: 132%;
+            border-radius: 50%;
+            opacity: 0.34;
+        }
+</style>
 </head>
 <body>
+<div class="watermark"></div>
 <div class="container">
 
 <!-- ════════════════════════════════════════════════════════════ -->

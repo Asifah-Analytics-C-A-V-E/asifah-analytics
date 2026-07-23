@@ -70,24 +70,24 @@
 
     /* Watermark gold standard (May 11 2026 — from military.html) */
     .watermark {
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: var(--watermark-size);
-        height: var(--watermark-size);
-        background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-        background-size: 135%;
-        background-repeat: no-repeat;
-        background-position: center;
-        border-radius: 50%;
-        opacity: var(--watermark-opacity);
-        pointer-events: none;
-        z-index: 0;
-        filter: var(--watermark-filter);
-        transition: all 0.4s ease;
-    }
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50vmin; height: 50vmin;
+    min-width: 340px; min-height: 340px;
+    max-width: 900px; max-height: 900px;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.30;
+    z-index: 0; pointer-events: none; user-select: none;
+    transition: opacity 0.4s ease;
+}
 
-    /* Grid overlay (body::before) — gold standard */
+/* Jul 23 2026 watermark spec -- DARK MODE: zooming past 100% and clipping to
+   a circle crops away the logo's white square backing, so the artwork's own
+   dark navy field reads as black while the cyan stays bright. */
+ /* Grid overlay (body::before) — gold standard */
     body::before {
         content: '';
         position: fixed;
@@ -419,8 +419,6 @@
     .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
     .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
 </style>
-<link rel="stylesheet" href="resources/asifah-standard-shell.css">
-<script src="resources/asifah-standard-shell.js" defer></script>
 </head>
 <body>
 
@@ -482,6 +480,7 @@
     <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="navRegionalRhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-africa.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">● Live</span></a>
     <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌏 Asia</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>

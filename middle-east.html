@@ -3221,11 +3221,36 @@
         order: 99;
     }
 }
-        </style>
-    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
-    <script defer src="resources/asifah-standard-shell.js"></script>
+        
+        /* ── WATERMARK (Jul 23 2026 canonical spec) ──────────────────────
+           Half the page in both themes. LIGHT keeps the logo's own white
+           square backing at 30%. DARK zooms past 100% and clips to a circle,
+           which crops the white surround away entirely so the artwork's dark
+           navy field reads as black while the cyan stays bright.
+           Sits at z-index 0: above the page tint (-1), below content (1). */
+        .watermark {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50vmin; height: 50vmin;
+            min-width: 340px; min-height: 340px;
+            max-width: 900px; max-height: 900px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.30;
+            z-index: 0; pointer-events: none; user-select: none;
+            transition: opacity 0.4s ease;
+        }
+        [data-theme="dark"] .watermark {
+            background-size: 132%;
+            border-radius: 50%;
+            opacity: 0.34;
+        }
+</style>
 </head>
 <body>
+<div class="watermark"></div>
     <div class="container">
 
 <!-- ========================================= -->
@@ -3251,7 +3276,7 @@
     
     <!-- Content -->
     <div style="position: relative; z-index: 2; text-align: center;">
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
              style="width: 90px; height: 90px; border-radius: 50%; margin-bottom: 30px; border: 2px solid rgba(0, 180, 255, 0.3); box-shadow: 0 0 30px rgba(0,210,255,0.4); animation: loadPulse 2s ease-in-out infinite;">
         <div style="font-size: 22px; font-weight: bold; color: #00d2ff; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; text-shadow: 0 0 20px rgba(0,210,255,0.8);">
             ASIFAH ANALYTICS
@@ -3356,7 +3381,7 @@
 
 <header>
             <!-- Logo added here -->
-            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" 
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" 
                  alt="Asifah Analytics Logo" 
                  class="header-logo">
     
@@ -7096,7 +7121,7 @@
        target="_blank" 
        class="analytics-button" 
        title="View Analytics">
-        <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" 
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" 
              alt="Analytics">
     </a>
 
