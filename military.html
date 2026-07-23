@@ -31,7 +31,7 @@
             --alert-red-bg: #fff5f5; --alert-red-border: #e53e3e;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
             --grid-color: transparent; --scanline-opacity: 0; --glow-opacity: 0;
-            --watermark-opacity: 0.5; --watermark-size: 500px;
+            --watermark-opacity: 0.30;   /* light mode -- white backing kept */
             --cyber-border: var(--border-color); --loading-bg: rgba(240,244,247,0.95);
             --evac-bg: #fff5f5; --evac-border: #e53e3e;
             --theatre-header-bg: rgba(0,0,0,0.03); --collapse-icon-color: #4a6178;
@@ -48,7 +48,7 @@
             --alert-red-bg: rgba(255,59,59,0.08); --alert-red-border: #ff3b3b;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.3); --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
             --grid-color: rgba(0,212,255,0.04); --scanline-opacity: 0.03; --glow-opacity: 1;
-            --watermark-opacity: 1; --watermark-size: 800px;
+            --watermark-opacity: 0.34;   /* dark mode -- circular crop, colors bright */
             --cyber-border: rgba(0,212,255,0.15); --loading-bg: rgba(10,14,23,0.95);
             --evac-bg: rgba(255,59,59,0.1); --evac-border: #ff3b3b;
             --theatre-header-bg: rgba(0,212,255,0.04); --collapse-icon-color: #94a3b8;
@@ -125,15 +125,55 @@
         body { font-family: 'Times New Roman', Times, serif; font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background-color 0.4s ease, color 0.4s ease; overflow-x: hidden; }
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
         body::after { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,var(--scanline-opacity)) 2px, rgba(0,212,255,var(--scanline-opacity)) 4px); pointer-events: none; z-index: 0; }
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 20px 40px; position: relative; z-index: 1; }
-        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: var(--watermark-size); height: var(--watermark-size); opacity: var(--watermark-opacity); pointer-events: none; z-index: 0; background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png'); background-size: 135%; background-repeat: no-repeat; background-position: center; border-radius: 50%; transition: all 0.4s ease; }
-        .header { background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end)); padding: 16px 30px; margin: 0 auto 24px; max-width: 1280px; border-radius: 0 0 12px 12px; position: relative; overflow: hidden; }
+        .container { max-width: 100%; margin: 0 auto; padding: 0 0 40px; position: relative; z-index: 1; }
+        /* ── WATERMARK (Jul 23 2026 spec) ──────────────────────────────────
+           Half the page in both themes. LIGHT keeps the logo's own white
+           square backing. DARK crops to a circle (background-size >100% plus
+           border-radius) which removes the white surround entirely, leaving
+           the artwork's dark navy field to read as black while the cyan stays
+           bright. Opacity is a variable so it can be tuned without hunting
+           through the rules. */
+        .watermark {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50vmin; height: 50vmin;
+            min-width: 340px; min-height: 340px;
+            max-width: 900px; max-height: 900px;
+            opacity: var(--watermark-opacity);
+            pointer-events: none; user-select: none; z-index: 0;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat; background-position: center;
+            transition: opacity 0.4s ease;
+        }
+        [data-theme="dark"] .watermark {
+            background-size: 132%;
+            border-radius: 50%;
+        }
+        .header { background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end)); padding: 16px 30px; margin: 0 auto 24px; max-width: 1800px; border-radius: 12px; position: relative; overflow: hidden; }
+        /* Jul 23 2026 -- CANONICAL PAGE WIDTH. Header, Worldwide Caution banner,
+           content column and footer all resolve to this same 1800px wrapper so
+           their left and right edges line up. Previously the header was
+           full-bleed, the caution banner was 1600px and .container was 1280px,
+           so nothing agreed with anything. */
+        .asifah-width { max-width: 1800px; margin-left: auto; margin-right: auto; }
         [data-theme="dark"] .header { border-bottom: 1px solid var(--cyber-border); box-shadow: 0 0 30px rgba(0,212,255,0.05); }
         .header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); opacity: var(--glow-opacity); }
         .header-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .header-logo { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
         [data-theme="dark"] .header-logo { border-color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,212,255,0.3); }
-        .header-right-controls { display: flex; gap: 8px; align-items: center; }
+        .header-right-controls { display: flex; gap: 14px; align-items: center; }
+        /* ── THEME CONTROL (Jul 23 2026) ───────────────────────────────
+           ONE control, in the header. Label above; sun and moon flanking the
+           switch, each brightening to show the active mode. Replaces the old
+           split arrangement where a "TOGGLE: LIGHT - DARK" label sat on one
+           side of the header and a separate switch on the other. */
+        .theme-control { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .theme-control-label { font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+        [data-theme="light"] .theme-control-label { color: rgba(255,255,255,0.85); }
+        .theme-switch-row { display: flex; align-items: center; gap: 9px; }
+        .theme-icon { font-size: 13px; line-height: 1; opacity: 0.35; transition: opacity 0.3s ease, transform 0.3s ease; }
+        .theme-icon.active { opacity: 1; transform: scale(1.15); }
         .home-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-family: 'Times New Roman', Times, serif; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s; }
         .home-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
         .header-row-2 { text-align: center; padding-bottom: 4px; }
@@ -376,8 +416,6 @@
         [dir="rtl"] .livemap-card:hover .livemap-card-arrow { transform: scaleX(-1) translateX(3px); }
         @media (max-width: 768px) { .header-row-1 { flex-direction: column; gap: 10px; align-items: flex-start; } .header-right-controls { flex-wrap: wrap; } .header-title { font-size: 1.3rem; letter-spacing: 2px; } .status-strip { grid-template-columns: repeat(2, 1fr); } .actor-grid, .target-grid { grid-template-columns: 1fr; } }
     </style>
-<link rel="stylesheet" href="resources/asifah-standard-shell.css">
-<script src="resources/asifah-standard-shell.js" defer></script>
 </head>
 <body>
 <div class="watermark"></div>
@@ -389,6 +427,14 @@
     <div class="header-row-1">
         <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
         <div class="header-right-controls">
+            <div class="theme-control">
+                <span class="theme-control-label" data-i18n="toggleLabel">Theme</span>
+                <div class="theme-switch-row">
+                    <span class="theme-icon" id="themeIconSun" aria-hidden="true">&#9728;&#65039;</span>
+                    <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()" role="button" tabindex="0" aria-label="Toggle light and dark mode"></div>
+                    <span class="theme-icon" id="themeIconMoon" aria-hidden="true">&#127769;</span>
+                </div>
+            </div>
             <a href="index.html" class="home-btn">&#127968; HOME</a>
             <button class="mobile-menu-btn" onclick="openMobileDrawer()" aria-label="Open navigation menu" style="margin-left:8px;">
             <span style="font-size:20px;">☰</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;">Menu</span>
@@ -400,10 +446,6 @@
         <div class="header-subtitle" data-i18n="pageSubtitle">Multi-Actor Deployment Intelligence</div>
     </div>
     <div class="header-row-3">
-        <div class="toggle-container">
-            <span class="toggle-label" data-i18n="toggleLabel">TOGGLE: LIGHT - DARK</span>
-            <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
-        </div>
         <button class="refresh-btn" onclick="refreshData()" title="Refresh">&#x27F3;</button>
     </div>
 </header>
@@ -440,7 +482,7 @@
     border-radius: 10px;
     padding: 16px 24px;
     margin: 0 auto 25px auto;
-    max-width: 1600px;
+    max-width: 1800px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -660,46 +702,6 @@
     <div class="signal-feed" id="signalFeed"></div>
     <div class="source-footer" id="sourceFooter"></div>
     <div class="updated-bar" id="updatedBar"></div>
-    <div class="page-footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About</h4>
-                <p><strong>ASIFAH ANALYTICS · GLOBAL MILITARY POSTURE TRACKER</strong><br>asifah-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
-            </div>
-            <div class="footer-section">
-                <h4 data-i18n="footerSources">Data Sources</h4>
-               <p data-i18n="footerSourcesText">Defense RSS feeds (USNI News, Naval News, Defense News, Janes, Breaking Defense), GDELT global event database (English + 14 language queries including Japanese, Korean, Chinese, Hebrew, Arabic, Farsi, Russian, Ukrainian, Spanish), NewsAPI, Brave Search (tertiary fallback), Reddit (r/CredibleDefense, r/LessCredibleDefence), OSINT Telegram channels, and BlueSky aggregated feeds (POTUS, SecDef, INDOPACOM, OSINT Defender, MOFA Japan, Taiwan MND, ROK MND, and others). Naval positions cross-referenced with public deployment records.</p>
-            </div>
-            <div class="footer-section">
-                <h4 data-i18n="footerMethodology">Methodology</h4>
-                <p data-i18n="footerMethodologyText">Multi-actor military posture aggregation across ~30 state actors and 6 theatres (Global/NORTHCOM, Africa/AFRICOM, Asia &amp; Pacific, Europe, Middle East, Western Hemisphere) with tiered actor weighting (Tier 1 strike → Tier 4 alliance), asset-class signal classification (carrier strike groups, submarines, strategic bombers, amphibious groups, fighter surges, air defense, ISR, ground forces, logistics, missile tests, naval exercises, base evacuations, drone incursions), regional tension multiplier scoring, and 7-day rolling window. Each actor's signals are scored against country-specific keyword libraries (English + native-language sources where applicable). Naval map shows weighted asset deployments with size = signal weight.</p>
-            </div>
-        </div>
-        <div class="footer-disclaimer">
-            <strong data-i18n="footerDisclaimerLabel">⚠️ DISCLAIMER</strong>
-            <span data-i18n="footerDisclaimerText">This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Posture indicators reflect media signal intensity and should not be interpreted as ground-truth predictions of operational deployments. Always consult authoritative sources for decision-making.</span>
-        </div>
-
-        <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-        <div style="margin:24px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-            <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-            <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
-        </div>
-
-        <div class="footer-links">
-            <a href="mission.html">Mission Statement</a>
-            <span>·</span>
-            <a href="privacy.html" data-i18n="footerPrivacy">Privacy Policy</a>
-            <span>·</span>
-            <a href="https://asifahanalytics.com">Home</a>
-        </div>
-        <div class="footer-copyright">
-            © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v3.0.0<br>
-            <span data-i18n="footerProprietary">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span>
-            <br>
-            <a href="index.html" class="back-link" data-i18n="backToMain">← Back to Main Dashboard</a>
-        </div>
-    </div>
 </div>
 <script>
 var API_BASE = 'https://asifah-backend.onrender.com';
@@ -796,20 +798,34 @@ function buildMapPanel(theatreId) {
     return panel;
 }
 
+function _applyThemeVisuals(theme) {
+    var toggle = document.getElementById('themeToggle');
+    if (toggle) {
+        if (theme === 'dark') toggle.classList.add('active');
+        else toggle.classList.remove('active');
+    }
+    // Sun brightens in light mode, moon in dark -- so the control reads at a
+    // glance instead of relying on switch position alone.
+    var sun = document.getElementById('themeIconSun');
+    var moon = document.getElementById('themeIconMoon');
+    if (sun)  sun.classList.toggle('active', theme === 'light');
+    if (moon) moon.classList.toggle('active', theme === 'dark');
+}
+
 function toggleTheme() {
     var current = document.documentElement.getAttribute('data-theme');
     var next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    var toggle = document.getElementById('themeToggle');
-    if (next === 'dark') toggle.classList.add('active'); else toggle.classList.remove('active');
-    localStorage.setItem('mil-theme', next);
+    document.body.setAttribute('data-theme', next);
+    _applyThemeVisuals(next);
+    try { localStorage.setItem('mil-theme', next); } catch (e) {}
 }
 
 function loadTheme() {
     var saved = localStorage.getItem('mil-theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved);
-    var toggle = document.getElementById('themeToggle');
-    if (saved === 'dark') toggle.classList.add('active'); else toggle.classList.remove('active');
+    document.body.setAttribute('data-theme', saved);
+    _applyThemeVisuals(saved);
 }
 
 function toggleTheatre(theatreId) {
@@ -1970,5 +1986,48 @@ document.addEventListener('keydown', (e) => {
 </script>
 </div><!-- end nav-sidebar-main -->
 </div><!-- end page-with-sidebar -->
+
+<!-- FOOTER -- outside the sidebar wrapper so it spans the same canonical
+     1800px as the header and the Worldwide Caution banner. -->
+<footer class="page-footer asifah-width">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About</h4>
+                <p><strong>ASIFAH ANALYTICS · GLOBAL MILITARY POSTURE TRACKER</strong><br>asifah-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
+            </div>
+            <div class="footer-section">
+                <h4 data-i18n="footerSources">Data Sources</h4>
+               <p data-i18n="footerSourcesText">Defense RSS feeds (USNI News, Naval News, Defense News, Janes, Breaking Defense), GDELT global event database (English + 14 language queries including Japanese, Korean, Chinese, Hebrew, Arabic, Farsi, Russian, Ukrainian, Spanish), NewsAPI, Brave Search (tertiary fallback), Reddit (r/CredibleDefense, r/LessCredibleDefence), OSINT Telegram channels, and BlueSky aggregated feeds (POTUS, SecDef, INDOPACOM, OSINT Defender, MOFA Japan, Taiwan MND, ROK MND, and others). Naval positions cross-referenced with public deployment records.</p>
+            </div>
+            <div class="footer-section">
+                <h4 data-i18n="footerMethodology">Methodology</h4>
+                <p data-i18n="footerMethodologyText">Multi-actor military posture aggregation across ~30 state actors and 6 theatres (Global/NORTHCOM, Africa/AFRICOM, Asia &amp; Pacific, Europe, Middle East, Western Hemisphere) with tiered actor weighting (Tier 1 strike → Tier 4 alliance), asset-class signal classification (carrier strike groups, submarines, strategic bombers, amphibious groups, fighter surges, air defense, ISR, ground forces, logistics, missile tests, naval exercises, base evacuations, drone incursions), regional tension multiplier scoring, and 7-day rolling window. Each actor's signals are scored against country-specific keyword libraries (English + native-language sources where applicable). Naval map shows weighted asset deployments with size = signal weight.</p>
+            </div>
+        </div>
+        <div class="footer-disclaimer">
+            <strong data-i18n="footerDisclaimerLabel">⚠️ DISCLAIMER</strong>
+            <span data-i18n="footerDisclaimerText">This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Posture indicators reflect media signal intensity and should not be interpreted as ground-truth predictions of operational deployments. Always consult authoritative sources for decision-making.</span>
+        </div>
+
+        <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
+        <div style="margin:24px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
+            <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
+        </div>
+
+        <div class="footer-links">
+            <a href="mission.html">Mission Statement</a>
+            <span>·</span>
+            <a href="privacy.html" data-i18n="footerPrivacy">Privacy Policy</a>
+            <span>·</span>
+            <a href="https://asifahanalytics.com">Home</a>
+        </div>
+        <div class="footer-copyright">
+            © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v3.0.0<br>
+            <span data-i18n="footerProprietary">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span>
+            <br>
+            <a href="index.html" class="back-link" data-i18n="backToMain">← Back to Main Dashboard</a>
+        </div>
+    </footer>
 </body>
 </html>
