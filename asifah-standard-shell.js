@@ -157,9 +157,23 @@
     setTheme(current === 'dark' ? 'light' : 'dark');
   }
 
+  function preferredHeader() {
+    var headers = Array.prototype.slice.call(document.querySelectorAll('header, .header'));
+    if (!headers.length) return null;
+
+    var visibleHeaders = headers.filter(function (header) {
+      return !header.querySelector('#pageLoadScreen');
+    });
+    var candidates = visibleHeaders.length ? visibleHeaders : headers;
+    var semantic = candidates.filter(function (header) {
+      return header.querySelector('h1, h2, .header-content, .language-switcher, .theme-toggle, .lang-btn');
+    });
+    return (semantic.length ? semantic : candidates).pop();
+  }
+
   function ensureHeader() {
     var file = currentFile();
-    var header = document.querySelector('header, .header');
+    var header = preferredHeader();
     if (!header) return;
     header.classList.add('asifah-standard-header');
     Array.prototype.slice.call(header.querySelectorAll('.theme-row, .theme-toggle, .toggle-switch')).forEach(function (el) {
@@ -217,6 +231,11 @@
     sidebar.innerHTML = html;
     document.body.insertBefore(sidebar, document.body.firstChild);
     document.body.classList.add('asifah-injected-sidebar-active');
+  }
+
+  function ensureWatermarkMode() {
+    var existing = document.querySelector('.watermark, .page-watermark, .asifah-watermark');
+    document.body.classList.add(existing ? 'asifah-page-watermark-existing' : 'asifah-shell-watermark-active');
   }
 
   function ensureMobileNav() {
@@ -298,6 +317,7 @@
 
   function init() {
     document.body.classList.add('asifah-standardized');
+    ensureWatermarkMode();
     ensureTheme();
     ensureHeader();
     ensureSidebar();
