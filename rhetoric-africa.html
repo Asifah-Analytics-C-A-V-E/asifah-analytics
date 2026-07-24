@@ -2,6 +2,7 @@
 <!-- Regional hub for africa_regional_bluf.py (/api/rhetoric/africa/bluf) -->
 <!-- Africa divergences from the Europe exemplar: (1) COVERAGE HONESTY card -->
 <!-- for single-tracker mode, (2) WHEEL JUNCTION panel, (3) claiming-actor    -->
+<!-- v1.1.0 Jul 24 2026 — Sudan tracker live; signal-polarity tags added.      -->
 <!-- SILENCE signal class. English-only per Africa rule.                      -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -243,6 +244,20 @@
     .silence-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #c4b5fd; font-family: 'Courier New', monospace; font-weight: 700; }
     .silence-item { font-size: 0.78rem; color: var(--text-secondary); font-family: 'Times New Roman', Times, serif; line-height: 1.55; padding: 4px 0 4px 10px; border-left: 2px solid rgba(167,139,250,0.4); margin: 4px 0; }
 
+    /* ── SIGNAL POLARITY (Jul 24 2026) ──
+       De-escalation signals are SCORE REDUCERS. They survive to this altitude
+       only because of the BLUF's diplomatic guard; rendering them in escalation
+       red would undo that. Blue = off-ramp, red = pressure. */
+    .sigrow.sigrow-deesc { background: rgba(29,78,216,0.06); }
+    .sigrow-tag {
+        font-size: 0.54rem; font-weight: 800; letter-spacing: 1px;
+        padding: 1px 6px; border-radius: 3px; text-transform: uppercase;
+        white-space: nowrap; flex-shrink: 0;
+    }
+    .sigrow-tag.deesc     { background: #1d4ed8; color: #dbeafe; }
+    .sigrow-tag.converge  { background: #7c2d12; color: #fed7aa; }
+    .sigrow-tag.humani    { background: #0e7490; color: #cffafe; }
+
     /* ── TRACKER BANNERS ── */
     .trackers-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
     .tracker-banner {
@@ -334,6 +349,9 @@
     <div class="nav-sidebar-label">Somalia</div>
     <a href="rhetoric-somalia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇸🇴 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
     <a href="somalia-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇸🇴 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-sidebar-label" style="margin-top:10px;">Sudan</div>
+    <a href="rhetoric-sudan.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇸🇩 Pressure Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <a href="sudan-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">🇸🇩 Stability Index</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -412,12 +430,8 @@
 <div class="section-title" style="margin-top:24px;">🔜 In Development</div>
 <div class="trackers-list">
     <div class="coming-soon-banner">
-        <div class="coming-soon-name">🇸🇩 Sudan Rhetoric Tracker</div>
-        <span class="coming-soon-badge">Next in queue</span>
-    </div>
-    <div class="coming-soon-banner">
         <div class="coming-soon-name">🇲🇱 Mali · 🇧🇫 Burkina Faso · 🇳🇪 Niger — Sahel Cluster</div>
-        <span class="coming-soon-badge">Queued</span>
+        <span class="coming-soon-badge">Next in queue</span>
     </div>
     <div class="coming-soon-banner">
         <div class="coming-soon-name">🇨🇫 Central African Republic</div>
@@ -698,15 +712,34 @@ function renderBluf(data) {
                 const locHtml = page
                     ? '<a class="sigrow-loc" href="' + page + '" style="color:' + lv.color + ';">' + esc(locName) + '</a>'
                     : '<span class="sigrow-loc nolink" style="color:' + lv.color + ';">' + esc(locName) + '</span>';
+                // ── Polarity read. A diplomatic signal is a score REDUCER; it
+                //    reached this altitude only via the BLUF's diplomatic guard,
+                //    so it must not render as a threat. ──
+                const cat = String(s.category || '').toLowerCase();
+                const isDeesc = String(s.pressure_type || '').toLowerCase() === 'diplomatic'
+                    || ['diplomatic_offramp', 'diplomatic_active', 'mediation_active',
+                        'off_ramp_active', 'ceasefire', 'diplomatic'].indexOf(cat) !== -1;
+                const isConverge = ['compound_convergence', 'russia_contradiction',
+                                    'wheel_convergence'].indexOf(cat) !== -1;
+                const isHumani = String(s.pressure_type || '').toLowerCase() === 'humanitarian';
+
+                let tag = '';
+                if (isDeesc)          tag = '<span class="sigrow-tag deesc">↓ de-escalation</span>';
+                else if (isConverge)  tag = '<span class="sigrow-tag converge">🌀 convergence</span>';
+                else if (isHumani)    tag = '<span class="sigrow-tag humani">humanitarian</span>';
+
+                const railColor = isDeesc ? '#1d4ed8' : (s.color || lv.color);
+                const chipColor = isDeesc ? '#1d4ed8' : (s.color || lv.color);
+
                 const div = document.createElement('div');
-                div.className = 'sigrow';
-                div.style.borderLeftColor = s.color || lv.color;
+                div.className = 'sigrow' + (isDeesc ? ' sigrow-deesc' : '');
+                div.style.borderLeftColor = railColor;
                 div.innerHTML =
                     '<span class="sigrow-icon">' + (s.icon || '⚡') + '</span>' +
                     '<div class="sigrow-body">' +
                         '<div class="sigrow-head">' +
-                            '<span class="sigrow-chip" style="background:' + (s.color || lv.color) + ';">L' + level + ' ' + esc(lv.label) + '</span>' +
-                            locHtml +
+                            '<span class="sigrow-chip" style="background:' + chipColor + ';">L' + level + ' ' + esc(lv.label) + '</span>' +
+                            locHtml + tag +
                         '</div>' +
                         '<div class="sigrow-text">' + esc(s.long_text || s.short_text || '') + '</div>' +
                     '</div>';
