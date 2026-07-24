@@ -192,6 +192,14 @@ header {
     margin-top: 10px;
 }
 
+/* ── RHETORIC TOP-SIGNAL ROWS ── */
+.rh-signal-row { display:flex; align-items:flex-start; gap:9px; padding:7px 9px; border-radius:6px; margin-bottom:5px; background:rgba(56,189,248,0.04); border-left:3px solid #6b7280; }
+.rh-signal-icon { font-size:0.95rem; flex-shrink:0; line-height:1.3; }
+.rh-signal-body { flex:1; min-width:0; }
+.rh-signal-text { font-size:12px; color:var(--text-primary); font-weight:600; line-height:1.4; }
+.rh-signal-detail { font-size:10.5px; color:var(--text-muted); line-height:1.45; margin-top:2px; }
+.rh-signal-lvl { font-size:9px; font-weight:800; padding:1px 6px; border-radius:3px; color:#0b1220; flex-shrink:0; letter-spacing:0.5px; }
+
 /* ── COMMODITY CARD ── */
 .commodity-card {
     background: var(--card-bg);
@@ -504,11 +512,39 @@ header {
 </div>
 
 <!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
-<div class="rhetoric-placeholder">
-    <div class="rh-icon">📡</div>
-    <div class="rh-title">Sudan Rhetoric &amp; Pressure Tracker</div>
-    <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_sudan.py</div>
-    <div class="rh-status">🔒 IN DEVELOPMENT</div>
+<!-- ── RHETORIC TOPLINE BANNER (live — reads /api/rhetoric/sudan/summary) ── -->
+<a href="rhetoric-sudan.html" id="rhetoricBanner" style="display:block;text-decoration:none;background: linear-gradient(135deg, rgba(22,101,52,0.18) 0%, rgba(16,185,129,0.10) 100%); border: 2px solid #10b981; border-radius: 10px; padding: 16px 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(16,185,129,0.15); transition: all 0.2s;" onmouseover="this.style.boxShadow='0 6px 20px rgba(16,185,129,0.30)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 4px 12px rgba(16,185,129,0.15)';this.style.transform='translateY(0)'">
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <div style="font-size:26px; flex-shrink:0;">📡</div>
+        <div style="flex:1; min-width:200px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                <span style="font-size:11px; font-weight:bold; color:#6ee7b7; text-transform:uppercase; letter-spacing:1.5px;">Sudan Rhetoric &amp; Pressure Tracker</span>
+                <span id="rhetoricLevelBadge" style="background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">LEVEL —</span>
+                <span id="rhetoricCompoundBadge" style="display:none; background:#dc2626; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">🌀 COMPOUND RISK</span>
+                <span id="rhetoricContradictionBadge" style="display:none; background:#b91c1c; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">⚖️ RUSSIA CONTRADICTION</span>
+                <span id="rhetoricSilenceBadge" style="display:none; background:#7c3aed; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">🔇 SILENCE</span>
+                <span id="rhetoricStaleBadge" style="display:none; background:#78350f; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">⏳ STALE</span>
+            </div>
+            <div id="rhetoricTopline" style="font-size:12px; color:#e2e8f0; line-height:1.45;">Loading actor-level escalation, vector scoring, and the hub-plug read…</div>
+        </div>
+        <div style="text-align:center; flex-shrink:0; padding-left:8px;">
+            <div id="rhetoricScore" style="font-size:2rem; font-weight:900; line-height:1; color:#10b981;">--</div>
+            <div style="font-size:9px; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase;">Score / 100</div>
+        </div>
+        <span style="flex-shrink:0; padding:6px 14px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); border-radius:6px; color:#6ee7b7; font-size:11px; font-weight:bold; white-space:nowrap;">OPEN TRACKER →</span>
+    </div>
+</a>
+
+<!-- ── RHETORIC CARD — TOP SIGNALS (Gold Standard: BLUF prose + top lines + watch) ── -->
+<div id="rhetoricCard" style="background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid #10b981; border-radius: 10px; padding: 18px 20px; margin-bottom: 22px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">📡 Rhetoric — Top Signals</div>
+        <span id="rhSignalCount" style="background:#374151; color:#e2e8f0; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">LOADING…</span>
+    </div>
+    <div id="rhBluf" style="font-size:12.5px; color:var(--text-secondary); line-height:1.55; background:rgba(16,185,129,0.05); border-left:3px solid #10b981; border-radius:6px; padding:10px 12px; margin-bottom:12px;">Loading strategic assessment…</div>
+    <div id="rhSignalList"></div>
+    <div id="rhWatch" style="font-size:11.5px; color:var(--text-muted); line-height:1.5; border-top:1px solid var(--card-border); padding-top:10px; margin-top:10px; font-style:italic;"></div>
+    <div style="font-size:10px; color:var(--text-muted); margin-top:8px;">Convergence indicator, not a probability of action. <a href="rhetoric-sudan.html" style="color:#6ee7b7;text-decoration:none;">Full tracker →</a></div>
 </div>
 
 <!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 (live tiles) ── -->
@@ -1016,6 +1052,114 @@ async function loadCommodity() {
 }
 
 // ── BOOT ──
+// ── RHETORIC — banner + top-signals card (reads /api/rhetoric/sudan/summary) ──
+async function loadRhetoric() {
+    const LEVELS = {
+        0: { label: 'Monitoring',      color: '#6b7280' },
+        1: { label: 'Rhetoric',        color: '#3b82f6' },
+        2: { label: 'Tension',         color: '#f59e0b' },
+        3: { label: 'Confrontation',   color: '#f97316' },
+        4: { label: 'Incident',        color: '#ef4444' },
+        5: { label: 'Active Conflict', color: '#7c3aed' },
+    };
+    const scoreEl   = document.getElementById('rhetoricScore');
+    const badgeEl   = document.getElementById('rhetoricLevelBadge');
+    const compEl    = document.getElementById('rhetoricCompoundBadge');
+    const contraEl  = document.getElementById('rhetoricContradictionBadge');
+    const silenceEl = document.getElementById('rhetoricSilenceBadge');
+    const staleEl   = document.getElementById('rhetoricStaleBadge');
+    const toplineEl = document.getElementById('rhetoricTopline');
+    const cntEl     = document.getElementById('rhSignalCount');
+    const blufEl    = document.getElementById('rhBluf');
+    const listEl    = document.getElementById('rhSignalList');
+    const watchEl   = document.getElementById('rhWatch');
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+
+    try {
+        const resp = await fetch(AFRICA_API + '/api/rhetoric/sudan/summary');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const d = await resp.json();
+
+        const level = d.theatre_escalation_level || 0;
+        const lv = LEVELS[level] || LEVELS[0];
+        const score = d.rhetoric_score || 0;
+
+        if (scoreEl) { scoreEl.textContent = score; scoreEl.style.color = lv.color; }
+        if (badgeEl) {
+            badgeEl.textContent = 'L' + level + ' — ' + String(d.theatre_label || lv.label).toUpperCase();
+            badgeEl.style.background = lv.color;
+        }
+
+        // Convergence badges — two independent detectors
+        const cc = d.compound_convergence || {};
+        if (compEl)   compEl.style.display   = cc.compound_risk_active ? '' : 'none';
+        if (contraEl) contraEl.style.display = cc.russia_contradiction_active ? '' : 'none';
+
+        // Silence anomalies (SAF / RSF are claiming actors)
+        const sil = d.silence_anomalies || [];
+        if (silenceEl) {
+            silenceEl.style.display = sil.length ? '' : 'none';
+            if (sil.length) silenceEl.textContent = '🔇 ' + sil.length + ' SILENCE';
+        }
+        if (staleEl) staleEl.style.display = d.stale ? '' : 'none';
+
+        // Banner topline prose
+        if (toplineEl) {
+            const parts = [];
+            if (cc.compound_risk_active) parts.push('Compound convergence: war tempo, humanitarian compression, and commodity exposure stacking on one window.');
+            if (cc.russia_contradiction_active) parts.push('Russia two-plug contradiction live — Port Sudan state track and Haftar-to-RSF supply both active.');
+            if (sil.length) {
+                const names = sil.map(s => String(s.actor_name || s.actor_id || '').replace(/_/g, ' ')).join(', ');
+                parts.push('Silence signal from ' + names + ' (claiming actor quiet — silence is signal).');
+            }
+            if (d.red_lines_breached) parts.push(d.red_lines_breached + ' red line' + (d.red_lines_breached > 1 ? 's' : '') + ' breached.');
+            if (!parts.length) parts.push('Actor-level escalation, vector composite scoring, and the hub-plug read — Russia · UAE · SAF patrons · Libya-Haftar · Chad &amp; South Sudan corridors.');
+            toplineEl.textContent = parts.join(' ');
+        }
+
+        // ── Top-signals card ──
+        const sw = d.so_what || {};
+        if (blufEl) {
+            blufEl.textContent = sw.assessment
+                || 'No assessment available this cycle — the tracker may still be warming up.';
+        }
+        if (watchEl) watchEl.textContent = sw.watch ? ('WATCH — ' + sw.watch) : '';
+
+        const sigs = (d.top_signals || []).slice(0, 6);
+        if (cntEl) {
+            cntEl.textContent = sigs.length ? (sigs.length + ' SIGNAL' + (sigs.length > 1 ? 'S' : '')) : 'QUIET';
+            cntEl.style.background = sigs.length ? lv.color : '#374151';
+            cntEl.style.color = sigs.length && level <= 2 ? '#0b1220' : '#e2e8f0';
+        }
+        if (listEl) {
+            if (!sigs.length) {
+                listEl.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 2px;">No signals above threshold this cycle. Silence is a valid analytical output — the tracker is reporting absence, not failing to report.</div>';
+            } else {
+                listEl.innerHTML = sigs.map(function (s) {
+                    const slv = LEVELS[Math.min(Math.max(s.level || 0, 0), 5)] || LEVELS[0];
+                    const col = s.color || slv.color;
+                    return '<div class="rh-signal-row" style="border-left-color:' + col + ';">' +
+                        '<span class="rh-signal-icon">' + esc(s.icon || '•') + '</span>' +
+                        '<div class="rh-signal-body">' +
+                            '<div class="rh-signal-text">' + esc(s.short_text || '') + '</div>' +
+                            '<div class="rh-signal-detail">' + esc(s.long_text || '') + '</div>' +
+                        '</div>' +
+                        '<span class="rh-signal-lvl" style="background:' + col + ';">L' + (s.level || 0) + '</span>' +
+                    '</div>';
+                }).join('');
+            }
+        }
+    } catch (err) {
+        console.warn('Rhetoric summary error:', err);
+        if (toplineEl) toplineEl.textContent = 'Rhetoric tracker warming up — open the full tracker for actor-level detail.';
+        if (badgeEl) badgeEl.textContent = 'LEVEL —';
+        if (cntEl) { cntEl.textContent = 'UNAVAILABLE'; cntEl.style.background = '#7f1d1d'; }
+        if (blufEl) blufEl.textContent = 'Rhetoric data unavailable — the Africa backend may still be warming up.';
+        if (listEl) listEl.innerHTML = '';
+    }
+}
+
 // ── HUMANITARIAN PULSE — sensor card (IOM DTM + ReliefWeb via Africa backend) ──
 async function loadHumanitarian() {
     const badge = document.getElementById('humBadge');
@@ -1078,6 +1222,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadTravelAdvisory();
     loadArticles();
     loadCommodity();
+    loadRhetoric();
     loadHumanitarian();
 });
 </script>
