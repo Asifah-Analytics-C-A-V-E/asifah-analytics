@@ -1219,11 +1219,12 @@ async function updateBluf(_resolvedUnused) {
     // Each tracker renders the moment its own fetch resolves — no waiting for
     // the slowest endpoint. Fixes the "page spins for 60s on Render cold-start"
     // UX problem. Returns a settled-result for posture aggregation.
-    async function loadTrackerProgressive(tracker) {
+    async function loadTrackerProgressive(tracker, fallbackData) {
         try {
             const data = await fetchWithTimeout(tracker.summaryUrl);
             const newEl = renderTrackerBanner(tracker, data);
             newEl.id = `banner-${tracker.id}`;
+            newEl.setAttribute('data-sort', tracker.id);
             const old = document.getElementById(`banner-${tracker.id}`);
             if (old) old.replaceWith(newEl);
             return { tracker, data };
@@ -1242,6 +1243,16 @@ async function updateBluf(_resolvedUnused) {
             const old = document.getElementById(`banner-${tracker.id}`);
             if (old) old.replaceWith(errEl);
             return { tracker, data: null };
+            // Endpoint missing or slow: fall back to the BLUF-sourced render so
+            // the banner keeps its level/score instead of going blank.
+            if (fallbackData) {
+                const fbEl = renderTrackerBanner(tracker, fallbackData);
+                fbEl.id = `banner-${tracker.id}`;
+                fbEl.setAttribute('data-sort', tracker.id);
+                const prev = document.getElementById(`banner-${tracker.id}`);
+                if (prev) prev.replaceWith(fbEl);
+                return { tracker, data: fallbackData };
+            }
         }
     }
 
@@ -1249,6 +1260,38 @@ async function updateBluf(_resolvedUnused) {
     // Everything comes from the backend. Used for trackers the BLUF reports
     // that TRACKERS (metadata) does not describe -- i.e. every newly shipped
     // country, automatically, with no edit to this file.
+    // Adapt a BLUF theatre_summary entry into the shape renderTrackerBanner
+    // expects. Lets a discovered tracker render fully from data we ALREADY have,
+    // instead of blanking out when it has no /summary endpoint of its own.
+    function blufDataToTrackerData(s) {
+        if (!s) return null;
+        return {
+            theatre_level:            s.level,
+            theatre_escalation_level: s.level,
+            theatre_label:            s.label,
+            theatre_color:            s.color,
+            rhetoric_score:           s.score,
+            article_count:            s.article_count,
+            vector_levels:            s.vector_levels || {},
+            scanned_at:               s.timestamp,
+            _from_bluf:               true,
+        };
+    }
+
+    // Re-order every banner alphabetically by display name. Called after the
+    // BLUF resolves, because discovered trackers arrive in a second pass and
+    // would otherwise pile up at the bottom out of order. appendChild MOVES an
+    // existing node, so this reorders without re-rendering anything.
+    function sortTrackerBanners(list) {
+        var nodes = Array.prototype.slice.call(list.children);
+        nodes.sort(function (a, b) {
+            var an = (a.getAttribute('data-sort') || a.id || '').toLowerCase();
+            var bn = (b.getAttribute('data-sort') || b.id || '').toLowerCase();
+            return an < bn ? -1 : (an > bn ? 1 : 0);
+        });
+        nodes.forEach(function (n) { list.appendChild(n); });
+    }
+
     function trackerFromBluf(id, summary) {
         const s = summary || {};
         const pretty = String(id).replace(/[_-]+/g, ' ')
@@ -1279,9 +1322,11 @@ async function updateBluf(_resolvedUnused) {
         active.forEach(tracker => {
             const el = renderTrackerBanner(tracker, null);
             el.id = `banner-${tracker.id}`;
+            el.setAttribute('data-sort', tracker.id);
             list.appendChild(el);
             rendered.add(tracker.id);
         });
+        sortTrackerBanners(list);
 
         // Kick off metadata trackers + the BLUF in parallel (unchanged).
         const trackerPromises = active.map(loadTrackerProgressive);
@@ -1294,15 +1339,24 @@ async function updateBluf(_resolvedUnused) {
             const summary = (bluf && bluf.theatre_summary) || {};
             const extras = Object.keys(summary).filter(id => !rendered.has(id));
             if (!extras.length) return [];
-            return Promise.all(extras.sort().map(id => {
+            const out = extras.sort().map(id => {
                 const t = trackerFromBluf(id, summary[id]);
-                const el = renderTrackerBanner(t, null);
+                // Render with BLUF data immediately -- level, score, article
+                // count and vector pills all come from the regional payload, so
+                // the banner is populated even if this tracker exposes no
+                // /summary endpoint of its own.
+                const el = renderTrackerBanner(t, blufDataToTrackerData(summary[id]));
                 el.id = `banner-${t.id}`;
+                el.setAttribute('data-sort', t.id);
                 list.appendChild(el);
                 rendered.add(id);
                 active.push(t);
-                return loadTrackerProgressive(t);
-            }));
+                // Still try the dedicated endpoint -- it carries richer detail
+                // when present. Failure is harmless: the BLUF render stands.
+                return loadTrackerProgressive(t, blufDataToTrackerData(summary[id]));
+            });
+            sortTrackerBanners(list);   // alphabetical across BOTH passes
+            return Promise.all(out);
         }).catch(() => []);
 
         const [resolved, extraResolved] = await Promise.all([
