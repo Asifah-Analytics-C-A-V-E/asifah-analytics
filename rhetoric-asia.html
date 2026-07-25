@@ -718,6 +718,19 @@ function renderConvergencePanel(panel) {
 
     // ── TRACKER DEFINITIONS ──
     // One entry per live tracker. Add new Asia trackers here as they launch.
+    // ── TRACKER METADATA (OPTIONAL ENRICHMENT) ──────────────────────────
+    // v1.x Jul 25 2026. NOT the source of truth for which trackers exist --
+    // the BLUF's theatre_summary is. Entries here only supply nicer prose.
+    //
+    // Asia's China build-out will add countries steadily. Each should appear
+    // the moment its tracker registers, with NO edit to this file: a hardcoded
+    // roster is a standing promise to hand-edit the frontend every time a
+    // tracker ships, and that promise gets broken. (Europe drifted four before
+    // anyone noticed; ME drifted one.)
+    //
+    // Unbuilt trackers cannot create phantom banners -- theatre_summary is
+    // built only from caches that actually resolved, so a planned-but-absent
+    // country never appears.
     const TRACKERS = [
         {
             id:         'afghanistan',
@@ -1067,12 +1080,12 @@ function renderConvergencePanel(panel) {
             ]);
             if (!respBluf.ok) {
                 document.getElementById('blufLoading').textContent = '⚠️ BLUF unavailable';
-                return;
+                return null;   // nothing to discover from
             }
             const data = await respBluf.json();
             if (!data.success) {
                 document.getElementById('blufLoading').textContent = '⚠️ BLUF unavailable';
-                return;
+                return data;   // may still carry theatre_summary
             }
             const pill = document.getElementById('blufPosturePill');
             pill.textContent = data.posture_label || 'UNKNOWN';
@@ -1120,6 +1133,7 @@ function renderConvergencePanel(panel) {
             }
             document.getElementById('blufLoading').style.display = 'none';
             document.getElementById('blufContent').style.display = 'block';
+                    return data;   // source of truth for which trackers exist
         } catch (e) {
             document.getElementById('blufLoading').textContent = '⚠️ BLUF unavailable';
             console.warn('[Asia BLUF]', e);
@@ -1127,20 +1141,82 @@ function renderConvergencePanel(panel) {
     }
 
     // ── MAIN LOAD ──
+    function blufDataToTrackerData(s) {
+        if (!s) return null;
+        return {
+            theatre_level:            s.level,
+            theatre_escalation_level: s.level,
+            theatre_label:            s.tracker_label || s.label,
+            theatre_color:            s.color,
+            rhetoric_score:           s.score,
+            article_count:            s.article_count,
+            vector_levels:            s.vector_levels || {},
+            scanned_at:               s.timestamp,
+            _from_bluf:               true,
+        };
+    }
+
+    function trackerFromBluf(id, summary) {
+        const s = summary || {};
+        const pretty = String(id).replace(/[_-]+/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+        return {
+            id:         id,
+            name:       (s.display || pretty) + ' Rhetoric Tracker',
+            flag:       s.flag || '\uD83D\uDCE1',
+            actors:     '',
+            vectors:    Object.keys(s.vector_levels || {}),
+            summaryUrl: API_BASE + '/api/rhetoric/' + id + '/summary',
+            url:        'https://www.asifahanalytics.com/rhetoric-' +
+                        String(id).replace(/_/g, '-') + '.html',
+            _discovered: true,
+        };
+    }
+
+    // appendChild MOVES an existing node, so this reorders without re-rendering.
+    function sortTrackerBanners(list) {
+        var nodes = Array.prototype.slice.call(list.children);
+        nodes.sort(function (a, b) {
+            var an = (a.getAttribute('data-sort') || a.id || '').toLowerCase();
+            var bn = (b.getAttribute('data-sort') || b.id || '').toLowerCase();
+            return an < bn ? -1 : (an > bn ? 1 : 0);
+        });
+        nodes.forEach(function (n) { list.appendChild(n); });
+    }
+
     async function loadAll() {
         const list = document.getElementById('trackersList');
         list.innerHTML = '';
 
-        // Pre-render loading skeletons
-        TRACKERS.forEach(tracker => {
+        // Pass 1 -- paint skeletons from metadata (fast first paint)
+        const active = TRACKERS.slice();
+        const rendered = new Set();
+        active.forEach(tracker => {
             const el = renderTrackerBanner(tracker, null);
             el.id = `banner-${tracker.id}`;
+            el.setAttribute('data-sort', tracker.id);
             list.appendChild(el);
+            rendered.add(tracker.id);
         });
+
+        // Pass 2 -- the BLUF is the SOURCE OF TRUTH for which trackers exist.
+        const blufData = await _blufPromise.catch(() => null);
+        const tsum = (blufData && blufData.theatre_summary) || {};
+        Object.keys(tsum).sort().forEach(id => {
+            if (rendered.has(id)) return;
+            const t = trackerFromBluf(id, tsum[id]);
+            const el = renderTrackerBanner(t, blufDataToTrackerData(tsum[id]));
+            el.id = `banner-${t.id}`;
+            el.setAttribute('data-sort', t.id);
+            list.appendChild(el);
+            rendered.add(id);
+            active.push(t);
+        });
+        sortTrackerBanners(list);
 
         // Fetch all summaries in parallel
         const settled = await Promise.allSettled(
-            TRACKERS.map(async tracker => {
+            active.map(async tracker => {
                 try {
                     const resp = await fetch(tracker.summaryUrl, { cache: 'no-store' });
                     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -1160,11 +1236,16 @@ function renderConvergencePanel(panel) {
         // Update each banner with live data
         resolved.forEach(({ tracker, data }) => {
             if (!tracker) return;
-            const newEl = renderTrackerBanner(tracker, data);
+            // No /summary endpoint (true of most greenfield builds) -> fall
+            // back to BLUF data rather than blanking the banner.
+            const fallback = blufDataToTrackerData(tsum[tracker.id]);
+            const newEl = renderTrackerBanner(tracker, data || fallback);
             newEl.id = `banner-${tracker.id}`;
+            newEl.setAttribute('data-sort', tracker.id);
             const old = document.getElementById(`banner-${tracker.id}`);
             if (old) old.replaceWith(newEl);
         });
+        sortTrackerBanners(list);   // alphabetical across BOTH passes
 
         updatePosture(resolved);
     }
@@ -1185,8 +1266,11 @@ function renderConvergencePanel(panel) {
     }
 
     // ── INIT ──
+    // loadAll() needs theatre_summary to discover trackers; loadAsiaBluf()
+    // needs it for prose. One fetch, shared -- not two.
+    let _blufPromise;
     loadTheme();
-    loadAsiaBluf();
+    _blufPromise = loadAsiaBluf();
     loadAll();
     document.querySelectorAll('#navSidebar a.nav-btn').forEach(a =>
         a.addEventListener('click', () => closeSidebar()));
