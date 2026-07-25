@@ -54,16 +54,29 @@
     content: '';
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 50vmin; height: 50vmin;
-    min-width: 340px; min-height: 340px;
-    max-width: 900px; max-height: 900px;
+    /* Canonical watermark spec (matches resources/asifah-standard-shell.css).
+       Was 50vmin / contain / hardcoded 0.30 opacity -- half size, and
+       `contain` renders the logo's WHITE SQUARE BACKING, which glares in dark
+       mode. background-size:135% zooms past the frame and border-radius:50%
+       clips the corners away, leaving only the artwork's own navy field. */
+    width: 110vmin; height: 110vmin;
+    min-width: 760px; min-height: 760px;
+    max-width: 1400px; max-height: 1400px;
     background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-    background-size: contain;
+    background-size: 135%;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 0.30;
+    border-radius: 50%;
+    /* These two variables were DEFINED at the top of this stylesheet and never
+       referenced -- which is why dark mode never received its filter. */
+    opacity: var(--watermark-opacity, 0.07);
+    filter: var(--watermark-filter, none);
     z-index: 0; pointer-events: none; user-select: none;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+@media (max-width: 768px) {
+    body::before { min-width: 520px; min-height: 520px; }
 }
 
 /* Jul 23 2026 watermark spec -- DARK MODE: zooming past 100% and clipping to
@@ -629,7 +642,13 @@ function renderConvergencePanel(panel) {
 
     var wheels = panel.resident_wheels || [];
     var eman   = panel.emanating || [];
-    if (!wheels.length && !eman.length) { card.style.display = 'none'; return; }
+    var silent = panel.emanating_silent || [];
+    // Show the card whenever there is ANY known relationship to report --
+    // including one that has gone quiet. A panel that vanishes when nothing is
+    // firing cannot tell the reader "quiet" apart from "broken".
+    if (!wheels.length && !eman.length && !silent.length) {
+        card.style.display = 'none'; return;
+    }
 
     document.getElementById('cvgSub').textContent = panel.subtitle || '';
     document.getElementById('cvgWheels').innerHTML = wheels.map(cvgWheelBlock).join('');
@@ -637,7 +656,7 @@ function renderConvergencePanel(panel) {
     // Emanating: local countries feeding FOREIGN hubs. This is the half that
     // rides to the GPI, so it is rendered as an outbound flow, not a tile.
     var emEl = document.getElementById('cvgEmanating');
-    if (eman.length) {
+    if (eman.length || silent.length) {
         emEl.innerHTML = '<div class="cvg-emanating">' +
             '<div class="cvg-wheel-label">\u2197 EMANATING \u2014 local spokes feeding hubs elsewhere</div>' +
             eman.map(function (e) {
@@ -651,7 +670,21 @@ function renderConvergencePanel(panel) {
                     (e.top_signal ? '<span style="color:var(--text-muted);font-size:0.7rem;">' +
                         cvgEsc(String(e.top_signal).slice(0, 84)) + '</span>' : '') +
                     '</div>';
-            }).join('') + '</div>';
+            }).join('') +
+            // Silent outbound spokes collapse the same way rim spokes do.
+            (silent.length
+              ? '<details class="cvg-silent"><summary>\u25B8 ' + silent.length +
+                ' outbound spoke' + (silent.length > 1 ? 's' : '') + ' not reporting' +
+                ' \u2014 not emitting yet, or stale beyond the freshness gate</summary>' +
+                '<div class="cvg-silent-list">' + silent.map(function (s) {
+                    var why = s.reason === 'stale'
+                        ? ' \u00b7 stale' + (s.age_hours ? ' ' + Math.round(s.age_hours) + 'h' : '')
+                        : '';
+                    return '<span class="cvg-silent-chip">' + cvgEsc(s.display || s.country) +
+                           ' \u2192 ' + cvgEsc(s.hub_display || s.hub) + why + '</span>';
+                }).join('') + '</div></details>'
+              : '') +
+            '</div>';
     } else { emEl.innerHTML = ''; }
 
     var anyConv = !!panel.any_converged;
@@ -665,6 +698,7 @@ function renderConvergencePanel(panel) {
 
     var notes = wheels.map(function (w) { return w.headline || w.dormant_note || ''; })
                       .filter(Boolean);
+    if (!wheels.length && panel.dormant_note) notes.push(panel.dormant_note);
     document.getElementById('cvgNote').textContent = notes.join(' ');
     document.getElementById('cvgDisclaimer').textContent = panel.disclaimer || '';
     card.style.display = 'block';
