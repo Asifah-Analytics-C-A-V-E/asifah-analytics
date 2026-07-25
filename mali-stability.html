@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- Asifah Analytics — Mali Stability Index v1.0.0 — May 2026 -->
-<!-- Gold Standard Africa shell: Arctic scheme + sidebar + rhetoric placeholder + commodity card + EN only -->
+<!-- Gold Standard Africa shell: Arctic scheme + sidebar + rhetoric placeholder + commodity + humanitarian + EN only -->
+<!-- v1.1.0 Jul 25 2026 - knowledge library refreshed through Jul 2026; siege-shaped humanitarian card; sidebar Canon v2 -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
 <head>
@@ -69,7 +70,10 @@ body::before {
     min-width: 500px; min-height: 500px;
     max-width: 800px; max-height: 800px;
     background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-    background-size: contain; background-repeat: no-repeat; background-position: center;
+    /* 135% + circular clip crops the logo's white square backing, which
+       otherwise glares in dark mode. Canonical spec. */
+    background-size: 135%; background-repeat: no-repeat; background-position: center;
+    border-radius: 50%;
     opacity: var(--watermark-opacity);
     filter: var(--watermark-filter);
     pointer-events: none;
@@ -468,11 +472,11 @@ header {
     <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
 
     <div class="nav-sidebar-label" style="margin-top: 14px;">Regional Rhetoric</div>
-    <a href="rhetoric-middle-east.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-africa.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">● Live</span></a>
     <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
     <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
-    <div class="nav-btn inactive-nav"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">🔒 In Dev</span></div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <div class="main-content">
@@ -508,6 +512,23 @@ header {
     <div class="rh-title">Mali Rhetoric &amp; Pressure Tracker</div>
     <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_mali.py</div>
     <div class="rh-status">🔒 IN DEVELOPMENT</div>
+</div>
+
+<!-- ── HUMANITARIAN PULSE (live sensor: IOM DTM + ReliefWeb + attributed baseline)
+     Mali's signature is a SIEGE, not a bidirectional flow: the blockade is the
+     headline dial and IDP stock is context. ── -->
+<div style="background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid #38bdf8; border-radius: 10px; padding: 18px 20px; margin-bottom: 22px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">🏕️ Humanitarian Pulse</div>
+        <span id="humBadge" style="background:#374151; color:#e2e8f0; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">LOADING…</span>
+    </div>
+    <div id="humBlockade" style="display:none; font-size:12px; line-height:1.5; background:rgba(220,38,38,0.08); border-left:3px solid #dc2626; border-radius:6px; padding:10px 12px; margin-bottom:12px; color:var(--text-primary);"></div>
+    <div id="humStats" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+        <div style="text-align:center; color:var(--text-muted); font-size:12px; grid-column:1/-1; padding:14px;">Loading displacement, blockade and food-security figures…</div>
+    </div>
+    <div id="humSoWhat" style="font-size:12px; color:var(--text-secondary); line-height:1.5; border-top:1px solid var(--card-border); padding-top:10px; margin-bottom:10px;"></div>
+    <div id="humReports"></div>
+    <div id="humSources" style="font-size:10px; color:var(--text-muted); margin-top:8px;"></div>
 </div>
 
 <!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 (live tiles) ── -->
@@ -600,14 +621,19 @@ header {
     <li><strong>JNIM (Jama'at Nasr al-Islam wal Muslimin):</strong> Al-Qaeda-aligned umbrella formed March 2017, merging AQIM-Sahara, Ansar Dine, Macina Liberation Front, and Al-Mourabitoun.</li>
     <li><strong>Iyad ag Ghaly:</strong> JNIM emir; veteran Tuareg insurgent leader.</li>
     <li><strong>Amadou Kouffa:</strong> Head of Macina Katiba, the JNIM affiliate operating in central Mali; principally targets Fulani-Bambara intercommunal lines.</li>
-    <li><strong>ISGS (Islamic State Sahel Province):</strong> Rival to JNIM; concentrated in Liptako-Gourma three-border area (Mali-Burkina-Niger).</li>
+    <li><strong>ISGS / ISSP (Islamic State Sahel Province):</strong> Rival to JNIM &mdash; the two jihadist groups fight each other; concentrated in Liptako-Gourma three-border area (Mali-Burkina-Niger).</li>
+    <li><strong>FLA (Azawad Liberation Front):</strong> Successor umbrella to the CMA/CSP Tuareg coalition. <strong>Secular ethnonationalist, NOT jihadist</strong> &mdash; seeks autonomy or independence for Azawad. Conflating the FLA with JNIM is the most common analytical error on Mali.</li>
+    <li><strong>The 2026 tactical convergence:</strong> The FLA and JNIM &mdash; a secular separatist movement and an al-Qaeda affiliate &mdash; now conduct coordinated simultaneous operations. A coalition of convenience against a common enemy, and a force multiplier. Whether it is durable or opportunistic is an open question; a split would be as significant as the alliance.</li>
 </ul>
 <p><strong>Operational Theaters (2024-2026):</strong></p>
 <ul>
     <li><strong>Tinzaouaten ambush (July 2024):</strong> JNIM + CMA-aligned Tuareg fighters ambushed FAMa and Wagner forces near Algerian border; reported Wagner casualties were among highest in any single engagement.</li>
     <li><strong>JNIM Bamako attack (Sept 17, 2024):</strong> Coordinated attack on the gendarmerie training school + Modibo Keita Airport; killed Mali soldiers and damaged presidential aircraft.</li>
     <li><strong>Mopti / Ségou central Mali:</strong> Macina Katiba operations against Bambara/Dogon villages; ethnic-defense militia (Dan Na Ambassagou) clashes.</li>
-    <li><strong>Gao / Kidal / Ménaka:</strong> Northern Mali contested between FAMa+Wagner, JNIM, ISGS, and CMA/FLA Tuareg factions.</li>
+    <li><strong>Gao / Kidal / M&eacute;naka:</strong> Northern Mali contested between FAMa+Africa Corps, JNIM, ISSP, and FLA Tuareg factions.</li>
+    <li><strong>Bamako fuel blockade (Sept 2025 &ndash; ongoing):</strong> JNIM interdiction of fuel convoys produced unprecedented scarcity across the south and centre. The crisis has spread into what NRC calls the country's food basket, reversing the decade-long north-and-centre pattern. Economic strangulation of a capital.</li>
+    <li><strong>April 25&ndash;26, 2026 &mdash; coordinated offensive:</strong> FLA + JNIM struck Bamako, Kati, Gao, Kidal, Mopti and S&eacute;var&eacute; simultaneously. <strong>Kidal fell and Mali's defence minister was killed.</strong> FAMa and Africa Corps withdrew from several northern positions, leaving Anefis and Aguelhok as the last army footholds in the Kidal region.</li>
+    <li><strong>July 4&ndash;5, 2026 &mdash; five-location strike:</strong> Simultaneous attacks on Aguelhok, Anefis, Gao, S&eacute;var&eacute; and Kenieroba (south, near Bamako). The FLA claimed downing an Africa Corps Mi-24P near Gao while ambushing a convoy bound for Anefis &mdash; reportedly the second Africa Corps helicopter lost in roughly ten weeks. <em>Claims are FLA-sourced and unconfirmed by Russia or Mali; read as claim tempo, not event count.</em></li>
 </ul>
                 
                 <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
@@ -637,12 +663,17 @@ header {
     <li><strong>Africa Corps transition (mid-2024):</strong> Post-Prigozhin restructuring; Wagner Mali contingent absorbed under direct GRU command (Andrey Averyanov / Unit 29155).</li>
     <li><strong>Yevkurov tours:</strong> Russian Deputy DM Yunus-Bek Yevkurov has made multiple Sahel tours formalizing the new partnership structure.</li>
     <li><strong>Russian instructors:</strong> Reported deployment of conventional Russian military trainers alongside Africa Corps; harder to distinguish from Wagner predecessor.</li>
+    <li><strong>Wagner formal exit (June 2025):</strong> Wagner announced departure from Mali; Africa Corps assumed the mission under Russian MoD control. The rebrand completed a shift from deniable contractor to state instrument.</li>
+    <li><strong>SVR absorbs the influence arm:</strong> Wagner's political-influence and disinformation branch &mdash; &ldquo;Africa Politology,&rdquo; internally &ldquo;The Company,&rdquo; roughly 100 consultants &mdash; was taken over by Russian foreign intelligence. <strong>The information campaign and the military operation now have different owners</strong>, which matters for reading rhetoric against kinetics.</li>
+    <li><strong>Libya logistics corridor:</strong> Benghazi &rarr; Maaten al-Sarra &rarr; Sahel/CAR. The same spine that supplies Russian operations in Sudan, running through the same Haftar node. Libya also functions as a hub for gold smuggling, sanctions evasion and migration leverage against Europe.</li>
 </ul>
 <p><strong>Operational Activity:</strong></p>
 <ul>
     <li><strong>Counter-insurgency joint ops:</strong> Africa Corps + FAMa operations against JNIM and ISGS; mixed effectiveness, high civilian casualties documented by HRW and MINUSMA (pre-withdrawal).</li>
     <li><strong>Tinzaouaten losses (July 2024):</strong> Major Wagner/Russian casualties at hands of CMA-aligned Tuareg fighters; one of the most significant tactical defeats Russian forces have faced in Africa.</li>
-    <li><strong>Documented atrocities:</strong> Moura massacre (March 2022) — UN documented FAMa + Wagner killing 500+ civilians; widely cited as evidence of Russian operational doctrine.</li>
+    <li><strong>Documented atrocities:</strong> Moura massacre (March 2022) &mdash; UN documented FAMa + Wagner killing 500+ civilians; widely cited as evidence of Russian operational doctrine. ACLED records 1,800+ civilians killed in Wagner operations across Africa since 2017.</li>
+    <li><strong>Why Russia is here &mdash; the model, not the mercenary story:</strong> The product being sold is <em>regime survival</em>, not counterterrorism: insulation for a junta against its own military and its own population. That is why it sells to coup regimes specifically. Payment comes as resource concessions &mdash; gold, uranium, mining rights &mdash; which convert to physical cash outside the dollar system and keep the operation off the Russian budget. <strong>Commodities are the payment mechanism, not the objective.</strong> The objectives are Western displacement (France and MINUSMA expelled from Mali; 1,000+ US troops from Niger), UN voting alignment, port and basing access, and migration leverage over Europe.</li>
+    <li><strong>The model's failure mode:</strong> Security has deteriorated in every country hosting Russian forces. Atrocities drive recruitment, which requires more force, which produces more atrocities. Mali is the largest Russian deployment alongside CAR and Libya &mdash; which makes it the test case for whether the Africa Corps model works at all. <strong>That, rather than Mali itself, is why this theatre carries global weight.</strong></li>
 </ul>
 <p><strong>Strategic Implications:</strong> Mali is the strategic anchor of Russia's Sahel posture. Loss of Mali partnership would significantly degrade Russia's Africa Corps regional infrastructure.</p>
                 
@@ -815,6 +846,60 @@ header {
      JAVASCRIPT
      ════════════════════════════════════════════════════════════ -->
 <script>
+// ── HUMANITARIAN PULSE — sensor card (IOM DTM + ReliefWeb via Africa backend) ──
+// Mali reads as a SIEGE: the blockade banner leads, IDP stock follows.
+async function loadHumanitarian() {
+    const badge = document.getElementById('humBadge');
+    function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+    try {
+        const r = await fetch(AFRICA_API + '/api/africa/humanitarian/mali');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        if (badge) {
+            if (d.live_dtm) { badge.textContent = 'LIVE \u00b7 IOM DTM'; badge.style.background = '#166534'; }
+            else { badge.textContent = 'BASELINE \u00b7 ATTRIBUTED'; badge.style.background = '#78350f'; }
+        }
+        const blk = document.getElementById('humBlockade');
+        if (blk && d.blockade_note) {
+            blk.innerHTML = '<b style="color:#fca5a5;">\u26D4 SUPPLY-ROUTE INTERDICTION</b><br>' + esc(d.blockade_note);
+            blk.style.display = 'block';
+        }
+        const stats = document.getElementById('humStats');
+        if (stats && d.headline_stats) {
+            stats.innerHTML = d.headline_stats.map(function (s) {
+                const isBlockade = /blockade/i.test(s.label || '');
+                const col = isBlockade ? '#dc2626' : '#38bdf8';
+                return '<div style="background:rgba(56,189,248,0.06); border:1px solid var(--card-border); border-radius:8px; padding:10px 12px;">' +
+                       '<div style="font-size:22px; font-weight:800; color:' + col + ';">' + esc(s.display || s.value) + '</div>' +
+                       '<div style="font-size:11px; color:var(--text-primary); font-weight:700; margin:2px 0;">' + esc(s.label) + '</div>' +
+                       '<div style="font-size:9.5px; color:var(--text-muted);">' + esc(s.source) + ' \u00b7 ' + esc(s.as_of || '') + '</div>' +
+                       '</div>';
+            }).join('');
+        }
+        const sw = document.getElementById('humSoWhat');
+        if (sw) sw.textContent = [d.so_what, d.drivers_note, d.famine_note, d.disease_note, d.funding_note].filter(Boolean).join(' ');
+        const rep = document.getElementById('humReports');
+        if (rep && d.reliefweb_reports && d.reliefweb_reports.length) {
+            rep.innerHTML = '<div style="font-size:11px; font-weight:700; color:var(--text-primary); margin-bottom:6px;">\uD83D\uDCC4 Latest ReliefWeb reports</div>' +
+                d.reliefweb_reports.slice(0, 3).map(function (x) {
+                    return '<div style="font-size:11.5px; margin-bottom:4px;">\u2022 <a href="' + x.url + '" target="_blank" rel="noopener" style="color:#93c5fd; text-decoration:none;">' +
+                           esc(x.title) + '</a> <span style="color:var(--text-muted);">\u2014 ' + esc(x.source || 'OCHA') + '</span></div>';
+                }).join('');
+        }
+        const srcEl = document.getElementById('humSources');
+        if (srcEl && d.sources) {
+            srcEl.innerHTML = 'Sources: ' + d.sources.map(function (s) {
+                return '<a href="' + s.url + '" target="_blank" rel="noopener" style="color:var(--text-muted);">' + esc(s.name) + '</a>';
+            }).join(' \u00b7 ') + (d.data_as_of ? ' \u00b7 baseline as of ' + esc(d.data_as_of) : '');
+        }
+    } catch (err) {
+        console.warn('Humanitarian error:', err);
+        if (badge) { badge.textContent = 'UNAVAILABLE'; badge.style.background = '#7f1d1d'; }
+        const stats = document.getElementById('humStats');
+        if (stats) stats.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;grid-column:1/-1;padding:14px;">Humanitarian data unavailable \u2014 backend may still be warming up.</div>';
+    }
+}
+
 const COUNTRY_ID      = 'mali';
 const COUNTRY_DISPLAY = 'Mali';
 const AFRICA_API      = 'https://asifah-africa-backend.onrender.com';
@@ -1066,6 +1151,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadTravelAdvisory();
     loadArticles();
     loadCommodity();
+    loadHumanitarian();
 });
 </script>
 </body>
