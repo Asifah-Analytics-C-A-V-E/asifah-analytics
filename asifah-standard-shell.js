@@ -298,6 +298,11 @@
 
   function init() {
     document.body.classList.add('asifah-standardized');
+    // Activates the shell's canonical watermark block in the CSS. Without this
+    // class the entire watermark section is dead code -- which is why the same
+    // watermark bug kept recurring page by page (Africa, Europe, Asia, WHA, ME,
+    // Mali all needed the identical fix individually). Found Jul 26 2026.
+    document.body.classList.add('asifah-shell-watermark-active');
     ensureTheme();
     ensureHeader();
     ensureSidebar();
