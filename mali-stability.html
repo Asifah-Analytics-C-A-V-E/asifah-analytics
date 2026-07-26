@@ -507,11 +507,21 @@ header {
 </div>
 
 <!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
-<div class="rhetoric-placeholder">
-    <div class="rh-icon">📡</div>
-    <div class="rh-title">Mali Rhetoric &amp; Pressure Tracker</div>
-    <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_mali.py</div>
-    <div class="rh-status">🔒 IN DEVELOPMENT</div>
+<!-- ── RHETORIC TRACKER (live) ── -->
+<div id="rhetoricBanner" style="display:none; background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid #22c55e; border-radius: 10px; padding: 16px 20px; margin-bottom: 22px;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+            <div style="font-size:0.68rem; letter-spacing:2px; text-transform:uppercase; color:#22c55e; font-family:'Courier New',monospace; margin-bottom:4px;">📡 Rhetoric &amp; Pressure Tracker</div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="font-size:1.6rem; font-weight:800;" id="rhScore">--</span>
+                <span id="rhLevel" style="font-size:0.68rem; font-weight:800; padding:3px 10px; border-radius:4px; background:#6b7280; color:#fff; letter-spacing:1px;">--</span>
+                <span id="rhTraj" style="display:none; font-size:0.62rem; font-weight:800; padding:3px 10px; border-radius:4px; letter-spacing:1px;"></span>
+            </div>
+        </div>
+        <a href="rhetoric-mali.html" style="align-self:center; padding:8px 16px; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.45); border-radius:6px; color:#22c55e; text-decoration:none; font-size:0.8rem; font-weight:700;">Open Tracker →</a>
+    </div>
+    <div id="rhProse" style="font-size:12.5px; line-height:1.55; color:var(--text-secondary); margin-top:10px;"></div>
+    <div id="rhSignals" style="margin-top:10px;"></div>
 </div>
 
 <!-- ── HUMANITARIAN PULSE (live sensor: IOM DTM + ReliefWeb + attributed baseline)
@@ -846,6 +856,51 @@ header {
      JAVASCRIPT
      ════════════════════════════════════════════════════════════ -->
 <script>
+// ── RHETORIC TRACKER banner (live summary endpoint) ──
+// Trajectory gets its own chip: on this theatre the directional read is the
+// headline, not a detail.
+async function loadRhetoric() {
+    function esc(s){const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+    const LV = {0:['Monitoring','#6b7280'],1:['Rhetoric','#3b82f6'],2:['Tension','#f59e0b'],
+                3:['Confrontation','#f97316'],4:['Incident','#ef4444'],5:['Active Conflict','#7c3aed']};
+    try {
+        const r = await fetch(AFRICA_API + '/api/rhetoric/mali/summary');
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!d || d.rhetoric_score === undefined) return;
+        const lvl = d.theatre_escalation_level || 0;
+        const meta = LV[lvl] || LV[0];
+        document.getElementById('rhScore').textContent = d.rhetoric_score || 0;
+        document.getElementById('rhScore').style.color = meta[1];
+        const lb = document.getElementById('rhLevel');
+        lb.textContent = 'L' + lvl + ' — ' + (d.theatre_label || meta[0]);
+        lb.style.background = meta[1];
+
+        const tr = d.trajectory || {};
+        if (tr.direction && tr.direction !== 'holding') {
+            const chip = document.getElementById('rhTraj');
+            const corro = (tr.confidence === 'multi_source' || tr.confidence === 'confirmed_partial');
+            chip.textContent = 'RUSSIA ' + String(tr.direction).toUpperCase() + (corro ? '' : ' · CLAIMED');
+            chip.style.background = tr.direction === 'contracting' ? '#dc2626' : '#f97316';
+            chip.style.color = '#fff';
+            chip.style.display = 'inline-block';
+        }
+        const sw = (d.so_what || {});
+        document.getElementById('rhProse').textContent = sw.assessment || '';
+        const sig = document.getElementById('rhSignals');
+        const tops = (d.top_signals || []).slice(0, 4);
+        if (tops.length) {
+            sig.innerHTML = tops.map(function (s) {
+                const c = (LV[s.level] || LV[0])[1];
+                return '<div style="font-size:11.5px; line-height:1.45; padding:5px 9px; margin-bottom:4px; border-left:3px solid ' + c +
+                       '; background:rgba(56,189,248,0.04); border-radius:0 5px 5px 0; color:var(--text-primary);">' +
+                       esc(s.short_text || '') + '</div>';
+            }).join('');
+        }
+        document.getElementById('rhetoricBanner').style.display = 'block';
+    } catch (e) { console.warn('Rhetoric banner:', e); }
+}
+
 // ── HUMANITARIAN PULSE — sensor card (IOM DTM + ReliefWeb via Africa backend) ──
 // Mali reads as a SIEGE: the blockade banner leads, IDP stock follows.
 async function loadHumanitarian() {
@@ -1152,6 +1207,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadArticles();
     loadCommodity();
     loadHumanitarian();
+    loadRhetoric();
 });
 </script>
 </body>
