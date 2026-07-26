@@ -507,6 +507,16 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                 <div class="feature-section-label">Quiet (watching for these to turn)</div>
                 <div class="quiet-chips" id="quietFeatures"></div>
 
+                <!-- SO WHAT — mechanism + what happened next + what would
+                     confirm or deny. Sits ABOVE the lag read because meaning
+                     should precede mechanics. -->
+                <div id="soWhatCard" style="display:none;border-radius:10px;padding:14px 18px;margin:14px 0;background:rgba(56,189,248,0.05);border-left:3px solid var(--accent);">
+                    <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;font-family:'Courier New',monospace;color:var(--text-muted);margin-bottom:6px;">So what</div>
+                    <div id="soWhatHeadline" style="font-weight:800;font-size:13.5px;margin-bottom:8px;"></div>
+                    <div id="soWhatBody" style="font-size:12.5px;line-height:1.6;color:var(--text-secondary);"></div>
+                    <div id="soWhatWatch" style="font-size:11.5px;line-height:1.55;margin-top:10px;padding-top:9px;border-top:1px solid var(--card-border);color:var(--text-muted);"></div>
+                </div>
+
                 <div class="lag-read" id="lagRead" style="display:none;">
                     <div class="lr-title">📐 Historical Pattern Read</div>
                     <div id="lagReadBody"></div>
@@ -538,17 +548,40 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
             </div>
 
             <!-- ══ REGIONAL MARKETS BOARD ══ -->
-            <div class="region-block">
-                <h2 class="region-heading">🌎 Americas</h2>
-                <div class="board-grid" id="board-americas"><div class="nyse-empty-state">Loading…</div></div>
+            <!-- ══ GLOBAL BENCHMARKS — rendered ONCE ══════════════════════
+                 Brent previously appeared three times (Russia, Iran, and a
+                 standalone) because each references BZ=F. Same instrument,
+                 three unrelated-looking cards. Global benchmarks now render
+                 here once and country cards REFERENCE them -- the same
+                 proxy-don't-clone rule the backends use. -->
+            <div class="region-block" id="globalStripBlock" style="display:none;">
+                <h2 class="region-heading">🌐 Global Benchmarks</h2>
+                <div class="board-grid" id="board-global"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic;">
+                    Priced globally, not by any one market. Country cards below reference these rather than repeating them.
+                </div>
             </div>
-            <div class="region-block">
-                <h2 class="region-heading">🌍 Europe, Middle East &amp; Africa</h2>
-                <div class="board-grid" id="board-emea"><div class="nyse-empty-state">Loading…</div></div>
+
+            <!-- ══ REGIONS — alphabetical, matching site taxonomy ══ -->
+            <div class="region-block" id="regionBlock-africa" style="display:none;">
+                <h2 class="region-heading">🌍 Africa</h2>
+                <div id="board-africa"></div>
             </div>
-            <div class="region-block">
-                <h2 class="region-heading">🌏 Asia-Pacific</h2>
-                <div class="board-grid" id="board-apac"><div class="nyse-empty-state">Loading…</div></div>
+            <div class="region-block" id="regionBlock-apac" style="display:none;">
+                <h2 class="region-heading">🌏 Asia &amp; The Pacific</h2>
+                <div id="board-apac"></div>
+            </div>
+            <div class="region-block" id="regionBlock-europe" style="display:none;">
+                <h2 class="region-heading">🌍 Europe</h2>
+                <div id="board-europe"></div>
+            </div>
+            <div class="region-block" id="regionBlock-me" style="display:none;">
+                <h2 class="region-heading">🕌 Middle East</h2>
+                <div id="board-me"></div>
+            </div>
+            <div class="region-block" id="regionBlock-wha" style="display:none;">
+                <h2 class="region-heading">🌎 Western Hemisphere</h2>
+                <div id="board-wha"></div>
             </div>
 
             <!-- ══ HISTORICAL PATTERN LIBRARY ══ -->
@@ -621,14 +654,25 @@ const ME_BACKEND = 'https://asifah-backend.onrender.com';
 // its backend and renders its tiles under the right region. detector-majors
 // (Nikkei/DAX/FTSE/Sensex) are injected from the detector payload separately.
 const PULSES = [
-    { region: 'americas', name: 'United States', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/us-stability', key: 'data.nyse' },
-    { region: 'americas', name: 'Mexico',        backend: 'https://asifah-wha-backend.onrender.com', path: '/api/mexico/stability', key: 'financial_pulse' },
-    { region: 'emea',     name: 'Israel',        backend: 'https://asifah-backend.onrender.com',     path: '/scan-israel-stability', key: 'financial_pulse' },
-    { region: 'emea',     name: 'Russia',        backend: 'https://asifa-europe-backend.onrender.com', path: '/api/stability/russia', key: 'financial_pulse' },
-    { region: 'emea',     name: 'Nigeria',       backend: 'https://asifah-africa-backend.onrender.com', path: '/api/nigeria/stability', key: 'financial_pulse' },
-    { region: 'emea',     name: 'Iran',          backend: 'https://asifah-backend.onrender.com',     path: '/api/iran/financial-pulse', key: 'financial_pulse' },
-    { region: 'apac',     name: 'China',         backend: 'https://asifah-asia-backend.onrender.com', path: '/api/china/stability', key: 'financial_pulse' },
+    // region keys match the five canonical site regions, alphabetical.
+    { region: 'wha',    name: 'United States', flag: '\uD83C\uDDFA\uD83C\uDDF8', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/us-stability', key: 'data.nyse' },
+    { region: 'wha',    name: 'Mexico',        flag: '\uD83C\uDDF2\uD83C\uDDFD', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/mexico/stability', key: 'financial_pulse' },
+    { region: 'me',     name: 'Israel',        flag: '\uD83C\uDDEE\uD83C\uDDF1', backend: 'https://asifah-backend.onrender.com',     path: '/scan-israel-stability', key: 'financial_pulse' },
+    { region: 'me',     name: 'Iran',          flag: '\uD83C\uDDEE\uD83C\uDDF7', backend: 'https://asifah-backend.onrender.com',     path: '/api/iran/financial-pulse', key: 'financial_pulse' },
+    { region: 'europe', name: 'Russia',        flag: '\uD83C\uDDF7\uD83C\uDDFA', backend: 'https://asifa-europe-backend.onrender.com', path: '/api/stability/russia', key: 'financial_pulse' },
+    { region: 'africa', name: 'Nigeria',       flag: '\uD83C\uDDF3\uD83C\uDDEC', backend: 'https://asifah-africa-backend.onrender.com', path: '/api/nigeria/stability', key: 'financial_pulse' },
+    { region: 'apac',   name: 'China',         flag: '\uD83C\uDDE8\uD83C\uDDF3', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/china/stability', key: 'financial_pulse' },
+    { region: 'apac',   name: 'Japan',         flag: '\uD83C\uDDEF\uD83C\uDDF5', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/asia/market/japan', key: 'instruments' },
 ];
+
+// Instruments priced globally rather than by any one market. Rendered once in
+// the global strip; country cards reference them by name instead of repeating
+// the tile. Keyed by the ticker each pulse reports.
+const GLOBAL_BENCHMARKS = {
+    'BZ=F': { name: 'Brent Crude',  note: 'Global oil benchmark. Referenced by Russia, Iran and Nigeria as a state-revenue baseline.' },
+    'CL=F': { name: 'WTI Crude',    note: 'US oil benchmark. Referenced by Mexico (Pemex formulas are WTI-linked).' },
+};
+
 
 const tierColor = { stress: '#ef4444', warning: '#eab308', stable: '#22c55e', rally: '#38bdf8' };
 const _charts = {};
@@ -706,40 +750,194 @@ function drawSpark(cid, spark, tier){
     });
 }
 
+// ── COUNTRY CARDS (rebuilt Jul 26 2026) ─────────────────────────────
+// WAS: every instrument became a loose tile in a flat regional grid, with the
+// country name rendered as its OWN tile beside them. Mexico's card sat next to
+// three unrelated-looking tiles that happened to be Mexico's. Brent appeared
+// three times because Russia, Iran and the standalone all reference BZ=F.
+//
+// NOW: one collapsible card per country, its instruments inside it, market
+// status as a HEADER PILL rather than a sibling tile, and globally-priced
+// benchmarks rendered once up top and REFERENCED here.
+const _globalSeen = {};      // ticker -> first tile payload
+const _countryRefs = {};     // ticker -> [country names that reference it]
+
+function statusPill(status){
+    if(!status) return '';
+    const s = String(status).toLowerCase();
+    const c = s === 'open' ? '#22c55e'
+            : s.indexOf('pre') === 0 ? '#f59e0b'
+            : s.indexOf('after') === 0 ? '#7c3aed' : '#6b7280';
+    return '<span style="font-family:\'Courier New\',monospace;font-size:10px;font-weight:800;'
+         + 'letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:999px;'
+         + 'background:' + c + '22;border:1px solid ' + c + '66;color:' + c + ';">'
+         + esc(s) + '</span>';
+}
+
+function countryCardHTML(p, fp, tiles){
+    const prefix = p.name.replace(/\W/g,'');
+    const keys = Object.keys(tiles);
+
+    // Split: globally-priced benchmarks are referenced, not repeated.
+    const own = [], refs = [];
+    keys.forEach(k => {
+        const t = tiles[k] || {};
+        const tk = t.ticker || '';
+        if(GLOBAL_BENCHMARKS[tk]){
+            refs.push(GLOBAL_BENCHMARKS[tk].name);
+            if(!_globalSeen[tk]) _globalSeen[tk] = { key:k, tile:t };
+            (_countryRefs[tk] = _countryRefs[tk] || []).push(p.name);
+        } else {
+            own.push(k);
+        }
+    });
+
+    const worst = own.map(k => (tiles[k]||{}).tier)
+                     .find(t => t === 'stress') || null;
+    const accent = worst ? tierColor.stress : 'var(--accent)';
+
+    let body = own.length
+        ? '<div class="board-grid" style="margin-top:12px;">' +
+          own.map(k => tileHTML(prefix, k, tiles[k])).join('') + '</div>'
+        : '<div class="nyse-empty-state" style="margin-top:12px;">No country-specific instruments reporting this cycle.</div>';
+
+    if(refs.length){
+        body += '<div style="font-size:11px;color:var(--text-muted);margin-top:10px;font-style:italic;">'
+              + 'Also exposed to ' + refs.map(esc).join(' and ')
+              + ' \u2014 shown once under Global Benchmarks above rather than repeated here.</div>';
+    }
+
+    return '<details class="country-card" open style="border:1px solid var(--card-border);'
+         + 'border-left:3px solid ' + accent + ';border-radius:10px;padding:14px 18px;'
+         + 'margin-bottom:12px;background:var(--card-bg);">'
+         + '<summary style="cursor:pointer;list-style:none;display:flex;align-items:center;'
+         + 'justify-content:space-between;flex-wrap:wrap;gap:10px;">'
+         + '<span style="display:flex;align-items:center;gap:10px;">'
+         + '<span style="font-size:1.15rem;">' + (p.flag||'') + '</span>'
+         + '<span style="font-weight:800;letter-spacing:0.5px;">' + esc(p.name) + '</span>'
+         + '<span style="font-size:10px;color:var(--text-muted);font-family:\'Courier New\',monospace;">'
+         + own.length + ' instrument' + (own.length===1?'':'s') + '</span>'
+         + '</span>'
+         + statusPill(fp.market_status)
+         + '</summary>' + body + '</details>';
+}
+
 async function loadPulse(p){
     try {
         const r = await fetch(p.backend + p.path);
         if(!r.ok) return;
         const data = await r.json();
-        const fp = dig(data, p.key);
-        if(!fp || !fp.tiles) return;
+        let fp = dig(data, p.key);
+        if(!fp) return;
+
+        // Shape adapters -- each backend reports its own dialect.
+        let tiles = fp.tiles;
+        if(!tiles && fp.indices){                       // us-stability NYSE shape
+            tiles = {};
+            Object.keys(fp.indices).forEach(k=>{
+                const ix = fp.indices[k];
+                tiles[k] = { name: ix.name, ticker: k, value: ix.value,
+                             change_pct_24h: ix.change_pct_24h,
+                             tier: ix.change_pct_24h < -1 ? 'stress'
+                                 : ix.change_pct_24h < 0 ? 'warning' : 'stable',
+                             note: 'US equity benchmark', sparkline: ix.sparkline };
+            });
+        }
+        if(!tiles && p.key === 'instruments'){          // asia_market_quotes shape
+            tiles = {};
+            Object.keys(fp).forEach(k=>{
+                const q = fp[k]; if(!q) return;
+                tiles[k] = { name: q.name, ticker: q.symbol, value: q.price,
+                             change_pct_24h: q.change_pct_1d,
+                             tier: q.change_pct_1d < -1 ? 'stress'
+                                 : q.change_pct_1d < 0 ? 'warning' : 'stable',
+                             note: q.note, sparkline: q.spark };
+            });
+            fp = { market_status: 'closed', tiles: tiles };
+        }
+        if(!tiles || !Object.keys(tiles).length) return;
+
         const board = el('board-'+p.region);
-        // clear the loading placeholder on first real tile group
-        if(board && board.querySelector('.nyse-empty-state')) board.innerHTML='';
+        if(!board) return;
+        board.insertAdjacentHTML('beforeend', countryCardHTML(p, fp, tiles));
+        const blk = el('regionBlock-'+p.region);
+        if(blk) blk.style.display = '';
+
         const prefix = p.name.replace(/\W/g,'');
-        let html = '<div class="nyse-tile" style="border-left:3px solid var(--accent);background:transparent;"><div class="nyse-tile-header"><span class="nyse-tile-name" style="font-size:13px;">'+esc(p.name)+'</span></div><div class="nyse-tile-meta" style="margin-top:auto;">'+(fp.market_status?('Market '+esc(fp.market_status)):'')+'</div></div>';
-        const order = Object.keys(fp.tiles);
-        order.forEach(k=>{ html += tileHTML(prefix, k, fp.tiles[k]); });
-        board.insertAdjacentHTML('beforeend', html);
-        order.forEach(k=>{ drawSpark('spark_'+prefix+'_'+k, fp.tiles[k].sparkline, fp.tiles[k].tier); });
+        Object.keys(tiles).forEach(k=>{
+            const t = tiles[k] || {};
+            if(GLOBAL_BENCHMARKS[t.ticker || '']) return;   // rendered globally
+            drawSpark('spark_'+prefix+'_'+k, t.sparkline, t.tier);
+        });
+        renderGlobalStrip();
     } catch(e){ console.warn('[Market Watch] pulse failed:', p.name, e); }
 }
 
+function renderGlobalStrip(){
+    const board = el('board-global');
+    if(!board) return;
+    const tks = Object.keys(_globalSeen);
+    if(!tks.length) return;
+    board.innerHTML = tks.map(tk=>{
+        const g = GLOBAL_BENCHMARKS[tk], s = _globalSeen[tk];
+        const t = Object.assign({}, s.tile, { name: g.name, note: g.note });
+        return tileHTML('global', s.key, t);
+    }).join('');
+    tks.forEach(tk=>{
+        const s = _globalSeen[tk];
+        drawSpark('spark_global_'+s.key, s.tile.sparkline, s.tile.tier);
+    });
+    const blk = el('globalStripBlock');
+    if(blk) blk.style.display = '';
+}
+
 function injectDetectorMajors(detector){
-    // The detector tracks Nikkei/DAX/FTSE/Sensex for global_sync; surface them
-    // as board tiles so the board and the engine share one source of truth.
+    // The detector has fetched Nikkei/DAX/FTSE/Sensex since launch for feature
+    // F10 (global_sync) but never exposed them. market_blackswan_detector.py
+    // v1.2.0 now emits `global_majors`, so the board and the engine that scores
+    // it read the SAME numbers -- one source of truth, no drift.
     const majors = (detector && detector.global_majors) || null;
-    if(!majors) return;  // backend may not expose them yet; tolerated
-    const map = { n225:['apac','Nikkei 225','^N225'], sensex:['apac','BSE Sensex','^BSESN'],
-                  dax:['emea','DAX','^GDAXI'], ftse:['emea','FTSE 100','^FTSE'] };
-    Object.keys(map).forEach(k=>{
-        const m = majors[k]; if(!m) return;
-        const [region,name,ticker]=map[k];
+    if(!majors) return;
+    const byRegion = {};
+    Object.keys(majors).forEach(k=>{
+        if(k.charAt(0) === '_') return;
+        const m = majors[k];
+        (byRegion[m.region] = byRegion[m.region] || []).push([k, m]);
+    });
+    Object.keys(byRegion).forEach(region=>{
         const board = el('board-'+region);
-        if(board && board.querySelector('.nyse-empty-state')) board.innerHTML='';
-        const t = { name:name, ticker:ticker, value:m.value, change_pct_24h:m.change_pct_24h, tier:m.tier||'stable', note:'Detector global-sync component', sparkline:m.sparkline };
-        board.insertAdjacentHTML('beforeend', tileHTML('major', k, t));
-        drawSpark('spark_major_'+k, m.sparkline, t.tier);
+        if(!board) return;
+        const rows = byRegion[region];
+        let html = '<details class="country-card" open style="border:1px solid var(--card-border);'
+                 + 'border-left:3px solid #f59e0b;border-radius:10px;padding:14px 18px;'
+                 + 'margin-bottom:12px;background:var(--card-bg);">'
+                 + '<summary style="cursor:pointer;list-style:none;display:flex;align-items:center;'
+                 + 'justify-content:space-between;flex-wrap:wrap;gap:10px;">'
+                 + '<span style="display:flex;align-items:center;gap:10px;">'
+                 + '<span style="font-size:1.15rem;">\uD83D\uDCC8</span>'
+                 + '<span style="font-weight:800;">Regional Majors</span>'
+                 + '<span style="font-size:10px;color:var(--text-muted);font-family:\'Courier New\',monospace;">'
+                 + rows.length + ' index' + (rows.length===1?'':'es') + '</span></span>'
+                 + '<span style="font-family:\'Courier New\',monospace;font-size:10px;font-weight:800;'
+                 + 'letter-spacing:1px;padding:3px 9px;border-radius:999px;background:#f59e0b22;'
+                 + 'border:1px solid #f59e0b66;color:#f59e0b;">MONTHLY</span>'
+                 + '</summary><div class="board-grid" style="margin-top:12px;">';
+        rows.forEach(([k,m])=>{
+            html += tileHTML('major', k, {
+                name: m.name, ticker: m.ticker, value: m.value,
+                change_pct_24h: m.change_pct_1m,
+                tier: (m.change_pct_1m||0) < -1 ? 'stress' : (m.change_pct_1m||0) < 0 ? 'warning' : 'stable',
+                note: m.note, sparkline: m.sparkline,
+            });
+        });
+        html += '</div><div style="font-size:11px;color:var(--text-muted);margin-top:10px;font-style:italic;">'
+              + 'Change figures are MONTH-over-month, not daily \u2014 these feed a monthly '
+              + 'feature engine. Distance from the 24-month high is what feature F10 '
+              + '(global_sync) keys on.</div></details>';
+        board.insertAdjacentHTML('beforeend', html);
+        rows.forEach(([k,m])=> drawSpark('spark_major_'+k, m.sparkline, 'stable'));
+        const blk = el('regionBlock-'+region);
+        if(blk) blk.style.display = '';
     });
 }
 
@@ -766,6 +964,26 @@ function renderFragility(d){
     qf.innerHTML = quiet.map(q=>'<span class="quiet-chip">'+esc(q.replace(/_/g,' '))+'</span>').join('') || '<span class="quiet-chip">—</span>';
 
     // Lag read
+    // ── SO WHAT ──────────────────────────────────────────────────────
+    // The Israeli-defense case was the diagnostic: the page flagged a valid
+    // post-Oct-7 analog and stopped. The reader learned a pattern MATCHED but
+    // never what it MEANT, so the finding died on the page.
+    const sw = d.so_what;
+    if(sw && (sw.headline || sw.body)){
+        el('soWhatCard').style.display = 'block';
+        el('soWhatHeadline').textContent = sw.headline || '';
+        el('soWhatBody').textContent = sw.body || '';
+        const w = el('soWhatWatch');
+        w.textContent = sw.watch ? ('WATCH \u2014 ' + sw.watch) : '';
+        w.style.display = sw.watch ? 'block' : 'none';
+        // Partial-spine analogs are weaker evidence than the % suggests.
+        el('soWhatCard').style.borderLeftColor =
+            sw.confidence === 'no_analog' ? '#6b7280'
+          : sw.confidence === 'partial_spine' ? '#f59e0b' : 'var(--accent)';
+    } else {
+        el('soWhatCard').style.display = 'none';
+    }
+
     if(d.historical_lag_read){
         el('lagRead').style.display='block';
         el('lagReadBody').textContent = d.historical_lag_read;
