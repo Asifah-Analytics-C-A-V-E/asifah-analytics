@@ -521,7 +521,18 @@ header {
         <a href="rhetoric-mali.html" style="align-self:center; padding:8px 16px; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.45); border-radius:6px; color:#22c55e; text-decoration:none; font-size:0.8rem; font-weight:700;">Open Tracker →</a>
     </div>
     <div id="rhProse" style="font-size:12.5px; line-height:1.55; color:var(--text-secondary); margin-top:10px;"></div>
+</div>
+
+<!-- ── RHETORIC CARD — TOP SIGNALS (Gold Standard: BLUF prose + top lines + watch) ── -->
+<div id="rhetoricCard" style="display:none; background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid #22c55e; border-radius: 10px; padding: 18px 20px; margin-bottom: 22px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">📡 Rhetoric — Top Signals</div>
+        <span id="rhSignalCount" style="background:#374151; color:#e2e8f0; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px;">LOADING…</span>
+    </div>
+    <div id="rhBluf" style="font-size:12.5px; color:var(--text-secondary); line-height:1.55; background:rgba(34,197,94,0.05); border-left:3px solid #22c55e; border-radius:6px; padding:10px 12px; margin-bottom:12px;">Loading strategic assessment…</div>
     <div id="rhSignals" style="margin-top:10px;"></div>
+    <div id="rhWatch" style="font-size:11.5px; color:var(--text-muted); line-height:1.5; border-top:1px solid var(--card-border); padding-top:10px; margin-top:10px; font-style:italic;"></div>
+    <div style="font-size:10px; color:var(--text-muted); margin-top:8px;">Convergence indicator, not a probability of action. <a href="rhetoric-mali.html" style="color:#4ade80;text-decoration:none;">Full tracker →</a></div>
 </div>
 
 <!-- ── HUMANITARIAN PULSE (live sensor: IOM DTM + ReliefWeb + attributed baseline)
@@ -877,8 +888,12 @@ async function loadRhetoric() {
         lb.style.background = meta[1];
 
         const tr = d.trajectory || {};
+        // Reset first: without this the chip persists from a previous render,
+        // so a HOLDING cycle after a CONTRACTING one still shows the old chip.
+        const trChip = document.getElementById('rhTraj');
+        if (trChip) { trChip.style.display = 'none'; trChip.textContent = ''; }
         if (tr.direction && tr.direction !== 'holding') {
-            const chip = document.getElementById('rhTraj');
+            const chip = trChip;
             const corro = (tr.confidence === 'multi_source' || tr.confidence === 'confirmed_partial');
             chip.textContent = 'RUSSIA ' + String(tr.direction).toUpperCase() + (corro ? '' : ' · CLAIMED');
             chip.style.background = tr.direction === 'contracting' ? '#dc2626' : '#f97316';
@@ -886,17 +901,60 @@ async function loadRhetoric() {
             chip.style.display = 'inline-block';
         }
         const sw = (d.so_what || {});
-        document.getElementById('rhProse').textContent = sw.assessment || '';
-        const sig = document.getElementById('rhSignals');
-        const tops = (d.top_signals || []).slice(0, 4);
-        if (tops.length) {
-            sig.innerHTML = tops.map(function (s) {
-                const c = (LV[s.level] || LV[0])[1];
-                return '<div style="font-size:11.5px; line-height:1.45; padding:5px 9px; margin-bottom:4px; border-left:3px solid ' + c +
-                       '; background:rgba(56,189,248,0.04); border-radius:0 5px 5px 0; color:var(--text-primary);">' +
-                       esc(s.short_text || '') + '</div>';
-            }).join('');
+
+        // ── BANNER: scenario headline only. The card below carries detail. ──
+        const banner = [];
+        if (sw.scenario) banner.push(sw.scenario + '.');
+        if (d.red_lines_breached) {
+            banner.push(d.red_lines_breached + ' red line' +
+                        (d.red_lines_breached > 1 ? 's' : '') + ' breached.');
         }
+        const sil = d.silence_anomalies || [];
+        if (sil.length) {
+            banner.push(sil.length + ' claiming-actor silence signal' +
+                        (sil.length > 1 ? 's' : '') + '.');
+        }
+        document.getElementById('rhProse').textContent =
+            banner.length ? banner.join(' ') : (sw.assessment || '');
+
+        // ── CARD: full assessment + top signals + watch line ──
+        const card  = document.getElementById('rhetoricCard');
+        const cnt   = document.getElementById('rhSignalCount');
+        const bluf  = document.getElementById('rhBluf');
+        const list  = document.getElementById('rhSignals');
+        const watch = document.getElementById('rhWatch');
+
+        if (bluf) bluf.textContent = sw.assessment ||
+            'No strategic assessment returned this cycle.';
+
+        const tops = (d.top_signals || []).slice(0, 6);
+        if (cnt) {
+            cnt.textContent = tops.length ? (tops.length + ' SIGNAL' + (tops.length > 1 ? 'S' : ''))
+                                          : 'QUIET CYCLE';
+            cnt.style.background = tops.length ? '#166534' : '#374151';
+        }
+        if (list) {
+            list.innerHTML = tops.length
+                ? tops.map(function (s) {
+                    const c = (LV[s.level] || LV[0])[1];
+                    return '<div style="display:flex; align-items:flex-start; gap:9px; padding:7px 9px; ' +
+                           'border-radius:0 6px 6px 0; margin-bottom:5px; background:rgba(56,189,248,0.04); ' +
+                           'border-left:3px solid ' + c + ';">' +
+                           '<span style="flex-shrink:0; font-size:9px; font-weight:800; letter-spacing:0.5px; ' +
+                           'padding:2px 6px; border-radius:3px; background:' + c + '; color:#fff;">L' +
+                           (parseInt(s.level, 10) || 0) + '</span>' +
+                           '<span style="font-size:11.5px; line-height:1.45; color:var(--text-primary);">' +
+                           esc(s.short_text || '') + '</span></div>';
+                  }).join('')
+                // Silence IS a valid output -- say so rather than rendering blank.
+                : '<div style="font-size:11.5px; color:var(--text-muted); padding:8px 10px; ' +
+                  'background:rgba(56,189,248,0.03); border-left:3px solid #6b7280; border-radius:0 6px 6px 0;">' +
+                  'No signal cleared the reporting threshold this cycle. A quiet corpus is a valid ' +
+                  'output, not a gap — vectors below L2 are held at country altitude by design.</div>';
+        }
+        if (watch) watch.textContent = sw.watch || '';
+        if (card) card.style.display = 'block';
+
         document.getElementById('rhetoricBanner').style.display = 'block';
     } catch (e) { console.warn('Rhetoric banner:', e); }
 }
