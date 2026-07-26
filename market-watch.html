@@ -959,14 +959,35 @@ function renderFragility(d){
     const af = el('activeFeatures');
     if(d.active_features && d.active_features.length){
         af.innerHTML = d.active_features.map(f=>
-            '<div class="feature-row"><div class="fr-name">'+esc(f.name.replace(/_/g,' '))+'</div><div class="fr-prec">'+esc(f.precedent)+'</div></div>'
+            // FOUR parts, not two (Jul 26 2026). Was: jargon name + test
+            // condition -- useful only to a reader who already knew the term
+            // and therefore did not need the row. Now: name, plain English,
+            // why it matters, then the test and its precedent.
+            '<div class="feature-row" style="flex-direction:column;align-items:flex-start;gap:5px;">'
+            + '<div class="fr-name">' + esc(f.name.replace(/_/g,' ')) + '</div>'
+            + (f.plain ? '<div style="font-size:12.5px;color:var(--text-primary);line-height:1.5;">'
+                       + esc(f.plain) + '</div>' : '')
+            + (f.why ? '<div style="font-size:12px;color:var(--text-secondary);line-height:1.55;">'
+                     + '<strong style="color:var(--accent);">Why it matters:</strong> '
+                     + esc(f.why) + '</div>' : '')
+            + '<div class="fr-prec" style="font-size:11.5px;font-family:\'Courier New\',monospace;'
+            + 'opacity:0.8;">' + esc(f.precedent) + '</div>'
+            + '</div>'
         ).join('');
     } else { af.innerHTML = '<div class="nyse-empty-state">No fragility signals active this cycle.</div>'; }
 
     // Quiet features
     const qf = el('quietFeatures');
     const quiet = (d.quiet_features||[]).concat((d.features_unavailable||[]).map(x=>x+' (no data)'));
-    qf.innerHTML = quiet.map(q=>'<span class="quiet-chip">'+esc(q.replace(/_/g,' '))+'</span>').join('') || '<span class="quiet-chip">—</span>';
+    // Defensive: quiet_features is a list of STRINGS today, but every other
+    // feature list on this page carries objects. If the backend ever aligns
+    // them, `q.replace` throws and kills the WHOLE fragility render -- the
+    // same object-vs-string crash class as the safeSrcStr() helper elsewhere
+    // on the platform. Cheap to guard, expensive to debug.
+    qf.innerHTML = quiet.map(q=>{
+        const name = (typeof q === 'string') ? q : ((q && (q.name || q.id)) || '');
+        return '<span class="quiet-chip">'+esc(String(name).replace(/_/g,' '))+'</span>';
+    }).join('') || '<span class="quiet-chip">—</span>';
 
     // Lag read
     // ── SO WHAT ──────────────────────────────────────────────────────
@@ -1005,9 +1026,74 @@ function renderFragility(d){
     // Similarity matches
     const sm = el('similarityMatches');
     if(d.similarity_matches && d.similarity_matches.length){
-        sm.innerHTML = d.similarity_matches.map(m=>{
-            const c = m.type==='bubble_burst'||m.type==='crash' ? '#ef4444' : m.type==='exogenous_shock' ? '#a78bfa' : 'var(--text-muted)';
-            return '<div class="similarity-row"><span class="sim-pct" style="color:'+c+';">'+Math.round(m.similarity_pct)+'%</span><span><strong>'+esc(m.label)+'</strong> ('+esc(m.event_month)+') · '+esc(m.drawdown)+'</span></div>';
+        // MATCH STRENGTH FIRST. Three analogs in a ranked list reads like three
+        // findings. If the best is 33%, the honest headline is that nothing in
+        // the library closely resembles now -- and the old layout implied the
+        // opposite by leading with named crashes.
+        const ms = d.match_strength;
+        let head = '';
+        if(ms && ms.text){
+            head = '<div style="border-radius:8px;padding:11px 13px;margin-bottom:12px;'
+                 + 'background:rgba(0,0,0,0.12);border-left:3px solid ' + esc(ms.color||'#6b7280')
+                 + ';font-size:12.5px;line-height:1.55;color:var(--text-primary);">'
+                 + esc(ms.text) + '</div>';
+        }
+
+        sm.innerHTML = head + d.similarity_matches.map((m,i)=>{
+            const c = m.type==='bubble_burst'||m.type==='crash' ? '#ef4444'
+                    : m.type==='exogenous_shock' ? '#a78bfa'
+                    : m.type==='policy_induced_bubble' ? '#f97316'
+                    : m.type==='contagion' ? '#a78bfa' : 'var(--text-muted)';
+
+            const label = m.source_url
+                ? '<a href="'+esc(m.source_url)+'" target="_blank" rel="noopener" '
+                  + 'style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent);">'
+                  + esc(m.label) + ' \u2197</a>'
+                : '<strong>'+esc(m.label)+'</strong>';
+
+            // OVERLAP GRID -- makes the percentage legible, and makes a weak
+            // match LOOK weak. A price chart of "now vs 1987" would imply the
+            // whole shape matches when only a third of the features do.
+            let grid = '';
+            const o = m.overlap;
+            if(o && (o.shared.length || o.now_only.length || o.then_only.length)){
+                const rows = []
+                  .concat(o.shared.map(f=>[f,true,true]))
+                  .concat(o.now_only.map(f=>[f,true,false]))
+                  .concat(o.then_only.map(f=>[f,false,true]));
+                const dot = (on,col)=> on
+                    ? '<span style="color:'+col+';font-size:13px;">\u25CF</span>'
+                    : '<span style="color:var(--card-border);font-size:13px;">\u25CB</span>';
+                grid = '<details style="margin:6px 0 12px 46px;">'
+                     + '<summary style="cursor:pointer;font-size:11px;color:var(--text-muted);'
+                     + 'font-family:\'Courier New\',monospace;letter-spacing:1px;">'
+                     + 'WHICH FEATURES OVERLAP \u2014 ' + o.shared_n + ' of ' + o.union_n
+                     + '</summary>'
+                     + '<table style="margin-top:8px;font-size:11.5px;border-collapse:collapse;">'
+                     + '<tr><th style="text-align:left;padding:3px 14px 3px 0;font-weight:400;'
+                     + 'color:var(--text-muted);"></th>'
+                     + '<th style="padding:3px 10px;color:var(--accent);font-size:10px;'
+                     + 'letter-spacing:1px;">NOW</th>'
+                     + '<th style="padding:3px 10px;color:'+c+';font-size:10px;letter-spacing:1px;">'
+                     + esc(m.event_month) + '</th></tr>'
+                     + rows.map(([f,now,then])=>
+                         '<tr><td style="padding:3px 14px 3px 0;color:'
+                         + ((now&&then)?'var(--text-primary)':'var(--text-muted)') + ';">'
+                         + esc(f.replace(/_/g,' ')) + '</td>'
+                         + '<td style="text-align:center;padding:3px 10px;">'+dot(now,'var(--accent)')+'</td>'
+                         + '<td style="text-align:center;padding:3px 10px;">'+dot(then,c)+'</td></tr>'
+                       ).join('')
+                     + '</table>'
+                     + '<div style="font-size:10.5px;color:var(--text-muted);margin-top:7px;'
+                     + 'font-style:italic;">Filled dots are active features. Overlap drives the '
+                     + 'percentage \u2014 shape similarity is deliberately NOT measured, because '
+                     + 'eyeballing two price curves is the error this module exists to avoid.</div>'
+                     + '</details>';
+            }
+
+            return '<div class="similarity-row"><span class="sim-pct" style="color:'+c+';">'
+                 + Math.round(m.similarity_pct)+'%</span><span>'+label+' ('+esc(m.event_month)+') \u00b7 '
+                 + esc(m.drawdown||'')+'</span></div>' + grid;
         }).join('');
     } else { sm.innerHTML='<div class="nyse-empty-state">No analogs above threshold.</div>'; }
 
