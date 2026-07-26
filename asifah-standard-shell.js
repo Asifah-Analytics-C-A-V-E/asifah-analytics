@@ -78,7 +78,7 @@
   }
 
   function isRhetoricPage(file) {
-    return /^rhetoric-/.test(file) && !/^rhetoric-(africa|asia|europe|index|wha)\.html$/.test(file);
+   return /^rhetoric-/.test(file) && !/^rhetoric-(africa|asia|europe|index|wha)\.html$/.test(file);
   }
 
   function isStabilityPage(file) {
