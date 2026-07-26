@@ -11,6 +11,11 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
+    /* Canonical watermark vars (added Jul 26 2026) -- this page had none, so
+       it hard-coded opacity 0.30 light / 1.0 dark. Opacity 1 on a logo with a
+       white square backing is what made it glare. */
+    --watermark-opacity: 0.06;
+    --watermark-filter:  none;
     --bg-color:       #e8f0f8;
     --container-bg:   #ffffff;
     --card-bg:        #ffffff;
@@ -28,6 +33,11 @@
     --gold:           #f59e0b;
 }
 [data-theme="dark"] {
+    /* Dark mode: brighter but still subtle, plus the arctic-blue tint the
+       rest of the platform uses. Was opacity:1 -- effectively a background
+       image rather than a watermark. */
+    --watermark-opacity: 0.16;
+    --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
     --bg-color:       #060d1a;
     --container-bg:   #0d1b2e;
     --card-bg:        #0d1b2e;
@@ -62,22 +72,30 @@ body::before {
 .watermark {
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 50vmin; height: 50vmin;
-    min-width: 340px; min-height: 340px;
-    max-width: 900px; max-height: 900px;
+    /* CANONICAL SPEC (Jul 26 2026). Previously 50vmin / background-size:contain
+       / opacity 0.30. Three problems, all visible: `contain` renders the logo's
+       WHITE SQUARE BACKING (the glare), 50vmin is roughly half the platform
+       size, and a fixed opacity ignores theme. 135% + a circular clip crops the
+       square away; the vars carry the theme difference. */
+    width: 110vmin; height: 110vmin;
+    min-width: 500px; min-height: 500px;
+    max-width: 800px; max-height: 800px;
     background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-    background-size: contain;
+    background-size: 135%;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 0.30;
-    z-index: 0; pointer-events: none; user-select: none;
-    transition: opacity 0.4s ease;
+    border-radius: 50%;
+    opacity: var(--watermark-opacity);
+    filter: var(--watermark-filter);
+    z-index: 0; pointer-events: none;
 }
 
 /* Jul 23 2026 watermark spec -- DARK MODE: zooming past 100% and clipping to
    a circle crops away the logo's white square backing, so the artwork's own
    dark navy field reads as black while the cyan stays bright. */
-[data-theme="dark"] .watermark { width: 800px; height: 800px; opacity: 1; }
+/* Dark-mode override REMOVED Jul 26 2026 -- it forced opacity:1 and a fixed
+   800px, overriding the responsive sizing. The theme difference now lives in
+   --watermark-opacity / --watermark-filter, same as every other page. */
 
 .container { max-width: 1500px; margin: 0 auto; padding: 0 20px; }
 
