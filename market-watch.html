@@ -606,6 +606,11 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                     </table>
                 </div>
                 <div class="library-intro" style="margin-top:14px;margin-bottom:0;" id="libraryFootnote"></div>
+                <div class="library-intro" style="margin-top:8px;margin-bottom:0;font-size:11.5px;">
+                    Episode names link to a primary explainer. Rows marked <em>not backtestable</em> sit outside the
+                    feature-series window &mdash; they are carried for pattern MATCHING, not lead-time evidence, and
+                    saying so is more honest than omitting them.
+                </div>
             </div>
 
         </div>
@@ -971,7 +976,15 @@ function renderFragility(d){
     const sw = d.so_what;
     if(sw && (sw.headline || sw.body)){
         el('soWhatCard').style.display = 'block';
-        el('soWhatHeadline').textContent = sw.headline || '';
+        if(sw.source_url && sw.headline){
+            el('soWhatHeadline').innerHTML = esc(sw.headline).replace(
+                esc(sw.headline),
+                '<a href="'+esc(sw.source_url)+'" target="_blank" rel="noopener" '
+                + 'style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent);">'
+                + esc(sw.headline) + ' \u2197</a>');
+        } else {
+            el('soWhatHeadline').textContent = sw.headline || '';
+        }
         el('soWhatBody').textContent = sw.body || '';
         const w = el('soWhatWatch');
         w.textContent = sw.watch ? ('WATCH \u2014 ' + sw.watch) : '';
@@ -1036,10 +1049,38 @@ async function loadBacktest(){
         const tb = el('episodeBody');
         if(bt.episode_reads && bt.episode_reads.length){
             tb.innerHTML = bt.episode_reads.map(e=>{
-                const cls = e.type==='bubble_burst'?'ep-bubble':e.type==='exogenous_shock'?'ep-shock':'ep-other';
+                const cls = e.type==='bubble_burst'?'ep-bubble'
+                          : e.type==='exogenous_shock'?'ep-shock'
+                          : e.type==='policy_induced_bubble'?'ep-bubble'
+                          : e.type==='contagion'?'ep-shock':'ep-other';
                 const lead = e.lead_months_at_elevated_plus;
-                const leadStr = (e.type==='exogenous_shock') ? '— (null case)' : (lead>0?lead+' mo':'0');
-                return '<tr><td><strong>'+esc(e.label)+'</strong></td><td><span class="ep-type '+cls+'">'+esc(e.type.replace(/_/g,' '))+'</span></td><td>'+esc(e.event_month)+'</td><td>'+leadStr+'</td><td>'+esc(e.drawdown||'')+'</td></tr>';
+
+                // Three distinct lead states, and they mean different things:
+                //   null case  -> exogenous, no pre-signal expected (by design)
+                //   pre-spine  -> we CANNOT score it, feature series start later
+                //   0 / N mo   -> an actual measured result
+                let leadStr;
+                if(e.outside_data_spine){
+                    leadStr = '<span style="color:var(--text-muted);font-style:italic;">'
+                            + 'not backtestable</span>';
+                } else if(e.type==='exogenous_shock'){
+                    leadStr = '\u2014 (null case)';
+                } else {
+                    leadStr = (lead>0 ? lead+' mo' : '0');
+                }
+
+                // Episode name links to a primary explainer where one exists.
+                const label = e.source_url
+                    ? '<a href="'+esc(e.source_url)+'" target="_blank" rel="noopener" '
+                      + 'style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent);">'
+                      + esc(e.label) + ' \u2197</a>'
+                    : esc(e.label);
+
+                const dim = e.outside_data_spine ? ' style="opacity:0.72;"' : '';
+                return '<tr'+dim+'><td><strong>'+label+'</strong></td>'
+                     + '<td><span class="ep-type '+cls+'">'+esc(e.type.replace(/_/g,' '))+'</span></td>'
+                     + '<td>'+esc(e.event_month)+'</td><td>'+leadStr+'</td>'
+                     + '<td>'+esc(e.drawdown||'')+'</td></tr>';
             }).join('');
         }
         if(bt.era_note) el('libraryFootnote').textContent = bt.era_note;
