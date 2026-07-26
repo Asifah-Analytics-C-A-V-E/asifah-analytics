@@ -846,6 +846,7 @@ footer .footer-copyright {
         <span id="rhetoricTheatreLabel" class="stability-label level-0">Loading...</span>
     </div>
     <div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:14px;" data-i18n="rhetoric_card_subtitle">Theatre score (0-100) · Updated every 12h · Inbound + Outbound max levels</div>
+    <div id="rhetoricTopline" style="display:none;font-size:0.82rem;line-height:1.55;color:var(--text-secondary);background:rgba(56,189,248,0.05);border-left:3px solid var(--accent);border-radius:6px;padding:11px 13px;margin:12px 0;"></div>
     <div id="rhetoricActorList" style="font-size:0.8rem;color:var(--text-secondary);">
         <span style="font-style:italic;color:var(--text-muted);">Loading actor levels...</span>
     </div>
@@ -891,6 +892,42 @@ footer .footer-copyright {
         <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
         <div id="commodityTopSignalsList"></div>
     </div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     FINANCIAL PULSE — Nikkei 225 + USD/JPY  (Jul 26 2026)
+     ══════════════════════════════════════════════════════════════════
+     WHY BOTH, AND WHY THE YEN LEADS:
+     The Nikkei alone is misleading. A weak yen flatters the index --
+     exporter earnings translate up -- so "Nikkei rising" can mean strength
+     OR currency debasement, and the index cannot tell you which.
+
+     The yen is also the richer signal because it reads TWO WAYS:
+       weak yen   -> import-cost inflation, BOJ credibility pressure,
+                     MOF intervention risk. DOMESTIC stress.
+       strong yen -> safe-haven inflows. That is a GLOBAL RISK-OFF read
+                     that says little about Japan itself, and it is the
+                     carry-trade unwind mechanism that turned yen strength
+                     into a worldwide equity cascade in August 2024.
+
+     So the analytic output is the DIVERGENCE, not either level:
+       Nikkei up + yen down  = arithmetic, not strength
+       Nikkei up + yen up    = real
+       Nikkei down + yen up  = risk-off, likely imported
+     ══════════════════════════════════════════════════════════════════ -->
+<div class="commodity-card" id="financialCard" style="margin-top:22px;">
+    <div class="commodity-card-title" data-i18n="financial_title">📉 Financial Pulse — Nikkei 225 &amp; Yen</div>
+
+    <div class="commodity-prose" id="financialProse">Loading market data…</div>
+
+    <div id="financialDivergence" style="display:none;font-size:0.82rem;line-height:1.55;border-radius:6px;padding:11px 13px;margin:12px 0;"></div>
+
+    <div class="commodity-grid" id="financialGrid" style="margin-top:12px;">
+        <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">Loading Nikkei and yen…</div>
+    </div>
+
+    <div id="financialNote" style="font-size:0.72rem;color:var(--text-muted);line-height:1.5;margin-top:10px;border-top:1px solid var(--card-border);padding-top:9px;"></div>
+</div>
+
 
     <div class="strategic-linkage" data-i18n-html="strategic_linkage">
         <strong>🎯 Strategic Linkage:</strong> Japan is the world's #3 semiconductor producer with critical equipment + materials dominance. Tokyo Electron is the #2 global fab equipment vendor; JSR/Shin-Etsu/SUMCO control ~60-70% of high-purity silicon wafers and EUV photoresist. TSMC's Kumamoto fab (JASM) is the reshoring linchpin for the U.S.-Japan-Taiwan supply chain. Rapidus is targeting 2nm production in Hokkaido by 2027. Energy: ~99% oil imports + ~95% LNG imports, but ~240-day strategic petroleum reserve provides the strongest buffer of any Asia tracker. Heavy rare earth dependency on China (~60%) remains the structural vulnerability — 2010 Senkaku embargo is the precedent.
@@ -1606,6 +1643,88 @@ function hideLoadingOverlay() {
 // ════════════════════════════════════════════════════════════
 // RHETORIC + STABILITY RENDERING
 // ════════════════════════════════════════════════════════════
+// ── PLAIN-LANGUAGE TOPLINE ──────────────────────────────────────────
+// rhetoric_tracker_japan.py emits NO interpretation layer -- no so_what, no
+// top_signals, no interpreter module. The page was therefore showing raw
+// actor levels and asking the reader to do the analysis.
+//
+// This composes a sentence from what the tracker DOES emit: the inbound /
+// outbound split, tripwire flags, and cross-theater amplifiers. It is a
+// frontend stopgap; a japan_signal_interpreter.py would do this properly
+// and feed the Asia BLUF and GPI as well as this page.
+//
+// Doctrine: estimative voice only. No probabilities, no dates, no "will".
+function renderRhetoricTopline(data) {
+    var host = el('rhetoricTopline');
+    if (!host) return;
+
+    var inbound  = data.inbound_max_level  || 0;
+    var outbound = data.outbound_max_level || 0;
+    var overall  = data.overall_level || 0;
+    var amp = data.crosstheater_amplifiers || data.cross_theater_amplifiers || {};
+    var parts = [];
+
+    // 1. The dual-axis read -- the distinction the page was throwing away.
+    //    Japan is simultaneously a TARGET (DPRK missiles, China maritime) and
+    //    an ACTOR (Article 9, JSDF posture). Collapsing them loses the story.
+    if (inbound > outbound && inbound >= 2) {
+        parts.push('Pressure is running INBOUND at L' + inbound + ' \u2014 Japan is being ' +
+                   'acted upon (DPRK launch activity, Chinese maritime and ADIZ pressure, ' +
+                   'Russian Far East movement) more than it is acting.');
+    } else if (outbound > inbound && outbound >= 2) {
+        parts.push('Pressure is running OUTBOUND at L' + outbound + ' \u2014 the movement is ' +
+                   'Japan\u2019s own posture: Article 9 reinterpretation language, JSDF ' +
+                   'deployment decisions, Taiwan-contingency signalling. A postwar ' +
+                   'pacifist constraint loosening is a structural change, not a news cycle.');
+    } else if (inbound >= 2 && outbound >= 2) {
+        parts.push('Inbound and outbound pressure are BOTH elevated (L' + inbound + ' / L' +
+                   outbound + ') \u2014 external pressure and domestic posture change moving ' +
+                   'together, which is the combination that has historically preceded ' +
+                   'formal defence-policy shifts rather than either alone.');
+    }
+
+    // 2. Cross-theater amplifiers -- Japan's vulnerabilities are IMPORTED.
+    if (amp.iran_hormuz_pressure) {
+        parts.push('Hormuz pressure is active. Japan imports roughly 99% of its oil and ' +
+                   'about 90% of that transits the Gulf \u2014 so an Iran-theatre signal is ' +
+                   'a direct Japanese energy-security read, not a distant one.');
+    }
+    if (amp.senkaku_active || (amp.china_outbound_max || 0) >= 3) {
+        parts.push('Senkaku / Chinese maritime activity is elevated. The 2010 precedent is ' +
+                   'the reference: a territorial dispute converted directly into a rare-earth ' +
+                   'export restriction, and Japan remains roughly 60% China-dependent for ' +
+                   'heavy rare earths.');
+    }
+    if (amp.taiwan_pressure) {
+        parts.push('Taiwan-strait pressure registers here because Japanese territory hosts ' +
+                   'the forces any contingency would involve, and Yonaguni sits ~110km from ' +
+                   'Taiwan.');
+    }
+
+    // 3. Tripwires named by the tracker.
+    var tw = [];
+    var actors = data.actors || {};
+    Object.keys(actors).forEach(function (k) {
+        var t = (actors[k] || {}).tripwires || {};
+        Object.keys(t).forEach(function (flag) { if (t[flag]) tw.push(flag); });
+    });
+    if (tw.length) {
+        parts.push(tw.length + ' tripwire' + (tw.length > 1 ? 's' : '') + ' flagged: ' +
+                   tw.slice(0, 4).map(function (x) { return x.replace(/_/g, ' '); }).join(', ') + '.');
+    }
+
+    // 4. Quiet is a valid output -- say so rather than rendering blank.
+    if (!parts.length) {
+        parts.push('Signals are at baseline this cycle. No inbound surge, no posture movement, ' +
+                   'no cross-theater amplifier active. Watch the inbound/outbound split: the ' +
+                   'combination of external pressure and domestic posture change is the ' +
+                   'pattern worth catching, not either alone.');
+    }
+
+    host.textContent = parts.join(' ');
+    host.style.display = 'block';
+}
+
 function renderRhetoric(data) {
     const score = data.theatre_score || 0;
     const overall = data.overall_level || 0;
@@ -1641,6 +1760,8 @@ function renderRhetoric(data) {
             '</div>';
         }).join('');
     }
+
+    renderRhetoricTopline(data);
 
     if (data.updated_at) {
         const ago = formatDate(data.updated_at);
@@ -1709,6 +1830,170 @@ function renderArticles(data) {
 // COMMODITY CARD — Gold Standard v2.0 (May 7 2026)
 // Pulls from Asia proxy first (12h cache), falls back to ME backend.
 // ════════════════════════════════════════════════════════════
+// ── FINANCIAL PULSE — Nikkei 225 + USD/JPY ──────────────────────────
+// Yahoo v8 chart endpoint (^N225 and JPY=X), query1 -> query2 failover, same
+// pattern as us_stability.py's Yahoo fallback. No API key required, which is
+// why this runs client-side rather than waiting on a japan_stability.py.
+async function loadFinancial() {
+    var INSTRUMENTS = [
+        { key: 'nikkei', symbol: '%5EN225', name: 'Nikkei 225', icon: '\uD83D\uDCC8',
+          unit: 'JPY', note: 'Tokyo Stock Exchange headline index. Exporter-heavy, so a weaker yen mechanically lifts it.' },
+        { key: 'yen',    symbol: 'JPY%3DX', name: 'USD/JPY',   icon: '\uD83D\uDCB4',
+          unit: 'JPY per USD', note: 'A RISING number means a WEAKER yen. MOF/BOJ have intervened around the 152-160 band; sustained moves past it are the observable event.' },
+    ];
+
+    function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+
+    async function quote(symbol) {
+        for (var i = 0; i < 2; i++) {
+            var host = i === 0 ? 'query1' : 'query2';
+            try {
+                var r = await fetch('https://' + host + '.finance.yahoo.com/v8/finance/chart/' +
+                                    symbol + '?range=1mo&interval=1d');
+                if (!r.ok) continue;
+                var j = await r.json();
+                var res = ((j.chart || {}).result || [])[0];
+                if (!res) continue;
+                var meta = res.meta || {};
+                var closes = (((res.indicators || {}).quote || [])[0] || {}).close || [];
+                closes = closes.filter(function (x) { return typeof x === 'number'; });
+                if (!closes.length) continue;
+                var last = meta.regularMarketPrice || closes[closes.length - 1];
+                var prev = meta.chartPreviousClose || closes[closes.length - 2] || last;
+                var first = closes[0];
+                return {
+                    price: last,
+                    change_pct_1d: prev ? ((last - prev) / prev) * 100 : 0,
+                    change_pct_30d: first ? ((last - first) / first) * 100 : 0,
+                    spark: closes.slice(-21),
+                };
+            } catch (e) { /* try next host */ }
+        }
+        return null;
+    }
+
+    var results = {};
+    for (var i = 0; i < INSTRUMENTS.length; i++) {
+        results[INSTRUMENTS[i].key] = await quote(INSTRUMENTS[i].symbol);
+    }
+
+    var grid = el('financialGrid');
+    var live = INSTRUMENTS.filter(function (x) { return results[x.key]; });
+
+    if (!live.length) {
+        // Absence-honest: say the sensor failed, do not imply calm.
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">\u26A0\uFE0F Market data unavailable this cycle \u2014 sensor offline, not a quiet market.</div>';
+        var pe = el('financialProse');
+        if (pe) pe.textContent = 'Nikkei and yen quotes could not be retrieved.';
+        return;
+    }
+
+    if (grid) {
+        grid.innerHTML = INSTRUMENTS.map(function (inst) {
+            var q = results[inst.key];
+            if (!q) {
+                return '<div class="commodity-pill"><div class="commodity-pill-header">' +
+                       '<span class="commodity-pill-icon">' + inst.icon + '</span>' +
+                       '<div class="commodity-pill-name">' + esc(inst.name) + '</div></div>' +
+                       '<div class="commodity-pill-note">Not reporting this cycle.</div></div>';
+            }
+            var up = q.change_pct_1d >= 0;
+            var cls = up ? 'price-up' : 'price-down';
+            var arrow = up ? '\u25B2' : '\u25BC';
+            var price = inst.key === 'yen' ? q.price.toFixed(2)
+                                           : Math.round(q.price).toLocaleString();
+            return '<div class="commodity-pill">' +
+                '<div class="commodity-pill-header">' +
+                    '<span class="commodity-pill-icon">' + inst.icon + '</span>' +
+                    '<div class="commodity-pill-name">' + esc(inst.name) + '</div>' +
+                '</div>' +
+                '<div class="commodity-pill-price">' + price +
+                    ' <span class="' + cls + '">' + arrow + ' ' +
+                    q.change_pct_1d.toFixed(2) + '%</span></div>' +
+                '<div class="commodity-pill-row" style="font-size:0.66rem;color:var(--text-muted);">' +
+                    '30d ' + (q.change_pct_30d >= 0 ? '+' : '') + q.change_pct_30d.toFixed(1) + '%' +
+                    ' \u00b7 ' + esc(inst.unit) +
+                '</div>' +
+                '<div class="commodity-pill-note">' + esc(inst.note) + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // ── THE DIVERGENCE READ — the reason both instruments are here ──
+    var n = results.nikkei, y = results.yen;
+    var pe2 = el('financialProse');
+    var dv = el('financialDivergence');
+
+    if (n && y) {
+        var nUp = n.change_pct_30d > 1;
+        var nDn = n.change_pct_30d < -1;
+        var yWeak = y.change_pct_30d > 1;    // USD/JPY up = yen WEAKER
+        var yStrong = y.change_pct_30d < -1;
+        var msg, colour;
+
+        if (nUp && yWeak) {
+            colour = '#f59e0b';
+            msg = 'DIVERGENCE \u2014 the Nikkei is up ' + n.change_pct_30d.toFixed(1) +
+                  '% over 30 days while the yen has weakened ' + y.change_pct_30d.toFixed(1) +
+                  '%. Read the index gain as largely CURRENCY EFFECT, not underlying strength: ' +
+                  'a weaker yen mechanically lifts exporter earnings. The domestic read is the ' +
+                  'opposite of the market read \u2014 a weak yen raises import costs for an ' +
+                  'economy importing ~99% of its oil.';
+        } else if (nUp && yStrong) {
+            colour = '#22c55e';
+            msg = 'ALIGNED \u2014 the Nikkei is up ' + n.change_pct_30d.toFixed(1) +
+                  '% AND the yen has strengthened ' + Math.abs(y.change_pct_30d).toFixed(1) +
+                  '%. Equity gains alongside a firming currency are not a translation effect, ' +
+                  'which makes this the more durable version of a rally.';
+        } else if (nDn && yStrong) {
+            colour = '#dc2626';
+            msg = 'RISK-OFF SIGNATURE \u2014 the Nikkei is down ' + Math.abs(n.change_pct_30d).toFixed(1) +
+                  '% while the yen has strengthened ' + Math.abs(y.change_pct_30d).toFixed(1) +
+                  '%. That pairing is the classic safe-haven inflow pattern and is usually ' +
+                  'IMPORTED rather than domestic \u2014 it is also the carry-trade unwind ' +
+                  'mechanism that transmitted Japanese yen strength into a global equity ' +
+                  'cascade in August 2024. Worth reading against the GPI, not just this page.';
+        } else if (nDn && yWeak) {
+            colour = '#f97316';
+            msg = 'BOTH WEAKENING \u2014 equities down ' + Math.abs(n.change_pct_30d).toFixed(1) +
+                  '% and the yen down ' + y.change_pct_30d.toFixed(1) + '%. Currency weakness ' +
+                  'failing to support the index is the combination that reads as domestic ' +
+                  'rather than translational stress.';
+        } else {
+            colour = '#6b7280';
+            msg = 'No meaningful divergence this cycle \u2014 Nikkei ' +
+                  (n.change_pct_30d >= 0 ? '+' : '') + n.change_pct_30d.toFixed(1) +
+                  '% and USD/JPY ' + (y.change_pct_30d >= 0 ? '+' : '') +
+                  y.change_pct_30d.toFixed(1) + '% over 30 days. The pairing is the signal ' +
+                  'here; either instrument alone would be ambiguous.';
+        }
+        if (dv) {
+            dv.textContent = msg;
+            dv.style.background = 'rgba(0,0,0,0.10)';
+            dv.style.borderLeft = '3px solid ' + colour;
+            dv.style.color = 'var(--text-primary)';
+            dv.style.display = 'block';
+        }
+        if (pe2) {
+            pe2.textContent = 'Japan\u2019s financial read requires both instruments. A weak yen ' +
+                'flatters the Nikkei through exporter earnings, so the index alone cannot ' +
+                'distinguish genuine strength from currency effect \u2014 the divergence between ' +
+                'them is the actual signal.';
+        }
+    } else if (pe2) {
+        pe2.textContent = 'Partial market data this cycle \u2014 the divergence read needs both ' +
+            'the Nikkei and the yen and is suppressed rather than estimated.';
+    }
+
+    var nt = el('financialNote');
+    if (nt) {
+        nt.textContent = 'Source: Yahoo Finance (^N225, JPY=X), 1-month daily. USD/JPY rising = ' +
+            'yen weakening. MOF/BOJ intervention has historically clustered in the 152\u2013160 ' +
+            'band; sustained moves through it are observable events rather than forecasts. ' +
+            'Market data is context for the stability read, not a stability score in itself.';
+    }
+}
+
 async function loadCommodity() {
     let data = null;
     try {
@@ -1750,7 +2035,15 @@ function renderCommodityAlertBanner(data) {
     const banner = el('commodityAlertBanner');
     if (!banner) return;
     const alertLevel = (data.alert_level || data.overall_alert || 'normal').toLowerCase();
-    const alertText = data.alert_text || '';
+    // The proxy already computes a composite. Show the number rather than
+    // making the reader infer intensity from a word.
+    var alertText = data.alert_text || '';
+    if (!alertText && typeof data.commodity_pressure === 'number') {
+        alertText = 'Composite commodity pressure ' + Math.round(data.commodity_pressure) +
+                    ' across ' + (data.profile_count || (data.commodity_summaries || []).length) +
+                    ' tracked exposures. Japan imports ~99% of its oil and ~95% of its gas, ' +
+                    'so energy pressure here is an import-cost read, not a producer read.';
+    }
     if (alertLevel === 'normal' && !alertText) {
         banner.classList.remove('show');
         return;
@@ -1764,19 +2057,31 @@ function renderCommodityAlertBanner(data) {
 function renderCommodityTiles(data) {
     const grid = el('commodityGrid');
     if (!grid) return;
-    const tiles = data.tiles || data.commodities || [];
+    // FIXED Jul 26 2026: the payload field is `commodity_summaries`. Neither
+    // `tiles` nor `commodities` exists on it, so this always resolved to []
+    // and the card rendered "No commodity exposure profile available" while
+    // the backend was returning ten live commodities with sparklines.
+    const tiles = data.commodity_summaries || data.tiles || data.commodities || [];
     if (!tiles.length) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure profile available</div>';
         return;
     }
     grid.innerHTML = tiles.map(function (t) {
-        const alertCls = 'commodity-alert-' + (t.alert || t.alert_level || 'normal').toLowerCase();
+        // Field mapping against the live proxy payload:
+        //   alert  -> global_alert_level      price/change -> sparkline.*
+        const alertVal = (t.global_alert_level || t.alert || t.alert_level || 'normal');
+        const alertCls = 'commodity-alert-' + String(alertVal).toLowerCase();
         const role = (t.role || '').toUpperCase();
         const rank = t.rank ? '#' + t.rank : '';
         const sigCount = t.signal_count || t.signals_24h || 0;
         const note = t.note || t.country_note || '';
-        const price = t.price_display || (t.price ? '$' + t.price : '');
-        const change = t.change_pct;
+        const sp = t.sparkline || {};
+        const unit = t.unit || '';
+        const price = t.price_display ||
+                      (typeof sp.price === 'number'
+                          ? (unit.indexOf('USD/') === 0 ? '$' + sp.price : '$' + sp.price)
+                          : (t.price ? '$' + t.price : ''));
+        const change = (typeof sp.change_pct_1d === 'number') ? sp.change_pct_1d : t.change_pct;
         const changeClass = (typeof change === 'number') ? (change >= 0 ? 'price-up' : 'price-down') : '';
         const changeStr = (typeof change === 'number') ? ((change >= 0 ? '+' : '') + change.toFixed(1) + '%') : '';
         return '<div class="commodity-pill">' +
@@ -1786,7 +2091,7 @@ function renderCommodityTiles(data) {
                 (rank ? '<span class="commodity-pill-rank">' + rank + '</span>' : '') +
             '</div>' +
             '<div class="commodity-pill-row">' +
-                '<span class="commodity-pill-alert ' + alertCls + '">' + (t.alert || 'normal') + '</span>' +
+                '<span class="commodity-pill-alert ' + alertCls + '">' + escapeHtml(String(alertVal)) + '</span>' +
                 (role ? '<span class="commodity-pill-role-badge">' + role + '</span>' : '') +
                 (sigCount ? '<span class="commodity-pill-signal-count">' + sigCount + ' sig</span>' : '') +
             '</div>' +
@@ -1862,6 +2167,9 @@ async function loadData() {
         }
     })();
 
+    const financialPromise = loadFinancial().catch(function (e) {
+        console.warn('[Japan Financial]', e);
+    });
     const commodityPromise = loadCommodity().catch(function (e) {
         console.error('[Japan Stability] Commodity load failed:', e);
     });
