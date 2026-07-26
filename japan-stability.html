@@ -847,6 +847,7 @@ footer .footer-copyright {
     </div>
     <div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:14px;" data-i18n="rhetoric_card_subtitle">Theatre score (0-100) · Updated every 12h · Inbound + Outbound max levels</div>
     <div id="rhetoricTopline" style="display:none;font-size:0.82rem;line-height:1.55;color:var(--text-secondary);background:rgba(56,189,248,0.05);border-left:3px solid var(--accent);border-radius:6px;padding:11px 13px;margin:12px 0;"></div>
+    <div id="rhetoricSignals"></div>
     <div id="rhetoricActorList" style="font-size:0.8rem;color:var(--text-secondary);">
         <span style="font-style:italic;color:var(--text-muted);">Loading actor levels...</span>
     </div>
@@ -1643,86 +1644,125 @@ function hideLoadingOverlay() {
 // ════════════════════════════════════════════════════════════
 // RHETORIC + STABILITY RENDERING
 // ════════════════════════════════════════════════════════════
-// ── PLAIN-LANGUAGE TOPLINE ──────────────────────────────────────────
-// rhetoric_tracker_japan.py emits NO interpretation layer -- no so_what, no
-// top_signals, no interpreter module. The page was therefore showing raw
-// actor levels and asking the reader to do the analysis.
+// ── STRATEGIC ASSESSMENT (interpreter-driven) ───────────────────────
+// CORRECTED Jul 26 2026. japan_signal_interpreter.py DOES exist and is wired:
+// rhetoric_tracker_japan.py attaches `top_signals` to the payload and injects
+// `so_what` on the /api/rhetoric/japan route. An earlier pass missed both
+// because they are attached AFTER the result dict is built, not inside it.
 //
-// This composes a sentence from what the tracker DOES emit: the inbound /
-// outbound split, tripwire flags, and cross-theater amplifiers. It is a
-// frontend stopgap; a japan_signal_interpreter.py would do this properly
-// and feed the Asia BLUF and GPI as well as this page.
-//
-// Doctrine: estimative voice only. No probabilities, no dates, no "will".
+// So the interpreter is authoritative and this renders it. The synthesis
+// below is the FALLBACK only -- which is exactly what the tracker's own log
+// line anticipates ("frontend will synthesize" when the interpreter is absent).
 function renderRhetoricTopline(data) {
     var host = el('rhetoricTopline');
     if (!host) return;
+    var sw = data.so_what || {};
 
+    if (sw.assessment || sw.situation) {
+        host.innerHTML = _renderSoWhat(sw, data);
+    } else {
+        host.textContent = _synthesizeTopline(data);
+    }
+    host.style.display = 'block';
+
+    _renderRhetoricSignals(data.top_signals || []);
+}
+
+function _renderSoWhat(sw, data) {
+    function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+    var out = '';
+
+    if (sw.scenario) {
+        out += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">' +
+               '<span style="font-size:1.1rem;">' + esc(sw.scenario_icon || '\u25CF') + '</span>' +
+               '<span style="font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;' +
+               'font-family:\'Courier New\',monospace;color:var(--text-muted);">Scenario</span>' +
+               '<span style="font-weight:800;color:' + esc(sw.scenario_color || 'var(--accent)') + ';">' +
+               esc(sw.scenario) + '</span></div>';
+    }
+    if (sw.situation)  out += '<div style="margin-bottom:8px;">' + esc(sw.situation) + '</div>';
+    if (sw.assessment) out += '<div style="margin-bottom:8px;"><b>Assessment:</b> ' + esc(sw.assessment) + '</div>';
+
+    // key_indicators / watch_list / red_lines are LISTS from the interpreter.
+    function list(title, arr, colour) {
+        if (!arr || !arr.length) return '';
+        return '<div style="margin-top:8px;"><div style="font-size:0.6rem;letter-spacing:1.6px;' +
+               'text-transform:uppercase;font-family:\'Courier New\',monospace;color:' + colour +
+               ';margin-bottom:4px;">' + title + '</div>' +
+               arr.slice(0, 4).map(function (x) {
+                   return '<div style="font-size:0.76rem;line-height:1.45;padding-left:10px;' +
+                          'border-left:2px solid ' + colour + ';margin-bottom:4px;">' + esc(x) + '</div>';
+               }).join('') + '</div>';
+    }
+    out += list('Key indicators', sw.key_indicators, 'var(--accent)');
+    out += list('Red lines',      sw.red_lines,      '#dc2626');
+    out += list('Watch',          sw.watch_list,     '#f59e0b');
+
+    if (sw.historical_match) {
+        out += '<div style="margin-top:8px;font-size:0.76rem;font-style:italic;color:var(--text-muted);">' +
+               'Historical analog: ' + esc(sw.historical_match) + '</div>';
+    }
+    return out;
+}
+
+function _renderRhetoricSignals(sigs) {
+    var host = el('rhetoricSignals');
+    if (!host) return;
+    function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+    if (!sigs.length) {
+        host.innerHTML = '<div style="font-size:0.74rem;color:var(--text-muted);padding:7px 9px;">' +
+            'No signal cleared the reporting threshold this cycle. A quiet corpus is a valid ' +
+            'output, not a gap.</div>';
+        return;
+    }
+    host.innerHTML = '<div style="font-size:0.6rem;letter-spacing:1.6px;text-transform:uppercase;' +
+        'font-family:\'Courier New\',monospace;color:var(--text-muted);margin:10px 0 5px;">' +
+        'Top signals \u2014 these ride to the Asia BLUF and GPI</div>' +
+        sigs.slice(0, 6).map(function (s) {
+            var c = s.color || LEVEL_COLORS[s.level || 0] || '#6b7280';
+            return '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 9px;' +
+                   'margin-bottom:4px;border-left:3px solid ' + esc(c) + ';border-radius:0 5px 5px 0;' +
+                   'background:rgba(56,189,248,0.04);">' +
+                   '<span style="flex-shrink:0;font-size:9px;font-weight:800;padding:2px 6px;' +
+                   'border-radius:3px;background:' + esc(c) + ';color:#fff;">L' + (s.level || 0) + '</span>' +
+                   '<span style="font-size:0.76rem;line-height:1.45;">' + esc(s.short_text || '') + '</span>' +
+                   '</div>';
+        }).join('');
+}
+
+// FALLBACK ONLY -- used when the interpreter is unavailable. Composes from the
+// inbound/outbound split and cross-theater amplifiers the tracker always emits.
+function _synthesizeTopline(data) {
     var inbound  = data.inbound_max_level  || 0;
     var outbound = data.outbound_max_level || 0;
-    var overall  = data.overall_level || 0;
     var amp = data.crosstheater_amplifiers || data.cross_theater_amplifiers || {};
     var parts = [];
 
-    // 1. The dual-axis read -- the distinction the page was throwing away.
-    //    Japan is simultaneously a TARGET (DPRK missiles, China maritime) and
-    //    an ACTOR (Article 9, JSDF posture). Collapsing them loses the story.
     if (inbound > outbound && inbound >= 2) {
-        parts.push('Pressure is running INBOUND at L' + inbound + ' \u2014 Japan is being ' +
-                   'acted upon (DPRK launch activity, Chinese maritime and ADIZ pressure, ' +
-                   'Russian Far East movement) more than it is acting.');
+        parts.push('Pressure is running INBOUND at L' + inbound + ' \u2014 Japan is being acted ' +
+                   'upon (DPRK launch activity, Chinese maritime and ADIZ pressure) more than ' +
+                   'it is acting.');
     } else if (outbound > inbound && outbound >= 2) {
         parts.push('Pressure is running OUTBOUND at L' + outbound + ' \u2014 the movement is ' +
                    'Japan\u2019s own posture: Article 9 reinterpretation language, JSDF ' +
-                   'deployment decisions, Taiwan-contingency signalling. A postwar ' +
-                   'pacifist constraint loosening is a structural change, not a news cycle.');
+                   'deployment decisions, Taiwan-contingency signalling.');
     } else if (inbound >= 2 && outbound >= 2) {
         parts.push('Inbound and outbound pressure are BOTH elevated (L' + inbound + ' / L' +
-                   outbound + ') \u2014 external pressure and domestic posture change moving ' +
-                   'together, which is the combination that has historically preceded ' +
-                   'formal defence-policy shifts rather than either alone.');
+                   outbound + ') \u2014 external pressure and domestic posture change moving together.');
     }
-
-    // 2. Cross-theater amplifiers -- Japan's vulnerabilities are IMPORTED.
     if (amp.iran_hormuz_pressure) {
-        parts.push('Hormuz pressure is active. Japan imports roughly 99% of its oil and ' +
-                   'about 90% of that transits the Gulf \u2014 so an Iran-theatre signal is ' +
-                   'a direct Japanese energy-security read, not a distant one.');
+        parts.push('Hormuz pressure is active. Japan imports roughly 99% of its oil and about ' +
+                   '90% of that transits the Gulf.');
     }
     if (amp.senkaku_active || (amp.china_outbound_max || 0) >= 3) {
-        parts.push('Senkaku / Chinese maritime activity is elevated. The 2010 precedent is ' +
-                   'the reference: a territorial dispute converted directly into a rare-earth ' +
-                   'export restriction, and Japan remains roughly 60% China-dependent for ' +
-                   'heavy rare earths.');
+        parts.push('Senkaku / Chinese maritime activity elevated \u2014 the 2010 precedent ' +
+                   'converted a territorial dispute directly into a rare-earth export restriction.');
     }
-    if (amp.taiwan_pressure) {
-        parts.push('Taiwan-strait pressure registers here because Japanese territory hosts ' +
-                   'the forces any contingency would involve, and Yonaguni sits ~110km from ' +
-                   'Taiwan.');
-    }
-
-    // 3. Tripwires named by the tracker.
-    var tw = [];
-    var actors = data.actors || {};
-    Object.keys(actors).forEach(function (k) {
-        var t = (actors[k] || {}).tripwires || {};
-        Object.keys(t).forEach(function (flag) { if (t[flag]) tw.push(flag); });
-    });
-    if (tw.length) {
-        parts.push(tw.length + ' tripwire' + (tw.length > 1 ? 's' : '') + ' flagged: ' +
-                   tw.slice(0, 4).map(function (x) { return x.replace(/_/g, ' '); }).join(', ') + '.');
-    }
-
-    // 4. Quiet is a valid output -- say so rather than rendering blank.
     if (!parts.length) {
-        parts.push('Signals are at baseline this cycle. No inbound surge, no posture movement, ' +
-                   'no cross-theater amplifier active. Watch the inbound/outbound split: the ' +
-                   'combination of external pressure and domestic posture change is the ' +
-                   'pattern worth catching, not either alone.');
+        parts.push('Signals are at baseline this cycle. Interpreter output unavailable, so this ' +
+                   'is a synthesized read from raw levels \u2014 thinner than the full assessment.');
     }
-
-    host.textContent = parts.join(' ');
-    host.style.display = 'block';
+    return parts.join(' ');
 }
 
 function renderRhetoric(data) {
