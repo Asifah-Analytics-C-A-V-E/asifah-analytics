@@ -97,7 +97,13 @@ body::before {
    800px, overriding the responsive sizing. The theme difference now lives in
    --watermark-opacity / --watermark-filter, same as every other page. */
 
-.container { max-width: 1500px; margin: 0 auto; padding: 0 20px; }
+/* position:relative + z-index:1 is REQUIRED, not cosmetic. The watermark is
+   position:fixed; z-index:0 -- a positioned element with z-index 0 paints
+   ABOVE static content. Without this the watermark sits on top of the page.
+   It only LOOKED fine in light mode because opacity is 0.06 there; dark mode
+   at 0.16 with saturate(3) made the same bug visible. Matches the canonical
+   container on every other page. */
+.container { max-width: 1500px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
 
 header {
     background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
