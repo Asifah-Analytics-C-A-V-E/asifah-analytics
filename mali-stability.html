@@ -1268,5 +1268,82 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRhetoric();
 });
 </script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SIDEBAR SELF-HEAL — Africa rhetoric button
+     ══════════════════════════════════════════════════════════════════
+     TEMPORARY. Remove once resources/asifah-standard-shell.js reliably
+     serves its Africa entry.
+
+     WHY THIS EXISTS: the shared shell's ensureSidebar() does an
+     UNCONDITIONAL `sidebar.innerHTML = canonicalNavHtml()` -- it deletes
+     whatever markup the page wrote and rebuilds the whole nav from its own
+     arrays. So the correct <a> at line ~475 of this page is destroyed on
+     every load. The repo copy of the shell HAS the Africa entry, but the
+     served copy did not as of Jul 26 2026 (survived a Cloudflare purge and
+     an Empty-Cache-and-Hard-Reload), so something between the repo and the
+     browser is still handing over an older build.
+
+     This block runs AFTER the shell and re-inserts the button if missing.
+     It is idempotent, defensive, and does nothing when the shell is correct
+     -- so it can stay in place harmlessly until the real cause is found.
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+    'use strict';
+    var HREF  = 'rhetoric-africa.html';
+    var LABEL = '\uD83D\uDCE1 Africa';          // 📡 Africa
+    var STATUS = '\u25CF Live';                  // ● Live
+
+    function healOne(container) {
+        if (!container) return false;
+        // Already present anywhere in this container? Nothing to do.
+        if (container.querySelector('a[href="' + HREF + '"], div[href="' + HREF + '"]')) return false;
+
+        // Find the "Regional Rhetoric" section header.
+        var labels = container.querySelectorAll('.nav-sidebar-label');
+        var header = null;
+        for (var i = 0; i < labels.length; i++) {
+            if (/regional\s+rhetoric/i.test(labels[i].textContent || '')) { header = labels[i]; break; }
+        }
+        if (!header) return false;   // shell markup changed -- fail quiet, break nothing
+
+        var a = document.createElement('a');
+        a.href = HREF;
+        // Match the shell's own classes exactly so styling is identical.
+        a.className = 'nav-btn rhetoric-btn active-nav';
+        a.setAttribute('data-selfheal', 'africa');
+        a.innerHTML = '<span class="nav-btn-label">' + LABEL + '</span>' +
+                      '<span class="nav-btn-status">' + STATUS + '</span>';
+        header.parentNode.insertBefore(a, header.nextSibling);   // first, alphabetical
+        return true;
+    }
+
+    function heal() {
+        // Desktop sidebar(s) AND the shell's injected mobile drawer.
+        var n = 0;
+        var nodes = document.querySelectorAll('.nav-sidebar, #asifahMobileDrawer, .asifah-mobile-drawer');
+        for (var i = 0; i < nodes.length; i++) { if (healOne(nodes[i])) n++; }
+        return n;
+    }
+
+    function start() {
+        heal();
+        // The shell may rebuild after we run (deferred script ordering is not
+        // guaranteed across browsers). Watch briefly and re-heal if it does.
+        var tries = 0;
+        var iv = setInterval(function () {
+            heal();
+            if (++tries >= 10) clearInterval(iv);   // ~5s, then stop
+        }, 500);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
+    }
+})();
+</script>
 </body>
 </html>
