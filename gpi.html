@@ -275,6 +275,15 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 26px; margi
 .axis-tag-diplomatic { border-color: rgba(14,165,233,0.4); color: #38bdf8; }
 .axis-tag-humanitarian { border-color: rgba(168,85,247,0.4); color: #c084fc; }
 /* Slice 2: trailing axis pill, linked location, page-less tag */
+.sig-country-pills { display:inline-flex; flex-wrap:wrap; gap:4px; margin-left:6px; vertical-align:middle; }
+.sig-country-pill {
+    font-family:'Courier New',monospace; font-size:9px; letter-spacing:0.8px;
+    text-transform:uppercase; padding:2px 7px; border-radius:999px;
+    border:1px solid rgba(147,197,253,0.35); background:rgba(147,197,253,0.08);
+    color:#93c5fd; white-space:nowrap; transition:all .15s ease;
+}
+a:hover > .sig-country-pill { border-color:#38bdf8; background:rgba(56,189,248,0.18); color:#e2f0fb; }
+
 .sig-row-foot { margin-top: 7px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sig-axis-tag-end { font-family: 'Courier New', monospace; font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--card-border); }
 a.sig-location-link { text-decoration: none; border-bottom: 1px dotted currentColor; }
@@ -805,6 +814,25 @@ a.sig-location-link:hover { opacity: 0.8; }
                     <div class="cvg-disclaimer" id="cvgDisclaimer"></div>
                 </div>
             </details>
+
+            <!-- ════════════════════════════════════════════════════════════
+                 COUNTRY ROLLUP (Jul 27 2026)
+                 The theatre-keyed grouping cannot see that four separate
+                 signals all touch Iran, because they are filed under four
+                 different theatres. This gathers them. Collapsed by default --
+                 it is a drill-down, not a headline, and the page's strength is
+                 that it does not shout.
+                 ════════════════════════════════════════════════════════════ -->
+            <div class="narratives-section" id="countryRollupSection" style="display:none;">
+                <div class="narratives-title">
+                    🗺️ The Full Picture by Country
+                    <span class="narratives-title-count" id="countryRollupCount">0</span>
+                </div>
+                <div class="narratives-subtitle">
+                    Signals are filed by theatre, but many touch several countries — a Hormuz read reaches Iran, Oman and the UAE whether or not it says so. This gathers everything touching each country, including signals filed elsewhere, so a country's picture is not split across headings.
+                </div>
+                <div id="countryRollupGrid"></div>
+            </div>
 
             <!-- ════════════════════════════════════════════════════════════
                  NARRATIVES SECTION (May 22 2026)
@@ -1581,6 +1609,113 @@ function _renderGroupBanner(group, axisColor, exposureIndex) {
     </div>`;
 }
 
+// ── COUNTRY TOUCH PILLS (Jul 27 2026) ───────────────────────────────────
+// A signal BELONGS to a theatre and TOUCHES countries -- two different
+// relations. The Jul 27 tagging audit found four of twenty displayed signals
+// referencing Iran under four DIFFERENT theatre tags, so Iran occupied a fifth
+// of the page while the grouping logic saw four unrelated items.
+//
+// These pills make the second relation visible: a global maritime signal shows
+// the countries it actually reaches, and clicking one goes to that country's
+// page. The signal stays filed where it belongs.
+//
+// The theatre's OWN country is suppressed -- "IRAN: kinetic tempo" tagged with
+// an Iran pill is noise. Pills are for what the headline does NOT already say.
+const _COUNTRY_PILL_LABEL = {
+    us: 'United States', dprk: 'North Korea', south_korea: 'South Korea',
+    saudi_arabia: 'Saudi Arabia', burkina_faso: 'Burkina Faso',
+    south_sudan: 'South Sudan', south_africa: 'South Africa',
+    car: 'CAR', uae: 'UAE', drc: 'DRC',
+};
+
+function _gpiCountryLabel(c) {
+    if (_COUNTRY_PILL_LABEL[c]) return _COUNTRY_PILL_LABEL[c];
+    return String(c || '').replace(/_/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
+}
+
+function _gpiCountryPills(s, loc) {
+    const list = (s && s.countries) || [];
+    if (!list.length) return '';
+    // Drop the country the row already names -- a pill repeating the headline
+    // adds width and no information.
+    const ownTheatre = String((s && s.theatre) || '').toLowerCase();
+    const shown = list.filter(c => c && c !== ownTheatre).slice(0, 6);
+    if (!shown.length) return '';
+    return '<span class="sig-country-pills">' + shown.map(c => {
+        const label = escapeHtmlGpi(_gpiCountryLabel(c));
+        // Use the page's OWN theatre->page map rather than inventing a
+        // resolver. An earlier draft called a _countryHref() that does not
+        // exist, guarded by typeof -- which silently disabled every link
+        // instead of failing loudly. Guards that hide missing functions are
+        // how "built but not wired" happens.
+        const href = (typeof _THEATRE_PAGE === 'object' && _THEATRE_PAGE) ? _THEATRE_PAGE[c] : null;
+        const inner = '<span class="sig-country-pill">' + label + '</span>';
+        return href ? `<a href="${href}" style="text-decoration:none;">${inner}</a>` : inner;
+    }).join('') + '</span>';
+}
+
+// ── COUNTRY ROLLUP (Jul 27 2026) ────────────────────────────────────────
+// Answers "what does Iran's picture owe to signals filed elsewhere?" -- which
+// grouped_signals structurally cannot, because those signals are not filed
+// under Iran. cross_theatre_pct is the number to watch: high means the
+// country's own page is under-reporting itself.
+function renderCountryRollup(data) {
+    const section = document.getElementById('countryRollupSection');
+    const grid = document.getElementById('countryRollupGrid');
+    const countEl = document.getElementById('countryRollupCount');
+    if (!section || !grid) return;
+
+    const roll = (data && data.country_rollup) || [];
+    // Only surface countries whose picture is genuinely SPLIT. A country whose
+    // signals all sit in its own theatre is already legible above; repeating
+    // it here would be noise.
+    const split = roll.filter(r => (r.referenced_from_elsewhere || 0) > 0);
+    if (!split.length) { section.style.display = 'none'; return; }
+
+    if (countEl) countEl.textContent = split.length;
+    const LVL = ['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'];
+
+    grid.innerHTML = split.slice(0, 12).map(r => {
+        const lv = Math.max(0, Math.min(5, parseInt(r.max_level, 10) || 0));
+        const col = LVL[lv];
+        const href = (typeof _THEATRE_PAGE === 'object' && _THEATRE_PAGE)
+                     ? _THEATRE_PAGE[r.country] : null;
+        const name = escapeHtmlGpi(_gpiCountryLabel(r.country));
+        const title = href
+            ? `<a href="${href}" style="color:inherit;text-decoration:none;border-bottom:1px dotted ${col};">${name}</a>`
+            : name;
+
+        const axes = (r.axes || []).map(a =>
+            `<span class="sig-country-pill" style="border-color:${col}55;background:${col}14;color:${col};">`
+            + escapeHtmlGpi(_AXIS_TAG_LABEL[a] || a) + '</span>').join('');
+
+        const rows = (r.signals || []).map(s => {
+            const tag = s.filed_elsewhere
+                ? `<span style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:#f59e0b;">FILED: ${escapeHtmlGpi(String(s.theatre || 'global').toUpperCase())}</span>`
+                : `<span style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:var(--text-muted);">OWN</span>`;
+            return `<div style="display:flex;gap:9px;align-items:flex-start;padding:5px 0;border-top:1px solid var(--card-border);">
+                <span style="flex-shrink:0;min-width:96px;">${tag}</span>
+                <span style="font-size:12px;line-height:1.45;">${escapeHtmlGpi(s.text || '')}</span>
+            </div>`;
+        }).join('');
+
+        return `<details style="border:1px solid var(--card-border);border-left:3px solid ${col};border-radius:9px;padding:12px 15px;margin-bottom:9px;background:var(--card-bg);">
+            <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;">
+                <span style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+                    <span style="font-weight:800;letter-spacing:0.4px;">${title}</span>
+                    <span class="sig-level-chip" style="background:${col};">L${lv}</span>
+                    ${axes}
+                </span>
+                <span style="font-family:'Courier New',monospace;font-size:10px;letter-spacing:1px;color:var(--text-muted);">
+                    ${r.signal_count} SIGNALS \u00b7 ${Math.round(r.cross_theatre_pct)}% FILED ELSEWHERE
+                </span>
+            </summary>
+            <div style="margin-top:9px;">${rows}</div>
+        </details>`;
+    }).join('');
+    section.style.display = 'block';
+}
+
 function _renderSignalRow(s, axisColor) {
     const icon = s.icon || '\u26a1';
     const color = s.color || axisColor;
@@ -1606,7 +1741,7 @@ function _renderSignalRow(s, axisColor) {
                 ${sourceTag}
             </div>
             <div class="sig-row-text">${safeBody}</div>
-            <div class="sig-row-foot">${endPill}${_gpiDecayTag(s)}</div>
+            <div class="sig-row-foot">${endPill}${_gpiCountryPills(s, loc)}${_gpiDecayTag(s)}</div>
         </div>
     </div>`;
 }
@@ -1871,6 +2006,7 @@ async function loadGpi() {
         renderGpiConvergence(data.convergence_panel);
         renderNarratives(data.narratives || []);
         document.getElementById('gpiSignalsCount').textContent    = `Signals: ${(data.top_signals || []).length}`;
+        try { renderCountryRollup(data); } catch (e) { console.warn('[GPI] country rollup:', e); }
 
         // v3.1 -- BLUF prose, signals, and timestamp now rendered inside the
         // active hero card via setActiveAxis(). The standalone BLUF card was
