@@ -439,6 +439,19 @@
                         <span class="gpi-btn-status" id="gpiBtnStatus" style="background:rgba(100,220,255,0.15);">LOADING</span>
                     </div>
                 </a>
+            <!-- ── LEAD SIGNAL + MOTION (Jul 27 2026) ──────────────────────
+                 The level alone has been pinned at L5 by sustained global
+                 conflict. A gauge at maximum is a broken gauge: it tells a
+                 first-time visitor nothing and trains a regular reader to stop
+                 looking. What MOVES is which theatre leads and what changed --
+                 so those are what the page shows. Deliberately two lines, not a
+                 ticker: a scrolling feed implies churn and would cost this page
+                 the calm that is its strength. -->
+            <div id="gpiLeadWrap" style="display:none;max-width:760px;margin:14px auto 0;text-align:center;">
+                <div id="gpiLead" style="font-size:0.95rem;color:#e2f0fb;letter-spacing:0.3px;"></div>
+                <div id="gpiMotion" style="font-size:0.78rem;color:#93c5fd;opacity:0.85;margin-top:5px;font-family:'Courier New',monospace;letter-spacing:1px;"></div>
+            </div>
+
             </div>
 
             <div class="region-section">
@@ -481,7 +494,16 @@
             </div>
 
             <div class="landing-footer">
-                <p>ASIFAH ANALYTICS provides open-source intelligence monitoring and conflict probability assessments across global regions. Data is aggregated from multilingual news sources, prediction markets, and community intelligence feeds.</p>
+                <!-- REWRITTEN Jul 27 2026. The previous copy promised "conflict
+                     probability assessments" and cited "prediction markets" as a
+                     source. Both were wrong. Every module on this platform carries
+                     the opposite commitment -- "a CONVERGENCE indicator, NOT a
+                     probability of action" -- so the front door was promising the
+                     one thing every room inside declines to do. "Prediction
+                     markets" was also factually stale; nothing in the feed stack
+                     reads one. -->
+                <p>ASIFAH ANALYTICS provides open-source intelligence monitoring across global regions. Asifah reads <strong>convergence</strong> &mdash; where independent pressures stack in the same window &mdash; from multilingual news, commodity and market data, humanitarian feeds, and regional social sources. Signals are synthesised into a Global Pressure Index and regional dashboards.</p>
+                <p style="margin-top:10px;opacity:0.85;"><em>Convergence, not prediction.</em> These are reads of present conditions measured against historical precedent, not forecasts of what happens next. The reader completes the inference.</p>
 
                 <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
                 <div style="margin:24px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
@@ -519,6 +541,38 @@
                     lvlEl.textContent = `L${data.global_level}`;
                     if (data.global_color) lvlEl.style.color = data.global_color;
                 }
+                // LEAD SIGNAL -- what the level cannot say.
+                const wrap = document.getElementById('gpiLeadWrap');
+                const leadEl = document.getElementById('gpiLead');
+                const motionEl = document.getElementById('gpiMotion');
+                if (leadEl && data.headline && data.headline.line) {
+                    const hd = data.headline;
+                    // Axis tint: the KIND of pressure, not just its height. An L5
+                    // earthquake and an L5 war are both L5 -- the colour and the
+                    // words together stop them reading as the same event.
+                    const AXIS = {
+                        kinetic:      ['#f87171', 'kinetic'],
+                        humanitarian: ['#fbbf24', 'humanitarian'],
+                        economic:     ['#34d399', 'economic'],
+                        diplomatic:   ['#818cf8', 'diplomatic'],
+                    };
+                    const ax = AXIS[hd.axis] || AXIS.kinetic;
+                    leadEl.innerHTML = '<span style="opacity:0.6;">Leading signal &mdash;</span> '
+                        + '<strong>' + String(hd.line).replace(/</g,'&lt;') + '</strong>'
+                        + ' <span style="font-size:0.66rem;font-family:\'Courier New\',monospace;'
+                        + 'letter-spacing:1px;text-transform:uppercase;padding:2px 7px;'
+                        + 'border-radius:999px;border:1px solid ' + ax[0] + '66;'
+                        + 'background:' + ax[0] + '1a;color:' + ax[0] + ';">' + ax[1] + '</span>';
+                    if (wrap) wrap.style.display = 'block';
+                }
+                if (motionEl && data.motion && data.motion.text) {
+                    // Motion is the reason to click: it implies someone is watching.
+                    motionEl.textContent = data.motion.quiet
+                        ? data.motion.text
+                        : '\u25B3 ' + data.motion.text;
+                    if (wrap) wrap.style.display = 'block';
+                }
+
                 if (stEl && data.global_label) {
                     stEl.textContent = data.global_label;
                     if (data.global_color) {
