@@ -823,16 +823,19 @@ a.sig-location-link:hover { opacity: 0.8; }
                  it is a drill-down, not a headline, and the page's strength is
                  that it does not shout.
                  ════════════════════════════════════════════════════════════ -->
-            <div class="narratives-section" id="countryRollupSection" style="display:none;">
-                <div class="narratives-title">
-                    🗺️ The Full Picture by Country
-                    <span class="narratives-title-count" id="countryRollupCount">0</span>
-                </div>
-                <div class="narratives-subtitle">
-                    Signals are filed by theatre, but many touch several countries — a Hormuz read reaches Iran, Oman and the UAE whether or not it says so. This gathers everything touching each country, including signals filed elsewhere, so a country's picture is not split across headings.
-                </div>
-                <div id="countryRollupGrid"></div>
-            </div>
+            <details class="narratives-section" id="countryRollupSection" style="display:none;">
+                <summary style="cursor:pointer;list-style:none;">
+                    <span class="narratives-title" style="display:inline-flex;align-items:center;gap:8px;">
+                        <span style="font-size:0.75rem;opacity:0.55;">▸</span>
+                        🗺️ The Full Picture by Country
+                        <span class="narratives-title-count" id="countryRollupCount">0</span>
+                    </span>
+                    <div class="narratives-subtitle" style="margin-top:6px;">
+                        Signals are filed by theatre, but many touch several countries — a Hormuz read reaches Iran, Oman and the UAE whether or not it says so. Expand to see everything touching each country, including signals filed elsewhere.
+                    </div>
+                </summary>
+                <div id="countryRollupGrid" style="margin-top:12px;"></div>
+            </details>
 
             <!-- ════════════════════════════════════════════════════════════
                  NARRATIVES SECTION (May 22 2026)
@@ -1003,7 +1006,13 @@ function renderGpiConvergence(panel) {
         summ.innerHTML = '\u25BE <b style="color:#dc2626;">' + converged +
             ' HUB' + (converged > 1 ? 'S' : '') + ' CONVERGED</b> \u00b7 ' +
             tracked + ' wheels tracked \u00b7 ' + lit + ' spokes lit';
-        wrap.open = true;                     // expand on its own when it matters
+        // CHANGED Jul 27 2026: was auto-expanding on convergence. Holding it
+        // closed until the GPI delta archive has depth -- an auto-opening panel
+        // that says "2 wheels tracked, no convergence" costs the page height
+        // for no read. The summary line still states the finding, and the
+        // reader expands when they want it. Revisit once the archive is deep
+        // enough that a convergence claim carries weight.
+        wrap.open = false;
     } else {
         summ.innerHTML = '\u25B8 Spoke &amp; Wheel \u2014 ' + tracked +
             ' wheels tracked \u00b7 ' + lit + ' spoke' + (lit === 1 ? '' : 's') +
@@ -1915,6 +1924,13 @@ function renderNarratives(narratives) {
             return map[r] || r.toUpperCase();
         }).join(' · ');
 
+        // Country pills (Jul 27 2026). The ECONOMIC card's prose routinely names
+        // "China, Brazil, India" or "Qatar ... UAE" mid-sentence, and none of
+        // it was pill-tagged because an earlier pass tagged only top_signals.
+        // Narratives are precisely where multi-country prose lives.
+        const narrPills = (typeof _gpiCountryPills === 'function')
+            ? _gpiCountryPills(narr, {}) : '';
+
         card.innerHTML =
             '<div class="narrative-card-header">' +
                 '<span class="narrative-card-icon">' + (narr.icon || '⚡') + '</span>' +
@@ -1927,7 +1943,12 @@ function renderNarratives(narratives) {
                 ? '<div class="narrative-card-sowhat-label">Why it matters</div>' +
                   '<div class="narrative-card-detail">' + escapeHtmlGpi(narr.detail) + '</div>'
                 : '') +
-            (regions ? '<div class="narrative-card-regions">Regions: ' + regions + '</div>' : '');
+            (regions ? '<div class="narrative-card-regions">Regions: ' + regions + '</div>' : '') +
+            // Country pills. `regions` above are BUCKETS (ME, Asia, Global);
+            // these are the actual countries the prose names -- "China, Brazil,
+            // India" on the fertilizer read, "Qatar ... UAE" on LNG. Different
+            // information, so both render.
+            (narrPills ? '<div class="narrative-card-countries" style="margin-top:7px;">' + narrPills + '</div>' : '');
 
         grid.appendChild(card);
     });
