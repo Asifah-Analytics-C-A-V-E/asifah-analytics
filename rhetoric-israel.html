@@ -152,6 +152,30 @@
     .section-card:hover { box-shadow: var(--card-hover-glow); }
     .section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
 
+    /* ── POLICY INSTRUMENT PANELS (Slices 2-5) ── */
+    .policy-panel .pp-badge-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .policy-panel .pp-badge { display:inline-block; padding:4px 12px; border-radius:6px; font-size:0.65rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#0b1220; background:var(--text-muted); }
+    .policy-panel .pp-freeze { font-size:0.62rem; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); font-family:'Courier New',monospace; }
+    .policy-panel .pp-headline { font-size:0.95rem; font-weight:600; color:var(--text-primary); line-height:1.5; margin-bottom:12px; }
+    .policy-panel .pp-rows { margin:8px 0; }
+    .policy-panel .pp-row { display:flex; align-items:flex-start; gap:10px; padding:7px 11px; border-radius:6px; margin-bottom:5px; font-size:0.78rem; background:var(--article-bg,rgba(255,255,255,0.03)); border-left:3px solid var(--card-border); }
+    .policy-panel .pp-row.ok    { border-left-color:#10b981; }
+    .policy-panel .pp-row.bad   { border-left-color:#dc2626; }
+    .policy-panel .pp-row.warn  { border-left-color:#f59e0b; }
+    .policy-panel .pp-row-label { flex:1; color:var(--text-primary); }
+    .policy-panel .pp-row-value { font-family:'Courier New',monospace; font-size:0.7rem; color:var(--text-muted); white-space:nowrap; }
+    .policy-panel .pp-chips { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+    .policy-panel .pp-chip { font-size:0.6rem; font-weight:700; letter-spacing:0.5px; padding:3px 9px; border-radius:12px; border:1px solid var(--card-border); color:var(--text-muted); }
+    .policy-panel .pp-chip.hot  { border-color:#dc2626; color:#f87171; }
+    .policy-panel .pp-chip.good { border-color:#10b981; color:#34d399; }
+    .policy-panel .pp-note { font-size:0.74rem; line-height:1.65; color:var(--text-secondary); margin-top:10px; padding:10px; border-radius:6px; background:var(--article-bg,rgba(255,255,255,0.03)); }
+    /* Attributed frames: a characterisation NEVER renders without its source
+       and, where one exists, its counter-position. */
+    .policy-panel .pp-frame { margin-top:10px; padding:10px 12px; border-radius:6px; border:1px dashed var(--card-border); font-size:0.73rem; line-height:1.6; }
+    .policy-panel .pp-frame-attr { font-size:0.6rem; letter-spacing:1px; text-transform:uppercase; color:var(--accent); margin-bottom:5px; }
+    .policy-panel .pp-frame-counter { margin-top:7px; padding-top:7px; border-top:1px solid var(--card-border); color:var(--text-muted); }
+    .policy-panel .pp-frame-src { margin-top:6px; font-size:0.62rem; }
+
     /* ── THEATRE BANNER ── */
     .theatre-banner { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px 28px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--card-glow); }
     .theatre-score-big { font-size: clamp(3rem, 8vw, 5rem); font-weight: 900; line-height: 1; color: var(--accent); }
@@ -983,6 +1007,50 @@
     </div>
 
     <!-- COORDINATION SIGNALS -->
+    <!-- ══════════════════════════════════════════════════════════════════
+         POLICY INSTRUMENT PANELS (Slices 2-5, Aug 2026)
+         Four detectors, ONE renderer. Each has a different instrument type --
+         gate ladder / administrative tempo / one-way ratchet / speaker
+         deviation -- but they share a payload shape (headline, note, rows,
+         chips, attributed frames), so a config-driven renderer covers all four
+         and any fifth added later. Each panel hides itself when its payload is
+         missing rather than rendering an empty shell.
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="section-card policy-panel" id="gazaGatesCard" style="display:none;">
+        <div class="section-title">🕊️ GAZA — BOARD OF PEACE GATES</div>
+        <div class="pp-badge-row"><span class="pp-badge" id="gazaGatesBadge">--</span><span class="pp-freeze" id="gazaGatesFreeze"></span></div>
+        <div class="pp-headline" id="gazaGatesHeadline"></div>
+        <div class="pp-rows" id="gazaGatesRows"></div>
+        <div class="pp-note" id="gazaGatesNote"></div>
+    </div>
+
+    <div class="section-card policy-panel" id="gazaRatchetCard" style="display:none;">
+        <div class="section-title">🔒 GAZA — CONTROL RATCHET</div>
+        <div class="pp-badge-row"><span class="pp-badge" id="gazaRatchetBadge">--</span></div>
+        <div class="pp-headline" id="gazaRatchetHeadline"></div>
+        <div class="pp-rows" id="gazaRatchetRows"></div>
+        <div class="pp-chips" id="gazaRatchetChips"></div>
+        <div class="pp-note" id="gazaRatchetNote"></div>
+        <div class="pp-frames" id="gazaRatchetFrames"></div>
+    </div>
+
+    <div class="section-card policy-panel" id="westBankCard" style="display:none;">
+        <div class="section-title">🏗️ WEST BANK — ADMINISTRATIVE ACT TEMPO</div>
+        <div class="pp-badge-row"><span class="pp-badge" id="westBankBadge">--</span></div>
+        <div class="pp-headline" id="westBankHeadline"></div>
+        <div class="pp-rows" id="westBankRows"></div>
+        <div class="pp-note" id="westBankNote"></div>
+        <div class="pp-frames" id="westBankFrames"></div>
+    </div>
+
+    <div class="section-card policy-panel" id="usVoiceCard" style="display:none;">
+        <div class="section-title">🎙️ US VOICES — DEVIATION FROM OWN POSTURE</div>
+        <div class="pp-badge-row"><span class="pp-badge" id="usVoiceBadge">--</span></div>
+        <div class="pp-headline" id="usVoiceHeadline"></div>
+        <div class="pp-rows" id="usVoiceRows"></div>
+        <div class="pp-note" id="usVoiceNote"></div>
+    </div>
+
     <div class="section-card" id="coordCard" style="display:none;">
         <div class="section-title" data-i18n="coordTitle">🤝 US / INTERNATIONAL COORDINATION SIGNALS</div>
         <div id="coordList"></div>
@@ -1609,6 +1677,158 @@
     // ══════════════════════════════════════════════════════════════
     // COORDINATION SIGNALS
     // ══════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════════
+    // POLICY INSTRUMENT PANELS (Slices 2-5) — one renderer, four payloads
+    // ══════════════════════════════════════════════════════════════════
+    function _ppEl(id){ return document.getElementById(id); }
+    function _ppSet(id, txt){ const e=_ppEl(id); if(e) e.textContent = txt || ''; }
+
+    function _ppRows(id, rows){
+        const wrap=_ppEl(id); if(!wrap) return;
+        wrap.innerHTML='';
+        (rows||[]).forEach(function(r){
+            const div=document.createElement('div');
+            div.className='pp-row'+(r.tone?(' '+r.tone):'');
+            const lab=document.createElement('span');
+            lab.className='pp-row-label'; lab.textContent=r.label;
+            const val=document.createElement('span');
+            val.className='pp-row-value'; val.textContent=r.value||'';
+            div.appendChild(lab); div.appendChild(val); wrap.appendChild(div);
+        });
+    }
+
+    function _ppChips(id, chips){
+        const wrap=_ppEl(id); if(!wrap) return;
+        wrap.innerHTML='';
+        (chips||[]).forEach(function(c){
+            const sp=document.createElement('span');
+            sp.className='pp-chip'+(c.tone?(' '+c.tone):'');
+            sp.textContent=c.text; wrap.appendChild(sp);
+        });
+    }
+
+    // Attributed frames. A characterisation never renders without its source,
+    // and where a counter-position exists it renders with it — the platform
+    // reports the argument, it does not join it.
+    function _ppFrames(id, frames){
+        const wrap=_ppEl(id); if(!wrap) return;
+        wrap.innerHTML='';
+        (frames||[]).forEach(function(f){
+            const box=document.createElement('div'); box.className='pp-frame';
+            const attr=document.createElement('div'); attr.className='pp-frame-attr';
+            attr.textContent=(f.attribution||'Unattributed')+(f.tier?(' · '+f.tier):'');
+            box.appendChild(attr);
+            const claim=document.createElement('div'); claim.textContent=f.claim||'';
+            box.appendChild(claim);
+            if(f.context){ const c=document.createElement('div');
+                c.style.cssText='margin-top:6px;opacity:.8;'; c.textContent=f.context; box.appendChild(c); }
+            if(f.counter_frame){ const cf=document.createElement('div');
+                cf.className='pp-frame-counter';
+                cf.textContent='Counter-position: '+f.counter_frame; box.appendChild(cf); }
+            if(f.source_url){ const a=document.createElement('a');
+                a.className='pp-frame-src'; a.href=f.source_url; a.target='_blank';
+                a.rel='noopener noreferrer'; a.style.color='var(--accent)';
+                a.textContent='→ '+(f.source||'source'); 
+                const w=document.createElement('div'); w.className='pp-frame-src'; w.appendChild(a);
+                box.appendChild(w); }
+            wrap.appendChild(box);
+        });
+    }
+
+    function _ppBadge(id, text, color){
+        const b=_ppEl(id); if(!b) return;
+        b.textContent=(text||'--').toUpperCase();
+        if(color) b.style.background=color;
+    }
+
+    function _ppShow(cardId, on){ const c=_ppEl(cardId); if(c) c.style.display = on?'block':'none'; }
+
+    function renderPolicyPanels(data){
+        try {
+            // ── Gaza Board of Peace gates ──
+            const gg = data.gaza_framework_gates;
+            if (gg && gg.gates && Object.keys(gg.gates).length) {
+                _ppShow('gazaGatesCard', true);
+                _ppBadge('gazaGatesBadge', gg.state,
+                    {advancing:'#10b981', stalled:'#f59e0b', quiet:'#94a3b8'}[gg.state]||'#94a3b8');
+                // The freeze reading is the whole point of Slice 1+2 together.
+                const fr = gg.freeze_reading;
+                _ppSet('gazaGatesFreeze', fr ? ('freeze reading: '+fr.toUpperCase()) : '');
+                _ppSet('gazaGatesHeadline', gg.headline);
+                _ppRows('gazaGatesRows', (gg.gate_order||Object.keys(gg.gates)).map(function(k){
+                    const v=gg.gates[k]||{};
+                    return { label:(v.label||k)+((gg.blocking_gate===k)?'  ← blocking':''),
+                             value:'declared '+(v.declared||0)+' / verified '+(v.actual||0),
+                             tone:(v.state==='moving'?'ok':v.state==='blocked'?'bad':'') };
+                }));
+                _ppSet('gazaGatesNote', gg.note);
+            } else { _ppShow('gazaGatesCard', false); }
+
+            // ── Gaza control ratchet ──
+            const gr = data.gaza_control_ratchet;
+            if (gr && gr.ratchet_state) {
+                _ppShow('gazaRatchetCard', true);
+                _ppBadge('gazaRatchetBadge', gr.ratchet_state,
+                    {ratcheting:'#dc2626', reversed:'#10b981', accumulating:'#94a3b8', static:'#64748b'}[gr.ratchet_state]||'#94a3b8');
+                _ppSet('gazaRatchetHeadline', gr.headline);
+                // Durations, not counts — the duration IS the finding.
+                _ppRows('gazaRatchetRows', [
+                    { label:'Net control advances', value:String(gr.net_notches||0),
+                      tone:(gr.net_notches>0?'bad':'') },
+                    { label:'Days since any reversal',
+                      value:(gr.days_since_reversal===null||gr.days_since_reversal===undefined)
+                            ? 'none observed' : (gr.days_since_reversal+'d'),
+                      tone:(gr.days_since_reversal===null?'bad':'ok') },
+                    { label:'Reconstruction absent',
+                      value:(gr.reconstruction_absent_days?gr.reconstruction_absent_days+'d':'reported recently'),
+                      tone:(gr.reconstruction_absent_days?'bad':'ok') },
+                    { label:'Withdrawal preconditions added', value:String(gr.conditions_added||0),
+                      tone:(gr.conditions_added?'warn':'') }
+                ]);
+                _ppChips('gazaRatchetChips', gr.cold_start
+                    ? [{text:'CLOCKS ACCUMULATING ('+(gr.clock_age_days||0)+'/14d)'}]
+                    : []);
+                _ppSet('gazaRatchetNote', gr.note);
+                _ppFrames('gazaRatchetFrames', gr.frames);
+            } else { _ppShow('gazaRatchetCard', false); }
+
+            // ── West Bank administrative tempo ──
+            const wb = data.west_bank_annexation_tempo;
+            if (wb && wb.counts) {
+                _ppShow('westBankCard', true);
+                const cats=(wb.active_categories||[]).length;
+                _ppBadge('westBankBadge', (wb.total_acts||0)+' acts / '+cats+' cat',
+                    cats>=3?'#dc2626':cats?'#f59e0b':'#94a3b8');
+                _ppSet('westBankHeadline', wb.total_acts
+                    ? (wb.total_acts+' administrative act(s) reported across '+cats+' categor'+(cats===1?'y':'ies')+' this cycle')
+                    : 'No West Bank administrative acts reported this cycle');
+                _ppRows('westBankRows', Object.keys(wb.counts).map(function(k){
+                    return { label:k.replace(/_/g,' '), value:String(wb.counts[k]||0),
+                             tone:(wb.counts[k]?'warn':'') };
+                }));
+                _ppSet('westBankNote', wb.note);
+                _ppFrames('westBankFrames', wb.frames);
+            } else { _ppShow('westBankCard', false); }
+
+            // ── US voice deviations ──
+            const uv = data.us_voice_signals;
+            if (uv && uv.headline) {
+                _ppShow('usVoiceCard', true);
+                const n=uv.deviation_count||0;
+                _ppBadge('usVoiceBadge', n?(n+' deviation'+(n===1?'':'s')):'baseline',
+                    n?'#dc2626':'#94a3b8');
+                _ppSet('usVoiceHeadline', uv.headline);
+                // Show WHY it is off baseline — the signal is the speaker.
+                _ppRows('usVoiceRows', (uv.deviations||[]).map(function(d){
+                    return { label:d.display+' — '+d.valence+(d.subject!=='presence'&&d.subject!=='co-presence'?(' toward '+String(d.subject).replace(/_/g,' ')):''),
+                             value:(d.tier||'').toUpperCase(),
+                             tone:(d.tier==='highest'?'bad':'warn') };
+                }));
+                _ppSet('usVoiceNote', uv.note);
+            } else { _ppShow('usVoiceCard', false); }
+        } catch(e){ console.warn('[Policy panels] render error:', e); }
+    }
+
     function renderCoordination(signals){
         const card=document.getElementById('coordCard');
         const list=document.getElementById('coordList');
@@ -1824,6 +2044,7 @@
         renderAlertCard(data.alerts_24h);
         renderTCI(data);
         renderCoordination(data.coordination_signals||[]);
+        renderPolicyPanels(data);
         renderActors(data.actors||{},data.silence_anomalies||[]);
         renderArticles(data.actors||{});
         const artCount=document.getElementById('articlesClassified');
