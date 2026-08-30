@@ -1096,6 +1096,34 @@
                     </div>
                 </div>
 
+                <!-- Election Cycle + Decision Freeze (Slice 1, Aug 2026)
+                     Informational. Reports WHICH STAGE the electoral cycle is in
+                     and how long it has run. The freeze flag is what the rhetoric
+                     layer consumes so a Lebanon/Gaza stall during a formation
+                     window reads as PARKED rather than FAILING. -->
+                <div class="metric-card">
+                    <div class="metric-title">&#127963;&#65039; <span data-i18n="cycleTitle">ELECTION CYCLE &amp; DECISION FREEZE</span></div>
+                    <div class="metric-value" id="cycleState">--</div>
+                    <div class="metric-subtitle" data-i18n="cycleSubtitle">Which stage, and can big decisions be made</div>
+
+                    <div style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div style="padding:8px; background:var(--article-bg); border-radius:6px;">
+                            <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;" data-i18n="cycleDaysLabel">Days in stage</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="cycleDays">--</div>
+                        </div>
+                        <div style="padding:8px; background:var(--article-bg); border-radius:6px;">
+                            <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;" data-i18n="cycleFreezeLabel">Decision freeze</div>
+                            <div style="font-size:14px; font-weight:600;" id="cycleFreeze">--</div>
+                        </div>
+                    </div>
+
+                    <div id="cycleLadder" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:4px;"></div>
+                    <div id="cycleOverrun" style="margin-top:8px; display:none; padding:8px; border-radius:6px; background:rgba(245,158,11,0.12); border-left:3px solid #f59e0b; font-size:11px; color:var(--text-primary);"></div>
+
+                    <div style="margin-top:10px; padding:8px; background:var(--article-bg); border-radius:6px; font-size:11px; color:var(--text-secondary);" id="cycleNote"></div>
+                    <div style="margin-top:6px; font-size:10px; font-style:italic; color:var(--text-muted);" id="cycleDisclaimer"></div>
+                </div>
+
             </div><!-- end metrics-grid -->
 
             <!-- Map -->
@@ -1746,6 +1774,54 @@
             document.getElementById('electionsArticlesList').innerHTML = electionsArts.map(a =>
                 `<div style="margin-bottom:6px;"><a href="${a.url}" target="_blank" style="color:var(--accent); text-decoration:none;">→ ${(a.title || 'Article').substring(0, 70)}${(a.title||'').length > 70 ? '...' : ''}</a></div>`
             ).join('') || '<div style="color:var(--text-secondary); font-style:italic;" data-i18n="electionsNoneNote">No election-proximity signals in this scan window</div>';
+
+            // ── Election Cycle + Decision Freeze (Slice 1) ──
+            // Informational only: stage + duration + freeze flag. No forecast,
+            // no coalition arithmetic — that is the rhetoric layer's job.
+            try {
+                const ec = conflict.election_cycle || {};
+                const stEl = document.getElementById('cycleState');
+                if (stEl) {
+                    const pretty = (ec.state || 'unknown').replace(/_/g, ' ').toUpperCase();
+                    stEl.textContent = pretty;
+                    document.getElementById('cycleDays').textContent =
+                        (ec.days_in_state ?? 0) + 'd' +
+                        (ec.expected_envelope_days ? ' / ~' + ec.expected_envelope_days + 'd' : '');
+
+                    const fz = document.getElementById('cycleFreeze');
+                    if (ec.decision_freeze)      { fz.textContent = 'ACTIVE';  fz.style.color = '#dc2626'; }
+                    else if (ec.partial_freeze)  { fz.textContent = 'PARTIAL'; fz.style.color = '#f59e0b'; }
+                    else                         { fz.textContent = 'NONE';    fz.style.color = '#10b981'; }
+
+                    // Stage ladder — current stage highlighted, cycle runs left to right.
+                    const stages = ['stable','coalition_crisis','dissolution','campaign','voted','formation','formed'];
+                    const lad = document.getElementById('cycleLadder');
+                    lad.innerHTML = '';
+                    stages.forEach(function (st) {
+                        const on = (st === ec.state);
+                        const chip = document.createElement('span');
+                        chip.textContent = st.replace(/_/g, ' ');
+                        chip.style.cssText =
+                            'font-size:9px;letter-spacing:0.5px;text-transform:uppercase;' +
+                            'padding:3px 7px;border-radius:10px;font-weight:' + (on ? '700' : '400') + ';' +
+                            'background:' + (on ? 'var(--accent)' : 'var(--article-bg)') + ';' +
+                            'color:' + (on ? '#0b1220' : 'var(--text-muted)') + ';';
+                        lad.appendChild(chip);
+                    });
+
+                    const ov = document.getElementById('cycleOverrun');
+                    if (ec.overrun) {
+                        ov.style.display = 'block';
+                        ov.textContent = 'OVERRUN — this stage has run ' + (ec.days_in_state ?? 0) +
+                            ' days against an expected envelope of about ' + (ec.expected_envelope_days ?? '?') +
+                            ' days.' + (ec.formation_hard_overrun
+                                ? ' Formation at this length is the range in which repeat elections become live.' : '');
+                    } else { ov.style.display = 'none'; }
+
+                    document.getElementById('cycleNote').textContent = ec.note || '';
+                    document.getElementById('cycleDisclaimer').textContent = ec.disclaimer || '';
+                }
+            } catch (e) { console.warn('[Election cycle] render error:', e); }
 
             // v2.1.0 — Fresh-data sparklines (Yahoo 5-day NIS + TASE intraday)
             // These render IMMEDIATELY from the main scan response, while the
