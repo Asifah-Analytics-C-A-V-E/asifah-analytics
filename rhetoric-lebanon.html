@@ -1454,6 +1454,26 @@
         <div class="fw-disclaimer" id="fwDisclaimer"></div>
     </div>
 
+    <!-- Framework GATE LADDER (Aug 2026) — complements the Slice 4 sovereignty
+         band above. Slice 4 asks "is the framework ACCEPTED"; this asks
+         "where is implementation physically STUCK". Reads data.framework_gates
+         from the TRACKER, not interp.framework_implementation. -->
+    <div class="framework-impl-card" id="fwGatesCard" style="display:none;">
+        <div class="interp-card-header">
+            <span style="font-size:1rem;">&#128273;</span>
+            <div style="flex:1;">
+                <div class="interp-card-title">IMPLEMENTATION GATES</div>
+                <div class="interp-card-subtitle">Declared vs. Verified — where the sequence is blocked</div>
+            </div>
+            <span class="fw-band-badge" id="fwGatesBadge">--</span>
+        </div>
+        <div class="fw-answer" id="fwGatesHeadline"></div>
+        <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#475569;font-family:'Courier New',monospace;margin-top:8px;">GATE LADDER <span style="text-transform:none;font-style:italic;color:#94a3b8;">(clearance and verification sit upstream of aid and expansion)</span></div>
+        <div id="fwGatesLadder" style="margin:6px 0 4px;"></div>
+        <div class="fw-gate-row" id="fwGatesChips"></div>
+        <div class="fw-assessment" id="fwGatesNote"></div>
+    </div>
+
     <div class="historical-card" id="historicalCard" style="display:none;">
         <div class="interp-card-header">
             <span style="font-size:1rem;">📚</span>
@@ -1964,8 +1984,76 @@
         });
     }
 
+    // ── Framework GATE LADDER (Aug 2026) ──
+    // Reads data.framework_gates from the TRACKER payload. Called before
+    // renderInterpretation's early return so it still renders on a cycle where
+    // the interpreter produced nothing.
+    function renderFrameworkGates(data) {
+        const fg = data && data.framework_gates;
+        const card = document.getElementById('fwGatesCard');
+        if (!card) return;
+        if (!fg || !fg.state || fg.state === 'error') { card.style.display = 'none'; return; }
+
+        card.style.display = 'block';
+        const badge = document.getElementById('fwGatesBadge');
+        const stateColors = { advancing: '#10b981', stalled: '#f59e0b', quiet: '#94a3b8' };
+        badge.textContent = (fg.state || '').toUpperCase();
+        badge.style.background = stateColors[fg.state] || '#94a3b8';
+        document.getElementById('fwGatesHeadline').textContent = fg.headline || '';
+
+        // Ladder: one row per gate, declared vs verified, blocking row marked.
+        const order = ['clearance', 'verification', 'aid_flow', 'zone_expansion'];
+        const label = { clearance: 'Clearance of fighters & weapons',
+                        verification: 'Third-party verification',
+                        aid_flow: 'Aid & reconstruction flow',
+                        zone_expansion: 'Pilot zone expansion' };
+        const wrap = document.getElementById('fwGatesLadder');
+        wrap.innerHTML = '';
+        const gates = fg.gates || {};
+        order.forEach(function (g) {
+            const v = gates[g];
+            if (!v) return;
+            const row = document.createElement('div');
+            row.className = 'fw-list-row ' + (v.state === 'moving' ? 'progress'
+                                            : v.state === 'blocked' ? 'stall' : '');
+            const isBlocking = (fg.blocking_gate === g);
+            const mark = v.state === 'moving' ? '\u2713'
+                       : v.state === 'blocked' ? '\u2717' : '\u00b7';
+            row.innerHTML =
+                '<span style="font-weight:700;min-width:14px;">' + mark + '</span>' +
+                '<span style="flex:1;">' + label[g] +
+                    (isBlocking ? ' <strong style="color:#991b1b;">&larr; blocking</strong>' : '') +
+                '</span>' +
+                '<span style="font-family:\'Courier New\',monospace;font-size:0.66rem;color:#475569;white-space:nowrap;">' +
+                    'declared ' + (v.declared || 0) + ' / verified ' + (v.actual || 0) +
+                '</span>';
+            wrap.appendChild(row);
+        });
+
+        // Context chips — named site, rumour tier, tail watch.
+        const chips = document.getElementById('fwGatesChips');
+        chips.innerHTML = '';
+        function chip(text, cls) {
+            const c = document.createElement('span');
+            c.className = 'fw-chip ' + (cls || '');
+            c.textContent = text;
+            chips.appendChild(c);
+        }
+        if (fg.ali_al_taher_mentions) chip('Ali al-Taher \u00d7' + fg.ali_al_taher_mentions, 'unclear');
+        if (fg.aqah_rumint_mentions)  chip('AQAH (RUMINT) \u00d7' + fg.aqah_rumint_mentions, 'unclear');
+        if (fg.durable_peace_signals) chip('Durable-peace \u00d7' + fg.durable_peace_signals, 'accept');
+        if (fg.collapse_tail_active)  chip('COLLAPSE TAIL ACTIVE', 'reject');
+        else if (fg.collapse_categories && Object.keys(fg.collapse_categories).length)
+            chip('Collapse chatter (below threshold)', 'unclear');
+        if (fg.west_bank_articles_excluded)
+            chip(fg.west_bank_articles_excluded + ' West Bank excluded', '');
+
+        document.getElementById('fwGatesNote').textContent = fg.note || '';
+    }
+
     // ── ESCALATION LADDER ──
     function renderInterpretation(data) {
+        renderFrameworkGates(data);   // tracker-sourced; must run before the early return
         const interp = data.interpretation;
         if (!interp) return;
 
