@@ -631,21 +631,31 @@
             gap: 20px;
         }
 
+        /* Base rule is DESKTOP-ONLY (fixed Aug 31 2026).
+           It was previously unscoped and sat AFTER the mobile drawer block
+           above, so at equal specificity `position: sticky` overrode the
+           drawer's `position: fixed` and `left: -260px` had no effect on a
+           sticky element. Result on phones: the sidebar rendered in normal
+           document flow ABOVE the country cards, and the hamburger toggled a
+           class that changed nothing visible. Scoping every layout property
+           inside the min-width query means cascade order no longer matters. */
         .nav-sidebar {
-            width: 200px;
-            flex-shrink: 0;
             display: none;
-            flex-direction: column;
-            gap: 10px;
-            padding-top: 4px;
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-            align-self: flex-start;
         }
 
         @media (min-width: 769px) {
-            .nav-sidebar { display: flex; }
+            .nav-sidebar {
+                width: 200px;
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding-top: 4px;
+                position: sticky;
+                top: 20px;
+                height: fit-content;
+                align-self: flex-start;
+            }
         }
 
         .nav-sidebar-label {
