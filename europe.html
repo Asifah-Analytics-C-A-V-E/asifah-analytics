@@ -631,26 +631,34 @@
             gap: 20px;
         }
 
-        /* Base rule is DESKTOP-ONLY (fixed Aug 31 2026).
-           It was previously unscoped and sat AFTER the mobile drawer block
+        /* Fixed Aug 31 2026, in two parts.
+           BUG 1: this rule was unscoped and sat AFTER the mobile drawer block
            above, so at equal specificity `position: sticky` overrode the
-           drawer's `position: fixed` and `left: -260px` had no effect on a
-           sticky element. Result on phones: the sidebar rendered in normal
-           document flow ABOVE the country cards, and the hamburger toggled a
-           class that changed nothing visible. Scoping every layout property
-           inside the min-width query means cascade order no longer matters. */
+           drawer's `position: fixed` and `left: -260px` did nothing on a
+           sticky element -- the sidebar rendered in normal document flow above
+           the country cards on phones.
+           BUG 2 (introduced by the first fix): moving EVERY property into the
+           desktop query took `flex-direction: column` with it. The mobile
+           drawer sets `display: flex !important` but no direction, so it fell
+           back to the default `row` and the nav buttons laid out horizontally
+           across a 240px drawer and ran off screen.
+           CORRECT PARTITION: properties that describe the LIST ITSELF
+           (direction, gap, padding) are universal and stay in the base rule.
+           Only properties that place it as a sticky column IN PAGE FLOW
+           (width, flex-shrink, position, top, height, align-self) are
+           desktop-only -- on mobile the drawer block supplies its own. */
         .nav-sidebar {
             display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 4px;
         }
 
         @media (min-width: 769px) {
             .nav-sidebar {
+                display: flex;
                 width: 200px;
                 flex-shrink: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                padding-top: 4px;
                 position: sticky;
                 top: 20px;
                 height: fit-content;
