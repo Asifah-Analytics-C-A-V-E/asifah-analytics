@@ -416,7 +416,74 @@
             .home-button { position: static; width: 100%; max-width: 300px; justify-content: center; }
             .targets-grid { grid-template-columns: 1fr; }
             .flight-cancellations-grid { grid-template-columns: 1fr; }
-            .nav-sidebar { display: none !important; }
+            /* `.nav-sidebar { display: none !important }` was here (removed Aug 31 2026).
+               The hamburger, backdrop and toggleMobileDrawer() were all present and
+               correct, but toggleMobileDrawer() adds `.open`, which carries no
+               !important -- so the drawer could never appear and tapping the button
+               did nothing at all. The drawer block below replaces it. */
+        }
+
+        /* ══════════════════════════════════════════════════════════════
+           MOBILE HAMBURGER + DRAWER (Gold Standard v1.2 -- ported from
+           europe.html, Aug 31 2026). asia.html had the MARKUP and the JS
+           but none of the CSS: no hamburger styling, no backdrop styling,
+           no drawer positioning, and no `.nav-sidebar.open` rule.
+           ══════════════════════════════════════════════════════════════ */
+        .mobile-hamburger { display: none; }
+        .mobile-drawer-backdrop { display: none; }
+
+        @media (max-width: 768px) {
+            .mobile-hamburger {
+                display: flex;
+                position: fixed;
+                top: 16px;
+                left: 16px;
+                width: 44px;
+                height: 44px;
+                background: var(--card-bg, #0d1b2e);
+                border: 1px solid var(--card-border, #1e3a5f);
+                border-radius: 8px;
+                cursor: pointer;
+                z-index: 1001;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                color: var(--text-primary, #e2f0fb);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                transition: transform 0.15s ease;
+                font-family: monospace;
+            }
+            .mobile-hamburger:hover { transform: scale(1.05); }
+            .mobile-hamburger:active { transform: scale(0.95); }
+
+            .nav-sidebar {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: -260px;
+                width: 240px;
+                height: 100vh;
+                background: var(--card-bg, #0d1b2e);
+                border-right: 1px solid var(--card-border, #1e3a5f);
+                padding: 70px 12px 20px 12px;
+                overflow-y: auto;
+                z-index: 1000;
+                transition: left 0.25s ease-in-out;
+                box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+            }
+            .nav-sidebar.open { left: 0; }
+
+            .mobile-drawer-backdrop {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.55);
+                z-index: 999;
+                backdrop-filter: blur(2px);
+            }
+            .mobile-drawer-backdrop.open { display: block; }
+
+            header { padding-top: 70px !important; }
         }
 
         /* ========================================
@@ -429,21 +496,32 @@
             gap: 20px;
         }
 
+        /* PARTITIONED Aug 31 2026 (same fix as europe.html).
+           This rule sits AFTER the mobile drawer block above, so leaving it
+           unscoped meant `position: sticky` overrode the drawer's
+           `position: fixed` at equal specificity.
+           Properties describing the LIST ITSELF (direction, gap, padding) stay
+           universal -- the drawer sets `display: flex` but no flex-direction,
+           and without `column` here the nav buttons lay out horizontally and
+           run off a 240px drawer. Only properties placing it as a sticky
+           column IN PAGE FLOW are desktop-scoped. */
         .nav-sidebar {
-            width: 200px;
-            flex-shrink: 0;
             display: none;
             flex-direction: column;
             gap: 10px;
             padding-top: 4px;
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-            align-self: flex-start;
         }
 
         @media (min-width: 769px) {
-            .nav-sidebar { display: flex; }
+            .nav-sidebar {
+                display: flex;
+                width: 200px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 20px;
+                height: fit-content;
+                align-self: flex-start;
+            }
         }
 
         .nav-sidebar-label {
