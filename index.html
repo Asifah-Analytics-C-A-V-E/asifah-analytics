@@ -537,28 +537,77 @@
 
                 const lvlEl = document.getElementById('gpiBtnLevel');
                 const stEl  = document.getElementById('gpiBtnStatus');
-                if (lvlEl && data.global_level !== undefined) {
-                    lvlEl.textContent = `L${data.global_level}`;
-                    if (data.global_color) lvlEl.style.color = data.global_color;
+
+                // ── BANNER (Sep 2026) ──
+                // The landing page is a DOOR, not a room: its job is to earn a
+                // click, not to deliver the analysis.
+                //
+                // Two modes. A LEVEL-6 red-line breach is rare enough to be its
+                // own hook, so it DISPLACES the level and names the country.
+                // Otherwise the level carries a short compound convergence tag
+                // ("Markets x Taiwan semis") -- because the level alone has been
+                // pinned at L5 by sustained global conflict, and a gauge at
+                // maximum is a broken gauge.
+                //
+                // Countries were considered and rejected: "Russia, Taiwan, Iraq"
+                // tells a geopolitically literate visitor what they already read
+                // this morning. A CONNECTION is the one thing here they cannot
+                // get elsewhere, and it opens a curiosity gap instead of closing
+                // one.
+                const b = data.banner || {};
+                const isBreach = b.mode === 'breach';
+
+                if (lvlEl) {
+                    const lvl = (isBreach ? b.level : (b.level ?? data.global_level));
+                    if (lvl !== undefined && lvl !== null) lvlEl.textContent = 'L' + lvl;
+                    // A breach always renders red regardless of the global colour;
+                    // it is the sharpest state the platform can report.
+                    lvlEl.style.color = isBreach ? '#dc2626'
+                                                 : (data.global_color || '#64dcff');
                 }
-                // LEAD SIGNAL -- what the level cannot say.
+                if (stEl && isBreach) {
+                    stEl.textContent = 'RED-LINE BREACH';
+                    stEl.style.background = 'rgba(220,38,38,0.9)';
+                    stEl.style.color = '#fff';
+                }
+                // LEAD LINE -- what the level cannot say.
                 const wrap = document.getElementById('gpiLeadWrap');
                 const leadEl = document.getElementById('gpiLead');
                 const motionEl = document.getElementById('gpiMotion');
-                if (leadEl && data.headline && data.headline.line) {
-                    const hd = data.headline;
-                    // Axis tint: the KIND of pressure, not just its height. An L5
-                    // earthquake and an L5 war are both L5 -- the colour and the
-                    // words together stop them reading as the same event.
-                    const AXIS = {
-                        kinetic:      ['#f87171', 'kinetic'],
-                        humanitarian: ['#fbbf24', 'humanitarian'],
-                        economic:     ['#34d399', 'economic'],
-                        diplomatic:   ['#818cf8', 'diplomatic'],
-                    };
-                    const ax = AXIS[hd.axis] || AXIS.kinetic;
+                const esc = t => String(t == null ? '' : t).replace(/</g, '&lt;');
+
+                // Axis tint: the KIND of pressure, not just its height. An L5
+                // earthquake and an L5 war are both L5 -- colour and words
+                // together stop them reading as the same event.
+                const AXIS = {
+                    kinetic:      ['#f87171', 'kinetic'],
+                    humanitarian: ['#fbbf24', 'humanitarian'],
+                    economic:     ['#34d399', 'economic'],
+                    diplomatic:   ['#818cf8', 'diplomatic'],
+                };
+
+                if (leadEl && isBreach && b.theatre) {
+                    // Name the country, then the breach in plain words. No tag
+                    // chip here -- the red L6 badge already carries the weight.
+                    leadEl.innerHTML =
+                        '<strong style="color:#f87171;">' + esc(b.theatre) + '</strong>'
+                        + (b.detail ? ' <span style="opacity:0.75;">&mdash; '
+                                      + esc(b.detail) + '</span>' : '');
+                    if (wrap) wrap.style.display = 'block';
+                } else if (leadEl && b.tag) {
+                    const ax = AXIS[b.axis] || AXIS.kinetic;
+                    leadEl.innerHTML =
+                        '<strong style="letter-spacing:0.5px;">' + esc(b.tag) + '</strong>'
+                        + ' <span style="font-size:0.66rem;font-family:\'Courier New\',monospace;'
+                        + 'letter-spacing:1px;text-transform:uppercase;padding:2px 7px;'
+                        + 'border-radius:999px;border:1px solid ' + ax[0] + '66;'
+                        + 'background:' + ax[0] + '1a;color:' + ax[0] + ';">' + ax[1] + '</span>';
+                    if (wrap) wrap.style.display = 'block';
+                } else if (leadEl && data.headline && data.headline.line) {
+                    // Fallback for a backend that predates the banner field.
+                    const ax = AXIS[data.headline.axis] || AXIS.kinetic;
                     leadEl.innerHTML = '<span style="opacity:0.6;">Leading signal &mdash;</span> '
-                        + '<strong>' + String(hd.line).replace(/</g,'&lt;') + '</strong>'
+                        + '<strong>' + esc(data.headline.line) + '</strong>'
                         + ' <span style="font-size:0.66rem;font-family:\'Courier New\',monospace;'
                         + 'letter-spacing:1px;text-transform:uppercase;padding:2px 7px;'
                         + 'border-radius:999px;border:1px solid ' + ax[0] + '66;'
