@@ -312,6 +312,14 @@
         /* ── GLOBAL PRESSURE INDEX BUTTON ── */
         .gpi-section {
             display: flex;
+            /* COLUMN, not the default row (fixed Sep 2026). This container holds
+               the GPI button AND the lead-signal line beneath it. While the lead
+               was hidden the button was the only flex item and centred fine;
+               the moment it unhid, the wrap became a SECOND ITEM ON THE SAME ROW
+               -- pushing the button left and throwing the text out to the right.
+               align-items keeps both children centred on the cross axis. */
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
             margin-bottom: 50px;
             padding: 0 24px;
@@ -447,7 +455,9 @@
                  so those are what the page shows. Deliberately two lines, not a
                  ticker: a scrolling feed implies churn and would cost this page
                  the calm that is its strength. -->
-            <div id="gpiLeadWrap" style="display:none;max-width:760px;margin:14px auto 0;text-align:center;">
+            <!-- max-width matches .gpi-btn (720px) so the line sits squarely
+                 under the button rather than running wider than it. -->
+            <div id="gpiLeadWrap" style="display:none;width:100%;max-width:720px;margin:14px auto 0;text-align:center;">
                 <div id="gpiLead" style="font-size:0.95rem;color:#e2f0fb;letter-spacing:0.3px;"></div>
                 <div id="gpiMotion" style="font-size:0.78rem;color:#93c5fd;opacity:0.85;margin-top:5px;font-family:'Courier New',monospace;letter-spacing:1px;"></div>
             </div>
