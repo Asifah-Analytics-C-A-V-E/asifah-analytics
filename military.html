@@ -1742,6 +1742,55 @@ var ASSET_COLORS = {
 };
 
 var _navalMap = null;
+var _navalTiles = null;
+
+// CARTO basemap key. CARTO began requiring a key for basemap tiles, and
+// without one the tiles render with an "API KEY REQUIRED" watermark.
+// The key is fetched from the backend so it lives in ONE place (a Render
+// env var) and can be rotated without editing any HTML.
+//
+// This key is NOT a secret and cannot be made one: the browser puts it in
+// every tile URL. What protects it is the domain restriction set on the
+// key in the CARTO dashboard. Keeping it out of the repo is about not
+// handing it to GitHub scrapers, not about hiding it from users.
+var _cartoKey = null;
+
+function _cartoTileUrl(isDark) {
+    var style = isDark ? 'dark_all' : 'light_all';
+    var url = 'https://{s}.basemaps.cartocdn.com/' + style + '/{z}/{x}/{y}{r}.png';
+    if (_cartoKey) {
+        url += '?key=' + encodeURIComponent(_cartoKey);
+    }
+    return url;
+}
+
+function loadCartoKey() {
+    var base = (typeof API_BASE !== 'undefined' && API_BASE)
+        ? API_BASE
+        : 'https://asifah-backend.onrender.com';
+    return fetch(base + '/api/config/map')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (cfg) {
+            if (cfg && cfg.carto_key) {
+                _cartoKey = cfg.carto_key;
+                // The map may already be drawn with an unkeyed URL. Swap the
+                // tiles in place rather than rebuilding the map, so a slow
+                // config response never blocks or resets the view.
+                if (_navalTiles) {
+                    var isDark = document.documentElement
+                        .getAttribute('data-theme') !== 'light';
+                    _navalTiles.setUrl(_cartoTileUrl(isDark));
+                }
+            }
+            return _cartoKey;
+        })
+        .catch(function () {
+            // Config unreachable. The map still renders, just watermarked.
+            return null;
+        });
+}
+
+loadCartoKey();
 
 function initNavalMap(signals, actorSummaries) {
     var container = document.getElementById('navalMapContainer');
@@ -1754,11 +1803,9 @@ function initNavalMap(signals, actorSummaries) {
         _navalMap = null;
     }
 
-    // Build map — dark Carto tiles
+    // Build map — Carto tiles, keyed via /api/config/map
     var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-    var tileUrl = isDark
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    var tileUrl = _cartoTileUrl(isDark);
 
     _navalMap = L.map('navalMapContainer', {
         center: [24.0, 45.0],
@@ -1769,10 +1816,11 @@ function initNavalMap(signals, actorSummaries) {
         attributionControl: false
     });
 
-    L.tileLayer(tileUrl, {
+    _navalTiles = L.tileLayer(tileUrl, {
         subdomains: 'abcd',
         maxZoom: 8
-    }).addTo(_navalMap);
+    });
+    _navalTiles.addTo(_navalMap);
 
     // Aggregate signals by hotspot_location
     var locationBuckets = {};
