@@ -1043,6 +1043,22 @@
         <div class="pp-frames" id="westBankFrames"></div>
     </div>
 
+    <!-- PALESTINIAN FINANCIAL ACCESS — LANE RHETORIC (v1.1.0, Oct 3 2026)
+         Ordered states, no index. 'violence_linked' means economic grievance is
+         being tied to armed action IN THE REPORTING — a pattern that has
+         historically preceded mobilization. It is not a forecast.
+         Firsthand and commentary are counted separately and shown separately;
+         only firsthand moves a lane's state. -->
+    <div class="section-card policy-panel" id="finAccessCard" style="display:none;">
+        <div class="section-title">&#127974; PALESTINIAN FINANCIAL ACCESS — LANE RHETORIC</div>
+        <div class="pp-badge-row"><span class="pp-badge" id="finAccessBadge">--</span></div>
+        <div class="pp-headline" id="finAccessHeadline"></div>
+        <div class="pp-rows" id="finAccessRows"></div>
+        <div class="pp-chips" id="finAccessChips"></div>
+        <div class="pp-note" id="finAccessNote"></div>
+        <div class="pp-frames" id="finAccessFrames"></div>
+    </div>
+
     <div class="section-card policy-panel" id="usVoiceCard" style="display:none;">
         <div class="section-title">🎙️ US VOICES — DEVIATION FROM OWN POSTURE</div>
         <div class="pp-badge-row"><span class="pp-badge" id="usVoiceBadge">--</span></div>
@@ -1809,6 +1825,111 @@
                 _ppSet('westBankNote', wb.note);
                 _ppFrames('westBankFrames', wb.frames);
             } else { _ppShow('westBankCard', false); }
+
+            // ── Palestinian financial access lane rhetoric (v1.1.0) ──
+            const fa = data.financial_access_rhetoric;
+            if (fa && fa.lanes && Object.keys(fa.lanes).length) {
+                _ppShow('finAccessCard', true);
+                const stateColor = {
+                    quiet:                 '#94a3b8',
+                    narrative_only:        '#60a5fa',
+                    mobilization_language: '#f59e0b',
+                    violence_linked:       '#dc2626',
+                    could_not_assess:      '#7c3aed'
+                };
+                _ppBadge('finAccessBadge',
+                    (fa.highest_state || 'unknown').replace(/_/g, ' '),
+                    stateColor[fa.highest_state] || '#94a3b8');
+                _ppSet('finAccessHeadline', fa.headline || '');
+
+                // One row per lane. The VALUE carries the firsthand/commentary
+                // split, because a lane sitting at 'narrative_only' on twenty
+                // op-eds and one sitting there on twenty news reports are
+                // different findings wearing the same word.
+                const laneOrder = ['A_correspondent_banking','B_clearance_revenue',
+                                   'C_pa_payroll','C1_security_force_payroll',
+                                   'D_reconstruction_finance'];
+                const keys = laneOrder.filter(function(k){ return fa.lanes[k]; })
+                    .concat(Object.keys(fa.lanes).filter(function(k){ return laneOrder.indexOf(k)<0; }));
+                _ppRows('finAccessRows', keys.map(function(k){
+                    const L = fa.lanes[k] || {};
+                    const mob = (L.mobilization||{}), vio = (L.violence_linkage||{});
+                    let extra = '';
+                    if (vio.firsthand) extra = '  · violence-linked ×' + vio.firsthand;
+                    else if (mob.firsthand) extra = '  · mobilization ×' + mob.firsthand;
+                    return {
+                        label: (L.label || k) + ' — ' + String(L.state||'').replace(/_/g,' '),
+                        value: (L.firsthand_count||0) + ' firsthand / ' +
+                               (L.commentary_count||0) + ' commentary' + extra,
+                        // The stylesheet has three tones; the lane ladder has
+                        // four states. Mobilization and violence-linkage are
+                        // different findings and must not share a colour.
+                        tone: (L.state === 'violence_linked') ? 'bad'
+                            : (L.state === 'mobilization_language') ? 'warn'
+                            : (L.state === 'quiet') ? '' : 'ok'
+                    };
+                }));
+
+                // Which characterisation is winning, per lane that has one.
+                const chips = [];
+                keys.forEach(function(k){
+                    const L = fa.lanes[k] || {};
+                    if (L.dominant_frame) {
+                        chips.push({ text: (L.label||k).split(' ')[0] + ': ' +
+                                           L.dominant_frame.replace(/_/g,' '),
+                                     tone: (L.dominant_frame === 'strangulation') ? 'hot' : '' });
+                    }
+                });
+                const sv = fa.stakeholder_voice || {};
+                if (sv.firsthand || sv.commentary) {
+                    chips.push({ text: 'stakeholder voice: ' + (sv.firsthand||0) +
+                                       ' firsthand / ' + (sv.commentary||0) + ' commentary' });
+                }
+                _ppChips('finAccessChips', chips);
+
+                const corpus = fa.corpus || {};
+                _ppSet('finAccessNote',
+                    'Corpus: ' + (corpus.firsthand||0) + ' firsthand, ' +
+                    (corpus.commentary||0) + ' commentary (' +
+                    Math.round((corpus.commentary_share||0)*100) + '% commentary). ' +
+                    (corpus.guard_note || '') + ' ' + (fa.doctrine_note || ''));
+
+                // Examples, attributed. A claim never renders without its source.
+                const frames = [];
+                keys.forEach(function(k){
+                    const L = fa.lanes[k] || {};
+                    (L.examples || []).forEach(function(ex){
+                        frames.push({
+                            attribution: ex.source || 'Unattributed',
+                            tier: (L.label || k),
+                            claim: ex.title || '',
+                            context: 'sub-lane: ' + String(ex.sub_lane||'').replace(/_/g,' ') +
+                                     ' — co-occurrence in reporting, not an asserted outcome',
+                            source: ex.source || 'source',
+                            source_url: ex.url || ''
+                        });
+                    });
+                });
+                (sv.examples || []).forEach(function(ex){
+                    frames.push({
+                        attribution: ex.source || 'Unattributed',
+                        tier: 'International stakeholder voice',
+                        claim: ex.title || '',
+                        context: 'These actors decide rather than react; their posture often moves first.',
+                        source: ex.source || 'source',
+                        source_url: ex.url || ''
+                    });
+                });
+                _ppFrames('finAccessFrames', frames.slice(0, 8));
+            } else if (fa && fa.highest_state === 'could_not_assess') {
+                _ppShow('finAccessCard', true);
+                _ppBadge('finAccessBadge', 'could not assess', '#7c3aed');
+                _ppSet('finAccessHeadline', fa.headline || '');
+                _ppRows('finAccessRows', []);
+                _ppChips('finAccessChips', []);
+                _ppSet('finAccessNote', fa.error || '');
+                _ppFrames('finAccessFrames', []);
+            } else { _ppShow('finAccessCard', false); }
 
             // ── US voice deviations ──
             const uv = data.us_voice_signals;
