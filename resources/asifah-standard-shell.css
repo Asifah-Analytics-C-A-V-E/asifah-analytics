@@ -459,3 +459,186 @@ body.asifah-injected-sidebar-active {
     opacity: 0.12;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   ESCALATION GUIDE RAIL  (v1.0, Oct 3 2026)
+   Left rail is NAVIGATION — where you can go.
+   Right rail is REFERENCE — how to read what you are seeing.
+   ══════════════════════════════════════════════════════════════════ */
+
+.asifah-ladder-rail {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 232px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  z-index: 20;
+  background: var(--asifah-shell-card);
+  border: 1.5px solid rgba(56, 189, 248, 0.22);
+  border-radius: 10px;
+  padding: 12px 12px 10px;
+  box-sizing: border-box;
+  color: var(--asifah-shell-text);
+  transition: width 0.2s ease, padding 0.2s ease;
+}
+
+body.asifah-ladder-active {
+  padding-right: 266px;
+}
+
+body.asifah-ladder-active.asifah-ladder-collapsed {
+  padding-right: 60px;
+}
+
+.asifah-ladder-rail.collapsed {
+  width: 40px;
+  padding: 10px 6px;
+  overflow: hidden;
+}
+
+.asifah-ladder-rail.collapsed .asifah-ladder-body {
+  display: none;
+}
+
+.asifah-ladder-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--asifah-shell-border);
+  background: transparent;
+  color: var(--asifah-shell-accent);
+  cursor: pointer;
+  line-height: 1;
+  font-size: 16px;
+  padding: 0;
+}
+
+.asifah-ladder-rail.collapsed .asifah-ladder-toggle {
+  position: static;
+  transform: rotate(180deg);
+}
+
+.asifah-ladder-title {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(56, 189, 248, 0.55);
+  margin: 0 28px 10px 2px;
+}
+
+.asifah-ladder-rung {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid rgba(56, 189, 248, 0.10);
+}
+
+.asifah-ladder-rung:first-of-type {
+  border-top: none;
+}
+
+.asifah-ladder-chip {
+  flex: 0 0 auto;
+  min-width: 26px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.asifah-ladder-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.asifah-ladder-label {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.asifah-ladder-gloss {
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--asifah-shell-muted);
+}
+
+.asifah-ladder-axis {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(56, 189, 248, 0.18);
+}
+
+.asifah-ladder-axis-title {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(56, 189, 248, 0.55);
+  margin-bottom: 6px;
+}
+
+.asifah-ladder-axis-row {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--asifah-shell-muted);
+  margin-bottom: 3px;
+}
+
+.asifah-ladder-axis-row strong {
+  display: block;
+  color: var(--asifah-shell-text);
+  font-weight: 700;
+}
+
+.asifah-ladder-axis-note {
+  font-size: 9px;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--asifah-shell-muted);
+  margin-top: 6px;
+}
+
+.asifah-ladder-foot {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(56, 189, 248, 0.18);
+  font-size: 9px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--asifah-shell-muted);
+}
+
+/* Drawer variant — mobile folds the guide into the existing nav drawer
+   rather than growing a second rail. */
+.asifah-ladder-rung.drawer {
+  padding: 6px 2px;
+}
+
+/* Higher breakpoint than the nav rail (1199px) on purpose. With both rails
+   up the page loses ~496px of chrome; on a 1280px laptop that leaves a
+   dashboard grid about 784px, which is cramped. Navigation is load-bearing,
+   reference is not, so the guide is the one that goes first. Below this it
+   lives in the mobile drawer. */
+@media (max-width: 1399px) {
+  .asifah-ladder-rail {
+    display: none !important;
+  }
+
+  body.asifah-ladder-active,
+  body.asifah-ladder-active.asifah-ladder-collapsed {
+    padding-right: 0;
+  }
+}
