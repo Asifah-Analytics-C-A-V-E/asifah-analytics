@@ -1,644 +1,525 @@
-/*
- * Asifah Analytics shared page chrome.
- * Standardizes watermark, sidebar, mobile drawer, theme button, and footer
- * without changing page-specific analytic content.
- */
+(function () {
+  'use strict';
 
-:root {
-  --asifah-shell-bg: var(--bg-color, var(--bg-primary, #e8f0f8));
-  --asifah-shell-card: var(--card-bg, var(--container-bg, var(--bg-card, #ffffff)));
-  --asifah-shell-border: var(--card-border, var(--border-color, #b0c8e0));
-  --asifah-shell-text: var(--text-primary, #0a1628);
-  --asifah-shell-muted: var(--text-muted, #4a6080);
-  --asifah-shell-accent: var(--accent, var(--accent-cyan, #38bdf8));
-}
+  var LOGO_URL = 'https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png';
+  var THEME_KEY = 'asifah-theme';
 
-[data-theme="dark"] {
-  --asifah-shell-bg: var(--bg-color, var(--bg-primary, #060d1a));
-  --asifah-shell-card: var(--card-bg, var(--container-bg, var(--bg-card, #0d1b2e)));
-  --asifah-shell-border: var(--card-border, var(--border-color, #1e3a5f));
-  --asifah-shell-text: var(--text-primary, #e2f0fb);
-  --asifah-shell-muted: var(--text-muted, #4a7090);
-  --asifah-shell-accent: var(--accent, var(--accent-cyan, #38bdf8));
-}
+  var REGION_DASHBOARDS = [
+    ['africa.html', '&#127757; Africa'],
+    ['asia.html', '&#127759; Asia & Pacific'],
+    ['europe.html', '&#127757; Europe'],
+    ['middle-east.html', '&#128332; Middle East'],
+    ['wha.html', '&#127758; Western Hemisphere']
+  ];
 
-body.asifah-standardized.asifah-shell-watermark-active::before {
-  content: '';
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 110vmin;
-  height: 110vmin;
-  min-width: 760px;
-  min-height: 760px;
-  max-width: 1400px;
-  max-height: 1400px;
-  background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
-  background-size: 135%;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.07;
-  filter: none;
-  z-index: 0;
-  pointer-events: none;
-  user-select: none;
-  border-radius: 50%;
-}
+  var GLOBAL_TRACKERS = [
+    ['commodities.html', '&#128738; Commodities'],
+    ['gpi.html', '&#127760; Global Pressure Index'],
+    ['market-watch.html', '&#128200; Market Watch'],
+    ['military.html', '&#127894; Military Tracker']
+  ];
 
-[data-theme="dark"] body.asifah-standardized.asifah-shell-watermark-active::before {
-  opacity: 0.18;
-  filter: saturate(3) brightness(0.8) hue-rotate(185deg);
-}
+  var REGIONAL_RHETORIC = [
+    ['rhetoric-africa.html', '&#128225; Africa'],
+    ['rhetoric-asia.html', '&#128225; Asia'],
+    ['rhetoric-europe.html', '&#128225; Europe'],
+    ['rhetoric-index.html', '&#128225; Middle East'],
+    ['rhetoric-wha.html', '&#128225; Western Hemisphere']
+  ];
 
-body.asifah-standardized.asifah-shell-watermark-active .watermark {
-  display: none;
-}
+  var REGION_BY_COUNTRY = {
+    afghanistan: 'asia.html', china: 'asia.html', india: 'asia.html', japan: 'asia.html',
+    kazakhstan: 'asia.html', 'north-korea': 'asia.html', pakistan: 'asia.html',
+    'south-korea': 'asia.html', taiwan: 'asia.html', turkmenistan: 'asia.html',
+    vietnam: 'asia.html',
 
-.asifah-legacy-control-hidden {
-  display: none !important;
-}
+    albania: 'europe.html', armenia: 'europe.html', azerbaijan: 'europe.html',
+    belarus: 'europe.html', belgium: 'europe.html', cyprus: 'europe.html',
+    greece: 'europe.html', greenland: 'europe.html', hungary: 'europe.html',
+    poland: 'europe.html', russia: 'europe.html', turkey: 'europe.html',
+    ukraine: 'europe.html',
 
-body.asifah-standardized .menu-toggle,
-body.asifah-standardized .mobile-hamburger,
-body.asifah-standardized .mobile-menu-btn:not(.asifah-mobile-menu-btn) {
-  display: none !important;
-}
+    algeria: 'middle-east.html', bahrain: 'middle-east.html', egypt: 'middle-east.html',
+    iran: 'middle-east.html', iraq: 'middle-east.html', israel: 'middle-east.html',
+    jordan: 'middle-east.html', kuwait: 'middle-east.html', lebanon: 'middle-east.html',
+    libya: 'middle-east.html', morocco: 'middle-east.html', oman: 'middle-east.html',
+    qatar: 'middle-east.html', saudi_arabia: 'middle-east.html',
+    saudi: 'middle-east.html', syria: 'middle-east.html', tunisia: 'middle-east.html',
+    uae: 'middle-east.html', yemen: 'middle-east.html',
 
-body.asifah-standardized .mobile-drawer,
-body.asifah-standardized .mobile-drawer-backdrop {
-  display: none !important;
-}
+    brazil: 'wha.html', chile: 'wha.html', colombia: 'wha.html', cuba: 'wha.html',
+    haiti: 'wha.html', mexico: 'wha.html', panama: 'wha.html', peru: 'wha.html',
+    us: 'wha.html', venezuela: 'wha.html',
 
-.asifah-header-left,
-.asifah-header-right,
-.asifah-header-center {
-  min-width: 0;
-}
+    burkina_faso: 'africa.html', 'burkina-faso': 'africa.html', drc: 'africa.html',
+    ethiopia: 'africa.html', kenya: 'africa.html', mali: 'africa.html',
+    niger: 'africa.html', nigeria: 'africa.html', rwanda: 'africa.html',
+    somalia: 'africa.html', south_africa: 'africa.html', 'south-africa': 'africa.html',
+    south_sudan: 'africa.html', 'south-sudan': 'africa.html', sudan: 'africa.html',
+    tanzania: 'africa.html', uganda: 'africa.html'
+  };
 
-.asifah-standard-logo {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 2px solid rgba(56, 189, 248, 0.4);
-  object-fit: cover;
-  flex: 0 0 auto;
-}
-
-.asifah-standard-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: var(--asifah-shell-accent);
-  background: rgba(56, 189, 248, 0.08);
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-}
-
-.asifah-standard-back:hover {
-  border-color: var(--asifah-shell-accent);
-  background: rgba(56, 189, 248, 0.16);
-}
-
-.asifah-theme-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  background: rgba(56, 189, 248, 0.10);
-  color: var(--asifah-shell-text);
-  border-radius: 999px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.asifah-theme-button:hover {
-  border-color: var(--asifah-shell-accent);
-  background: rgba(56, 189, 248, 0.18);
-}
-
-.asifah-theme-switch-track {
-  width: 38px;
-  height: 20px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.35);
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.asifah-theme-switch-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #ffffff;
-  transition: transform 0.2s ease;
-}
-
-[data-theme="dark"] .asifah-theme-switch-knob {
-  transform: translateX(18px);
-}
-
-body.asifah-standardized .nav-sidebar {
-  width: 200px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 4px;
-  position: sticky;
-  top: 20px;
-  height: fit-content;
-  align-self: flex-start;
-}
-
-body.asifah-standardized .nav-sidebar-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: rgba(56, 189, 248, 0.55);
-  font-family: 'Courier New', monospace;
-  margin-bottom: 4px;
-  padding-left: 2px;
-}
-
-body.asifah-standardized .nav-btn {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  overflow: hidden;
-  border: 1.5px solid rgba(56, 189, 248, 0.22);
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.06) 0%, rgba(14, 165, 233, 0.04) 100%);
-  color: var(--asifah-shell-text);
-}
-
-body.asifah-standardized .nav-btn:hover {
-  border-color: rgba(56, 189, 248, 0.65);
-  transform: translateY(-1px);
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.16);
-}
-
-body.asifah-standardized .nav-btn-label {
-  font-size: 12px;
-  line-height: 1.3;
-}
-
-body.asifah-standardized .nav-btn-status {
-  font-family: 'Courier New', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-top: 5px;
-  opacity: 0.75;
-  color: var(--asifah-shell-accent);
-}
-
-body.asifah-standardized .nav-btn.current-page {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.18) 0%, rgba(22, 163, 74, 0.12) 100%);
-  border-color: rgba(34, 197, 94, 0.65);
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.18);
-}
-
-body.asifah-standardized .nav-btn.tracker-btn {
-  border-color: rgba(245, 158, 11, 0.50);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.05) 100%);
-}
-
-body.asifah-standardized .nav-btn.tracker-btn .nav-btn-status {
-  color: #f59e0b;
-}
-
-body.asifah-standardized .nav-btn.tracker-btn.current-page {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.20) 0%, rgba(217, 119, 6, 0.12) 100%);
-  border-color: rgba(245, 158, 11, 0.70);
-  box-shadow: 0 0 18px rgba(245, 158, 11, 0.22);
-}
-
-body.asifah-standardized .nav-btn.rhetoric-btn {
-  border-color: rgba(34, 197, 94, 0.40);
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(22, 163, 74, 0.05) 100%);
-}
-
-body.asifah-standardized .nav-btn.rhetoric-btn .nav-btn-status {
-  color: #4ade80;
-}
-
-body.asifah-standardized .nav-divider {
-  height: 1px;
-  background: rgba(56, 189, 248, 0.16);
-  margin: 5px 0;
-}
-
-.asifah-injected-sidebar {
-  position: fixed !important;
-  top: 20px !important;
-  left: 20px !important;
-  max-height: calc(100vh - 40px);
-  overflow-y: auto;
-  z-index: 20;
-}
-
-body.asifah-injected-sidebar-active {
-  padding-left: 230px;
-}
-
-.asifah-mobile-menu-btn {
-  display: none;
-  position: fixed;
-  top: 14px;
-  left: 14px;
-  z-index: 10001;
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  border: 1.5px solid rgba(56, 189, 248, 0.45);
-  background: var(--asifah-shell-card);
-  color: var(--asifah-shell-accent);
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-}
-
-.asifah-mobile-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
-}
-
-.asifah-mobile-backdrop.open {
-  display: block;
-}
-
-.asifah-mobile-drawer {
-  display: block;
-  position: fixed;
-  inset: 0 auto 0 0;
-  width: min(84vw, 320px);
-  z-index: 9999;
-  padding: 58px 14px 20px;
-  overflow-y: auto;
-  background: var(--asifah-shell-card);
-  border-right: 2px solid var(--asifah-shell-accent);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
-  transform: translateX(-105%);
-  transition: transform 0.25s ease;
-}
-
-.asifah-mobile-drawer.open {
-  transform: translateX(0);
-}
-
-.asifah-mobile-drawer-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  border: 1px solid var(--asifah-shell-border);
-  background: transparent;
-  color: var(--asifah-shell-text);
-  cursor: pointer;
-}
-
-.asifah-mobile-drawer-title {
-  position: absolute;
-  top: 18px;
-  left: 16px;
-  right: 54px;
-  color: var(--asifah-shell-accent);
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.asifah-footer {
-  background: var(--asifah-shell-card);
-  border: 1px solid var(--asifah-shell-border);
-  border-radius: 12px;
-  box-sizing: border-box;
-  width: min(1600px, calc(100% - 40px));
-  padding: 22px 24px;
-  margin: 24px auto;
-  text-align: center;
-  color: var(--asifah-shell-text);
-}
-
-.asifah-footer-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--asifah-shell-accent);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.asifah-footer-sources {
-  font-size: 0.78rem;
-  color: var(--asifah-shell-text);
-  margin: 0 auto 14px;
-  line-height: 1.5;
-  max-width: 760px;
-}
-
-.asifah-footer-pills {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.asifah-footer-pill {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  border: 1.5px solid;
-}
-
-.asifah-footer-pill.bmc {
-  background: rgba(251, 191, 36, 0.12);
-  color: #f59e0b;
-  border-color: rgba(251, 191, 36, 0.5);
-}
-
-.asifah-footer-pill.contact {
-  background: rgba(56, 189, 248, 0.12);
-  color: var(--asifah-shell-accent);
-  border-color: rgba(56, 189, 248, 0.5);
-}
-
-.asifah-footer-disclaimer {
-  font-size: 0.7rem;
-  color: var(--asifah-shell-muted);
-  font-style: italic;
-  margin: 0 auto 10px;
-  max-width: 760px;
-  line-height: 1.5;
-}
-
-.asifah-footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  font-size: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.asifah-footer-links a {
-  color: var(--asifah-shell-muted);
-  text-decoration: none;
-  border-bottom: 1px dotted var(--asifah-shell-muted);
-}
-
-.asifah-footer-links a:hover {
-  color: var(--asifah-shell-accent);
-  border-bottom-color: var(--asifah-shell-accent);
-}
-
-@media (max-width: 1199px) {
-  body.asifah-standardized .nav-sidebar {
-    display: none !important;
+  function currentFile() {
+    return (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   }
 
-  body.asifah-injected-sidebar-active {
-    padding-left: 0;
+  function countrySlug(file) {
+    return file
+      .replace(/^rhetoric-/, '')
+      .replace(/-stability\.html$/, '')
+      .replace(/\.html$/, '');
   }
 
-  .asifah-mobile-menu-btn {
-    display: flex;
-  }
-}
-
-@media (max-width: 768px) {
-  body.asifah-standardized.asifah-shell-watermark-active::before {
-    min-width: 520px;
-    min-height: 520px;
-    opacity: 0.05;
+  function labelForFile(file) {
+    var base = countrySlug(file).replace(/_/g, '-');
+    return base.split('-').filter(Boolean).map(function (part) {
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    }).join(' ');
   }
 
-  [data-theme="dark"] body.asifah-standardized.asifah-shell-watermark-active::before {
-    opacity: 0.12;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   ESCALATION GUIDE RAIL  (v1.0, Oct 3 2026)
-   Left rail is NAVIGATION — where you can go.
-   Right rail is REFERENCE — how to read what you are seeing.
-   ══════════════════════════════════════════════════════════════════ */
-
-.asifah-ladder-rail {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 232px;
-  max-height: calc(100vh - 40px);
-  overflow-y: auto;
-  z-index: 20;
-  background: var(--asifah-shell-card);
-  border: 1.5px solid rgba(56, 189, 248, 0.22);
-  border-radius: 10px;
-  padding: 12px 12px 10px;
-  box-sizing: border-box;
-  color: var(--asifah-shell-text);
-  transition: width 0.2s ease, padding 0.2s ease;
-}
-
-body.asifah-ladder-active {
-  padding-right: 266px;
-}
-
-body.asifah-ladder-active.asifah-ladder-collapsed {
-  padding-right: 60px;
-}
-
-.asifah-ladder-rail.collapsed {
-  width: 40px;
-  padding: 10px 6px;
-  overflow: hidden;
-}
-
-.asifah-ladder-rail.collapsed .asifah-ladder-body {
-  display: none;
-}
-
-.asifah-ladder-toggle {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  border: 1px solid var(--asifah-shell-border);
-  background: transparent;
-  color: var(--asifah-shell-accent);
-  cursor: pointer;
-  line-height: 1;
-  font-size: 16px;
-  padding: 0;
-}
-
-.asifah-ladder-rail.collapsed .asifah-ladder-toggle {
-  position: static;
-  transform: rotate(180deg);
-}
-
-.asifah-ladder-title {
-  font-family: 'Courier New', monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: rgba(56, 189, 248, 0.55);
-  margin: 0 28px 10px 2px;
-}
-
-.asifah-ladder-rung {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 5px 0;
-  border-top: 1px solid rgba(56, 189, 248, 0.10);
-}
-
-.asifah-ladder-rung:first-of-type {
-  border-top: none;
-}
-
-.asifah-ladder-chip {
-  flex: 0 0 auto;
-  min-width: 26px;
-  text-align: center;
-  border-radius: 5px;
-  padding: 2px 5px;
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.asifah-ladder-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.asifah-ladder-label {
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.asifah-ladder-gloss {
-  font-size: 10px;
-  line-height: 1.35;
-  color: var(--asifah-shell-muted);
-}
-
-.asifah-ladder-axis {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(56, 189, 248, 0.18);
-}
-
-.asifah-ladder-axis-title {
-  font-family: 'Courier New', monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: rgba(56, 189, 248, 0.55);
-  margin-bottom: 6px;
-}
-
-.asifah-ladder-axis-row {
-  font-size: 10px;
-  line-height: 1.4;
-  color: var(--asifah-shell-muted);
-  margin-bottom: 3px;
-}
-
-.asifah-ladder-axis-row strong {
-  display: block;
-  color: var(--asifah-shell-text);
-  font-weight: 700;
-}
-
-.asifah-ladder-axis-note {
-  font-size: 9px;
-  font-style: italic;
-  line-height: 1.4;
-  color: var(--asifah-shell-muted);
-  margin-top: 6px;
-}
-
-.asifah-ladder-foot {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(56, 189, 248, 0.18);
-  font-size: 9px;
-  font-style: italic;
-  line-height: 1.45;
-  color: var(--asifah-shell-muted);
-}
-
-/* Drawer variant — mobile folds the guide into the existing nav drawer
-   rather than growing a second rail. */
-.asifah-ladder-rung.drawer {
-  padding: 6px 2px;
-}
-
-/* Higher breakpoint than the nav rail (1199px) on purpose. With both rails
-   up the page loses ~496px of chrome; on a 1280px laptop that leaves a
-   dashboard grid about 784px, which is cramped. Navigation is load-bearing,
-   reference is not, so the guide is the one that goes first. Below this it
-   lives in the mobile drawer. */
-@media (max-width: 1399px) {
-  .asifah-ladder-rail {
-    display: none !important;
+  function isRhetoricPage(file) {
+    return /^rhetoric-/.test(file) && !/^rhetoric-(africa|asia|europe|index|wha)\.html$/.test(file);
   }
 
-  body.asifah-ladder-active,
-  body.asifah-ladder-active.asifah-ladder-collapsed {
-    padding-right: 0;
+  function isStabilityPage(file) {
+    return /-stability\.html$/.test(file) || ['russia.html', 'ukraine.html', 'israel.html', 'jordan.html', 'greenland.html', 'poland.html'].indexOf(file) >= 0;
   }
-}
+
+  function backTarget(file) {
+    if (isRhetoricPage(file)) {
+      var slug = countrySlug(file);
+      var special = {
+        dprk: 'north-korea-stability.html',
+        russia: 'russia.html',
+        ukraine: 'ukraine.html',
+        israel: 'israel.html',
+        greenland: 'greenland.html',
+        poland: 'poland.html'
+      };
+      return [special[slug] || (slug + '-stability.html'), 'Back to ' + labelForFile(file)];
+    }
+    if (isStabilityPage(file)) {
+      var target = REGION_BY_COUNTRY[countrySlug(file)] || 'index.html';
+      var label = target === 'index.html' ? 'Back to Home' : 'Back to Regional Dashboard';
+      return [target, label];
+    }
+    return ['index.html', 'Back to Home'];
+  }
+
+  function navLink(item, kind, file) {
+    var href = item[0];
+    var label = item[1];
+    var current = href.toLowerCase() === file;
+    var classes = ['nav-btn'];
+    if (kind) classes.push(kind);
+    if (current) classes.push('current-page');
+    else classes.push('active-nav');
+    var tag = current ? 'div' : 'a';
+    var hrefAttr = current ? '' : ' href="' + href + '"';
+    var status = current ? '&#9673; You are here' : '&#9679; Live';
+    return '<' + tag + hrefAttr + ' class="' + classes.join(' ') + '">' +
+      '<span class="nav-btn-label">' + label + '</span>' +
+      '<span class="nav-btn-status">' + status + '</span>' +
+      '</' + tag + '>';
+  }
+
+  function canonicalNavHtml() {
+    var file = currentFile();
+    var html = '<div class="nav-sidebar-label">Dashboards</div>';
+    REGION_DASHBOARDS.forEach(function (item) { html += navLink(item, '', file); });
+    html += '<div class="nav-divider"></div><div class="nav-sidebar-label">Global Trackers</div>';
+    GLOBAL_TRACKERS.forEach(function (item) { html += navLink(item, 'tracker-btn', file); });
+    html += '<div class="nav-divider"></div><div class="nav-sidebar-label">Regional Rhetoric</div>';
+    REGIONAL_RHETORIC.forEach(function (item) { html += navLink(item, 'rhetoric-btn', file); });
+    return html;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ESCALATION LADDER — ONE DEFINITION, EVERY PAGE  (v1.0, Oct 3 2026)
+  // ══════════════════════════════════════════════════════════════════
+  // Every page used to declare its own ESCALATION_LEVELS. They drifted:
+  // Asia's page rendered "Coercion" at L4 while Asia's own backend emitted
+  // "Incident" for the same number, and across five surfaces L3 was
+  // variously "Direct Threat", "Confrontation" or "ELEVATED". Same scan,
+  // different word, depending which element you looked at.
+  //
+  // The ladder now lives here. Pages read window.AsifahLadder instead of
+  // declaring a table, so the chip and the guide rail are reading the same
+  // object and CANNOT disagree. A page that does not exist yet gets the
+  // correct ladder for free, which is the actual test of whether this is
+  // architecture or housekeeping.
+  //
+  // DESIGN RULE: every rung describes what the ACTOR is doing, except L0,
+  // which honestly describes what WE are doing -- watching, with nothing
+  // above normal. "Baseline" would imply we assessed it as normal;
+  // "Monitoring" says the scan is running and found nothing. On a page that
+  // sits at L0 for months that distinction is the difference between
+  // reading dead and reading alive.
+  var ASIFAH_LADDER = [
+    { level: 0, label: 'Monitoring',      color: '#6b7280',
+      gloss: 'Nothing above normal. The scan is running.' },
+    { level: 1, label: 'Rhetoric',        color: '#3b82f6',
+      gloss: 'Talk, with no named target.' },
+    { level: 2, label: 'Warning',         color: '#f59e0b',
+      gloss: 'Talk directed at a named target.' },
+    { level: 3, label: 'Confrontation',   color: '#f97316',
+      gloss: 'Direct and mutual — both sides engaged.' },
+    { level: 4, label: 'Coercion',        color: '#ef4444',
+      gloss: 'Pressure applied to extract a concession.' },
+    { level: 5, label: 'Active Conflict', color: '#dc2626',
+      gloss: 'Open hostilities underway.' }
+  ];
+
+  // Mirrors theatre_state.py on the backends. The ladder above is a THREAT
+  // ladder, and no single word spans war, famine, supply shock and
+  // diplomatic collapse -- any word vague enough to cover all four says
+  // nothing. So the axis supplies the meaning. A magnitude-9 earthquake is a
+  // legitimate L5, and calling it "active conflict" is not imprecise, it is
+  // false.
+  var ASIFAH_AXIS_STATE = {
+    kinetic:      ['quiet', 'rhetorical signalling', 'pressure building',
+                   'standoff hardening', 'armed incident', 'active war footing',
+                   'red line breached'],
+    humanitarian: ['quiet', 'early humanitarian indicators', 'population pressure building',
+                   'humanitarian conditions deteriorating', 'acute humanitarian emergency',
+                   'mass-casualty humanitarian disaster', 'catastrophic humanitarian collapse'],
+    economic:     ['quiet', 'market signalling', 'cost pressure building',
+                   'supply pressure hardening', 'acute supply disruption',
+                   'economic rupture', 'systemic economic breakdown'],
+    diplomatic:   ['quiet', 'diplomatic signalling', 'diplomatic friction',
+                   'diplomatic standoff', 'talks collapsed', 'diplomatic rupture',
+                   'relations severed']
+  };
+
+  var LADDER_KEY = 'asifah-ladder-open';
+
+  function ladderClamp(n) {
+    n = parseInt(n, 10);
+    if (isNaN(n)) n = 0;
+    return Math.max(0, Math.min(5, n));
+  }
+
+  window.AsifahLadder = {
+    levels: ASIFAH_LADDER,
+    /** Full rung object. Always returns something -- never undefined. */
+    get: function (n) { return ASIFAH_LADDER[ladderClamp(n)]; },
+    label: function (n) { return this.get(n).label; },
+    color: function (n) { return this.get(n).color; },
+    gloss: function (n) { return this.get(n).gloss; },
+    /** 'Coercion (L4)' -- for chips that want both. */
+    withLevel: function (n) {
+      var lv = ladderClamp(n);
+      return ASIFAH_LADDER[lv].label + ' (L' + lv + ')';
+    },
+    /** Axis-aware phrase, mirroring theatre_state.py. */
+    axisPhrase: function (n, axis) {
+      var table = ASIFAH_AXIS_STATE[axis] || ASIFAH_AXIS_STATE.kinetic;
+      var lv = Math.max(0, Math.min(6, parseInt(n, 10) || 0));
+      return table[lv] || table[0];
+    },
+    axes: ASIFAH_AXIS_STATE
+  };
+
+  /** Pages that actually carry levels. Mission/privacy/index get no rail. */
+  function pageHasLevels(file) {
+    if (/^(index|mission|privacy)\.html$/.test(file)) return false;
+    var known = REGION_DASHBOARDS.concat(GLOBAL_TRACKERS, REGIONAL_RHETORIC)
+      .some(function (item) { return item[0].toLowerCase() === file; });
+    return known || isRhetoricPage(file) || isStabilityPage(file);
+  }
+
+  function ladderRailHtml() {
+    var rungs = ASIFAH_LADDER.slice().reverse().map(function (r) {
+      return '<div class="asifah-ladder-rung">' +
+        '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
+        '<span class="asifah-ladder-text">' +
+          '<span class="asifah-ladder-label">' + r.label + '</span>' +
+          '<span class="asifah-ladder-gloss">' + r.gloss + '</span>' +
+        '</span></div>';
+    }).join('');
+
+    // The axis note. Without it the rail quietly asserts that L4 means
+    // coercion on a humanitarian axis, which would frame a famine as a
+    // security problem -- a framing the platform should not make by default.
+    var axisRows = [
+      ['Kinetic',      ASIFAH_AXIS_STATE.kinetic[4]],
+      ['Humanitarian', ASIFAH_AXIS_STATE.humanitarian[4]],
+      ['Economic',     ASIFAH_AXIS_STATE.economic[4]],
+      ['Diplomatic',   ASIFAH_AXIS_STATE.diplomatic[4]]
+    ].map(function (p) {
+      return '<div class="asifah-ladder-axis-row"><strong>' + p[0] + '</strong>' + p[1] + '</div>';
+    }).join('');
+
+    return '<button type="button" class="asifah-ladder-toggle" aria-label="Collapse the escalation guide">' +
+             '<span class="asifah-ladder-toggle-icon">&rsaquo;</span>' +
+           '</button>' +
+           '<div class="asifah-ladder-body">' +
+             '<div class="asifah-ladder-title">How to read levels</div>' +
+             rungs +
+             '<div class="asifah-ladder-axis">' +
+               '<div class="asifah-ladder-axis-title">L4 by pressure axis</div>' + axisRows +
+               '<div class="asifah-ladder-axis-note">The ladder scores intensity. What a level ' +
+               'MEANS depends on which axis it sits on.</div>' +
+             '</div>' +
+             '<div class="asifah-ladder-foot">Scores are convergence indicators from publicly ' +
+             'observable signals — not event counts and not predictions.</div>' +
+           '</div>';
+  }
+
+  function ensureLadderRail() {
+    var file = currentFile();
+    if (!pageHasLevels(file)) return;
+    if (document.getElementById('asifahLadderRail')) return;
+
+    var rail = document.createElement('aside');
+    rail.id = 'asifahLadderRail';
+    rail.className = 'asifah-ladder-rail';
+    rail.innerHTML = ladderRailHtml();
+    document.body.appendChild(rail);
+    document.body.classList.add('asifah-ladder-active');
+
+    // Open by default, collapse remembered. A collapsed-by-default rail is
+    // invisible to a first-time reader, which defeats it; an always-open one
+    // nags the regular. Open-then-remember serves both.
+    var open = true;
+    try {
+      var saved = localStorage.getItem(LADDER_KEY);
+      if (saved === 'closed') open = false;
+    } catch (e) { /* private mode: fall back to open */ }
+
+    function apply() {
+      rail.classList.toggle('collapsed', !open);
+      document.body.classList.toggle('asifah-ladder-collapsed', !open);
+      var btn = rail.querySelector('.asifah-ladder-toggle');
+      if (btn) btn.setAttribute('aria-label',
+        (open ? 'Collapse' : 'Expand') + ' the escalation guide');
+    }
+    apply();
+
+    rail.querySelector('.asifah-ladder-toggle').addEventListener('click', function () {
+      open = !open;
+      apply();
+      try { localStorage.setItem(LADDER_KEY, open ? 'open' : 'closed'); } catch (e) {}
+    });
+  }
+
+  /** Mobile: the rail folds into the existing drawer rather than becoming a
+      second rail. A right rail at phone width is a bad time. */
+  function ladderDrawerHtml() {
+    if (!pageHasLevels(currentFile())) return '';
+    return '<div class="nav-divider"></div>' +
+           '<div class="nav-sidebar-label">How to read levels</div>' +
+           ASIFAH_LADDER.slice().reverse().map(function (r) {
+             return '<div class="asifah-ladder-rung drawer">' +
+               '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
+               '<span class="asifah-ladder-text">' +
+                 '<span class="asifah-ladder-label">' + r.label + '</span>' +
+                 '<span class="asifah-ladder-gloss">' + r.gloss + '</span>' +
+               '</span></div>';
+           }).join('');
+  }
+
+  function ensureTheme() {
+    var saved = localStorage.getItem(THEME_KEY);
+    if (!saved) {
+      saved = document.documentElement.getAttribute('data-theme') || 'dark';
+    }
+    saved = saved === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.body.setAttribute('data-theme', saved);
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+    var btn = document.querySelector('.asifah-theme-button');
+    if (btn) btn.setAttribute('aria-label', 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode');
+  }
+
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  function ensureHeader() {
+    var file = currentFile();
+    var header = document.querySelector('header, .header');
+    if (!header) return;
+    header.classList.add('asifah-standard-header');
+    Array.prototype.slice.call(header.querySelectorAll('.theme-row, .theme-toggle, .toggle-switch')).forEach(function (el) {
+      if (!el.classList.contains('asifah-theme-button') && !el.closest('.asifah-theme-button')) {
+        el.classList.add('asifah-legacy-control-hidden');
+      }
+    });
+    Array.prototype.slice.call(header.querySelectorAll('.mobile-menu-btn, .menu-toggle, .mobile-hamburger')).forEach(function (el) {
+      if (!el.classList.contains('asifah-mobile-menu-btn')) {
+        el.classList.add('asifah-legacy-control-hidden');
+      }
+    });
+
+    if (!header.querySelector('.header-logo, .asifah-standard-logo')) {
+      var img = document.createElement('img');
+      img.src = LOGO_URL;
+      img.alt = 'Asifah Analytics';
+      img.className = 'asifah-standard-logo';
+      header.insertBefore(img, header.firstChild);
+    }
+
+    if (!header.querySelector('.back-link, .home-btn, .asifah-standard-back')) {
+      var back = backTarget(file);
+      var link = document.createElement('a');
+      link.href = back[0];
+      link.className = 'asifah-standard-back';
+      link.textContent = back[1];
+      header.insertBefore(link, header.firstChild);
+    }
+
+    if (!header.querySelector('.asifah-theme-button')) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'asifah-theme-button';
+      button.innerHTML = '<span>Theme</span><span class="asifah-theme-switch-track"><span class="asifah-theme-switch-knob"></span></span>';
+      button.addEventListener('click', toggleTheme);
+      header.appendChild(button);
+    }
+  }
+
+  function ensureSidebar() {
+    var html = canonicalNavHtml();
+    var sidebars = Array.prototype.slice.call(document.querySelectorAll('.nav-sidebar'));
+    if (sidebars.length) {
+      sidebars.forEach(function (sidebar) {
+        sidebar.innerHTML = html;
+        sidebar.id = sidebar.id || 'navSidebar';
+      });
+      return;
+    }
+
+    // ── v (Oct 3 2026) DO NOT DOUBLE UP ──────────────────────────────
+    // rhetoric-qatar.html carries <aside class="sidebar" id="navSidebar">
+    // with page-specific links (Qatar Rhetoric / Qatar Stability) that the
+    // canonical nav has no equivalent for. The old code matched only
+    // '.nav-sidebar', found nothing, and injected a SECOND rail -- two
+    // sidebars side by side, plus 230px of body padding squeezing a grid
+    // that had already allocated 220px to the first one.
+    //
+    // A page with its own navigation is LEFT ALONE rather than overwritten.
+    // Replacing bespoke links with the canonical set would silently delete
+    // navigation the reader depends on, which is worse than a visual
+    // inconsistency -- and unlike the inconsistency, nobody would notice.
+    var bespoke = document.querySelector('#navSidebar, aside.sidebar, nav.sidebar');
+    if (bespoke) {
+        bespoke.classList.add('asifah-bespoke-sidebar');
+        if (window.console && console.info) {
+            console.info('[Asifah shell] Page has its own sidebar (' +
+                (bespoke.className || bespoke.id) + ') -- canonical nav not ' +
+                'injected. Rename its class to "nav-sidebar" to adopt the ' +
+                'standard nav, but only if its links are already in it.');
+        }
+        return;
+    }
+
+    var sidebar = document.createElement('nav');
+    sidebar.className = 'nav-sidebar asifah-injected-sidebar';
+    sidebar.id = 'navSidebar';
+    sidebar.innerHTML = html;
+    document.body.insertBefore(sidebar, document.body.firstChild);
+    document.body.classList.add('asifah-injected-sidebar-active');
+  }
+
+  function ensureMobileNav() {
+    if (!document.getElementById('asifahMobileMenu')) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.id = 'asifahMobileMenu';
+      button.className = 'asifah-mobile-menu-btn';
+      button.setAttribute('aria-label', 'Open navigation');
+      button.innerHTML = '&#9776;';
+      document.body.appendChild(button);
+    }
+
+    if (!document.getElementById('asifahMobileBackdrop')) {
+      var backdrop = document.createElement('div');
+      backdrop.id = 'asifahMobileBackdrop';
+      backdrop.className = 'asifah-mobile-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
+    if (!document.getElementById('asifahMobileDrawer')) {
+      var drawer = document.createElement('div');
+      drawer.id = 'asifahMobileDrawer';
+      drawer.className = 'asifah-mobile-drawer';
+      drawer.innerHTML = '<button type="button" class="asifah-mobile-drawer-close" aria-label="Close navigation">&times;</button>' +
+        '<div class="asifah-mobile-drawer-title">Asifah Navigation</div>' +
+        canonicalNavHtml() + ladderDrawerHtml();
+      document.body.appendChild(drawer);
+    }
+
+    var menu = document.getElementById('asifahMobileMenu');
+    var backdropEl = document.getElementById('asifahMobileBackdrop');
+    var drawerEl = document.getElementById('asifahMobileDrawer');
+    var close = drawerEl.querySelector('.asifah-mobile-drawer-close');
+
+    function open() {
+      drawerEl.classList.add('open');
+      backdropEl.classList.add('open');
+    }
+    function closeDrawer() {
+      drawerEl.classList.remove('open');
+      backdropEl.classList.remove('open');
+    }
+
+    menu.addEventListener('click', open);
+    backdropEl.addEventListener('click', closeDrawer);
+    close.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeDrawer();
+    });
+  }
+
+  function footerHtml() {
+    return '<div class="asifah-footer-title">Asifah Analytics</div>' +
+      '<div class="asifah-footer-sources">Open-source intelligence dashboard built from public reporting, official releases, market and commodity data, humanitarian feeds, aviation notices, and regional social-source mirrors where available.</div>' +
+      '<div class="asifah-footer-pills">' +
+      '<a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc">Buy Me a Coffee</a>' +
+      '<a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact">Contact Asifah</a>' +
+      '</div>' +
+      '<div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. Scores are convergence indicators based on publicly observable signals, not operational guidance or predictions of action.</div>' +
+      '<div class="asifah-footer-links">' +
+      '<a href="mission.html">Mission Statement</a>' +
+      '<a href="privacy.html">Privacy Policy</a>' +
+      '<a href="index.html">Home</a>' +
+      '</div>';
+  }
+
+  function ensureFooter() {
+    var footer = document.querySelector('footer.asifah-footer');
+    if (!footer) {
+      footer = document.querySelector('footer, .page-footer');
+    }
+    if (!footer) {
+      footer = document.createElement('footer');
+      document.body.appendChild(footer);
+    }
+    footer.className = 'asifah-footer';
+    footer.innerHTML = footerHtml();
+  }
+
+  function init() {
+    document.body.classList.add('asifah-standardized');
+    ensureTheme();
+    ensureHeader();
+    ensureSidebar();
+    ensureMobileNav();
+    ensureLadderRail();
+    ensureFooter();
+    setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
