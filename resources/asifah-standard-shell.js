@@ -131,6 +131,45 @@
     GLOBAL_TRACKERS.forEach(function (item) { html += navLink(item, 'tracker-btn', file); });
     html += '<div class="nav-divider"></div><div class="nav-sidebar-label">Regional Rhetoric</div>';
     REGIONAL_RHETORIC.forEach(function (item) { html += navLink(item, 'rhetoric-btn', file); });
+    return html + navExtrasHtml(file);
+  }
+
+  /** PAGE-SPECIFIC NAV LINKS  (v, Oct 3 2026)
+   *
+   *  The reason rhetoric-qatar.html had a hand-rolled sidebar at all was that
+   *  it carries two links no other page has -- Qatar Rhetoric and Qatar
+   *  Stability -- and the canonical nav had nowhere to put them. So the page
+   *  kept its own rail, drifted away from the standard, and ended up with a
+   *  second sidebar injected beside it.
+   *
+   *  A page now declares its extra links in its own markup and the shell
+   *  folds them into the canonical nav as a labelled section:
+   *
+   *      <aside class="nav-sidebar" id="navSidebar">
+   *        <div data-asifah-nav-extra="Qatar Pages">
+   *          <a href="qatar-stability.html">Qatar Stability</a>
+   *        </div>
+   *      </aside>
+   *
+   *  Read BEFORE the sidebar's innerHTML is replaced -- the declaration lives
+   *  inside the element we are about to overwrite, which is deliberate: the
+   *  links degrade to a plain list if the shell never loads, rather than
+   *  vanishing. The attribute's value is the section heading.
+   */
+  function navExtrasHtml(file) {
+    var blocks = document.querySelectorAll('[data-asifah-nav-extra]');
+    var html = '';
+    Array.prototype.forEach.call(blocks, function (block) {
+      var items = [];
+      Array.prototype.forEach.call(block.querySelectorAll('a[href]'), function (a) {
+        items.push([a.getAttribute('href'), a.textContent.trim()]);
+      });
+      if (!items.length) return;
+      var label = block.getAttribute('data-asifah-nav-extra') || 'This section';
+      html += '<div class="nav-divider"></div><div class="nav-sidebar-label">' +
+              label + '</div>';
+      items.forEach(function (item) { html += navLink(item, 'page-btn', file); });
+    });
     return html;
   }
 
@@ -229,7 +268,7 @@
   }
 
   function ladderRailHtml() {
-    var rungs = ASIFAH_LADDER.slice().reverse().map(function (r) {
+    var rungs = ASIFAH_LADDER.map(function (r) {
       return '<div class="asifah-ladder-rung">' +
         '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
         '<span class="asifah-ladder-text">' +
@@ -296,9 +335,93 @@
     }
     apply();
 
+    // ── Vertical alignment (Oct 3 2026) ──────────────────────────────
+    // The rail was pinned to the viewport top while the left sidebar sits
+    // inside a centred container BELOW the page header, so "HOW TO READ
+    // LEVELS" floated above "DASHBOARDS" by the height of the header.
+    //
+    // WE ALIGN TEXT TO TEXT, NOT BOX TO BOX. The left sidebar is transparent
+    // -- no background, no border -- so its box edge is invisible, and lining
+    // the two boxes up left the title low by the height of the rail's own
+    // padding. The rail is a bordered card, so its card edge has to sit
+    // slightly ABOVE the sidebar's notional top for the two labels to read as
+    // level. Both offsets are MEASURED at runtime rather than hardcoded, so a
+    // page with a different header height or nav padding still lands square.
+    //
+    //   alignLadderRail()  "HOW TO READ LEVELS"  level with  "DASHBOARDS"
+    //   tuneLadderGap()    the first rung        level with  the first nav button
+    //
+    // SCROLL -- stated accurately, because the first version of this comment
+    // got it wrong and a test caught it. The sidebar does NOT stick on these
+    // pages. It declares `position: sticky; top: 20px`, but it is the tallest
+    // child of its flex row, so its containing block is exactly its own
+    // height and sticky has zero travel; at ~990px it is also taller than
+    // most viewports. It simply scrolls away. The rail tracks it on the way
+    // up and then CLAMPS at 20px, so the guide is still on screen when you
+    // are 1,200px down the page looking at an L4 chip -- which is when you
+    // actually want it. A deliberate divergence, not an alignment bug.
+    function railAnchor() {
+      var nav = document.querySelector('.nav-sidebar, aside.sidebar, nav.sidebar');
+      if (!nav) return null;
+      return {
+        nav:   nav,
+        label: nav.querySelector('.nav-sidebar-label') || nav,
+        btn:   nav.querySelector('.nav-btn, a, button')
+      };
+    }
+
+    /** Vertical: put the rail's TITLE on the sidebar's LABEL, then keep the
+        card inside the viewport. Re-measures on every call, so it stays
+        correct after a font swap, a theme change or a collapse. */
+    function alignLadderRail() {
+      var a = railAnchor();
+      if (!a) return;
+      var title = rail.querySelector('.asifah-ladder-title');
+      var railTop = rail.getBoundingClientRect().top;
+      // Card edge -> title: border + padding. Zero while collapsed (the title
+      // is hidden), and then box-top alignment is the only thing that means
+      // anything anyway.
+      var inner = (title && title.getBoundingClientRect().height)
+        ? title.getBoundingClientRect().top - railTop
+        : 0;
+      var want = Math.max(20, Math.round(a.label.getBoundingClientRect().top - inner));
+      rail.style.top = want + 'px';
+      // The CSS max-height assumes top:20px. Once the rail sits lower than
+      // that, the static cap lets a long rail run off the bottom of the
+      // screen with no way to scroll to the footnote.
+      rail.style.maxHeight = Math.max(160, window.innerHeight - want - 20) + 'px';
+    }
+
+    /** Then close the remaining gap so the first rung sits on the first nav
+        button. Converges in one pass: the correction IS the measured delta. */
+    function tuneLadderGap() {
+      var a = railAnchor();
+      if (!a || !a.btn) return;
+      var title = rail.querySelector('.asifah-ladder-title');
+      var rung = rail.querySelector('.asifah-ladder-rung');
+      if (!title || !rung || !rung.getBoundingClientRect().height) return;
+      var delta = a.btn.getBoundingClientRect().top - rung.getBoundingClientRect().top;
+      if (Math.abs(delta) < 1) return;
+      var cur = parseFloat(window.getComputedStyle(title).marginBottom) || 0;
+      title.style.marginBottom = Math.max(0, Math.min(40, Math.round(cur + delta))) + 'px';
+    }
+
+    function placeLadderRail() { alignLadderRail(); tuneLadderGap(); }
+
+    placeLadderRail();
+    // Webfonts land after first paint and move both columns; re-measure once.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(placeLadderRail).catch(function () {});
+    }
+    window.addEventListener('scroll', alignLadderRail, { passive: true });
+    window.addEventListener('resize', placeLadderRail);
+
     rail.querySelector('.asifah-ladder-toggle').addEventListener('click', function () {
       open = !open;
       apply();
+      // Collapsing hides the title, so the measured offsets change. Re-place
+      // rather than leaving the card where the open layout had put it.
+      placeLadderRail();
       try { localStorage.setItem(LADDER_KEY, open ? 'open' : 'closed'); } catch (e) {}
     });
   }
@@ -309,7 +432,7 @@
     if (!pageHasLevels(currentFile())) return '';
     return '<div class="nav-divider"></div>' +
            '<div class="nav-sidebar-label">How to read levels</div>' +
-           ASIFAH_LADDER.slice().reverse().map(function (r) {
+           ASIFAH_LADDER.map(function (r) {
              return '<div class="asifah-ladder-rung drawer">' +
                '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
                '<span class="asifah-ladder-text">' +
@@ -347,7 +470,7 @@
     var header = document.querySelector('header, .header');
     if (!header) return;
     header.classList.add('asifah-standard-header');
-    Array.prototype.slice.call(header.querySelectorAll('.theme-row, .theme-toggle, .toggle-switch')).forEach(function (el) {
+    Array.prototype.slice.call(header.querySelectorAll('.theme-row, .theme-toggle, .toggle-switch, .toggle-container, .toggle-label')).forEach(function (el) {
       if (!el.classList.contains('asifah-theme-button') && !el.closest('.asifah-theme-button')) {
         el.classList.add('asifah-legacy-control-hidden');
       }
@@ -394,6 +517,30 @@
         sidebar.id = sidebar.id || 'navSidebar';
       });
       return;
+    }
+
+    // ── v (Oct 3 2026) DO NOT DOUBLE UP ──────────────────────────────
+    // rhetoric-qatar.html carries <aside class="sidebar" id="navSidebar">
+    // with page-specific links (Qatar Rhetoric / Qatar Stability) that the
+    // canonical nav has no equivalent for. The old code matched only
+    // '.nav-sidebar', found nothing, and injected a SECOND rail -- two
+    // sidebars side by side, plus 230px of body padding squeezing a grid
+    // that had already allocated 220px to the first one.
+    //
+    // A page with its own navigation is LEFT ALONE rather than overwritten.
+    // Replacing bespoke links with the canonical set would silently delete
+    // navigation the reader depends on, which is worse than a visual
+    // inconsistency -- and unlike the inconsistency, nobody would notice.
+    var bespoke = document.querySelector('#navSidebar, aside.sidebar, nav.sidebar');
+    if (bespoke) {
+        bespoke.classList.add('asifah-bespoke-sidebar');
+        if (window.console && console.info) {
+            console.info('[Asifah shell] Page has its own sidebar (' +
+                (bespoke.className || bespoke.id) + ') -- canonical nav not ' +
+                'injected. Rename its class to "nav-sidebar" to adopt the ' +
+                'standard nav, but only if its links are already in it.');
+        }
+        return;
     }
 
     var sidebar = document.createElement('nav');
