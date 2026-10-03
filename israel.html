@@ -315,6 +315,29 @@
 
         /* ===== MAP ===== */
         .map-section { background: var(--container-bg); border: 2px solid var(--card-border); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: var(--card-glow); transition: background 0.3s ease; }
+
+        /* ── PALESTINIAN FINANCIAL ACCESS (v2.3.0, Oct 3 2026) ── */
+        .fin-access-section { background: var(--container-bg); border: 2px solid var(--card-border); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: var(--card-glow); transition: background 0.3s ease; }
+        .fin-access-section h2 { margin: 0 0 4px 0; }
+        .fin-lane-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; margin-top: 16px; }
+        .fin-lane { background: var(--metric-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px; }
+        .fin-lane-key { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1.2px; }
+        .fin-lane-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+        .fin-lane-mech { font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+        .fin-lane-fail { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; font-style: italic; }
+        .fin-chip { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; background: var(--article-bg); color: var(--text-muted); margin: 0 4px 4px 0; }
+        .fin-chip.live { background: var(--accent); color: #0b1220; font-weight: 700; }
+        .fin-reading { font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.55; padding: 7px; background: var(--article-bg); border-radius: 6px; }
+        .fin-unsensed { font-size: 10px; color: var(--text-muted); border-left: 2px solid var(--card-border); padding-left: 8px; margin-top: 8px; line-height: 1.5; }
+        .fin-banner { padding: 12px 14px; border-radius: 8px; font-size: 12px; line-height: 1.6; margin-top: 12px; }
+        .fin-banner.info { background: var(--article-bg); color: var(--text-secondary); border-left: 3px solid var(--accent); }
+        .fin-banner.warn { background: rgba(245,158,11,0.12); color: var(--text-primary); border-left: 3px solid #f59e0b; }
+        .fin-chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+        .fin-chain .step { font-size: 11px; padding: 5px 9px; border-radius: 6px; background: var(--article-bg); color: var(--text-secondary); }
+        .fin-chain .arrow { color: var(--text-muted); font-size: 12px; }
+        .fin-stale { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.6px; padding: 2px 6px; border-radius: 8px; margin-left: 6px; background: rgba(245,158,11,0.18); color: #b45309; }
+        [data-theme="dark"] .fin-access-section { border-color: rgba(0,200,212,0.18); }
+        [data-theme="dark"] .fin-stale { color: #fbbf24; }
         .map-section h2 { font-size: 20px; margin-bottom: 15px; color: var(--text-primary); font-weight: bold; }
         #israel-map { width: 100%; height: 450px; border-radius: 8px; border: 1px solid var(--card-border); }
 
@@ -1042,6 +1065,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
                             <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;" data-i18n="oppPollHeader">📊 Latest Knesset Poll Snapshot</div>
                             <div style="font-size:9px; color:var(--text-muted); font-style:italic;" data-i18n="oppPollAsOf">As of: April 28, 2026 (manual)</div>
+                            <div id="oppPollAge" style="font-size:9px; margin-top:2px;"></div>
                         </div>
                         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
                             <div>
@@ -1068,7 +1092,7 @@
                     <div id="oppositionArticlesList" style="margin-top:12px; font-size:12px;"></div>
 
                     <div style="margin-top:10px; padding:8px; background:var(--article-bg); border-radius:6px; font-size:11px; color:var(--text-secondary);" data-i18n="oppWatchNote">
-                        Bennett & Lapid merged into "Together" (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating; elections expected by October 2026.
+                        Bennett & Lapid merged into "Together" (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating.
                     </div>
                 </div>
 
@@ -1081,7 +1105,7 @@
                     <div style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                         <div style="padding:8px; background:var(--article-bg); border-radius:6px;">
                             <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;" data-i18n="electionsScheduled">Scheduled by</div>
-                            <div style="font-size:14px; font-weight:600; color:var(--text-primary);" data-i18n="electionsByOctober">Oct 2026</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="electionsDeadlineValue">--</div>
                         </div>
                         <div style="padding:8px; background:var(--article-bg); border-radius:6px;">
                             <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;" data-i18n="electionsMentions">Election mentions (7d)</div>
@@ -1089,10 +1113,16 @@
                         </div>
                     </div>
 
+                    <!-- v2.3.0: single source of truth for election timing. The page used
+                         to state the deadline in seven places -- five said October 2026,
+                         two said November 2026 -- and a reader could see both without
+                         scrolling. Rendered from ELECTION_TIMING, with a review stamp. -->
+                    <div id="electionTimingNote" style="margin-top:8px; font-size:10px; color:var(--text-muted); line-height:1.5;"></div>
+
                     <div id="electionsArticlesList" style="margin-top:12px; font-size:12px;"></div>
 
                     <div style="margin-top:10px; padding:8px; background:var(--article-bg); border-radius:6px; font-size:11px; color:var(--text-secondary);" data-i18n="electionsNote">
-                        Elections must take place by end of October 2026. Higher score = more public discussion of dissolution / no-confidence votes / snap elections / caretaker scenarios.
+                        Higher score = more public discussion of dissolution / no-confidence votes / snap elections / caretaker scenarios.
                     </div>
                 </div>
 
@@ -1126,6 +1156,45 @@
 
             </div><!-- end metrics-grid -->
 
+            <!-- ═══ PALESTINIAN FINANCIAL ACCESS (v2.3.0, Oct 3 2026) ═══
+                 Lane-separated, informational, UNSCORED by design.
+                 Lanes A and B fail differently: correspondent banking failure is
+                 PLUMBING (trade finance and remittances freeze even if the PA is
+                 solvent); clearance withholding is a POLITICAL ACT that hits
+                 payroll directly. One blended number could not tell them apart.
+                 C1 is separated from C because security-force pay is where fiscal
+                 stress converts most directly into a policing vacuum. -->
+            <div class="fin-access-section" id="finAccessSection" style="display:none;">
+                <h2>&#128179; <span>Palestinian Financial Access</span></h2>
+                <p class="open-source-disclaimer" style="margin-top:0;">Correspondent banking, clearance revenue, payroll, and reconstruction finance — tracked as separable mechanisms. Informational: this section carries state and evidence and produces no score.</p>
+
+                <div id="finAccessStatus" class="fin-banner info"></div>
+                <div id="finAccessLangWarning" class="fin-banner warn" style="display:none;"></div>
+
+                <div class="fin-lane-grid" id="finLaneGrid"></div>
+
+                <div id="finStakeholder" style="margin-top:18px;"></div>
+
+                <!-- Second-order effects: PUBLISHED, NOT COMPUTED.
+                     A causal chain that multiplies a score is prediction smuggled
+                     in as plumbing. This is documented analyst reasoning, shown to
+                     the reader, feeding nothing. -->
+                <div style="margin-top:20px; padding:14px; background:var(--article-bg); border-radius:8px;">
+                    <div style="font-size:12px; font-weight:700; color:var(--text-primary); letter-spacing:0.3px;">SECOND-ORDER CHAIN — documented reasoning, not a computation</div>
+                    <div class="fin-chain">
+                        <span class="step">banking access suspended</span><span class="arrow">&rarr;</span>
+                        <span class="step">cash economy</span><span class="arrow">&rarr;</span>
+                        <span class="step">reduced transparency</span><span class="arrow">&rarr;</span>
+                        <span class="step">payroll disruption</span><span class="arrow">&rarr;</span>
+                        <span class="step">PA legitimacy decline</span><span class="arrow">&rarr;</span>
+                        <span class="step">appeal of alternative actors</span>
+                    </div>
+                    <div style="font-size:10px; color:var(--text-muted); margin-top:10px; line-height:1.6; font-style:italic;">
+                        This chain is a reasoning aid for the reader. It does not weight, multiply, or feed any value on this page. Each link is a pattern that has been observed elsewhere, not a step this platform forecasts. The sensor reports co-occurrence; the reader completes the inference.
+                    </div>
+                </div>
+            </div>
+
             <!-- Map -->
             <div class="map-section">
                 <h2>🗺️ Israel & Surrounding Territories — Strategic Overview</h2>
@@ -1148,7 +1217,7 @@
                             <p><strong>The Current Coalition (formed Dec 2022):</strong> Comprises Netanyahu's Likud (32), Shas (11), United Torah Judaism (7), Religious Zionism (7), Otzma Yehudit (6), and Noam (1) — holding 64 of 120 seats. The coalition is structurally fragile: any single partner's withdrawal collapses the government.</p>
                             <p><strong>Netanyahu's Criminal Trial:</strong> On trial for bribery, fraud, and breach of trust — charges he denies. The ongoing trial creates unique governance tensions with no parallel in Western democracies.</p>
                             <p><strong>Judicial Reform Crisis (2023):</strong> Attempt to curtail Supreme Court powers triggered the largest protest movement in Israeli history — paused after October 7 but not resolved.</p>
-                            <p><strong>2026 Elections:</strong> Must be held by November 2026. Early elections possible if coalition fractures over war strategy, hostage deal terms, or Haredi conscription. Likud showing poll gains amid war.</p>
+                            <p><strong>2026 Elections:</strong> Due in the autumn 2026 statutory window — the date is set by the Hebrew calendar, so sources cite late October and early November inconsistently; verify against the Knesset record before relying on a specific day. Early elections possible if coalition fractures over war strategy, hostage deal terms, or Haredi conscription. Likud showing poll gains amid war.</p>
                             <div class="report-links-grid">
                                 <a href="https://www.knesset.gov.il/main/eng/home.asp" target="_blank" class="report-link">📑 Knesset Official</a>
                                 <a href="https://en.idi.org.il/" target="_blank" class="report-link">📑 Israel Democracy Institute</a>
@@ -1329,6 +1398,62 @@
 
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         const BACKEND_URL = 'https://asifah-backend.onrender.com';
+
+        // ════════════════════════════════════════════════════════════
+        // ELECTION TIMING — SINGLE SOURCE OF TRUTH  (v2.3.0, Oct 3 2026)
+        // ------------------------------------------------------------
+        // Before this, the page asserted the election deadline in seven
+        // places: five said October 2026, two said November 2026. Both were
+        // visible without scrolling, and all seven were frozen strings while
+        // the backend behind them had already been changed (v2.2.0) to derive
+        // years at scan time and track 2026 AND 2027 -- because the vote is
+        // not the end of the cycle; government formation and a possible
+        // re-run is the larger instability window.
+        //
+        // Israeli law sets the date by the Hebrew calendar (third Tuesday of
+        // Cheshvan), which is WHY English-language sources disagree about the
+        // month. So this states the WINDOW, names the ambiguity, and stamps
+        // when a human last checked -- rather than picking a month and
+        // sounding certain. Date-stamp over hardcode; review over freeze.
+        // ════════════════════════════════════════════════════════════
+        const ELECTION_TIMING = {
+            windowLabel:     'Autumn 2026',
+            windowDetail:    'Statutory deadline is set by the Hebrew calendar (third Tuesday of Cheshvan 5787); English-language sources cite late October and early November inconsistently. Verify against the Knesset record before relying on a specific day.',
+            reviewed:        '2026-10-03',
+            reviewEveryDays: 90
+        };
+
+        function _daysSince(iso) {
+            try { return Math.floor((Date.now() - new Date(iso + 'T00:00:00Z').getTime()) / 86400000); }
+            catch (e) { return null; }
+        }
+
+        function renderElectionTiming() {
+            try {
+                const age = _daysSince(ELECTION_TIMING.reviewed);
+                const stale = (age !== null && age > ELECTION_TIMING.reviewEveryDays);
+                const v = document.getElementById('electionsDeadlineValue');
+                if (v) {
+                    v.innerHTML = ELECTION_TIMING.windowLabel +
+                        (stale ? '<span class="fin-stale">REVIEW DUE</span>' : '');
+                }
+                const n = document.getElementById('electionTimingNote');
+                if (n) {
+                    n.textContent = ELECTION_TIMING.windowDetail +
+                        ' — last reviewed ' + ELECTION_TIMING.reviewed +
+                        (age !== null ? ' (' + age + 'd ago)' : '');
+                }
+                // Manual polling figures go stale silently; say how stale.
+                const p = document.getElementById('oppPollAge');
+                if (p) {
+                    const pAge = _daysSince('2026-04-28');
+                    if (pAge !== null && pAge > 60) {
+                        p.innerHTML = '<span class="fin-stale">' + pAge +
+                            'd OLD — MANUAL FIGURE, NOT A LIVE READING</span>';
+                    } else { p.innerHTML = ''; }
+                }
+            } catch (e) { console.warn('[Election timing] render error:', e); }
+        }
 
         // ===== THEME =====
         function initTheme() {
@@ -1736,7 +1861,8 @@
             if (knesset.election_signal_count > 0) {
                 document.getElementById('electionSignal').innerHTML = `🗳️ <strong style="color:#facc15;">${knesset.election_signal_count} early election signal${knesset.election_signal_count > 1 ? 's' : ''} detected</strong>`;
             } else {
-                document.getElementById('electionSignal').innerHTML = '🗓️ Election due by Nov 2026';
+                document.getElementById('electionSignal').innerHTML =
+                    '🗓️ Election due: ' + ELECTION_TIMING.windowLabel;
             }
 
             // Leadership badges
@@ -1834,11 +1960,131 @@
                 if (taseSpark.length > 0) buildTaseSparkline(taseSpark);
             } catch(e) { console.warn('[Sparklines] fresh-data render error:', e); }
 
+            // v2.3.0 — Palestinian financial access (unscored state block)
+            try {
+                renderFinancialAccess((data.conflict || {}).financial_access);
+            } catch (e) { console.warn('[Financial access] render error:', e); }
+
+            // v2.3.0 — election timing from the single source of truth
+            renderElectionTiming();
+
             // Articles feed — populate tabbed buckets
             const allArts = (data.all_articles || []);
             renderTabbedArticles(allArts);
             // Also fetch Think Tank feed in parallel — non-blocking
             loadThinkTankArticles();
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // PALESTINIAN FINANCIAL ACCESS (v2.3.0, Oct 3 2026)
+        // Renders the unscored state block. Shows what is SENSED, what is
+        // merely EVIDENCED, and what is neither -- in that order, because
+        // conflating them is the failure this whole lane exists to avoid.
+        // ════════════════════════════════════════════════════════════
+        function _esc(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function renderFinancialAccess(fa) {
+            const sec = document.getElementById('finAccessSection');
+            if (!sec) return;
+            if (!fa || !fa.state) { sec.style.display = 'none'; return; }
+            sec.style.display = 'block';
+
+            const statusEl = document.getElementById('finAccessStatus');
+
+            if (fa.state === 'could_not_assess') {
+                statusEl.className = 'fin-banner warn';
+                statusEl.innerHTML = '<strong>COULD NOT ASSESS.</strong> ' +
+                    _esc(fa.doctrine_note || 'The block failed to build.') +
+                    (fa.error ? '<br><span style="font-size:11px;">' + _esc(fa.error) + '</span>' : '');
+                document.getElementById('finLaneGrid').innerHTML = '';
+                document.getElementById('finStakeholder').innerHTML = '';
+                return;
+            }
+
+            const dc = fa.data_completeness || {};
+            statusEl.className = 'fin-banner info';
+            statusEl.innerHTML =
+                '<strong>STATE: EVIDENCE ONLY &middot; NO SCORE.</strong> ' +
+                _esc(dc.verified_state_fields_sensed != null ? dc.verified_state_fields_sensed : 0) +
+                ' of ' + _esc(dc.verified_state_fields_total != null ? dc.verified_state_fields_total : '?') +
+                ' verified state fields are sensed. ' +
+                _esc(fa.doctrine_note || '');
+
+            const warnEl = document.getElementById('finAccessLangWarning');
+            if (fa.language_coverage_warning) {
+                warnEl.style.display = 'block';
+                warnEl.innerHTML = '<strong>LANGUAGE COVERAGE.</strong> ' +
+                    _esc(fa.language_coverage_warning);
+            } else { warnEl.style.display = 'none'; }
+
+            const grid = document.getElementById('finLaneGrid');
+            grid.innerHTML = '';
+            const lanes = fa.lanes || {};
+            Object.keys(lanes).forEach(function (key) {
+                const L = lanes[key];
+                const c = L.evidence_by_language || {};
+                const live = (L.evidence_count || 0) > 0;
+
+                let unsensed = '';
+                const vs = L.verified_state || {};
+                Object.keys(vs).forEach(function (f) {
+                    unsensed += '<div>' + _esc(f) + ': <strong>' +
+                        (vs[f].sensed ? _esc(vs[f].value) : 'NOT SENSED') +
+                        '</strong> &mdash; needs: ' + _esc(vs[f].source_needed) + '</div>';
+                });
+
+                let arts = (L.evidence_articles || []).slice(0, 3).map(function (a) {
+                    const title = (a.title || 'Article');
+                    return '<div style="margin-top:5px;"><a href="' + _esc(a.url || '#') +
+                        '" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:none; font-size:11px;">&rarr; ' +
+                        _esc(title.substring(0, 72)) + (title.length > 72 ? '…' : '') + '</a></div>';
+                }).join('');
+
+                const el = document.createElement('div');
+                el.className = 'fin-lane';
+                el.innerHTML =
+                    '<div class="fin-lane-key">' + _esc(key.split('_')[0]) + '</div>' +
+                    '<div class="fin-lane-title">' + _esc(L.label) + '</div>' +
+                    '<div class="fin-lane-mech">' + _esc(L.mechanism) + '</div>' +
+                    '<div style="margin-top:8px;">' +
+                        '<span class="fin-chip' + (live ? ' live' : '') + '">' +
+                            _esc(L.evidence_count || 0) + ' evidence</span>' +
+                        '<span class="fin-chip">EN ' + _esc(c.en || 0) + '</span>' +
+                        '<span class="fin-chip">HE ' + _esc(c.he || 0) + '</span>' +
+                        '<span class="fin-chip">AR ' + _esc(c.ar || 0) + '</span>' +
+                    '</div>' +
+                    '<div class="fin-lane-fail"><strong>If it fails:</strong> ' + _esc(L.failure_mode) + '</div>' +
+                    '<div class="fin-reading">' + _esc(L.reading) + '</div>' +
+                    (L.state_note ? '<div class="fin-unsensed">' + _esc(L.state_note) + '</div>' : '') +
+                    '<div class="fin-unsensed"><strong>Verified state</strong>' + unsensed + '</div>' +
+                    arts;
+                grid.appendChild(el);
+            });
+
+            const sv = fa.stakeholder_voice || {};
+            const svc = sv.evidence_by_language || {};
+            const svArts = (sv.evidence_articles || []).slice(0, 3).map(function (a) {
+                const title = (a.title || 'Article');
+                return '<div style="margin-top:5px;"><a href="' + _esc(a.url || '#') +
+                    '" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:none; font-size:11px;">&rarr; ' +
+                    _esc(title.substring(0, 80)) + (title.length > 80 ? '…' : '') + '</a></div>';
+            }).join('');
+            document.getElementById('finStakeholder').innerHTML =
+                '<div class="fin-lane">' +
+                    '<div class="fin-lane-key">CROSS-LANE</div>' +
+                    '<div class="fin-lane-title">' + _esc(sv.label || 'International stakeholder voice') + '</div>' +
+                    '<div class="fin-lane-mech">' + _esc(sv.why_it_matters || '') + '</div>' +
+                    '<div style="margin-top:8px;">' +
+                        '<span class="fin-chip' + ((sv.evidence_count || 0) > 0 ? ' live' : '') + '">' +
+                            _esc(sv.evidence_count || 0) + ' evidence</span>' +
+                        '<span class="fin-chip">EN ' + _esc(svc.en || 0) + '</span>' +
+                        '<span class="fin-chip">HE ' + _esc(svc.he || 0) + '</span>' +
+                        '<span class="fin-chip">AR ' + _esc(svc.ar || 0) + '</span>' +
+                    '</div>' + svArts +
+                '</div>';
         }
 
         // ===== TABBED ARTICLES (canonical v2.1.0) =====
@@ -2135,14 +2381,13 @@
             coalitionStatus: "🏛️ COALITION STATUS",
             coalitionSubtitle: "Knesset seats (61 needed)",
             coalitionTrial: "⚠️ On trial: bribery, fraud, breach of trust",
-            coalitionElection: "🗓️ Election due by October 2026",
             keyFigures: "👥 KEY FIGURES",
             strikeActivity: "🎯 RECENT STRIKE ACTIVITY",
             strikeSubtitle: "Events (ACLED/RSS, 30d)",
             // Legacy keys (kept for backward compat)
             bennettWatch: "🌟 OPPOSITION WATCH",
             bennettSubtitle: "Mentions (7d) — anti-Netanyahu bloc",
-            bennettNote: "Bennett & Lapid merged into 'Together' (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating; elections expected by October 2026.",
+            bennettNote: "Bennett & Lapid merged into 'Together' (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating.",
             // v2.1.0 — Opposition Watch
             oppWatchTitle: "OPPOSITION WATCH",
             oppWatchSubtitle: "Mentions (7d) — anti-Netanyahu bloc",
@@ -2156,15 +2401,14 @@
             oppSeats3: "seats",
             oppPollNote: "Coalition: 51-57 · Opposition (Zionist): 52-60 · Arab parties: 9-11 · Threshold: 61 to govern",
             oppNoneNote: "No opposition articles in this scan window",
-            oppWatchNote: "Bennett & Lapid merged into 'Together' (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating; elections expected by October 2026.",
+            oppWatchNote: "Bennett & Lapid merged into 'Together' (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating.",
             // v2.1.0 — Elections Vector
             electionsTitle: "ELECTIONS VECTOR",
             electionsSubtitle: "Electoral pressure proximity (0–100)",
             electionsScheduled: "Scheduled by",
-            electionsByOctober: "Oct 2026",
             electionsMentions: "Election mentions (7d)",
             electionsNoneNote: "No election-proximity signals in this scan window",
-            electionsNote: "Elections must take place by end of October 2026. Higher score = more public discussion of dissolution / no-confidence votes / snap elections / caretaker scenarios.",
+            electionsNote: "Higher score = more public discussion of dissolution / no-confidence votes / snap elections / caretaker scenarios.",
             // Map / Knowledge / Articles
             mapTitle: "🗺️ Israel & Surrounding Territories — Strategic Overview",
             knowledgeLibraryTitle: "Knowledge Library",
@@ -2250,13 +2494,12 @@
             coalitionStatus: "🏛️ מצב הקואליציה",
             coalitionSubtitle: "מושבים בכנסת (נדרשים 61)",
             coalitionTrial: "⚠️ עומד לדין: שוחד, מרמה והפרת אמונים",
-            coalitionElection: "🗓️ בחירות עד אוקטובר 2026",
             keyFigures: "👥 דמויות מרכזיות",
             strikeActivity: "🎯 פעילות תקיפה אחרונה",
             strikeSubtitle: "אירועים (ACLED/RSS, 30 ימים)",
             bennettWatch: "🌟 מעקב אופוזיציה",
             bennettSubtitle: "אזכורים (7 ימים) — הגוש האנטי־נתניהו",
-            bennettNote: "בנט ולפיד התאחדו במפלגת 'יחד' (26 באפריל 2026) — בראשות בנט. מחזרים אחרי איזנקוט (ישר!). הגוש האנטי־נתניהו מתגבש; בחירות צפויות עד אוקטובר 2026.",
+            bennettNote: "בנט ולפיד התאחדו במפלגת 'יחד' (26 באפריל 2026) — בראשות בנט. מחזרים אחרי איזנקוט (ישר!). הגוש האנטי־נתניהו מתגבש.",
             // v2.1.0 — Opposition Watch (Hebrew)
             oppWatchTitle: "מעקב אופוזיציה",
             oppWatchSubtitle: "אזכורים (7 ימים) — הגוש האנטי־נתניהו",
@@ -2270,15 +2513,14 @@
             oppSeats3: "מנדטים",
             oppPollNote: "קואליציה: 51-57 · אופוזיציה (ציונית): 52-60 · מפלגות ערביות: 9-11 · סף: 61 להקמת ממשלה",
             oppNoneNote: "לא נמצאו כתבות אופוזיציה בחלון הסריקה",
-            oppWatchNote: "בנט ולפיד התאחדו ב'יחד' (26 באפריל 2026), בראשות בנט. מחזרים אחרי ישר! של איזנקוט. הגוש האנטי־נתניהו מתגבש; בחירות צפויות עד אוקטובר 2026.",
+            oppWatchNote: "בנט ולפיד התאחדו ב'יחד' (26 באפריל 2026), בראשות בנט. מחזרים אחרי ישר! של איזנקוט. הגוש האנטי־נתניהו מתגבש.",
             // v2.1.0 — Elections Vector (Hebrew)
             electionsTitle: "וקטור בחירות",
             electionsSubtitle: "קרבת לחץ אלקטורלי (0–100)",
             electionsScheduled: "מתוכננות עד",
-            electionsByOctober: "אוקטובר 2026",
             electionsMentions: "אזכורי בחירות (7 ימים)",
             electionsNoneNote: "לא זוהו סימני קרבת בחירות בחלון הסריקה",
-            electionsNote: "הבחירות חייבות להתקיים עד סוף אוקטובר 2026. ציון גבוה יותר = יותר דיון פומבי בפיזור הכנסת, הצבעות אי־אמון, בחירות חטופות או ממשלת מעבר.",
+            electionsNote: "ציון גבוה יותר = יותר דיון פומבי בפיזור הכנסת, הצבעות אי־אמון, בחירות חטופות או ממשלת מעבר.",
             mapTitle: "🗺️ ישראל והאזור — סקירה אסטרטגית",
             knowledgeLibraryTitle: "ספריית ידע",
             knowledgeDisclaimer: "מידע רקע מבוסס על מקורות פתוחים, ניתוחי מכוני מחקר ודיווחים ממשלתיים פומביים.",
@@ -2363,13 +2605,12 @@
             coalitionStatus: "🏛️ حالة الائتلاف",
             coalitionSubtitle: "مقاعد الكنيست (61 مطلوبة)",
             coalitionTrial: "⚠️ قيد المحاكمة: رشوة، احتيال، خيانة أمانة",
-            coalitionElection: "🗓️ انتخابات بحلول أكتوبر 2026",
             keyFigures: "👥 شخصيات رئيسية",
             strikeActivity: "🎯 نشاط الضربات الأخيرة",
             strikeSubtitle: "الأحداث (ACLED/RSS، 30 يومًا)",
             bennettWatch: "🌟 مراقبة المعارضة",
             bennettSubtitle: "الإشارات (7 أيام) — الكتلة المعارضة لنتنياهو",
-            bennettNote: "بينيت ولابيد دمجا حزبيهما تحت اسم 'معًا' (26 أبريل 2026) — بقيادة بينيت. يسعون لانضمام إيزنكوت (يَشار!). الكتلة المعارضة لنتنياهو تتوحد؛ الانتخابات متوقعة بحلول أكتوبر 2026.",
+            bennettNote: "بينيت ولابيد دمجا حزبيهما تحت اسم 'معًا' (26 أبريل 2026) — بقيادة بينيت. يسعون لانضمام إيزنكوت (يَشار!). الكتلة المعارضة لنتنياهو تتوحد.",
             // Opposition Watch (Arabic)
             oppWatchTitle: "مراقبة المعارضة",
             oppWatchSubtitle: "الإشارات (7 أيام) — الكتلة المعارضة لنتنياهو",
@@ -2383,15 +2624,14 @@
             oppSeats3: "مقاعد",
             oppPollNote: "الائتلاف: 51-57 · المعارضة (الصهيونية): 52-60 · الأحزاب العربية: 9-11 · العتبة: 61 لتشكيل حكومة",
             oppNoneNote: "لا توجد مقالات معارضة في نافذة الفحص",
-            oppWatchNote: "بينيت ولابيد توحدا في 'معًا' (26 أبريل 2026)، بقيادة بينيت. يسعون لضم إيزنكوت (يَشار!). الكتلة المعارضة لنتنياهو تتوحد؛ الانتخابات متوقعة بحلول أكتوبر 2026.",
+            oppWatchNote: "بينيت ولابيد توحدا في 'معًا' (26 أبريل 2026)، بقيادة بينيت. يسعون لضم إيزنكوت (يَشار!). الكتلة المعارضة لنتنياهو تتوحد.",
             // Elections Vector (Arabic)
             electionsTitle: "متجه الانتخابات",
             electionsSubtitle: "قرب الضغط الانتخابي (0–100)",
             electionsScheduled: "مقررة بحلول",
-            electionsByOctober: "أكتوبر 2026",
             electionsMentions: "ذكر الانتخابات (7 أيام)",
             electionsNoneNote: "لم تُرصد إشارات قرب انتخابات في نافذة الفحص",
-            electionsNote: "يجب أن تجرى الانتخابات بحلول نهاية أكتوبر 2026. كلما زاد الرقم زاد النقاش العام حول حل الكنيست أو سحب الثقة أو الانتخابات المبكرة أو سيناريوهات حكومة تصريف الأعمال.",
+            electionsNote: "كلما زاد الرقم زاد النقاش العام حول حل الكنيست أو سحب الثقة أو الانتخابات المبكرة أو سيناريوهات حكومة تصريف الأعمال.",
             mapTitle: "🗺️ إسرائيل والمنطقة — نظرة استراتيجية",
             knowledgeLibraryTitle: "مكتبة المعرفة",
             knowledgeDisclaimer: "معلومات خلفية من مصادر مفتوحة وتحليلات مراكز أبحاث وتقارير حكومية علنية.",
@@ -2476,13 +2716,12 @@
             coalitionStatus: "🏛️ وضعیت ائتلاف",
             coalitionSubtitle: "کرسی‌های کنست (61 مورد نیاز)",
             coalitionTrial: "⚠️ در حال محاکمه: رشوه، کلاهبرداری، سوءاستفاده از اعتماد",
-            coalitionElection: "🗓️ انتخابات تا اکتبر 2026",
             keyFigures: "👥 چهره‌های کلیدی",
             strikeActivity: "🎯 فعالیت حملات اخیر",
             strikeSubtitle: "رویدادها (ACLED/RSS، 30 روز)",
             bennettWatch: "🌟 پایش اپوزیسیون",
             bennettSubtitle: "اشاره‌ها (7 روز) — جبهه ضد نتانیاهو",
-            bennettNote: "بنت و لاپید در حزب 'با هم' (26 آوریل 2026) ادغام شدند — به رهبری بنت. در حال جذب ایزنکات (یشار!). جبهه ضد نتانیاهو در حال تثبیت است؛ انتخابات تا اکتبر 2026 پیش‌بینی می‌شود.",
+            bennettNote: "بنت و لاپید در حزب 'با هم' (26 آوریل 2026) ادغام شدند — به رهبری بنت. در حال جذب ایزنکات (یشار!). جبهه ضد نتانیاهو در حال تثبیت است.",
             // Opposition Watch (Farsi)
             oppWatchTitle: "پایش اپوزیسیون",
             oppWatchSubtitle: "اشاره‌ها (7 روز) — جبهه ضد نتانیاهو",
@@ -2496,15 +2735,14 @@
             oppSeats3: "کرسی",
             oppPollNote: "ائتلاف: 51-57 · اپوزیسیون (صهیونیستی): 52-60 · احزاب عربی: 9-11 · آستانه: 61 برای تشکیل دولت",
             oppNoneNote: "هیچ مقاله اپوزیسیونی در پنجره اسکن یافت نشد",
-            oppWatchNote: "بنت و لاپید در 'با هم' ادغام شدند (26 آوریل 2026)، به رهبری بنت. در حال جذب یشار! ایزنکات. جبهه ضد نتانیاهو در حال تثبیت است؛ انتخابات تا اکتبر 2026.",
+            oppWatchNote: "بنت و لاپید در 'با هم' ادغام شدند (26 آوریل 2026)، به رهبری بنت. در حال جذب یشار! ایزنکات. جبهه ضد نتانیاهو در حال تثبیت است.",
             // Elections Vector (Farsi)
             electionsTitle: "بُردار انتخابات",
             electionsSubtitle: "نزدیکی فشار انتخاباتی (0–100)",
             electionsScheduled: "زمان‌بندی شده تا",
-            electionsByOctober: "اکتبر 2026",
             electionsMentions: "اشاره‌های انتخاباتی (7 روز)",
             electionsNoneNote: "نشانه‌ای از نزدیکی انتخابات در پنجره اسکن یافت نشد",
-            electionsNote: "انتخابات باید تا پایان اکتبر 2026 برگزار شود. امتیاز بالاتر = بحث عمومی بیشتر در مورد انحلال کنست، رأی عدم اعتماد، انتخابات زودهنگام یا دولت موقت.",
+            electionsNote: "امتیاز بالاتر = بحث عمومی بیشتر در مورد انحلال کنست، رأی عدم اعتماد، انتخابات زودهنگام یا دولت موقت.",
             mapTitle: "🗺️ اسرائیل و منطقه — نمای کلی راهبردی",
             knowledgeLibraryTitle: "کتابخانه دانش",
             knowledgeDisclaimer: "اطلاعات پس‌زمینه از منابع باز، تحلیل اندیشکده‌ها و گزارش‌های دولتی عمومی گردآوری شده است.",
@@ -2710,10 +2948,14 @@
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
             });
+            // v2.3.0 — the i18n pass overwrites textContent, so anything the
+            // page derives rather than translates has to be re-applied after it.
+            renderElectionTiming();
         }
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', () => {
             startLoadingProgress();
+            renderElectionTiming();
             loadIsraelData();
             loadIsraelRhetoricCards();
             setInterval(loadIsraelRhetoricCards, 30 * 60 * 1000);
