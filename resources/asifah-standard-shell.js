@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   'use strict';
 
   var LOGO_URL = 'https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png';
@@ -78,7 +78,7 @@
   }
 
   function isRhetoricPage(file) {
-   return /^rhetoric-/.test(file) && !/^rhetoric-(africa|asia|europe|index|wha)\.html$/.test(file);
+    return /^rhetoric-/.test(file) && !/^rhetoric-(africa|asia|europe|index|wha)\.html$/.test(file);
   }
 
   function isStabilityPage(file) {
@@ -132,6 +132,191 @@
     html += '<div class="nav-divider"></div><div class="nav-sidebar-label">Regional Rhetoric</div>';
     REGIONAL_RHETORIC.forEach(function (item) { html += navLink(item, 'rhetoric-btn', file); });
     return html;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ESCALATION LADDER — ONE DEFINITION, EVERY PAGE  (v1.0, Oct 3 2026)
+  // ══════════════════════════════════════════════════════════════════
+  // Every page used to declare its own ESCALATION_LEVELS. They drifted:
+  // Asia's page rendered "Coercion" at L4 while Asia's own backend emitted
+  // "Incident" for the same number, and across five surfaces L3 was
+  // variously "Direct Threat", "Confrontation" or "ELEVATED". Same scan,
+  // different word, depending which element you looked at.
+  //
+  // The ladder now lives here. Pages read window.AsifahLadder instead of
+  // declaring a table, so the chip and the guide rail are reading the same
+  // object and CANNOT disagree. A page that does not exist yet gets the
+  // correct ladder for free, which is the actual test of whether this is
+  // architecture or housekeeping.
+  //
+  // DESIGN RULE: every rung describes what the ACTOR is doing, except L0,
+  // which honestly describes what WE are doing -- watching, with nothing
+  // above normal. "Baseline" would imply we assessed it as normal;
+  // "Monitoring" says the scan is running and found nothing. On a page that
+  // sits at L0 for months that distinction is the difference between
+  // reading dead and reading alive.
+  var ASIFAH_LADDER = [
+    { level: 0, label: 'Monitoring',      color: '#6b7280',
+      gloss: 'Nothing above normal. The scan is running.' },
+    { level: 1, label: 'Rhetoric',        color: '#3b82f6',
+      gloss: 'Talk, with no named target.' },
+    { level: 2, label: 'Warning',         color: '#f59e0b',
+      gloss: 'Talk directed at a named target.' },
+    { level: 3, label: 'Confrontation',   color: '#f97316',
+      gloss: 'Direct and mutual — both sides engaged.' },
+    { level: 4, label: 'Coercion',        color: '#ef4444',
+      gloss: 'Pressure applied to extract a concession.' },
+    { level: 5, label: 'Active Conflict', color: '#dc2626',
+      gloss: 'Open hostilities underway.' }
+  ];
+
+  // Mirrors theatre_state.py on the backends. The ladder above is a THREAT
+  // ladder, and no single word spans war, famine, supply shock and
+  // diplomatic collapse -- any word vague enough to cover all four says
+  // nothing. So the axis supplies the meaning. A magnitude-9 earthquake is a
+  // legitimate L5, and calling it "active conflict" is not imprecise, it is
+  // false.
+  var ASIFAH_AXIS_STATE = {
+    kinetic:      ['quiet', 'rhetorical signalling', 'pressure building',
+                   'standoff hardening', 'armed incident', 'active war footing',
+                   'red line breached'],
+    humanitarian: ['quiet', 'early humanitarian indicators', 'population pressure building',
+                   'humanitarian conditions deteriorating', 'acute humanitarian emergency',
+                   'mass-casualty humanitarian disaster', 'catastrophic humanitarian collapse'],
+    economic:     ['quiet', 'market signalling', 'cost pressure building',
+                   'supply pressure hardening', 'acute supply disruption',
+                   'economic rupture', 'systemic economic breakdown'],
+    diplomatic:   ['quiet', 'diplomatic signalling', 'diplomatic friction',
+                   'diplomatic standoff', 'talks collapsed', 'diplomatic rupture',
+                   'relations severed']
+  };
+
+  var LADDER_KEY = 'asifah-ladder-open';
+
+  function ladderClamp(n) {
+    n = parseInt(n, 10);
+    if (isNaN(n)) n = 0;
+    return Math.max(0, Math.min(5, n));
+  }
+
+  window.AsifahLadder = {
+    levels: ASIFAH_LADDER,
+    /** Full rung object. Always returns something -- never undefined. */
+    get: function (n) { return ASIFAH_LADDER[ladderClamp(n)]; },
+    label: function (n) { return this.get(n).label; },
+    color: function (n) { return this.get(n).color; },
+    gloss: function (n) { return this.get(n).gloss; },
+    /** 'Coercion (L4)' -- for chips that want both. */
+    withLevel: function (n) {
+      var lv = ladderClamp(n);
+      return ASIFAH_LADDER[lv].label + ' (L' + lv + ')';
+    },
+    /** Axis-aware phrase, mirroring theatre_state.py. */
+    axisPhrase: function (n, axis) {
+      var table = ASIFAH_AXIS_STATE[axis] || ASIFAH_AXIS_STATE.kinetic;
+      var lv = Math.max(0, Math.min(6, parseInt(n, 10) || 0));
+      return table[lv] || table[0];
+    },
+    axes: ASIFAH_AXIS_STATE
+  };
+
+  /** Pages that actually carry levels. Mission/privacy/index get no rail. */
+  function pageHasLevels(file) {
+    if (/^(index|mission|privacy)\.html$/.test(file)) return false;
+    var known = REGION_DASHBOARDS.concat(GLOBAL_TRACKERS, REGIONAL_RHETORIC)
+      .some(function (item) { return item[0].toLowerCase() === file; });
+    return known || isRhetoricPage(file) || isStabilityPage(file);
+  }
+
+  function ladderRailHtml() {
+    var rungs = ASIFAH_LADDER.slice().reverse().map(function (r) {
+      return '<div class="asifah-ladder-rung">' +
+        '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
+        '<span class="asifah-ladder-text">' +
+          '<span class="asifah-ladder-label">' + r.label + '</span>' +
+          '<span class="asifah-ladder-gloss">' + r.gloss + '</span>' +
+        '</span></div>';
+    }).join('');
+
+    // The axis note. Without it the rail quietly asserts that L4 means
+    // coercion on a humanitarian axis, which would frame a famine as a
+    // security problem -- a framing the platform should not make by default.
+    var axisRows = [
+      ['Kinetic',      ASIFAH_AXIS_STATE.kinetic[4]],
+      ['Humanitarian', ASIFAH_AXIS_STATE.humanitarian[4]],
+      ['Economic',     ASIFAH_AXIS_STATE.economic[4]],
+      ['Diplomatic',   ASIFAH_AXIS_STATE.diplomatic[4]]
+    ].map(function (p) {
+      return '<div class="asifah-ladder-axis-row"><strong>' + p[0] + '</strong>' + p[1] + '</div>';
+    }).join('');
+
+    return '<button type="button" class="asifah-ladder-toggle" aria-label="Collapse the escalation guide">' +
+             '<span class="asifah-ladder-toggle-icon">&rsaquo;</span>' +
+           '</button>' +
+           '<div class="asifah-ladder-body">' +
+             '<div class="asifah-ladder-title">How to read levels</div>' +
+             rungs +
+             '<div class="asifah-ladder-axis">' +
+               '<div class="asifah-ladder-axis-title">L4 by pressure axis</div>' + axisRows +
+               '<div class="asifah-ladder-axis-note">The ladder scores intensity. What a level ' +
+               'MEANS depends on which axis it sits on.</div>' +
+             '</div>' +
+             '<div class="asifah-ladder-foot">Scores are convergence indicators from publicly ' +
+             'observable signals — not event counts and not predictions.</div>' +
+           '</div>';
+  }
+
+  function ensureLadderRail() {
+    var file = currentFile();
+    if (!pageHasLevels(file)) return;
+    if (document.getElementById('asifahLadderRail')) return;
+
+    var rail = document.createElement('aside');
+    rail.id = 'asifahLadderRail';
+    rail.className = 'asifah-ladder-rail';
+    rail.innerHTML = ladderRailHtml();
+    document.body.appendChild(rail);
+    document.body.classList.add('asifah-ladder-active');
+
+    // Open by default, collapse remembered. A collapsed-by-default rail is
+    // invisible to a first-time reader, which defeats it; an always-open one
+    // nags the regular. Open-then-remember serves both.
+    var open = true;
+    try {
+      var saved = localStorage.getItem(LADDER_KEY);
+      if (saved === 'closed') open = false;
+    } catch (e) { /* private mode: fall back to open */ }
+
+    function apply() {
+      rail.classList.toggle('collapsed', !open);
+      document.body.classList.toggle('asifah-ladder-collapsed', !open);
+      var btn = rail.querySelector('.asifah-ladder-toggle');
+      if (btn) btn.setAttribute('aria-label',
+        (open ? 'Collapse' : 'Expand') + ' the escalation guide');
+    }
+    apply();
+
+    rail.querySelector('.asifah-ladder-toggle').addEventListener('click', function () {
+      open = !open;
+      apply();
+      try { localStorage.setItem(LADDER_KEY, open ? 'open' : 'closed'); } catch (e) {}
+    });
+  }
+
+  /** Mobile: the rail folds into the existing drawer rather than becoming a
+      second rail. A right rail at phone width is a bad time. */
+  function ladderDrawerHtml() {
+    if (!pageHasLevels(currentFile())) return '';
+    return '<div class="nav-divider"></div>' +
+           '<div class="nav-sidebar-label">How to read levels</div>' +
+           ASIFAH_LADDER.slice().reverse().map(function (r) {
+             return '<div class="asifah-ladder-rung drawer">' +
+               '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
+               '<span class="asifah-ladder-text">' +
+                 '<span class="asifah-ladder-label">' + r.label + '</span>' +
+                 '<span class="asifah-ladder-gloss">' + r.gloss + '</span>' +
+               '</span></div>';
+           }).join('');
   }
 
   function ensureTheme() {
@@ -242,7 +427,8 @@
       drawer.id = 'asifahMobileDrawer';
       drawer.className = 'asifah-mobile-drawer';
       drawer.innerHTML = '<button type="button" class="asifah-mobile-drawer-close" aria-label="Close navigation">&times;</button>' +
-        '<div class="asifah-mobile-drawer-title">Asifah Navigation</div>' + canonicalNavHtml();
+        '<div class="asifah-mobile-drawer-title">Asifah Navigation</div>' +
+        canonicalNavHtml() + ladderDrawerHtml();
       document.body.appendChild(drawer);
     }
 
@@ -298,15 +484,11 @@
 
   function init() {
     document.body.classList.add('asifah-standardized');
-    // Activates the shell's canonical watermark block in the CSS. Without this
-    // class the entire watermark section is dead code -- which is why the same
-    // watermark bug kept recurring page by page (Africa, Europe, Asia, WHA, ME,
-    // Mali all needed the identical fix individually). Found Jul 26 2026.
-    document.body.classList.add('asifah-shell-watermark-active');
     ensureTheme();
     ensureHeader();
     ensureSidebar();
     ensureMobileNav();
+    ensureLadderRail();
     ensureFooter();
     setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
   }
