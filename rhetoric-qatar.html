@@ -58,7 +58,7 @@
             --shadow-glow: 0 0 20px rgba(56,189,248,0.15);
 
             --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
-            --watermark-opacity: 1; --watermark-size: 800px;
+            --watermark-opacity: 0.18; --watermark-size: 800px;   /* was 1 -- platform standard is 0.18 dark */
             --loading-bg: rgba(6,13,26,0.95);
             --header-gradient: linear-gradient(135deg, #0d1b2e 0%, #112338 50%, #1e3a5f 100%);
         }
@@ -121,7 +121,7 @@
             border: 1px solid var(--border-color);
             border-top: none;
             border-radius: 0 0 12px 12px;
-            max-width: 1800px;          /* match .main-layout column width */
+            max-width: 1280px;          /* PLATFORM STANDARD -- match .main-layout */
             margin: 0 auto;
             padding: 16px 28px;
             position: sticky;
@@ -233,7 +233,8 @@
 
         /* Layout */
         .main-layout {
-            max-width: 1800px;
+            max-width: 1280px;   /* PLATFORM STANDARD (Oct 3 2026) -- was 1800px,
+                                    the only page on the site that was not 1280 */
             margin: 0 auto;
             display: grid;
             grid-template-columns: 220px 1fr;
@@ -738,7 +739,7 @@
             --text-secondary: #2c5282;
             --text-muted: #5d7ea3;
             --watermark-filter: saturate(2) brightness(1.1) hue-rotate(190deg);
-            --watermark-opacity: 0.5; --watermark-size: 500px;
+            --watermark-opacity: 0.07; --watermark-size: 500px;   /* was 0.5 -- platform standard is 0.07 light */
             --shadow-sm: 0 1px 3px rgba(30,58,95,0.08);
             --shadow-md: 0 4px 12px rgba(30,58,95,0.12);
             --shadow-glow: 0 0 12px rgba(56,189,248,0.2);
@@ -814,41 +815,19 @@
 <div class="main-layout">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar" id="navSidebar">
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
-            <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
-            <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
-            <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
-            <a href="wha.html" class="sidebar-link" data-i18n="sb_wha">🌎 Western Hemisphere</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
-            <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
-            <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
-            <a href="gpi.html" class="sidebar-link crosscut" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
-            <a href="market-watch.html" class="sidebar-link crosscut" data-i18n="sb_market">📈 Market Watch</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_rhetoric">RHETORIC LANDINGS</div>
-            <a href="rhetoric-index.html" class="sidebar-link rhetoric" data-i18n="sb_rh_me">💬 Middle East Rhetoric</a>
-            <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
-            <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
-            <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_peru">QATAR PAGES</div>
-            <a href="rhetoric-qatar.html" class="sidebar-link rhetoric active" data-i18n="sb_peru_rhetoric">💬 Qatar Rhetoric</a>
-            <a href="qatar-stability.html" class="sidebar-link" data-i18n="sb_peru_stability">📊 Qatar Stability</a>
+    <!-- SIDEBAR -- canonical, owned by the shell (Oct 3 2026).
+         This page used to hand-roll its whole nav, which is how it drifted off
+         the standard and ended up with a second sidebar injected beside it.
+         It now declares ONLY the two links that are unique to Qatar; the shell
+         reads them via data-asifah-nav-extra and folds them into the bottom of
+         the canonical nav. Everything above them comes from the shell, so this
+         page cannot drift again.
+         The links keep .sidebar-link so they still look like buttons in the
+         half-second before the shell takes over -- and if it never loads. -->
+    <aside class="nav-sidebar" id="navSidebar">
+        <div data-asifah-nav-extra="Qatar Pages">
+            <a href="rhetoric-qatar.html" class="sidebar-link rhetoric active" data-i18n="sb_peru_rhetoric">&#128172; Qatar Rhetoric</a>
+            <a href="qatar-stability.html" class="sidebar-link" data-i18n="sb_peru_stability">&#128202; Qatar Stability</a>
         </div>
     </aside>
 
@@ -962,7 +941,7 @@
 </div>
 
 <!-- FOOTER (canonical Asifah pattern) -->
-<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:1800px;font-size:13px;color:#93c5fd;text-align:center;">
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:1280px;font-size:13px;color:#93c5fd;text-align:center;">
     <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — QATAR</div>
     <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
     <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Comercio, La República, Gestión, RPP, Ojo Público, Reuters) · NewsAPI · Brave</div>
