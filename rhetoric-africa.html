@@ -82,7 +82,7 @@
 /* Jul 23 2026 watermark spec -- DARK MODE: zooming past 100% and clipping to
    a circle crops away the logo's white square backing, so the artwork's own
    dark navy field reads as black while the cyan stays bright. */
-.container { max-width: 1800px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+.container { max-width: 1280px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
     /* ── HEADER ── */
     header {
@@ -362,6 +362,15 @@
     .loading-dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
 </style>
+    <!-- Asifah standard shell (Oct 3 2026). These pages previously carried a
+         HAND-COPIED watermark spec with a comment saying it "matches"
+         asifah-standard-shell.css, while never loading that stylesheet or its
+         script. That is why the five regional BLUFs drifted apart on sizing,
+         why the mobile drawer was missing, and why the escalation guide rail
+         could not appear. The shell is now loaded, as it already is on the
+         country stability pages. -->
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
+    <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
 <body>
 <div class="container">
@@ -567,10 +576,35 @@
 // stays visible without letting absence dominate a panel about presence.
 // ══════════════════════════════════════════════════════════════
 var CVG_LEVELS = {
-    0: {label:'Monitoring',    color:'#6b7280'}, 1: {label:'Rhetoric',      color:'#3b82f6'},
-    2: {label:'Tension',       color:'#f59e0b'}, 3: {label:'Confrontation', color:'#f97316'},
-    4: {label:'Incident',      color:'#ef4444'}, 5: {label:'Active Conflict', color:'#7c3aed'}
+    0: { label: 'Monitoring',      color: '#6b7280' },
+    1: { label: 'Rhetoric',        color: '#3b82f6' },
+    2: { label: 'Warning',         color: '#f59e0b' },
+    3: { label: 'Confrontation',   color: '#f97316' },
+    4: { label: 'Coercion',        color: '#ef4444' },
+    5: { label: 'Active Conflict', color: '#dc2626' },
+    // L6 is Africa-only on this page: lvl() clamps to 6 because the junction
+    // read borrowed the GPI's seventh rung. The shell ladder stops at 5, so
+    // the sync loop below leaves this entry alone -- which is exactly what
+    // should happen. Without it, a red-line breach rendered as "Monitoring".
+    6: { label: 'Red-Line Breach', color: '#dc2626' },
 };
+    // ── CANONICAL LADDER (Oct 3 2026) ────────────────────────────────
+    // The ladder lives in asifah-standard-shell.js (window.AsifahLadder).
+    // This page used to declare its own table, which is how L4 came to read
+    // one word here and a different one in the backend that fed it.
+    //
+    // The object below is a FALLBACK, used only if the shell fails to load,
+    // and it is OVERWRITTEN from the shell at DOMContentLoaded -- deferred
+    // scripts run before that event, so window.AsifahLadder always exists by
+    // the time any chip renders. Do not edit these words here; edit the
+    // shell and they follow.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.AsifahLadder) return;
+        window.AsifahLadder.levels.forEach(function (r) {
+            CVG_LEVELS[r.level] = { label: r.label, color: r.color };
+        });
+    });
+
 
 function cvgEsc(s) {
     var d = document.createElement('div');
@@ -716,12 +750,33 @@ const BLUF_URL = AFRICA_BACKEND + '/api/rhetoric/africa/bluf';
 const LEVELS = {
     0: { label: 'Monitoring',      color: '#6b7280' },
     1: { label: 'Rhetoric',        color: '#3b82f6' },
-    2: { label: 'Tension',         color: '#f59e0b' },
+    2: { label: 'Warning',         color: '#f59e0b' },
     3: { label: 'Confrontation',   color: '#f97316' },
-    4: { label: 'Incident',        color: '#ef4444' },
-    5: { label: 'Active Conflict', color: '#7c3aed' },
+    4: { label: 'Coercion',        color: '#ef4444' },
+    5: { label: 'Active Conflict', color: '#dc2626' },
+    // L6 is Africa-only on this page: lvl() clamps to 6 because the junction
+    // read borrowed the GPI's seventh rung. The shell ladder stops at 5, so
+    // the sync loop below leaves this entry alone -- which is exactly what
+    // should happen. Without it, a red-line breach rendered as "Monitoring".
     6: { label: 'Red-Line Breach', color: '#dc2626' },
 };
+    // ── CANONICAL LADDER (Oct 3 2026) ────────────────────────────────
+    // The ladder lives in asifah-standard-shell.js (window.AsifahLadder).
+    // This page used to declare its own table, which is how L4 came to read
+    // one word here and a different one in the backend that fed it.
+    //
+    // The object below is a FALLBACK, used only if the shell fails to load,
+    // and it is OVERWRITTEN from the shell at DOMContentLoaded -- deferred
+    // scripts run before that event, so window.AsifahLadder always exists by
+    // the time any chip renders. Do not edit these words here; edit the
+    // shell and they follow.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.AsifahLadder) return;
+        window.AsifahLadder.levels.forEach(function (r) {
+            LEVELS[r.level] = { label: r.label, color: r.color };
+        });
+    });
+
 
 // Country tracker page links (grows with the build queue)
 const TRACKER_PAGES = {

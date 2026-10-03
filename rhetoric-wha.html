@@ -119,7 +119,7 @@
         z-index: 0;
     }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
     /* ── HEADER ── */
     header {
@@ -476,6 +476,15 @@
     .nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.05) 100%); }
     .nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
 </style>
+    <!-- Asifah standard shell (Oct 3 2026). These pages previously carried a
+         HAND-COPIED watermark spec with a comment saying it "matches"
+         asifah-standard-shell.css, while never loading that stylesheet or its
+         script. That is why the five regional BLUFs drifted apart on sizing,
+         why the mobile drawer was missing, and why the escalation guide rail
+         could not appear. The shell is now loaded, as it already is on the
+         country stability pages. -->
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
+    <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
 <body>
 
@@ -668,13 +677,30 @@
     const WHA_BACKEND = 'https://asifah-wha-backend.onrender.com';
 
     const ESCALATION_LEVELS = {
-        0: { label: 'Baseline',        color: '#6b7280' },
-        1: { label: 'Rhetoric',        color: '#3b82f6' },
-        2: { label: 'Warning',         color: '#f59e0b' },
-        3: { label: 'Confrontation',   color: '#f97316' },
-        4: { label: 'Coercion',        color: '#ef4444' },
-        5: { label: 'Active Conflict', color: '#dc2626' },
-    };
+    0: { label: 'Monitoring',      color: '#6b7280' },
+    1: { label: 'Rhetoric',        color: '#3b82f6' },
+    2: { label: 'Warning',         color: '#f59e0b' },
+    3: { label: 'Confrontation',   color: '#f97316' },
+    4: { label: 'Coercion',        color: '#ef4444' },
+    5: { label: 'Active Conflict', color: '#dc2626' },
+};
+    // ── CANONICAL LADDER (Oct 3 2026) ────────────────────────────────
+    // The ladder lives in asifah-standard-shell.js (window.AsifahLadder).
+    // This page used to declare its own table, which is how L4 came to read
+    // one word here and a different one in the backend that fed it.
+    //
+    // The object below is a FALLBACK, used only if the shell fails to load,
+    // and it is OVERWRITTEN from the shell at DOMContentLoaded -- deferred
+    // scripts run before that event, so window.AsifahLadder always exists by
+    // the time any chip renders. Do not edit these words here; edit the
+    // shell and they follow.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.AsifahLadder) return;
+        window.AsifahLadder.levels.forEach(function (r) {
+            ESCALATION_LEVELS[r.level] = { label: r.label, color: r.color };
+        });
+    });
+
 
     // ── TRACKER DEFINITIONS ──
     // One entry per live tracker. Add new WHA trackers here as they launch.
@@ -1385,10 +1411,30 @@
 // stays visible without letting absence dominate a panel about presence.
 // ══════════════════════════════════════════════════════════════
 var CVG_LEVELS = {
-    0: {label:'Monitoring',    color:'#6b7280'}, 1: {label:'Rhetoric',      color:'#3b82f6'},
-    2: {label:'Tension',       color:'#f59e0b'}, 3: {label:'Confrontation', color:'#f97316'},
-    4: {label:'Incident',      color:'#ef4444'}, 5: {label:'Active Conflict', color:'#7c3aed'}
+    0: { label: 'Monitoring',      color: '#6b7280' },
+    1: { label: 'Rhetoric',        color: '#3b82f6' },
+    2: { label: 'Warning',         color: '#f59e0b' },
+    3: { label: 'Confrontation',   color: '#f97316' },
+    4: { label: 'Coercion',        color: '#ef4444' },
+    5: { label: 'Active Conflict', color: '#dc2626' },
 };
+    // ── CANONICAL LADDER (Oct 3 2026) ────────────────────────────────
+    // The ladder lives in asifah-standard-shell.js (window.AsifahLadder).
+    // This page used to declare its own table, which is how L4 came to read
+    // one word here and a different one in the backend that fed it.
+    //
+    // The object below is a FALLBACK, used only if the shell fails to load,
+    // and it is OVERWRITTEN from the shell at DOMContentLoaded -- deferred
+    // scripts run before that event, so window.AsifahLadder always exists by
+    // the time any chip renders. Do not edit these words here; edit the
+    // shell and they follow.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.AsifahLadder) return;
+        window.AsifahLadder.levels.forEach(function (r) {
+            CVG_LEVELS[r.level] = { label: r.label, color: r.color };
+        });
+    });
+
 
 function cvgEsc(s) {
     var d = document.createElement('div');
