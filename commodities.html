@@ -2047,6 +2047,7 @@ const COUNTRY_META = {
     norway:       { flag: '🇳🇴', name: 'Norway' },
     panama:       { flag: '🇵🇦', name: 'Panama' },
     qatar:        { flag: '🇶🇦', name: 'Qatar' },
+    syria:        { flag: '🇸🇾', name: 'Syria' },
     peru:         { flag: '🇵🇪', name: 'Peru' },
     philippines:  { flag: '🇵🇭', name: 'Philippines' },
     russia:       { flag: '🇷🇺', name: 'Russia' },
@@ -2077,7 +2078,7 @@ const REGION_DEFAULTS = {
     africa:       { name: 'Africa',              icon: '🌍', order: 1, countries: ['algeria', 'angola', 'botswana', 'burkina_faso', 'car', 'drc', 'egypt', 'guinea', 'libya', 'madagascar', 'mali', 'morocco', 'mozambique', 'niger', 'nigeria', 'south_africa', 'sudan'] },
     asia_pacific: { name: 'Asia-Pacific',        icon: '🌏', order: 2, countries: ['afghanistan', 'australia', 'china', 'india', 'indonesia', 'japan', 'malaysia', 'philippines', 'south_korea', 'taiwan', 'thailand', 'vietnam'] },
     europe:       { name: 'Europe',              icon: '🌍', order: 3, countries: ['azerbaijan', 'belarus', 'belgium', 'eu', 'france', 'germany', 'greece', 'greenland', 'hungary', 'kazakhstan', 'netherlands', 'norway', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'] },
-    middle_east:  { name: 'Middle East',         icon: '🕌', order: 4, countries: ['iran', 'israel', 'jordan', 'lebanon', 'qatar', 'saudi_arabia', 'uae'] },
+    middle_east:  { name: 'Middle East',         icon: '🕌', order: 4, countries: ['iran', 'israel', 'jordan', 'lebanon', 'qatar', 'saudi_arabia', 'syria', 'uae'] },
     wha:          { name: 'Western Hemisphere',  icon: '🌎', order: 5, countries: ['argentina', 'brazil', 'canada', 'chile', 'cuba', 'mexico', 'panama', 'peru', 'usa', 'venezuela'] },
 };
 
@@ -2314,7 +2315,16 @@ const CONV_FLAGS = { afghanistan:'🇦🇫', greenland:'🇬🇱', egypt:'🇪�
     mali:'🇲🇱', burkina_faso:'🇧🇫', niger:'🇳🇪', sudan:'🇸🇩', car:'🇨🇫', mozambique:'🇲🇿', madagascar:'🇲🇬',
     kazakhstan:'🇰🇿', ukraine:'🇺🇦', russia:'🇷🇺', china:'🇨🇳', vietnam:'🇻🇳', thailand:'🇹🇭',
     mexico:'🇲🇽', peru:'🇵🇪', chile:'🇨🇱', botswana:'🇧🇼', south_africa:'🇿🇦',
-    saudi_arabia:'🇸🇦', cuba:'🇨🇺', belarus:'🇧🇾', hungary:'🇭🇺' };
+    saudi_arabia:'🇸🇦', cuba:'🇨🇺', belarus:'🇧🇾', hungary:'🇭🇺',
+    // Oct 4 2026 -- this map had 41 of the backend's 64 exposure countries. The
+    // other 23 rendered flagless in the convergence strip (the lookup falls back
+    // to ''), which reads as a rendering bug rather than as missing data. Filled
+    // from COUNTRY_COMMODITY_EXPOSURE so the two stay in step.
+    syria:'🇸🇾', australia:'🇦🇺', azerbaijan:'🇦🇿', belgium:'🇧🇪', brazil:'🇧🇷',
+    canada:'🇨🇦', eu:'🇪🇺', france:'🇫🇷', germany:'🇩🇪', greece:'🇬🇷',
+    israel:'🇮🇱', japan:'🇯🇵', malaysia:'🇲🇾', netherlands:'🇳🇱', norway:'🇳🇴',
+    panama:'🇵🇦', poland:'🇵🇱', qatar:'🇶🇦', south_korea:'🇰🇷', taiwan:'🇹🇼',
+    turkmenistan:'🇹🇲', uae:'🇦🇪', usa:'🇺🇸' };
 
 function _convEsc(s){ return (s==null?'':String(s)).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
@@ -2647,6 +2657,25 @@ function renderExposureMatrix() {
     // Pull region structure from backend if available, else fall back to defaults
     const regions = pressureData.country_regions || REGION_DEFAULTS;
 
+    // ── DRIFT GUARD (Oct 4 2026) ──────────────────────────────────────────
+    // buildRegionBlock renders ONLY the countries named in a region's list, so
+    // a country the backend has exposure data for but that appears in NO region
+    // is dropped from the matrix entirely -- rendering nothing, logging nothing.
+    // Syria hit exactly that: added to COUNTRY_COMMODITY_EXPOSURE, invisible on
+    // this page. The backend is the one writer; this map is a reader that can
+    // fall behind it. So SAY SO rather than silently showing less than we know.
+    const _mappedCountries = new Set(
+        Object.values(regions).reduce((acc, r) => acc.concat(r.countries || []), []));
+    const _backendCountries = Object.keys(pressureData.country_summaries || {});
+    const _unmapped = _backendCountries.filter(c => !_mappedCountries.has(c));
+    if (_unmapped.length) {
+        console.warn('[Commodities] ' + _unmapped.length + ' country/countries have ' +
+                     'backend exposure data but no region mapping, so they are NOT ' +
+                     'shown in the matrix: ' + _unmapped.join(', ') +
+                     ' — add them to REGION_DEFAULTS.');
+    }
+    window._commodityUnmapped = _unmapped;
+
     // Build expand/collapse state: default = expanded for any region with mapped countries
     if (!window._regionExpanded) {
         window._regionExpanded = {};
@@ -2753,6 +2782,20 @@ function renderExposureMatrix() {
         .sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
 
     let html = '';
+
+    // Visible half of the drift guard. A console warning is invisible to the
+    // person actually reading the page, and "we hold exposure data for this
+    // country but are not showing it" is exactly the kind of silence this
+    // platform exists to refuse. Renders only when drift exists.
+    if (_unmapped.length) {
+        html += '<div class="region-empty" style="border-left:3px solid rgba(249,115,22,0.8);' +
+                'margin-bottom:12px;">⚠️ ' + _unmapped.length +
+                ' country/countries have commodity exposure data that is <strong>not shown ' +
+                'below</strong> because they are not yet assigned to a region: ' +
+                _unmapped.map(c => (COUNTRY_META[c] || {}).name || c).join(', ') +
+                '. This is a mapping gap on this page, not an absence of exposure.</div>';
+    }
+
     sortedRegions.forEach(([rid, rdata]) => {
         html += buildRegionBlock(rid, rdata);
     });
