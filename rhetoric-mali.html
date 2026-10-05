@@ -581,6 +581,10 @@
         <div class="history-toggle-group">
             <button class="history-toggle-btn active" id="btn7d" onclick="setHistoryView('7d')">7 DAY</button>
             <button class="history-toggle-btn" id="btn30d" onclick="setHistoryView('30d')">30 DAY</button>
+            <!-- Oct 5 2026: the archive holds 120 scans at a 12h cadence = ~60
+                 days. ALL is the honest third option; a "90 DAY" button could
+                 never be filled from this key. -->
+            <button class="history-toggle-btn" id="btnAll" onclick="setHistoryView('all')">ALL</button>
         </div>
     </div>
     <div class="history-chart-wrap"><canvas id="historyChart"></canvas>
@@ -637,14 +641,38 @@
 const API_BASE = 'https://asifah-africa-backend.onrender.com';
 const MALI_API = API_BASE + '/api/rhetoric/mali';
 
+// ── CANONICAL LADDER (corrected Oct 5 2026) ──────────────────────────
+// This page had drifted: it rendered L2 as "Tension" and L4 as "Incident"
+// while africa_regional_bluf.py, the GPI and the standard shell all carry
+// L2 "Warning" and L4 "Coercion". Same scan, different words depending on
+// which page you were looking at — the exact failure the Oct 3 canon note
+// was written to prevent.
+//
+// The words below now match ESCALATION_LABELS in africa_regional_bluf.py.
+// If the standard shell is ever loaded on this page, the sync block below
+// takes over and this becomes a fallback rather than a second source of
+// truth. (Full Gold Standard shell retrofit is a separate job — this page
+// does not currently load asifah-standard-shell.js at all.)
 const ESCALATION_LEVELS = {
-    0: { label: 'Monitoring',    color: '#6b7280', desc: 'Below escalation threshold' },
+    0: { label: 'Monitoring',    color: '#6b7280', desc: 'Scan running, nothing above normal' },
     1: { label: 'Rhetoric',      color: '#3b82f6', desc: 'Standard pressure language, baseline mentions' },
-    2: { label: 'Tension',       color: '#f59e0b', desc: 'Watch tier — activity present, not moving' },
+    2: { label: 'Warning',       color: '#f59e0b', desc: 'Watch tier — activity present, not moving' },
     3: { label: 'Confrontation', color: '#f97316', desc: 'Massing, named threats, active negotiation round' },
-    4: { label: 'Incident',      color: '#ef4444', desc: 'Confirmed strike, siege intensification, deal ratified' },
+    4: { label: 'Coercion',      color: '#ef4444', desc: 'Confirmed strike, siege intensification, deal ratified' },
     5: { label: 'Active Conflict', color: '#7c3aed', desc: 'City falls, mass-atrocity event, base activation' },
 };
+
+// Adopt the shell ladder if it is present, so the words follow the canon
+// rather than being maintained twice. Harmless when the shell is absent.
+document.addEventListener('DOMContentLoaded', function () {
+    if (!window.AsifahLadder || !window.AsifahLadder.levels) return;
+    window.AsifahLadder.levels.forEach(function (r) {
+        if (ESCALATION_LEVELS[r.level]) {
+            ESCALATION_LEVELS[r.level].label = r.label;
+            ESCALATION_LEVELS[r.level].color = r.color;
+        }
+    });
+});
 
 // Left panel = the war and where it leaks
 const BELLIGERENT_ACTORS = ['saf_burhan', 'rsf_hemedti', 'chad_border', 'south_mali_corridor'];
@@ -1196,10 +1224,46 @@ const zoneBandPlugin = {
     }
 };
 function _fmtLabel(ts) { try { return new Date(ts).toLocaleDateString('en-US', {month:'short', day:'numeric'}); } catch { return ts; } }
+// ── HISTORY WINDOWING (rewritten Oct 5 2026) ─────────────────────────
+// TWO BUGS FIXED HERE.
+//
+// 1. TIME RAN BACKWARDS. The endpoint reads `lrange HISTORY_KEY 0 119` over a
+//    list built with `lpush`, so it returns NEWEST FIRST. Nothing on this page
+//    reversed it, so the chart plotted newest-on-the-left: every trend read
+//    inverted. A score climbing left-to-right on screen was a score falling.
+//
+// 2. THE WINDOWS WERE WRONG, AND WRONG AT THE FAR END. `slice(-28)` on a
+//    newest-first array takes the twenty-eight OLDEST entries — so "7 DAY"
+//    was showing a fortnight from two months ago, and "30 DAY" returned all
+//    120 entries, which at a 12-hour cadence is sixty days.
+//
+// Now: reverse once into chronological order, then window by TIMESTAMP rather
+// than by a fixed count, so the windows stay correct if the scan cadence ever
+// changes. Returns {entries, note} — the note is shown when a window could not
+// be filled, because a chart silently showing more than its label claims is
+// the same class of lie as the one above.
 function _sliceEntries(entries, view) {
-    if (!entries || !entries.length) return [];
-    return view === '7d' ? entries.slice(-28) : entries;
+    if (!entries || !entries.length) return { entries: [], note: '' };
+    const chrono = entries.slice().reverse();     // oldest -> newest
+    if (view === 'all') return { entries: chrono, note: '' };
+    const days = (view === '7d') ? 7 : 30;
+    const cutoff = Date.now() - days * 86400000;
+    const windowed = chrono.filter(function (e) {
+        const t = Date.parse(e && e.ts);
+        return isFinite(t) && t >= cutoff;
+    });
+    if (windowed.length >= 2) return { entries: windowed, note: '' };
+    return {
+        entries: chrono,
+        note: 'Fewer than two scans in the last ' + days + ' days — showing the full archive instead.',
+    };
 }
+
+// Direction colours for the trajectory markers on the score line.
+const TRAJ_POINT = {
+    contracting: '#dc2626',
+    expanding:   '#a78bfa',
+};
 function renderHistoryChart(datasets, labels) {
     const canvas = document.getElementById('historyChart');
     const emptyEl = document.getElementById('historyEmpty');
@@ -1228,7 +1292,24 @@ function renderHistoryChart(datasets, labels) {
                     bodyColor: isDark ? '#93c5fd' : '#1e3a5f',
                     titleFont: { family: fontFam, size: 11, weight: 'bold' },
                     bodyFont: { family: fontFam, size: 10 },
-                    callbacks: { label: ctx => `Score: ${ctx.parsed.y}` }
+                    // v1.1.0 -- the tooltip carries the directional read, so a
+                    // marked point explains itself rather than needing a key.
+                    callbacks: {
+                        label: function (ctx) {
+                            const out = ['Score: ' + ctx.parsed.y];
+                            const meta = (ctx.dataset.trajMeta || [])[ctx.dataIndex];
+                            if (meta && meta.direction && meta.direction !== 'holding') {
+                                out.push('Russia ' + (meta.direction === 'contracting'
+                                    ? 'losing ground' : 'gaining ground')
+                                    + ' (strength ' + (meta.level || 0) + '/5)');
+                            } else if (meta && meta.direction === 'holding') {
+                                out.push('Trajectory: holding — sensor ran, nothing moving');
+                            } else {
+                                out.push('Trajectory: not recorded this scan');
+                            }
+                            return out;
+                        }
+                    }
                 }
             },
             scales: {
@@ -1243,13 +1324,52 @@ async function loadHistoryData() {
         const resp = await fetch(API_BASE + '/api/rhetoric/mali/history');
         if (!resp.ok) return;
         const data = await resp.json();
-        const entries = _sliceEntries(data.history || [], _historyView);
+        const sliced = _sliceEntries(data.history || [], _historyView);
+        const entries = sliced.entries;
+
+        // ── TRAJECTORY ON THE CHART (v1.1.0 Oct 5 2026) ──────────────
+        // The history has carried `trajectory` and `trajectory_level` since
+        // July and this chart plotted only `score`, so the only two
+        // directional events this tracker has ever recorded were invisible on
+        // the one page built to show its history.
+        //
+        // Rendered as MARKERS on the score line rather than a second series:
+        // direction is categorical, and a 0-5 magnitude sharing a 0-100 score
+        // axis would read as a flat line at the bottom. A marked point says
+        // "the Russian position moved on this scan" at the moment it moved,
+        // against the pressure it moved under. Unmarked points are not claims
+        // of stability -- the tooltip distinguishes holding from not recorded.
+        const trajMeta = entries.map(function (e) {
+            return { direction: e.trajectory || '', level: e.trajectory_level || 0 };
+        });
+        const pointColors = trajMeta.map(function (m) { return TRAJ_POINT[m.direction] || '#f59e0b'; });
+        const pointSizes  = trajMeta.map(function (m) {
+            return TRAJ_POINT[m.direction] ? 5 : (entries.length < 15 ? 3 : 0);
+        });
+        const moved = trajMeta.filter(function (m) { return TRAJ_POINT[m.direction]; }).length;
+
         const legendEl = document.getElementById('historyLegend');
-        if (legendEl) legendEl.innerHTML = `<div class="history-legend-item"><div class="history-legend-dot" style="background:#f59e0b;"></div> Mali Pressure Score</div>`;
+        if (legendEl) {
+            legendEl.innerHTML =
+                '<div class="history-legend-item"><div class="history-legend-dot" style="background:#f59e0b;"></div> Mali Pressure Score</div>' +
+                '<div class="history-legend-item"><div class="history-legend-dot" style="background:#dc2626;"></div> Russia losing ground</div>' +
+                '<div class="history-legend-item"><div class="history-legend-dot" style="background:#a78bfa;"></div> Russia gaining ground</div>' +
+                '<div class="history-legend-item" style="opacity:0.75;">' +
+                    (moved
+                        ? moved + ' scan' + (moved === 1 ? '' : 's') + ' with a directional read in this window'
+                        : 'No directional movement recorded in this window') +
+                '</div>' +
+                (sliced.note ? '<div class="history-legend-item" style="opacity:0.75;font-style:italic;">' + sliced.note + '</div>' : '');
+        }
+
         renderHistoryChart([{
             label: 'Mali', data: entries.map(e => e.score ?? 0),
             borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.07)',
-            borderWidth: 2, pointRadius: entries.length < 15 ? 3 : 0, pointHoverRadius: 4, fill: true, tension: 0.35
+            borderWidth: 2,
+            pointRadius: pointSizes, pointBackgroundColor: pointColors,
+            pointBorderColor: pointColors, pointHoverRadius: 6,
+            fill: true, tension: 0.35,
+            trajMeta: trajMeta,
         }], entries.map(e => _fmtLabel(e.ts)));
     } catch (e) { console.warn('[HistoryChart]', e); }
 }
@@ -1257,6 +1377,8 @@ function setHistoryView(mode) {
     _historyView = mode;
     document.getElementById('btn7d').classList.toggle('active', mode === '7d');
     document.getElementById('btn30d').classList.toggle('active', mode === '30d');
+    var _bAll = document.getElementById('btnAll');
+    if (_bAll) _bAll.classList.toggle('active', mode === 'all');
     loadHistoryData();
 }
 
