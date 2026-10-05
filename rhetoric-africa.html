@@ -311,6 +311,24 @@
     .silence-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #c4b5fd; font-family: 'Courier New', monospace; font-weight: 700; }
     .silence-item { font-size: 0.78rem; color: var(--text-secondary); font-family: 'Times New Roman', Times, serif; line-height: 1.55; padding: 4px 0 4px 10px; border-left: 2px solid rgba(167,139,250,0.4); margin: 4px 0; }
 
+    /* ── PATRON TRAJECTORY (v1.1.0 Oct 5 2026) ──────────────────────────
+       Direction, not presence. The convergence panel above says WHERE a
+       patron is plugged in; this says which way the plug is moving.       */
+    .traj-card {
+        background: var(--card-bg); border: 1px solid rgba(249,115,22,0.28);
+        border-left: 3px solid #f97316; border-radius: 8px;
+        padding: 14px 16px; margin-bottom: 16px;
+    }
+    .traj-head { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; flex-wrap: wrap; }
+    .traj-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #fdba74; font-family: 'Courier New', monospace; font-weight: 700; }
+    .traj-pill { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: #fff; margin-left: auto; }
+    .traj-sowhat { font-size: 0.82rem; color: var(--text-primary); font-family: 'Times New Roman', Times, serif; line-height: 1.6; margin: 6px 0 10px; }
+    .traj-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 0.76rem; color: var(--text-secondary); font-family: 'Times New Roman', Times, serif; padding: 4px 0 4px 10px; border-left: 2px solid rgba(249,115,22,0.3); margin: 4px 0; }
+    .traj-dir { font-weight: 700; }
+    .traj-meta { font-size: 10px; color: var(--text-muted); font-family: 'Courier New', monospace; }
+    .traj-unread { font-size: 0.74rem; color: var(--text-muted); font-style: italic; font-family: 'Times New Roman', Times, serif; padding: 6px 0 0 10px; border-left: 2px dashed rgba(107,114,128,0.45); margin-top: 8px; }
+    .traj-caveat { font-size: 0.62rem; color: var(--text-muted); font-style: italic; margin-top: 10px; font-family: 'Courier New', monospace; line-height: 1.5; }
+
     /* ── SIGNAL POLARITY (Jul 24 2026) ──
        De-escalation signals are SCORE REDUCERS. They survive to this altitude
        only because of the BLUF's diplomatic guard; rendering them in escalation
@@ -503,6 +521,22 @@
     </div>
 </div>
 
+<!-- ── PATRON TRAJECTORY (v1.1.0 Oct 5 2026) ──────────────────────────────
+     Rendered entirely from data.trajectory_* and theatre_summary[*].trajectory.
+     No country, patron or direction is named in this markup: a new tracker
+     with a trajectory sensor appears here with zero edits to this file. ── -->
+<div class="traj-card" id="trajCard" style="display:none;">
+    <div class="traj-head">
+        <span style="font-size:1rem;">🧭</span>
+        <span class="traj-label">Patron Trajectory — which way the plug is moving</span>
+        <span class="traj-pill" id="trajPill" style="background:#6b7280;">HOLDING</span>
+    </div>
+    <div class="traj-sowhat" id="trajSoWhat"></div>
+    <div id="trajRows"></div>
+    <div class="traj-unread" id="trajUnread" style="display:none;"></div>
+    <div class="traj-caveat" id="trajCaveat"></div>
+</div>
+
 <!-- ACTIVE TRACKERS -->
 <div class="section-title">📡 Active Rhetoric Trackers — Africa</div>
 <div class="trackers-list" id="trackersList"></div>
@@ -510,13 +544,18 @@
 <!-- IN DEVELOPMENT -->
 <div class="section-title" style="margin-top:24px;">🔜 In Development</div>
 <div class="trackers-list">
+    <!-- Oct 5 2026: Mali shipped Jul 25 and is live above. This block claimed it
+         was still "next in queue" for ten weeks — a page telling the reader the
+         platform is less capable than it is. Burkina Faso and Niger are the real
+         next two: the Mali tracker's own clone note says their actor rosters and
+         trigger ladders are a transform of it. -->
     <div class="coming-soon-banner">
-        <div class="coming-soon-name">🇲🇱 Mali · 🇧🇫 Burkina Faso · 🇳🇪 Niger — Sahel Cluster</div>
+        <div class="coming-soon-name">🇧🇫 Burkina Faso · 🇳🇪 Niger — Sahel Cluster</div>
         <span class="coming-soon-badge">Next in queue</span>
     </div>
     <div class="coming-soon-banner">
         <div class="coming-soon-name">🇨🇫 Central African Republic</div>
-        <span class="coming-soon-badge">Queued</span>
+        <span class="coming-soon-badge">Queued — separate build, not a Sahel clone</span>
     </div>
 </div>
 
@@ -883,6 +922,159 @@ function renderSilence(data) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// PATRON TRAJECTORY PANEL (v1.1.0 Oct 5 2026)
+// ══════════════════════════════════════════════════════════════
+// The convergence panel above answers "where is this patron plugged in".
+// This answers "which way is the plug moving" — the read the Sudan and Mali
+// trackers have emitted since July and nothing on this page could show.
+//
+// Three states are deliberately distinct and must never collapse into one:
+//   MOVING   a sensor ran and found direction
+//   HOLDING  a sensor ran and found nothing moving
+//   UNREAD   there is no sensor on that tracker at all
+// Rendering UNREAD as HOLDING would put a confident "stable" on a country
+// nobody measured.
+const TRAJ_HUB_NAMES = { uae: 'UAE', us: 'US', drc: 'DRC' };
+
+function trajHub(h) {
+    const k = String(h || '').toLowerCase();
+    if (TRAJ_HUB_NAMES[k]) return TRAJ_HUB_NAMES[k];
+    return k.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
+
+function trajDir(d) {
+    if (d === 'contracting') return 'losing ground';
+    if (d === 'expanding')   return 'gaining ground';
+    return 'holding';
+}
+
+function trajDirColor(d) {
+    if (d === 'contracting') return '#f97316';
+    if (d === 'expanding')   return '#a78bfa';
+    return 'var(--text-muted)';
+}
+
+// Plain language, not the reader's internal vocabulary. "multi_source" tells
+// a first-time reader nothing; "two or more outlets carried it" tells them
+// how much weight to put on the line.
+function trajConf(c) {
+    switch (String(c || '').toLowerCase()) {
+        case 'multi_source':      return 'two or more outlets carried it';
+        case 'confirmed_partial': return 'one outlet carried it';
+        case 'claim_sourced':     return 'claimed by an interested party, unconfirmed';
+        default:                  return 'no supporting reporting found';
+    }
+}
+
+function trajCountry(k, summary) {
+    const t = (summary || {})[k] || {};
+    return ((t.flag ? t.flag + ' ' : '') + (t.display || String(k).toUpperCase())).trim();
+}
+
+function renderTrajectory(data) {
+    const card = document.getElementById('trajCard');
+    if (!card) return;
+    const summary = data.theatre_summary || {};
+    const conv    = data.trajectory_convergence || [];
+    const claimed = data.trajectory_claim_only || [];
+    const unread  = data.trajectory_unread || [];
+
+    // Flatten every country/patron reading that actually MOVED.
+    const moving = [];
+    Object.keys(summary).sort().forEach(function (k) {
+        const tj = summary[k].trajectory;
+        if (!tj) return;
+        Object.keys(tj).sort().forEach(function (hub) {
+            const v = tj[hub] || {};
+            if (v.direction === 'contracting' || v.direction === 'expanding') {
+                moving.push({ country: k, hub: hub, v: v });
+            }
+        });
+    });
+
+    // Nothing to say at all — no sensor anywhere, nothing moving.
+    if (!moving.length && !unread.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+
+    // ── Pill + the So What line. Lead with the finding, not the data. ──
+    const pill = document.getElementById('trajPill');
+    const sw   = document.getElementById('trajSoWhat');
+    let pillText = 'HOLDING', pillColor = '#6b7280', soWhat = '';
+
+    if (conv.length) {
+        const c = conv[0];
+        const names = (c.confirmed_countries || []).map(function (k) {
+            return trajCountry(k, summary);
+        }).join(' and ');
+        pillText  = 'CONVERGED';
+        pillColor = '#dc2626';
+        soWhat = trajHub(c.hub) + ' is ' + trajDir(c.direction) + ' in ' + names +
+                 ' at the same time. One country moving is a local story; two moving the ' +
+                 'same way is a regional question — and this is a read of direction, not ' +
+                 'of presence.';
+    } else if (claimed.length) {
+        const c = claimed[0];
+        const names = (c.countries || []).map(function (k) {
+            return trajCountry(k, summary);
+        }).join(' and ');
+        pillText  = 'CLAIMED ONLY';
+        pillColor = '#a78bfa';
+        soWhat = trajHub(c.hub) + ' is reported ' + trajDir(c.direction) + ' in ' + names +
+                 ', but no confirming outlet has carried it. That is evidence a claim is ' +
+                 'being made, not evidence the ground has moved — the claims come from ' +
+                 'parties with an interest in the answer.';
+    } else if (moving.length) {
+        const m = moving[0];
+        pillText  = 'SINGLE COUNTRY';
+        pillColor = '#f97316';
+        soWhat = trajHub(m.hub) + ' is ' + trajDir(m.v.direction) + ' in ' +
+                 trajCountry(m.country, summary) + '. One country moving is a local ' +
+                 'story; it becomes a regional question when a second country moves the ' +
+                 'same patron the same way.';
+    } else {
+        soWhat = 'Every tracker with a directional sensor reports its patrons holding ' +
+                 'this cycle — the sensors ran and found nothing moving.';
+    }
+    if (pill) { pill.textContent = pillText; pill.style.background = pillColor; }
+    if (sw)   { sw.textContent = soWhat; }
+
+    // ── Per-reading rows ──
+    const rows = document.getElementById('trajRows');
+    if (rows) {
+        rows.innerHTML = moving.map(function (m) {
+            return '<div class="traj-row">' +
+                '<span>' + esc(trajCountry(m.country, summary)) + '</span>' +
+                '<span class="traj-dir" style="color:' + trajDirColor(m.v.direction) + ';">' +
+                    esc(trajHub(m.hub) + ' ' + trajDir(m.v.direction)) + '</span>' +
+                '<span class="traj-meta">strength ' + (m.v.magnitude || 0) + '/5 · ' +
+                    esc(trajConf(m.v.confidence)) + '</span>' +
+                '</div>';
+        }).join('') || '<div class="traj-row"><span>All measured patrons holding this cycle.</span></div>';
+    }
+
+    // ── UNREAD, stated plainly. This line is the whole point of the panel. ──
+    const un = document.getElementById('trajUnread');
+    if (un) {
+        if (unread.length) {
+            un.style.display = 'block';
+            un.textContent = 'No directional sensor on ' +
+                unread.map(function (k) { return trajCountry(k, summary); }).join(', ') +
+                ' — unread on this axis, not holding. Nothing is being claimed about ' +
+                'which way a patron is moving there.';
+        } else {
+            un.style.display = 'none';
+        }
+    }
+
+    const cav = document.getElementById('trajCaveat');
+    if (cav) {
+        cav.textContent = data.trajectory_caveat ||
+            'Trajectory reads reporting, not ground truth. A patron losing ground with ' +
+            'nobody reporting it registers as holding.';
+    }
+}
+
+// ══════════════════════════════════════════════════════════════
 // POSTURE BANNER
 // ══════════════════════════════════════════════════════════════
 function renderPosture(data) {
@@ -1036,10 +1228,29 @@ function renderTrackers(data) {
         const staleTag = (t.freshness === 'stale')
             ? '<span class="vector-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border-color:rgba(245,158,11,0.35);">stale — last known good</span>'
             : '';
+        // ── Directional chip (v1.1.0). t.trajectory === null means the tracker
+        //    carries NO sensor; it renders differently from a sensor that ran
+        //    and found nothing. Same reason the stale tag exists: the reader
+        //    has to be able to tell a measurement from a gap. ──
+        const tj = t.trajectory;
+        let trajTag;
+        if (!tj) {
+            trajTag = '<span class="vector-pill" style="background:rgba(107,114,128,0.10);color:var(--text-muted);border-color:rgba(107,114,128,0.30);border-style:dashed;" title="This tracker has no trajectory sensor. Unread, not holding.">no directional sensor</span>';
+        } else {
+            trajTag = Object.keys(tj).sort().map(function (hub) {
+                const v = tj[hub] || {};
+                const moving = (v.direction === 'contracting' || v.direction === 'expanding');
+                const col = trajDirColor(v.direction);
+                return '<span class="vector-pill" style="background:rgba(249,115,22,0.10);color:' + col + ';border-color:rgba(249,115,22,0.30);" title="' +
+                    esc(trajConf(v.confidence)) + '">' +
+                    esc(trajHub(hub) + ' ' + trajDir(v.direction)) +
+                    (moving ? ' ' + (v.magnitude || 0) + '/5' : '') + '</span>';
+            }).join('');
+        }
         return '<div class="tracker-banner">' +
             '<div><div class="tracker-name">' + (t.flag || '') + ' ' + esc(t.display || k.toUpperCase()) + '</div>' +
             '<div class="tracker-actors">' + (t.article_count || 0) + ' articles this scan · composite ' + (t.score || 0) + '/100</div></div>' +
-            '<div class="tracker-middle"><div class="tracker-vectors">' + pills + staleTag + '</div></div>' +
+            '<div class="tracker-middle"><div class="tracker-vectors">' + pills + trajTag + staleTag + '</div></div>' +
             '<div class="tracker-right">' +
             '<span class="level-badge" style="background:' + lv.color + ';">L' + level + ' — ' + esc(t.label || lv.label) + '</span>' +
             '<a class="open-btn" href="' + page + '">Open Tracker →</a>' +
@@ -1067,6 +1278,7 @@ async function loadBluf(force) {
         renderCoverage(data);
         renderBluf(data);
         renderConvergencePanel(data.convergence_panel);
+        renderTrajectory(data);
         renderSilence(data);
         renderTrackers(data);
     } catch (e) {
