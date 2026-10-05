@@ -1167,6 +1167,40 @@ let _gpiState = {
     apiData:    null,
 };
 
+// ── THEATRE STATE VOCABULARY (v3, Oct 3 2026) ────────────────────
+// MOVED TO MODULE SCOPE Oct 5 2026. This was declared INSIDE
+// _buildCardData(), which never used it, while _groupSynthesisFor() -- a
+// different function -- called TS.withLevel(). "ReferenceError: TS is not
+// defined", thrown only when a theatre group had 2+ signals on a SINGLE axis,
+// because the multi-axis branch returns before reaching that line. One
+// unlucky scan shape and the whole page rendered L? / UNAVAILABLE.
+// Mirrors theatre_state.py on the backend. Kept in sync by hand, which is
+// a known cost -- the alternative is the page inventing a FOURTH level
+// vocabulary, which is exactly what the legend below used to do: it said
+// L3 = "confrontation" while the BLUF called L3 "Direct Threat" and the
+// GPI called it "ELEVATED". Same number, three different words, depending
+// which page you were on.
+//
+// Axis matters: a magnitude-9 earthquake is a legitimate L5, and calling
+// it "active war footing" is not imprecise, it is false.
+const TS = {
+    states: {
+        kinetic:      ['quiet','rhetorical signalling','pressure building','standoff hardening','armed incident','active war footing','red line breached'],
+        humanitarian: ['quiet','early humanitarian indicators','population pressure building','humanitarian conditions deteriorating','acute humanitarian emergency','mass-casualty humanitarian disaster','catastrophic humanitarian collapse'],
+        economic:     ['quiet','market signalling','cost pressure building','supply pressure hardening','acute supply disruption','economic rupture','systemic economic breakdown'],
+        diplomatic:   ['quiet','diplomatic signalling','diplomatic friction','diplomatic standoff','talks collapsed','diplomatic rupture','relations severed']
+    },
+    phrase(level, axis) {
+        const table = this.states[axis] || this.states.kinetic;
+        const lv = Math.max(0, Math.min(6, parseInt(level, 10) || 0));
+        return table[lv] || table[0];
+    },
+    withLevel(level, axis) {
+        const lv = Math.max(0, Math.min(6, parseInt(level, 10) || 0));
+        return `${this.phrase(lv, axis)} (L${lv})`;
+    }
+};
+
 function _buildCardData(axisName) {
     /* Compute display fields for one axis. Returns dict ready for innerHTML rendering. */
     const data = _gpiState.apiData || {};
@@ -1177,33 +1211,6 @@ function _buildCardData(axisName) {
     const level = isAll
         ? (data.global_level || 0)
         : (axis.level || 0);
-    // ── THEATRE STATE VOCABULARY (v3, Oct 3 2026) ────────────────────
-    // Mirrors theatre_state.py on the backend. Kept in sync by hand, which is
-    // a known cost -- the alternative is the page inventing a FOURTH level
-    // vocabulary, which is exactly what the legend below used to do: it said
-    // L3 = "confrontation" while the BLUF called L3 "Direct Threat" and the
-    // GPI called it "ELEVATED". Same number, three different words, depending
-    // which page you were on.
-    //
-    // Axis matters: a magnitude-9 earthquake is a legitimate L5, and calling
-    // it "active war footing" is not imprecise, it is false.
-    const TS = {
-        states: {
-            kinetic:      ['quiet','rhetorical signalling','pressure building','standoff hardening','armed incident','active war footing','red line breached'],
-            humanitarian: ['quiet','early humanitarian indicators','population pressure building','humanitarian conditions deteriorating','acute humanitarian emergency','mass-casualty humanitarian disaster','catastrophic humanitarian collapse'],
-            economic:     ['quiet','market signalling','cost pressure building','supply pressure hardening','acute supply disruption','economic rupture','systemic economic breakdown'],
-            diplomatic:   ['quiet','diplomatic signalling','diplomatic friction','diplomatic standoff','talks collapsed','diplomatic rupture','relations severed']
-        },
-        phrase(level, axis) {
-            const table = this.states[axis] || this.states.kinetic;
-            const lv = Math.max(0, Math.min(6, parseInt(level, 10) || 0));
-            return table[lv] || table[0];
-        },
-        withLevel(level, axis) {
-            const lv = Math.max(0, Math.min(6, parseInt(level, 10) || 0));
-            return `${this.phrase(lv, axis)} (L${lv})`;
-        }
-    };
 
     const levelLabel = isAll
         ? (data.global_label || '')
