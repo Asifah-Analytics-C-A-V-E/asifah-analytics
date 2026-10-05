@@ -4,6 +4,7 @@
 <!-- v1.5.0 (May 23, 2026): PHASE 1A AFRICA + CRITICAL MINERALS LAUNCH. Added 6 new commodities (PGM, chromium, manganese, phosphate, diamonds, bauxite) for 22 total. Added 8 new countries (Angola, Belgium, Botswana, Guinea, Jordan, Morocco, Nigeria, South Africa) for 44 total. Africa region populated (was 2, now 8 countries). Canonical Gold Standard v1.2 sidebar retrofit (Dashboards → Cross-Cutting Tools → Regional Rhetoric, hamburger drawer for mobile, ESC handler). Header subtitle + status strip counts updated. -->
 <!-- v1.4.0 (May 17, 2026): Sugar Full Retrofit — added Sugar as 16th commodity (NY11 futures); added Cuba (historic_reversal sugar role + 8-commodity profile, Phase 6 butterfly consumer) + Thailand (sugar producer #3) for 34 total countries; introduced regime_flags taxonomy (sub_consumer_floor flag on India + Cuba sugar) — CAVE phase 2 foundation. -->
 <!-- v1.3.0: Consumer scrub — 32 countries (added Argentina, Australia, Brazil, Canada, Egypt, EU bloc, France, India, Panama, Türkiye); EU mouseover tooltip; multi-role schema support -->
+<!-- v1.3.1 (Oct 5, 2026): Standing-watch register on the butterfly convergence cards — consumes interpreter v1.2.0's standing_watch/active/trigger_state so an unconfirmed coupled trigger renders as STANDING WATCH (grey pill, dashed edge, sorted after firing cards) instead of looking identical to a confirmed convergence. Section count splits firing vs watch. -->
 <!-- v1.2.0: Regional collapsible exposure matrix + signal-type pills + Silver/Nickel/Cobalt + canonical footer -->
 <html lang="en" dir="ltr">
 <head>
@@ -824,6 +825,22 @@
             background: var(--ca-butterfly-bg-strong);
             color: var(--ca-butterfly);
             border-color: var(--ca-butterfly);
+        }
+        /* v1.3.1 (Oct 5 2026) -- STANDING WATCH register.
+           A convergence whose coupled trigger was NOT confirmed is not
+           firing, and must not look like it is. Muted grey pill, dashed
+           left edge: structural exposure is context, not an alert. The
+           level pill still shows the real commodity level, but in grey,
+           so ELEVATED does not shout yellow on an unconfirmed read. */
+        .ca-prose-pill.watch {
+            background: rgba(148,163,184,0.12);
+            color: var(--text-secondary);
+            border-color: rgba(148,163,184,0.45);
+        }
+        .ca-prose-block.butterfly.standing-watch {
+            border-left-style: dashed;
+            border-left-color: rgba(148,163,184,0.55);
+            opacity: 0.88;
         }
         .ca-region-tag {
             font-size: 0.58rem;
@@ -1952,7 +1969,7 @@
         <a href="https://asifahanalytics.com" style="color:var(--accent-cyan, #38bdf8);text-decoration:none;margin:0 10px;">Home</a>
     </div>
     <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted, #4a7090);">
-        © 2025-2026 Asifah Analytics. All Rights Reserved. Asifah Commodities Tracker v1.3.0 — Proprietary and Confidential.
+        © 2025-2026 Asifah Analytics. All Rights Reserved. Asifah Commodities Tracker v1.3.1 — Proprietary and Confidential.
     </div>
 </footer>
 
@@ -2504,13 +2521,52 @@ function renderCommodityAnalysis() {
         butterflySection.style.display = 'none';
     } else {
         butterflySection.style.display = '';
-        butterflyCount.textContent = '(' + convKeys.length + ')';
+
+        // v1.3.1 (Oct 5 2026): a convergence card is either FIRING (coupled
+        // trigger confirmed in its region's BLUF) or on STANDING WATCH
+        // (commodity pressure present, trigger unconfirmed or no sensor
+        // emits it yet). Before this, every card rendered identically and
+        // the section count said "(2)" whether both were confirmed or
+        // neither was. standing_watch / active are supplied by interpreter
+        // v1.2.0; an older payload has neither key, so isWatchConv() is
+        // false for every card and the page renders exactly as it does now.
+        function isWatchConv(c) {
+            c = c || {};
+            return (c.standing_watch === true) || (c.active === false);
+        }
+        function watchReason(c) {
+            switch ((c || {}).trigger_state) {
+                case 'unwired':
+                    return 'No sensor emits this convergence\u2019s trigger '
+                         + 'category yet \u2014 structural exposure only.';
+                case 'unknown':
+                    return 'The trigger region\u2019s BLUF could not be read '
+                         + 'this cycle \u2014 unread, not quiet.';
+                default:
+                    return 'Commodity pressure present; coupled trigger not '
+                         + 'confirmed this cycle.';
+            }
+        }
+
+        var nWatch = 0;
+        for (var wk = 0; wk < convKeys.length; wk++) {
+            if (isWatchConv(convergences[convKeys[wk]])) nWatch++;
+        }
+        var nFiring = convKeys.length - nWatch;
+        butterflyCount.textContent = nWatch
+            ? '(' + nFiring + ' firing \u00b7 ' + nWatch + ' watch)'
+            : '(' + convKeys.length + ')';
+
         // Default collapsed -- user expands for headlines (per design).
-        // Sort by priority descending — most-severe first
+        // Confirmed convergences first, then standing watch; priority
+        // descending inside each group.
         var sortedKeys = convKeys.sort(function(a, b) {
-            var pa = (convergences[a] || {}).priority || 0;
-            var pb = (convergences[b] || {}).priority || 0;
-            return pb - pa;
+            var ca = convergences[a] || {};
+            var cb = convergences[b] || {};
+            var wa = isWatchConv(ca) ? 1 : 0;
+            var wb = isWatchConv(cb) ? 1 : 0;
+            if (wa !== wb) return wa - wb;
+            return (cb.priority || 0) - (ca.priority || 0);
         });
         var html = '';
         for (var i = 0; i < sortedKeys.length; i++) {
@@ -2521,11 +2577,20 @@ function renderCommodityAnalysis() {
             var display = c.display || label.replace(/_/g, '+').toUpperCase();
             var regions = c.regions || [];
 
-            html += '<div class="ca-prose-block butterfly">';
+            var isWatch = isWatchConv(c);
+
+            html += '<div class="ca-prose-block butterfly'
+                 + (isWatch ? ' standing-watch' : '') + '">';
             html += '<div class="ca-prose-label">';
             html += '<span>' + escapeCaHtml(icon) + ' ' + escapeCaHtml(display) + '</span>';
-            html += '<span class="ca-prose-pill lvl-' + escapeCaHtml(lvl) + '">'
+            html += '<span class="ca-prose-pill '
+                 + (isWatch ? 'watch' : 'lvl-' + escapeCaHtml(lvl)) + '">'
                  + escapeCaHtml(lvl.toUpperCase()) + '</span>';
+            if (isWatch) {
+                html += '<span class="ca-prose-pill watch" title="'
+                     + escapeCaHtml(watchReason(c))
+                     + '">STANDING WATCH</span>';
+            }
             for (var r = 0; r < regions.length; r++) {
                 html += '<span class="ca-region-tag">'
                      + escapeCaHtml(String(regions[r]).toUpperCase()) + '</span>';
