@@ -1201,6 +1201,55 @@ const TS = {
     }
 };
 
+
+// ── LEVEL LEGEND (Oct 5 2026) ─────────────────────────────────────────────
+// GENERATED FROM TS.states. It used to be hardcoded HTML beside the TS block
+// -- which is the FOURTH vocabulary the TS comment above explicitly exists to
+// prevent, sitting directly underneath it. The drift was live and visible:
+//   * the legend said "a 0-5 ladder"; TS.states has SEVEN rungs (0-6)
+//   * every axis table in TS ends at 'red line breached' / equivalent (L6),
+//     and the legend listed nothing above L5
+//   * the kinetic axis has been reading L6 RED-LINE BREACH on the front page,
+//     with a legend telling the reader the scale stops at 5
+// Deriving it means a new rung appears here the moment it appears in TS.
+// Add a rung to TS.states and this updates itself.
+
+// Which axis gets its FULL ladder spelled out. The others start at
+// LEGEND_FROM_RUNG, because L0-L2 read much the same across axes and four
+// complete tables is a wall of text, not a legend.
+const LEGEND_FULL_AXIS = 'kinetic';
+const LEGEND_FROM_RUNG = 3;
+
+function _renderLevelLegend() {
+    const order = ['kinetic', 'humanitarian', 'economic', 'diplomatic'];
+    const maxRung = Math.max(
+        ...order.map(a => ((TS.states || {})[a] || []).length)) - 1;
+
+    const rows = order.map(ax => {
+        const table = (TS.states || {})[ax] || [];
+        if (!table.length) return '';
+        const from = (ax === LEGEND_FULL_AXIS) ? 0 : LEGEND_FROM_RUNG;
+        const rungs = table
+            .map((phrase, lv) => ({ lv, phrase }))
+            .filter(r => r.lv >= from)
+            .map(r => `L${r.lv} ${escapeHtmlGpi(r.phrase)}`)
+            .join(' &middot; ');
+        const name = ax.charAt(0).toUpperCase() + ax.slice(1);
+        return `<br><strong>${name}:</strong> ${rungs}.`;
+    }).join('');
+
+    return `
+        <strong>How to read this:</strong> each line is a live signal on a
+        0&ndash;${maxRung} ladder. What a level MEANS depends on which pressure
+        axis it sits on &mdash; the same number is a different finding on a
+        humanitarian axis than on a kinetic one.${rows}
+        <br>On the commodity axis, <strong>SURGE / HIGH / ELEVATED</strong>
+        measure news-signal pressure (weighted volume &amp; severity of matched
+        reporting), <em>not</em> price moves. Hover any line marked &#9432; for
+        the &ldquo;so what.&rdquo;
+    `;
+}
+
 function _buildCardData(axisName) {
     /* Compute display fields for one axis. Returns dict ready for innerHTML rendering. */
     const data = _gpiState.apiData || {};
@@ -1883,22 +1932,7 @@ function _renderHeroCard(axisName) {
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         <div class="axis-bluf-prose">${_formatBlufParagraphs(d.blufProse || '')}</div>
         <div class="pressure-axis-signals">${signalsHtml}</div>
-        <div class="bluf-legend">
-            <strong>How to read this:</strong> each line is a live signal on a 0&ndash;5 ladder. What a
-            level MEANS depends on which pressure axis it sits on &mdash; the same number is a different
-            finding on a humanitarian axis than on a kinetic one.
-            <br><strong>Kinetic:</strong> L0 quiet &middot; L1 rhetorical signalling &middot; L2 pressure
-            building &middot; L3 standoff hardening &middot; L4 armed incident &middot; L5 active war footing.
-            <br><strong>Humanitarian:</strong> L3 conditions deteriorating &middot; L4 acute emergency
-            &middot; L5 mass-casualty disaster.
-            <br><strong>Economic:</strong> L3 supply pressure hardening &middot; L4 acute supply disruption
-            &middot; L5 economic rupture.
-            <br><strong>Diplomatic:</strong> L3 diplomatic standoff &middot; L4 talks collapsed &middot;
-            L5 diplomatic rupture.
-            On the commodity axis, <strong>SURGE / HIGH / ELEVATED</strong> measure news-signal pressure
-            (weighted volume &amp; severity of matched reporting), <em>not</em> price moves. Hover any line
-            marked &#9432; for the &ldquo;so what.&rdquo;
-        </div>
+        <div class="bluf-legend">${_renderLevelLegend()}</div>
         ${regionsLine}
         ${timestampHtml}
     `;
