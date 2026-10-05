@@ -228,6 +228,22 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 .reprice-drill:hover { text-decoration: underline; }
 .reprice-drill + .reprice-drill { margin-left: 14px; }
 
+/* ── TAB BARS (v1.4.0) ── Regional board + pattern library both tab by the
+   five canonical site regions, spelled out, in the site's alphabetical order.
+   A region with nothing in it still gets a tab and an honest empty state --
+   hiding it would make a coverage gap look like a tidy design. ── */
+.tabbar { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 16px; padding-bottom:10px;
+          border-bottom:2px solid var(--card-border); }
+.tab { font-family:inherit; font-size:12px; font-weight:700; letter-spacing:0.6px;
+       padding:7px 14px; border-radius:6px; cursor:pointer; white-space:nowrap;
+       background:transparent; color:var(--text-muted);
+       border:1px solid var(--card-border); transition:all .15s ease; }
+.tab:hover { color:var(--text-primary); border-color:var(--accent); }
+.tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+.tab .tab-count { opacity:.7; font-weight:600; margin-left:5px; font-size:11px; }
+.tab-empty-state { font-size:13px; color:var(--text-muted); font-style:italic;
+                   padding:18px 4px; }
+
 /* ── REGIONAL BOARD ── */
 .region-block { margin-bottom: 22px; }
 .region-heading { font-size: 16px; font-weight: 800; letter-spacing: 1px; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--card-border); display: flex; align-items: center; gap: 8px; }
@@ -562,26 +578,31 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                 </div>
             </div>
 
-            <!-- ══ REGIONS — alphabetical, matching site taxonomy ══ -->
+            <!-- ══ REGIONS — tabbed, alphabetical, matching site taxonomy ══
+                 Previously these five blocks flowed down the page, so reaching
+                 the Western Hemisphere meant scrolling past everything else.
+                 Tabs are built by buildRegionTabs() AFTER the pulses land, so
+                 each tab can carry its true count rather than a guess. ══ -->
+            <div class="tabbar" id="regionTabs" style="display:none;"></div>
             <div class="region-block" id="regionBlock-africa" style="display:none;">
-                <h2 class="region-heading">🌍 Africa</h2>
                 <div id="board-africa"></div>
+                <div class="tab-empty-state" id="empty-africa" style="display:none;"></div>
             </div>
             <div class="region-block" id="regionBlock-apac" style="display:none;">
-                <h2 class="region-heading">🌏 Asia &amp; The Pacific</h2>
                 <div id="board-apac"></div>
+                <div class="tab-empty-state" id="empty-apac" style="display:none;"></div>
             </div>
             <div class="region-block" id="regionBlock-europe" style="display:none;">
-                <h2 class="region-heading">🌍 Europe</h2>
                 <div id="board-europe"></div>
+                <div class="tab-empty-state" id="empty-europe" style="display:none;"></div>
             </div>
             <div class="region-block" id="regionBlock-me" style="display:none;">
-                <h2 class="region-heading">🕌 Middle East</h2>
                 <div id="board-me"></div>
+                <div class="tab-empty-state" id="empty-me" style="display:none;"></div>
             </div>
             <div class="region-block" id="regionBlock-wha" style="display:none;">
-                <h2 class="region-heading">🌎 Western Hemisphere</h2>
                 <div id="board-wha"></div>
+                <div class="tab-empty-state" id="empty-wha" style="display:none;"></div>
             </div>
 
             <!-- ══ HISTORICAL PATTERN LIBRARY ══ -->
@@ -599,10 +620,14 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                     <span class="bs-C" style="padding:1px 5px;border-radius:3px;">C</span>ritical.
                 </div>
                 <div class="bandstrip" id="bandStrip"></div>
+                <!-- v1.4.0 -- region tabs. The library was 10 US episodes, 4 Japan
+                     and 1 Asia-wide; tabbing it by region made the gaps visible,
+                     which is why eight episodes were added to fill them. -->
+                <div class="tabbar" id="libraryTabs" style="display:none;"></div>
                 <div style="overflow-x:auto;">
                     <table class="episode-table">
-                        <thead><tr><th>Episode</th><th>Type</th><th>Event</th><th>Lead (mo) at elevated+</th><th>Drawdown</th></tr></thead>
-                        <tbody id="episodeBody"><tr><td colspan="5" class="nyse-empty-state">Loading backtest…</td></tr></tbody>
+                        <thead><tr><th>Episode</th><th>Region</th><th>Type</th><th>Event</th><th>Lead (mo) at elevated+</th><th>Drawdown</th></tr></thead>
+                        <tbody id="episodeBody"><tr><td colspan="6" class="nyse-empty-state">Loading backtest…</td></tr></tbody>
                     </table>
                 </div>
                 <div class="library-intro" style="margin-top:14px;margin-bottom:0;" id="libraryFootnote"></div>
@@ -646,7 +671,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
             <a href="https://asifahanalytics.com" style="color:var(--accent);text-decoration:none;margin:0 10px;">Home</a>
         </div>
         <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch v1.0.0 — Proprietary and Confidential.
+            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch · fragility detector v1.4.0 — Proprietary.
         </div>
     </footer>
 
@@ -692,7 +717,8 @@ const REPRICING_THEATERS = [
     // KOREA (Jul 12 2026) -- the first mode='habituation' theater. The other two ask
     // whether the market believes a peace; Korea has none to believe (armistice since
     // 1953), so it asks whether the tape still flinches when Pyongyang shouts.
-    // Reads 'rhetoric_pending' until rhetoric_tracker_dprk.py ships -- honestly.
+    // rhetoric_tracker_dprk.py shipped Jul 2026 and writes rhetoric:dprk:latest.
+    // 'rhetoric_pending' now means that key is COLD, not that the tracker is absent.
     { theater: 'korea',          drill: 'rhetoric-dprk.html',    drillLabel: 'DPRK leverage tracker',    hub: 'rhetoric-asia.html',   hubLabel: 'Asia BLUF' },
 ];
 
@@ -865,8 +891,10 @@ async function loadPulse(p){
         const board = el('board-'+p.region);
         if(!board) return;
         board.insertAdjacentHTML('beforeend', countryCardHTML(p, fp, tiles));
-        const blk = el('regionBlock-'+p.region);
-        if(blk) blk.style.display = '';
+        // v1.4.0 -- visibility belongs to the tab controller now. Forcing
+        // display here would make whichever pulse resolved last win the view.
+        _regionHas[p.region] = true;
+        if(_regionTab) buildRegionTabs();
 
         const prefix = p.name.replace(/\W/g,'');
         Object.keys(tiles).forEach(k=>{
@@ -941,9 +969,147 @@ function injectDetectorMajors(detector){
               + '(global_sync) keys on.</div></details>';
         board.insertAdjacentHTML('beforeend', html);
         rows.forEach(([k,m])=> drawSpark('spark_major_'+k, m.sparkline, 'stable'));
-        const blk = el('regionBlock-'+region);
-        if(blk) blk.style.display = '';
+        _regionHas[region] = true;          // v1.4.0 -- tab controller owns visibility
+        if(_regionTab) buildRegionTabs();
     });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// REGION TABS (v1.4.0)
+// ══════════════════════════════════════════════════════════════════
+// One taxonomy, spelled out, in the site's canonical alphabetical order. Used
+// by BOTH the regional board and the pattern library so the two cannot drift
+// into different names or different orders for the same five regions.
+const REGIONS = [
+    { key:'africa', label:'Africa',                 flag:'\uD83C\uDF0D' },
+    { key:'apac',   label:'Asia & The Pacific',     flag:'\uD83C\uDF0F' },
+    { key:'europe', label:'Europe',                 flag:'\uD83C\uDF0D' },
+    { key:'me',     label:'The Middle East',        flag:'\uD83D\uDD4C' },
+    { key:'wha',    label:'The Western Hemisphere', flag:'\uD83C\uDF0E' },
+];
+const REGION_LABEL = {}; REGIONS.forEach(r=>{ REGION_LABEL[r.key]=r.label; });
+
+// ── Regional board ──
+// A region with no pulses still gets a tab. Hiding it would turn a coverage
+// gap into a tidy design, which is the one thing this platform does not do.
+let _regionTab = null;
+const _regionHas = {};
+
+function setRegionTab(key){
+    _regionTab = key;
+    REGIONS.forEach(r=>{
+        const blk = el('regionBlock-'+r.key);
+        if(blk) blk.style.display = (r.key===key) ? '' : 'none';
+        const btn = el('regionTab-'+r.key);
+        if(btn) btn.classList.toggle('active', r.key===key);
+    });
+    // The empty state is its OWN node. An earlier revision wrote it into the
+    // panel's innerHTML, which destroyed the board-<region> container -- so any
+    // pulse that resolved after the first tab switch had nowhere to render and
+    // the region went permanently dark. Toggle, never overwrite.
+    const empty = el('empty-'+key);
+    if(empty){
+        if(_regionHas[key]){
+            empty.style.display = 'none';
+        } else {
+            empty.innerHTML = 'No market pulses in ' + esc(REGION_LABEL[key])
+                + ' yet. This region is <strong>unread</strong>, not quiet \u2014 '
+                + 'nothing is being asserted about its markets.';
+            empty.style.display = '';
+        }
+    }
+}
+
+function buildRegionTabs(){
+    const bar = el('regionTabs'); if(!bar) return;
+    REGIONS.forEach(r=>{
+        const n = (el('board-'+r.key) || {}).childElementCount || 0;
+        _regionHas[r.key] = n > 0;
+    });
+    bar.innerHTML = REGIONS.map(r=>
+        '<button class="tab" id="regionTab-'+r.key+'" onclick="setRegionTab(\''+r.key+'\')">'
+        + r.flag + ' ' + esc(r.label)
+        + (_regionHas[r.key] ? '' : '<span class="tab-count">\u2014</span>')
+        + '</button>').join('');
+    bar.style.display = '';
+    // Land on the first region that actually has something, so the page never
+    // opens on an empty panel -- but every tab stays reachable.
+    const first = (REGIONS.find(r=>_regionHas[r.key]) || REGIONS[0]).key;
+    setRegionTab(_regionTab && _regionHas[_regionTab] ? _regionTab : first);
+}
+
+// ── Pattern library ──
+let _libEpisodes = [];
+let _libTab = 'all';
+
+function setLibTab(key){
+    _libTab = key;
+    ['all'].concat(REGIONS.map(r=>r.key)).forEach(k=>{
+        const btn = el('libTab-'+k);
+        if(btn) btn.classList.toggle('active', k===key);
+    });
+    renderEpisodeRows();
+}
+
+function buildLibraryTabs(){
+    const bar = el('libraryTabs'); if(!bar) return;
+    const count = k => _libEpisodes.filter(e=>(e.region||'wha')===k).length;
+    bar.innerHTML =
+        '<button class="tab" id="libTab-all" onclick="setLibTab(\'all\')">All'
+        + '<span class="tab-count">' + _libEpisodes.length + '</span></button>'
+        + REGIONS.map(r=>
+            '<button class="tab" id="libTab-'+r.key+'" onclick="setLibTab(\''+r.key+'\')">'
+            + r.flag + ' ' + esc(r.label)
+            + '<span class="tab-count">' + count(r.key) + '</span></button>').join('');
+    bar.style.display = '';
+    setLibTab(_libTab);
+}
+
+function episodeRowHTML(e){
+    const cls = e.type==='bubble_burst'?'ep-bubble'
+              : e.type==='exogenous_shock'?'ep-shock'
+              : e.type==='policy_induced_bubble'?'ep-bubble'
+              : e.type==='contagion'?'ep-shock':'ep-other';
+    const lead = e.lead_months_at_elevated_plus;
+    // Three distinct lead states, and they mean different things:
+    //   null case  -> exogenous, no pre-signal expected (by design)
+    //   pre-spine  -> we CANNOT score it, feature series start later
+    //   0 / N mo   -> an actual measured result
+    let leadStr;
+    if(e.outside_data_spine){
+        leadStr = '<span style="color:var(--text-muted);font-style:italic;">not backtestable</span>';
+    } else if(e.type==='exogenous_shock'){
+        leadStr = '\u2014 (null case)';
+    } else {
+        leadStr = (lead>0 ? lead+' mo' : '0');
+    }
+    const label = e.source_url
+        ? '<a href="'+esc(e.source_url)+'" target="_blank" rel="noopener" '
+          + 'style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent);">'
+          + esc(e.label) + ' \u2197</a>'
+        : esc(e.label);
+    const dim = e.outside_data_spine ? ' style="opacity:0.72;"' : '';
+    return '<tr'+dim+'><td><strong>'+label+'</strong></td>'
+         + '<td style="white-space:nowrap;font-size:11px;color:var(--text-muted);">'
+         + esc(REGION_LABEL[e.region||'wha'] || '\u2014') + '</td>'
+         + '<td><span class="ep-type '+cls+'">'+esc((e.type||'').replace(/_/g,' '))+'</span></td>'
+         + '<td>'+esc(e.event_month||'')+'</td><td>'+leadStr+'</td>'
+         + '<td>'+esc(e.drawdown||'')+'</td></tr>';
+}
+
+function renderEpisodeRows(){
+    const tb = el('episodeBody'); if(!tb) return;
+    const rows = (_libTab==='all')
+        ? _libEpisodes
+        : _libEpisodes.filter(e=>(e.region||'wha')===_libTab);
+    if(!rows.length){
+        tb.innerHTML = '<tr><td colspan="6" class="nyse-empty-state">'
+            + 'No episodes from ' + esc(REGION_LABEL[_libTab]||'this region') + ' in the library yet. '
+            + 'That is a gap in the library, not a claim that this region has never '
+            + 'produced one.</td></tr>';
+        return;
+    }
+    tb.innerHTML = rows.map(episodeRowHTML).join('');
 }
 
 function renderFragility(d){
@@ -1131,43 +1297,10 @@ async function loadBacktest(){
                 return '<div><div class="bandstrip-cell bs-'+b+'">'+b+'</div><div class="bandstrip-year" style="text-align:center;">'+y.slice(2)+'</div></div>';
             }).join('');
         }
-        // Episode table
-        const tb = el('episodeBody');
+        // Episode table -- stored, then rendered through the region tabs.
         if(bt.episode_reads && bt.episode_reads.length){
-            tb.innerHTML = bt.episode_reads.map(e=>{
-                const cls = e.type==='bubble_burst'?'ep-bubble'
-                          : e.type==='exogenous_shock'?'ep-shock'
-                          : e.type==='policy_induced_bubble'?'ep-bubble'
-                          : e.type==='contagion'?'ep-shock':'ep-other';
-                const lead = e.lead_months_at_elevated_plus;
-
-                // Three distinct lead states, and they mean different things:
-                //   null case  -> exogenous, no pre-signal expected (by design)
-                //   pre-spine  -> we CANNOT score it, feature series start later
-                //   0 / N mo   -> an actual measured result
-                let leadStr;
-                if(e.outside_data_spine){
-                    leadStr = '<span style="color:var(--text-muted);font-style:italic;">'
-                            + 'not backtestable</span>';
-                } else if(e.type==='exogenous_shock'){
-                    leadStr = '\u2014 (null case)';
-                } else {
-                    leadStr = (lead>0 ? lead+' mo' : '0');
-                }
-
-                // Episode name links to a primary explainer where one exists.
-                const label = e.source_url
-                    ? '<a href="'+esc(e.source_url)+'" target="_blank" rel="noopener" '
-                      + 'style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent);">'
-                      + esc(e.label) + ' \u2197</a>'
-                    : esc(e.label);
-
-                const dim = e.outside_data_spine ? ' style="opacity:0.72;"' : '';
-                return '<tr'+dim+'><td><strong>'+label+'</strong></td>'
-                     + '<td><span class="ep-type '+cls+'">'+esc(e.type.replace(/_/g,' '))+'</span></td>'
-                     + '<td>'+esc(e.event_month)+'</td><td>'+leadStr+'</td>'
-                     + '<td>'+esc(e.drawdown||'')+'</td></tr>';
-            }).join('');
+            _libEpisodes = bt.episode_reads;
+            buildLibraryTabs();
         }
         if(bt.era_note) el('libraryFootnote').textContent = bt.era_note;
     } catch(e){ console.warn('[Market Watch] backtest failed:', e); }
@@ -1297,6 +1430,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     loadDetector();
     loadRepricing();
     loadBacktest();
+    // Tabs are built once up front so all five regions are reachable from the
+    // first paint, then rebuilt as pulses land so each tab carries a true count.
+    buildRegionTabs();
     PULSES.forEach(loadPulse);
 });
 </script>
