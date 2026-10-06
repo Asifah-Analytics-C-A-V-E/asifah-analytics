@@ -629,6 +629,121 @@ a.sig-location-link:hover { opacity: 0.8; }
     margin-top: 10px;
 }
 
+/* ── CLUSTER CARDS (Oct 6 2026) ──────────────────────────────────────
+   A cluster is not a peer of the country cards it contains -- it is the
+   umbrella over them. It therefore spans the full grid and renders FIRST,
+   with its member cards marked and sitting underneath. Before this, four
+   Levant wheat nodes produced four equal cards and the reader had to
+   assemble "this is one regional story" unaided. */
+.narrative-card.is-cluster {
+    grid-column: 1 / -1;
+    border-left-width: 6px;
+    background: linear-gradient(135deg, rgba(56,189,248,0.07) 0%, rgba(0,0,0,0.0) 60%);
+}
+.cluster-badge {
+    font-size: 0.55rem; padding: 2px 9px; border-radius: 999px;
+    letter-spacing: 1.5px; font-family: 'Courier New', monospace;
+    background: rgba(56,189,248,0.14); color: var(--accent-cyan, #38bdf8);
+    border: 1px solid rgba(56,189,248,0.40);
+    text-transform: uppercase; white-space: nowrap; font-weight: 700;
+}
+/* Lit / dark node strip. The dark nodes are NAMED, never merely counted:
+   a reader who cannot see which node is unlit cannot tell a quiet node
+   from one that was never built. */
+.cluster-nodes { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+.cluster-node {
+    font-size: 0.62rem; padding: 3px 9px; border-radius: 4px;
+    font-family: 'Courier New', monospace; letter-spacing: 0.5px;
+    text-transform: uppercase; font-weight: 600; border: 1px solid;
+}
+.cluster-node.lit {
+    background: rgba(245,158,11,0.13); color: var(--accent-yellow, #f59e0b);
+    border-color: rgba(245,158,11,0.45);
+}
+.cluster-node.dark {
+    background: rgba(107,114,128,0.10); color: var(--text-muted);
+    border-color: rgba(107,114,128,0.35);
+}
+.cluster-block { margin-top: 12px; }
+.cluster-block-label {
+    font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); font-family: 'Courier New', monospace;
+    font-weight: 700; margin-bottom: 5px;
+}
+.cluster-block-body {
+    font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary);
+    font-family: 'Times New Roman', serif;
+}
+/* Same shock, different failure mode per country. This is the thing a
+   per-country card structurally cannot say. */
+.cluster-transmission { display: grid; gap: 6px; }
+.cluster-transmission-row {
+    display: grid; grid-template-columns: 110px 1fr; gap: 10px;
+    align-items: baseline; padding: 6px 0;
+    border-top: 1px solid var(--card-border);
+}
+.cluster-transmission-row:first-child { border-top: none; }
+.cluster-transmission-country {
+    font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase;
+    font-family: 'Courier New', monospace; font-weight: 700;
+    color: var(--text-primary);
+}
+.cluster-transmission-how {
+    font-size: 0.8rem; line-height: 1.55; color: var(--text-secondary);
+    font-family: 'Times New Roman', serif;
+}
+.cluster-details { margin-top: 12px; }
+.cluster-details > summary {
+    cursor: pointer; list-style: none;
+    font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); font-family: 'Courier New', monospace; font-weight: 700;
+}
+.cluster-details > summary::-webkit-details-marker { display: none; }
+.cluster-details > summary::before { content: '▸ '; }
+.cluster-details[open] > summary::before { content: '▾ '; }
+.cluster-butterfly-item { margin-top: 10px; }
+.cluster-butterfly-effect {
+    font-size: 0.8rem; font-weight: 700; color: var(--text-primary);
+    font-family: 'Times New Roman', serif;
+}
+.cluster-butterfly-how {
+    font-size: 0.78rem; line-height: 1.55; color: var(--text-secondary);
+    font-family: 'Times New Roman', serif; margin-top: 2px;
+}
+.cluster-watchlist {
+    font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;
+    font-family: 'Courier New', monospace; line-height: 1.5;
+}
+/* The doctrine guard. Muted on purpose -- it must be present and readable
+   without competing with the finding it qualifies. */
+.cluster-not-implied {
+    margin-top: 12px; padding: 9px 12px; border-radius: 6px;
+    background: rgba(107,114,128,0.08);
+    border-left: 3px solid rgba(107,114,128,0.45);
+}
+.cluster-not-implied ul { margin: 4px 0 0; padding-left: 18px; }
+.cluster-not-implied li {
+    font-size: 0.74rem; line-height: 1.5; color: var(--text-muted);
+    font-family: 'Times New Roman', serif; margin-bottom: 3px;
+}
+/* An unstamped pressure level. The word in the headline is a placeholder,
+   not a measurement, and the page says so rather than letting it pass. */
+.cluster-unread {
+    margin-top: 10px; padding: 7px 11px; border-radius: 5px;
+    background: rgba(148,163,184,0.10);
+    border-left: 3px solid rgba(148,163,184,0.5);
+    font-size: 0.74rem; line-height: 1.5; color: var(--text-secondary);
+    font-family: 'Times New Roman', serif;
+}
+/* Member cards keep their country detail and gain a line saying what they
+   are part of. Nothing is deleted by the rollup. */
+.narrative-card.cluster-member { border-left-style: dotted; }
+.cluster-member-tag {
+    font-size: 0.58rem; letter-spacing: 1.3px; text-transform: uppercase;
+    color: var(--text-muted); font-family: 'Courier New', monospace;
+    margin-bottom: 7px;
+}
+
 .regional-card { background: var(--container-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px 22px; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; text-decoration: none; color: var(--text-primary); display: flex; flex-direction: column; }
 .regional-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 22px rgba(14,165,233,0.12); }
 .regional-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
@@ -1972,11 +2087,41 @@ function renderNarratives(narratives) {
     }
 
     section.style.display = '';
-    countEl.textContent = narratives.length;
     grid.innerHTML = '';
 
-    // Sort by priority descending (highest first)
-    const sorted = [...narratives].sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    // ── Cluster ordering (Oct 6 2026) ───────────────────────────────────
+    // A cluster card is the umbrella over its member cards, so it renders
+    // immediately BEFORE them regardless of priority. Sorting on priority
+    // alone put the umbrella wherever its number landed, which is how four
+    // Levant wheat nodes ended up as four peers with no visible relation.
+    // A payload from the older GPI carries no is_cluster anywhere, so every
+    // card falls through to the original priority sort untouched.
+    const byPriority = (a, b) => (b.priority || 0) - (a.priority || 0);
+    const clusterCards = narratives.filter(n => n && n.is_cluster).sort(byPriority);
+    const clusteredIds = new Set();
+    clusterCards.forEach(c => (c.member_ids || []).forEach(id => clusteredIds.add(id)));
+
+    const loose = narratives
+        .filter(n => n && !n.is_cluster && !clusteredIds.has(n.category))
+        .sort(byPriority);
+
+    const sorted = [];
+    clusterCards.forEach(c => {
+        sorted.push(c);
+        // Members follow their own cluster, loudest first, so the umbrella and
+        // the countries under it read as one block.
+        narratives
+            .filter(n => n && !n.is_cluster && (c.member_ids || []).includes(n.category))
+            .sort(byPriority)
+            .forEach(mem => sorted.push(mem));
+    });
+    loose.forEach(n => sorted.push(n));
+
+    // The raw card count read as N separate stories. When a cluster is present,
+    // say how many distinct stories there actually are.
+    countEl.textContent = clusterCards.length
+        ? (clusterCards.length + loose.length) + ' \u00b7 ' + clusterCards.length + ' regional'
+        : String(narratives.length);
 
     sorted.forEach(narr => {
         const card = document.createElement('div');
@@ -2008,15 +2153,149 @@ function renderNarratives(narratives) {
         const narrPills = (typeof _gpiCountryPills === 'function')
             ? _gpiCountryPills(narr, {}) : '';
 
+        // ── Cluster extras (Oct 6 2026) ─────────────────────────────────
+        // Built here so the header below can carry the CLUSTER badge and the
+        // body can carry the node strip, the per-country transmission, the
+        // compounding claim, the butterfly and the doctrine guard. Each piece
+        // renders only when the registry actually defines it: a half-written
+        // cluster reads as half-written, never as thin analysis in full dress.
+        let clusterHtml = '';
+        let clusterBadge = '';
+        if (narr.is_cluster) {
+            card.classList.add('is-cluster');
+            clusterBadge = '<span class="cluster-badge">Cluster</span>';
+            const cs = narr.cluster_state || {};
+
+            // Node strip -- lit and dark, both NAMED.
+            const lit  = (cs.countries || []);
+            const dark = (cs.inactive_countries || []);
+            if (lit.length || dark.length) {
+                clusterHtml +=
+                    '<div class="cluster-nodes">' +
+                    lit.map(c => '<span class="cluster-node lit">● ' +
+                                 escapeHtmlGpi(c) + '</span>').join('') +
+                    dark.map(c => '<span class="cluster-node dark">○ ' +
+                                  escapeHtmlGpi(c) + ' — not firing</span>').join('') +
+                    '</div>';
+            }
+
+            if (cs.shared_mechanism) {
+                clusterHtml +=
+                    '<div class="cluster-block">' +
+                      '<div class="cluster-block-label">How the shock travels</div>' +
+                      '<div class="cluster-block-body">' +
+                        escapeHtmlGpi(cs.shared_mechanism) + '</div>' +
+                    '</div>';
+            }
+            if (cs.why_together) {
+                clusterHtml +=
+                    '<div class="cluster-block">' +
+                      '<div class="cluster-block-label">Why these belong together</div>' +
+                      '<div class="cluster-block-body">' +
+                        escapeHtmlGpi(cs.why_together) + '</div>' +
+                    '</div>';
+            }
+
+            // The payoff: same shock, different binding constraint per country.
+            if (cs.transmission && cs.transmission.length) {
+                clusterHtml +=
+                    '<div class="cluster-block">' +
+                      '<div class="cluster-block-label">How it lands, country by country</div>' +
+                      '<div class="cluster-transmission">' +
+                        cs.transmission.map(t =>
+                          '<div class="cluster-transmission-row">' +
+                            '<div class="cluster-transmission-country">' +
+                              escapeHtmlGpi(t.country || '') + '</div>' +
+                            '<div class="cluster-transmission-how">' +
+                              escapeHtmlGpi(t.how || '') + '</div>' +
+                          '</div>').join('') +
+                      '</div>' +
+                    '</div>';
+            }
+
+            if (cs.compounding) {
+                clusterHtml +=
+                    '<div class="cluster-block">' +
+                      '<div class="cluster-block-label">Why more than one matters</div>' +
+                      '<div class="cluster-block-body">' +
+                        escapeHtmlGpi(cs.compounding) + '</div>' +
+                    '</div>';
+            }
+
+            // Long, so collapsed by default -- present without crowding the read.
+            if (cs.butterfly && cs.butterfly.length) {
+                clusterHtml +=
+                    '<details class="cluster-details">' +
+                      '<summary>What this could touch next (' + cs.butterfly.length + ')</summary>' +
+                      cs.butterfly.map(b => {
+                        const obs = (b.observables || []).map(escapeHtmlGpi).join(' · ');
+                        const roles = (b.exposed_roles || []).map(escapeHtmlGpi).join(', ');
+                        return '<div class="cluster-butterfly-item">' +
+                                 '<div class="cluster-butterfly-effect">' +
+                                   escapeHtmlGpi(b.effect || '') + '</div>' +
+                                 '<div class="cluster-butterfly-how">' +
+                                   escapeHtmlGpi(b.how || '') + '</div>' +
+                                 (obs ? '<div class="cluster-watchlist">Watch: ' + obs + '</div>' : '') +
+                                 (roles ? '<div class="cluster-watchlist">Who is exposed: ' +
+                                          roles + '</div>' : '') +
+                               '</div>';
+                      }).join('') +
+                    '</details>';
+            }
+
+            if (cs.not_implied && cs.not_implied.length) {
+                clusterHtml +=
+                    '<div class="cluster-not-implied">' +
+                      '<div class="cluster-block-label">What this does not say</div>' +
+                      '<ul>' + cs.not_implied.map(x =>
+                        '<li>' + escapeHtmlGpi(x) + '</li>').join('') + '</ul>' +
+                    '</div>';
+            }
+
+            if (cs.as_of) {
+                clusterHtml += '<div class="narrative-card-regions">Cluster analysis as of ' +
+                               escapeHtmlGpi(cs.as_of) + '</div>';
+            }
+        }
+
+        // An unstamped pressure level, on a cluster or a country card alike.
+        // alert_stamped is absent on older payloads, which read as true -- the
+        // caveat appears only when the backend explicitly reports it missing.
+        if (narr.alert_stamped === false) {
+            clusterHtml +=
+                '<div class="cluster-unread">' +
+                  'Pressure level not reported by the regional layer this cycle. ' +
+                  'The level word in the headline is a placeholder, not a reading — ' +
+                  'unread, not quiet.' +
+                '</div>';
+        }
+
+        // Member cards say what they are part of, so a country card is never
+        // mistaken for a standalone finding when it is one node of several.
+        let memberTag = '';
+        if (narr.clustered_into && !narr.is_cluster) {
+            card.classList.add('cluster-member');
+            memberTag = '<div class="cluster-member-tag">Part of: ' +
+                        escapeHtmlGpi(String(narr.clustered_into).replace(/_/g, ' ')) +
+                        '</div>';
+        }
+
         card.innerHTML =
+            memberTag +
             '<div class="narrative-card-header">' +
                 '<span class="narrative-card-icon">' + (narr.icon || '⚡') + '</span>' +
                 '<div class="narrative-card-headline">' +
                     escapeHtmlGpi(narr.headline || '') +
                 '</div>' +
+                clusterBadge +
                 '<span class="narrative-card-priority-pill">P' + pri + ' · ' + priorityLabel + '</span>' +
             '</div>' +
-            (narr.detail
+            clusterHtml +
+            // A cluster card's `detail` is a copy of its shared_mechanism, which
+            // the block above already rendered under "How the shock travels".
+            // Printing it again under "Why it matters" put the same paragraph on
+            // screen twice, which reads as padding and buries the guard below it.
+            ((narr.detail && !narr.is_cluster)
                 ? '<div class="narrative-card-sowhat-label">Why it matters</div>' +
                   '<div class="narrative-card-detail">' + escapeHtmlGpi(narr.detail) + '</div>'
                 : '') +
