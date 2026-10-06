@@ -206,7 +206,15 @@
     { level: 4, label: 'Coercion',        color: '#ef4444',
       gloss: 'Pressure applied to extract a concession.' },
     { level: 5, label: 'Active Conflict', color: '#dc2626',
-      gloss: 'Open hostilities underway.' }
+      gloss: 'Open hostilities underway.' },
+    // L6 added Oct 6 2026. The axis tables below have always gone to 6 ('red
+    // line breached'), and the GPI's level coercion can return 6 -- so a page
+    // could render an L6 chip that this guide had no row for. ladderClamp()
+    // capped at 5, which meant an L6 chip silently displayed as L5 'Active
+    // Conflict': the platform's most serious reading rendering as its
+    // second-most. A ladder that cannot show its own top rung is not a ladder.
+    { level: 6, label: 'Red Line Breached', color: '#991b1b',
+      gloss: 'A stated red line has been crossed.' }
   ];
 
   // Mirrors theatre_state.py on the backends. The ladder above is a THREAT
@@ -235,7 +243,7 @@
   function ladderClamp(n) {
     n = parseInt(n, 10);
     if (isNaN(n)) n = 0;
-    return Math.max(0, Math.min(5, n));
+    return Math.max(0, Math.min(6, n));
   }
 
   window.AsifahLadder = {
@@ -406,7 +414,39 @@
       title.style.marginBottom = Math.max(0, Math.min(40, Math.round(cur + delta))) + 'px';
     }
 
-    function placeLadderRail() { alignLadderRail(); tuneLadderGap(); }
+    /** Horizontal: MEASURE the content column instead of trusting a constant.
+     *
+     *  The CSS computes `left` from --asifah-content-max, which carries a comment
+     *  stating plainly that it must match the .container max-width on the pages,
+     *  and that both are 1280. gpi.html's container is 1500. A page that widens
+     *  its container therefore gets a rail positioned for a narrower one, and the
+     *  guide lands ON TOP of the content it is supposed to annotate -- about
+     *  200px inside the column at 1920 viewport width.
+     *
+     *  A documented coupling that nothing enforces is a comment, not a contract.
+     *  The vertical alignment in this same file has always measured rather than
+     *  assumed; the horizontal never did. It does now.
+     */
+    function placeLadderRailX() {
+      var container = document.querySelector('.container, .page-container, main');
+      if (!container) return;                 // no column to hug -- CSS stands
+      var box = container.getBoundingClientRect();
+      if (!box.width) return;
+      var gap = 20;
+      var railW = rail.getBoundingClientRect().width || 232;
+      // Hug the content column's right edge, but never run off screen.
+      var want = Math.min(box.right + gap, window.innerWidth - railW - gap);
+      // Below the breakpoint the CSS hides the rail entirely; don't fight it.
+      if (window.innerWidth <= 1199) { rail.style.left = ''; return; }
+      if (rail.classList.contains('collapsed')) { rail.style.left = ''; return; }
+      rail.style.left = Math.max(gap, Math.round(want)) + 'px';
+    }
+
+    function placeLadderRail() {
+      alignLadderRail();
+      tuneLadderGap();
+      placeLadderRailX();
+    }
 
     placeLadderRail();
     // Webfonts land after first paint and move both columns; re-measure once.
