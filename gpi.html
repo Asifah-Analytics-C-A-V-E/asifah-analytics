@@ -572,7 +572,15 @@ a.sig-location-link:hover { opacity: 0.8; }
     font-family: 'Times New Roman', serif; margin: -8px 0 18px; max-width: 760px;
 }
 .narratives-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    display: grid;
+    /* min() guard added Oct 6 2026. A bare minmax(360px, 1fr) does not shrink
+       below its floor, so on a 390px phone the grid laid out a 360px column
+       inside a ~350px content box and the page gained 17px of horizontal
+       scroll the moment ANY narrative rendered. Pre-existing and invisible
+       until a card was on screen -- the empty page measured clean, which is
+       why it survived. min(360px, 100%) lets the column collapse to the
+       container on narrow screens and behaves identically above it. */
+    grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
     gap: 14px;
 }
 .narrative-card {
@@ -795,6 +803,26 @@ a.sig-location-link:hover { opacity: 0.8; }
             opacity: 0.34;
         }
 </style>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ASIFAH STANDARD SHELL  (wired Oct 6 2026)
+     This page carried its own nav, drawer, theme toggle and footer and
+     never loaded the shell at all -- which is why the right-hand "How to
+     read levels" rail has never appeared here. Nothing was blocking it.
+
+     The shell overwrites .nav-sidebar with the canonical nav (this page's
+     was a hand-copy of the same thirteen links, so the only change is
+     gaining a "You are here" state), injects the mobile drawer, the header
+     logo/back/theme controls, the ladder rail, and the standard footer.
+
+     NOTE for anyone widening this page: .container is max-width 1500 while
+     the shell's CSS constant assumes 1280. The shell JS measures the real
+     container at runtime (placeLadderRailX), so the rail hugs the true
+     content edge -- but the CSS fallback is still 1280, so a no-JS render
+     puts the rail inside the column.
+     ══════════════════════════════════════════════════════════════════ -->
+<link rel="stylesheet" href="asifah-standard-shell.css">
+<script defer src="asifah-standard-shell.js"></script>
 </head>
 
 <body data-theme="dark">
@@ -973,43 +1001,37 @@ a.sig-location-link:hover { opacity: 0.8; }
         </div>
     </div>
 
-    <footer style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:30px;margin-top:30px;margin-bottom:30px;font-size:13px;color:var(--text-secondary);">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:20px;">
+    <!-- ══════════════════════════════════════════════════════════════
+         PAGE NOTES  (was a <footer>, Oct 6 2026)
+         Retagged from <footer> to <section>. The standard shell replaces the
+         first <footer> it finds, which would have deleted the Synthesis Layer
+         and Methodology copy below -- content that exists nowhere else on the
+         platform and describes how THIS page is built.
+         The duplicated chrome has gone instead: the Buy Me a Coffee and Contact
+         buttons, the mission/privacy/home links and the generic disclaimer all
+         appear in the shell footer that now renders beneath this block, and
+         having them twice on one page read as a mistake rather than emphasis.
+         What stays is what is specific to the Global Pressure Index.
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="gpi-page-notes" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:30px;margin-top:30px;font-size:13px;color:var(--text-secondary);">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;">
             <div>
                 <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">About</h4>
                 <p style="font-size:12px;line-height:1.5;"><strong>ASIFAH ANALYTICS · GLOBAL PRESSURE INDEX</strong><br>asifah-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
             </div>
             <div>
                 <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">Synthesis Layer</h4>
-                <p style="font-size:12px;line-height:1.5;">The Global Pressure Index rolls up regional BLUFs (Africa, Asia, Europe, Middle East, Western Hemisphere) into a single analyst-prose narrative. Cross-theater convergence detection runs on each refresh; new narrative patterns slot in as the platform evolves.</p>
+                <p style="font-size:12px;line-height:1.5;">The Global Pressure Index rolls up regional BLUFs (Africa, Asia, Europe, Middle East, Western Hemisphere) into a single analyst-prose narrative. Cross-theater convergence detection runs on each refresh; sibling convergences that share a commodity and a region are rolled up into one regional reading rather than reported country by country.</p>
             </div>
             <div>
                 <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:8px;">Methodology</h4>
-                <p style="font-size:12px;line-height:1.5;">Source-weighted OSINT aggregation with time-decay scoring. Open-source signals only — no classified data. Synthesis is analytical estimate, not prediction.</p>
+                <p style="font-size:12px;line-height:1.5;">Source-weighted OSINT aggregation with time-decay scoring. Open-source signals only — no classified data. Levels are translated through one shared severity canon, so the same word means the same rung on every page. Synthesis is a convergence reading of what is present, not a prediction of what follows.</p>
             </div>
         </div>
-
-        <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-        <div style="margin:24px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-            <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-            <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
+        <div style="text-align:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--card-border);font-size:11px;color:var(--text-muted);">
+            © 2025-2026 Asifah Analytics. All Rights Reserved. Global Pressure Index v2.1.0 — Proprietary and Confidential.
         </div>
-
-        <div style="margin-top:20px;padding:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;font-size:12px;line-height:1.5;">
-            <strong style="color:#f59e0b;">⚠️ DISCLAIMER</strong> &mdash; This page provides analytical estimates based on open-source intelligence aggregation. It does not constitute intelligence assessments, military advice, or policy recommendations. Always consult authoritative sources for decision-making. Not for operational use.
-        </div>
-
-        <div style="text-align:center;margin-top:20px;padding-top:15px;border-top:1px solid var(--card-border);font-size:12px;">
-            <a href="mission.html" style="color:var(--accent);text-decoration:none;margin:0 10px;">Mission Statement</a>
-            <span style="color:var(--text-muted);">·</span>
-            <a href="privacy.html" style="color:var(--accent);text-decoration:none;margin:0 10px;">Privacy Policy</a>
-            <span style="color:var(--text-muted);">·</span>
-            <a href="https://asifahanalytics.com" style="color:var(--accent);text-decoration:none;margin:0 10px;">Home</a>
-        </div>
-        <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 Asifah Analytics. All Rights Reserved. Global Pressure Index v2.0.0 — Proprietary and Confidential.
-        </div>
-    </footer>
+    </section>
 
 </div>
 
