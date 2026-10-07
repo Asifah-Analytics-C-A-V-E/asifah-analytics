@@ -663,7 +663,9 @@ var API_BASE = 'https://asifah-africa-backend.onrender.com';
 var EP = {
     humanitarian: API_BASE + '/api/africa/humanitarian/burkina_faso',
     financial:    API_BASE + '/api/africa/financial/burkina_faso',
-    commodities:  API_BASE + '/api/commodity-pressure/burkina_faso',
+    // Africa namespace, NOT /api/commodity-pressure/ -- commodity_proxy_africa.py
+    // renames the ME backend's canonical route on the way through.
+    commodities:  API_BASE + '/api/africa/commodity/burkina_faso',
     advisories:   API_BASE + '/api/africa/travel-advisories',
     rhetoric:     API_BASE + '/api/rhetoric/burkina_faso'
 };
@@ -1035,6 +1037,19 @@ function renderCommodities() {
                  + 'about current pressure. A quiet tile here is an unread tile, not a quiet market.</div>';
         }
 
+        /* The Africa proxy stale-serves when the ME backend fails. A stale copy
+           shown as fresh is the same lie as an unread zero -- say which it is. */
+        if (d.proxy_stale) {
+            html += '<div class="sub" style="margin-top:8px;"><span class="pill pill-warn">proxy stale-served</span> '
+                 + 'The ME backend did not answer, so this is the last good copy'
+                 + (d.proxy_fetched_at ? ', fetched ' + fmtDate(d.proxy_fetched_at) : '')
+                 + ' — not a reading taken this cycle.</div>';
+        } else if (d.proxy_cached) {
+            html += '<div class="sub" style="margin-top:8px;"><span class="pill pill-mute">proxy cached</span> '
+                 + 'Served from the 12h Africa proxy cache'
+                 + (d.proxy_fetched_at ? ', fetched ' + fmtDate(d.proxy_fetched_at) : '') + '.</div>';
+        }
+
         var li = d.leader_interventions || [];
         if (li.length) {
             html += '<div class="note-block"><div class="note-head">Leader interventions (jawboning)</div>';
@@ -1054,9 +1069,9 @@ function renderCommodities() {
     }).catch(function (e) {
         el('commStamp').textContent = 'fetch failed';
         el('commBody').innerHTML = '<div class="errbox">' + NR
-            + ' Commodity pressure unreachable (' + esc(e.message) + '). If this persists, confirm the '
-            + 'Africa backend proxies <code>/api/commodity-pressure/&lt;target&gt;</code> — check '
-            + '<code>/debug/routes</code>.</div>';
+            + ' Commodity exposure unreachable (' + esc(e.message) + '). A 503 here means the ME '
+            + 'backend did not answer and the proxy had no cache to fall back on — check '
+            + '<code>/api/africa/commodity-debug</code>.</div>';
         registerStamp('commodities', null);
     });
 }
