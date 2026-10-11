@@ -738,7 +738,11 @@ function fmtVal(v) {
 /* Inline SVG sparkline. No chart library, no CDN, no layout shift. */
 function sparkline(series) {
     if (!series || !series.length || series.length < 2) return '';
-    var pts = series.map(num).filter(function (x) { return x !== null; });
+    /* Two shapes in the wild: commodity_tracker emits a flat list of floats,
+       the Yahoo fetchers emit [{time, value}]. Accept both. */
+    var pts = series.map(function (p) {
+        return num(p && typeof p === 'object' ? p.value : p);
+    }).filter(function (x) { return x !== null; });
     if (pts.length < 2) return '';
     var lo = Math.min.apply(null, pts), hi = Math.max.apply(null, pts);
     var span = (hi - lo) || 1;
