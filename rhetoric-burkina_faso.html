@@ -1,0 +1,622 @@
+<!-- Asifah Analytics — Burkina Faso Rhetoric & Pressure Tracker v1.0.0 — 11 Oct 2026 -->
+<!-- TIER-2 SPOKE: Russia (commercial/energy more than kinetic) + China (dark) -->
+<!-- TIER-1 OFF-WHEEL: the Gulf gold channel — a hub this platform does not run -->
+<!-- Rachel's ruling 11 Oct 2026: tier is a BACK-END label. It is never rendered as a chip. -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Burkina Faso Pressure Tracker — Asifah Analytics</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<style>
+/* ── ARCTIC THEME VARIABLES (canonical platform-wide) ── */
+:root {
+    --bg-color:       #e8f0f8;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #b0c8e0;
+    --text-primary:   #0a1628;
+    --text-secondary: #1e3a5f;
+    --text-muted:     #4a6080;
+    --article-bg:     #f0f6fc;
+    --accent:         #0ea5e9;
+    --card-glow:      none;
+    --watermark-opacity: 0.07;
+    --watermark-filter:  none;
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --accent:         #38bdf8;
+    --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
+    --watermark-opacity: 0.18;
+    --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color); color: var(--text-primary);
+    min-height: 100vh; transition: background-color .3s ease, color .3s ease;
+}
+body::before {
+    content: ''; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%,-50%); width: 110vmin; height: 110vmin;
+    min-width: 800px; min-height: 800px; max-width: 1400px; max-height: 1400px;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    opacity: var(--watermark-opacity); filter: var(--watermark-filter);
+    z-index: 0; pointer-events: none; user-select: none;
+}
+/* GOLD STANDARD: 1280px, matching --asifah-content-max in the shell CSS. */
+.container { max-width: 1280px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+
+header {
+    background: linear-gradient(135deg,#060d1a,#0a1628); border: 1px solid #1e3a5f;
+    border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5), 0 0 40px rgba(56,189,248,.08);
+}
+[data-theme="light"] header { background: linear-gradient(135deg,#dbeafe,#eff6ff); border-color:#93c5fd; }
+.header-logo { width:52px; height:52px; border-radius:50%; border:2px solid rgba(56,189,248,.4); flex-shrink:0; }
+.header-left { display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
+.back-link {
+    display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px;
+    border:1px solid rgba(56,189,248,.3); color:#38bdf8; font-size:.7rem; font-weight:700;
+    letter-spacing:1px; text-decoration:none; text-transform:uppercase; transition:all .2s;
+}
+.back-link:hover { border-color:#38bdf8; background:rgba(56,189,248,.08); }
+.header-center { flex:1; text-align:center; }
+.header-flag { font-size:.75rem; font-weight:700; letter-spacing:3px; color:#38bdf8; text-transform:uppercase; }
+.header-title { font-size:clamp(1.3rem,3vw,1.9rem); font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#e2f0fb; margin:4px 0; }
+[data-theme="light"] .header-title { color:#0a1628; }
+.header-subtitle { font-size:.75rem; color:var(--text-muted); letter-spacing:1px; }
+.header-timestamp { font-size:.65rem; color:var(--text-muted); margin-top:4px; font-family:'Courier New',monospace; }
+.header-right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+.spoke-badge {
+    display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:6px;
+    background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.4);
+    font-size:.6rem; font-weight:700; letter-spacing:2px; color:#38bdf8;
+    text-transform:uppercase; font-family:'Courier New',monospace;
+}
+
+.page-with-sidebar { display:flex; flex-direction:row; align-items:flex-start; gap:20px; }
+.nav-sidebar { width:200px; flex-shrink:0; display:flex; flex-direction:column; gap:8px; padding-top:4px; position:sticky; top:20px; height:fit-content; }
+.nav-sidebar-label { font-size:9px; text-transform:uppercase; letter-spacing:2px; color:rgba(56,189,248,.5); font-family:'Courier New',monospace; margin-bottom:4px; padding-left:2px; }
+.nav-btn { display:flex; justify-content:space-between; align-items:center; gap:6px; padding:9px 11px; border-radius:8px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--text-secondary); font-size:.72rem; font-weight:600; text-decoration:none; transition:all .2s; }
+.nav-btn:hover { border-color:#38bdf8; color:#38bdf8; }
+.nav-btn-status { font-size:.55rem; color:var(--text-muted); font-family:'Courier New',monospace; }
+.main-content { flex:1; min-width:0; }
+
+/* ── POSTURE BANNER ── */
+.posture-banner {
+    display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap;
+    border:2px solid; border-radius:12px; padding:16px 22px; margin-bottom:18px;
+    background:linear-gradient(135deg,rgba(0,0,0,.25),rgba(0,0,0,.05));
+}
+.posture-label { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; font-family:'Courier New',monospace; margin-bottom:5px; }
+.posture-level { font-size:1.5rem; font-weight:700; letter-spacing:2px; }
+.posture-right { text-align:right; }
+.posture-score { font-size:2rem; font-weight:700; line-height:1; }
+.posture-score-label { font-size:.58rem; color:var(--text-muted); letter-spacing:1.5px; font-family:'Courier New',monospace; text-transform:uppercase; }
+
+/* ── CARDS ── */
+.card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:22px 24px; margin-bottom:18px; box-shadow:var(--card-glow); }
+.card-title { font-size:.78rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--accent); font-family:'Courier New',monospace; border-bottom:1px solid var(--card-border); padding-bottom:10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.card-title .stamp { font-size:.6rem; color:var(--text-muted); letter-spacing:1px; font-weight:400; text-transform:none; }
+.prose { font-size:.92rem; line-height:1.65; color:var(--text-secondary); }
+.prose strong { color:var(--text-primary); }
+.sub { font-size:.72rem; color:var(--text-muted); font-family:'Courier New',monospace; line-height:1.55; }
+
+/* ── COMMERCIAL AXIS (the marquee card) ── */
+.axis-wrap { display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:14px; }
+.axis-state { font-size:1.9rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; line-height:1; }
+.axis-bar { flex:1; min-width:260px; }
+.axis-track { display:flex; height:26px; border-radius:6px; overflow:hidden; border:1px solid var(--card-border); background:var(--article-bg); }
+.axis-seg { display:flex; align-items:center; justify-content:center; font-size:.6rem; font-weight:700; font-family:'Courier New',monospace; letter-spacing:1px; color:#fff; transition:flex-grow .4s ease; min-width:0; overflow:hidden; white-space:nowrap; }
+.axis-seg.capture { background:#f59e0b; }
+.axis-seg.refusal { background:#22c55e; }
+.axis-seg.empty   { background:transparent; color:var(--text-muted); border-left:1px dashed var(--card-border); }
+.axis-ends { display:flex; justify-content:space-between; font-size:.56rem; color:var(--text-muted); font-family:'Courier New',monospace; letter-spacing:1.5px; text-transform:uppercase; margin-top:5px; }
+.axis-note { border-left:3px solid rgba(56,189,248,.4); padding:9px 0 9px 13px; margin-top:12px; background:var(--article-bg); border-radius:0 6px 6px 0; font-size:.8rem; line-height:1.6; color:var(--text-secondary); }
+.axis-note.warn { border-left-color:#f59e0b; background:rgba(245,158,11,.07); }
+
+/* ── VECTOR GAUGES ── */
+.vec-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+.vec { background:var(--article-bg); border:1px solid var(--card-border); border-radius:10px; padding:13px 15px; }
+.vec-name { font-size:.7rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-secondary); font-family:'Courier New',monospace; }
+.vec-level { font-size:1.35rem; font-weight:700; margin:5px 0 3px; }
+.vec-meter { height:6px; border-radius:3px; background:var(--card-border); overflow:hidden; margin:7px 0 6px; }
+.vec-fill { height:100%; border-radius:3px; transition:width .4s ease; }
+.vec-meta { font-size:.58rem; color:var(--text-muted); font-family:'Courier New',monospace; line-height:1.5; }
+
+/* ── SIGNALS ── */
+.sig { border-left:4px solid; border-radius:0 8px 8px 0; background:var(--article-bg); padding:12px 15px; margin-bottom:10px; }
+.sig-head { font-size:.84rem; font-weight:700; color:var(--text-primary); line-height:1.4; margin-bottom:5px; }
+.sig-body { font-size:.8rem; line-height:1.6; color:var(--text-secondary); }
+.sig-src { font-size:.6rem; font-family:'Courier New',monospace; margin-top:7px; }
+.sig-src a { color:var(--accent); text-decoration:none; }
+.sig-src a:hover { text-decoration:underline; }
+
+/* ── ACTORS ── */
+.actor { border:1px solid var(--card-border); border-radius:10px; background:var(--article-bg); margin-bottom:10px; }
+.actor > summary { cursor:pointer; padding:12px 15px; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.actor > summary::-webkit-details-marker { display:none; }
+.actor-name { font-size:.85rem; font-weight:700; color:var(--text-primary); }
+.actor-role { font-size:.66rem; color:var(--text-muted); font-family:'Courier New',monospace; }
+.actor-body { padding:0 15px 14px; font-size:.82rem; line-height:1.6; color:var(--text-secondary); }
+.actor-arts { border-top:1px dashed var(--card-border); margin-top:11px; padding-top:9px; }
+.art { padding:6px 0; font-size:.78rem; line-height:1.45; }
+.art a { color:var(--text-primary); text-decoration:none; }
+.art a:hover { color:var(--accent); text-decoration:underline; }
+.art-meta { font-size:.57rem; color:var(--text-muted); font-family:'Courier New',monospace; margin-top:2px; }
+
+/* ── PILLS ── */
+.pill { display:inline-block; font-size:.54rem; font-weight:700; letter-spacing:1.2px; font-family:'Courier New',monospace; text-transform:uppercase; padding:2px 7px; border-radius:4px; border:1px solid; }
+.pill-mute { color:var(--text-muted); border-color:var(--card-border); }
+.pill-warn { color:#f59e0b; border-color:rgba(245,158,11,.55); background:rgba(245,158,11,.08); }
+.pill-info { color:#38bdf8; border-color:rgba(56,189,248,.5); background:rgba(56,189,248,.08); }
+.pill-good { color:#22c55e; border-color:rgba(34,197,94,.5); background:rgba(34,197,94,.08); }
+.pill-bad  { color:#ef4444; border-color:rgba(239,68,68,.5); background:rgba(239,68,68,.08); }
+.pill-dash { color:var(--text-muted); border-color:var(--card-border); border-style:dashed; }
+
+/* ── WHEEL PRESENCE ── */
+.wheel-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:12px; }
+.wheel { background:var(--article-bg); border:1px solid var(--card-border); border-radius:10px; padding:13px 15px; }
+.wheel.active { border-color:#f59e0b; background:rgba(245,158,11,.07); }
+.wheel.dark { border-style:dashed; }
+.wheel-name { font-size:.8rem; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+.wheel-lvl { font-size:.62rem; font-family:'Courier New',monospace; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:7px; }
+.wheel-note { font-size:.72rem; line-height:1.5; color:var(--text-secondary); }
+
+.offwheel {
+    border:2px solid #f59e0b; border-radius:10px; padding:13px 17px; margin-top:13px;
+    background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.05));
+}
+.offwheel-head { font-size:.66rem; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:#f59e0b; font-family:'Courier New',monospace; margin-bottom:5px; }
+
+.errbox { font-size:.78rem; color:#f59e0b; font-family:'Courier New',monospace; border:1px dashed rgba(245,158,11,.5); border-radius:8px; padding:12px 15px; background:rgba(245,158,11,.07); line-height:1.55; }
+.loading { font-size:.78rem; color:var(--text-muted); font-family:'Courier New',monospace; padding:10px 0; }
+
+@media (max-width:900px) {
+    .page-with-sidebar { display:block; }
+    .nav-sidebar { display:none; }
+    .container { padding:12px; }
+}
+</style>
+<link rel="stylesheet" href="resources/asifah-standard-shell.css">
+<script defer src="resources/asifah-standard-shell.js"></script>
+</head>
+<body>
+<div class="container">
+
+<header>
+    <div class="header-left">
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+        <a href="burkina_faso-stability.html" class="back-link">← Back to Burkina Faso Stability</a>
+    </div>
+    <div class="header-center">
+        <div class="header-flag">🇧🇫 BURKINA FASO</div>
+        <div class="header-title">BURKINA FASO PRESSURE TRACKER</div>
+        <div class="header-subtitle">Junta consolidation · JNIM/ISGS · Rosatom &amp; Africa Corps · AES · gold sovereignty vs the Gulf channel</div>
+        <div class="header-timestamp">Last scan: <span id="lastUpdated">loading…</span></div>
+    </div>
+    <div class="header-right">
+        <div class="spoke-badge" id="spokeBadge">◎ ANALYST LAYER</div>
+    </div>
+</header>
+
+<div class="page-with-sidebar">
+
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label">Dashboards</div>
+    <a href="africa.html" class="nav-btn"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-sidebar-label">Burkina Faso</div>
+    <div class="nav-btn" style="border-color:#38bdf8;color:#38bdf8;"><span class="nav-btn-label">🇧🇫 Pressure Tracker</span><span class="nav-btn-status">◉ You are here</span></div>
+    <a href="burkina_faso-stability.html" class="nav-btn"><span class="nav-btn-label">🇧🇫 Stability Index</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-africa.html" class="nav-btn"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">● Live</span></a>
+</nav>
+
+<main class="main-content">
+
+<!-- ══════════ POSTURE ══════════ -->
+<div class="posture-banner" id="postureBanner" style="border-color:#6b7280;">
+    <div>
+        <div class="posture-label" style="color:#6b7280;" id="postureLabel">🇧🇫 Burkina Faso Posture</div>
+        <div class="posture-level" id="postureLevel">loading…</div>
+    </div>
+    <div class="posture-right">
+        <div class="posture-score" id="postureScore">—</div>
+        <div class="posture-score-label">composite / 100</div>
+    </div>
+</div>
+
+<!-- ══════════ EXECUTIVE SUMMARY ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Executive Summary</span><span class="stamp" id="execStamp"></span></div>
+    <div class="prose" id="execBody"><div class="loading">Loading analyst layer…</div></div>
+</section>
+
+<!-- ══════════ COMMERCIAL AXIS — the marquee ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Commercial Axis</span><span class="stamp">capture · refusal · unread</span></div>
+    <div id="axisBody"><div class="loading">Reading commercial direction…</div></div>
+</section>
+
+<!-- ══════════ WHEEL PRESENCE ══════════ -->
+<section class="card">
+    <div class="card-title"><span>External Actors</span><span class="stamp">who is here, and whose wheel they belong to</span></div>
+    <div id="wheelBody"><div class="loading">Reading wheel presence…</div></div>
+</section>
+
+<!-- ══════════ VECTORS ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Pressure Vectors</span><span class="stamp" id="vecStamp"></span></div>
+    <div id="vecBody"><div class="loading">Loading vectors…</div></div>
+</section>
+
+<!-- ══════════ TOP SIGNALS ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Top Signals</span><span class="stamp" id="sigStamp"></span></div>
+    <div id="sigBody"><div class="loading">Loading signals…</div></div>
+</section>
+
+<!-- ══════════ SO WHAT ══════════ -->
+<section class="card">
+    <div class="card-title"><span>So What</span><span class="stamp">implication chains · estimative voice</span></div>
+    <div id="soWhatBody"><div class="loading">Loading…</div></div>
+</section>
+
+<!-- ══════════ RED LINES ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Red Lines</span><span class="stamp" id="rlStamp"></span></div>
+    <div id="rlBody"><div class="loading">Loading…</div></div>
+</section>
+
+<!-- ══════════ ACTORS ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Actors</span><span class="stamp" id="actorStamp"></span></div>
+    <div id="actorBody"><div class="loading">Loading actors…</div></div>
+</section>
+
+<!-- ══════════ INSTRUMENTATION — the honest card ══════════ -->
+<section class="card">
+    <div class="card-title"><span>Instrumentation</span><span class="stamp" id="instStamp"></span></div>
+    <div class="sub" style="margin-bottom:12px;">
+        What this tracker can and cannot currently see. Every keyword list was run against
+        verbatim published 2026 headlines; the ones that matched nothing are named here rather
+        than left to read as quiet. <strong>A tested silence and an untested silence look
+        identical on a gauge and mean opposite things.</strong>
+    </div>
+    <div id="instBody"><div class="loading">Loading…</div></div>
+</section>
+
+</main>
+</div><!-- /page-with-sidebar -->
+
+<footer class="asifah-footer"></footer>
+</div><!-- /container -->
+
+<script>
+'use strict';
+
+var API_BASE = 'https://asifah-africa-backend.onrender.com';
+var EP = API_BASE + '/api/rhetoric/burkina_faso';
+
+var LEVEL_COLORS = { 0:'#6b7280', 1:'#3b82f6', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444', 5:'#7c3aed' };
+var TEMPO_COLORS = { low:'#6b7280', normal:'#3b82f6', elevated:'#f59e0b', high:'#f97316', surge:'#ef4444', unread:'#6b7280' };
+var TEMPO_FRAC   = { low:0.12, normal:0.3, elevated:0.55, high:0.78, surge:1.0, unread:0 };
+
+function el(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent = (s==null?'':String(s)); return d.innerHTML; }
+function fmtDate(iso){ if(!iso) return ''; var d=new Date(iso); return isNaN(d)?String(iso).slice(0,10):d.toISOString().slice(0,16).replace('T',' ')+'Z'; }
+
+/* ABSENCE HONESTY. Missing renders as the word, never as a zero. */
+var NR = '<span class="pill pill-dash">not reporting</span>';
+
+function tempoPill(level){
+    var c = TEMPO_COLORS[level] || '#6b7280';
+    return '<span class="pill" style="color:'+c+';border-color:'+c+'88;background:'+c+'14;">'+esc(level||'unread')+'</span>';
+}
+
+/* ════════════ POSTURE ════════════ */
+function renderPosture(d){
+    var lvl = (d.theatre_level == null) ? null : d.theatre_level;
+    var c = (lvl == null) ? '#6b7280' : (LEVEL_COLORS[lvl] || '#6b7280');
+    el('postureBanner').style.borderColor = c;
+    el('postureLabel').style.color = c;
+    el('postureLevel').style.color = c;
+    el('postureLevel').textContent = (lvl == null)
+        ? 'UNREAD' : ('L' + lvl + ' · ' + (d.theatre_label || '').toUpperCase());
+    el('postureScore').textContent = (d.theatre_score == null) ? '—' : d.theatre_score;
+    el('postureScore').style.color = c;
+    el('lastUpdated').textContent = fmtDate(d.last_updated) + (d.cached ? ' (cached)' : '');
+
+    /* The L5 cap, surfaced. A level that was held down is a different fact from
+       a level that arrived low, and the reader is entitled to both. */
+    if (d.l5_capped) {
+        el('postureLabel').innerHTML += ' <span class="pill pill-warn">capped at L4 — L5 gate did not fire</span>';
+    }
+}
+
+/* ════════════ COMMERCIAL AXIS ════════════ */
+function renderAxis(a){
+    if(!a){ el('axisBody').innerHTML = '<div class="errbox">'+NR+' No commercial axis in this payload.</div>'; return; }
+    var cap = Number(a.capture_score)||0, ref = Number(a.refusal_score)||0, tot = cap+ref;
+    var colors = { capture:'#f59e0b', refusal:'#22c55e', unread:'#6b7280' };
+    var c = colors[a.state] || '#6b7280';
+
+    var h = '<div class="axis-wrap">';
+    h += '<div class="axis-state" style="color:'+c+';">'+esc(a.state||'unread')+'</div>';
+    h += '<div class="axis-bar"><div class="axis-track">';
+    if(tot === 0){
+        h += '<div class="axis-seg empty" style="flex:1 1 100%;">no directional reporting this cycle</div>';
+    } else {
+        if(cap) h += '<div class="axis-seg capture" style="flex:'+cap+' 1 0;">CAPTURE '+cap+'</div>';
+        if(ref) h += '<div class="axis-seg refusal" style="flex:'+ref+' 1 0;">REFUSAL '+ref+'</div>';
+    }
+    h += '</div><div class="axis-ends"><span>← foreign capture</span><span>state refusal →</span></div></div></div>';
+
+    h += '<div class="prose">'+esc(a.reading||'')+'</div>';
+
+    /* BOTH-HOT. The label picks a side because it must; this says it didn't have to be true. */
+    if(a.both_hot){
+        h += '<div class="axis-note warn"><strong>BOTH SIDES LIVE.</strong> '+esc(a.both_hot_note||'')+'</div>';
+    }
+    if(a.channel_asymmetry){
+        h += '<div class="axis-note">'+esc(a.channel_asymmetry)+'</div>';
+    }
+    if((a.score_drivers||[]).length){
+        h += '<div class="sub" style="margin-top:10px;">Score drivers: '+a.score_drivers.map(esc).join(' · ')+'</div>';
+    }
+    if((a.leading_indicators||[]).length){
+        h += '<div class="sub" style="margin-top:10px;"><strong>Leading indicators:</strong><br>'
+           + a.leading_indicators.map(function(x){ return '· '+esc(x); }).join('<br>') + '</div>';
+    }
+    h += '<div class="sub" style="margin-top:10px;">'+esc(a.disclaimer||'')+'</div>';
+    el('axisBody').innerHTML = h;
+}
+
+/* ════════════ WHEEL PRESENCE ════════════
+   TIER IS NEVER RENDERED. Rachel's ruling 11 Oct 2026: it is a back-end weight
+   that changes how a spoke rolls up, not a chip on a page. The payload carries
+   tier and tier_weight; this function reads neither.                        */
+function renderWheels(wp){
+    if(!wp){ el('wheelBody').innerHTML = '<div class="errbox">'+NR+' No wheel presence in this payload.</div>'; return; }
+    var NAMES = { russia:'🇷🇺 Russia', china:'🇨🇳 China', gulf:'🇦🇪 Gulf' };
+    var h = '<div class="wheel-grid">';
+    ['russia','china','gulf'].forEach(function(k){
+        var w = wp[k]; if(!w) return;
+        var dark = (w.instrumentation || '').indexOf('DARK') >= 0;
+        var cls = 'wheel' + (w.active ? ' active' : '') + (dark ? ' dark' : '');
+        h += '<div class="'+cls+'">';
+        h += '<div class="wheel-name">'+esc(NAMES[k]||k)+'</div>';
+        h += '<div class="wheel-lvl">'+(dark ? '<span class="pill pill-dash">no dedicated actor</span>'
+                                             : tempoPill(w.level))+'</div>';
+        /* page_note ONLY. tier_rationale carries tier language by design and
+           must never reach a page -- the Gulf one opens "TIER 1 AND OFF-WHEEL".
+           Reading it here is how the 11 Oct ruling would quietly break. */
+        h += '<div class="wheel-note">'+esc(w.page_note || w.note || '')+'</div>';
+        h += '</div>';
+    });
+    h += '</div>';
+
+    /* The field the architecture gained. */
+    if(wp.dominant_actor_on_wheel === false){
+        h += '<div class="offwheel"><div class="offwheel-head">⚠ Dominant actor is OFF-WHEEL</div>'
+           + '<div class="prose">'+esc(wp.dominant_actor_note||'')+'</div></div>';
+    } else {
+        h += '<div class="sub" style="margin-top:12px;"><span class="pill pill-mute">on-wheel</span> '
+           + esc(wp.dominant_actor_note||'No off-wheel dominant actor firing this cycle.')+'</div>';
+    }
+    el('wheelBody').innerHTML = h;
+}
+
+/* ════════════ VECTORS ════════════ */
+function renderVectors(d){
+    var lv = d.vector_levels || {}, labels = d.vector_labels || {}, val = d.vector_validation || {};
+    var keys = Object.keys(lv);
+    if(!keys.length){ el('vecBody').innerHTML = '<div class="errbox">'+NR+' No vectors reported.</div>'; return; }
+    var h = '<div class="vec-grid">';
+    keys.forEach(function(k){
+        var level = lv[k], c = TEMPO_COLORS[level] || '#6b7280';
+        var frac = TEMPO_FRAC[level]; if(frac == null) frac = 0;
+        var v = val[k] || {};
+        h += '<div class="vec">';
+        h += '<div class="vec-name">'+esc(labels[k] || k.replace(/_/g,' '))+'</div>';
+        h += '<div class="vec-level" style="color:'+c+';">'+esc(String(level||'unread').toUpperCase())+'</div>';
+        h += '<div class="vec-meter"><div class="vec-fill" style="width:'+Math.round(frac*100)+'%;background:'+c+';"></div></div>';
+        h += '<div class="vec-meta">score '+esc((d.vector_scores||{})[k])+'</div>';
+        /* A vector whose level excludes an untested actor says so, rather than
+           letting a partial measurement pass as a whole one. */
+        if(v.partial){
+            h += '<div class="vec-meta" style="margin-top:6px;"><span class="pill pill-dash">partial</span> '+esc(v.note||'')+'</div>';
+        }
+        h += '</div>';
+    });
+    h += '</div>';
+    el('vecBody').innerHTML = h;
+    el('vecStamp').textContent = keys.length + ' vectors';
+}
+
+/* ════════════ SIGNALS ════════════ */
+function renderSignals(sigs){
+    if(!sigs || !sigs.length){
+        el('sigBody').innerHTML = '<div class="sub">'+NR+' No signals cleared this cycle. '
+            + 'A quiet scan is a quiet feed, not a quiet country.</div>';
+        return;
+    }
+    var h = '';
+    sigs.forEach(function(s){
+        var lvl = s.level, c = TEMPO_COLORS[lvl] || LEVEL_COLORS[lvl] || s.color || '#6b7280';
+        h += '<div class="sig" style="border-left-color:'+c+';">';
+        h += '<div class="sig-head">'+esc(s.short_text||'')+'</div>';
+        if(s.long_text) h += '<div class="sig-body">'+esc(s.long_text)+'</div>';
+        if((s.sources||[]).length){
+            h += '<div class="sig-src">' + s.sources.filter(function(x){return x && x.title;}).map(function(x){
+                return '<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.source||'source')+'</a>';
+            }).join(' · ') + '</div>';
+        }
+        h += '</div>';
+    });
+    el('sigBody').innerHTML = h;
+    el('sigStamp').textContent = sigs.length + ' surfaced';
+}
+
+/* ════════════ SO WHAT ════════════ */
+function renderSoWhat(sw){
+    if(!sw || !sw.length){ el('soWhatBody').innerHTML = '<div class="sub">'+NR+'</div>'; return; }
+    el('soWhatBody').innerHTML = sw.map(function(b){
+        return '<div class="axis-note">'+esc(b.bullet||'')+'</div>';
+    }).join('');
+}
+
+/* ════════════ RED LINES ════════════ */
+function renderRedLines(d){
+    var rl = d.red_lines || {}, trig = rl.triggered || [];
+    var gate = d.l5_gate || {};
+    var h = '';
+    if(!trig.length){
+        h += '<div class="sub">No red lines tripped this cycle. These are low-base-rate patterns; '
+           + 'their absence is the normal state and is not itself reassuring.</div>';
+    } else {
+        trig.forEach(function(r){
+            var breached = (r.status === 'BREACHED');
+            h += '<div class="sig" style="border-left-color:'+(breached?'#ef4444':'#f59e0b')+';">';
+            h += '<div class="sig-head">'+(breached?'<span class="pill pill-bad">breached</span>':'<span class="pill pill-warn">approaching</span>')
+               + ' ' + esc(String(r.id||'').replace(/_/g,' ')) + '</div>';
+            if(r.note) h += '<div class="sig-body">'+esc(r.note)+'</div>';
+            h += '</div>';
+        });
+    }
+    /* The L5 gate, stated. A level capped by a gate is not the same as a level that arrived low. */
+    h += '<div class="sub" style="margin-top:12px;"><strong>L5 gate:</strong> '
+       + (gate.any ? '<span class="pill pill-bad">FIRED</span>' : '<span class="pill pill-mute">not fired</span>')
+       + ' ' + esc(gate.reason||'') + '</div>';
+    el('rlBody').innerHTML = h;
+    el('rlStamp').textContent = (rl.breached_count||0)+' breached · '+(rl.approaching_count||0)+' approaching';
+}
+
+/* ════════════ ACTORS ════════════ */
+function renderActors(asum){
+    var keys = Object.keys(asum||{});
+    if(!keys.length){ el('actorBody').innerHTML = '<div class="errbox">'+NR+' No actors reported.</div>'; return; }
+    keys.sort(function(a,b){
+        var o=['surge','high','elevated','normal','low'];
+        return o.indexOf(asum[a].level) - o.indexOf(asum[b].level);
+    });
+    var h = '';
+    keys.forEach(function(k){
+        var a = asum[k], v = a.validation || {};
+        var unval = (v.status === 'unvalidated'), thin = (v.status === 'thin');
+        h += '<details class="actor"><summary>';
+        h += '<span><span class="actor-name">'+esc(a.icon||'')+' '+esc(a.name||k)+'</span>'
+           + '<br><span class="actor-role">'+esc(a.role||'')+'</span></span>';
+        h += '<span style="text-align:right;">'+tempoPill(a.level)+' '
+           + '<span class="actor-role">'+esc(a.article_count||0)+' signals</span>';
+        if(unval) h += '<br><span class="pill pill-dash">unvalidated</span>';
+        else if(thin) h += '<br><span class="pill pill-warn">thin</span>';
+        h += '</span></summary>';
+        h += '<div class="actor-body">'+esc(a.description||'');
+        if(unval || thin){
+            h += '<div class="axis-note warn" style="margin-top:10px;"><strong>'
+               + (unval?'UNVALIDATED.':'THIN.') + '</strong> '+esc(v.note||'')
+               + ' Matched '+esc(v.real_headlines_matched)+' real headline(s) in validation.</div>';
+        }
+        if((a.top_articles||[]).length){
+            h += '<div class="actor-arts">';
+            a.top_articles.slice(0,5).forEach(function(x){
+                h += '<div class="art"><a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>'
+                   + '<div class="art-meta">'+esc(x.source||'')+' · '+esc(x.language||'')+'</div></div>';
+            });
+            h += '</div>';
+        } else {
+            h += '<div class="actor-arts"><div class="sub">'+NR+' no matched articles this cycle</div></div>';
+        }
+        h += '</div></details>';
+    });
+    el('actorBody').innerHTML = h;
+    el('actorStamp').textContent = keys.length + ' actors · 4 vectors';
+}
+
+/* ════════════ INSTRUMENTATION ════════════ */
+function renderInstrumentation(d){
+    var asum = d.actor_summaries || {};
+    var unval = [], thin = [], ok = [];
+    Object.keys(asum).forEach(function(k){
+        var st = (asum[k].validation||{}).status;
+        if(st === 'unvalidated') unval.push(asum[k]);
+        else if(st === 'thin') thin.push(asum[k]);
+        else ok.push(asum[k]);
+    });
+    var h = '<div class="sub" style="margin-bottom:12px;">';
+    h += '<span class="pill pill-good">'+ok.length+' validated</span> ';
+    if(thin.length)  h += '<span class="pill pill-warn">'+thin.length+' thin</span> ';
+    if(unval.length) h += '<span class="pill pill-dash">'+unval.length+' unvalidated</span>';
+    h += '</div>';
+
+    unval.concat(thin).forEach(function(a){
+        var v = a.validation||{};
+        h += '<div class="axis-note warn"><strong>'+esc(a.name)+' — '+esc(String(v.status).toUpperCase())
+           + ' ('+esc(v.real_headlines_matched)+' real headlines matched).</strong> '+esc(v.note||'')+'</div>';
+    });
+
+    /* The country gate — the thing that keeps global commodity chatter out. */
+    h += '<div class="axis-note"><strong>Country gate:</strong> '
+       + esc(d.articles_passed_country_gate) + ' of ' + esc(d.articles_scanned)
+       + ' articles passed; ' + esc(d.articles_rejected_by_gate) + ' rejected. '
+       + esc(d.gate_note||'') + '</div>';
+
+    /* Commodity signals are read but deliberately not scored. Say so. */
+    var cc = d.commodity_context || {};
+    if(cc.available && cc.scored === false){
+        h += '<div class="axis-note"><strong>Commodity signals: read, not scored.</strong> '
+           + esc(cc.discard_reason||'') + '</div>';
+    }
+    h += '<div class="sub" style="margin-top:10px;">'+esc(d.validation_corpus_note||'')+'</div>';
+    el('instBody').innerHTML = h;
+    el('instStamp').textContent = 'validated ' + (d.actor_validation_as_of || '');
+}
+
+/* ════════════ BOOT ════════════ */
+fetch(EP, { cache:'no-store' })
+  .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(function(d){
+      renderPosture(d);
+      el('execBody').innerHTML = '<div class="prose">'+esc(d.executive_summary||'')+'</div>';
+      /* node_class is a back-end slug ('tier2_spoke') and rendering it raw puts
+         the tier on the page. Map it to a front-end-safe phrase instead. */
+      var CLASS_LABEL = { tier2_spoke:'spoke tracker', hub:'hub tracker',
+                          junction:'junction tracker', aligned_hub:'aligned hub' };
+      el('execStamp').textContent = (CLASS_LABEL[d.node_class] || 'tracker')
+                                  + (d.version ? ' · v'+d.version : '');
+      renderAxis(d.commercial_axis);
+      renderWheels(d.wheel_presence);
+      renderVectors(d);
+      renderSignals(d.top_signals);
+      renderSoWhat(d.so_what);
+      renderRedLines(d);
+      renderActors(d.actor_summaries);
+      renderInstrumentation(d);
+  })
+  .catch(function(e){
+      var msg = '<div class="errbox">'+NR+' Burkina Faso rhetoric tracker unreachable ('+esc(e.message)+'). '
+              + 'Nothing is being asserted from a stale copy. Check '
+              + '<code>/api/rhetoric/burkina_faso/debug</code>.</div>';
+      ['execBody','axisBody','wheelBody','vecBody','sigBody','soWhatBody','rlBody','actorBody','instBody']
+        .forEach(function(id){ el(id).innerHTML = msg; });
+      el('postureLevel').textContent = 'UNREACHABLE';
+      el('lastUpdated').textContent = 'fetch failed';
+  });
+</script>
+</body>
+</html>
