@@ -403,20 +403,31 @@ function renderWheels(wp){
         h += '<div class="wheel-lvl">'+(dark ? '<span class="pill pill-dash">no dedicated actor</span>'
                                              : tempoPill(w.level))+'</div>';
         /* page_note ONLY. tier_rationale carries tier language by design and
-           must never reach a page -- the Gulf one opens "TIER 1 AND OFF-WHEEL".
-           Reading it here is how the 11 Oct ruling would quietly break. */
+           must never reach a page -- the Gulf one still opens with a tier
+           number. Reading it here is how the 11 Oct ruling would quietly
+           break. (The quote that used to sit in this comment went stale the
+           same afternoon the UAE hub shipped, which is its own small lesson.) */
         h += '<div class="wheel-note">'+esc(w.page_note || w.note || '')+'</div>';
         h += '</div>';
     });
     h += '</div>';
 
-    /* The field the architecture gained. */
-    if(wp.dominant_actor_on_wheel === false){
-        h += '<div class="offwheel"><div class="offwheel-head">⚠ Dominant actor is OFF-WHEEL</div>'
+    /* The field the architecture gained -- AND ITS POLARITY FLIPPED on
+       11 Oct 2026. dominant_actor_on_wheel used to be `not gulf.active`:
+       true meant "nothing dominant is firing". It is now `gulf.active`:
+       true means "the dominant commercial actor rides the UAE wheel", which
+       shipped this afternoon. Reading the old polarity would have put the
+       loud OFF-WHEEL warning on quiet cycles and hidden it on live ones --
+       the card inverted, saying the opposite of the truth with total
+       confidence. Branch on the gulf slice directly instead, so this card
+       cannot silently invert again if the flag's meaning moves. */
+    var _gulfActive = (wp.gulf && wp.gulf.active) || wp.dominant_actor_on_wheel === true;
+    if(_gulfActive){
+        h += '<div class="offwheel"><div class="offwheel-head">🪙 Gulf channel active — feeds the UAE wheel</div>'
            + '<div class="prose">'+esc(wp.dominant_actor_note||'')+'</div></div>';
     } else {
-        h += '<div class="sub" style="margin-top:12px;"><span class="pill pill-mute">on-wheel</span> '
-           + esc(wp.dominant_actor_note||'No off-wheel dominant actor firing this cycle.')+'</div>';
+        h += '<div class="sub" style="margin-top:12px;"><span class="pill pill-mute">no dominant counterparty this cycle</span> '
+           + esc(wp.dominant_actor_note||'No dominant commercial actor firing this cycle.')+'</div>';
     }
     el('wheelBody').innerHTML = h;
 }
