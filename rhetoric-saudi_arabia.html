@@ -808,7 +808,9 @@
         .v3-caveat { font-size: 0.8rem; line-height: 1.5; color: var(--accent-yellow);
                      border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 8px; }
 
-        .pact-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+        .pact-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
+        @media (max-width: 1100px) { .pact-row { grid-template-columns: 1fr 1fr; } }
+        .pact-cell.non-pact { border-style: dashed; }
         @media (max-width: 800px) { .pact-row { grid-template-columns: 1fr; } }
         .pact-cell { background: var(--bg-signal); border: 1px solid var(--border-color); border-radius: 8px;
                      padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -853,7 +855,7 @@
     </div>
     <div class="header-row-2">
         <div class="header-title" data-i18n="page_title">SAUDI ARABIA RHETORIC TRACKER</div>
-        <div class="header-subtitle" data-i18n="page_subtitle">13-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">14-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier</div>
     </div>
     <div class="header-row-3">
         <div class="lang-toggle">
@@ -959,7 +961,7 @@
         <div class="section-header">
             <span class="section-icon">🤝</span>
             <span class="section-title" data-i18n="sec_pact">Mecca Pact — Guarantor Response</span>
-            <span class="section-desc" data-i18n="sec_pact_desc">Saudi Arabia · Türkiye · Pakistan (signed Aug 2026; collective deterrence activated 5 Oct 2026)</span>
+            <span class="section-desc" data-i18n="sec_pact_desc">Saudi Arabia · Türkiye · Pakistan (signed Aug 2026; collective deterrence activated 5 Oct 2026) · Egypt tracked as non-pact support</span>
         </div>
         <div class="v3-card" id="pactCard"><p class="empty-state" data-i18n="loading">Loading...</p></div>
 
@@ -1023,7 +1025,7 @@
                 <span class="level-pill" id="vecDomesticLevel">—</span>
             </div>
             <div class="gauge-card">
-                <div class="gauge-label" data-i18n="vec_guarantor">Guarantor Response</div>
+                <div class="gauge-label" data-i18n="vec_guarantor">Guarantor &amp; Third-Party Response</div>
                 <div class="gauge-value" id="vecGuarantorScore">—</div>
                 <span class="level-pill" id="vecGuarantorLevel">—</span>
             </div>
@@ -1434,8 +1436,8 @@ const T = {
 // =============================================
 const T_V3 = {
     en: {
-        page_subtitle: '13-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier',
-        vec_guarantor: 'Guarantor Response',
+        page_subtitle: '14-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier',
+        vec_guarantor: 'Guarantor & Third-Party Response',
         drift_label: 'Accords Axis', type_alignment_drift: 'Accords Axis',
         cca_copper_title: 'Oil \u00d7 Infrastructure Coupling', cca_silver_title: 'Wheat \u00d7 Import Dependence',
         actors_desc_tpl: '{n} tracked actors across {m} vectors',
@@ -1448,7 +1450,8 @@ const T_V3 = {
         forcing_caveat: 'Source check: a US- or Israeli-sourced claim of cooperation is not Saudi confirmation. Riyadh\u2019s response is the tell \u2014 denial keeps the holdout; silence is the signal.',
         axis_absent: 'Accords axis not computed this scan \u2014 the interpreter fell back. Absence reported, not inferred.',
         sec_pact: 'Mecca Pact \u2014 Guarantor Response',
-        sec_pact_desc: 'Saudi Arabia \u00b7 T\u00fcrkiye \u00b7 Pakistan (signed Aug 2026; collective deterrence activated 5 Oct 2026)',
+        sec_pact_desc: 'Saudi Arabia \u00b7 T\u00fcrkiye \u00b7 Pakistan (signed Aug 2026; collective deterrence activated 5 Oct 2026) \u00b7 Egypt tracked as non-pact support',
+        pact_egypt: 'Egypt', pact_non_pact: 'Non-pact',
         pact_turkiye: 'T\u00fcrkiye', pact_pakistan: 'Pakistan', pact_kinetic: 'Saudi kinetic tempo',
         reading_responding: 'Guarantors responding',
         reading_flat_under_fire: 'Flat under fire \u2014 the pact-is-paper reading',
@@ -1465,11 +1468,12 @@ const T_V3 = {
         // 'confirmed' in the backend means REPORTED by non-claim outlets (wires/RSS) --
         // not confirmed by Riyadh. The label says what is actually measured.
         conf_confirmed: 'Reported', conf_claim_sourced: 'Claim-sourced', conf_by: 'non-claim outlets', conf_claimed_by: 'claimed by',
-        ftr_method_text: '13-actor frame across 5 vectors: Kinetic Inbound (Houthi/Yemen, MOD/air defence, Iran file), Energy Infrastructure (Aramco, OPEC+), Normalization Watch (Accords track, Palestinian file, US track, GCC), Domestic Transformation (Royal Court/MBS, Vision 2030), Guarantor Response (Mecca Pact: T\u00fcrkiye, Pakistan). Keywords score; tripwires assert \u2014 tripwires match within a single sentence and carry a confirmation class. Telegram claim channels are counted apart from the scores. Hajj window is a calendar multiplier, never a standalone signal. Scan refreshes every 12 hours.',
+        ftr_method_text: '14-actor frame across 5 vectors: Kinetic Inbound (Houthi/Yemen, MOD/air defence, Iran file), Energy Infrastructure (Aramco, OPEC+), Normalization Watch (Accords track, Palestinian file, US track, GCC), Domestic Transformation (Royal Court/MBS, Vision 2030), Guarantor & Third-Party Response (Mecca Pact guarantors T\u00fcrkiye and Pakistan; Egypt tracked as non-pact support, never counted in the pact reading). Keywords score; tripwires assert \u2014 tripwires match within a single sentence and carry a confirmation class. Telegram claim channels are counted apart from the scores. Hajj window is a calendar multiplier, never a standalone signal. Scan refreshes every 12 hours.',
     },
     ar: {
-        page_subtitle: '13 فاعلًا · 5 محاور · مرتكز ميثاق مكة · رصد الامتناع عن الاتفاقيات · طبقة احتكاك في عجلة إيران',
-        vec_guarantor: 'استجابة الضامنين',
+        page_subtitle: '14 فاعلًا · 5 محاور · مرتكز ميثاق مكة · رصد الامتناع عن الاتفاقيات · طبقة احتكاك في عجلة إيران',
+        vec_guarantor: 'استجابة الضامنين والأطراف الثالثة',
+        pact_egypt: 'مصر', pact_non_pact: 'خارج الميثاق',
         drift_label: 'محور الاتفاقيات', type_alignment_drift: 'محور الاتفاقيات',
         actors_desc_tpl: '{n} فاعلًا عبر {m} محاور', vectors_desc_tpl: '{m} محاور تحليلية — التكوين والدرجات',
         coverage_label: 'التغطية', coverage_absent: 'مصادر شقيقة لا تُبلغ', coverage_zero: 'أعاد 0 في هذا المسح',
@@ -1491,8 +1495,9 @@ const T_V3 = {
         conf_confirmed: 'مُبلَّغ عنه', conf_claim_sourced: 'مصدره ادعاء', conf_by: 'مصادر غير ادعائية', conf_claimed_by: 'ادّعته',
     },
     he: {
-        page_subtitle: '13 שחקנים · 5 וקטורים · עוגן ברית מכה · מעקב הימנעות מההסכמים · רמת חיכוך בגלגל איראן',
-        vec_guarantor: 'תגובת שותפות ההגנה',
+        page_subtitle: '14 שחקנים · 5 וקטורים · עוגן ברית מכה · מעקב הימנעות מההסכמים · רמת חיכוך בגלגל איראן',
+        vec_guarantor: 'תגובת שותפות ההגנה וצדדים שלישיים',
+        pact_egypt: 'מצרים', pact_non_pact: 'מחוץ לברית',
         drift_label: 'ציר ההסכמים', type_alignment_drift: 'ציר ההסכמים',
         actors_desc_tpl: '{n} שחקנים ב-{m} וקטורים', vectors_desc_tpl: '{m} וקטורים אנליטיים — הרכב וציונים',
         coverage_label: 'כיסוי', coverage_absent: 'מקורות מקבילים שאינם מדווחים', coverage_zero: 'החזיר 0 בסריקה זו',
@@ -1514,8 +1519,9 @@ const T_V3 = {
         conf_confirmed: 'דווח', conf_claim_sourced: 'מקור: טענה', conf_by: 'מקורות שאינם ערוצי טענה', conf_claimed_by: 'נטען ע״י',
     },
     fa: {
-        page_subtitle: '۱۳ بازیگر · ۵ بردار · لنگر پیمان مکه · پایش امتناع از توافق‌ها · لایه اصطکاک چرخ ایران',
-        vec_guarantor: 'واکنش ضامن‌ها',
+        page_subtitle: '۱۴ بازیگر · ۵ بردار · لنگر پیمان مکه · پایش امتناع از توافق‌ها · لایه اصطکاک چرخ ایران',
+        vec_guarantor: 'واکنش ضامن‌ها و طرف‌های ثالث',
+        pact_egypt: 'مصر', pact_non_pact: 'خارج از پیمان',
         drift_label: 'محور توافق‌ها', type_alignment_drift: 'محور توافق‌ها',
         actors_desc_tpl: '{n} بازیگر در {m} بردار', vectors_desc_tpl: '{m} بردار تحلیلی — ترکیب و امتیاز',
         coverage_label: 'پوشش', coverage_absent: 'منابع هم‌ردیف که گزارش نمی‌دهند', coverage_zero: 'در این اسکن ۰ برگرداند',
@@ -1784,14 +1790,18 @@ function renderPact() {
         html += `<p class="v3-note" style="color:var(--accent-yellow);">\u26a0 ${escapeHtml(t.reading_absent)}</p>`;
     }
     const tk = actors.mecca_pact_turkiye || {}, pk = actors.mecca_pact_pakistan || {};
+    // Egypt (18 Oct ruling): tracked as NON-pact support. Shown beside the
+    // guarantors, visibly marked, never counted in the pact's own reading.
+    const eg = actors.egypt_support || null;
     const kin = (mp && mp.kinetic_level) || (scanData.vector_levels || {}).kinetic_inbound || 'low';
     html += '<div class="pact-row">';
     html += `<div class="pact-cell"><div><span class="pact-name">🇹🇷 ${escapeHtml(t.pact_turkiye)}</span><span class="v3-muted">${escapeHtml(t.actor_signals)}: ${tk.article_count || 0}</span></div>${_levelPill(tk.level)}</div>`;
     html += `<div class="pact-cell"><div><span class="pact-name">🇵🇰 ${escapeHtml(t.pact_pakistan)}</span><span class="v3-muted">${escapeHtml(t.actor_signals)}: ${pk.article_count || 0}</span></div>${_levelPill(pk.level)}</div>`;
+    if (eg) html += `<div class="pact-cell non-pact"><div><span class="pact-name">🇪🇬 ${escapeHtml(t.pact_egypt)}</span> <span class="chip">${escapeHtml(t.pact_non_pact)}</span><span class="v3-muted">${escapeHtml(t.actor_signals)}: ${eg.article_count || 0}</span></div>${_levelPill(eg.level)}</div>`;
     html += `<div class="pact-cell"><div><span class="pact-name">🇸🇦 ${escapeHtml(t.pact_kinetic)}</span></div>${_levelPill(kin)}</div>`;
     html += '</div>';
-    const arts = [].concat(tk.top_articles || [], pk.top_articles || []);
-    if (arts.length) html += `<div style="margin-top:12px;">${_artRows(arts, 4)}</div>`;
+    const arts = [].concat(tk.top_articles || [], pk.top_articles || [], (eg && eg.top_articles) || []);
+    if (arts.length) html += `<div style="margin-top:12px;">${_artRows(arts, 6)}</div>`;
     card.innerHTML = html;
 }
 
@@ -2042,7 +2052,7 @@ function renderActors() {
     // Turkiye/Pakistan, Palestinian file). Known order first, then ANY other
     // actor the payload carries -- new backend actors render automatically.
     const KNOWN = ['houthi_yemen', 'saudi_mod_airdefense', 'iran_saudi',
-                   'mecca_pact_turkiye', 'mecca_pact_pakistan',
+                   'mecca_pact_turkiye', 'mecca_pact_pakistan', 'egypt_support',
                    'aramco_energy', 'opec_policy',
                    'accords_normalization', 'palestinian_file', 'us_saudi', 'gcc_saudi',
                    'royal_court_mbs', 'vision2030_domestic'];
