@@ -768,6 +768,63 @@
         @media (max-width: 600px) {
             .composite-strip { grid-template-columns: 1fr; }
         }
+
+        /* ── v3 (Oct 18 2026): coverage line, Accords axis, Mecca Pact, claim posture ── */
+        .composite-strip { grid-template-columns: 1.4fr repeat(5, 1fr); }
+        @media (max-width: 1199px) { .composite-strip { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px)  { .composite-strip { grid-template-columns: 1fr; } }
+
+        .coverage-bar {
+            font-size: 0.78rem; color: var(--text-muted); background: var(--bg-signal);
+            border: 1px dashed var(--border-color); border-radius: 8px;
+            padding: 8px 12px; margin: -6px 0 18px 0; line-height: 1.5;
+        }
+        .coverage-bar .cov-warn { color: var(--accent-yellow); font-weight: 700; }
+
+        .v3-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-cyan); border-radius: 10px;
+            padding: 18px 20px; margin-bottom: 24px; box-shadow: var(--shadow-sm);
+        }
+        .v3-badge {
+            display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; padding: 4px 12px; border-radius: 6px; border: 1px solid;
+        }
+        .v3-note { font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); margin: 10px 0 0 0; }
+        .v3-sub  { font-size: 0.7rem; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+                   color: var(--accent-cyan); margin-bottom: 8px; }
+        .v3-muted { font-size: 0.8rem; color: var(--text-muted); }
+        .v3-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        @media (max-width: 800px) { .v3-grid2 { grid-template-columns: 1fr; } }
+        .v3-pane { background: var(--bg-signal); border: 1px solid var(--border-color);
+                   border-radius: 8px; padding: 12px 14px; min-width: 0; }
+        .v3-pane-head { display: flex; justify-content: space-between; align-items: center;
+                        gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .v3-art { font-size: 0.82rem; line-height: 1.45; padding: 4px 0;
+                  border-top: 1px solid var(--border-color); overflow-wrap: anywhere; }
+        .v3-art:first-of-type { border-top: none; }
+        .v3-art a { color: var(--text-secondary); text-decoration: none; }
+        .v3-art a:hover { text-decoration: underline; }
+        .v3-caveat { font-size: 0.8rem; line-height: 1.5; color: var(--accent-yellow);
+                     border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 8px; }
+
+        .pact-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+        @media (max-width: 800px) { .pact-row { grid-template-columns: 1fr; } }
+        .pact-cell { background: var(--bg-signal); border: 1px solid var(--border-color); border-radius: 8px;
+                     padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .pact-cell .pact-name { font-weight: 700; color: var(--text-primary); }
+        .pact-cell .v3-muted { display: block; margin-top: 2px; }
+
+        .claim-stats { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 12px; }
+        .claim-stat .v { font-size: 1.4rem; font-weight: 700; color: var(--accent-cyan); }
+        .claim-stat .k { font-size: 0.68rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); }
+        .chip { display: inline-block; font-size: 0.72rem; padding: 2px 8px; margin: 3px 4px 0 0;
+                border-radius: 999px; border: 1px solid var(--border-strong); color: var(--text-secondary); }
+        .conf-pill { display: inline-block; font-size: 0.62rem; font-weight: 700; letter-spacing: 1px;
+                     text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid; }
+        .conf-confirmed { color: #6ee7b7; border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.10); }
+        .conf-claim_sourced { color: #fcd34d; border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.10); }
+        .signal-conf-row { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
     </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -796,7 +853,7 @@
     </div>
     <div class="header-row-2">
         <div class="header-title" data-i18n="page_title">SAUDI ARABIA RHETORIC TRACKER</div>
-        <div class="header-subtitle" data-i18n="page_subtitle">10-Actor · 4-Vector Composite · Friction Tier + Detente Shim (Iran · Israel Watch · US · IMEC)</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">13-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier</div>
     </div>
     <div class="header-row-3">
         <div class="lang-toggle">
@@ -859,6 +916,8 @@
     <main class="content">
 
         <div class="updated-bar" id="updatedBar" data-i18n="initializing">Initializing...</div>
+        <!-- v3: absence is REPORTED, not inferred -- sibling feeds + zero-return sources -->
+        <div class="coverage-bar" id="coverageBar" style="display:none;"></div>
 
         <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">
             ⏳ Initial scan in progress — this normally takes 3–5 minutes after a fresh deploy. Signals will appear shortly.
@@ -888,6 +947,30 @@
             <p class="empty-state" data-i18n="loading">Loading...</p>
         </div>
 
+        <!-- v3: ACCORDS AXIS (Rachel's 11 Oct ruling: holdout anchored by Gaza / West Bank /
+             Lebanon; the one forcing path is Israeli defence capability to Riyadh) -->
+        <div class="section-header">
+            <span class="section-icon">🧭</span>
+            <span class="section-title" data-i18n="sec_accords">Accords Axis — Holdout ↔ Signature</span>
+        </div>
+        <div class="v3-card" id="accordsCard"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
+        <!-- v3: MECCA PACT -- guarantor response (Türkiye · Pakistan) -->
+        <div class="section-header">
+            <span class="section-icon">🤝</span>
+            <span class="section-title" data-i18n="sec_pact">Mecca Pact — Guarantor Response</span>
+            <span class="section-desc" data-i18n="sec_pact_desc">Saudi Arabia · Türkiye · Pakistan (signed Aug 2026; collective deterrence activated 5 Oct 2026)</span>
+        </div>
+        <div class="v3-card" id="pactCard"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
+        <!-- v3: CLAIM-CHANNEL POSTURE (Telegram claim tiers, Saudi-gated) -->
+        <div class="section-header">
+            <span class="section-icon">📡</span>
+            <span class="section-title" data-i18n="sec_claims">Claim-Channel Posture</span>
+            <span class="section-desc" data-i18n="sec_claims_desc">Aligned / state Telegram claims about Saudi Arabia, counted apart from the scores</span>
+        </div>
+        <div class="v3-card" id="claimCard"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
         <!-- COMMODITY COUPLING (only shown if pressure exists) -->
         <div id="commoditySection" style="display: none;">
             <div class="section-header">
@@ -896,12 +979,12 @@
                 <span class="section-desc" data-i18n="sec_commodity_desc">Live supply-risk fingerprints from the commodity tracker</span>
             </div>
             <!-- Convergence banners + composite strip (mirror saudi_arabia-stability.html) -->
-            <div id="ccaCopper" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.10)); border:1px solid #f59e0b; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
-                <div style="font-weight:800; color:#fbbf24; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">⚡ <span data-i18n="cca_copper_title">Copper × Mining-Region Conflict Convergence</span></div>
+            <div id="ccaOil" style="display:none; background:linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.10)); border:1px solid #f59e0b; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
+                <div style="font-weight:800; color:#fbbf24; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">⚡ <span data-i18n="cca_copper_title">Oil × Infrastructure Coupling</span></div>
                 <div style="font-size:12px; line-height:1.55; color:var(--text-primary);">Oil is the coupling that matters: Abqaiq-class infrastructure events reprice Brent globally within hours (the 2019 precedent halved output in a day). The East-West Petroline to Yanbu is the bypass story; IMEC is the corridor story.</div>
             </div>
-            <div id="ccaSilver" style="display:none; background:linear-gradient(135deg, rgba(168,85,247,0.18), rgba(139,92,246,0.18)); border:1px solid #a855f7; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
-                <div style="font-weight:800; color:#c4b5fd; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">🪙 <span data-i18n="cca_silver_title">Silver × Presidential Instability</span></div>
+            <div id="ccaWheat" style="display:none; background:linear-gradient(135deg, rgba(168,85,247,0.18), rgba(139,92,246,0.18)); border:1px solid #a855f7; border-radius:10px; padding:14px 18px; margin-bottom:12px;">
+                <div style="font-weight:800; color:#c4b5fd; font-size:13px; letter-spacing:0.5px; margin-bottom:5px;">🌾 <span data-i18n="cca_silver_title">Wheat × Import Dependence</span></div>
                 <div style="font-size:12px; line-height:1.55; color:#ddd6fe;">Wheat import dependence (SAGO procurement, ~13M-ton demand) is the quiet coupling: Red Sea shipping disruption transmits into food-security costs -- watch Bab el-Mandeb war-risk premiums alongside Yanbu throughput.</div>
             </div>
             <div id="ccaComposite" style="display:none; border:1px solid #ef4444; border-left:4px solid #ef4444; border-radius:8px; background:rgba(239,68,68,0.07); padding:10px 16px; margin-bottom:12px; font-size:12.5px;">
@@ -939,13 +1022,18 @@
                 <div class="gauge-value" id="vecDomesticScore">—</div>
                 <span class="level-pill" id="vecDomesticLevel">—</span>
             </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_guarantor">Guarantor Response</div>
+                <div class="gauge-value" id="vecGuarantorScore">—</div>
+                <span class="level-pill" id="vecGuarantorLevel">—</span>
+            </div>
         </div>
 
         <!-- VECTOR BREAKDOWN -->
         <div class="section-header">
             <span class="section-icon">🧭</span>
             <span class="section-title" data-i18n="sec_vectors">Vector Breakdown</span>
-            <span class="section-desc" data-i18n="sec_vectors_desc">4 analytical vectors — composition + scoring</span>
+            <span class="section-desc" id="vectorsDesc">5 analytical vectors — composition + scoring</span>
         </div>
         <div class="vector-grid" id="vectorGrid">
             <div class="empty-state" data-i18n="loading">Loading...</div>
@@ -955,7 +1043,7 @@
         <div class="section-header">
             <span class="section-icon">🎭</span>
             <span class="section-title" data-i18n="sec_actors">Actor Breakdown</span>
-            <span class="section-desc" data-i18n="sec_actors_desc">8 tracked actors across 4 vectors</span>
+            <span class="section-desc" id="actorsDesc">13 tracked actors across 5 vectors</span>
         </div>
         <div class="actor-grid" id="actorGrid">
             <div class="empty-state" data-i18n="loading">Loading...</div>
@@ -967,8 +1055,8 @@
 <!-- FOOTER (canonical Asifah pattern) -->
 <footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:1800px;font-size:13px;color:#93c5fd;text-align:center;">
     <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — SAUDI ARABIA</div>
-    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
-    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Comercio, La República, Gestión, RPP, Ojo Público, Reuters) · NewsAPI · Brave</div>
+    <div style="margin-bottom:6px;">Backend: asifah-backend.onrender.com (ME) · Scans refresh ~every 12 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: RSS (Arab News, Saudi Gazette, Al Arabiya, Al-Monitor) · Google News (EN / AR / UR) · Telegram (tiered) · GDELT · NewsAPI · Brave</div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
         <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
         <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
@@ -985,7 +1073,7 @@ const API_BASE = 'https://asifah-backend.onrender.com';
 const ENDPOINT = `${API_BASE}/api/rhetoric/saudi_arabia`;
 
 // =============================================
-// I18N — English / Spanish / Portuguese
+// I18N — English / Arabic / Hebrew / Farsi
 // =============================================
 const T = {
     en: {
@@ -1341,6 +1429,119 @@ const T = {
 };
 
 // =============================================
+// I18N v3 ADDITIONS (Oct 18 2026) -- merged OVER each language with English
+// as the fallback, so a key missing in ar/he/fa shows English, never 'undefined'.
+// =============================================
+const T_V3 = {
+    en: {
+        page_subtitle: '13-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier',
+        vec_guarantor: 'Guarantor Response',
+        drift_label: 'Accords Axis', type_alignment_drift: 'Accords Axis',
+        cca_copper_title: 'Oil \u00d7 Infrastructure Coupling', cca_silver_title: 'Wheat \u00d7 Import Dependence',
+        actors_desc_tpl: '{n} tracked actors across {m} vectors',
+        vectors_desc_tpl: '{m} analytical vectors \u2014 composition + scoring',
+        coverage_label: 'Coverage', coverage_absent: 'Sibling feeds not reporting', coverage_zero: 'returned 0 this scan',
+        sec_accords: 'Accords Axis \u2014 Holdout \u2194 Signature',
+        accords_anchors: 'Holdout anchors \u2014 Gaza \u00b7 West Bank \u00b7 Lebanon',
+        accords_forcing: 'Forcing path \u2014 Israeli defence capability to Riyadh',
+        forcing_fired: 'Fired', forcing_quiet: 'Not fired this scan',
+        forcing_caveat: 'Source check: a US- or Israeli-sourced claim of cooperation is not Saudi confirmation. Riyadh\u2019s response is the tell \u2014 denial keeps the holdout; silence is the signal.',
+        axis_absent: 'Accords axis not computed this scan \u2014 the interpreter fell back. Absence reported, not inferred.',
+        sec_pact: 'Mecca Pact \u2014 Guarantor Response',
+        sec_pact_desc: 'Saudi Arabia \u00b7 T\u00fcrkiye \u00b7 Pakistan (signed Aug 2026; collective deterrence activated 5 Oct 2026)',
+        pact_turkiye: 'T\u00fcrkiye', pact_pakistan: 'Pakistan', pact_kinetic: 'Saudi kinetic tempo',
+        reading_responding: 'Guarantors responding',
+        reading_flat_under_fire: 'Flat under fire \u2014 the pact-is-paper reading',
+        reading_no_test: 'No test this scan',
+        reading_absent: 'Pact reading not in this payload (tracker older than v2.1.2)',
+        sec_claims: 'Claim-Channel Posture',
+        sec_claims_desc: 'Aligned / state Telegram claims about Saudi Arabia, counted apart from the scores',
+        claim_state_unread: 'Unread', claim_state_nominal: 'Nominal', claim_state_quieting: 'Quieting',
+        claim_state_silent: 'Silent', claim_state_surging: 'Surging',
+        claim_volume: 'Claims this scan', claim_baseline: 'Baseline (14 scans)',
+        claim_tg_total: 'Telegram messages (all)', claim_tier_total: 'Claim-tier (all topics)',
+        claim_scope_gated: 'Saudi-gated', claim_scope_ungated: 'UNGATED \u2014 whole axis ecosystem (pre-v2.1.0 payload)',
+        claim_channels: 'Channels', claim_absent: 'Claim posture not in this payload.',
+        // 'confirmed' in the backend means REPORTED by non-claim outlets (wires/RSS) --
+        // not confirmed by Riyadh. The label says what is actually measured.
+        conf_confirmed: 'Reported', conf_claim_sourced: 'Claim-sourced', conf_by: 'non-claim outlets', conf_claimed_by: 'claimed by',
+        ftr_method_text: '13-actor frame across 5 vectors: Kinetic Inbound (Houthi/Yemen, MOD/air defence, Iran file), Energy Infrastructure (Aramco, OPEC+), Normalization Watch (Accords track, Palestinian file, US track, GCC), Domestic Transformation (Royal Court/MBS, Vision 2030), Guarantor Response (Mecca Pact: T\u00fcrkiye, Pakistan). Keywords score; tripwires assert \u2014 tripwires match within a single sentence and carry a confirmation class. Telegram claim channels are counted apart from the scores. Hajj window is a calendar multiplier, never a standalone signal. Scan refreshes every 12 hours.',
+    },
+    ar: {
+        page_subtitle: '13 فاعلًا · 5 محاور · مرتكز ميثاق مكة · رصد الامتناع عن الاتفاقيات · طبقة احتكاك في عجلة إيران',
+        vec_guarantor: 'استجابة الضامنين',
+        drift_label: 'محور الاتفاقيات', type_alignment_drift: 'محور الاتفاقيات',
+        actors_desc_tpl: '{n} فاعلًا عبر {m} محاور', vectors_desc_tpl: '{m} محاور تحليلية — التكوين والدرجات',
+        coverage_label: 'التغطية', coverage_absent: 'مصادر شقيقة لا تُبلغ', coverage_zero: 'أعاد 0 في هذا المسح',
+        sec_accords: 'محور الاتفاقيات — الامتناع ↔ التوقيع',
+        accords_anchors: 'مرتكزات الامتناع — غزة · الضفة الغربية · لبنان',
+        accords_forcing: 'المسار الضاغط — قدرات دفاعية إسرائيلية للرياض',
+        forcing_fired: 'أُطلق', forcing_quiet: 'لم يُطلق في هذا المسح',
+        forcing_caveat: 'تنبيه المصدر: ادعاء أمريكي أو إسرائيلي بالتعاون ليس تأكيدًا سعوديًا. ردّ الرياض هو المؤشر — النفي يُبقي الامتناع، والصمت هو الإشارة.',
+        axis_absent: 'لم يُحتسب محور الاتفاقيات في هذا المسح — عاد المفسّر إلى الوضع الاحتياطي. الغياب مُبلَّغ عنه لا مُستنتج.',
+        sec_pact: 'ميثاق مكة — استجابة الضامنين',
+        pact_turkiye: 'تركيا', pact_pakistan: 'باكستان', pact_kinetic: 'وتيرة الهجمات على السعودية',
+        reading_responding: 'الضامنون يستجيبون', reading_flat_under_fire: 'ثبات تحت النار — قراءة «الميثاق حبر على ورق»',
+        reading_no_test: 'لا اختبار في هذا المسح',
+        sec_claims: 'وضعية قنوات الادعاء',
+        claim_state_unread: 'غير مقروء', claim_state_nominal: 'طبيعي', claim_state_quieting: 'تراجع',
+        claim_state_silent: 'صامت', claim_state_surging: 'تصاعد',
+        claim_volume: 'ادعاءات هذا المسح', claim_baseline: 'خط الأساس (14 مسحًا)', claim_channels: 'القنوات',
+        claim_scope_gated: 'مقصور على السعودية',
+        conf_confirmed: 'مُبلَّغ عنه', conf_claim_sourced: 'مصدره ادعاء', conf_by: 'مصادر غير ادعائية', conf_claimed_by: 'ادّعته',
+    },
+    he: {
+        page_subtitle: '13 שחקנים · 5 וקטורים · עוגן ברית מכה · מעקב הימנעות מההסכמים · רמת חיכוך בגלגל איראן',
+        vec_guarantor: 'תגובת שותפות ההגנה',
+        drift_label: 'ציר ההסכמים', type_alignment_drift: 'ציר ההסכמים',
+        actors_desc_tpl: '{n} שחקנים ב-{m} וקטורים', vectors_desc_tpl: '{m} וקטורים אנליטיים — הרכב וציונים',
+        coverage_label: 'כיסוי', coverage_absent: 'מקורות מקבילים שאינם מדווחים', coverage_zero: 'החזיר 0 בסריקה זו',
+        sec_accords: 'ציר ההסכמים — הימנעות ↔ חתימה',
+        accords_anchors: 'עוגני ההימנעות — עזה · הגדה המערבית · לבנון',
+        accords_forcing: 'המסלול המכריע — יכולות הגנה ישראליות לריאד',
+        forcing_fired: 'הופעל', forcing_quiet: 'לא הופעל בסריקה זו',
+        forcing_caveat: 'בדיקת מקור: טענה אמריקנית או ישראלית על שיתוף פעולה אינה אישור סעודי. תגובת ריאד היא הסימן — הכחשה משמרת את ההימנעות; שתיקה היא האות.',
+        axis_absent: 'ציר ההסכמים לא חושב בסריקה זו — המפרש עבר למצב גיבוי. ההיעדר מדווח, לא מוסק.',
+        sec_pact: 'ברית מכה — תגובת שותפות ההגנה',
+        pact_turkiye: 'טורקיה', pact_pakistan: 'פקיסטן', pact_kinetic: 'קצב התקיפות על סעודיה',
+        reading_responding: 'השותפות מגיבות', reading_flat_under_fire: 'דממה תחת אש — קריאת "הברית על הנייר"',
+        reading_no_test: 'אין מבחן בסריקה זו',
+        sec_claims: 'מצב ערוצי הטענות',
+        claim_state_unread: 'לא נקרא', claim_state_nominal: 'תקין', claim_state_quieting: 'נחלש',
+        claim_state_silent: 'שקט', claim_state_surging: 'זינוק',
+        claim_volume: 'טענות בסריקה', claim_baseline: 'קו בסיס (14 סריקות)', claim_channels: 'ערוצים',
+        claim_scope_gated: 'מסונן לסעודיה',
+        conf_confirmed: 'דווח', conf_claim_sourced: 'מקור: טענה', conf_by: 'מקורות שאינם ערוצי טענה', conf_claimed_by: 'נטען ע״י',
+    },
+    fa: {
+        page_subtitle: '۱۳ بازیگر · ۵ بردار · لنگر پیمان مکه · پایش امتناع از توافق‌ها · لایه اصطکاک چرخ ایران',
+        vec_guarantor: 'واکنش ضامن‌ها',
+        drift_label: 'محور توافق‌ها', type_alignment_drift: 'محور توافق‌ها',
+        actors_desc_tpl: '{n} بازیگر در {m} بردار', vectors_desc_tpl: '{m} بردار تحلیلی — ترکیب و امتیاز',
+        coverage_label: 'پوشش', coverage_absent: 'منابع هم‌ردیف که گزارش نمی‌دهند', coverage_zero: 'در این اسکن ۰ برگرداند',
+        sec_accords: 'محور توافق‌ها — امتناع ↔ امضا',
+        accords_anchors: 'لنگرهای امتناع — غزه · کرانه باختری · لبنان',
+        accords_forcing: 'مسیر وادارکننده — توان دفاعی اسرائیل برای ریاض',
+        forcing_fired: 'فعال شد', forcing_quiet: 'در این اسکن فعال نشد',
+        forcing_caveat: 'بررسی منبع: ادعای آمریکایی یا اسرائیلی دربارهٔ همکاری، تأیید سعودی نیست. واکنش ریاض نشانه است — تکذیب امتناع را حفظ می‌کند؛ سکوت خودِ سیگنال است.',
+        axis_absent: 'محور توافق‌ها در این اسکن محاسبه نشد — مفسّر به حالت پشتیبان رفت. غیاب گزارش می‌شود، نه استنباط.',
+        sec_pact: 'پیمان مکه — واکنش ضامن‌ها',
+        pact_turkiye: 'ترکیه', pact_pakistan: 'پاکستان', pact_kinetic: 'آهنگ حملات به عربستان',
+        reading_responding: 'ضامن‌ها واکنش نشان می‌دهند', reading_flat_under_fire: 'سکوت زیر آتش — خوانش «پیمان روی کاغذ»',
+        reading_no_test: 'بدون آزمون در این اسکن',
+        sec_claims: 'وضعیت کانال‌های ادعا',
+        claim_state_unread: 'خوانده‌نشده', claim_state_nominal: 'عادی', claim_state_quieting: 'کاهشی',
+        claim_state_silent: 'خاموش', claim_state_surging: 'جهش',
+        claim_volume: 'ادعاهای این اسکن', claim_baseline: 'خط مبنا (۱۴ اسکن)', claim_channels: 'کانال‌ها',
+        claim_scope_gated: 'محدود به عربستان',
+        conf_confirmed: 'گزارش‌شده', conf_claim_sourced: 'منبع: ادعا', conf_by: 'منبع غیرادعایی', conf_claimed_by: 'ادعاشده توسط',
+    },
+};
+Object.keys(T).forEach(lang => Object.assign(T[lang], T_V3.en, T_V3[lang] || {}));
+// The method text is long; keep each language's own where it has one, else English.
+// (Object.assign above already put the English v3 version on every language.)
+
+// =============================================
 // STATE
 // =============================================
 let currentLang = localStorage.getItem('asifah_saudi_lang') || 'en';
@@ -1424,10 +1625,14 @@ function renderEverything() {
     if (!scanData) return;
 
     renderUpdatedBar();
+    renderCoverage();
     renderComposite();
     renderExecSummary();
     renderTopSignals();
     renderSoWhat();
+    renderAccords();
+    renderPact();
+    renderClaims();
     renderVectors();
     renderCommodityCoupling();
     renderActors();
@@ -1439,7 +1644,7 @@ function renderUpdatedBar() {
     const bar = document.getElementById('updatedBar');
     if (scanData && scanData.last_updated) {
         const dt = new Date(scanData.last_updated);
-        const formatted = dt.toLocaleString(currentLang === 'pt' ? 'pt-BR' : currentLang === 'es' ? 'es' : 'en-US',
+        const formatted = dt.toLocaleString(({ ar: 'ar', he: 'he', fa: 'fa' })[currentLang] || 'en-US',
                                               { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
         const tag = scanData.cached ? t.updated_cached : t.updated_live;
         const stale = scanData.stale ? t.updated_stale : '';
@@ -1468,6 +1673,156 @@ function renderComposite() {
     setPill('vecNormLevel', vl.normalization_watch || 'low');
     document.getElementById('vecDomesticScore').textContent = (vs.domestic_transformation || 0).toFixed(1);
     setPill('vecDomesticLevel', vl.domestic_transformation || 'low');
+    document.getElementById('vecGuarantorScore').textContent = (vs.guarantor_response || 0).toFixed(1);
+    setPill('vecGuarantorLevel', vl.guarantor_response || 'low');
+}
+
+// v3: absence is REPORTED, not inferred. Sibling feeds that did not report,
+// and any source that returned zero, are stated plainly -- never left blank.
+function renderCoverage() {
+    const t = T[currentLang] || T.en;
+    const bar = document.getElementById('coverageBar');
+    const parts = [];
+    const absent = scanData.crosstheater_absent || [];
+    if (absent.length) {
+        const names = absent.map(a => a.replace('_fingerprint', '').replace(/_/g, ' '))
+                            .map(n => n.charAt(0).toUpperCase() + n.slice(1));
+        parts.push(`<span class="cov-warn">\u26a0 ${escapeHtml(t.coverage_absent)}:</span> ${escapeHtml(names.join(', '))}`);
+    }
+    const sb = scanData.source_breakdown || {};
+    const zero = Object.keys(sb).filter(k => sb[k] === 0).map(k => k.toUpperCase());
+    if (zero.length) {
+        parts.push(`<span class="cov-warn">${escapeHtml(zero.join(' \u00b7 '))}</span> ${escapeHtml(t.coverage_zero)}`);
+    }
+    const live = Object.keys(sb).filter(k => sb[k] > 0).map(k => `${k.toUpperCase()} ${sb[k]}`);
+    if (live.length) parts.push(escapeHtml(live.join(' \u00b7 ')));
+    if (!parts.length) { bar.style.display = 'none'; return; }
+    bar.style.display = 'block';
+    bar.innerHTML = `<strong>${escapeHtml(t.coverage_label)}:</strong> ` + parts.join(' &nbsp;|&nbsp; ');
+}
+
+function _artRows(articles, max) {
+    return (articles || []).slice(0, max || 3).map(art => {
+        const url = art.url || '';
+        const title = escapeHtml(art.title || '');
+        const link = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${title}</a>` : title;
+        return `<div class="v3-art">${link} <span class="v3-muted">[${escapeHtml(art.source || '')}]</span></div>`;
+    }).join('');
+}
+
+function _levelPill(level) {
+    const t = T[currentLang] || T.en;
+    const lv = level || 'low';
+    return `<span class="level-pill level-${escapeHtml(lv)}">${escapeHtml(t['level_' + lv] || lv)}</span>`;
+}
+
+// v3: ACCORDS AXIS. Band + so-what from the interpreter; holdout anchors read
+// from the palestinian_file actor; forcing path = israel_defense_transfer.
+function renderAccords() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('accordsCard');
+    const em = s => (s || '').replace(/--/g, '\u2014');
+    const drift = scanData.alignment_drift || null;
+    const actors = scanData.actor_summaries || {};
+    const pal = actors.palestinian_file || null;
+    const tws = (scanData.tripwires_global || []).filter(x => x && x.id === 'israel_defense_transfer');
+    let html = '';
+    if (drift && drift.band) {
+        const bc = drift.color || 'var(--accent-cyan)';
+        card.style.borderLeftColor = bc;
+        html += `<span class="v3-badge" style="color:${escapeHtml(bc)}; border-color:${escapeHtml(bc)}; background:${escapeHtml(bc)}22;">${escapeHtml(t.drift_label)}: ${escapeHtml(drift.band)}</span>`;
+        html += `<p class="v3-note">${escapeHtml(em(drift.so_what_factor || ''))}</p>`;
+    } else {
+        card.style.borderLeftColor = 'var(--accent-yellow)';
+        html += `<p class="v3-note" style="color:var(--accent-yellow);">\u26a0 ${escapeHtml(t.axis_absent)}</p>`;
+    }
+    html += '<div class="v3-grid2">';
+    // Holdout anchors
+    html += '<div class="v3-pane">';
+    html += `<div class="v3-pane-head"><span class="v3-sub" style="margin:0;">${escapeHtml(t.accords_anchors)}</span>${pal ? _levelPill(pal.level) : ''}</div>`;
+    if (pal && (pal.top_articles || []).length) html += _artRows(pal.top_articles, 3);
+    else html += `<div class="v3-muted">${escapeHtml(t.actor_no_articles)}</div>`;
+    html += '</div>';
+    // Forcing path
+    const fired = tws.length > 0;
+    const conf = fired ? (tws.some(x => x.confirmation === 'confirmed') ? 'confirmed'
+                         : (tws.find(x => x.confirmation) || {}).confirmation) : null;
+    html += '<div class="v3-pane">';
+    html += `<div class="v3-pane-head"><span class="v3-sub" style="margin:0;">${escapeHtml(t.accords_forcing)}</span>`;
+    html += fired ? `<span class="level-pill level-high">${escapeHtml(t.forcing_fired)}</span>`
+                  : `<span class="level-pill level-low">${escapeHtml(t.forcing_quiet)}</span>`;
+    html += '</div>';
+    if (fired && conf) html += `<span class="conf-pill conf-${escapeHtml(conf)}">${escapeHtml(t['conf_' + conf] || conf)}</span>`;
+    const acc = actors.accords_normalization || null;
+    if (acc && (acc.top_articles || []).length) html += _artRows(acc.top_articles, 3);
+    if (fired) html += `<div class="v3-caveat">${escapeHtml(t.forcing_caveat)}</div>`;
+    html += '</div></div>';
+    if (drift && (drift.leading_indicators || []).length) {
+        html += `<div class="v3-sub" style="margin-top:14px;">${escapeHtml(t.leading_indicators || 'Leading Indicators')}</div><ul class="drift-li-list">`;
+        drift.leading_indicators.forEach(li => { html += `<li>${escapeHtml(em(li))}</li>`; });
+        html += '</ul>';
+    }
+    if (drift && drift.disclaimer) html += `<p class="drift-disclaimer">${escapeHtml(em(drift.disclaimer))}</p>`;
+    card.innerHTML = html;
+}
+
+// v3: MECCA PACT. The tracker computes the reading (ONE writer); the page renders it.
+function renderPact() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('pactCard');
+    const mp = scanData.mecca_pact || null;
+    const actors = scanData.actor_summaries || {};
+    const READ_COLOR = { responding: '#10b981', flat_under_fire: '#f97316', no_test: '#5d7ea3' };
+    let html = '';
+    if (mp && mp.reading) {
+        const c = READ_COLOR[mp.reading] || '#5d7ea3';
+        card.style.borderLeftColor = c;
+        html += `<span class="v3-badge" style="color:${c}; border-color:${c}; background:${c}22;">${escapeHtml(t['reading_' + mp.reading] || mp.reading)}</span>`;
+        html += `<p class="v3-note">${escapeHtml((mp.note || '').replace(/--/g, '\u2014'))}</p>`;
+    } else {
+        card.style.borderLeftColor = 'var(--accent-yellow)';
+        html += `<p class="v3-note" style="color:var(--accent-yellow);">\u26a0 ${escapeHtml(t.reading_absent)}</p>`;
+    }
+    const tk = actors.mecca_pact_turkiye || {}, pk = actors.mecca_pact_pakistan || {};
+    const kin = (mp && mp.kinetic_level) || (scanData.vector_levels || {}).kinetic_inbound || 'low';
+    html += '<div class="pact-row">';
+    html += `<div class="pact-cell"><div><span class="pact-name">🇹🇷 ${escapeHtml(t.pact_turkiye)}</span><span class="v3-muted">${escapeHtml(t.actor_signals)}: ${tk.article_count || 0}</span></div>${_levelPill(tk.level)}</div>`;
+    html += `<div class="pact-cell"><div><span class="pact-name">🇵🇰 ${escapeHtml(t.pact_pakistan)}</span><span class="v3-muted">${escapeHtml(t.actor_signals)}: ${pk.article_count || 0}</span></div>${_levelPill(pk.level)}</div>`;
+    html += `<div class="pact-cell"><div><span class="pact-name">🇸🇦 ${escapeHtml(t.pact_kinetic)}</span></div>${_levelPill(kin)}</div>`;
+    html += '</div>';
+    const arts = [].concat(tk.top_articles || [], pk.top_articles || []);
+    if (arts.length) html += `<div style="margin-top:12px;">${_artRows(arts, 4)}</div>`;
+    card.innerHTML = html;
+}
+
+// v3: CLAIM-CHANNEL POSTURE. 'unread' is rendered as unread -- never as quiet.
+function renderClaims() {
+    const t = T[currentLang] || T.en;
+    const card = document.getElementById('claimCard');
+    const cp = scanData.claim_posture || null;
+    if (!cp) { card.innerHTML = `<p class="v3-muted">${escapeHtml(t.claim_absent)}</p>`; return; }
+    const COL = { unread: '#5d7ea3', nominal: '#38bdf8', quieting: '#f59e0b', silent: '#f97316', surging: '#ef4444' };
+    const st = cp.state || 'unread';
+    const c = COL[st] || '#5d7ea3';
+    card.style.borderLeftColor = c;
+    // Ungated warning only when there IS an ungated count to warn about
+    // (a zero-message 'unread' has nothing to mis-scope).
+    const gated = cp.scope === 'saudi_gated' || !(cp.claim_volume > 0);
+    let html = `<span class="v3-badge" style="color:${c}; border-color:${c}; background:${c}22;">${escapeHtml(t['claim_state_' + st] || st)}</span> `;
+    html += `<span class="chip" style="${gated ? '' : 'color:var(--accent-yellow); border-color:var(--accent-yellow);'}">${escapeHtml(gated ? t.claim_scope_gated : t.claim_scope_ungated)}</span>`;
+    html += '<div class="claim-stats">';
+    html += `<div class="claim-stat"><div class="v">${cp.claim_volume != null ? cp.claim_volume : '\u2014'}</div><div class="k">${escapeHtml(t.claim_volume)}</div></div>`;
+    html += `<div class="claim-stat"><div class="v">${cp.baseline != null ? cp.baseline : '\u2014'}</div><div class="k">${escapeHtml(t.claim_baseline)}</div></div>`;
+    html += `<div class="claim-stat"><div class="v" style="color:var(--text-secondary);">${cp.telegram_total != null ? cp.telegram_total : '\u2014'}</div><div class="k">${escapeHtml(t.claim_tg_total)}</div></div>`;
+    if (cp.claim_tier_total != null) html += `<div class="claim-stat"><div class="v" style="color:var(--text-secondary);">${cp.claim_tier_total}</div><div class="k">${escapeHtml(t.claim_tier_total)}</div></div>`;
+    html += '</div>';
+    if (cp.note) html += `<p class="v3-note">${escapeHtml(cp.note.replace(/--/g, '\u2014'))}</p>`;
+    if ((cp.channels || []).length) {
+        html += `<div style="margin-top:10px;"><span class="v3-sub">${escapeHtml(t.claim_channels)}</span><div>`;
+        cp.channels.forEach(ch => { html += `<span class="chip">${escapeHtml(ch)}</span>`; });
+        html += '</div></div>';
+    }
+    card.innerHTML = html;
 }
 
 function setPill(elemId, level) {
@@ -1489,7 +1844,6 @@ function renderExecSummary() {
     card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
 }
 
-// renderElectionWatch RETIRED Jul 2026 (runoff concluded -- Fujimori declared winner)
 function renderTopSignals() {
     const t = T[currentLang] || T.en;
     const grid = document.getElementById('topSignalsGrid');
@@ -1500,9 +1854,12 @@ function renderTopSignals() {
     }
 
     let html = '';
+    // v3: some signals (the axis read, cross-theater) carry a NUMERIC level and a
+    // 'category' instead of 'type' -- normalize so the pill never shows a bare "3".
+    const NUM_LEVEL = { 0: 'low', 1: 'normal', 2: 'elevated', 3: 'high', 4: 'surge', 5: 'surge' };
     signals.forEach(sig => {
-        const level = sig.level || 'low';
-        const type = sig.type || 'actor_signal';
+        const level = (typeof sig.level === 'number' ? NUM_LEVEL[sig.level] : sig.level) || 'low';
+        const type = sig.type || sig.category || 'actor_signal';
         const typeLabel = t['type_' + type] || type;
         let sourcesHtml = '';
         if (sig.sources && sig.sources.length) {
@@ -1520,6 +1877,15 @@ function renderTopSignals() {
             sourcesHtml += '</div>';
         }
 
+        // v3: tripwires carry a confirmation class (interpreter v1.2.2+).
+        let confHtml = '';
+        if (type === 'tripwire' && sig.confirmation) {
+            const cc = sig.confirmation;
+            confHtml = `<div class="signal-conf-row"><span class="conf-pill conf-${escapeHtml(cc)}">${escapeHtml(t['conf_' + cc] || cc)}</span>`;
+            if (sig.confirmed_by) confHtml += ` &nbsp;${sig.confirmed_by} ${escapeHtml(t.conf_by)}`;
+            if ((sig.claim_channels || []).length) confHtml += ` &nbsp;\u00b7 ${escapeHtml(t.conf_claimed_by)}: ${escapeHtml(sig.claim_channels.join(', '))}`;
+            confHtml += '</div>';
+        }
         html += `
             <div class="signal-card level-${level}">
                 <div class="signal-meta-row">
@@ -1527,6 +1893,7 @@ function renderTopSignals() {
                     <span class="level-pill level-${level}">${escapeHtml(t['level_' + level] || level)}</span>
                 </div>
                 <div class="signal-short">${escapeHtml(sig.short_text || '')}</div>
+                ${confHtml}
                 <div class="signal-long">${escapeHtml(sig.long_text || '')}</div>
                 ${sourcesHtml}
             </div>`;
@@ -1542,8 +1909,9 @@ function renderSoWhat() {
     const em = s => (s || '').replace(/--/g, '\u2014');
     let html = '';
 
-    // Lead: great-power alignment-drift factor (BRI inroad read)
-    if (drift && drift.band) {
+    // v3: the Accords axis renders in its own card (renderAccords). The old
+    // drift lead block here is disabled to avoid showing it twice.
+    if (false && drift && drift.band) {
         const bc = drift.color || 'var(--accent-orange)';
         html += `<div class="drift-block" style="border-left-color:${escapeHtml(bc)};">`;
         html += `<div class="drift-band-row"><span class="drift-band-badge" style="background:${escapeHtml(bc)}22; color:${escapeHtml(bc)}; border:1px solid ${escapeHtml(bc)};">${escapeHtml(t.drift_label || 'Alignment Drift')}: ${escapeHtml(drift.band)}</span></div>`;
@@ -1563,7 +1931,10 @@ function renderSoWhat() {
     }
 
     // Remaining strategic bullets (exclude the alignment-drift lead bullet to avoid duplication)
-    const others = bullets.filter(b => !(b.bullet || '').toUpperCase().startsWith('ALIGNMENT DRIFT'));
+    const others = bullets.filter(b => {
+        const u = (b.bullet || '').toUpperCase();
+        return !u.startsWith('ALIGNMENT DRIFT') && !u.startsWith('ACCORDS AXIS READS');
+    });
     if (others.length) {
         html += '<ul class="so-what-list">';
         others.forEach(b => {
@@ -1583,21 +1954,31 @@ function renderVectors() {
     const vl = scanData.vector_levels || {};
     const actors = scanData.actor_summaries || {};
 
-    const vectorMembers = {
-        'kinetic_inbound':         ['houthi_yemen', 'saudi_mod_airdefense', 'iran_saudi'],
-        'energy_infrastructure':   ['aramco_energy', 'opec_policy'],
-        'normalization_watch':     ['accords_normalization', 'us_saudi', 'gcc_saudi'],
-        'domestic_transformation': ['royal_court_mbs', 'vision2030_domestic'],
-    };
+    // v3: membership is READ from the payload (each actor names its vector),
+    // so a backend actor can never silently vanish from this grid again --
+    // which is exactly what happened to the three 11 Oct actors.
+    const VEC_ORDER = ['kinetic_inbound', 'energy_infrastructure', 'normalization_watch',
+                       'domestic_transformation', 'guarantor_response'];
+    const vectorMembers = {};
+    Object.entries(actors).forEach(([aid, a]) => {
+        const v = (a && a.vector) || 'unassigned';
+        (vectorMembers[v] = vectorMembers[v] || []).push(aid);
+    });
+    Object.keys(vs).forEach(v => { vectorMembers[v] = vectorMembers[v] || []; });
+    const orderedVecs = VEC_ORDER.filter(v => v in vectorMembers)
+        .concat(Object.keys(vectorMembers).filter(v => !VEC_ORDER.includes(v)));
     const vectorLabels = {
         'kinetic_inbound':         t.vec_kinetic,
         'energy_infrastructure':   t.vec_energy,
         'normalization_watch':     t.vec_norm,
         'domestic_transformation': t.vec_domestic,
+        'guarantor_response':      t.vec_guarantor,
     };
+    const vdesc = document.getElementById('vectorsDesc');
+    if (vdesc) vdesc.textContent = (t.vectors_desc_tpl || '').replace('{m}', orderedVecs.length);
 
     let html = '';
-    Object.entries(vectorMembers).forEach(([vid, members]) => {
+    orderedVecs.map(v => [v, vectorMembers[v]]).forEach(([vid, members]) => {
         const memberNames = members.map(a => (actors[a] && actors[a].name) || a).join(', ');
         const score = (vs[vid] || 0).toFixed(1);
         const level = vl[vid] || 'low';
@@ -1628,10 +2009,12 @@ function renderCommodityCoupling() {
     section.style.display = 'block';
 
     const sc = story.commodities || {};
-    const copperHot = sc.copper && sc.copper !== 'normal';
-    const silverHot = sc.silver && sc.silver !== 'normal';
-    document.getElementById('ccaCopper').style.display = copperHot ? 'block' : 'none';
-    document.getElementById('ccaSilver').style.display = silverHot ? 'block' : 'none';
+    // v3: was copper/silver (Peru clone) -- keys this tracker never receives,
+    // so neither convergence banner could ever show. Saudi couplings: oil, wheat.
+    const oilHot = sc.oil && sc.oil !== 'normal';
+    const wheatHot = sc.wheat && sc.wheat !== 'normal';
+    document.getElementById('ccaOil').style.display = oilHot ? 'block' : 'none';
+    document.getElementById('ccaWheat').style.display = wheatHot ? 'block' : 'none';
     const comp = document.getElementById('ccaComposite');
     if (story.alert && story.alert !== 'normal') {
         const COLORS = { elevated: '#3b82f6', high: '#f59e0b', critical: '#dc2626', surge: '#ef4444' };
@@ -1655,7 +2038,19 @@ function renderActors() {
     const actors = scanData.actor_summaries || {};
 
     // Order: domestic first, then resource, then alignment
-    const actorOrder = ['royal_court_mbs', 'vision2030_domestic', 'saudi_mod_airdefense', 'aramco_energy', 'opec_policy', 'houthi_yemen', 'iran_saudi', 'accords_normalization', 'us_saudi', 'gcc_saudi'];
+    // v3: the hard-coded list of 10 hid the three 11 Oct actors (Mecca Pact
+    // Turkiye/Pakistan, Palestinian file). Known order first, then ANY other
+    // actor the payload carries -- new backend actors render automatically.
+    const KNOWN = ['houthi_yemen', 'saudi_mod_airdefense', 'iran_saudi',
+                   'mecca_pact_turkiye', 'mecca_pact_pakistan',
+                   'aramco_energy', 'opec_policy',
+                   'accords_normalization', 'palestinian_file', 'us_saudi', 'gcc_saudi',
+                   'royal_court_mbs', 'vision2030_domestic'];
+    const actorOrder = KNOWN.filter(a => a in actors)
+        .concat(Object.keys(actors).filter(a => !KNOWN.includes(a)));
+    const nVec = new Set(Object.values(actors).map(a => a && a.vector).filter(Boolean)).size;
+    const adesc = document.getElementById('actorsDesc');
+    if (adesc) adesc.textContent = (t.actors_desc_tpl || '').replace('{n}', actorOrder.length).replace('{m}', nVec);
 
     let html = '';
     actorOrder.forEach(aid => {
