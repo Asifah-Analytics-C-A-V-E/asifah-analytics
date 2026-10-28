@@ -1024,17 +1024,18 @@
 
                 <!-- Coalition / Knesset -->
                 <div class="metric-card">
-                    <div class="metric-title">🏛️ COALITION STATUS</div>
-                    <div class="metric-value" id="coalitionSeats">64</div>
-                    <div class="metric-subtitle">Knesset seats (61 needed)</div>
+                    <div class="metric-title" id="coalitionTitle">🏛️ COALITION STATUS</div>
+                    <div class="metric-value" id="coalitionSeats">--</div>
+                    <div class="metric-subtitle" id="coalitionSubtitle">Knesset seats (61 needed)</div>
                     <div class="coalition-bar-container" id="coalitionBarContainer" style="margin-top:12px;">
                         <div class="coalition-bar" id="coalitionBar"></div>
                         <div class="coalition-legend" id="coalitionLegend"></div>
                     </div>
                     <div style="margin-top:10px; font-size:11px; color:var(--text-secondary); padding:8px; background:var(--article-bg); border-radius:6px;">
-                        <div>🧑‍⚖️ PM: <strong style="color:var(--text-primary);">Benjamin Netanyahu</strong></div>
+                        <div id="coalitionPmLine">🧑‍⚖️ PM: <strong style="color:var(--text-primary);">Benjamin Netanyahu</strong></div>
                         <div style="margin-top:4px;">⚠️ On trial: bribery, fraud, breach of trust</div>
                         <div id="electionSignal" style="margin-top:4px;"></div>
+                        <div id="coalitionPaths" style="margin-top:8px;"></div>
                     </div>
                 </div>
 
@@ -1060,40 +1061,17 @@
                     <div class="metric-value" id="oppositionMentions">--</div>
                     <div class="metric-subtitle" data-i18n="oppWatchSubtitle">Mentions (7d) — anti-Netanyahu bloc</div>
 
-                    <!-- Mini-scorecard: latest published poll from major Israeli outlets -->
-                    <div style="margin-top:14px; padding:10px; background:var(--article-bg); border-radius:6px;">
-                        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-                            <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;" data-i18n="oppPollHeader">📊 Latest Knesset Poll Snapshot</div>
-                            <div style="font-size:9px; color:var(--text-muted); font-style:italic;" data-i18n="oppPollAsOf">As of: April 28, 2026 (manual)</div>
-                            <div id="oppPollAge" style="font-size:9px; margin-top:2px;"></div>
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px;">
-                            <div>
-                                <div style="font-weight:600; color:var(--text-primary);" data-i18n="oppTogether">Together (Bennett+Lapid)</div>
-                                <div style="font-size:18px; font-weight:700; color:#fbbf24;" id="oppTogetherSeats">26-27</div>
-                                <div style="color:var(--text-muted);" data-i18n="oppSeats">seats</div>
-                            </div>
-                            <div>
-                                <div style="font-weight:600; color:var(--text-primary);" data-i18n="oppLikud">Likud</div>
-                                <div style="font-size:18px; font-weight:700; color:#60a5fa;" id="oppLikudSeats">28</div>
-                                <div style="color:var(--text-muted);" data-i18n="oppSeats2">seats</div>
-                            </div>
-                            <div>
-                                <div style="font-weight:600; color:var(--text-primary);" data-i18n="oppYashar">Yashar (Eisenkot)</div>
-                                <div style="font-size:18px; font-weight:700; color:#a78bfa;" id="oppYasharSeats">12-15</div>
-                                <div style="color:var(--text-muted);" data-i18n="oppSeats3">seats</div>
-                            </div>
-                        </div>
-                        <div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--card-border); font-size:10px; color:var(--text-muted);" data-i18n="oppPollNote">
-                            Coalition: 51-57 · Opposition (Zionist): 52-60 · Arab parties: 9-11 · Threshold: 61 to govern
-                        </div>
+                    <!-- v2.4.0 (Oct 28 2026): election RESULTS replace the April poll.
+                         Rendered by renderElectionResults() from the backend's
+                         election_results block -- seat numbers live in one place
+                         (ELECTION_RESULTS in israel_stability.py), not in this page. -->
+                    <div id="electionResultsBox" style="margin-top:14px; padding:10px; background:var(--article-bg); border-radius:6px; font-size:11px; color:var(--text-muted);">
+                        Loading election results…
                     </div>
 
                     <div id="oppositionArticlesList" style="margin-top:12px; font-size:12px;"></div>
 
-                    <div style="margin-top:10px; padding:8px; background:var(--article-bg); border-radius:6px; font-size:11px; color:var(--text-secondary);" data-i18n="oppWatchNote">
-                        Bennett & Lapid merged into "Together" (April 26, 2026) — Bennett to lead. Eisenkot's Yashar! courted to join. Anti-Netanyahu bloc consolidating.
-                    </div>
+                    <div id="oppWatchNote" style="margin-top:10px; padding:8px; background:var(--article-bg); border-radius:6px; font-size:11px; color:var(--text-secondary);"></div>
                 </div>
 
                 <!-- Elections Vector (v2.1.0 — new card tracking electoral pressure proximity) -->
@@ -1453,6 +1431,156 @@
                     } else { p.innerHTML = ''; }
                 }
             } catch (e) { console.warn('[Election timing] render error:', e); }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // ELECTION RESULTS + COALITION CARD + KEY FIGURES  (v2.4.0, Oct 28 2026)
+        // ------------------------------------------------------------
+        // Seat numbers come ONLY from data.election_results (backend config
+        // ELECTION_RESULTS, provisional until certified). This page holds no
+        // seat counts of its own any more -- the April poll snapshot it used to
+        // carry is gone. Path rows are ARITHMETIC: what a structure adds up to,
+        // never whether anyone will agree to it.
+        // ════════════════════════════════════════════════════════════
+        const ER_LABELS = {
+            en: { knesset: '🏛️ 26TH KNESSET — RESULTS', seats: 'largest party', needed: 'needed to govern',
+                  provisional: 'PROVISIONAL', official: 'OFFICIAL', asof: 'as of', review: 'REVIEW DUE',
+                  paths: 'Path arithmetic (sums, not forecasts)', caretaker: 'PM (caretaker until a government is sworn in):',
+                  formed: 'New government sworn in — day', outgoing: '🏛️ OUTGOING COALITION',
+                  oppNote: 'Opposition bloc led by Eisenkot (Yashar). Neither bloc reached 61 on the provisional count; the Arab parties hold the balance.' },
+            he: { knesset: '🏛️ הכנסת ה־26 — תוצאות', seats: 'המפלגה הגדולה', needed: 'נדרשים להרכבת ממשלה',
+                  provisional: 'זמני', official: 'רשמי', asof: 'נכון ל־', review: 'נדרש עדכון',
+                  paths: 'חשבון מסלולים (סכומים, לא תחזיות)', caretaker: 'ראש ממשלה (מעבר עד השבעת ממשלה):',
+                  formed: 'ממשלה חדשה הושבעה — יום', outgoing: '🏛️ הקואליציה היוצאת',
+                  oppNote: 'גוש האופוזיציה בהובלת איזנקוט (ישר!). אף גוש לא הגיע ל־61 בספירה הזמנית; המפלגות הערביות מחזיקות את לשון המאזניים.' },
+            ar: { knesset: '🏛️ الكنيست الـ26 — النتائج', seats: 'الحزب الأكبر', needed: 'مطلوبة لتشكيل الحكومة',
+                  provisional: 'أولية', official: 'رسمية', asof: 'حتى', review: 'تحتاج مراجعة',
+                  paths: 'حساب المسارات (مجاميع لا توقعات)', caretaker: 'رئيس الوزراء (تصريف أعمال حتى أداء حكومة جديدة اليمين):',
+                  formed: 'أدت حكومة جديدة اليمين — اليوم', outgoing: '🏛️ الائتلاف المنتهية ولايته',
+                  oppNote: 'كتلة المعارضة بقيادة آيزنكوت (يَشار). لم تبلغ أي كتلة 61 مقعدًا في الفرز الأولي؛ الأحزاب العربية ترجّح الكفة.' },
+            fa: { knesset: '🏛️ کنست بیست‌وششم — نتایج', seats: 'بزرگ‌ترین حزب', needed: 'لازم برای تشکیل دولت',
+                  provisional: 'موقت', official: 'رسمی', asof: 'تا', review: 'نیاز به بازبینی',
+                  paths: 'حساب مسیرها (جمع، نه پیش‌بینی)', caretaker: 'نخست‌وزیر (موقت تا سوگند دولت جدید):',
+                  formed: 'دولت جدید سوگند یاد کرد — روز', outgoing: '🏛️ ائتلاف خروجی',
+                  oppNote: 'جبهه مخالف به رهبری آیزنکوت (یشار). هیچ جبهه‌ای در شمارش موقت به ۶۱ نرسید؛ احزاب عرب کفه را تعیین می‌کنند.' },
+        };
+
+        function renderElectionResults(data) {
+            try {
+                const lang = window._ilLang || 'en';
+                const L = ER_LABELS[lang] || ER_LABELS.en;
+                const er = data.election_results;
+                const ec = (data.conflict || {}).election_cycle || {};
+                const box = document.getElementById('electionResultsBox');
+
+                // ── Coalition card ──
+                const titleEl = document.getElementById('coalitionTitle');
+                const seatsEl = document.getElementById('coalitionSeats');
+                const subEl   = document.getElementById('coalitionSubtitle');
+                const barEl   = document.getElementById('coalitionBar');
+                const legEl   = document.getElementById('coalitionLegend');
+                const pathEl  = document.getElementById('coalitionPaths');
+                const pmEl    = document.getElementById('coalitionPmLine');
+
+                if (er && er.parties && er.parties.length) {
+                    const badge = er.status === 'official' ? L.official : L.provisional;
+                    const largest = er.parties[0];
+                    if (titleEl) titleEl.textContent = L.knesset;
+                    if (seatsEl) seatsEl.textContent = largest.seats;
+                    if (subEl) subEl.textContent = (lang === 'he' && largest.name_he ? largest.name_he : largest.name) +
+                        ' — ' + L.seats + ' · ' + er.majority + ' ' + L.needed;
+
+                    // Bloc bar: one segment per bloc, sized by seats.
+                    const blocs = er.blocs || {};
+                    if (barEl) barEl.innerHTML = Object.keys(blocs).map(k => {
+                        const b = blocs[k];
+                        return '<div class="coalition-segment" style="width:' + (b.seats / er.total_seats * 100).toFixed(1) +
+                               '%; background:' + b.color + ';" title="' + _esc(b.label) + ': ' + b.seats + '">' + b.seats + '</div>';
+                    }).join('');
+                    if (legEl) legEl.innerHTML = er.parties.map(p => {
+                        const c = (blocs[p.bloc] || {}).color || '#6b7280';
+                        const nm = (lang === 'he' && p.name_he) ? p.name_he : p.name;
+                        return '<div class="coalition-legend-item"><div class="legend-dot" style="background:' + c + ';"></div>' +
+                               _esc(nm) + ' (' + p.seats + ')</div>';
+                    }).join('');
+
+                    // Path arithmetic rows.
+                    if (pathEl) pathEl.innerHTML =
+                        '<div style="font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:4px;">' + L.paths + '</div>' +
+                        (er.paths || []).map(p =>
+                            '<div style="display:flex; justify-content:space-between; gap:8px; padding:2px 0; border-bottom:1px solid var(--card-border);">' +
+                            '<span>' + _esc(p.id) + ' · ' + _esc(p.label) + '</span>' +
+                            '<strong style="white-space:nowrap; color:' + (p.clears_majority ? '#22c55e' : '#f87171') + ';">' +
+                            p.seats + ' (' + (p.margin >= 0 ? '+' : '') + p.margin + ')</strong></div>'
+                        ).join('');
+
+                    if (pmEl) {
+                        if (ec.state === 'formed') {
+                            pmEl.innerHTML = '🧑‍⚖️ ' + L.formed + ' ' + (ec.days_since_formed ?? 0);
+                        } else {
+                            pmEl.innerHTML = '🧑‍⚖️ ' + L.caretaker + ' <strong style="color:var(--text-primary);">Benjamin Netanyahu</strong>';
+                        }
+                    }
+
+                    // Results box on the Opposition Watch card.
+                    if (box) {
+                        box.innerHTML =
+                            '<div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:8px;">' +
+                              '<span style="font-size:10px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">📊 ' + L.knesset.replace('🏛️ ', '') + '</span>' +
+                              '<span style="font-size:9px; font-style:italic;">' + badge + ' · ' + L.asof + ' ' + _esc(er.as_of) +
+                                (er.review_due ? ' <span class="fin-stale">' + L.review + '</span>' : '') + '</span>' +
+                            '</div>' +
+                            '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">' +
+                            Object.keys(blocs).map(k =>
+                                '<div><div style="font-weight:600; color:var(--text-primary);">' + _esc(blocs[k].label) + '</div>' +
+                                '<div style="font-size:18px; font-weight:700; color:' + blocs[k].color + ';">' + blocs[k].seats + '</div></div>'
+                            ).join('') +
+                            '</div>' +
+                            '<div style="margin-top:8px; padding-top:6px; border-top:1px solid var(--card-border); font-size:10px;">' +
+                              _esc(er.source) + '</div>';
+                    }
+                    const note = document.getElementById('oppWatchNote');
+                    if (note) note.textContent = L.oppNote;
+                } else {
+                    // No results block (older backend): say so instead of showing stale seats.
+                    if (titleEl) titleEl.textContent = L.outgoing;
+                    if (seatsEl) seatsEl.textContent = '--';
+                    if (box) box.textContent = 'Election results not available from the backend yet.';
+                }
+
+                const knesset = data.knesset || {};
+                const sig = document.getElementById('electionSignal');
+                if (sig) {
+                    sig.innerHTML = (ec.state && ec.state !== 'stable')
+                        ? '🗳️ ' + _esc(String(ec.state).replace(/_/g, ' ').toUpperCase()) + ' · ' + (ec.days_in_state ?? 0) + 'd'
+                        : (knesset.election_signal_count > 0
+                            ? '🗳️ <strong style="color:#facc15;">' + knesset.election_signal_count + ' early election signal(s) detected</strong>'
+                            : '🗓️ Election due: ' + ELECTION_TIMING.windowLabel);
+                }
+
+                // ── Key figures: backend order, no hardcoded roster ──
+                const leadership = data.leadership || {};
+                const grid = document.getElementById('leadershipGrid');
+                if (grid) {
+                    grid.innerHTML = Object.keys(leadership).map(key => {
+                        const l = leadership[key];
+                        if (!l) return '';
+                        return '<div class="leadership-badge">' +
+                            '<span class="badge-flag">' + (l.flag || '🇮🇱') + '</span>' +
+                            '<div class="badge-info">' +
+                              '<div class="badge-name">' + (l.icon || '') + ' ' + _esc(l.name) + '</div>' +
+                              '<div class="badge-title" style="color:var(--text-muted);">' + _esc(l.title) + '</div>' +
+                              (l.note ? '<div class="badge-note">' + _esc(l.note) + '</div>' : '') +
+                            '</div>' +
+                            '<span class="badge-status" style="background:' + (l.status_color || '#6b7280') + '20; color:' + (l.status_color || '#6b7280') +
+                              '; border:1px solid ' + (l.status_color || '#6b7280') + '40;">' + _esc(l.status) + '</span>' +
+                          '</div>';
+                    }).join('') +
+                    (data.leadership_reviewed
+                        ? '<div style="font-size:9px; color:var(--text-muted); font-style:italic; margin-top:4px;">reviewed ' + _esc(data.leadership_reviewed) + '</div>'
+                        : '');
+                }
+            } catch (e) { console.warn('[Election results] render error:', e); }
         }
 
         // ===== THEME =====
@@ -1844,45 +1972,11 @@
             ).join('') || '<div style="color:var(--text-secondary); font-style:italic;">No recent strike articles</div>';
 
             // Knesset / Coalition
-            const knesset = data.knesset || {};
-            const coal = knesset.coalition || {};
-            const parties = coal.coalition_parties || [];
-            if (parties.length > 0) {
-                document.getElementById('coalitionSeats').textContent = coal.coalition_seats || 64;
-                const colors = ['#6495ED','#3b82f6','#1d4ed8','#1e40af','#1e3a8a','#172554'];
-                const total = 120;
-                document.getElementById('coalitionBar').innerHTML = parties.map((p, i) =>
-                    `<div class="coalition-segment" style="width:${(p.seats/total*100).toFixed(1)}%; background:${colors[i % colors.length]};" title="${p.name}: ${p.seats}">${p.seats >= 5 ? p.seats : ''}</div>`
-                ).join('') + `<div class="coalition-segment" style="width:${((120 - (coal.coalition_seats||64))/total*100).toFixed(1)}%; background:var(--card-border);">Opp.</div>`;
-                document.getElementById('coalitionLegend').innerHTML = parties.map((p, i) =>
-                    `<div class="coalition-legend-item"><div class="legend-dot" style="background:${colors[i % colors.length]};"></div>${p.name} (${p.seats})</div>`
-                ).join('');
-            }
-            if (knesset.election_signal_count > 0) {
-                document.getElementById('electionSignal').innerHTML = `🗳️ <strong style="color:#facc15;">${knesset.election_signal_count} early election signal${knesset.election_signal_count > 1 ? 's' : ''} detected</strong>`;
-            } else {
-                document.getElementById('electionSignal').innerHTML =
-                    '🗓️ Election due: ' + ELECTION_TIMING.windowLabel;
-            }
-
-            // Leadership badges
-            const leadership = data.leadership || {};
-            const leaderOrder = ['netanyahu', 'smotrich', 'ben_gvir', 'gallant', 'bennett'];
-            const leaderGrid = document.getElementById('leadershipGrid');
-            leaderGrid.innerHTML = leaderOrder.map(key => {
-                const l = leadership[key];
-                if (!l) return '';
-                return `
-                    <div class="leadership-badge">
-                        <span class="badge-flag">${l.flag || '🇮🇱'}</span>
-                        <div class="badge-info">
-                            <div class="badge-name">${l.icon || ''} ${l.name}</div>
-                            <div class="badge-title" style="color:var(--text-muted);">${l.title}</div>
-                            ${l.note ? `<div class="badge-note">${l.note}</div>` : ''}
-                        </div>
-                        <span class="badge-status" style="background:${l.status_color || '#6b7280'}20; color:${l.status_color || '#6b7280'}; border:1px solid ${l.status_color || '#6b7280'}40;">${l.status}</span>
-                    </div>`;
-            }).join('');
+            // v2.4.0 -- the coalition card, results box and leadership grid are
+            // rendered by renderElectionResults() so a language switch can
+            // re-apply them (the i18n pass overwrites textContent).
+            window._ilLastData = data;
+            renderElectionResults(data);
 
             // v2.1.0 — Opposition Watch (replaces Bennett-only)
             const oppMentions = conflict.opposition_mentions ?? conflict.bennett_mentions ?? 0;
@@ -2951,6 +3045,8 @@
             // v2.3.0 — the i18n pass overwrites textContent, so anything the
             // page derives rather than translates has to be re-applied after it.
             renderElectionTiming();
+            window._ilLang = lang;
+            if (window._ilLastData) renderElectionResults(window._ilLastData);
         }
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', () => {
