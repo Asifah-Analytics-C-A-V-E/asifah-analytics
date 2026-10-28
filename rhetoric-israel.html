@@ -2044,7 +2044,10 @@
                 'Seats ' + String(gf.results_status || 'unavailable').toUpperCase() +
                 (gf.results_as_of ? ' as of ' + gf.results_as_of : '') + '. Corpus: ' +
                 (c.firsthand||0) + ' firsthand / ' + (c.commentary||0) + ' commentary in ' + (c.in_scope||0) +
-                ' formation-scoped items. ' + (gf.doctrine_note || ''));
+                ' formation-scoped items' +
+                (gf.by_language ? ' (EN ' + (gf.by_language.en||0) + ' / HE ' + (gf.by_language.he||0) +
+                                  ' / AR ' + (gf.by_language.ar||0) + ')' : '') +
+                '. ' + (gf.doctrine_note || ''));
         } catch(e){ console.warn('[Formation panel] render error:', e); }
     }
 
