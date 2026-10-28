@@ -217,6 +217,44 @@
       gloss: 'A stated red line has been crossed.' }
   ];
 
+  // ── INDEX LADDER (Oct 28 2026) ─────────────────────────────────────
+  // The Global Pressure Index asks a DIFFERENT question from a country page.
+  // A country page asks "how intense is it here?" -- the theatre ladder above
+  // answers that, and L4 Coercion / L6 Red Line Breached stay exactly right
+  // there. The GPI asks "is the world getting worse this fortnight?" Since
+  // GPI v3.12/3.13 three rungs mean something else on that page:
+  //   L4  also reads SUSTAINED CONFLICT -- a war still at L5 on its own page,
+  //       with no new front in 14 days (the novelty gate)
+  //   L5  means a NEW front reached open hostilities within 14 days
+  //   L6  is GLOBAL SHOCK -- a world-altering event, confirmed by visible
+  //       UN / NATO / G7 reaction, held 7 days. Tracker red-line breaches
+  //       are held at L5 on the index.
+  // Redefining L4 platform-wide would have been wrong: on a country page,
+  // coercion is still coercion. So the rail is PAGE-AWARE: the GPI gets the
+  // index meanings, every other page gets the theatre ladder unchanged.
+  var ASIFAH_INDEX_OVERRIDES = {
+    4: { label: 'Coercion · or Sustained Conflict',
+         gloss: 'Coercion somewhere; or a war still underway with no new front in 14 days.' },
+    5: { label: 'Active Conflict — new front',
+         gloss: 'A NEW front reached open hostilities within the last 14 days.' },
+    6: { label: 'Global Shock',
+         gloss: 'A world-altering event, confirmed by visible UN / NATO / G7 reaction. Holds 7 days.' }
+  };
+  var INDEX_PAGES = ['gpi.html'];
+
+  function isIndexPage(file) {
+    return INDEX_PAGES.indexOf(file || currentFile()) >= 0;
+  }
+
+  /** The ladder as THIS page should read it. */
+  function pageLadder() {
+    if (!isIndexPage()) return ASIFAH_LADDER;
+    return ASIFAH_LADDER.map(function (r) {
+      var o = ASIFAH_INDEX_OVERRIDES[r.level];
+      return o ? { level: r.level, label: o.label, color: r.color, gloss: o.gloss } : r;
+    });
+  }
+
   // Mirrors theatre_state.py on the backends. The ladder above is a THREAT
   // ladder, and no single word spans war, famine, supply shock and
   // diplomatic collapse -- any word vague enough to cover all four says
@@ -235,7 +273,12 @@
                    'economic rupture', 'systemic economic breakdown'],
     diplomatic:   ['quiet', 'diplomatic signalling', 'diplomatic friction',
                    'diplomatic standoff', 'talks collapsed', 'diplomatic rupture',
-                   'relations severed']
+                   'relations severed'],
+    // Oct 28 2026 -- fifth axis (GPI v3.12). Who governs, and on what
+    // authority. A caretaker government in coalition talks reads L3.
+    governance:   ['quiet', 'political signalling', 'political friction',
+                   'governing authority contested', 'governance crisis',
+                   'legitimacy rupture', 'constitutional order broken']
   };
 
   var LADDER_KEY = 'asifah-ladder-open';
@@ -264,7 +307,11 @@
       var lv = Math.max(0, Math.min(6, parseInt(n, 10) || 0));
       return table[lv] || table[0];
     },
-    axes: ASIFAH_AXIS_STATE
+    axes: ASIFAH_AXIS_STATE,
+    /** Index (GPI) meanings for L4-L6 -- see ASIFAH_INDEX_OVERRIDES. */
+    indexOverrides: ASIFAH_INDEX_OVERRIDES,
+    /** The ladder as the current page reads it (index-aware). */
+    forPage: function () { return pageLadder(); }
   };
 
   /** Pages that actually carry levels. Mission/privacy/index get no rail. */
@@ -276,7 +323,7 @@
   }
 
   function ladderRailHtml() {
-    var rungs = ASIFAH_LADDER.map(function (r) {
+    var rungs = pageLadder().map(function (r) {
       return '<div class="asifah-ladder-rung">' +
         '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
         '<span class="asifah-ladder-text">' +
@@ -292,7 +339,8 @@
       ['Kinetic',      ASIFAH_AXIS_STATE.kinetic[4]],
       ['Humanitarian', ASIFAH_AXIS_STATE.humanitarian[4]],
       ['Economic',     ASIFAH_AXIS_STATE.economic[4]],
-      ['Diplomatic',   ASIFAH_AXIS_STATE.diplomatic[4]]
+      ['Diplomatic',   ASIFAH_AXIS_STATE.diplomatic[4]],
+      ['Governance',   ASIFAH_AXIS_STATE.governance[4]]
     ].map(function (p) {
       return '<div class="asifah-ladder-axis-row"><strong>' + p[0] + '</strong>' + p[1] + '</div>';
     }).join('');
@@ -301,8 +349,17 @@
              '<span class="asifah-ladder-toggle-icon">&rsaquo;</span>' +
            '</button>' +
            '<div class="asifah-ladder-body">' +
-             '<div class="asifah-ladder-title">How to read levels</div>' +
+             '<div class="asifah-ladder-title">' +
+               (isIndexPage() ? 'How to read the index' : 'How to read levels') + '</div>' +
              rungs +
+             (isIndexPage()
+               ? '<div class="asifah-ladder-axis">' +
+                   '<div class="asifah-ladder-axis-title">Why the index differs</div>' +
+                   '<div class="asifah-ladder-axis-note">Country pages score how intense a theatre is. ' +
+                   'This index scores whether the WORLD is getting worse: a long war with nothing new ' +
+                   'added reads L4 here while its own page stays L5. Severity there, motion here.</div>' +
+                 '</div>'
+               : '') +
              '<div class="asifah-ladder-axis">' +
                '<div class="asifah-ladder-axis-title">L4 by pressure axis</div>' + axisRows +
                '<div class="asifah-ladder-axis-note">The ladder scores intensity. What a level ' +
@@ -471,8 +528,9 @@
   function ladderDrawerHtml() {
     if (!pageHasLevels(currentFile())) return '';
     return '<div class="nav-divider"></div>' +
-           '<div class="nav-sidebar-label">How to read levels</div>' +
-           ASIFAH_LADDER.map(function (r) {
+           '<div class="nav-sidebar-label">' +
+             (isIndexPage() ? 'How to read the index' : 'How to read levels') + '</div>' +
+           pageLadder().map(function (r) {
              return '<div class="asifah-ladder-rung drawer">' +
                '<span class="asifah-ladder-chip" style="background:' + r.color + ';">L' + r.level + '</span>' +
                '<span class="asifah-ladder-text">' +
