@@ -803,6 +803,7 @@
         <div class="pp-headline" id="formationHeadline"></div>
         <div class="pp-rows" id="formationRows"></div>
         <div class="pp-chips" id="formationChips"></div>
+        <div id="formationPrices"></div>
         <div id="formationSoWhat"></div>
         <div id="formationWatch"></div>
         <div class="pp-note" id="formationNote"></div>
@@ -1108,7 +1109,7 @@
 
     <!-- FOOTER -->
     <div class="page-footer">
-        © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v1.2.0-israel-formation |
+        © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v1.3.0-israel-formation |
         <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--accent);text-decoration:none;">☕ buy me a coffee</a>
     </div>
 
@@ -2003,6 +2004,51 @@
                                st.paths.map(function(x){ return 'Path ' + x; }).join('/') + ' (' + st.count + ')',
                          tone: st.effect === 'blocks' ? 'hot' : 'good' };
             }));
+
+            // ── Prices, gives, horse-trading (v1.3.0) ──
+            const prEl = document.getElementById('formationPrices');
+            if (prEl) {
+                prEl.innerHTML = '';
+                const pr = gf.prices || {};
+                const bp = pr.by_party || {};
+                const keys = Object.keys(bp);
+                const ports = pr.portfolios_in_play || {};
+                if (keys.length || Object.keys(ports).length || (pr.contradictions||[]).length) {
+                    const h = document.createElement('div');
+                    h.className = 'interp-section-title';
+                    h.textContent = '💱 PRICES & GIVES — DEMANDS AS REPORTED, NOT CONCESSIONS';
+                    prEl.appendChild(h);
+                    keys.forEach(function(k){
+                        const e = bp[k];
+                        const row = document.createElement('div');
+                        row.className = 'pp-row warn';
+                        const l = document.createElement('span'); l.className = 'pp-row-label';
+                        l.textContent = e.party + ' — ' + Object.keys(e.topics||{}).map(function(t){ return t.replace(/_/g,' '); }).join(', ');
+                        const v = document.createElement('span'); v.className = 'pp-row-value';
+                        v.textContent = Object.values(e.topics||{}).reduce(function(a,b){ return a+b; }, 0) + ' item(s)';
+                        row.appendChild(l); row.appendChild(v); prEl.appendChild(row);
+                    });
+                    (pr.contradictions||[]).forEach(function(x){
+                        const row = document.createElement('div');
+                        row.className = 'pp-row bad';
+                        const l = document.createElement('span'); l.className = 'pp-row-label';
+                        l.textContent = '⚠ ' + ((gf.path_names||{})[x.path] || x.path) + ': ' + x.a_parties.join(', ') + ' (' + x.a_topic +
+                                        ') vs ' + x.b_parties.join(', ') + ' (' + x.b_topic + ')';
+                        row.appendChild(l); prEl.appendChild(row);
+                    });
+                    if (Object.keys(ports).length) {
+                        const chips = document.createElement('div');
+                        chips.className = 'pp-chips';
+                        Object.keys(ports).forEach(function(pn){
+                            const c = document.createElement('span');
+                            c.className = 'pp-chip';
+                            c.textContent = '🗂 ' + pn + ' (' + ports[pn] + ')';
+                            chips.appendChild(c);
+                        });
+                        prEl.appendChild(chips);
+                    }
+                }
+            }
 
             const sw = gf.so_what || {};
             const titles = {israel:'🇮🇱 FOR ISRAEL', region:'🌍 FOR THE REGION', global:'🌐 FOR THE GLOBE (US · IRAN WAR · MARKETS)'};
