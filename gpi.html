@@ -2488,7 +2488,17 @@ async function loadGpi() {
         const gate = data.level_gate || {};
         if (gateEl) {
             let txt = '';
-            if (gate.applied && gate.summary) {
+            const l6 = data.l6 || {};
+            const l6e = (l6.events || []).slice(-1)[0];
+            if (l6.active && l6e) {
+                // v3.13 -- L6 GLOBAL SHOCK: name the event class, where, the
+                // institutional reaction that confirmed it, and the hold clock.
+                txt = '<strong>' + escapeHtmlGpi(l6e.class_label || 'Global shock') + '</strong> &mdash; ' +
+                      escapeHtmlGpi(String(l6e.theatre || '').replace(/_/g, ' ')
+                          .replace(/\b\w/g, c => c.toUpperCase())) +
+                      '. Confirmed by institutional reaction. Day ' + (l6e.day || 0) +
+                      ' of a ' + (l6.hold_days || 7) + '-day hold.';
+            } else if (gate.applied && gate.summary) {
                 txt = '<strong>Sustained, not new.</strong> ' + escapeHtmlGpi(gate.summary);
             } else if (data.global_level >= 5 && gate.reason) {
                 txt = escapeHtmlGpi(gate.reason);
