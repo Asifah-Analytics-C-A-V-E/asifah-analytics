@@ -177,6 +177,19 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 26px; margi
 .gpi-banner-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; position: relative; z-index: 2; }
 .gpi-level-display { font-family: 'Times New Roman', Times, serif; font-size: 92px; font-weight: 900; line-height: 0.9; letter-spacing: -2px; text-shadow: 0 0 30px currentColor; }
 .gpi-level-badge { display: inline-block; padding: 8px 22px; border-radius: 8px; font-family: 'Times New Roman', Times, serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ffffff; margin-top: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+/* v3.12 (Oct 28 2026) -- why the level reads what it reads. Under the badge. */
+.gpi-level-gate { max-width: 340px; margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--text-secondary); text-align: right; font-family: 'Times New Roman', Times, serif; }
+.gpi-level-gate strong { color: var(--text-primary); }
+@media (max-width: 768px) { .gpi-level-gate { text-align: left; max-width: 100%; } }
+/* Standing-watch tier: collapsed by default, opens on click. */
+.standing-watch { margin-top: 18px; border-top: 1px dashed var(--card-border); padding-top: 14px; }
+.standing-watch > summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+.standing-watch > summary::-webkit-details-marker { display: none; }
+.standing-watch > summary::before { content: '\25b8'; color: var(--accent); transition: transform 0.15s; }
+.standing-watch[open] > summary::before { transform: rotate(90deg); }
+.standing-watch-hint { letter-spacing: 0.5px; text-transform: none; font-family: 'Times New Roman', Times, serif; font-size: 0.85rem; }
+.standing-watch .narratives-grid { margin-top: 14px; opacity: 0.88; }
+.standing-reason { margin-top: 8px; font-size: 11.5px; color: var(--text-muted); font-family: 'Courier New', monospace; letter-spacing: 0.5px; }
 .gpi-stats { display: flex; gap: 18px; margin-top: 12px; font-size: 12px; color: var(--text-muted); font-family: 'Courier New', monospace; }
 .gpi-stats span { letter-spacing: 1px; }
 
@@ -274,6 +287,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 26px; margi
 .axis-tag-economic { border-color: rgba(245,158,11,0.4); color: #fbbf24; }
 .axis-tag-diplomatic { border-color: rgba(14,165,233,0.4); color: #38bdf8; }
 .axis-tag-humanitarian { border-color: rgba(168,85,247,0.4); color: #c084fc; }
+.axis-tag-governance { border-color: rgba(20,184,166,0.45); color: #2dd4bf; }
 /* Slice 2: trailing axis pill, linked location, page-less tag */
 .sig-country-pills { display:inline-flex; flex-wrap:wrap; gap:4px; margin-left:6px; vertical-align:middle; }
 .sig-country-pill {
@@ -344,14 +358,22 @@ a.sig-location-link:hover { opacity: 0.8; }
 }
 .pressure-axes-tabbar-label::before { content: '▸ '; color: var(--accent); }
 .pressure-axes-tabbar .pressure-axes-tabs {
-    /* 5 buttons in standalone tabbar (not 4 like the under-hero version) */
-    grid-template-columns: repeat(5, 1fr);
+    /* 6 buttons since Oct 28 2026 (All + 5 axes, governance added).
+       minmax(0, 1fr), not 1fr: a bare 1fr column refuses to shrink below its
+       content, so the sixth tab pushed the row 155px past the viewport. The
+       same floor caused a pre-existing 63px phone overflow -- fixed together. */
+    grid-template-columns: repeat(6, minmax(0, 1fr));
 }
+.pressure-axes-tabs .pressure-axis-card { min-width: 0; }
+.pressure-axes-tabs .pressure-axis-header { flex-wrap: wrap; gap: 6px; min-width: 0; }
+.pressure-axes-tabs .pressure-axis-title-group { min-width: 0; }
+.pressure-axes-tabs .pressure-axis-name { overflow-wrap: anywhere; }
+.pressure-axes-tabs .pressure-axis-level-pill { max-width: 100%; white-space: normal; }
 @media (max-width: 768px) {
-    .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(3, 1fr); }
+    .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 480px) {
-    .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(2, 1fr); }
+    .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Base card styles */
@@ -541,11 +563,13 @@ a.sig-location-link:hover { opacity: 0.8; }
 .pressure-axis-card.axis-economic     { --axis-color: #f97316; }
 .pressure-axis-card.axis-diplomatic   { --axis-color: #0ea5e9; }
 .pressure-axis-card.axis-humanitarian { --axis-color: #eab308; }
+.pressure-axis-card.axis-governance   { --axis-color: #14b8a6; }
 .pressure-axis-card.axis-all          { --axis-color: #38bdf8; }
 
 .regional-cards-section { margin-top: 30px; }
 .regional-cards-title { font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border); }
-.regional-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; }
+/* min() guard Oct 28 2026 -- same fix as .narratives-grid (Oct 6): a bare 380px floor overflowed a 390px phone. */
+.regional-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 16px; }
 
 /* ── NARRATIVE CARDS (May 22 2026) ─────────────────────────────────
    Cross-theater convergence narrative renderer. Hidden when no
@@ -917,6 +941,7 @@ a.sig-location-link:hover { opacity: 0.8; }
                 <div class="gpi-banner-right">
                     <div class="gpi-level-display loading-shimmer" id="gpiLevelDisplay" style="color:#6b7280;">L--</div>
                     <div class="gpi-level-badge" id="gpiLevelBadge" style="background:#6b7280;">LOADING</div>
+                    <div class="gpi-level-gate" id="gpiLevelGate" style="display:none;"></div>
                 </div>
             </div>
 
@@ -1001,6 +1026,17 @@ a.sig-location-link:hover { opacity: 0.8; }
                 <div class="narratives-grid" id="narrativesGrid">
                     <!-- Narrative cards injected by renderNarratives() -->
                 </div>
+                <!-- v3.12 (Oct 28 2026): standing watches -- structural reads that
+                     are not moving. Collapsed by default; a watch whose headline
+                     changes moves itself back up into the grid above. -->
+                <details class="standing-watch" id="standingWatchSection" style="display:none;">
+                    <summary>
+                        Standing watches
+                        <span class="narratives-title-count" id="standingWatchCount">0</span>
+                        <span class="standing-watch-hint">structural reads that are not moving &mdash; click to open</span>
+                    </summary>
+                    <div class="narratives-grid" id="standingWatchGrid"></div>
+                </details>
             </div>
 
         </div>
@@ -1274,13 +1310,14 @@ initTheme();
 // Active vector card = full-width hero panel containing BLUF prose + signals.
 // Inactive cards = compact tab row below the hero. Click to swap.
 const ACTIVE_AXIS_DEFAULT = 'all';
-const AXIS_ORDER = ['all', 'kinetic', 'economic', 'diplomatic', 'humanitarian'];
+const AXIS_ORDER = ['all', 'kinetic', 'economic', 'diplomatic', 'humanitarian', 'governance'];
 const AXIS_FALLBACK_COLORS = {
     all:          '#38bdf8',
     kinetic:      '#dc2626',
     economic:     '#f97316',
     diplomatic:   '#0ea5e9',
     humanitarian: '#eab308',
+    governance:   '#14b8a6',
 };
 const AXIS_FALLBACK_ICONS = {
     all:          '\ud83c\udf10',   // 🌐
@@ -1288,6 +1325,7 @@ const AXIS_FALLBACK_ICONS = {
     economic:     '\ud83d\udcc8',   // 📈
     diplomatic:   '\ud83d\udd4a\ufe0f',  // 🕊️
     humanitarian: '\ud83c\udd98',   // 🆘
+    governance:   '\ud83c\udfdb\ufe0f',   // 🏛️
 };
 const AXIS_FALLBACK_LABELS = {
     all:          'All Vectors',
@@ -1295,6 +1333,7 @@ const AXIS_FALLBACK_LABELS = {
     economic:     'Economic',
     diplomatic:   'Diplomatic',
     humanitarian: 'Humanitarian',
+    governance:   'Governance',
 };
 const AXIS_FALLBACK_DESCRIPTIONS = {
     all:          'Synthesized cross-axis view -- the default BLUF combining all pressure dimensions.',
@@ -1302,6 +1341,7 @@ const AXIS_FALLBACK_DESCRIPTIONS = {
     economic:     'Commodity surges, currency stress, sanctions, supply chain.',
     diplomatic:   'Ceasefire arithmetic, mediation tempo, alliance shifts.',
     humanitarian: 'Displacement flows, civilian harm, famine, refugee surges.',
+    governance:   'Elections, caretaker periods, successions, coups, legitimacy contests.',
 };
 
 let _gpiState = {
@@ -1330,7 +1370,8 @@ const TS = {
         kinetic:      ['quiet','rhetorical signalling','pressure building','standoff hardening','armed incident','active war footing','red line breached'],
         humanitarian: ['quiet','early humanitarian indicators','population pressure building','humanitarian conditions deteriorating','acute humanitarian emergency','mass-casualty humanitarian disaster','catastrophic humanitarian collapse'],
         economic:     ['quiet','market signalling','cost pressure building','supply pressure hardening','acute supply disruption','economic rupture','systemic economic breakdown'],
-        diplomatic:   ['quiet','diplomatic signalling','diplomatic friction','diplomatic standoff','talks collapsed','diplomatic rupture','relations severed']
+        diplomatic:   ['quiet','diplomatic signalling','diplomatic friction','diplomatic standoff','talks collapsed','diplomatic rupture','relations severed'],
+        governance:   ['quiet','political signalling','political friction','governing authority contested','governance crisis','legitimacy rupture','constitutional order broken']
     },
     phrase(level, axis) {
         const table = this.states[axis] || this.states.kinetic;
@@ -1363,7 +1404,7 @@ const LEGEND_FULL_AXIS = 'kinetic';
 const LEGEND_FROM_RUNG = 3;
 
 function _renderLevelLegend() {
-    const order = ['kinetic', 'humanitarian', 'economic', 'diplomatic'];
+    const order = ['kinetic', 'humanitarian', 'economic', 'diplomatic', 'governance'];
     const maxRung = Math.max(
         ...order.map(a => ((TS.states || {})[a] || []).length)) - 1;
 
@@ -1438,7 +1479,16 @@ function _buildCardData(axisName) {
         return 0;
     };
     const _pool = isAll ? (data.top_signals || []) : (axis.top_signals || []);
-    const _gated = _pool.filter(s => _lvlRank(s) >= 3);
+    // v3.12 (Oct 28 2026): diplomatic and governance signals are EXEMPT from the
+    // L3 floor. Their levels measure something different -- a ceasefire track or
+    // a caretaker freeze often sits at L1-L2 and is still the most consequential
+    // line on the page. The floor was written for kinetic noise; applied to
+    // every axis it silently hid the non-kinetic butterflies.
+    const _floorExempt = (s) => {
+        const ax = String(s.pressure_type || '').toLowerCase();
+        return ax === 'diplomatic' || ax === 'governance';
+    };
+    const _gated = _pool.filter(s => _lvlRank(s) >= 3 || _floorExempt(s));
     // If nothing clears the gate, fall back to whatever exists (keeps a quiet
     // axis honest: shows its real low-level signals rather than going blank).
     const _use = _gated.length > 0 ? _gated : _pool;
@@ -1467,7 +1517,7 @@ function _gpiLevelChip(s) {
     return `<span class="sig-level-chip" style="background:${bg};">${txt}</span>`;
 }
 
-const _AXIS_TAG_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+const _AXIS_TAG_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian', governance:'Governance' };
 
 // Region-code -> display name (Slice 2 FIX B). Bare region codes must never
 // render as a 'location' (the 'Me:' bug); they get spelled out.
@@ -1550,8 +1600,9 @@ function _gpiAxisTag(s) {
 
 // Trailing axis pill (Slice 2 FIX C) -- terminal, end of row.
 const _AXIS_PILL_BG = { kinetic:'rgba(220,38,38,0.14)', economic:'rgba(245,158,11,0.14)',
-                        diplomatic:'rgba(14,165,233,0.14)', humanitarian:'rgba(168,85,247,0.14)' };
-const _AXIS_PILL_FG = { kinetic:'#f87171', economic:'#fbbf24', diplomatic:'#38bdf8', humanitarian:'#c084fc' };
+                        diplomatic:'rgba(14,165,233,0.14)', humanitarian:'rgba(168,85,247,0.14)',
+                        governance:'rgba(20,184,166,0.16)' };
+const _AXIS_PILL_FG = { kinetic:'#f87171', economic:'#fbbf24', diplomatic:'#38bdf8', humanitarian:'#c084fc', governance:'#2dd4bf' };
 function _gpiAxisPillEnd(s) {
     // Slice 3: render one pill per axis. Narratives carry s.axes (multi);
     // ordinary signals fall back to their single pressure_type.
@@ -1646,7 +1697,7 @@ const _UNGROUPED_THEATRES_JS = new Set([
     'western hemisphere', 'wha', 'africa', 'the western hemisphere', 'me',
     'global_commodity', 'global_food', 'global_humanitarian', 'global_market',
 ]);
-const _AXIS_PILL_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian'];
+const _AXIS_PILL_ORDER = ['kinetic', 'economic', 'diplomatic', 'humanitarian', 'governance'];
 
 function _groupSignalsByTheatre(signals, exposureIndex) {
     // v3.2.1 (Jul 16 2026): bucket on the RESOLVED display identity, not the
@@ -2102,19 +2153,41 @@ function _renderCompactCard(axisName) {
     return card;
 }
 
+// v3.12 (Oct 28 2026) -- split by tier. The card builder below is unchanged;
+// it now renders into whichever grid it is handed and returns its count text.
 function renderNarratives(narratives) {
-    const section = document.getElementById('narrativesSection');
-    const grid = document.getElementById('narrativesGrid');
-    const countEl = document.getElementById('narrativesCardCount');
+    const section  = document.getElementById('narrativesSection');
+    const countEl  = document.getElementById('narrativesCardCount');
+    const stSect   = document.getElementById('standingWatchSection');
+    const stCount  = document.getElementById('standingWatchCount');
+    const all      = (narratives || []).filter(Boolean);
+    const topline  = all.filter(n => n.tier !== 'standing');
+    const standing = all.filter(n => n.tier === 'standing');
 
-    if (!narratives || narratives.length === 0) {
+    if (all.length === 0) {
         // Hidden when quiet — no narratives section visible
         section.style.display = 'none';
         return;
     }
-
     section.style.display = '';
+    countEl.textContent = _renderNarrativeCards(topline, 'narrativesGrid') || '0';
+
+    if (stSect) {
+        if (standing.length) {
+            stSect.style.display = '';
+            _renderNarrativeCards(standing, 'standingWatchGrid');
+            if (stCount) stCount.textContent = String(standing.length);
+        } else {
+            stSect.style.display = 'none';
+        }
+    }
+}
+
+function _renderNarrativeCards(narratives, gridId) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return '';
     grid.innerHTML = '';
+    if (!narratives || narratives.length === 0) return '0';
 
     // ── Cluster ordering (Oct 6 2026) ───────────────────────────────────
     // A cluster card is the umbrella over its member cards, so it renders
@@ -2146,7 +2219,7 @@ function renderNarratives(narratives) {
 
     // The raw card count read as N separate stories. When a cluster is present,
     // say how many distinct stories there actually are.
-    countEl.textContent = clusterCards.length
+    const countText = clusterCards.length
         ? (clusterCards.length + loose.length) + ' \u00b7 ' + clusterCards.length + ' regional'
         : String(narratives.length);
 
@@ -2331,10 +2404,15 @@ function renderNarratives(narratives) {
             // these are the actual countries the prose names -- "China, Brazil,
             // India" on the fertilizer read, "Qatar ... UAE" on LNG. Different
             // information, so both render.
-            (narrPills ? '<div class="narrative-card-countries" style="margin-top:7px;">' + narrPills + '</div>' : '');
+            (narrPills ? '<div class="narrative-card-countries" style="margin-top:7px;">' + narrPills + '</div>' : '') +
+            // v3.12: a standing card says WHY it is standing, so collapsed never reads as dismissed.
+            ((narr.tier === 'standing' && narr.standing_reason)
+                ? '<div class="standing-reason">Standing watch &middot; ' + escapeHtmlGpi(narr.standing_reason) + '</div>'
+                : '');
 
         grid.appendChild(card);
     });
+    return countText;
 }
 
 function escapeHtmlGpi(s) {
@@ -2403,8 +2481,29 @@ async function loadGpi() {
         badge.textContent = data.global_label;
         badge.style.background = data.global_color;
 
+        // v3.12 (Oct 28 2026) -- the honesty line for the novelty gate. A held
+        // L4 says the war continues and nothing NEW has been added; a fresh L5
+        // names the new front. Older payloads carry no level_gate: hidden.
+        const gateEl = document.getElementById('gpiLevelGate');
+        const gate = data.level_gate || {};
+        if (gateEl) {
+            let txt = '';
+            if (gate.applied && gate.summary) {
+                txt = '<strong>Sustained, not new.</strong> ' + escapeHtmlGpi(gate.summary);
+            } else if (data.global_level >= 5 && gate.reason) {
+                txt = escapeHtmlGpi(gate.reason);
+            } else if (gate.available === false && gate.reason) {
+                txt = escapeHtmlGpi(gate.reason);
+            }
+            gateEl.innerHTML = txt;
+            gateEl.style.display = txt ? '' : 'none';
+        }
+
         document.getElementById('gpiRegionsLive').textContent    = `Regions: ${data.regions_live}/${data.regions_total}`;
-        document.getElementById('gpiNarrativesCount').textContent = `Narratives: ${(data.narratives || []).length}`;
+        const _tiers = data.narrative_tiers || null;
+        document.getElementById('gpiNarrativesCount').textContent = _tiers
+            ? `Narratives: ${_tiers.topline} (+${_tiers.standing} standing)`
+            : `Narratives: ${(data.narratives || []).length}`;
 
         // ── Render narratives section (May 22 2026) ──
         renderGpiConvergence(data.convergence_panel);
