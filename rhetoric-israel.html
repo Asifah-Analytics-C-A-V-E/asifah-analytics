@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Israel Rhetoric & Strike Actor Tracker v1.0.0 — March 2026 -->
+<!-- Asifah Analytics — Israel Rhetoric & Strike Actor Tracker v1.2.0 — October 2026 -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -790,6 +790,24 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════════════
+         GOVERNMENT FORMATION (v1.2.0, Oct 28 2026)
+         Five paths (A, B1, B2, C, D) with ordered evidence states, stances
+         reported beside them, seat arithmetic from the results table, and a
+         So What assembled from fragments by what this scan found. Visible
+         only while a formation window is open; hides itself otherwise.
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="section-card policy-panel" id="formationCard" style="display:none; border-color:rgba(167,139,250,0.55);">
+        <div class="section-title">🏛️ GOVERNMENT FORMATION — WHICH GOVERNMENT, AND WHAT EACH ONE CHANGES</div>
+        <div class="pp-badge-row"><span class="pp-badge" id="formationBadge">--</span><span class="pp-freeze" id="formationFreeze"></span></div>
+        <div class="pp-headline" id="formationHeadline"></div>
+        <div class="pp-rows" id="formationRows"></div>
+        <div class="pp-chips" id="formationChips"></div>
+        <div id="formationSoWhat"></div>
+        <div id="formationWatch"></div>
+        <div class="pp-note" id="formationNote"></div>
+    </div>
+
     <!-- SO WHAT / INTERPRETATION CARDS -->
     <!-- So What Summary Box -->
     <div class="interp-so-what" id="soWhatCard" style="display:none;">
@@ -1090,7 +1108,7 @@
 
     <!-- FOOTER -->
     <div class="page-footer">
-        © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v1.0.0-israel-dual-dashboard |
+        © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v1.2.0-israel-formation |
         <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--accent);text-decoration:none;">☕ buy me a coffee</a>
     </div>
 
@@ -1950,6 +1968,86 @@
         } catch(e){ console.warn('[Policy panels] render error:', e); }
     }
 
+    // ══════════════════════════════════════════════════════════════════
+    // GOVERNMENT FORMATION PANEL (v1.2.0) — reads data.government_formation
+    // ══════════════════════════════════════════════════════════════════
+    function renderGovernmentFormation(data){
+        try {
+            const gf = data.government_formation;
+            const card = document.getElementById('formationCard');
+            if (!card) return;
+            if (!gf || !gf.active) { card.style.display = 'none'; return; }
+            card.style.display = 'block';
+
+            const stateColor = {voted:'#60a5fa', formation:'#a78bfa', formed:'#10b981'};
+            _ppBadge('formationBadge', (gf.cycle_state || '--') + (gf.days_in_state != null ? ' · day ' + gf.days_in_state : ''),
+                     stateColor[gf.cycle_state] || '#94a3b8');
+            _ppSet('formationFreeze', gf.decision_freeze ? 'decision freeze: ON — external decisions parked' : '');
+            _ppSet('formationHeadline', gf.headline);
+
+            const order = ['A','B1','B2','C','D'];
+            const tone = {quiet:'', discussed:'', negotiating:'warn', committed:'ok'};
+            _ppRows('formationRows', order.filter(k => (gf.paths||{})[k]).map(function(k){
+                const p = gf.paths[k];
+                const seats = (p.seats != null) ? (p.seats + ' seats (' + (p.margin >= 0 ? '+' : '') + p.margin + ')') : 'no seat math';
+                const fh = ['discussed','negotiating','committed'].reduce(function(n, l){ return n + (((p.counts||{})[l]||{}).firsthand||0); }, 0);
+                let label = 'Path ' + k + ' · ' + p.label + ' — ' + String(p.state).toUpperCase();
+                if ((p.blocked_by||[]).length) label += '  ✋ ' + p.blocked_by.join(', ');
+                if ((p.enabled_by||[]).length) label += '  🤝 ' + p.enabled_by.join(', ');
+                return { label: label, value: seats + ' · ' + fh + ' firsthand',
+                         tone: ((p.blocked_by||[]).length && p.state !== 'quiet') ? 'bad' : tone[p.state] };
+            }));
+
+            _ppChips('formationChips', (gf.stances||[]).map(function(st){
+                return { text: st.actor + (st.effect === 'blocks' ? ' rules out ' : ' open to ') +
+                               st.paths.map(function(x){ return 'Path ' + x; }).join('/') + ' (' + st.count + ')',
+                         tone: st.effect === 'blocks' ? 'hot' : 'good' };
+            }));
+
+            const sw = gf.so_what || {};
+            const titles = {israel:'🇮🇱 FOR ISRAEL', region:'🌍 FOR THE REGION', global:'🌐 FOR THE GLOBE (US · IRAN WAR · MARKETS)'};
+            const swEl = document.getElementById('formationSoWhat');
+            swEl.innerHTML = '';
+            ['israel','region','global'].forEach(function(alt){
+                const frs = sw[alt] || [];
+                if (!frs.length) return;
+                const h = document.createElement('div');
+                h.className = 'interp-section-title';
+                h.textContent = titles[alt];
+                swEl.appendChild(h);
+                frs.forEach(function(t){
+                    const d = document.createElement('div');
+                    d.className = 'pp-note';
+                    d.style.marginTop = '6px';
+                    d.textContent = t;
+                    swEl.appendChild(d);
+                });
+            });
+
+            const wEl = document.getElementById('formationWatch');
+            wEl.innerHTML = '';
+            if ((gf.watch_list||[]).length) {
+                const h = document.createElement('div');
+                h.className = 'interp-section-title';
+                h.textContent = 'WATCH FOR';
+                wEl.appendChild(h);
+                gf.watch_list.forEach(function(w){
+                    const d = document.createElement('div');
+                    d.className = 'interp-watch-item';
+                    d.textContent = '→ ' + w;
+                    wEl.appendChild(d);
+                });
+            }
+
+            const c = gf.corpus || {};
+            _ppSet('formationNote',
+                'Seats ' + String(gf.results_status || 'unavailable').toUpperCase() +
+                (gf.results_as_of ? ' as of ' + gf.results_as_of : '') + '. Corpus: ' +
+                (c.firsthand||0) + ' firsthand / ' + (c.commentary||0) + ' commentary in ' + (c.in_scope||0) +
+                ' formation-scoped items. ' + (gf.doctrine_note || ''));
+        } catch(e){ console.warn('[Formation panel] render error:', e); }
+    }
+
     function renderCoordination(signals){
         const card=document.getElementById('coordCard');
         const list=document.getElementById('coordList');
@@ -2157,6 +2255,7 @@
         currentData=data;
         const level=data.theatre_escalation_level||0;
         renderTheatre(data);
+        renderGovernmentFormation(data);
         renderInterpretation(data);
         renderDiplomaticDeescalation(data);
         renderLadder(level);

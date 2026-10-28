@@ -893,6 +893,18 @@
     <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/israel-west-bank-and-gaza-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW ADVISORY →</a>
 </div>
 
+        <!-- GOVERNMENT BANNER (v2.4.1, Oct 28 2026) — formation window, then the
+             post-formation off-ramp: "new government" headline for days 0-30,
+             "alignment" through day 100, then hidden (normal cards). -->
+        <div id="ilGovtBanner" style="display:none; align-items:center; gap:14px; border-radius:10px; padding:14px 20px; margin-bottom:15px; flex-wrap:wrap; background:linear-gradient(135deg,#2e1065,#4c1d95); border:2px solid #a78bfa; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+            <div style="font-size:24px;flex-shrink:0;">🏛️</div>
+            <div style="flex:1;">
+                <div style="font-size:11px;font-weight:bold;color:#ddd6fe;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;" id="ilGovtBannerTitle">Government formation</div>
+                <div style="font-size:12px;color:#ede9fe;line-height:1.4;" id="ilGovtBannerText"></div>
+            </div>
+            <a href="rhetoric-israel.html#formationCard" style="flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">Formation paths →</a>
+        </div>
+
         <!-- ISRAEL RHETORIC TRACKER BANNER -->
         <div class="il-rhetoric-banner">
             <div style="font-size:24px;flex-shrink:0;">📡</div>
@@ -1465,12 +1477,46 @@
                   oppNote: 'جبهه مخالف به رهبری آیزنکوت (یشار). هیچ جبهه‌ای در شمارش موقت به ۶۱ نرسید؛ احزاب عرب کفه را تعیین می‌کنند.' },
         };
 
+        // Government banner. ec = election cycle (stability payload);
+        // gf = government_formation (rhetoric payload) when available.
+        window._ilGovt = window._ilGovt || {};
+        function renderGovtBanner(ec, gf) {
+            try {
+                if (ec) window._ilGovt.ec = ec;
+                if (gf) window._ilGovt.gf = gf;
+                ec = window._ilGovt.ec || {};
+                gf = window._ilGovt.gf || {};
+                const el = document.getElementById('ilGovtBanner');
+                const t = document.getElementById('ilGovtBannerTitle');
+                const x = document.getElementById('ilGovtBannerText');
+                if (!el) return;
+                if (ec.state === 'formed') {
+                    const ph = ec.post_formation_phase;
+                    if (ph === 'headline') {
+                        t.textContent = 'New government sworn in';
+                        x.textContent = 'Day ' + (ec.days_since_formed ?? 0) + ' of ' + (ec.headline_days || 30) +
+                            '. A new coalition is a policy discontinuity: prior-government positions are not its baseline.';
+                    } else if (ph === 'alignment') {
+                        t.textContent = 'New government — alignment window';
+                        x.textContent = 'Day ' + (ec.days_since_formed ?? 0) + ' of ' + (ec.alignment_window_days || 100) +
+                            ': is the government doing what its own guidelines said?';
+                    } else { el.style.display = 'none'; return; }
+                } else if (ec.state === 'voted' || ec.state === 'formation') {
+                    t.textContent = 'Government formation — day ' + (ec.days_in_state ?? 0);
+                    x.textContent = (gf.headline || 'No bloc reached 61; formation paths are tracked on the rhetoric page.') +
+                        (ec.decision_freeze ? ' Decision freeze ON: Lebanon and Gaza frameworks read as parked, not failing.' : '');
+                } else { el.style.display = 'none'; return; }
+                el.style.display = 'flex';
+            } catch (e) { console.warn('[Govt banner] render error:', e); }
+        }
+
         function renderElectionResults(data) {
             try {
                 const lang = window._ilLang || 'en';
                 const L = ER_LABELS[lang] || ER_LABELS.en;
                 const er = data.election_results;
                 const ec = (data.conflict || {}).election_cycle || {};
+                renderGovtBanner(ec, null);
                 const box = document.getElementById('electionResultsBox');
 
                 // ── Coalition card ──
@@ -3008,6 +3054,7 @@
                 const fullResp = await fetch(`${BACKEND_URL}/api/rhetoric/israel`);
                 if (!fullResp.ok) return;
                 const fullData = await fullResp.json();
+                renderGovtBanner(null, fullData.government_formation || null);
                 const silenceMap = {};
                 (fullData.silence_anomalies||[]).forEach(a => { silenceMap[a.actor_id] = true; });
                 const actorListEl = document.getElementById('ilActorList');
