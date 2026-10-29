@@ -181,6 +181,18 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 26px; margi
 .gpi-level-gate { max-width: 340px; margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--text-secondary); text-align: right; font-family: 'Times New Roman', Times, serif; }
 .gpi-level-gate strong { color: var(--text-primary); }
 @media (max-width: 768px) { .gpi-level-gate { text-align: left; max-width: 100%; } }
+/* v3.14 -- hero header wraps on narrow screens: axis-native labels are longer
+   ("MASS-CASUALTY HUMANITARIAN DISASTER") than the old chip words, and a
+   nowrap pill pushed a 390px phone 77px sideways. */
+.axis-hero .pressure-axis-header { flex-wrap: wrap; gap: 8px; min-width: 0; }
+.axis-hero .pressure-axis-header > span:last-child { min-width: 0; max-width: 100%; }
+.axis-hero .pressure-axis-level-pill { white-space: normal; max-width: 100%; display: inline-block; }
+/* v3.14 (Oct 29 2026) -- motion tag: severity is the level, motion is this. */
+.axis-motion-tag { display: inline-block; margin-top: 6px; font-family: 'Courier New', monospace; font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--card-border); color: var(--text-muted); }
+.axis-motion-tag.motion-new { color: #fbbf24; border-color: rgba(251,191,36,0.55); background: rgba(251,191,36,0.10); }
+.axis-motion-tag.motion-sustained { color: var(--text-muted); }
+.axis-motion-tag.motion-unread { font-style: italic; }
+.pressure-axis-header .axis-motion-tag { margin-top: 0; margin-left: 8px; vertical-align: middle; }
 /* Standing-watch tier: collapsed by default, opens on click. */
 .standing-watch { margin-top: 18px; border-top: 1px dashed var(--card-border); padding-top: 14px; }
 .standing-watch > summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: 'Courier New', monospace; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
@@ -367,7 +379,13 @@ a.sig-location-link:hover { opacity: 0.8; }
 .pressure-axes-tabs .pressure-axis-card { min-width: 0; }
 .pressure-axes-tabs .pressure-axis-header { flex-wrap: wrap; gap: 6px; min-width: 0; }
 .pressure-axes-tabs .pressure-axis-title-group { min-width: 0; }
-.pressure-axes-tabs .pressure-axis-name { overflow-wrap: anywhere; }
+/* Six tabs: tighter tracking so HUMANITARIAN / GOVERNANCE fit whole. Words
+   never break mid-word (anywhere produced "HUMANITA RIAN"); a name that still
+   cannot fit wraps between words or shrinks, it does not split. */
+.pressure-axes-tabs .pressure-axis-name { overflow-wrap: normal; word-break: keep-all;
+    letter-spacing: 1.2px; font-size: clamp(10px, 0.85vw, 13px); }
+.pressure-axes-tabs .pressure-axis-icon { flex-shrink: 0; }
+.pressure-axes-tabs .pressure-axis-title-group { flex-wrap: wrap; row-gap: 2px; max-width: 100%; }
 .pressure-axes-tabs .pressure-axis-level-pill { max-width: 100%; white-space: normal; }
 @media (max-width: 768px) {
     .pressure-axes-tabbar .pressure-axes-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1496,9 +1514,20 @@ function _buildCardData(axisName) {
 
     const regionLevels = isAll ? {} : (axis.region_levels || {});
 
+    // v3.14 -- motion beside severity. For All Vectors it mirrors the index gate.
+    let motion = '';
+    if (isAll) {
+        const g = data.level_gate || {};
+        if (g.applied) motion = 'sustained';
+        else if ((data.global_level || 0) >= 5 && (g.fresh || []).length) motion = 'new';
+    } else if (level >= 4) {
+        motion = axis.motion || '';
+    }
+    const motionNote = isAll ? ((data.level_gate || {}).summary || '') : (axis.motion_note || '');
+
     return {
         axisName, level, levelLabel, axisColor, axisIcon, axisLabel,
-        axisDescription, blufProse, signals, regionLevels, isAll,
+        axisDescription, blufProse, signals, regionLevels, isAll, motion, motionNote,
     };
 }
 
@@ -2120,7 +2149,9 @@ function _renderHeroCard(axisName) {
                 <span class="pressure-axis-icon">${d.axisIcon}</span>
                 <span class="pressure-axis-name">${d.axisLabel}</span>
             </div>
-            <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level} \u00b7 ${d.levelLabel}</span>
+            <span>
+                <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level} \u00b7 ${d.levelLabel}</span>${_motionTag(d)}
+            </span>
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         <div class="axis-bluf-prose">${_formatBlufParagraphs(d.blufProse || '')}</div>
@@ -2149,8 +2180,17 @@ function _renderCompactCard(axisName) {
             </div>
             <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level}</span>
         </div>
+        ${_motionTag(d)}
     `;
     return card;
+}
+
+/* v3.14 (Oct 29 2026) -- severity is the L-number; this is motion. Rendered
+   only at L4+, where the distinction matters. Title carries the full note. */
+function _motionTag(d) {
+    if (!d || !d.motion || d.motion === 'quiet') return '';
+    const label = d.motion === 'unread' ? 'motion unread' : d.motion;
+    return `<span class="axis-motion-tag motion-${d.motion}" title="${escapeHtmlGpi(d.motionNote || '')}">${label}</span>`;
 }
 
 // v3.12 (Oct 28 2026) -- split by tier. The card builder below is unchanged;
