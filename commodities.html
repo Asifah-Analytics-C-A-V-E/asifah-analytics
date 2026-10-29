@@ -617,6 +617,60 @@
             background: var(--bg-signal); border-radius: 6px; border-left: 3px solid var(--border-color);
         }
 
+
+        /* ===== COMMODITY WEBS (Oct 29 2026) =====
+           What moves a commodity, and what it moves. A web is a CLOSED box
+           unless something in it is new (72h) -- a standing condition must
+           never read as breaking news. */
+        :root {
+            --web-accent:    #14b8a6;            /* teal-500 -- distinct from conv orange / butterfly violet */
+            --web-bg:        rgba(20,184,166,0.06);
+            --web-bg-strong: rgba(20,184,166,0.14);
+        }
+        [data-theme="light"] {
+            --web-accent:    #0f766e;            /* teal-700 for light theme */
+            --web-bg:        rgba(15,118,110,0.06);
+            --web-bg-strong: rgba(15,118,110,0.12);
+        }
+        .web-panel { margin-bottom: 28px; min-width: 0; }
+        .web-intro { font-size: 0.86rem; line-height: 1.55; color: var(--text-primary); background: var(--web-bg);
+            border-left: 3px solid var(--web-accent); padding: 11px 15px; border-radius: 6px; margin-bottom: 12px; }
+        .web-card { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid var(--web-lvl, var(--web-accent));
+            border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+        .web-card > summary { list-style: none; cursor: pointer; padding: 12px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .web-card > summary::-webkit-details-marker { display: none; }
+        .web-card > summary:hover { background: var(--web-bg); }
+        .web-card[open] > summary { border-bottom: 1px solid var(--border-color); }
+        .web-name { font-weight: 800; font-size: 1rem; color: var(--text-primary); white-space: nowrap; }
+        .web-pill { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px;
+            border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+        .web-pill.fresh { color: var(--web-accent); background: var(--web-bg-strong); }
+        .web-pill.standing { color: var(--text-muted); }
+        .web-headline { flex: 1 1 100%; font-size: 0.85rem; line-height: 1.45; color: var(--text-secondary); min-width: 0; overflow-wrap: anywhere; }
+        .web-chev { margin-left: auto; color: var(--text-muted); font-size: 0.8rem; transition: transform 0.15s ease; }
+        .web-card[open] .web-chev { transform: rotate(180deg); }
+        .web-body { padding: 12px 14px 14px; min-width: 0; }
+        .web-note { font-size: 0.82rem; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; }
+        .web-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        @media (max-width: 760px) { .web-cols { grid-template-columns: minmax(0, 1fr); } }
+        .web-col-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--web-accent); margin-bottom: 6px; }
+        .web-row { background: var(--bg-signal); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; min-width: 0; }
+        .web-row-head { display: block; font-size: 0.82rem; font-weight: 700; line-height: 1.5; color: var(--text-primary); overflow-wrap: anywhere; }
+        .web-dot { display: inline-block; vertical-align: middle; margin: -2px 6px 0 0; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; background: var(--border-strong); }
+        .web-dot.lit, .web-dot.responding, .web-dot.stressed { background: var(--web-lvl, var(--accent-orange)); }
+        .web-dot.relief { background: var(--accent-green); }
+        .web-dot.mooted, .web-dot.exposure { background: transparent; border: 2px solid var(--accent-yellow); }
+        .web-dot.unread, .web-dot.no_sensor { background: transparent; border: 2px dashed var(--text-muted); }
+        .web-state { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); }
+        .web-ev { font-size: 0.76rem; line-height: 1.45; color: var(--text-secondary); margin-top: 3px; overflow-wrap: anywhere; }
+        .web-fm { font-size: 0.72rem; line-height: 1.45; color: var(--text-muted); margin-top: 3px; }
+        .web-unv { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.4px; color: var(--accent-yellow); border: 1px solid var(--accent-yellow); border-radius: 4px; padding: 0 4px; }
+        .web-sowhat { margin-top: 12px; background: var(--web-bg); border-left: 3px solid var(--web-accent); border-radius: 6px; padding: 10px 12px; }
+        .web-sowhat div { font-size: 0.82rem; line-height: 1.5; color: var(--text-primary); margin-bottom: 4px; }
+        .web-sowhat b { color: var(--web-accent); font-size: 0.68rem; letter-spacing: 0.6px; }
+        .web-foot { margin-top: 10px; font-size: 0.72rem; line-height: 1.5; color: var(--text-muted); }
+        .web-quiet { font-size: 0.8rem; color: var(--text-muted); padding: 6px 2px; }
+
         .ca-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -1722,7 +1776,7 @@
     </div>
     <div class="header-row-2">
         <div class="header-title">GLOBAL CROSS-CUTTING COMMODITIES TRACKER</div>
-        <div class="header-subtitle">Strategic Resource Pressure Across 22 Commodities &amp; 44 Country Actors</div>
+        <div class="header-subtitle">Strategic Resource Pressure Across <span id="hdrCommodityCount">35</span> Commodities &amp; Their Country Actors</div>
     </div>
     <div class="header-row-3">
         <div class="toggle-container">
@@ -1849,12 +1903,27 @@
         <div class="section-header">
             <span class="section-icon">🗺️</span>
             <span class="section-title">Country Exposure Matrix</span>
-            <span class="section-desc">Roles &amp; positions of each country across the 22 strategic commodities — grouped by region</span>
+            <span class="section-desc">Roles &amp; positions of each country across every tracked commodity — grouped by region</span>
         </div>
 
         <div class="exposure-matrix" id="exposureMatrix">
             <!-- Rendered by JS -->
             <div class="news-empty">Loading exposure matrix...</div>
+        </div>
+
+        <!-- ========== COMMODITY WEBS (Oct 29 2026) ==========
+             What moves each watched commodity (inbound) and what it moves
+             (outbound). Reads /api/commodity-web. A web opens itself only when
+             something in it is new in the last 72 hours; standing webs stay
+             closed so a constant condition never reads as breaking news. -->
+        <div class="section-header">
+            <span class="section-icon">🕸️</span>
+            <span class="section-title">Commodity Webs</span>
+            <span class="section-desc">What moves each commodity, and what it moves &mdash; a box opens only when something in it is new</span>
+        </div>
+
+        <div class="web-panel" id="webPanel">
+            <div class="conv-empty">Loading commodity webs&hellip;</div>
         </div>
 
         <!-- ========== STRUCTURAL CONVERGENCE (Slice 3 — Jun 22 2026) ========== -->
@@ -2009,6 +2078,7 @@ const ENDPOINT_PRESSURE = `${API_BASE}/api/commodity-pressure`;
 const ENDPOINT_PRICES = `${API_BASE}/api/commodity-prices`;
 const ENDPOINT_FFPI = `${API_BASE}/api/food-price-index`;
 const ENDPOINT_CONVERGENCE = `${API_BASE}/api/commodity-structural-convergence`;
+const ENDPOINT_WEB = `${API_BASE}/api/commodity-web`;   // Oct 29 2026 -- commodity webs
 
 // ============================================================
 // STATIC METADATA — country flags + display names
@@ -2102,14 +2172,14 @@ const REGION_DEFAULTS = {
 // EU bloc tooltip text (shown on hover over the EU country name)
 const EU_BLOC_TOOLTIP = "The European Union is tracked as a single bloc-level actor because key commodity policy — CAP wheat tariffs, EU Critical Raw Materials Act, EU Chips Act, REPowerEU LNG procurement, gas storage mandates — is set at EU-27 level rather than national level. Individual EU member states with distinctive national-level exposure (France for nuclear/uranium) are tracked separately.";
 
-// Commodity display order — fully alphabetical (22 commodities as of v1.5.0)
+// Commodity display order — fully alphabetical (35 commodities as of Oct 29 2026; zinc added)
 // v1.5.0 (May 23 2026): Phase 1A added pgm, chromium, manganese, phosphate, diamonds, bauxite
 const COMMODITY_ORDER = [
     'bauxite', 'chromium', 'coal', 'cobalt', 'coffee', 'copper', 'corn',
     'diamonds', 'fishmeal', 'gold', 'graphite', 'gum_arabic', 'iron_ore', 'lithium', 'manganese', 'natural_gas',
     'nickel', 'nitrogen', 'oil', 'pgm', 'phosphate', 'potash', 'rare_earths',
     'rice', 'semiconductors', 'silicon', 'silver', 'soybeans', 'sugar',
-    'sulfur', 'sunflower_oil', 'tantalum', 'uranium', 'wheat'
+    'sulfur', 'sunflower_oil', 'tantalum', 'uranium', 'wheat', 'zinc'
 ];
 
 // ============================================================
@@ -2119,6 +2189,7 @@ let pressureData = null;
 let pricesData = null;
 let ffpiData = null;          // FAO Food Price Index bundle (Stage 1b)
 let convergenceData = null;   // commodity x WB-structural convergence (Slice 3)
+let webData = null;           // commodity webs (Oct 29 2026)
 let allSignals = [];          // flat list of news signals (from pressureData.top_signals)
 let activeNewsFilter = 'all';
 let chartInstances = {};      // Chart.js instances keyed by commodity_id
@@ -2198,6 +2269,18 @@ async function loadAll(forceRefresh = false) {
             console.warn('Convergence fetch failed:', e);
         }
 
+        // Commodity webs -- independent, non-blocking (Oct 29 2026).
+        try {
+            const webRes = await fetch(ENDPOINT_WEB).then(r => r.json());
+            if (webRes && Array.isArray(webRes.webs)) {
+                webData = webRes;
+            } else {
+                console.warn('Commodity web fetch returned no webs:', webRes);
+            }
+        } catch (e) {
+            console.warn('Commodity web fetch failed:', e);
+        }
+
         renderEverything();
 
     } catch (err) {
@@ -2223,6 +2306,7 @@ function renderEverything() {
     renderStatusStrip();
     renderFFPI();                // Stage 1b — FAO Food Price Index card
     renderExposureMatrix();
+    renderCommodityWebs();       // Oct 29 2026 — what moves it / what it moves
     renderConvergence();         // Slice 3 — exposure x structural stress
     renderCommodityCards();
     renderNewsFilters();
@@ -2387,6 +2471,113 @@ function renderConvergence() {
 
     // Detail container -- populated on tile click (expand-in-place).
     html += '<div class="conv-detail" id="convDetail" style="display:none;"></div>';
+    el.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════════
+// COMMODITY WEBS (Oct 29 2026)
+// Reads /api/commodity-web. Each web is a <details> box that is OPEN only
+// when the backend marks it fresh (something new in 72h). Standing webs stay
+// closed but one click away. Quiet webs are named, not hidden.
+// ════════════════════════════════════════════════════════════════
+const WEB_LVL_COLOR = { 3: 'var(--accent-yellow)', 4: 'var(--accent-orange)', 5: 'var(--accent-red)' };
+const WEB_STATE_TEXT = {
+    lit: 'lit', quiet: 'quiet', mooted: 'talked about, not done', exposure: 'exposure only',
+    unread: 'unread', no_sensor: 'no sensor', responding: 'responding', stressed: 'under stress'
+};
+
+function _webRow(name, stateKey, dotClass, evidence, extra) {
+    var h = '<div class="web-row"><div class="web-row-head">';
+    h += '<span class="web-dot ' + dotClass + '"></span>' + _convEsc(name);
+    h += ' <span class="web-state">' + _convEsc(WEB_STATE_TEXT[stateKey] || stateKey) + '</span>';
+    if (extra) h += ' ' + extra;
+    h += '</div>';
+    if (evidence) h += '<div class="web-ev">' + _convEsc(evidence) + '</div>';
+    return h;
+}
+
+function renderCommodityWebs() {
+    var el = document.getElementById('webPanel');
+    if (!el) return;
+    var d = webData;
+    if (!d) {
+        el.innerHTML = '<div class="conv-empty">⚠️ Commodity webs unavailable this load. (Missing data, not an all-clear.)</div>';
+        return;
+    }
+    var webs = (d.webs || []).slice();
+    var live = webs.filter(function(w){ return (w.level || 0) >= 3; });
+    var quiet = webs.filter(function(w){ return !((w.level || 0) >= 3); });
+    live.sort(function(a, b){ return (b.fresh === true) - (a.fresh === true) || (b.level || 0) - (a.level || 0); });
+
+    var html = '<div class="web-intro">Each web reads two directions: what world events are moving the commodity (inbound) '
+             + 'and what the commodity is moving (outbound). A <b>convergence</b> means both are lit at once. '
+             + 'Boxes open themselves only when something is new; a closed box is a standing condition, not news.</div>';
+    if (d.store && d.store !== 'ok') {
+        html += '<div class="conv-disclaimer">Freshness history: ' + _convEsc(d.store) + '.</div>';
+    }
+    if (d.error) {
+        html += '<div class="conv-empty">⚠️ ' + _convEsc(d.error) + '</div>';
+    }
+
+    live.forEach(function(w){
+        var lvl = w.level || 0;
+        var color = WEB_LVL_COLOR[lvl] || 'var(--web-accent)';
+        html += '<details class="web-card" style="--web-lvl:' + color + '"' + (w.fresh ? ' open' : '') + '>';
+        html += '<summary>';
+        html +=   '<span class="web-name">' + (w.icon || '') + ' ' + _convEsc(w.label) + '</span>';
+        html +=   '<span class="web-pill" style="color:' + color + '">L' + lvl + ' ' + _convEsc(w.state) + '</span>';
+        html +=   '<span class="web-pill ' + (w.fresh ? 'fresh' : 'standing') + '">' + (w.fresh ? 'New' : 'Standing') + '</span>';
+        html +=   '<span class="web-chev">▼</span>';
+        html +=   '<span class="web-headline">' + _convEsc(w.headline) + '</span>';
+        html += '</summary>';
+
+        html += '<div class="web-body">';
+        if (w.chokepoint_note) html += '<div class="web-note">' + _convEsc(w.chokepoint_note) + '</div>';
+        html += '<div class="web-cols">';
+
+        html += '<div><div class="web-col-title">Inbound &mdash; what is moving it</div>';
+        (w.inbound || []).forEach(function(x){
+            var stateKey = x.state;
+            var dot = x.state === 'lit' ? (x.direction === 'relief' ? 'relief' : 'lit') : x.state;
+            var label = x.label + (x.state === 'lit' && x.direction === 'relief' ? ' (relief)' : '');
+            html += _webRow(label, stateKey, dot, x.evidence) + '</div>';
+        });
+        html += '</div>';
+
+        html += '<div><div class="web-col-title">Outbound &mdash; what it is moving</div>';
+        (w.outbound || []).forEach(function(x){
+            var flag = (typeof CONV_FLAGS !== 'undefined' && CONV_FLAGS[x.country]) ? CONV_FLAGS[x.country] + ' ' : '';
+            var unv = x.verified ? '' : '<span class="web-unv" title="' + _convEsc(x.source || 'Claude research') + '">UNVERIFIED</span>';
+            var row = _webRow(flag + x.label, x.state, x.state, x.evidence, unv);
+            if (x.failure_mode && (x.state === 'responding' || x.state === 'stressed')) {
+                row += '<div class="web-fm">' + _convEsc(x.failure_mode) + '</div>';
+            }
+            html += row + '</div>';
+        });
+        html += '</div>';
+        html += '</div>';   // web-cols
+
+        var sw = w.so_what || {};
+        if (sw.country || sw.region || sw.global) {
+            html += '<div class="web-sowhat">';
+            if (sw.country) html += '<div><b>COUNTRY</b> ' + _convEsc(sw.country) + '</div>';
+            if (sw.region)  html += '<div><b>REGION</b> ' + _convEsc(sw.region) + '</div>';
+            if (sw.global)  html += '<div><b>GLOBAL</b> ' + _convEsc(sw.global) + '</div>';
+            html += '</div>';
+        }
+        var foot = [];
+        if (w.watch && w.watch.length) foot.push('Watch: ' + w.watch.join(' · '));
+        if (w.not_implied && w.not_implied.length) foot.push('Not implied: ' + w.not_implied.join(' '));
+        if (w.fresh_basis) foot.push('Freshness: ' + w.fresh_basis + '.');
+        if (foot.length) html += '<div class="web-foot">' + foot.map(_convEsc).join('<br>') + '</div>';
+        html += '</div></details>';
+    });
+
+    if (quiet.length) {
+        html += '<div class="web-quiet">Quiet this cycle (on watch, nothing moving): '
+              + quiet.map(function(w){ return (w.icon || '') + ' ' + _convEsc(w.label || w.commodity); }).join(', ') + '</div>';
+    }
+    if (!webs.length) html += '<div class="web-quiet">No commodity webs configured.</div>';
     el.innerHTML = html;
 }
 
@@ -2684,6 +2875,15 @@ function maybeShowPendingBanner() {
 }
 
 function renderStatusStrip() {
+    // Oct 29 2026 -- was a hardcoded "24" while 35 are tracked. Count the list.
+    const comEl = document.getElementById('statCommodities');
+    if (comEl) {
+        const n = (pricesData && pricesData.commodity_meta)
+            ? Object.keys(pricesData.commodity_meta).length : COMMODITY_ORDER.length;
+        comEl.textContent = n;
+        const hdr = document.getElementById('hdrCommodityCount');
+        if (hdr) hdr.textContent = n;
+    }
     const sigEl = document.getElementById('statSignals');
     const sigSubEl = document.getElementById('statSignalsSub');
     const artEl = document.getElementById('statArticles');
