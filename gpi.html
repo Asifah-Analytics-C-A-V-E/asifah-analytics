@@ -460,8 +460,15 @@ a.sig-location-link:hover { opacity: 0.8; }
 }
 .axis-plain-more, .axis-analyst { margin-top: 10px; }
 .axis-plain-more > summary, .axis-analyst > summary {
-    cursor: pointer; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--accent); padding: 4px 0; list-style: none; user-select: none;
+    cursor: pointer; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); padding: 6px 0; list-style: none; user-select: none;
+}
+/* Oct 30 2026 -- the label between the plain-language block and the live
+   signal list, so the reader knows where the write-up ends and the evidence
+   begins. */
+.axis-signals-label {
+    margin: 12px 0 8px 0; padding-top: 10px; border-top: 1px solid var(--card-border);
+    font-size: 11px; letter-spacing: 0.5px; color: var(--text-muted); font-style: italic;
 }
 .axis-plain-more > summary::-webkit-details-marker,
 .axis-analyst > summary::-webkit-details-marker { display: none; }
@@ -869,6 +876,28 @@ a.sig-location-link:hover { opacity: 0.8; }
     header { text-align: left; }
     .gpi-banner { flex-direction: column; align-items: flex-start; }
     .gpi-banner-right { align-items: flex-start; }
+    /* Oct 30 2026 -- mobile scrub. The banner's children sized to their
+       widest line (a no-wrap stats row) and were clipped by the card: the
+       "Sustained, not new" explanation ran off the right edge. */
+    .gpi-banner { padding: 22px 18px; gap: 16px; }
+    .gpi-banner-left, .gpi-banner-right { width: 100%; min-width: 0; }
+    .gpi-label { letter-spacing: 2px; }
+    .gpi-tagline { overflow-wrap: anywhere; }
+    .gpi-stats { flex-wrap: wrap; gap: 6px 14px; }
+    .gpi-level-gate { max-width: 100%; overflow-wrap: anywhere; }
+    .gpi-level-badge { max-width: 100%; white-space: normal; }
+    .axis-plain-headline { font-size: 19px; }
+    .axis-plain-sowhat { font-size: 16px; }
+    /* Narrative cards: headline gets the full width; badges drop below it.
+       Side by side, "Levant wheat / food security" read one word per line. */
+    .narrative-card-header { flex-wrap: wrap; }
+    .narrative-card-headline { flex: 1 1 calc(100% - 40px); min-width: 0; }
+    .narrative-card-header .cluster-badge,
+    .narrative-card-header .narrative-card-priority-pill { margin-left: 34px; }
+    .narrative-card-header .cluster-badge + .narrative-card-priority-pill { margin-left: 0; }
+    /* Regional cards: the posture pill may sit under the region name. */
+    .regional-card-header { flex-wrap: wrap; }
+    .regional-card-pill { max-width: 100%; text-align: left; }
 }
 
         /* ── WATERMARK (Jul 23 2026 canonical spec) ──────────────────────
@@ -1719,6 +1748,16 @@ function _resolveLocation(s) {
     if (theatre && _THEATRE_PAGE[theatre]) {
         return { label: _titleCase(theatre.replace(/_/g,' ')), href: _trackerPageFor(s) || _THEATRE_PAGE[theatre] };
     }
+    // 1b. Oct 30 2026 -- a real COUNTRY theatre with no Asifah page yet (DRC,
+    //     Kenya, Nigeria...). Before this, it fell through to the REGION name of
+    //     whichever backend carried it, so DR Congo's Ebola row read "Middle
+    //     East & North Africa". A country is named as itself.
+    if (theatre && !_REGION_DISPLAY[theatre] && !/^global/.test(theatre) && theatre !== 'unknown') {
+        const ACRO = { drc:'DR Congo', png:'PNG', uae:'UAE', uk:'UK', us:'US', usa:'USA',
+                       car:'Central African Republic', cote_divoire:"C\u00f4te d'Ivoire" };
+        return { label: ACRO[theatre] || _titleCase(theatre.replace(/_/g,' ')),
+                 href: _trackerPageFor(s) || null };
+    }
     // 2. theatre is actually a region code (the 'Me:' bug) OR a global bucket:
     //    try to parse a country name out of the text first.
     //    v3.2.2 (Jul 16 2026): recognition no longer requires a built page, and
@@ -2208,6 +2247,7 @@ function _renderHeroCard(axisName) {
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         ${_proseBlock(axisName, d)}
+        ${_signalsLabel(d)}
         <div class="pressure-axis-signals">${signalsHtml}</div>
         <div class="bluf-legend">${_renderLevelLegend()}</div>
         ${regionsLine}
@@ -2592,6 +2632,19 @@ function _regionalPillHtml(card) {
     const head = `L${card.level} \u00b7 ${escapeHtmlGpi(parts[0] || '')}`;
     const sub = parts.slice(1).join(' \u00b7 ');
     return sub ? `${head}<span class="pill-sub">${escapeHtmlGpi(sub)}</span>` : head;
+}
+
+function _signalsLabel(d) {
+    const api = _gpiState.apiData || {};
+    const n = (d.signals || []).length;
+    if (!n) return '';
+    let when = '';
+    if (api.generated_at) {
+        const dt = new Date(api.generated_at);
+        if (!isNaN(dt)) when = ' \u00b7 as of ' + dt.toLocaleString('en-US',
+            {month:'short', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true});
+    }
+    return `<div class="axis-signals-label">Live signals behind this read &mdash; ${n} from Asifah's trackers, unedited${when}</div>`;
 }
 
 async function loadVoice() {
