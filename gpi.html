@@ -437,6 +437,55 @@ a.sig-location-link:hover { opacity: 0.8; }
     border-bottom: 1px solid var(--card-border);
     white-space: pre-wrap;
 }
+/* ── PLAIN-LANGUAGE VOICE (v3.19, Oct 30 2026) ───────────────────────────
+   gpi_voice.py writes a headline, a two-sentence So What, a fuller read and
+   what to watch for each tab. It sits on top; the analyst prose that used to
+   be the whole BLUF moves one click below. No write-up -> the page renders
+   exactly as before. */
+.pressure-axis-card.axis-hero .axis-plain {
+    margin: 14px 0 12px 0;
+    padding: 14px 0 12px 0;
+    border-top: 1px solid var(--card-border);
+    min-width: 0;
+}
+.axis-plain-headline {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 21px; line-height: 1.35; font-weight: 700;
+    color: var(--text-primary); margin-bottom: 8px; overflow-wrap: anywhere;
+}
+.axis-plain-sowhat {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 17px; line-height: 1.65; color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+.axis-plain-more, .axis-analyst { margin-top: 10px; }
+.axis-plain-more > summary, .axis-analyst > summary {
+    cursor: pointer; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); padding: 4px 0; list-style: none; user-select: none;
+}
+.axis-plain-more > summary::-webkit-details-marker,
+.axis-analyst > summary::-webkit-details-marker { display: none; }
+.axis-plain-more > summary::before, .axis-analyst > summary::before { content: '\25B8  '; }
+.axis-plain-more[open] > summary::before, .axis-analyst[open] > summary::before { content: '\25BE  '; }
+.axis-plain-read {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px; line-height: 1.7; color: var(--text-primary);
+    margin: 6px 0 8px 0; overflow-wrap: anywhere;
+}
+.axis-plain-watch-title {
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-muted); margin-top: 6px;
+}
+.axis-plain-watch { margin: 4px 0 0 18px; padding: 0; }
+.axis-plain-watch li {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 15px; line-height: 1.55; color: var(--text-primary);
+}
+.axis-plain-label {
+    margin-top: 10px; font-size: 11px; letter-spacing: 0.5px;
+    color: var(--text-muted); font-style: italic;
+}
+.pressure-axis-card.axis-hero .axis-analyst .axis-bluf-prose { margin-top: 6px; }
 .pressure-axis-card.axis-hero .axis-bluf-prose.loading-shimmer {
     min-height: 60px;
 }
@@ -800,7 +849,10 @@ a.sig-location-link:hover { opacity: 0.8; }
 .regional-card-title-group { display: flex; align-items: center; gap: 10px; }
 .regional-card-flag { font-size: 26px; }
 .regional-card-name { font-family: 'Times New Roman', Times, serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-.regional-card-pill { font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; color: #ffffff; flex-shrink: 0; }
+.regional-card-pill { font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; color: #ffffff; flex-shrink: 1; min-width: 0; max-width: 62%; text-align: right; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+/* Oct 30 2026 -- the full posture shows, stacked: "L4 · ELEVATED" over
+   "INCIDENT OR RED LINE". The label used to be cut to 18 characters. */
+.regional-card-pill .pill-sub { display: block; font-size: 9px; letter-spacing: 1.2px; opacity: 0.92; }
 .regional-card-excerpt { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 14px; flex: 1; }
 .regional-card-signals { margin: 12px 0; display: flex; flex-direction: column; gap: 4px; }
 .regional-card-signal { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted); }
@@ -1365,6 +1417,7 @@ const AXIS_FALLBACK_DESCRIPTIONS = {
 let _gpiState = {
     activeAxis: ACTIVE_AXIS_DEFAULT,
     apiData:    null,
+    voice:      null,   // v3.19 -- /api/gpi/voice
 };
 
 // ── THEATRE STATE VOCABULARY (v3, Oct 3 2026) ────────────────────
@@ -2154,7 +2207,7 @@ function _renderHeroCard(axisName) {
             </span>
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
-        <div class="axis-bluf-prose">${_formatBlufParagraphs(d.blufProse || '')}</div>
+        ${_proseBlock(axisName, d)}
         <div class="pressure-axis-signals">${signalsHtml}</div>
         <div class="bluf-legend">${_renderLevelLegend()}</div>
         ${regionsLine}
@@ -2491,6 +2544,70 @@ function setActiveAxis(axisName) {
     });
 }
 
+// ── PLAIN-LANGUAGE VOICE (v3.19, Oct 30 2026) ──────────────────────────
+// Reads /api/gpi/voice (never triggers a write -- that only happens on the
+// backend). The write-up leads; the analyst prose sits one click below.
+// Clicks inside the hero card normally re-render it (setActiveAxis), which
+// would snap a just-opened <details> shut, so the toggles stop propagation.
+const VOICE_VIEW = { all: 'all_vectors', kinetic: 'kinetic', economic: 'economic',
+                     diplomatic: 'diplomatic', humanitarian: 'humanitarian',
+                     governance: 'governance' };
+
+function _proseBlock(axisName, d) {
+    const analyst = `<div class="axis-bluf-prose">${_formatBlufParagraphs(d.blufProse || '')}</div>`;
+    const voice = _gpiState.voice || null;
+    const v = voice && voice.views ? voice.views[VOICE_VIEW[axisName] || axisName] : null;
+    if (!v || !v.headline) return analyst;
+    const esc = escapeHtmlGpi;
+    const watch = (v.watch || []).filter(Boolean);
+    let when = '';
+    if (voice.generated_at) {
+        const dt = new Date(voice.generated_at);
+        if (!isNaN(dt)) when = ' \u00b7 written ' + dt.toLocaleString('en-US',
+            {month:'short', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true});
+    }
+    return `
+        <div class="axis-plain">
+            <div class="axis-plain-headline">${esc(v.headline)}</div>
+            <div class="axis-plain-sowhat">${esc(v.so_what || '')}</div>
+            <details class="axis-plain-more" onclick="event.stopPropagation()">
+                <summary>The fuller read</summary>
+                <div class="axis-plain-read">${esc(v.read || '')}</div>
+                ${watch.length ? `<div class="axis-plain-watch-title">What to watch</div>
+                <ul class="axis-plain-watch">${watch.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
+            </details>
+            <div class="axis-plain-label">${esc(voice.label || 'Plain-language read, AI-drafted from Asifah signals')}${when}</div>
+        </div>
+        <details class="axis-analyst" onclick="event.stopPropagation()">
+            <summary>Analyst detail &mdash; every signal behind this read</summary>
+            ${analyst}
+        </details>`;
+}
+
+// Oct 30 2026 -- "ELEVATED -- INCIDENT OR RED LINE" was sliced to 18 chars
+// ("ELEVATED -- INCIDE"). Split on the double dash and stack the second half.
+function _regionalPillHtml(card) {
+    const raw = String(card.posture_label || card.level_label || '');
+    const parts = raw.split(/\s+--\s+|\s+\u2014\s+/);
+    const head = `L${card.level} \u00b7 ${escapeHtmlGpi(parts[0] || '')}`;
+    const sub = parts.slice(1).join(' \u00b7 ');
+    return sub ? `${head}<span class="pill-sub">${escapeHtmlGpi(sub)}</span>` : head;
+}
+
+async function loadVoice() {
+    try {
+        const resp = await fetch(ME_BACKEND + '/api/gpi/voice');
+        if (!resp.ok) return;
+        const v = await resp.json();
+        if (v && v.available && v.views) {
+            _gpiState.voice = v;
+            if (_gpiState.apiData) setActiveAxis(_gpiState.activeAxis);
+        }
+    } catch (e) {
+        console.warn('[GPI] plain-language voice unavailable:', e);
+    }
+}
+
 async function loadGpi() {
     try {
         const resp = await fetch(ME_BACKEND + '/api/gpi');
@@ -2574,6 +2691,7 @@ async function loadGpi() {
         // PRESSURE AXES RENDERING (v3.1 -- May 19, 2026)
         // Hero-Panel: active axis is the BLUF. Renders via setActiveAxis().
         setActiveAxis(ACTIVE_AXIS_DEFAULT);
+        loadVoice();   // v3.19 -- plain-language write-up, re-renders when it arrives
 
         const grid = document.getElementById('regionalCardsGrid');
         grid.innerHTML = '';
@@ -2594,7 +2712,7 @@ async function loadGpi() {
                         <span class="regional-card-flag">${card.flag}</span>
                         <span class="regional-card-name">${card.name}</span>
                     </div>
-                    <span class="regional-card-pill" style="background:${pillBg};">L${card.level} · ${(card.posture_label || card.level_label || '').slice(0,18)}</span>
+                    <span class="regional-card-pill" style="background:${pillBg};">${_regionalPillHtml(card)}</span>
                 </div>
                 <div class="regional-card-excerpt">${card.bluf_excerpt || ''}</div>
                 ${sigList ? `<div class="regional-card-signals">${sigList}</div>` : ''}
