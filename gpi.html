@@ -861,6 +861,11 @@ a.sig-location-link:hover { opacity: 0.8; }
    "INCIDENT OR RED LINE". The label used to be cut to 18 characters. */
 .regional-card-pill .pill-sub { display: block; font-size: 9px; letter-spacing: 1.2px; opacity: 0.92; }
 .regional-card-excerpt { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 14px; flex: 1; }
+/* Oct 30 2026 -- plain-language regional read on the card (regional_voice.py) */
+.regional-card-plain { margin-bottom: 14px; flex: 1; min-width: 0; }
+.regional-card-plain-headline { font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.4; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; overflow-wrap: anywhere; }
+.regional-card-plain-sowhat { font-family: 'Times New Roman', Times, serif; font-size: 14px; line-height: 1.6; color: var(--text-secondary); overflow-wrap: anywhere; }
+.regional-card-plain-label { margin-top: 8px; font-size: 10.5px; color: var(--text-muted); font-style: italic; }
 .regional-card-signals { margin: 12px 0; display: flex; flex-direction: column; gap: 4px; }
 .regional-card-signal { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted); }
 .regional-card-signal-icon { font-size: 14px; }
@@ -2746,9 +2751,23 @@ async function loadGpi() {
         setActiveAxis(ACTIVE_AXIS_DEFAULT);
         loadVoice();   // v3.19 -- plain-language write-up, re-renders when it arrives
 
-        const grid = document.getElementById('regionalCardsGrid');
-        grid.innerHTML = '';
-        (data.regional_cards || []).forEach(card => {
+        renderRegionalCards();
+        loadRegionalVoice();   // Oct 30 2026 -- plain-language regional reads
+
+    } catch (e) {
+        _gpiLoadError(e);
+    }
+}
+
+// Oct 30 2026 -- regional cards lead with the plain-language read (headline +
+// So What) when one exists; the old 300-character excerpt otherwise.
+function renderRegionalCards() {
+    const data = _gpiState.apiData || {};
+    const rv = (_gpiState.regionalVoice || {});
+    const grid = document.getElementById('regionalCardsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    (data.regional_cards || []).forEach(card => {
             const a = document.createElement('a');
             a.className = 'regional-card';
             a.href = card.hub_url;
@@ -2767,14 +2786,41 @@ async function loadGpi() {
                     </div>
                     <span class="regional-card-pill" style="background:${pillBg};">${_regionalPillHtml(card)}</span>
                 </div>
-                <div class="regional-card-excerpt">${card.bluf_excerpt || ''}</div>
+                ${_regionalVoiceHtml(card, rv[card.region]) || `<div class="regional-card-excerpt">${card.bluf_excerpt || ''}</div>`}
                 ${sigList ? `<div class="regional-card-signals">${sigList}</div>` : ''}
                 <div class="regional-card-cta">→ Open ${card.name} BLUF</div>
             `;
             grid.appendChild(a);
         });
+}
 
+function _regionalVoiceHtml(card, rec) {
+    const v = rec && rec.available && rec.view;
+    if (!v || !v.headline) return '';
+    const esc = escapeHtmlGpi;
+    return `<div class="regional-card-plain">
+                <div class="regional-card-plain-headline">${esc(v.headline)}</div>
+                <div class="regional-card-plain-sowhat">${esc(v.so_what || '')}</div>
+                <div class="regional-card-plain-label">Plain-language read, AI-drafted from Asifah signals</div>
+            </div>`;
+}
+
+async function loadRegionalVoice() {
+    try {
+        const resp = await fetch(ME_BACKEND + '/api/regional/voice');
+        if (!resp.ok) return;
+        const j = await resp.json();
+        if (j && j.regions) {
+            _gpiState.regionalVoice = j.regions;
+            renderRegionalCards();
+        }
     } catch (e) {
+        console.warn('[GPI] regional plain-language reads unavailable:', e);
+    }
+}
+
+function _gpiLoadError(e) {
+    {   // (block kept from the old catch body)
         console.error('GPI load error:', e);
         const levelEl = document.getElementById('gpiLevelDisplay');
         if (levelEl) {
