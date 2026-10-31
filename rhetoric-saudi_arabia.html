@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics -- Saudi Arabia Rhetoric Tracker v1.0.0 -- Jul 2026
-     Friction-tier + detente shim: 10 actors, 4 vectors (kinetic_inbound / energy_infrastructure /
-     normalization_watch / domestic_transformation). Backend: asifah-backend.onrender.com
-     Cloned from rhetoric-afghanistan.html (payload-contract donor). -->
+<!-- Asifah Analytics -- Saudi Arabia Rhetoric Tracker -- page v3.1.0 (Oct 31 2026)
+     Reads tracker v2.3.0 / interpreter v1.4.0: 14 actors, 6 vectors (kinetic_inbound /
+     energy_infrastructure / normalization_watch / domestic_transformation / guarantor_response /
+     us_security_anchor). v3.1.0: US Security Anchor gauge + vector label; Mecca Pact lane split
+     (shield vs channel); method text explains claim labelling. Older payloads degrade honestly.
+     Backend: asifah-backend.onrender.com. (v1.0.0 Jul 2026, cloned from rhetoric-afghanistan.html) -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
-<!-- Arctic palette · 8 actors · 4-vector composite · en/es/pt full i18n -->
+<!-- Arctic palette · 14 actors · 6-vector composite · en/ar/he/fa i18n -->
 <html lang="en" dir="ltr">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -770,7 +772,7 @@
         }
 
         /* ── v3 (Oct 18 2026): coverage line, Accords axis, Mecca Pact, claim posture ── */
-        .composite-strip { grid-template-columns: 1.4fr repeat(5, 1fr); }
+        .composite-strip { grid-template-columns: 1.4fr repeat(6, 1fr); }
         @media (max-width: 1199px) { .composite-strip { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px)  { .composite-strip { grid-template-columns: 1fr; } }
 
@@ -811,6 +813,13 @@
         .pact-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
         @media (max-width: 1100px) { .pact-row { grid-template-columns: 1fr 1fr; } }
         .pact-cell.non-pact { border-style: dashed; }
+        /* v3.1.0: Mecca Pact lane split -- shield vs channel */
+        .lane-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        @media (max-width: 600px) { .lane-row { grid-template-columns: 1fr; } }
+        .lane-cell { background: var(--bg-signal); border: 1px solid var(--border-color); border-radius: 8px;
+                     padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+        .lane-cell.lead { border-color: var(--accent-cyan); box-shadow: inset 3px 0 0 var(--accent-cyan); }
+        .lane-cell .lane-n { font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan); }
         @media (max-width: 800px) { .pact-row { grid-template-columns: 1fr; } }
         .pact-cell { background: var(--bg-signal); border: 1px solid var(--border-color); border-radius: 8px;
                      padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -855,7 +864,7 @@
     </div>
     <div class="header-row-2">
         <div class="header-title" data-i18n="page_title">SAUDI ARABIA RHETORIC TRACKER</div>
-        <div class="header-subtitle" data-i18n="page_subtitle">14-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">14-Actor · 6-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier</div>
     </div>
     <div class="header-row-3">
         <div class="lang-toggle">
@@ -997,7 +1006,7 @@
 
         </div>
 
-        <!-- COMPOSITE STRIP — Saudi pressure + 4 vector cards -->
+        <!-- COMPOSITE STRIP — Saudi pressure + 6 vector cards -->
         <div class="composite-strip">
             <div class="gauge-card composite">
                 <div class="gauge-label" data-i18n="composite_label">Saudi Composite Pressure</div>
@@ -1029,13 +1038,18 @@
                 <div class="gauge-value" id="vecGuarantorScore">—</div>
                 <span class="level-pill" id="vecGuarantorLevel">—</span>
             </div>
+            <div class="gauge-card">
+                <div class="gauge-label" data-i18n="vec_us">US Security Anchor</div>
+                <div class="gauge-value" id="vecUSScore">—</div>
+                <span class="level-pill" id="vecUSLevel">—</span>
+            </div>
         </div>
 
         <!-- VECTOR BREAKDOWN -->
         <div class="section-header">
             <span class="section-icon">🧭</span>
             <span class="section-title" data-i18n="sec_vectors">Vector Breakdown</span>
-            <span class="section-desc" id="vectorsDesc">5 analytical vectors — composition + scoring</span>
+            <span class="section-desc" id="vectorsDesc">6 analytical vectors — composition + scoring</span>
         </div>
         <div class="vector-grid" id="vectorGrid">
             <div class="empty-state" data-i18n="loading">Loading...</div>
@@ -1045,7 +1059,7 @@
         <div class="section-header">
             <span class="section-icon">🎭</span>
             <span class="section-title" data-i18n="sec_actors">Actor Breakdown</span>
-            <span class="section-desc" id="actorsDesc">13 tracked actors across 5 vectors</span>
+            <span class="section-desc" id="actorsDesc">14 tracked actors across 6 vectors</span>
         </div>
         <div class="actor-grid" id="actorGrid">
             <div class="empty-state" data-i18n="loading">Loading...</div>
@@ -1436,8 +1450,15 @@ const T = {
 // =============================================
 const T_V3 = {
     en: {
-        page_subtitle: '14-Actor · 5-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier',
+        page_subtitle: '14-Actor · 6-Vector · Mecca Pact Anchor · Accords Holdout Watch · Iran-Wheel Friction Tier',
         vec_guarantor: 'Guarantor & Third-Party Response',
+        vec_us: 'US Security Anchor',
+        lanes_title: 'Which lane is moving \u2014 shield or channel?',
+        lane_defence: 'Defence (shield)', lane_diplomacy: 'Diplomacy (channel)', lane_expansion: 'Enlargement',
+        lanes_of: 'stories driving the guarantor cards',
+        lanes_method: 'counted by headline vocabulary \u2014 a lean, not a census',
+        lane_us_drawdown: 'US footprint shrinking (ordered-departure reporting)',
+        lanes_absent: 'Lane split not in this payload (tracker older than v2.3.0).',
         drift_label: 'Accords Axis', type_alignment_drift: 'Accords Axis',
         cca_copper_title: 'Oil \u00d7 Infrastructure Coupling', cca_silver_title: 'Wheat \u00d7 Import Dependence',
         actors_desc_tpl: '{n} tracked actors across {m} vectors',
@@ -1468,11 +1489,18 @@ const T_V3 = {
         // 'confirmed' in the backend means REPORTED by non-claim outlets (wires/RSS) --
         // not confirmed by Riyadh. The label says what is actually measured.
         conf_confirmed: 'Reported', conf_claim_sourced: 'Claim-sourced', conf_by: 'non-claim outlets', conf_claimed_by: 'claimed by',
-        ftr_method_text: '14-actor frame across 5 vectors: Kinetic Inbound (Houthi/Yemen, MOD/air defence, Iran file), Energy Infrastructure (Aramco, OPEC+), Normalization Watch (Accords track, Palestinian file, US track, GCC), Domestic Transformation (Royal Court/MBS, Vision 2030), Guarantor & Third-Party Response (Mecca Pact guarantors T\u00fcrkiye and Pakistan; Egypt tracked as non-pact support, never counted in the pact reading). Keywords score; tripwires assert \u2014 tripwires match within a single sentence and carry a confirmation class. Telegram claim channels are counted apart from the scores. Hajj window is a calendar multiplier, never a standalone signal. Scan refreshes every 12 hours.',
+        ftr_method_text: '14-actor frame across 6 vectors: Kinetic Inbound (Houthi/Yemen, MOD/air defence, Iran file), Energy Infrastructure (Aramco, OPEC+), Normalization Watch (Accords track, GCC; the Palestinian file is read as the holdout counterweight on the Accords axis, not added to this score), Domestic Transformation (Royal Court/MBS, Vision 2030), Guarantor & Third-Party Response (Mecca Pact guarantors T\u00fcrkiye and Pakistan; Egypt tracked as non-pact support, never counted in the pact reading), US Security Anchor (US-Saudi track: arms, posture, embassy status). Keywords score; tripwires assert \u2014 tripwires match within a single sentence, ignore names (the \u201cMecca\u201d in Mecca Pact, a \u201cDefence Minister\u201d title) and carry a confirmation class. \u201cReported\u201d means carried by non-claim outlets; an event attributed to the attacker (\u201cHouthis say\u2026\u201d) or relayed only by claim channels or aggregators is labelled claimed, whoever publishes it \u2014 Riyadh confirming is a separate, stronger fact. Telegram claim channels are counted apart from the scores. Hajj window is a calendar multiplier, never a standalone signal. Scan refreshes every 12 hours.',
     },
     ar: {
-        page_subtitle: '14 فاعلًا · 5 محاور · مرتكز ميثاق مكة · رصد الامتناع عن الاتفاقيات · طبقة احتكاك في عجلة إيران',
+        page_subtitle: '14 فاعلًا · 6 محاور · مرتكز ميثاق مكة · رصد الامتناع عن الاتفاقيات · طبقة احتكاك في عجلة إيران',
         vec_guarantor: 'استجابة الضامنين والأطراف الثالثة',
+        vec_us: 'المرتكز الأمني الأمريكي',
+        lanes_title: 'أي مسار يتحرك — درع أم قناة؟',
+        lane_defence: 'دفاع (درع)', lane_diplomacy: 'دبلوماسية (قناة)', lane_expansion: 'توسيع العضوية',
+        lanes_of: 'قصص تحرّك بطاقات الضامنين',
+        lanes_method: 'مُحتسبة من مفردات العناوين — ميل لا إحصاء',
+        lane_us_drawdown: 'تقلّص الوجود الأمريكي (تقارير المغادرة الإلزامية)',
+        lanes_absent: 'تقسيم المسارات غير موجود في هذه البيانات (متتبع أقدم من v2.3.0).',
         pact_egypt: 'مصر', pact_non_pact: 'خارج الميثاق',
         drift_label: 'محور الاتفاقيات', type_alignment_drift: 'محور الاتفاقيات',
         actors_desc_tpl: '{n} فاعلًا عبر {m} محاور', vectors_desc_tpl: '{m} محاور تحليلية — التكوين والدرجات',
@@ -1495,8 +1523,15 @@ const T_V3 = {
         conf_confirmed: 'مُبلَّغ عنه', conf_claim_sourced: 'مصدره ادعاء', conf_by: 'مصادر غير ادعائية', conf_claimed_by: 'ادّعته',
     },
     he: {
-        page_subtitle: '14 שחקנים · 5 וקטורים · עוגן ברית מכה · מעקב הימנעות מההסכמים · רמת חיכוך בגלגל איראן',
+        page_subtitle: '14 שחקנים · 6 וקטורים · עוגן ברית מכה · מעקב הימנעות מההסכמים · רמת חיכוך בגלגל איראן',
         vec_guarantor: 'תגובת שותפות ההגנה וצדדים שלישיים',
+        vec_us: 'העוגן הביטחוני האמריקני',
+        lanes_title: 'איזה מסלול זז — מגן או ערוץ?',
+        lane_defence: 'הגנה (מגן)', lane_diplomacy: 'דיפלומטיה (ערוץ)', lane_expansion: 'הרחבת החברות',
+        lanes_of: 'ידיעות שמניעות את כרטיסי השותפות',
+        lanes_method: 'נספר לפי אוצר המילים בכותרות — נטייה, לא מפקד',
+        lane_us_drawdown: 'צמצום הנוכחות האמריקנית (דיווחי עזיבה מחייבת)',
+        lanes_absent: 'פיצול המסלולים אינו בנתונים אלה (גרסת עוקב ישנה מ-v2.3.0).',
         pact_egypt: 'מצרים', pact_non_pact: 'מחוץ לברית',
         drift_label: 'ציר ההסכמים', type_alignment_drift: 'ציר ההסכמים',
         actors_desc_tpl: '{n} שחקנים ב-{m} וקטורים', vectors_desc_tpl: '{m} וקטורים אנליטיים — הרכב וציונים',
@@ -1519,8 +1554,15 @@ const T_V3 = {
         conf_confirmed: 'דווח', conf_claim_sourced: 'מקור: טענה', conf_by: 'מקורות שאינם ערוצי טענה', conf_claimed_by: 'נטען ע״י',
     },
     fa: {
-        page_subtitle: '۱۴ بازیگر · ۵ بردار · لنگر پیمان مکه · پایش امتناع از توافق‌ها · لایه اصطکاک چرخ ایران',
+        page_subtitle: '۱۴ بازیگر · ۶ بردار · لنگر پیمان مکه · پایش امتناع از توافق‌ها · لایه اصطکاک چرخ ایران',
         vec_guarantor: 'واکنش ضامن‌ها و طرف‌های ثالث',
+        vec_us: 'لنگر امنیتی آمریکا',
+        lanes_title: 'کدام مسیر در حرکت است — سپر یا کانال؟',
+        lane_defence: 'دفاع (سپر)', lane_diplomacy: 'دیپلماسی (کانال)', lane_expansion: 'گسترش عضویت',
+        lanes_of: 'خبرهایی که کارت‌های ضامن را پیش می‌برند',
+        lanes_method: 'شمارش بر پایهٔ واژگان تیترها — گرایش، نه سرشماری',
+        lane_us_drawdown: 'کاهش حضور آمریکا (گزارش‌های خروج اجباری)',
+        lanes_absent: 'تفکیک مسیرها در این داده نیست (ردیاب قدیمی‌تر از v2.3.0).',
         pact_egypt: 'مصر', pact_non_pact: 'خارج از پیمان',
         drift_label: 'محور توافق‌ها', type_alignment_drift: 'محور توافق‌ها',
         actors_desc_tpl: '{n} بازیگر در {m} بردار', vectors_desc_tpl: '{m} بردار تحلیلی — ترکیب و امتیاز',
@@ -1681,6 +1723,16 @@ function renderComposite() {
     setPill('vecDomesticLevel', vl.domestic_transformation || 'low');
     document.getElementById('vecGuarantorScore').textContent = (vs.guarantor_response || 0).toFixed(1);
     setPill('vecGuarantorLevel', vl.guarantor_response || 'low');
+    // v3.1.0: tracker v2.3.0 split the US track out of Normalization Watch.
+    // An older payload has no key -- show an em dash, never a fake 0.0 / Low.
+    const usEl = document.getElementById('vecUSScore'), usPill = document.getElementById('vecUSLevel');
+    if ('us_security_anchor' in vs) {
+        usEl.textContent = (vs.us_security_anchor || 0).toFixed(1);
+        setPill('vecUSLevel', vl.us_security_anchor || 'low');
+    } else {
+        usEl.textContent = '\u2014';
+        usPill.className = 'level-pill'; usPill.textContent = '\u2014';
+    }
 }
 
 // v3: absence is REPORTED, not inferred. Sibling feeds that did not report,
@@ -1800,7 +1852,28 @@ function renderPact() {
     if (eg) html += `<div class="pact-cell non-pact"><div><span class="pact-name">🇪🇬 ${escapeHtml(t.pact_egypt)}</span> <span class="chip">${escapeHtml(t.pact_non_pact)}</span><span class="v3-muted">${escapeHtml(t.actor_signals)}: ${eg.article_count || 0}</span></div>${_levelPill(eg.level)}</div>`;
     html += `<div class="pact-cell"><div><span class="pact-name">🇸🇦 ${escapeHtml(t.pact_kinetic)}</span></div>${_levelPill(kin)}</div>`;
     html += '</div>';
-    const arts = [].concat(tk.top_articles || [], pk.top_articles || [], (eg && eg.top_articles) || []);
+    // v3.1.0: WHICH LANE IS MOVING (tracker v2.3.0). A pact talking in Tehran
+    // and a pact deploying air defence are different findings; the level pills
+    // above cannot tell them apart. lanes === null/undefined = not measured.
+    const ln = mp ? mp.lanes : undefined;
+    if (ln && ln.stories) {
+        const L = ln.lanes || {};
+        const top = Math.max(L.defence || 0, L.diplomacy || 0, L.expansion || 0);
+        html += `<div class="v3-sub" style="margin-top:14px;">${escapeHtml(t.lanes_title)}</div><div class="lane-row">`;
+        [['defence', t.lane_defence], ['diplomacy', t.lane_diplomacy], ['expansion', t.lane_expansion]].forEach(([k, lab]) => {
+            const n = L[k] || 0;
+            html += `<div class="lane-cell${top && n === top ? ' lead' : ''}"><span>${escapeHtml(lab)}</span><span class="lane-n">${n}</span></div>`;
+        });
+        html += '</div>';
+        html += `<div class="v3-muted" style="margin-top:6px;">${ln.stories} ${escapeHtml(t.lanes_of)} \u00b7 ${escapeHtml(t.lanes_method)}</div>`;
+        if (ln.us_drawdown) html += `<span class="chip" style="color:var(--accent-yellow); border-color:var(--accent-yellow);">\u26a0 ${escapeHtml(t.lane_us_drawdown)}</span>`;
+    } else if (mp && mp.reading && !('lanes' in mp)) {
+        html += `<div class="v3-muted" style="margin-top:10px;">${escapeHtml(t.lanes_absent)}</div>`;
+    }
+    // v3.1.0: de-duplicated -- one pact story often lands on BOTH guarantor cards.
+    const _seenArt = new Set();
+    const arts = [].concat(tk.top_articles || [], pk.top_articles || [], (eg && eg.top_articles) || [])
+        .filter(a => { const k = (a && (a.url || a.title)) || ''; if (_seenArt.has(k)) return false; _seenArt.add(k); return true; });
     if (arts.length) html += `<div style="margin-top:12px;">${_artRows(arts, 6)}</div>`;
     card.innerHTML = html;
 }
@@ -1968,7 +2041,7 @@ function renderVectors() {
     // so a backend actor can never silently vanish from this grid again --
     // which is exactly what happened to the three 11 Oct actors.
     const VEC_ORDER = ['kinetic_inbound', 'energy_infrastructure', 'normalization_watch',
-                       'domestic_transformation', 'guarantor_response'];
+                       'domestic_transformation', 'guarantor_response', 'us_security_anchor'];
     const vectorMembers = {};
     Object.entries(actors).forEach(([aid, a]) => {
         const v = (a && a.vector) || 'unassigned';
@@ -1983,6 +2056,7 @@ function renderVectors() {
         'normalization_watch':     t.vec_norm,
         'domestic_transformation': t.vec_domestic,
         'guarantor_response':      t.vec_guarantor,
+        'us_security_anchor':      t.vec_us,
     };
     const vdesc = document.getElementById('vectorsDesc');
     if (vdesc) vdesc.textContent = (t.vectors_desc_tpl || '').replace('{m}', orderedVecs.length);
