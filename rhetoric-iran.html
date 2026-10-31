@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Iran Command Node Tracker v2.0.0 — May 2026 -->
+<!-- Asifah Analytics — Iran Command Node Tracker v2.1.0 — Oct 31 2026 (ceasefire day/direction/lanes; staleness scrub) -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- v2.0.0: Gold Standard pass — Arctic cyan rebrand, 1800px container, GPI sidebar, class-based footer, REGIME SIGNALS card. -->
 <!-- Trilogy visual coherence: Iran (densest evasion node) + Russia (engine) + China (architect) -->
@@ -733,7 +733,7 @@
         <div class="header-center">
             <div class="header-flag">🇮🇷 <span data-i18n="pageFlag">IRAN</span></div>
             <div class="header-title" data-i18n="pageTitle">IRAN COMMAND NODE TRACKER</div>
-            <div class="header-subtitle" data-i18n="pageSubtitle">IRGC · Khamenei · Proxy Network · Nuclear · Hormuz · Domestic Signals</div>
+            <div class="header-subtitle" data-i18n="pageSubtitle">IRGC · Supreme Leader · Proxy Network · Nuclear · Hormuz · Domestic Signals</div>
             <div class="header-timestamp"><span data-i18n="lastUpdatedLabel">Last updated</span>: <span id="lastUpdated" data-i18n="loading">Loading...</span></div>
         </div>
         <div class="header-right">
@@ -1155,7 +1155,7 @@
             <span data-i18n="footerSupportText">If you find Asifah Analytics useful and want to support ongoing development, you can</span> ☕ <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" data-i18n="footerSupportLink">buy me a coffee</a>
         </div>
         <div class="footer-copyright">
-            © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v2.0.0<br>
+            © 2025-2026 ASIFAH ANALYTICS — ALL RIGHTS RESERVED — v2.1.0<br>
             <span data-i18n="footerCopyrightLine2">Proprietary and Confidential. Unauthorized use, reproduction, or distribution prohibited.</span><br>
             <a href="index.html" style="color:var(--accent);" data-i18n="footerBackToMain">← Back to Main Dashboard</a>
         </div>
@@ -1194,7 +1194,7 @@
     const T = {
         en: {
             backLink:'← Back to Iran', pageFlag:'IRAN', pageTitle:'IRAN COMMAND NODE TRACKER',
-            pageSubtitle:'IRGC · Khamenei · Proxy Network · Nuclear · Hormuz · Domestic Signals',
+            pageSubtitle:'IRGC · Supreme Leader · Proxy Network · Nuclear · Hormuz · Domestic Signals',
             commandNodeLabel:'COMMAND NODE',
             lastUpdatedLabel:'Last updated',
             loading:'Loading...', scoreLabel:'RHETORIC SCORE / 100',
@@ -2016,7 +2016,8 @@
                 `Last scan: ${agoTxt} · ${data.total_articles||0} articles analyzed`;
         }
         document.getElementById('lastUpdated').textContent =
-            new Date(data.scanned_at || data.timestamp || Date.now()).toLocaleString();
+            // Oct 31 2026: no timestamp -> say so; "now" would dress cached data as fresh.
+            ((data.scanned_at || data.timestamp) ? new Date(data.scanned_at || data.timestamp).toLocaleString() : 'unknown');
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -2144,9 +2145,9 @@
         if (explainerEl) {
             let msg;
             if (modifier <= -10) {
-                msg = 'Direct talks or active negotiations detected — Araghchi shuttle, US envoy contact, or framework discussions. Score reduced significantly. Threat vectors above remain ground truth on what IRGC and proxies are doing.';
+                msg = 'Direct talks or active negotiations detected — offers of direct talks, envoy contact, or framework discussions. Score reduced significantly. Threat vectors above remain ground truth on what IRGC and proxies are doing.';
             } else if (modifier <= -6) {
-                msg = 'Mediator activity detected — Pakistan, Oman, or Russia brokering between Iran and the US. Pressure score is moderately reduced.';
+                msg = 'Mediator activity detected — a third party (e.g. Qatar, Pakistan, Oman) carrying messages between Iran and the US. Pressure score is moderately reduced.';
             } else if (modifier <= -3) {
                 msg = 'Diplomatic push detected — calls for talks, ceasefire offers, or pre-negotiation positioning. Slight downward pressure on the score.';
             } else {
@@ -2157,7 +2158,7 @@
     }
 
     // ══════════════════════════════════════════════════════════════
-    // CEASEFIRE TRAJECTORY CARD (bidirectional 60-day-window read)
+    // CEASEFIRE TRAJECTORY CARD (phase since 8 Apr + direction; tracker v1.8.0)
     // ══════════════════════════════════════════════════════════════
     function renderCeasefireTrajectory(data) {
         const card = document.getElementById('ceasefireTrajectoryCard');
@@ -2175,7 +2176,14 @@
         card.style.borderLeftColor = color;
 
         const headEl = document.getElementById('ceasefireTrajectoryHeadline');
-        if (headEl) { headEl.textContent = traj.headline || 'Ceasefire trajectory'; headEl.style.color = color; }
+        // Oct 31 2026 (tracker v1.8.0): day count since the 8 Apr ceasefire and
+        // the week-on-week direction ride with the headline.
+        const DIR = {building: 'pressure building vs last week', easing: 'pressure easing vs last week',
+                     steady: 'steady vs last week', unread: 'week-on-week direction not yet readable'};
+        let head = traj.headline || 'Ceasefire trajectory';
+        if (traj.phase_day != null) head += ' · day ' + traj.phase_day + ' since Apr 8';
+        if (traj.direction) head += ' · ' + (DIR[traj.direction] || traj.direction);
+        if (headEl) { headEl.textContent = head; headEl.style.color = color; }
 
         const detEl = document.getElementById('ceasefireTrajectoryDetail');
         if (detEl) detEl.textContent = traj.detail || '';
@@ -2183,7 +2191,12 @@
         const metersEl = document.getElementById('ceasefireTrajectoryMeters');
         if (metersEl) {
             const fwd = traj.forward_signal || 0, br = traj.breach_signal || 0;
-            metersEl.textContent = 'Consolidation signal: ' + fwd + '  \u00b7  Breach signal: ' + br;
+            let m = 'Consolidation signal: ' + fwd + '  \u00b7  Breach signal: ' + br;
+            const ln = traj.lanes || null;
+            if (ln) m += '  \u00b7  Threat rhetoric: ' + (ln.rhetoric || 0) + ' \u00b7 US/Israeli preparation: ' +
+                         (ln.preparation || 0) + ' \u00b7 Incidents: ' + (ln.incidents || 0) +
+                         ' \u00b7 Mediation: ' + (ln.diplomacy || 0);
+            metersEl.textContent = m;
         }
     }
 
