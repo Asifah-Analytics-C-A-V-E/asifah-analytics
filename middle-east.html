@@ -1793,6 +1793,11 @@
     color: #10b981;
     margin-bottom: 15px;
 }
+/* Nov 1 2026: an unread sensor gets no green tick -- unread is not quiet */
+.no-notams.unread::before {
+    content: "?";
+    color: #9ca3af;
+}
 
 .no-notams-title {
     font-size: 16px;
@@ -8496,7 +8501,7 @@ async function updateFlightCancellations() {
                 const unread = !data.state || data.state === 'unread';
                 badge.innerHTML = unread ? '<span>Unread</span>' : '<span>0 Active</span>';
                 wrapper.innerHTML = unread ? `
-                    <div class="no-notams">
+                    <div class="no-notams unread">
                         <div class="no-notams-title">Airspace sensors unread</div>
                         <div class="no-notams-subtitle">Not read this cycle -- this is not the same as quiet airspace.</div>
                     </div>
