@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.4.0 (Nov 1 2026; v1.0.0 May 10 2026) -->
+<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.4.1 (Nov 1 2026; v1.0.0 May 10 2026) -->
 <!-- v1.4.0: Election & Governance Window card (tracker v1.4.0 'governance' block, GPI governance
      axis contract), two-sided civil-society mobilisation, source-coverage line, role-labelled
      Congress actors, Fed chair label, 'v1.1 Coming Soon' placeholder panel removed. -->
@@ -1645,6 +1645,7 @@ const I18N = {
         gov_corroborated: 'corroborated', gov_single: 'single report',
         gov_mob: 'Civil-society mobilization (two-sided)', gov_left: 'Left-leaning groups', gov_right: 'Right-leaning groups',
         gov_unsided: 'Unaffiliated', gov_watch: 'Watch for',
+        gov_preelection: 'Race calls, recounts, certification and concession categories open when polls close. Before then only litigation, threats and federal presence can register. Opinion and explainer pieces are never counted as events.',
         cov_label: 'Sources not delivering', cov_ok: 'All attempted sources delivered this scan.',
         cov_not_sensed: 'Not sensed: too few articles this scan.',
     },
@@ -1768,6 +1769,7 @@ const I18N = {
         gov_corroborated: 'corroborado', gov_single: 'reporte único',
         gov_mob: 'Movilización de la sociedad civil (ambos lados)', gov_left: 'Grupos de izquierda', gov_right: 'Grupos de derecha',
         gov_unsided: 'Sin afiliación', gov_watch: 'Qué vigilar',
+        gov_preelection: 'Las categorías de resultados, recuentos, certificación y concesiones se abren al cerrar las urnas. Antes, solo cuentan litigios, amenazas y presencia federal. Los artículos de opinión y explicativos nunca cuentan como hechos.',
         cov_label: 'Fuentes sin datos', cov_ok: 'Todas las fuentes consultadas respondieron.',
         cov_not_sensed: 'No detectado: muy pocos artículos en este escaneo.',
     },
@@ -1891,6 +1893,7 @@ const I18N = {
         gov_corroborated: 'corroborado', gov_single: 'relato único',
         gov_mob: 'Mobilização da sociedade civil (dois lados)', gov_left: 'Grupos de esquerda', gov_right: 'Grupos de direita',
         gov_unsided: 'Sem afiliação', gov_watch: 'O que observar',
+        gov_preelection: 'As categorias de resultados, recontagens, certificação e concessões abrem quando as urnas fecham. Antes, só contam litígios, ameaças e presença federal. Artigos de opinião e explicativos nunca contam como fatos.',
         cov_label: 'Fontes sem dados', cov_ok: 'Todas as fontes consultadas responderam.',
         cov_not_sensed: 'Não detectado: poucos artigos neste ciclo.',
     }
@@ -2130,6 +2133,9 @@ function renderGovernance(data) {
     const cls = g.classes || {};
     const active = Object.entries(cls).filter(([k, c]) => c && c.count > 0)
         .sort((a, b) => (b[1].rung - a[1].rung) || (b[1].count - a[1].count));
+    if (g.post_election_classes_open === false) {
+        h += '<div class="gov-note">' + escapeHtml(t('gov_preelection')) + '</div>';
+    }
     if (g.sensed === false) {
         h += '<div class="gov-note">' + escapeHtml(t('gov_not_sensed')) + '</div>';
     } else if (!active.length) {
