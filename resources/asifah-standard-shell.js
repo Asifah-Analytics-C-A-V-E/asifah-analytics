@@ -373,6 +373,10 @@
   function ensureLadderRail() {
     var file = currentFile();
     if (!pageHasLevels(file)) return;
+    // Nov 1 2026: a page that does not (yet) speak the L0-L6 ladder opts out with
+    // <body data-asifah-ladder="off"> -- a rail beside "probability %" cards
+    // would contradict them. Remove the attribute once the page speaks levels.
+    if (document.body.getAttribute('data-asifah-ladder') === 'off') return;
     if (document.getElementById('asifahLadderRail')) return;
 
     var rail = document.createElement('aside');
