@@ -7004,11 +7004,12 @@
         <!-- NOTAM Widget -->
         <div class="notam-widget" id="notamWidget">
             <div class="notam-widget-header">
-                <div class="notam-widget-title" data-i18n="notamWidgetTitle">Active NOTAMs - Middle East</div>
+                <div class="notam-widget-title" data-i18n="notamWidgetTitle">Airspace Watch - Middle East</div>
                 <div class="notam-status-badge" id="notamStatusBadge">
                     <span>Loading...</span>
                 </div>
             </div>
+            <div id="airspaceLines" style="font-size:12.5px;line-height:1.5;margin:4px 0 10px;"></div>
             <div class="notam-scroll-container" id="notamScrollContainer">
                 <div class="notam-cards-wrapper" id="notamCardsWrapper">
                     <!-- NOTAM cards will be inserted here -->
@@ -8458,26 +8459,51 @@ async function updateFlightCancellations() {
                 }
                 
                 const data = await response.json();
-                displayNotams(data.notams || []);
+                displayNotams(data.notams || [], data);
                 
             } catch (error) {
                 console.warn('NOTAM fetch error:', error);
-                displayNotams([]);
+                displayNotams([], { state: 'unread' });
             }
         }
 
-        function displayNotams(notams) {
+        // Nov 1 2026 -- Airspace Watch v2.0.0: EASA bulletins + FAA restrictions +
+        // OpenSky traffic. An empty list is only "quiet" if the sources were READ.
+        function airspaceSourceLine(data) {
+            const s = (data && data.sources) || {};
+            const word = st => st === 'read' ? 'read' : st === 'stale' ? 'last good read' :
+                               st === 'partial' ? 'partly read' : 'unread';
+            const os = s.opensky || {};
+            return `<div style="opacity:.7;font-size:11px;margin-top:4px;">Sources: EASA ${word((s.easa||{}).state)} · ` +
+                   `FAA ${word((s.faa||{}).state)} · ${os.provider === 'al' ? 'adsb.lol' : 'OpenSky'} traffic ${word(os.state)}` +
+                   (data && data.timestamp ? ` · ${new Date(data.timestamp).toLocaleString()}` : '') + `</div>`;
+        }
+
+        function displayNotams(notams, data) {
+            data = data || {};
+            const linesEl = document.getElementById('airspaceLines');
+            if (linesEl) {
+                const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                const lines = (data.lines || []).slice(0, 4).map(l => `<div>• ${esc(l)}</div>`).join('');
+                linesEl.innerHTML = lines + airspaceSourceLine(data);
+            }
             const wrapper = document.getElementById('notamCardsWrapper');
             const badge = document.getElementById('notamStatusBadge');
             
             if (!wrapper || !badge) return;
             
             if (!notams || notams.length === 0) {
-                badge.innerHTML = '<span>0 Active</span>';
-                wrapper.innerHTML = `
+                const unread = !data.state || data.state === 'unread';
+                badge.innerHTML = unread ? '<span>Unread</span>' : '<span>0 Active</span>';
+                wrapper.innerHTML = unread ? `
                     <div class="no-notams">
-                        <div class="no-notams-title">No Active NOTAMs</div>
-                        <div class="no-notams-subtitle">All Middle East airspace operating normally</div>
+                        <div class="no-notams-title">Airspace sensors unread</div>
+                        <div class="no-notams-subtitle">Not read this cycle -- this is not the same as quiet airspace.</div>
+                    </div>
+                ` : `
+                    <div class="no-notams">
+                        <div class="no-notams-title">No active warnings or traffic anomalies</div>
+                        <div class="no-notams-subtitle">Sources read; nothing flagged this cycle.</div>
                     </div>
                 `;
                 return;
@@ -8525,7 +8551,7 @@ async function updateFlightCancellations() {
                             </div>
                             ${notam.source_url ? `
                                 <a href="${notam.source_url}" target="_blank" rel="noopener noreferrer" class="notam-link">
-                                    📰 View NOTAM →
+                                    📰 View source →
                                 </a>
                             ` : ''}
                         </div>
