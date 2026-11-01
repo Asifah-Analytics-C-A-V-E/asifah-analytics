@@ -719,7 +719,7 @@
       '<div class="asifah-footer-sources">Open-source intelligence dashboard built from public reporting, official releases, market and commodity data, humanitarian feeds, aviation notices, and regional social-source mirrors where available.</div>' +
       '<div class="asifah-footer-pills">' +
       '<a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc">Buy Me a Coffee</a>' +
-      '<a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact">Contact Asifah</a>' +
+      '<a href="mailto:asifahanalytics@gmail.com" class="asifah-footer-pill contact">Contact Asifah</a>' +
       '</div>' +
       socialsHtml() +
       '<div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. Scores are convergence indicators based on publicly observable signals, not operational guidance or predictions of action.</div>' +
