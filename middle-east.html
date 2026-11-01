@@ -8278,24 +8278,24 @@ async function updateFlightCancellations() {
             try {
                 const response = await fetch(`${BACKEND_URL}/flight-cancellations`);
                 if (response.status === 404) {
-                    displayFlightCancellations([]);
+                    displayFlightCancellations([], true);
                     window.__disableFlightCancellations = true;
                     return;
                 }
                 if (!response.ok) {
-                    displayFlightCancellations([]);
+                    displayFlightCancellations([], true);
                     return;
                 }
                 const contentType = response.headers.get('content-type') || '';
                 if (!contentType.includes('application/json')) {
-                    displayFlightCancellations([]);
+                    displayFlightCancellations([], true);
                     return;
                 }
                 const data = await response.json();
-                displayFlightCancellations(data.cancellations || []);
+                displayFlightCancellations(data.cancellations || [], data.state === 'unread' || !!data.scan_in_progress);
             } catch (error) {
                 console.warn('Flight cancellations failed:', error);
-                displayFlightCancellations([]);
+                displayFlightCancellations([], true);
             }
         }
 
@@ -8323,7 +8323,7 @@ async function updateFlightCancellations() {
 
         let flightCardsVisible = 4; // Track how many cards are visible
 
-        function displayFlightCancellations(cancellations) {
+        function displayFlightCancellations(cancellations, unread) {
             const grid = document.getElementById('flightCancellationsGrid');
             const badge = document.getElementById('flightStatusBadge');
             const expandButton = document.getElementById('flightExpandButton');
@@ -8333,9 +8333,12 @@ async function updateFlightCancellations() {
             const t = translations[currentLanguage] || translations.en;
             
             if (!cancellations || cancellations.length === 0) {
-                grid.innerHTML = '<div class="no-cancellations">No major flight disruptions detected</div>';
+                // Nov 1 2026: an unread scan is not "all routes normal"
+                grid.innerHTML = unread
+                    ? '<div class="no-cancellations">Flight scan not read yet -- this is not the same as no disruptions.</div>'
+                    : '<div class="no-cancellations">No major flight disruptions detected</div>';
                 badge.className = 'flight-status-badge normal';
-                badge.innerHTML = '<span>All Routes Normal</span>';
+                badge.innerHTML = unread ? '<span>Unread</span>' : '<span>All Routes Normal</span>';
                 if (expandButton) expandButton.style.display = 'none';
                 return;
             }
