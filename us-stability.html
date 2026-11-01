@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — U.S. Stability Index v1.0.0 — May 11, 2026 -->
+<!-- Asifah Analytics — U.S. Stability Index — page v1.2.0 (Nov 1 2026; v1.0.0 May 11 2026) -->
+<!-- v1.2.0: reads us_stability v1.2.0 -- composite is no longer calendar-multiplied (modifier applies
+     to electoral signals only; trendline marks the method change); election phase shows the next
+     milestone (the lame-duck day count pointed at 2028); advisory banners date-stamped and labelled
+     static (the FCDO 'loading…' never resolved); unsensed dimensions say so. -->
 <!-- Gold Standard: Arctic scheme + watermark + sidebar + 6 dimensions + state map + commodity + EN/ES/PT -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" dir="ltr">
@@ -246,6 +250,10 @@
         @media (max-width: 768px) {
             .nav-sidebar { display: none !important; }
             .page-with-sidebar { flex-direction: column; }
+            /* v1.2.0: the main column was 383px inside a 350px parent on phones
+               (pre-existing 13px horizontal overflow). Constrain it to the parent. */
+            .nav-sidebar-main { width: 100%; max-width: 100%; }
+            .nav-sidebar-main .container { max-width: 100%; }
         }
 
         .container {
@@ -1985,7 +1993,7 @@
                         ⚠️ <span data-i18n="wwCautionTitle">U.S. Department of State — Worldwide Caution</span>
                     </div>
                     <div class="ww-caution-body" data-i18n="wwCautionBody">
-                        Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate. The Department of State continues to advise heightened situational awareness and review of personal security plans.
+                        Static summary (captured Mar 2026, not fetched live): issued after U.S. combat operations against Iran began on Feb 28 2026, advising Americans worldwide, especially in the Middle East, to follow guidance from the nearest U.S. embassy or consulate. Context since: ceasefire in effect from Apr 8 2026; ordered departure of non-emergency U.S. staff from Saudi Arabia on Oct 21 2026. Open the full advisory for the current text.
                     </div>
                     <a href="https://travel.state.gov/content/travel/en/international-travel/before-you-go/travelers-with-special-considerations/worldwide-caution.html" target="_blank" rel="noopener" class="ww-caution-cta" data-i18n="wwCautionCta">View Full State Department Worldwide Caution →</a>
                 </div>
@@ -1999,13 +2007,13 @@
                             <span class="fcdo-title-pill" data-i18n="fcdoPill">Allied Foreign Service View</span>
                         </div>
                         <div class="fcdo-context" data-i18n="fcdoContext">
-                            Reflects how an allied foreign service assesses U.S. conditions for British nationals abroad. Surfaces stability-relevant signals (gun violence, severe weather, civil unrest) without partisan framing — a reciprocal analytical view of our own country.
+                            Reflects how an allied foreign service assesses U.S. conditions for British nationals abroad. Surfaces stability-relevant signals (gun violence, severe weather, civil unrest) without partisan framing — a reciprocal analytical view of the United States.
                         </div>
                         <div class="fcdo-summary" id="fcdoSummary" data-i18n="fcdoSummary">
                             Loading FCDO advisory&hellip;
                         </div>
                         <a href="https://www.gov.uk/foreign-travel-advice/usa" target="_blank" rel="noopener" class="fcdo-cta" data-i18n="fcdoCta">View Full UK-FCDO Advisory →</a>
-                        <div class="fcdo-asof" id="fcdoAsof" data-i18n="fcdoAsofLoading">Last updated: loading&hellip;</div>
+                        <div class="fcdo-asof" id="fcdoAsof" data-i18n="fcdoAsofLoading">Not fetched live — open the full advisory for the current text and date.</div>
                     </div>
                 </div>
 
@@ -2308,7 +2316,7 @@
                     </p>
                     <p style="font-size:0.8rem; margin-bottom:14px;">
                         <strong data-i18n="footerSourcesTitle">Data Sources:</strong>
-                        <span data-i18n="footerSources">FRED (Federal Reserve Economic Data) · Yahoo Finance · Alpha Vantage · Congress.gov API · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.</span>
+                        <span data-i18n="footerSources">FRED (Federal Reserve Economic Data) · Yahoo Finance · Alpha Vantage · Congress.gov API · UK FCDO · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.</span>
                     </p>
                     <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin: 14px 0 18px;">
                         <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="footer-pill footer-pill-coffee">
@@ -2367,10 +2375,10 @@ var TRANSLATIONS = {
         metaConfig: 'Government:',
         fcdoTitle: 'UK Foreign, Commonwealth & Development Office — Travel Advice for the United States',
         fcdoPill: 'Allied Foreign Service View',
-        fcdoContext: 'Reflects how an allied foreign service assesses U.S. conditions for British nationals abroad. Surfaces stability-relevant signals (gun violence, severe weather, civil unrest) without partisan framing — a reciprocal analytical view of our own country.',
-        fcdoSummary: 'British nationals visiting the United States should monitor local advisories. The U.S. has experienced incidents of gun violence and mass casualty events in public places. Severe weather (hurricanes, wildfires, tornadoes) regularly affects regions of the country. Civil unrest occasionally occurs in major cities. Healthcare costs are very high; comprehensive travel insurance is essential. ESTA authorization required for visa-waiver travel.',
+        fcdoContext: 'Reflects how an allied foreign service assesses U.S. conditions for British nationals abroad. Surfaces stability-relevant signals (gun violence, severe weather, civil unrest) without partisan framing — a reciprocal analytical view of the United States.',
+        fcdoSummary: 'Static paraphrase (captured May 2026): British nationals visiting the United States should monitor local advisories. The U.S. has experienced incidents of gun violence and mass casualty events in public places. Severe weather (hurricanes, wildfires, tornadoes) regularly affects regions of the country. Civil unrest occasionally occurs in major cities. Healthcare costs are very high; comprehensive travel insurance is essential. ESTA authorization required for visa-waiver travel.',
         fcdoCta: 'View Full UK-FCDO Advisory →',
-        fcdoAsofLoading: 'Last updated: loading…',
+        fcdoAsofLoading: 'Not fetched live — open the full advisory for the current text and date.',
         compositeLabel: 'Composite Stability Index',
         compositeTrendTitle: '30-Day Composite Trend',
         trendCold: 'Trend data populates from first scan onward',
@@ -2404,7 +2412,7 @@ var TRANSLATIONS = {
         commodityProse: 'The United States is a globally significant producer and consumer of energy (oil, natural gas), agricultural commodities (corn, wheat, soybeans), and industrial metals. Domestic price stress in these commodities translates directly to consumer wallets and political pressure regardless of which administration is in power. This card surfaces commodity-specific stress signals affecting U.S. household stability.',
         // Worldwide Caution banner i18n (v1.0.0 May 27 2026)
         wwCautionTitle: 'U.S. Department of State — Worldwide Caution',
-        wwCautionBody: 'Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate. The Department of State continues to advise heightened situational awareness and review of personal security plans.',
+        wwCautionBody: 'Static summary (captured Mar 2026, not fetched live): issued after U.S. combat operations against Iran began on Feb 28 2026, advising Americans worldwide, especially in the Middle East, to follow guidance from the nearest U.S. embassy or consulate. Context since: ceasefire in effect from Apr 8 2026; ordered departure of non-emergency U.S. staff from Saudi Arabia on Oct 21 2026. Open the full advisory for the current text.',
         wwCautionCta: 'View Full State Department Worldwide Caution →',
         // NYSE i18n (v1.0.0 May 27 2026)
         nyseTitle: 'U.S. Equity Indices',
@@ -2443,7 +2451,7 @@ var TRANSLATIONS = {
         footerBackendLabel: 'Backend:',
         footerCadence: '12-hour scan cadence · NYSE updated twice daily (7 AM & 7 PM ET)',
         footerSourcesTitle: 'Data Sources:',
-        footerSources: 'FRED (Federal Reserve Economic Data) · Yahoo Finance · Alpha Vantage · Congress.gov API · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.',
+        footerSources: 'FRED (Federal Reserve Economic Data) · Yahoo Finance · Alpha Vantage · Congress.gov API · UK FCDO · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Asifah Military Tracker fingerprint contract.',
         footerBmc: 'Buy Me a Coffee',
         footerContact: 'Contact Asifah',
         footerDisclaimerLabel: 'Disclaimer:',
@@ -2481,10 +2489,10 @@ var TRANSLATIONS = {
         metaConfig: 'Gobierno:',
         fcdoTitle: 'Oficina del Exterior del Reino Unido — Aviso de Viaje para Estados Unidos',
         fcdoPill: 'Vista Diplomática Aliada',
-        fcdoContext: 'Refleja cómo un servicio exterior aliado evalúa las condiciones de EE. UU. para sus ciudadanos. Surge señales relevantes de estabilidad (violencia armada, clima severo, disturbios civiles) sin enmarcado partidista — una vista analítica recíproca de nuestro propio país.',
-        fcdoSummary: 'Los ciudadanos británicos que visiten EE. UU. deben monitorear los avisos locales. El país ha experimentado incidentes de violencia armada y eventos con víctimas masivas en lugares públicos. El clima severo (huracanes, incendios forestales, tornados) afecta regularmente a regiones del país. Ocasionalmente ocurren disturbios civiles en ciudades importantes. Los costos de atención médica son muy altos; el seguro de viaje integral es esencial. Se requiere autorización ESTA para viajar bajo el Programa de Exención de Visas.',
+        fcdoContext: 'Refleja cómo un servicio exterior aliado evalúa las condiciones de EE. UU. para sus ciudadanos. Surge señales relevantes de estabilidad (violencia armada, clima severo, disturbios civiles) sin enmarcado partidista — una vista analítica recíproca de Estados Unidos.',
+        fcdoSummary: 'Paráfrasis estática (capturada en mayo de 2026): Los ciudadanos británicos que visiten EE. UU. deben monitorear los avisos locales. El país ha experimentado incidentes de violencia armada y eventos con víctimas masivas en lugares públicos. El clima severo (huracanes, incendios forestales, tornados) afecta regularmente a regiones del país. Ocasionalmente ocurren disturbios civiles en ciudades importantes. Los costos de atención médica son muy altos; el seguro de viaje integral es esencial. Se requiere autorización ESTA para viajar bajo el Programa de Exención de Visas.',
         fcdoCta: 'Ver aviso UK-FCDO completo →',
-        fcdoAsofLoading: 'Última actualización: cargando…',
+        fcdoAsofLoading: 'No se actualiza en vivo: abra el aviso completo para el texto y la fecha vigentes.',
         compositeLabel: 'Índice Compuesto de Estabilidad',
         compositeTrendTitle: 'Tendencia Compuesta de 30 Días',
         trendCold: 'Los datos de tendencia se completan a partir del primer análisis',
@@ -2518,7 +2526,7 @@ var TRANSLATIONS = {
         commodityProse: 'Estados Unidos es un productor y consumidor globalmente significativo de energía (petróleo, gas natural), commodities agrícolas (maíz, trigo, soja) y metales industriales. La presión doméstica en los precios de estos commodities se traduce directamente a los bolsillos del consumidor y a la presión política, independientemente de qué administración esté en el poder.',
         // Worldwide Caution banner i18n (v1.0.0 May 27 2026)
         wwCautionTitle: 'Departamento de Estado de EE. UU. — Alerta Mundial',
-        wwCautionBody: 'Tras el lanzamiento de operaciones de combate estadounidenses en Irán, los estadounidenses en todo el mundo, y especialmente en el Medio Oriente, deben seguir las orientaciones de la embajada o consulado estadounidense más cercano. El Departamento de Estado continúa aconsejando mayor conciencia situacional y la revisión de los planes de seguridad personal.',
+        wwCautionBody: 'Resumen estático (capturado en marzo de 2026, no se actualiza en vivo): emitido tras el inicio de operaciones de combate estadounidenses contra Irán el 28 de febrero de 2026; aconseja a los estadounidenses, sobre todo en Medio Oriente, seguir las orientaciones de la embajada o consulado más cercano. Contexto posterior: alto el fuego desde el 8 de abril de 2026; salida ordenada del personal no esencial de EE. UU. de Arabia Saudita el 21 de octubre de 2026. Abra el aviso completo para el texto vigente.',
         wwCautionCta: 'Ver Alerta Mundial Completa del Departamento de Estado →',
         // NYSE i18n (v1.0.0 May 27 2026)
         nyseTitle: 'Índices Bursátiles de EE. UU.',
@@ -2557,7 +2565,7 @@ var TRANSLATIONS = {
         footerBackendLabel: 'Backend:',
         footerCadence: 'Cadencia de escaneo de 12 horas · NYSE actualizado dos veces al día (7 AM y 7 PM ET)',
         footerSourcesTitle: 'Fuentes de Datos:',
-        footerSources: 'FRED (Datos Económicos del Banco de la Reserva Federal) · Yahoo Finance · Alpha Vantage · API Congress.gov · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Contrato de huella del Rastreador Militar de Asifah.',
+        footerSources: 'FRED (Datos Económicos del Banco de la Reserva Federal) · Yahoo Finance · Alpha Vantage · API Congress.gov · UK FCDO · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Contrato de huella del Rastreador Militar de Asifah.',
         footerBmc: 'Invítame un Café',
         footerContact: 'Contactar Asifah',
         footerDisclaimerLabel: 'Aviso:',
@@ -2597,10 +2605,10 @@ var TRANSLATIONS = {
         metaConfig: 'Governo:',
         fcdoTitle: 'Foreign Office do Reino Unido — Aviso de Viagem aos EUA',
         fcdoPill: 'Visão Diplomática Aliada',
-        fcdoContext: 'Reflete como um serviço diplomático aliado avalia as condições dos EUA para seus cidadãos. Faz emergir sinais relevantes de estabilidade (violência armada, clima severo, distúrbios civis) sem enquadramento partidário — uma visão analítica recíproca do nosso próprio país.',
-        fcdoSummary: 'Cidadãos britânicos que visitam os EUA devem monitorar os avisos locais. O país experimentou incidentes de violência armada e eventos com vítimas em massa em locais públicos. Clima severo (furacões, incêndios, tornados) afeta regularmente regiões do país. Distúrbios civis ocasionalmente ocorrem em grandes cidades. Custos de saúde são muito altos; seguro de viagem abrangente é essencial. Autorização ESTA é exigida para viagem com isenção de visto.',
+        fcdoContext: 'Reflete como um serviço diplomático aliado avalia as condições dos EUA para seus cidadãos. Faz emergir sinais relevantes de estabilidade (violência armada, clima severo, distúrbios civis) sem enquadramento partidário — uma visão analítica recíproca dos Estados Unidos.',
+        fcdoSummary: 'Paráfrase estática (capturada em maio de 2026): Cidadãos britânicos que visitam os EUA devem monitorar os avisos locais. O país experimentou incidentes de violência armada e eventos com vítimas em massa em locais públicos. Clima severo (furacões, incêndios, tornados) afeta regularmente regiões do país. Distúrbios civis ocasionalmente ocorrem em grandes cidades. Custos de saúde são muito altos; seguro de viagem abrangente é essencial. Autorização ESTA é exigida para viagem com isenção de visto.',
         fcdoCta: 'Ver aviso UK-FCDO completo →',
-        fcdoAsofLoading: 'Última atualização: carregando…',
+        fcdoAsofLoading: 'Não atualizado ao vivo: abra o aviso completo para o texto e a data atuais.',
         compositeLabel: 'Índice Composto de Estabilidade',
         compositeTrendTitle: 'Tendência Composta de 30 Dias',
         trendCold: 'Dados de tendência preenchem a partir do primeiro escaneamento',
@@ -2634,7 +2642,7 @@ var TRANSLATIONS = {
         commodityProse: 'Os Estados Unidos são um produtor e consumidor globalmente significativo de energia (petróleo, gás natural), commodities agrícolas (milho, trigo, soja) e metais industriais. A pressão doméstica nos preços dessas commodities se traduz diretamente em bolsos do consumidor e pressão política, independentemente de qual administração esteja no poder.',
         // Worldwide Caution banner i18n (v1.0.0 May 27 2026)
         wwCautionTitle: 'Departamento de Estado dos EUA — Alerta Mundial',
-        wwCautionBody: 'Após o lançamento de operações de combate dos EUA no Irã, americanos em todo o mundo e especialmente no Oriente Médio devem seguir as orientações da embaixada ou consulado dos EUA mais próximo. O Departamento de Estado continua aconselhando maior consciência situacional e revisão dos planos de segurança pessoal.',
+        wwCautionBody: 'Resumo estático (capturado em março de 2026, não atualizado ao vivo): emitido após o início das operações de combate dos EUA contra o Irã em 28 de fevereiro de 2026; orienta americanos, sobretudo no Oriente Médio, a seguir a embaixada ou consulado mais próximo. Contexto posterior: cessar-fogo desde 8 de abril de 2026; saída ordenada do pessoal não essencial dos EUA da Arábia Saudita em 21 de outubro de 2026. Abra o aviso completo para o texto atual.',
         wwCautionCta: 'Ver Alerta Mundial Completa do Departamento de Estado →',
         // NYSE i18n (v1.0.0 May 27 2026)
         nyseTitle: 'Índices Acionários dos EUA',
@@ -2673,7 +2681,7 @@ var TRANSLATIONS = {
         footerBackendLabel: 'Backend:',
         footerCadence: 'Cadência de varredura de 12 horas · NYSE atualizado duas vezes por dia (7h e 19h ET)',
         footerSourcesTitle: 'Fontes de Dados:',
-        footerSources: 'FRED (Dados Econômicos do Federal Reserve) · Yahoo Finance · Alpha Vantage · API Congress.gov · UK FCDO · GDELT · NewsAPI · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Contrato de impressão digital do Rastreador Militar Asifah.',
+        footerSources: 'FRED (Dados Econômicos do Federal Reserve) · Yahoo Finance · Alpha Vantage · API Congress.gov · UK FCDO · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky · Reddit · Telegram · Google News RSS · CISA · FEMA · Contrato de impressão digital do Rastreador Militar Asifah.',
         footerBmc: 'Compre-me um Café',
         footerContact: 'Contatar Asifah',
         footerDisclaimerLabel: 'Aviso:',
@@ -3123,10 +3131,17 @@ function renderMeta(data, t) {
         data.last_updated ? new Date(data.last_updated).toLocaleString() : '—';
     document.getElementById('metaArticles').textContent =
         (data.articles_scanned || 0).toLocaleString();
-    var phase = (data.election_cycle || {}).phase_label || '—';
-    var daysOut = (data.election_cycle || {}).days_until_next_election;
-    document.getElementById('metaCycle').textContent =
-        phase + (daysOut != null ? ' (' + daysOut + ' days)' : '');
+    var ec = data.election_cycle || {};
+    var phase = ec.phase_label || '—';
+    // v1.2.0: show the NEXT MILESTONE. In the lame duck days_until_next_election
+    // pointed at 2028 and rendered "Lame Duck (735 days)".
+    var cycleText = phase;
+    if (ec.next_milestone && ec.days_to_milestone != null) {
+        cycleText += ' · ' + ec.next_milestone + ' in ' + ec.days_to_milestone + ' days';
+    } else if (ec.days_until_next_election != null) {
+        cycleText += ' (' + ec.days_until_next_election + ' days)';
+    }
+    document.getElementById('metaCycle').textContent = cycleText;
     var sb = data.structural_baseline || {};
     document.getElementById('metaConfig').textContent =
         sb.configuration ? sb.configuration.replace('_', ' ').replace('_', ' ') : '—';
@@ -3159,7 +3174,10 @@ function renderComposite(data, t) {
         (t.bands && t.bands[band.band]) || band.label || '—';
     document.getElementById('compositeDescription').textContent = band.description || '';
     var modText = '';
-    if (c.cycle_modifier) {
+    if (c.cycle_modifier_scope) {
+        // v1.2.0: the calendar no longer multiplies the composite.
+        modText = 'Election-cycle modifier ' + c.cycle_modifier + 'x applies to active electoral signals only — the composite is not calendar-multiplied.';
+    } else if (c.cycle_modifier) {
         modText = 'Cycle modifier: ' + c.cycle_modifier + 'x · Raw composite: ' + (c.raw_score || '—');
     }
     document.getElementById('compositeModifier').textContent = modText;
@@ -3198,9 +3216,23 @@ function renderTrendline(historyData) {
         return (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1);
     }).join(' ');
     var pathArea = pathLine + ' L' + pts[pts.length-1][0].toFixed(1) + ',' + (h - pad) + ' L' + pts[0][0].toFixed(1) + ',' + (h - pad) + ' Z';
-    var dotsHtml = pts.map(function(p) {
-        return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3" fill="' + bandColorVar(p[3]) + '"><title>' + p[4] + ': ' + p[2] + '</title></circle>';
+    // v1.2.0: snapshots without 'method' were calendar-multiplied (x1.05-x1.6).
+    // They are drawn hollow, and a dashed line marks where raw scoring begins,
+    // so the method change does not read as a real drop in stress.
+    var dotsHtml = pts.map(function(p, i) {
+        var legacy = !snapshots[i].method;
+        return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3" ' +
+            (legacy ? 'fill="none" stroke="' + bandColorVar(p[3]) + '" stroke-width="1.2"'
+                    : 'fill="' + bandColorVar(p[3]) + '"') +
+            '><title>' + p[4] + ': ' + p[2] + (legacy ? ' (calendar-multiplied, before Nov 1 2026)' : '') + '</title></circle>';
     }).join('');
+    var firstNew = -1;
+    for (var k = 0; k < snapshots.length; k++) { if (snapshots[k].method) { firstNew = k; break; } }
+    if (firstNew > 0) {
+        var xm = pts[firstNew][0].toFixed(1);
+        dotsHtml += '<line x1="' + xm + '" x2="' + xm + '" y1="' + pad + '" y2="' + (h - pad) + '" stroke="currentColor" stroke-dasharray="3,3" opacity="0.5"/>' +
+            '<text x="' + xm + '" y="' + (pad + 8) + '" text-anchor="end" dx="-4" fill="currentColor" opacity="0.6" font-size="9">method change</text>';
+    }
     svg.innerHTML = '<defs><linearGradient id="trendGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="0.25"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>' +
         '<path d="' + pathArea + '" fill="url(#trendGrad)" stroke="none"/>' +
         '<path d="' + pathLine + '" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>' +
@@ -3293,6 +3325,12 @@ function renderKeywordDimension(dimId, data, t) {
     if (!container) return;
     var cats = dim.category_data || {};
     var keys = Object.keys(cats);
+    if (dim.sensed === false) {
+        // v1.2.0: too few articles -- a coverage gap, not calm.
+        container.innerHTML = '<div class="dim-empty" style="color:var(--accent-yellow,#f59e0b);">⚠ ' +
+            escapeHtml(dim.sensed_note || 'Not sensed this scan.') + '</div>';
+        return;
+    }
     if (keys.length === 0) {
         container.innerHTML = '<div class="dim-empty">' + escapeHtml(t.emptySignals || 'No signals detected.') + '</div>';
         return;

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — U.S. Rhetoric Tracker v1.0.0 — May 10, 2026 -->
+<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.4.0 (Nov 1 2026; v1.0.0 May 10 2026) -->
+<!-- v1.4.0: Election & Governance Window card (tracker v1.4.0 'governance' block, GPI governance
+     axis contract), two-sided civil-society mobilisation, source-coverage line, role-labelled
+     Congress actors, Fed chair label, 'v1.1 Coming Soon' placeholder panel removed. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
-<!-- Arctic palette · 9 actors · 3 layers · cross-theater (READS ALL) -->
+<!-- Arctic palette · 10 actors · 3 layers · cross-theater (READS ALL) -->
 <!-- Calibration: volatility/coherence-based; US generally upper edge of stable -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>U.S. Rhetoric Tracker — Asifah Analytics</title>
-    <meta name="description" content="Multi-actor U.S. rhetoric monitoring across 9 actors and 3 branches. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture.">
+    <meta name="description" content="Multi-actor U.S. rhetoric monitoring across 10 actors and 3 branches, plus the election and governance window. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture.">
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 
     <style>
@@ -632,7 +635,35 @@
             border: 1px solid rgba(100,116,139,0.35);
         }
 
-        /* WHITE HOUSE RHETORIC & DIVERGENCE PANEL (preview placeholder for v1.1) */
+        /* v1.4.0: ELECTION & GOVERNANCE WINDOW */
+        .gov-card { border-left: 4px solid #0d9488; }
+        .gov-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .gov-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.74rem; font-weight: 700;
+                    letter-spacing: 0.04em; border: 1px solid #0d9488; color: #5eead4; background: rgba(13,148,136,0.12); }
+        .gov-pill.l2 { border-color: var(--accent-yellow); color: #fcd34d; background: rgba(245,158,11,0.12); }
+        .gov-pill.l3 { border-color: var(--accent-orange); color: #fdba74; background: rgba(249,115,22,0.12); }
+        .gov-pill.l4, .gov-pill.l5 { border-color: var(--accent-red); color: #fca5a5; background: rgba(239,68,68,0.12); }
+        .gov-pill.muted { border-color: var(--border-strong); color: var(--text-muted); background: transparent; }
+        .gov-headline { font-size: 1.02rem; font-weight: 600; color: var(--text-primary); margin: 4px 0 12px; overflow-wrap: anywhere; }
+        .gov-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .gov-pane { background: var(--bg-signal); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+        .gov-pane h5 { margin: 0 0 8px; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+        .gov-row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.86rem; color: var(--text-secondary); padding: 3px 0; }
+        .gov-row b { color: var(--text-primary); }
+        .gov-class { font-size: 0.84rem; color: var(--text-secondary); padding: 4px 0; border-bottom: 1px dashed var(--border-color); overflow-wrap: anywhere; }
+        .gov-class:last-child { border-bottom: none; }
+        .gov-class a { color: var(--accent-cyan); text-decoration: none; }
+        .gov-corr { font-size: 0.68rem; padding: 1px 6px; border-radius: 8px; margin-left: 6px; border: 1px solid var(--border-strong); color: var(--text-muted); }
+        .gov-corr.yes { border-color: var(--accent-orange); color: #fdba74; }
+        .mob-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--bg-elevated); margin: 6px 0; }
+        .mob-bar span { display: block; height: 100%; }
+        .gov-list { margin: 6px 0 0 18px; padding: 0; color: var(--text-secondary); font-size: 0.86rem; }
+        .gov-list li { margin-bottom: 4px; }
+        .gov-note { font-size: 0.76rem; color: var(--text-muted); font-style: italic; margin-top: 8px; }
+        .coverage-line { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; overflow-wrap: anywhere; }
+        .coverage-line .warn { color: var(--accent-yellow); }
+
+        /* WHITE HOUSE RHETORIC & DIVERGENCE PANEL (retired v1.4.0; styles kept for cache-safety) */
         .divergence-panel {
             background: linear-gradient(135deg, rgba(220,38,38,0.05), rgba(124,58,237,0.05));
             border: 1px dashed var(--border-strong);
@@ -1190,7 +1221,7 @@
                 <span data-i18n="hdr_title">U.S. Rhetoric Tracker</span>
             </div>
             <div class="header-subtitle" data-i18n="hdr_subtitle">
-                Multi-actor monitoring across 9 actors and 3 branches. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture — not aggression.
+                Multi-actor monitoring across 10 actors and 3 branches. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture — not aggression.
             </div>
         </div>
         <div class="header-controls">
@@ -1263,6 +1294,7 @@
                     <span id="compositeBandText">—</span>
                 </div>
                 <div class="composite-description" id="compositeDescription">—</div>
+                <div class="coverage-line" id="coverageLine"></div>
                 <div class="composite-meta" id="compositeMeta">
                     <span data-i18n="comp_loading">Last scan: loading…</span>
                 </div>
@@ -1325,36 +1357,13 @@
             </div>
         </div>
 
-        <!-- WHITE HOUSE RHETORIC & DIVERGENCE PANEL (v1.1 preview) -->
-        <div class="divergence-panel">
-            <div class="divergence-panel-header">
-                <div class="divergence-panel-title">
-                    📐 <span data-i18n="div_title">White House Rhetoric & Divergence Index</span>
-                </div>
-                <span class="divergence-panel-pill" data-i18n="div_pill">v1.1 Coming Soon</span>
-            </div>
-            <div class="divergence-grid">
-                <div class="divergence-side">
-                    <div class="divergence-side-label" data-i18n="div_rhetoric_label">Rhetoric Score (Live)</div>
-                    <div class="divergence-side-value" id="divRhetoricScore">—</div>
-                    <div class="divergence-side-context" data-i18n="div_rhetoric_ctx">
-                        Aggregate executive branch rhetoric tempo. Currently based on statement volume, tripwire hits, and baseline ratios.
-                    </div>
-                </div>
-                <div class="divergence-side">
-                    <div class="divergence-side-label" data-i18n="div_action_label">Statement Follow-Through (v1.1)</div>
-                    <div class="divergence-side-value" style="color:var(--text-muted);">—</div>
-                    <div class="divergence-side-context" data-i18n="div_action_ctx">
-                        v1.1 will compare statements against historical follow-through rates by topic (immigration, tariffs, Iran, NATO, etc.). Scores: clear action / murky / no action / rollback / success / failure.
-                    </div>
-                </div>
-            </div>
-            <div class="divergence-coming-soon-note" data-i18n="div_note">
-                Statement-by-statement follow-through analysis ships in v1.1. Methodology designed to be apolitical: measures DIVERGENCE between rhetoric and action, not whether either is "correct."
-            </div>
+        <!-- v1.4.0: ELECTION & GOVERNANCE WINDOW (tracker 'governance' block; GPI governance axis) -->
+        <div class="section-card gov-card" id="governance">
+            <div class="section-title">🏛️ <span data-i18n="gov_title">Election &amp; Governance Window</span></div>
+            <div class="section-subtitle" data-i18n="gov_subtitle">Institutional events in the counting, certification and transition window: certification refusals, recounts, concessions, threats to election officials, federal presence at polling sites. Corroborated above L2. Not a forecast of any race and not a judgement on any party.</div>
+            <div id="governanceBody"><div style="color:var(--text-muted);" data-i18n="gov_loading">Loading governance window…</div></div>
         </div>
 
-        <!-- ACTORS BY LAYER -->
         <div id="actorLayersContainer">
             <!-- Executive Layer -->
             <div class="layer-section">
@@ -1485,13 +1494,13 @@
         <div>
             <h4 data-i18n="ftr_about">About this tracker</h4>
             <p data-i18n="ftr_about_text">
-                The U.S. Rhetoric Tracker monitors rhetoric across 9 actors in 3 branches of U.S. government plus state and institutional pushback. Calibrated to reflect the median American experience: the U.S. is generally on the upper edge of stable, with the view from DC feeling more volatile than the view from the rest of the country. Scoring measures volatility and divergence, not aggression.
+                The U.S. Rhetoric Tracker monitors rhetoric across 10 actors in 3 branches of U.S. government plus state and institutional pushback. Calibrated to reflect the median American experience: the U.S. is generally on the upper edge of stable, with the view from DC feeling more volatile than the view from the rest of the country. Scoring measures volatility and divergence, not aggression.
             </p>
         </div>
         <div>
             <h4 data-i18n="ftr_sources">Data sources</h4>
             <p data-i18n="ftr_sources_text">
-                RSS feeds (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI · Brave Search · Bluesky (76 verified accounts) · Telegram · Reddit (25 cross-spectrum subs) · Cross-theater fingerprints from all 23 other trackers · CISA + CBP federal feeds.
+                RSS feeds (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky (76 verified accounts) · Telegram · Reddit (25 cross-spectrum subs) · Cross-theater fingerprints from all 23 other trackers · CISA alerts · Election-administration and two-sided civil-society mobilization feeds (v1.4.0).
             </p>
         </div>
     </div>
@@ -1520,7 +1529,7 @@ const I18N = {
         // Header
         hdr_title: 'U.S. Rhetoric Tracker',
         hdr_back: '← Back to U.S. Stability',
-        hdr_subtitle: 'Multi-actor monitoring across 9 actors and 3 branches. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture — not aggression.',
+        hdr_subtitle: 'Multi-actor monitoring across 10 actors and 3 branches. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture — not aggression.',
         hdr_dark: 'Dark', hdr_light: 'Light', hdr_refresh: 'Refresh',
 
         // Sidebar
@@ -1612,9 +1621,9 @@ const I18N = {
 
         // Footer
         ftr_about: 'About this tracker',
-        ftr_about_text: 'The U.S. Rhetoric Tracker monitors rhetoric across 9 actors in 3 branches of U.S. government plus state and institutional pushback. Calibrated to reflect the median American experience: the U.S. is generally on the upper edge of stable, with the view from DC feeling more volatile than the view from the rest of the country. Scoring measures volatility and divergence, not aggression.',
+        ftr_about_text: 'The U.S. Rhetoric Tracker monitors rhetoric across 10 actors in 3 branches of U.S. government plus state and institutional pushback. Calibrated to reflect the median American experience: the U.S. is generally on the upper edge of stable, with the view from DC feeling more volatile than the view from the rest of the country. Scoring measures volatility and divergence, not aggression.',
         ftr_sources: 'Data sources',
-        ftr_sources_text: 'RSS feeds (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI · Brave Search · Bluesky (76 verified accounts) · Telegram · Reddit (25 cross-spectrum subs) · Cross-theater fingerprints from all 23 other trackers · CISA + CBP federal feeds.',
+        ftr_sources_text: 'RSS feeds (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky (76 verified accounts) · Telegram · Reddit (25 cross-spectrum subs) · Cross-theater fingerprints from all 23 other trackers · CISA alerts · Election-administration and two-sided civil-society mobilization feeds (v1.4.0).',
 
         // Inline labels
         articles_view: 'View articles',
@@ -1624,13 +1633,27 @@ const I18N = {
         baseline_label: 'baseline',
         no_signals: 'No signals surfaced this scan.',
         no_targets: 'No specific country targets this scan.',
+        // v1.4.0 governance window
+        gov_title: 'Election & Governance Window',
+        gov_subtitle: 'Institutional events in the counting, certification and transition window: certification refusals, recounts, concessions, threats to election officials, federal presence at polling sites. Corroborated above L2. Not a forecast of any race and not a judgement on any party.',
+        gov_loading: 'Loading governance window…',
+        gov_absent: 'Governance block not in this payload (tracker older than v1.4.0).',
+        gov_days: 'days', gov_control: 'Chamber control', gov_house: 'House', gov_senate: 'Senate',
+        gov_vacant: 'vacant', gov_asof: 'As of', gov_acting: 'Acting / unverified posts',
+        gov_incidents: 'Election administration', gov_not_sensed: 'Not sensed this scan — too few articles. Absence of reports is not calm.',
+        gov_no_incidents: 'No certification, security or federal-presence incidents reported this scan.',
+        gov_corroborated: 'corroborated', gov_single: 'single report',
+        gov_mob: 'Civil-society mobilization (two-sided)', gov_left: 'Left-leaning groups', gov_right: 'Right-leaning groups',
+        gov_unsided: 'Unaffiliated', gov_watch: 'Watch for',
+        cov_label: 'Sources not delivering', cov_ok: 'All attempted sources delivered this scan.',
+        cov_not_sensed: 'Not sensed: too few articles this scan.',
     },
 
     es: {
         // Header
         hdr_title: 'Rastreador de Retórica de EE.UU.',
         hdr_back: '← Volver a Estabilidad EE.UU.',
-        hdr_subtitle: 'Monitoreo multi-actor a través de 9 actores y 3 ramas. Infraestructura apolítica que rastrea volatilidad, divergencia y fractura transversal — no agresión.',
+        hdr_subtitle: 'Monitoreo multi-actor a través de 10 actores y 3 ramas. Infraestructura apolítica que rastrea volatilidad, divergencia y fractura transversal — no agresión.',
         hdr_dark: 'Oscuro', hdr_light: 'Claro', hdr_refresh: 'Recargar',
 
         // Sidebar
@@ -1722,9 +1745,9 @@ const I18N = {
 
         // Footer
         ftr_about: 'Sobre este rastreador',
-        ftr_about_text: 'El Rastreador de Retórica de EE.UU. monitorea retórica a través de 9 actores en 3 ramas del gobierno de EE.UU. más el contrapeso estatal e institucional. Calibrado para reflejar la experiencia mediana del estadounidense: EE.UU. está generalmente en el borde superior de estable, con la vista desde DC sintiéndose más volátil que la vista del resto del país. La puntuación mide volatilidad y divergencia, no agresión.',
+        ftr_about_text: 'El Rastreador de Retórica de EE.UU. monitorea retórica a través de 10 actores en 3 ramas del gobierno de EE.UU. más el contrapeso estatal e institucional. Calibrado para reflejar la experiencia mediana del estadounidense: EE.UU. está generalmente en el borde superior de estable, con la vista desde DC sintiéndose más volátil que la vista del resto del país. La puntuación mide volatilidad y divergencia, no agresión.',
         ftr_sources: 'Fuentes de datos',
-        ftr_sources_text: 'Fuentes RSS (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI · Brave Search · Bluesky (76 cuentas verificadas) · Telegram · Reddit (25 subs transversales) · Huellas de los 23 otros rastreadores · Fuentes federales CISA + CBP.',
+        ftr_sources_text: 'Fuentes RSS (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky (76 cuentas verificadas) · Telegram · Reddit (25 subs transversales) · Huellas de los 23 otros rastreadores · Alertas CISA · Fuentes de administración electoral y movilización (v1.4.0).',
 
         // Inline labels
         articles_view: 'Ver artículos',
@@ -1734,13 +1757,26 @@ const I18N = {
         baseline_label: 'línea base',
         no_signals: 'No surgieron señales en este escaneo.',
         no_targets: 'Ningún país específico apuntado en este escaneo.',
+        gov_title: 'Ventana Electoral y de Gobernanza',
+        gov_subtitle: 'Eventos institucionales en la ventana de conteo, certificación y transición: negativas a certificar, recuentos, concesiones, amenazas a funcionarios electorales, presencia federal en centros de votación. Corroborados por encima de L2. No es un pronóstico de ninguna contienda ni un juicio sobre ningún partido.',
+        gov_loading: 'Cargando ventana de gobernanza…',
+        gov_absent: 'Bloque de gobernanza ausente en estos datos (rastreador anterior a v1.4.0).',
+        gov_days: 'días', gov_control: 'Control de las cámaras', gov_house: 'Cámara', gov_senate: 'Senado',
+        gov_vacant: 'vacantes', gov_asof: 'Al', gov_acting: 'Cargos interinos / sin verificar',
+        gov_incidents: 'Administración electoral', gov_not_sensed: 'No detectado en este escaneo: muy pocos artículos. La ausencia de reportes no es calma.',
+        gov_no_incidents: 'Sin incidentes de certificación, seguridad o presencia federal reportados en este escaneo.',
+        gov_corroborated: 'corroborado', gov_single: 'reporte único',
+        gov_mob: 'Movilización de la sociedad civil (ambos lados)', gov_left: 'Grupos de izquierda', gov_right: 'Grupos de derecha',
+        gov_unsided: 'Sin afiliación', gov_watch: 'Qué vigilar',
+        cov_label: 'Fuentes sin datos', cov_ok: 'Todas las fuentes consultadas respondieron.',
+        cov_not_sensed: 'No detectado: muy pocos artículos en este escaneo.',
     },
 
     pt: {
         // Header
         hdr_title: 'Rastreador de Retórica dos EUA',
         hdr_back: '← Voltar para Estabilidade EUA',
-        hdr_subtitle: 'Monitoramento multi-ator através de 9 atores e 3 ramos. Infraestrutura apolítica rastreando volatilidade, divergência e fratura transversal — não agressão.',
+        hdr_subtitle: 'Monitoramento multi-ator através de 10 atores e 3 ramos. Infraestrutura apolítica rastreando volatilidade, divergência e fratura transversal — não agressão.',
         hdr_dark: 'Escuro', hdr_light: 'Claro', hdr_refresh: 'Atualizar',
 
         // Sidebar
@@ -1832,9 +1868,9 @@ const I18N = {
 
         // Footer
         ftr_about: 'Sobre este rastreador',
-        ftr_about_text: 'O Rastreador de Retórica dos EUA monitora retórica através de 9 atores em 3 ramos do governo dos EUA mais o contrapeso estadual e institucional. Calibrado para refletir a experiência americana mediana: os EUA estão geralmente na borda superior do estável, com a vista de DC parecendo mais volátil que a vista do resto do país. A pontuação mede volatilidade e divergência, não agressão.',
+        ftr_about_text: 'O Rastreador de Retórica dos EUA monitora retórica através de 10 atores em 3 ramos do governo dos EUA mais o contrapeso estadual e institucional. Calibrado para refletir a experiência americana mediana: os EUA estão geralmente na borda superior do estável, com a vista de DC parecendo mais volátil que a vista do resto do país. A pontuação mede volatilidade e divergência, não agressão.',
         ftr_sources: 'Fontes de dados',
-        ftr_sources_text: 'Feeds RSS (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI · Brave Search · Bluesky (76 contas verificadas) · Telegram · Reddit (25 subs transversais) · Impressões digitais dos 23 outros rastreadores · Feeds federais CISA + CBP.',
+        ftr_sources_text: 'Feeds RSS (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky (76 contas verificadas) · Telegram · Reddit (25 subs transversais) · Impressões digitais dos 23 outros rastreadores · Alertas CISA · Fontes de administração eleitoral e mobilização (v1.4.0).',
 
         // Inline labels
         articles_view: 'Ver artigos',
@@ -1844,6 +1880,19 @@ const I18N = {
         baseline_label: 'linha base',
         no_signals: 'Nenhum sinal surgiu nesta varredura.',
         no_targets: 'Nenhum país específico mirado nesta varredura.',
+        gov_title: 'Janela Eleitoral e de Governança',
+        gov_subtitle: 'Eventos institucionais na janela de contagem, certificação e transição: recusas de certificação, recontagens, concessões, ameaças a funcionários eleitorais, presença federal em locais de votação. Corroborados acima de L2. Não é previsão de nenhuma disputa nem julgamento sobre nenhum partido.',
+        gov_loading: 'Carregando janela de governança…',
+        gov_absent: 'Bloco de governança ausente nestes dados (rastreador anterior à v1.4.0).',
+        gov_days: 'dias', gov_control: 'Controle das casas', gov_house: 'Câmara', gov_senate: 'Senado',
+        gov_vacant: 'vagas', gov_asof: 'Em', gov_acting: 'Cargos interinos / não verificados',
+        gov_incidents: 'Administração eleitoral', gov_not_sensed: 'Não detectado neste ciclo: poucos artigos. Ausência de relatos não é calma.',
+        gov_no_incidents: 'Nenhum incidente de certificação, segurança ou presença federal relatado neste ciclo.',
+        gov_corroborated: 'corroborado', gov_single: 'relato único',
+        gov_mob: 'Mobilização da sociedade civil (dois lados)', gov_left: 'Grupos de esquerda', gov_right: 'Grupos de direita',
+        gov_unsided: 'Sem afiliação', gov_watch: 'O que observar',
+        cov_label: 'Fontes sem dados', cov_ok: 'Todas as fontes consultadas responderam.',
+        cov_not_sensed: 'Não detectado: poucos artigos neste ciclo.',
     }
 };
 
@@ -1949,7 +1998,8 @@ function renderAll(data) {
     renderVectors(data);
     renderSoWhat(data);
     renderTopSignals(data);
-    renderDivergencePanel(data);
+    renderGovernance(data);
+    renderCoverage(data);
     renderActors(data);
     renderBalance(data);
     renderTargets(data);
@@ -2034,11 +2084,117 @@ function renderTopSignals(data) {
     });
 }
 
-function renderDivergencePanel(data) {
-    const actors = data.actors || {};
-    const exec = actors.us_executive || {};
-    const score = exec.actor_score !== undefined ? Math.round(exec.actor_score) : '—';
-    document.getElementById('divRhetoricScore').textContent = score;
+// v1.4.0: Election & Governance Window. Absence-honest: an older payload or an
+// unsensed lane says so instead of rendering calm.
+function renderGovernance(data) {
+    const body = document.getElementById('governanceBody');
+    if (!body) return;
+    const _em = (x) => String(x == null ? '' : x).replace(/--/g, '\u2014');
+    const g = data.governance;
+    if (!g) {
+        body.innerHTML = '<div class="gov-note">' + escapeHtml(t('gov_absent')) + '</div>';
+        return;
+    }
+    const lvl = (typeof g.level === 'number') ? g.level : 0;
+    const pillCls = g.sensed === false ? 'muted' : ('l' + lvl);
+    let h = '<div class="gov-head">';
+    h += '<span class="gov-pill ' + pillCls + '">L' + lvl + ' · ' + escapeHtml(g.level_label || '') + '</span>';
+    if (g.phase_label) h += '<span class="gov-pill muted">' + escapeHtml(g.phase_label) + '</span>';
+    if (g.next_milestone && g.days_to_milestone !== null && g.days_to_milestone !== undefined) {
+        h += '<span class="gov-pill muted">' + escapeHtml(g.next_milestone) + ': ' + g.days_to_milestone + ' ' + escapeHtml(t('gov_days')) + '</span>';
+    }
+    h += '</div>';
+    h += '<div class="gov-headline">' + escapeHtml(_em(g.headline)) + '</div>';
+
+    h += '<div class="gov-grid">';
+    // Chambers + acting officials
+    const ch = g.chambers || {};
+    const hs = ch.house || {}, sn = ch.senate || {};
+    const fmtCh = (c) => (c && c.majority_party) ? (c.majority_party + ' ' + (c.majority_size ?? '?') + '–' + (c.minority_size ?? '?')) : '—';
+    h += '<div class="gov-pane"><h5>' + escapeHtml(t('gov_control')) + '</h5>';
+    h += '<div class="gov-row"><span>' + escapeHtml(t('gov_house')) + '</span><b>' + escapeHtml(fmtCh(hs)) + (hs.vacant ? ' (' + hs.vacant + ' ' + escapeHtml(t('gov_vacant')) + ')' : '') + '</b></div>';
+    h += '<div class="gov-row"><span>' + escapeHtml(t('gov_senate')) + '</span><b>' + escapeHtml(fmtCh(sn)) + '</b></div>';
+    if (hs.as_of) h += '<div class="gov-note">' + escapeHtml(t('gov_asof')) + ' ' + escapeHtml(hs.as_of) + ' · ' + escapeHtml(ch.data_freshness || '') + '</div>';
+    if (ch.staleness_warning) h += '<div class="gov-note" style="color:var(--accent-yellow);">' + escapeHtml(ch.staleness_warning) + '</div>';
+    const acting = g.acting_officials || [];
+    if (acting.length) {
+        h += '<h5 style="margin-top:10px;">' + escapeHtml(t('gov_acting')) + '</h5>';
+        acting.forEach(a => {
+            h += '<div class="gov-row"><span>' + escapeHtml(a.role || '') + '</span><b>' + escapeHtml(a.name || '') + (a.status === 'verify' ? ' ⚠' : '') + '</b></div>';
+        });
+    }
+    h += '</div>';
+
+    // Election-administration classes
+    h += '<div class="gov-pane"><h5>' + escapeHtml(t('gov_incidents')) + '</h5>';
+    const cls = g.classes || {};
+    const active = Object.entries(cls).filter(([k, c]) => c && c.count > 0)
+        .sort((a, b) => (b[1].rung - a[1].rung) || (b[1].count - a[1].count));
+    if (g.sensed === false) {
+        h += '<div class="gov-note">' + escapeHtml(t('gov_not_sensed')) + '</div>';
+    } else if (!active.length) {
+        h += '<div class="gov-note">' + escapeHtml(t('gov_no_incidents')) + '</div>';
+    } else {
+        active.forEach(([k, c]) => {
+            const ex = (c.examples || [])[0];
+            h += '<div class="gov-class"><b>' + escapeHtml(c.label) + '</b> · ' + c.count +
+                 '<span class="gov-corr' + (c.corroborated ? ' yes' : '') + '">' +
+                 escapeHtml(c.corroborated ? t('gov_corroborated') : t('gov_single')) + '</span>';
+            if (ex) h += '<br>' + (ex.link ? '<a href="' + escapeAttr(ex.link) + '" target="_blank" rel="noopener">' : '') +
+                         escapeHtml(ex.title || '') + (ex.link ? '</a>' : '') + ' <span style="color:var(--text-muted);">— ' + escapeHtml(ex.source || '') + '</span>';
+            h += '</div>';
+        });
+    }
+    h += '</div>';
+
+    // Two-sided mobilisation
+    const m = g.mobilization || data.mobilization || {};
+    const L = m.left || 0, R = m.right || 0, U = m.unsided || 0, T = Math.max(1, L + R + U);
+    h += '<div class="gov-pane"><h5>' + escapeHtml(t('gov_mob')) + '</h5>';
+    h += '<div class="mob-bar"><span style="width:' + (100 * L / T) + '%;background:#3b82f6;"></span>' +
+         '<span style="width:' + (100 * U / T) + '%;background:#64748b;"></span>' +
+         '<span style="width:' + (100 * R / T) + '%;background:#dc2626;"></span></div>';
+    h += '<div class="gov-row"><span>' + escapeHtml(t('gov_left')) + '</span><b>' + L + '</b></div>';
+    h += '<div class="gov-row"><span>' + escapeHtml(t('gov_unsided')) + '</span><b>' + U + '</b></div>';
+    h += '<div class="gov-row"><span>' + escapeHtml(t('gov_right')) + '</span><b>' + R + '</b></div>';
+    if (m.reading) h += '<div class="gov-note">' + escapeHtml(_em(m.reading)) + '</div>';
+    h += '</div>';
+    h += '</div>';   // grid
+
+    const sw = g.so_what || [];
+    if (sw.length) {
+        h += '<div class="gov-pane" style="margin-bottom:10px;"><h5>' + escapeHtml(t('sw_label')) + '</h5><ul class="gov-list">';
+        sw.forEach(x => { h += '<li>' + escapeHtml(_em(x)) + '</li>'; });
+        h += '</ul></div>';
+    }
+    if (g.cross_read_iran && !sw.includes(g.cross_read_iran)) {
+        h += '<div class="gov-note">🇮🇷 ' + escapeHtml(_em(g.cross_read_iran)) + '</div>';
+    }
+    const w = g.watch || [];
+    if (w.length) {
+        h += '<div class="gov-pane"><h5>' + escapeHtml(t('gov_watch')) + '</h5><ul class="gov-list">';
+        w.forEach(x => { h += '<li>' + escapeHtml(x) + '</li>'; });
+        h += '</ul></div>';
+    }
+    if (g.disclaimer) h += '<div class="gov-note">' + escapeHtml(g.disclaimer) + '</div>';
+    body.innerHTML = h;
+}
+
+// v1.4.0: say which sources did NOT deliver -- a dead feed must not read as calm.
+function renderCoverage(data) {
+    const el = document.getElementById('coverageLine');
+    if (!el) return;
+    const sh = data.source_health || {};
+    const bad = Object.entries(sh).filter(([k, r]) => r && r.status && r.status !== 'ok' && r.status !== 'not_attempted');
+    let txt = '';
+    if (data.sensed === false) txt += '<span class="warn">⚠ ' + escapeHtml(t('cov_not_sensed')) + '</span> ';
+    if (bad.length) {
+        txt += '<span class="warn">' + escapeHtml(t('cov_label')) + ':</span> ' +
+               bad.map(([k, r]) => escapeHtml(k) + ' (' + escapeHtml(r.status.replace(/_/g, ' ')) + ')').join(' · ');
+    } else if (Object.keys(sh).length) {
+        txt += escapeHtml(t('cov_ok'));
+    }
+    el.innerHTML = txt;
 }
 
 function renderActors(data) {
@@ -2046,7 +2202,8 @@ function renderActors(data) {
     const layers = {
         executive:    ['us_executive', 'us_state_dept', 'us_defense'],
         legislative:  ['us_congress_majority', 'us_congress_opposition'],
-        institutional:['us_judicial', 'us_dhs_ice', 'us_federal_reserve', 'us_states'],
+        institutional:['us_judicial', 'us_dhs_ice', 'us_federal_reserve', 'us_states',
+                       'us_civil_mobilization'],
     };
     const layerGridIds = {
         executive: 'actorGridExecutive',
@@ -2077,6 +2234,7 @@ function buildActorCard(key, a, layer) {
         us_executive: '🏛️', us_state_dept: '🌐', us_defense: '🪖',
         us_congress_majority: '🏛️', us_congress_opposition: '🏛️',
         us_judicial: '⚖️', us_dhs_ice: '🚨', us_federal_reserve: '💵', us_states: '🗺️',
+        us_civil_mobilization: '📣',
     };
     const nameMap = {
         us_executive: 'U.S. Executive Branch',
@@ -2088,17 +2246,19 @@ function buildActorCard(key, a, layer) {
         us_dhs_ice: 'DHS / ICE / Immigration Enforcement',
         us_federal_reserve: 'Federal Reserve',
         us_states: 'State Governors',
+        us_civil_mobilization: 'Civil-Society Mobilization (two-sided)',
     };
     const roleMap = {
         us_executive: 'White House / Trump / Cabinet',
         us_state_dept: 'Diplomatic Posture',
         us_defense: 'Pentagon / Combatant Commands',
-        us_congress_majority: 'House R + Senate Leadership',
-        us_congress_opposition: 'House Dem + Senate Dem + Opposition',
+        us_congress_majority: 'Majority leadership, House + Senate (R as of Nov 2026)',
+        us_congress_opposition: 'Minority leadership, House + Senate (D as of Nov 2026)',
         us_judicial: 'SCOTUS + Federal Courts + DOJ',
         us_dhs_ice: 'Immigration Enforcement (Civil Unrest Driver)',
-        us_federal_reserve: 'Powell + FOMC',
+        us_federal_reserve: 'Fed Chair + FOMC',
         us_states: 'State Pushback / Federalism',
+        us_civil_mobilization: 'Left- and right-leaning groups, counted per side',
     };
 
     const tierName = a.tier_name || a.tier || 'Active';
