@@ -744,7 +744,15 @@
       document.body.appendChild(footer);
     }
     footer.className = 'asifah-footer';
+    // Nov 1 2026: a page may contribute its own block (methodology, sources, disclaimer)
+    // with <section data-asifah-footer-extra>. It is moved INTO the shared footer, above
+    // the standard content, so a page has one footer instead of two stacked boxes.
+    var extra = document.querySelector('[data-asifah-footer-extra]');
     footer.innerHTML = footerHtml();
+    if (extra) {
+      extra.classList.add('asifah-footer-extra');
+      footer.insertBefore(extra, footer.firstChild);
+    }
   }
 
   function init() {
