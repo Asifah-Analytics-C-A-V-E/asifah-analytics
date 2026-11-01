@@ -699,6 +699,21 @@
     });
   }
 
+  // SOCIALS (Nov 1 2026) -- one list, every page. Add/remove a row here only.
+  var SOCIALS = [
+    ['https://www.instagram.com/asifahanalytics/', 'Instagram', '@AsifahAnalytics', 'ig'],
+    ['https://x.com/AsifahAnalytics', 'X', '@AsifahAnalytics', 'x']
+  ];
+
+  function socialsHtml() {
+    return '<div class="asifah-footer-socials" aria-label="Follow Asifah Analytics">' +
+      SOCIALS.map(function (s) {
+        return '<a href="' + s[0] + '" target="_blank" rel="noopener" class="asifah-footer-social ' + s[3] + '">' +
+          '<span class="asifah-footer-social-net">' + s[1] + '</span> ' + s[2] + '</a>';
+      }).join('') +
+      '</div>';
+  }
+
   function footerHtml() {
     return '<div class="asifah-footer-title">Asifah Analytics</div>' +
       '<div class="asifah-footer-sources">Open-source intelligence dashboard built from public reporting, official releases, market and commodity data, humanitarian feeds, aviation notices, and regional social-source mirrors where available.</div>' +
@@ -706,6 +721,7 @@
       '<a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" class="asifah-footer-pill bmc">Buy Me a Coffee</a>' +
       '<a href="mailto:hello@asifahanalytics.com" class="asifah-footer-pill contact">Contact Asifah</a>' +
       '</div>' +
+      socialsHtml() +
       '<div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. Scores are convergence indicators based on publicly observable signals, not operational guidance or predictions of action.</div>' +
       '<div class="asifah-footer-links">' +
       '<a href="mission.html">Mission Statement</a>' +
