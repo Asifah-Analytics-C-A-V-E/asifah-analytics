@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Egypt Stability Index v1.0.0 -->
+<!-- Asifah Analytics - Egypt Stability Index v2.0.0 - Nov 1 2026 (rebuilt on the israel.html Gold Standard; backend egypt_stability.py v1.0.0) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -12,352 +12,2133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Egypt Stability Index | Asifah Analytics v1.0.0</title>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Egypt Stability Index | Asifah Analytics v2.0.0</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         :root {
-            --bg-color: #f5f5f5; --container-bg: #ffffff; --card-bg: #ffffff;
-            --card-border: #e1e8ed; --text-primary: #2c3e50; --text-secondary: #7f8c8d;
-            --text-muted: #95a5a6; --header-gradient-start: #1e3a5f; --header-gradient-end: #2c5282;
-            --header-text: #ffffff; --metric-bg: #ffffff; --article-bg: #f8f9fa;
-            --article-hover: #e8f4f8; --accent: #6495ED;
+            --bg-color: #e8f0f8;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #b0c8e0;
+            --text-primary: #0a1628;
+            --text-secondary: #1e3a5f;
+            --text-muted: #4a6080;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #0ea5e9;
+            --header-text: #ffffff;
+            --metric-bg: #ffffff;
+            --article-bg: #f0f6fc;
+            --article-hover: #e1ecf7;
+            --loading-overlay-bg: rgba(232, 240, 248, 0.98);
+            --loading-spinner-bg: rgba(14, 165, 233, 0.2);
+            --accent: #0ea5e9;
+            --card-glow: none;
+            --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
+            --watermark-opacity: 0.08;
+            --watermark-filter: none;
         }
+
         [data-theme="dark"] {
-            --bg-color: #1a1a1a; --container-bg: #2d2d2d; --card-bg: #2d2d2d;
-            --card-border: #404040; --text-primary: #e0e0e0; --text-secondary: #b0b0b0;
-            --text-muted: #808080; --header-gradient-start: #1e3a5f; --header-gradient-end: #2c5282;
-            --header-text: #ffffff; --metric-bg: #2d2d2d; --article-bg: #333333;
-            --article-hover: #3a3a3a; --accent: #6495ED;
+            --bg-color: #060d1a;
+            --container-bg: #0d1b2e;
+            --card-bg: #0d1b2e;
+            --card-border: #1e3a5f;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #4a7090;
+            --header-gradient-start: #060d1a;
+            --header-gradient-end: #1e3a5f;
+            --metric-bg: #0d1b2e;
+            --article-bg: #0a1525;
+            --article-hover: #112038;
+            --loading-overlay-bg: rgba(6, 13, 26, 0.98);
+            --loading-spinner-bg: rgba(56, 189, 248, 0.4);
+            --accent: #38bdf8;
+            --card-glow: 0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+            --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
+            --watermark-opacity: 0.22;
+            --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
         }
-        body { font-family: 'Times New Roman', Times, serif; font-size: 14px; background: var(--bg-color); color: var(--text-primary); line-height: 1.6; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vmin; height: 90vmin;
+            min-width: 600px; min-height: 600px;
+            max-width: 1000px; max-height: 1000px;
+            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: var(--watermark-opacity);
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        [data-theme="dark"] body::before {
+            filter: brightness(0.3) sepia(1) hue-rotate(180deg) saturate(3);
+        }
+
+        /* ===== LOADING ===== */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--loading-overlay-bg);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; }
+        .loading-spinner {
+            width: 60px; height: 60px;
+            border: 5px solid var(--loading-spinner-bg);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-status { text-align: center; max-width: 500px; padding: 0 20px; }
+        .loading-title { font-size: 24px; font-weight: bold; color: var(--accent); margin-bottom: 20px; letter-spacing: 1px; }
+        .loading-step { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; font-size: 15px; color: var(--text-secondary); transition: all 0.3s ease; }
+        .loading-step.active { color: var(--accent); font-weight: bold; }
+        .loading-step.complete { color: #4ade80; }
+        .step-icon { font-size: 18px; min-width: 20px; }
+        .loading-progress { margin-top: 25px; font-size: 13px; color: var(--text-secondary); font-style: italic; }
+        .loading-error { color: #f87171; font-size: 16px; margin-top: 20px; padding: 15px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 8px; }
+
+        /* ===== LAYOUT ===== */
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+        /* ===== TRAVEL WARNING BANNERS ===== */
+        .travel-warning-banner {
+            border-radius: 10px; padding: 14px 20px; margin-bottom: 12px;
+            display: flex; align-items: flex-start; gap: 14px;
+        }
+        .travel-warning-banner.worldwide {
+            background: linear-gradient(135deg, #1a2035 0%, #1e3a5f 100%);
+            border: 1px solid rgba(100,149,237,0.4);
+        }
+        .travel-warning-banner.do-not-travel {
+            background: linear-gradient(135deg, #3b0000 0%, #5c0a0a 100%);
+            border: 2px solid rgba(220,38,38,0.7);
+        }
+        .travel-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .travel-banner-text { color: #e8f0fe; font-size: 13px; line-height: 1.5; flex: 1; }
+        .travel-banner-text strong { display: block; margin-bottom: 3px; font-size: 14px; }
+        .travel-banner-text.do-not-travel-text { color: #fecaca; }
+        .travel-banner-text.do-not-travel-text strong { color: #ffffff; font-size: 15px; }
+        .travel-banner-link {
+            color: #93c5fd; text-decoration: none; font-size: 12px;
+            border: 1px solid rgba(147,197,253,0.3); padding: 4px 10px;
+            border-radius: 4px; white-space: nowrap; flex-shrink: 0; align-self: center;
+            transition: all 0.2s ease;
+        }
+        .travel-banner-link:hover { background: rgba(147,197,253,0.1); border-color: rgba(147,197,253,0.6); }
+
+        /* ===== HEADER ===== */
         header {
             background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
-            color: var(--header-text); padding: 30px; border-radius: 12px; margin-bottom: 10px;
-            text-align: center; position: relative;
+            color: var(--header-text);
+            padding: 35px; border-radius: 12px; margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            position: relative; display: flex; align-items: center; gap: 30px;
         }
-        header h1 { font-size: 28px; margin-bottom: 8px; letter-spacing: 2px; }
-        .subtitle { font-size: 16px; opacity: 0.95; }
+        [data-theme="dark"] header { border: 1px solid rgba(100,149,237,0.2); }
+        .header-logo { width: 80px; height: 80px; flex-shrink: 0; border-radius: 50%; margin-top: 48px; }
+        .header-content { flex: 1; text-align: center; }
+        h1 { font-size: 28px; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .subtitle { font-size: 16px; font-weight: normal; opacity: 0.95; letter-spacing: 0.5px; }
         .last-updated { font-size: 13px; opacity: 0.85; margin-top: 10px; }
-        .header-controls { position: absolute; top: 15px; right: 20px; display: flex; gap: 8px; align-items: center; }
-        .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+
+        .header-controls {
+            position: absolute; top: 35px; right: 35px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 1000;
+        }
+        [dir="rtl"] .header-controls { right: auto; left: 35px; }
+
+        .language-switcher { display: flex; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 8px; backdrop-filter: blur(10px); }
+        .theme-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 8px; backdrop-filter: blur(10px); }
+        .theme-toggle-label { font-size: 11px; color: rgba(255,255,255,0.9); margin-right: 8px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .theme-toggle-switch { position: relative; width: 50px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 13px; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3); }
+        .theme-toggle-switch:hover { background: rgba(255,255,255,0.3); }
+        .theme-toggle-slider { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .theme-toggle-slider::before { content: '☀️'; }
+        [data-theme="dark"] .theme-toggle-slider { transform: translateX(24px); }
+        [data-theme="dark"] .theme-toggle-slider::before { content: '🌙'; }
+        .lang-btn { background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 6px 14px; font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
         .lang-btn:hover { background: rgba(255,255,255,0.3); }
-        .lang-btn.active { background: rgba(255,255,255,0.3); border-color: white; font-weight: bold; }
-        .home-btn { display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: white; text-decoration: none; font-size: 13px; font-weight: bold; position: absolute; top: 15px; left: 20px; }
-        .home-btn:hover { background: rgba(255,255,255,0.3); }
-        .theme-toggle { display: flex; align-items: center; gap: 6px; color: white; font-size: 12px; cursor: pointer; }
-        .theme-toggle input { width: 36px; height: 20px; appearance: none; background: rgba(255,255,255,0.2); border-radius: 10px; position: relative; cursor: pointer; }
-        .theme-toggle input::after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
-        .theme-toggle input:checked::after { left: 18px; }
-        .map-section, .knowledge-library, .articles-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 25px; margin-bottom: 20px; }
-        .map-section h2, .knowledge-library h2 { font-size: 20px; margin-bottom: 15px; color: var(--text-primary); }
-        .map-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; font-style: italic; }
-        .knowledge-categories { display: grid; gap: 12px; }
-        .knowledge-card { border: 1px solid var(--card-border); border-radius: 8px; overflow: hidden; }
-        .knowledge-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; cursor: pointer; background: var(--article-bg); }
-        .knowledge-header:hover { background: var(--article-hover); }
-        .knowledge-header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .category-icon { font-size: 20px; }
-        .collapse-icon { font-size: 12px; color: var(--text-muted); transition: transform 0.3s; }
-        .knowledge-card.collapsed .knowledge-content { display: none; }
-        .knowledge-card:not(.collapsed) .collapse-icon { transform: rotate(180deg); }
-        .knowledge-content { padding: 18px; line-height: 1.8; }
-        .knowledge-content p { margin-bottom: 12px; }
-        .knowledge-content ul { margin: 10px 0 15px 20px; }
-        .knowledge-content li { margin-bottom: 6px; }
-        .report-links-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .report-link { display: inline-block; padding: 6px 14px; background: var(--article-bg); border: 1px solid var(--card-border); border-radius: 6px; color: var(--accent); text-decoration: none; font-size: 12px; font-weight: bold; }
-        .report-link:hover { background: var(--article-hover); }
-        .open-source-disclaimer { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 10px; }
-        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
-        .article-item { padding: 15px; border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 10px; background: var(--article-bg); }
-        .article-item:hover { background: var(--article-hover); }
-        .article-title { font-weight: bold; margin-bottom: 5px; }
-        .article-meta { font-size: 12px; color: var(--text-muted); }
-        .article-link { display: inline-block; margin-top: 8px; color: var(--accent); text-decoration: none; font-size: 13px; }
-        footer { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 30px; margin-top: 30px; margin-bottom: 30px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+        .lang-btn.active { background: white; color: #1e3a5f; border-color: white; }
+        .back-link { display: inline-block; position: absolute; top: 20px; left: 20px; padding: 12px 24px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); transition: all 0.2s ease; font-size: 14px; font-weight: bold; }
+        .back-link:hover { background: rgba(255,255,255,0.3); }
+        [dir="rtl"] .back-link { left: auto; right: 20px; }
+
+        /* ===== STABILITY CARD ===== */
+        .stability-index-card {
+            background: var(--container-bg); border-radius: 12px; padding: 30px;
+            margin-bottom: 30px; box-shadow: var(--card-glow);
+            border: 2px solid var(--card-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .stability-title { font-size: 20px; margin-bottom: 20px; text-align: center; color: var(--text-primary); font-weight: bold; letter-spacing: 1px; }
+        .stability-score { font-size: 72px; font-weight: bold; text-align: center; margin: 20px 0; }
+        .stability-score.green { color: #4ade80; }
+        .stability-score.yellow { color: #facc15; }
+        .stability-score.orange { color: #fb923c; }
+        .stability-score.red { color: #f87171; }
+        [data-theme="dark"] .stability-score.red { text-shadow: 0 0 20px rgba(248,113,113,0.3); }
+        [data-theme="dark"] .stability-score.orange { text-shadow: 0 0 20px rgba(251,146,60,0.3); }
+        [data-theme="dark"] .stability-score.yellow { text-shadow: 0 0 20px rgba(250,204,21,0.3); }
+        [data-theme="dark"] .stability-score.green { text-shadow: 0 0 20px rgba(74,222,128,0.3); }
+        .stability-label { text-align: center; font-size: 20px; margin-bottom: 10px; font-weight: 600; }
+        .stability-label.green { color: #4ade80; }
+        .stability-label.yellow { color: #facc15; }
+        .stability-label.orange { color: #fb923c; }
+        .stability-label.red { color: #f87171; }
+        .stability-bar { width: 100%; height: 30px; background: var(--card-border); border-radius: 15px; overflow: hidden; margin: 20px 0; }
+        .stability-fill { height: 100%; background: linear-gradient(90deg, #f87171 0%, #fb923c 25%, #facc15 50%, #4ade80 100%); transition: width 0.5s ease; border-radius: 15px; }
+        .stability-legend { text-align: center; font-size: 13px; color: var(--text-secondary); font-style: italic; }
+
+        /* Score breakdown */
+        .score-breakdown { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; justify-content: center; }
+        .score-component {
+            padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+            background: var(--article-bg); border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+        }
+        .score-component.positive { color: #4ade80; border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.08); }
+        .score-component.negative { color: #f87171; border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+        .score-component.neutral { color: #6495ED; border-color: rgba(100,149,237,0.3); background: rgba(100,149,237,0.08); }
+
+        /* Sparkline */
+        .sparkline-container { margin-top: 15px; padding: 10px; background: var(--article-bg); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; transition: background 0.3s ease; }
+        .sparkline-label { font-size: 12px; color: var(--text-secondary); margin-right: 10px; white-space: nowrap; }
+        .sparkline-canvas { flex-grow: 1; max-width: 150px; height: 40px; }
+        .sparkline-status { font-size: 12px; color: var(--text-secondary); font-style: italic; }
+
+        /* ===== METRICS GRID ===== */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card {
+            background: var(--metric-bg); border-radius: 12px; padding: 20px;
+            box-shadow: var(--card-glow); border: 2px solid var(--card-border);
+            transition: transform 0.2s, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .metric-card:hover { transform: translateY(-5px); box-shadow: var(--card-hover-glow); }
+        [data-theme="dark"] .metric-card:hover { border-color: rgba(100,149,237,0.4); }
+        .metric-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
+        [data-theme="dark"] .metric-title { color: #6495ED; }
+        .metric-value { font-size: 36px; font-weight: bold; color: var(--text-primary); margin-bottom: 5px; }
+        .metric-subtitle { font-size: 13px; color: var(--text-secondary); }
+
+        /* Leadership badges */
+        .leadership-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .leadership-badge {
+            display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+            background: var(--article-bg); border-radius: 8px; border: 1px solid var(--card-border);
+            transition: background 0.3s ease;
+        }
+        .badge-flag { font-size: 16px; }
+        .badge-info { flex: 1; }
+        .badge-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .badge-title { font-size: 11px; color: var(--text-secondary); }
+        .badge-status {
+            font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge-note { font-size: 10px; color: var(--text-muted); margin-top: 2px; font-style: italic; }
+
+        /* Coalition bar */
+        .coalition-bar-container { margin-top: 10px; }
+        .coalition-bar { height: 20px; background: var(--card-border); border-radius: 4px; overflow: hidden; display: flex; margin: 6px 0; }
+        .coalition-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; font-weight: 700; transition: width 0.5s ease; white-space: nowrap; overflow: hidden; }
+        .coalition-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .coalition-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-secondary); }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Activity items */
+        .activity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .activity-item { background: var(--article-bg); padding: 12px; border-radius: 8px; text-align: center; transition: background 0.3s ease; }
+        .activity-number { font-size: 28px; font-weight: bold; color: var(--text-primary); }
+        .activity-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+        /* ===== MAP ===== */
+        .map-section { background: var(--container-bg); border: 2px solid var(--card-border); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: var(--card-glow); transition: background 0.3s ease; }
+        .map-section h2 { font-size: 20px; margin-bottom: 15px; color: var(--text-primary); font-weight: bold; }
+        #egypt-map { width: 100%; height: 450px; border-radius: 8px; border: 1px solid var(--card-border); }
+
+        /* ===== KNOWLEDGE LIBRARY ===== */
+        .knowledge-library { background: var(--container-bg); border: 2px solid var(--card-border); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: var(--card-glow); transition: background 0.3s ease; }
+        .knowledge-library h2 { font-size: 24px; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+        .knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .knowledge-card { background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; }
+        .knowledge-card:hover { transform: translateY(-3px); box-shadow: var(--card-hover-glow); }
+        [data-theme="dark"] .knowledge-card:hover { border-color: rgba(100,149,237,0.4); }
+        .knowledge-header { background: linear-gradient(135deg, rgba(100,149,237,0.1) 0%, rgba(30,82,130,0.1) 100%); padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s ease; }
+        .knowledge-header:hover { background: linear-gradient(135deg, rgba(100,149,237,0.15) 0%, rgba(30,82,130,0.15) 100%); }
+        [data-theme="dark"] .knowledge-header { background: linear-gradient(135deg, rgba(100,149,237,0.08) 0%, rgba(30,58,95,0.15) 100%); }
+        .knowledge-header-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: bold; color: var(--text-primary); }
+        .category-icon { font-size: 22px; }
+        .collapse-icon { font-size: 20px; color: var(--accent); transition: transform 0.3s ease; }
+        .knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+        .knowledge-content { padding: 20px; max-height: 600px; overflow-y: auto; transition: max-height 0.3s ease, padding 0.3s ease; }
+        .knowledge-card.collapsed .knowledge-content { max-height: 0; padding: 0 20px; overflow: hidden; }
+        .knowledge-content p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 12px; }
+        .knowledge-content ul { margin-left: 20px; margin-bottom: 12px; }
+        .knowledge-content li { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 6px; }
+        .knowledge-content strong { color: var(--text-primary); }
+        .open-source-disclaimer { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--card-border); }
+        .report-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-top: 12px; }
+        .report-link { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--accent); color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: bold; transition: all 0.3s ease; }
+        .report-link:hover { background: #4169E1; transform: translateX(3px); }
+        .knowledge-content::-webkit-scrollbar { width: 8px; }
+        .knowledge-content::-webkit-scrollbar-track { background: var(--article-bg); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+        /* ===== ARTICLES ===== */
+        .articles-section { background: var(--container-bg); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: var(--card-glow); border: 2px solid var(--card-border); transition: background 0.3s ease; }
+        .section-title { font-size: 20px; margin-bottom: 20px; color: var(--text-primary); font-weight: bold; letter-spacing: 0.5px; }
+        .article-item { background: var(--article-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; transition: background 0.2s ease, transform 0.2s; border-left: 4px solid #1e3a5f; }
+        [data-theme="dark"] .article-item { border-left-color: #6495ED; }
+        [dir="rtl"] .article-item { border-left: none; border-right: 4px solid #1e3a5f; }
+        .article-item:hover { background: var(--article-hover); transform: translateX(4px); }
+        [dir="rtl"] .article-item:hover { transform: translateX(-4px); }
+        .article-title { color: var(--text-primary); font-size: 14px; margin-bottom: 5px; font-weight: 500; }
+        .article-meta { font-size: 12px; color: var(--text-secondary); }
+        .article-link { color: var(--accent); text-decoration: none; font-size: 13px; }
+        .article-link:hover { text-decoration: underline; }
+        [data-theme="dark"] .article-link { color: #7dabf8; }
+
+        /* ===== ARTICLE TABS (canonical v2.1.0) ===== */
+        .article-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--card-border); margin-bottom: 14px; overflow-x: auto; flex-wrap: wrap; }
+        .article-tab {
+            padding: 8px 14px; border: none; background: transparent;
+            cursor: pointer; font-family: inherit; font-size: 0.88em;
+            color: var(--text-secondary); border-bottom: 2px solid transparent;
+            margin-bottom: -2px; white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .article-tab:hover { color: var(--text-primary); }
+        .article-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+        .article-tab .tab-count { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--article-bg); font-size: 0.75em; font-weight: 600; }
+        .article-tab.active .tab-count { background: rgba(0,200,212,0.18); color: var(--accent); }
+        [data-theme="dark"] .article-tab.active .tab-count { background: rgba(0,200,212,0.22); }
+        .article-list { max-height: 700px; overflow-y: auto; }
+        /* Source pill styling — canonical color codes */
+        .source-pill { padding: 1px 8px; border-radius: 4px; font-size: 0.72em; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; }
+        .source-pill.rss      { background: rgba(34,197,94,0.15);  color: #16a34a; }
+        .source-pill.gdelt    { background: rgba(56,189,248,0.15); color: #0ea5e9; }
+        .source-pill.newsapi  { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .source-pill.brave    { background: rgba(249,115,22,0.15); color: #f97316; }
+        .source-pill.telegram { background: rgba(37,99,235,0.15);  color: #2563eb; }
+        .source-pill.bluesky  { background: rgba(14,165,233,0.18); color: #0284c7; }
+        .source-pill.reddit   { background: rgba(239,68,68,0.15);  color: #dc2626; }
+        .source-pill.thinktank{ background: rgba(168,85,247,0.18); color: #9333ea; }
+        [data-theme="dark"] .source-pill.thinktank { color: #c084fc; }
+
+        /* ===== FOOTER ===== */
+        footer { background: var(--container-bg); padding: 25px; border-radius: 12px; box-shadow: var(--card-glow); border: 2px solid var(--card-border); font-size: 12px; text-align: center; margin-top: 40px; color: var(--text-secondary); transition: background 0.3s ease; }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            header h1 { font-size: 20px; }
-            .home-btn { position: static; margin-bottom: 10px; }
-            .header-controls { position: static; justify-content: center; margin-top: 10px; }
+            header { flex-direction: column; gap: 20px; padding: 25px 20px; }
+            .header-logo { width: 60px; height: 60px; }
+            .header-controls { position: static; align-items: center; }
+            h1 { font-size: 24px; }
+            .back-link { position: static; display: block; width: fit-content; margin: 0 auto 15px; }
+            .knowledge-categories { grid-template-columns: 1fr; }
+            .activity-grid { grid-template-columns: 1fr; }
+        }
+        /* ── CANONICAL SIDEBAR (v2.1.0) ── */
+        .page-with-sidebar { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start; }
+        .main-content { min-width: 0; }
+        .nav-sidebar { position: sticky; top: 24px; align-self: start; display: flex; flex-direction: column; gap: 4px; max-height: calc(100vh - 48px); overflow-y: auto; }
+        .nav-sidebar-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); padding: 8px 4px 4px 4px; }
+        .nav-divider { height: 1px; background: var(--card-border); margin: 6px 0; }
+        .nav-btn { display: flex; flex-direction: column; padding: 8px 10px; border: 1px solid var(--card-border); border-radius: 6px; background: var(--card-bg); color: var(--text-primary); text-decoration: none; transition: all 0.2s; cursor: pointer; }
+        .nav-btn:hover { border-color: var(--accent); box-shadow: var(--card-hover-glow); }
+        .nav-btn-label { font-size: 12px; font-weight: 600; line-height: 1.3; }
+        .nav-btn-status { font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; opacity: 0.7; color: var(--accent); }
+        .nav-btn.active-nav { border-color: rgba(56,189,248,0.5); }
+        [data-theme="dark"] .nav-btn.active-nav { background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, rgba(14,165,233,0.10) 100%); color: #ffffff; }
+        .nav-btn.current-page { border-color: rgba(34,197,94,0.6); background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(22,163,74,0.12) 100%); }
+        .nav-btn.current-page .nav-btn-status { color: #16a34a; }
+        [data-theme="dark"] .nav-btn.current-page { color: #ffffff; }
+        [data-theme="dark"] .nav-btn.current-page .nav-btn-status { color: #4ade80; }
+        .nav-btn.inactive-nav { border-color: rgba(0,0,0,0.1); background: rgba(0,0,0,0.02); color: rgba(0,0,0,0.3); cursor: default; }
+        [data-theme="dark"] .nav-btn.inactive-nav { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.25); }
+        .nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.35); background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(22,163,74,0.05) 100%); }
+        .nav-btn.rhetoric-btn .nav-btn-status { color: #16a34a; }
+        [data-theme="dark"] .nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+        .nav-btn.military-btn { border-color: rgba(100,116,139,0.4); background: linear-gradient(135deg, rgba(100,116,139,0.08) 0%, rgba(51,65,85,0.05) 100%); }
+        .nav-btn.military-btn .nav-btn-status { color: #94a3b8; }
+        @media (max-width: 1099px) { .nav-sidebar { display: none; } .page-with-sidebar { display: block; } }
+
+        /* RTL support for Hebrew/Arabic/Farsi */
+        [dir="rtl"] .nav-sidebar-label { text-align: right; }
+        /* v2.0.0: RTL grids mirror on their own -- the old "1fr 200px" override put the
+           main column into the 200px track in AR/HE/FA (152px overflow on israel.html too). */
+        [dir="rtl"] .page-with-sidebar { grid-template-columns: 200px 1fr; }
+        [dir="rtl"] .nav-btn { text-align: right; }
+
+        /* Canonical footer */
+        /* ── FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── */
+        /* Canonical 3-tile equity card mirroring NYSE pattern from us-stability.html.
+         * TASE TA-35 · NIS/USD · EIS ETF. Market status pill + per-tile tier coloring. */
+        .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .financial-pulse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .financial-pulse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .financial-pulse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .financial-pulse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .financial-pulse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .financial-pulse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .financial-pulse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .financial-pulse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .financial-pulse-status-pill.market-partial   { background: rgba(96,165,250,0.18);  color: #60a5fa; border-color: rgba(96,165,250,0.4); }
+
+        .financial-pulse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .financial-pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .financial-pulse-grid { grid-template-columns: 1fr; }
+        }
+
+        .financial-pulse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .financial-pulse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .financial-pulse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .financial-pulse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .financial-pulse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .financial-pulse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .financial-pulse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .financial-pulse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .financial-pulse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .financial-pulse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .financial-pulse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .financial-pulse-tile-change.up   { color: #22c55e; }
+        .financial-pulse-tile-change.down { color: #ef4444; }
+        .financial-pulse-tile-change.flat { color: var(--text-muted); }
+        .financial-pulse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .financial-pulse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+        .financial-pulse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+        .financial-pulse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        /* RTL: flip header pill placement, keep tile content LTR (numbers) */
+        [dir="rtl"] .financial-pulse-card-header { flex-direction: row-reverse; }
+        [dir="rtl"] .financial-pulse-tile-value,
+        [dir="rtl"] .financial-pulse-tile-change,
+        [dir="rtl"] .financial-pulse-tile-ticker,
+        [dir="rtl"] .financial-pulse-tile-meta { direction: ltr; text-align: left; }
+
+        .asifah-footer { margin-top: 40px; padding: 30px 24px 20px; border-top: 1px solid var(--card-border); color: var(--text-secondary); }
+        .asifah-footer a { color: var(--accent); }
+        .asifah-footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-bottom: 24px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        .asifah-footer-col-title { font-weight: 700; color: var(--accent); margin-bottom: 8px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        .asifah-footer-col-text { font-size: 0.78em; line-height: 1.6; color: var(--text-secondary); }
+        .asifah-disclaimer { max-width: 1200px; margin: 20px auto 0; padding: 14px; background: rgba(220,38,38,0.08); border-left: 3px solid #dc2626; border-radius: 6px; font-size: 0.78em; line-height: 1.55; color: var(--text-secondary); }
+        .asifah-bmac { max-width: 1200px; margin: 18px auto 0; padding: 14px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.25); border-radius: 8px; font-size: 0.88em; color: var(--text-secondary); }
+        .asifah-copy { max-width: 1200px; margin: 22px auto 0; padding-top: 18px; border-top: 1px solid var(--card-border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 0.74em; color: var(--text-muted); }
+    /* ═══════════════════════════════════════════════════════════
+           COMMODITY EXPOSURE CARD — Gold Standard v1.0 (May 6, 2026)
+           Canonical pattern across all stability pages
+           ═══════════════════════════════════════════════════════════ */
+        .commodity-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .commodity-card {
+            border-color: rgba(0,200,212,0.18);
+            box-shadow: 0 0 6px rgba(0,200,212,0.08);
+        }
+        .commodity-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .commodity-prose {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            margin: 10px 0 16px 0;
+            padding: 12px 14px;
+            background: var(--bg-color);
+            border-left: 3px solid #60a5fa;
+            border-radius: 6px;
+        }
+        .commodity-alert-banner {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            display: none;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #60a5fa;
+            box-shadow: 0 4px 12px rgba(96,165,250,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(96,165,250,0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(96,165,250,0.25);
+        }
+        .commodity-pill-signal-count {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .commodity-pill-price {
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+        .commodity-pill-note {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-top: 4px;
+        }
+        .commodity-top-signals {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: var(--bg-color);
+            border-radius: 6px;
+            border-left: 3px solid var(--text-muted);
+            font-size: 11px;
+        }
+        .commodity-top-signals .ts-title {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        .commodity-top-signals a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            line-height: 1.45;
+        }
+        .commodity-top-signals a:hover { color: #60a5fa; }
+        .commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+
+        /* ═══════════ EGYPT-SPECIFIC (v2.0.0, Nov 1 2026) ═══════════ */
+        .eg-banner { display:flex; align-items:center; gap:14px; border-radius:10px; padding:12px 18px; margin-bottom:12px; flex-wrap:wrap; }
+        .eg-banner.rhet { background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; color:#dcfce7; }
+        .eg-banner.rhet a { color:#86efac; font-weight:700; }
+        .eg-banner.advisory { background:linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%); border:1px solid rgba(147,197,253,0.45); color:#e2f0fb; }
+        .eg-banner.advisory a { color:#93c5fd; font-weight:700; text-decoration:none; border:1px solid rgba(147,197,253,0.4); padding:4px 10px; border-radius:5px; white-space:nowrap; }
+        .eg-banner-text { flex:1; min-width:220px; font-size:12.5px; line-height:1.5; }
+        .eg-banner-text strong { display:block; font-size:11px; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:2px; }
+        .eg-pill { display:inline-block; font-size:10px; font-weight:800; letter-spacing:1px; padding:2px 9px; border-radius:4px; text-transform:uppercase; white-space:nowrap; }
+
+        .eg-sowhat { background:var(--container-bg); border:2px solid var(--card-border); border-left:5px solid var(--accent); border-radius:12px; padding:20px 22px; margin-bottom:22px; box-shadow:var(--card-glow); }
+        .eg-sowhat-label { font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
+        .eg-sowhat-head { font-size:18px; font-weight:700; color:var(--text-primary); margin-bottom:10px; line-height:1.4; }
+        .eg-sowhat ul { margin:0 0 0 18px; }
+        .eg-sowhat li { font-size:13.5px; line-height:1.6; color:var(--text-secondary); margin-bottom:6px; }
+        [dir="rtl"] .eg-sowhat { border-left:2px solid var(--card-border); border-right:5px solid var(--accent); }
+        [dir="rtl"] .eg-sowhat ul { margin:0 18px 0 0; }
+
+        .eg-meta-line { font-size:11.5px; color:var(--text-muted); margin-top:10px; line-height:1.5; }
+        .eg-chip { display:inline-block; font-size:10px; padding:2px 8px; border-radius:10px; background:var(--article-bg); color:var(--text-secondary); border:1px solid var(--card-border); margin:0 4px 4px 0; }
+        .eg-chip.grey { color:var(--text-muted); }
+        .eg-chip.warn { background:rgba(245,158,11,0.14); color:#b45309; border-color:rgba(245,158,11,0.4); }
+        [data-theme="dark"] .eg-chip.warn { color:#fbbf24; }
+
+        .eg-dim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-bottom:26px; }
+        .eg-dim { background:var(--metric-bg); border:2px solid var(--card-border); border-radius:12px; padding:16px 18px; box-shadow:var(--card-glow); display:flex; flex-direction:column; gap:8px; min-width:0; }
+        .eg-dim-head { display:flex; align-items:center; gap:10px; }
+        .eg-dim-icon { font-size:22px; }
+        .eg-dim-name { flex:1; font-size:14px; font-weight:700; color:var(--text-primary); }
+        .eg-dim-score { font-family:'Courier New',monospace; font-size:22px; font-weight:800; }
+        .eg-dim-bar { height:6px; background:var(--card-border); border-radius:3px; overflow:hidden; }
+        .eg-dim-fill { height:100%; border-radius:3px; transition:width .5s ease; }
+        .eg-dim-counts { font-size:11px; color:var(--text-muted); }
+        .eg-dim-note { font-size:11.5px; color:var(--text-secondary); line-height:1.5; padding:7px 9px; background:var(--article-bg); border-radius:6px; }
+        .eg-ev { font-size:11.5px; line-height:1.45; padding:4px 0; border-top:1px dashed var(--card-border); }
+        .eg-ev a { color:var(--text-secondary); text-decoration:none; }
+        .eg-ev a:hover { color:var(--accent); }
+        .eg-dir { display:inline-block; font-size:9px; font-weight:800; letter-spacing:.8px; padding:1px 6px; border-radius:3px; margin-right:6px; text-transform:uppercase; }
+        .eg-dir.stress { background:rgba(239,68,68,0.15); color:#ef4444; }
+        .eg-dir.relief { background:rgba(34,197,94,0.15); color:#16a34a; }
+        .eg-dir.mooted { background:rgba(107,114,128,0.18); color:#9ca3af; }
+        [dir="rtl"] .eg-dir { margin-right:0; margin-left:6px; }
+
+        .eg-section { background:var(--container-bg); border:2px solid var(--card-border); border-radius:12px; padding:22px 24px; margin-bottom:26px; box-shadow:var(--card-glow); }
+        .eg-section h2 { font-size:19px; color:var(--text-primary); margin-bottom:4px; }
+        .eg-section .eg-sub { font-size:12.5px; color:var(--text-muted); font-style:italic; margin-bottom:14px; line-height:1.5; }
+        [data-theme="dark"] .eg-section, [data-theme="dark"] .eg-sowhat, [data-theme="dark"] .eg-dim { border-color:rgba(0,200,212,0.18); }
+
+        .eg-inst-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+        .eg-inst { background:var(--metric-bg); border:1px solid var(--card-border); border-radius:10px; padding:14px; font-size:12.5px; color:var(--text-secondary); line-height:1.55; min-width:0; }
+        .eg-inst-title { font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
+        .eg-inst table { width:100%; border-collapse:collapse; font-size:11.5px; margin-top:6px; }
+        .eg-inst td { padding:3px 4px; border-bottom:1px solid var(--card-border); }
+        .eg-inst td.num { font-family:'Courier New',monospace; text-align:right; direction:ltr; }
+
+        .eg-cal { display:flex; flex-wrap:wrap; gap:12px; }
+        .eg-cal-item { flex:1; min-width:200px; background:var(--metric-bg); border:1px solid var(--card-border); border-radius:10px; padding:12px 14px; }
+        .eg-cal-days { font-family:'Courier New',monospace; font-size:26px; font-weight:800; color:var(--accent); }
+        .eg-cal-label { font-size:12px; color:var(--text-secondary); line-height:1.45; }
+
+        .eg-anchor { padding:10px 0; border-bottom:1px solid var(--card-border); font-size:12.5px; line-height:1.55; color:var(--text-secondary); }
+        .eg-anchor:last-child { border-bottom:none; }
+        .eg-anchor strong { color:var(--text-primary); }
+        .eg-anchor .src { font-size:10.5px; color:var(--text-muted); }
+        .eg-anchor .src a { color:var(--text-muted); }
+
+        .eg-trend-wrap { position:relative; height:180px; }
+        #egypt-map { width:100%; height:440px; border-radius:8px; border:1px solid var(--card-border); }
+        .eg-warming { text-align:center; padding:30px; color:var(--text-secondary); font-size:14px; }
+
+        @media (max-width: 768px) {
+            .eg-dim-grid { grid-template-columns:1fr; }
+            .eg-section { padding:16px; }
+            .eg-sowhat-head { font-size:16px; }
+            #egypt-map { height:320px; }
         }
     </style>
-<link rel="stylesheet" href="resources/asifah-standard-shell.css">
-<script src="resources/asifah-standard-shell.js" defer></script>
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
+    <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <a href="middle-east.html" class="home-btn">&larr; Back to Dashboard</a>
-            <div class="header-controls">
-                <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
-                <button class="lang-btn" onclick="switchLanguage('he', this)">עב</button>
-                <button class="lang-btn" onclick="switchLanguage('ar', this)">ع</button>
-                <button class="lang-btn" onclick="switchLanguage('fa', this)">فا</button>
-                <label class="theme-toggle">
-                    <span>Theme</span>
-                    <input type="checkbox" onchange="toggleTheme()">
-                </label>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-status">
+            <div class="loading-title" data-i18n="loadingTitle">Loading Egypt Stability Data</div>
+            <div class="loading-steps">
+                <div class="loading-step active" id="step1"><span class="step-icon">⏳</span><span data-i18n="loadStep1">Reading the pound, EGX30 and reserves...</span></div>
+                <div class="loading-step" id="step2"><span class="step-icon">⏳</span><span data-i18n="loadStep2">Reading bread, wheat and energy signals...</span></div>
+                <div class="loading-step" id="step3"><span class="step-icon">⏳</span><span data-i18n="loadStep3">Reading Suez, borders and security...</span></div>
+                <div class="loading-step" id="step4"><span class="step-icon">⏳</span><span data-i18n="loadStep4">Rendering dashboard...</span></div>
             </div>
-            <h1>🇪🇬 EGYPT STABILITY INDEX</h1>
-            <div class="subtitle">Multi-Factor Analysis: Suez Canal Security, Sinai Insurgency, Gaza Spillover & Regional Positioning</div>
-            <div class="last-updated" id="lastUpdated">Last updated: Loading...</div>
+            <div class="loading-progress" id="loadingProgress" data-i18n="loadingNote">Cached reads are fast; a first scan takes 1-2 minutes.</div>
+            <div class="loading-error" id="loadingError" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+    <div class="page-with-sidebar">
+
+    <!-- CANONICAL SIDEBAR (static fallback; resources/asifah-standard-shell.js replaces it at runtime) -->
+    <nav class="nav-sidebar" id="navSidebar">
+        <div class="nav-sidebar-label">Dashboards</div>
+        <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+        <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+        <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+        <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+        <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Global Trackers</div>
+        <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+        <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+        <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+        <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">Regional Rhetoric</div>
+        <a href="rhetoric-africa.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
+        <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <a href="rhetoric-egypt.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇪🇬 Egypt Rhetoric</span><span class="nav-btn-status">● Soon</span></a>
+        <div class="nav-btn current-page"><span class="nav-btn-label">🇪🇬 Egypt Stability</span><span class="nav-btn-status">◉ You are here</span></div>
+    </nav>
+
+    <div class="main-content">
+        <header>
+            <a href="middle-east.html" class="back-link" data-i18n="backLink">← Middle East</a>
+            <img src="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
+            <div class="header-content">
+                <h1 data-i18n="pageTitle">🇪🇬 EGYPT STABILITY INDEX</h1>
+                <div class="subtitle" data-i18n="pageSubtitle">The crossroads state: the pound, bread, gas, Suez, and four live borders</div>
+                <div class="last-updated" id="lastUpdated">—</div>
+            </div>
+            <div class="header-controls">
+                <div class="language-switcher">
+                    <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
+                    <button class="lang-btn" onclick="switchLanguage('ar', this)">ع</button>
+                    <button class="lang-btn" onclick="switchLanguage('he', this)">עב</button>
+                    <button class="lang-btn" onclick="switchLanguage('fa', this)">فا</button>
+                </div>
+                <div class="theme-toggle">
+                    <span class="theme-toggle-label" data-i18n="themeToggle">Theme</span>
+                    <div class="theme-toggle-switch" onclick="toggleTheme()">
+                        <div class="theme-toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <!-- U.S. STATE DEPARTMENT — WORLDWIDE CAUTION -->
-        <div style="
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
-            border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px;
-            margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        ">
-            <div style="font-size: 24px; flex-shrink: 0;">&#x1F6A8;</div>
-            <div style="flex: 1;">
-                <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;">&#x26A0;&#xFE0F; U.S. State Department — Worldwide Caution</div>
-                <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+        <!-- TRAVEL GUIDANCE: link-out only. We do not restate an advisory level we
+             cannot keep current; the official pages are the source of truth. -->
+        <div class="eg-banner advisory">
+            <div style="font-size:22px;">🧭</div>
+            <div class="eg-banner-text">
+                <strong data-i18n="advTitle">Official travel guidance</strong>
+                <span data-i18n="advText">Advisory levels change; read them at the source rather than from a copy on this page.</span>
             </div>
-            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW CAUTION &rarr;</a>
+            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/egypt-travel-advisory.html" target="_blank" rel="noopener" data-i18n="advEgypt">Egypt advisory →</a>
+            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" data-i18n="advWorldwide">Worldwide Caution →</a>
         </div>
 
-        <!-- EGYPT TRAVEL ADVISORY -->
-        <div style="
-            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
-            border: 2px solid #f97316; border-radius: 10px; padding: 14px 20px;
-            margin-bottom: 15px; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        ">
-            <div style="font-size: 24px; flex-shrink: 0;">🇪🇬</div>
-            <div style="flex: 1;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                    <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;">U.S. State Department — Egypt Travel Advisory</span>
-                    <span style="background: #f97316; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LEVEL 3</span>
-                </div>
-                <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;"><strong style="color: #f97316;">Reconsider Travel to Egypt</strong> due to terrorism. Exercise increased caution due to the ongoing regional conflict. The Sinai Peninsula (except Sharm el-Sheikh resort area) is particularly dangerous.</div>
+        <!-- RHETORIC TRACKER BANNER (goes live automatically when /api/rhetoric/egypt ships) -->
+        <div class="eg-banner rhet" id="rhetBanner">
+            <div style="font-size:22px;">📡</div>
+            <div class="eg-banner-text">
+                <strong data-i18n="rhetTitle">Egypt Rhetoric &amp; Pressure Tracker</strong>
+                <span id="rhetBannerText" data-i18n="rhetSoon">Deploying next: six fronts (Gulf defence, Suez &amp; Red Sea, bread &amp; balance sheet, Sudan &amp; the Nile, Gaza/Sinai &amp; Israeli gas, Libya). This page reads conditions; the tracker will read what actors say.</span>
             </div>
-            <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/egypt-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW ADVISORY &rarr;</a>
+            <span class="eg-pill" id="rhetPill" style="background:#6b7280;color:#fff;" data-i18n="rhetPillSoon">DEPLOYING</span>
         </div>
 
-        <!-- MAP SECTION -->
-        <div class="map-section">
-            <h2>&#x1F5FA;&#xFE0F; Egypt — Strategic Overview</h2>
-            <div class="map-subtitle">Interactive map centered on Egypt. Suez Canal, Sinai, and Rafah border crossing overlays coming soon.</div>
-            <div style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden;">
-                <iframe 
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=24.7%2C22.0%2C36.9%2C31.7&layer=mapnik&marker=30.04%2C31.24"
-                    width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
-                </iframe>
+        <div id="warmingBox" class="eg-section eg-warming" style="display:none;"></div>
+
+        <div id="content" style="display:none;">
+
+            <!-- SO WHAT -->
+            <div class="eg-sowhat" id="soWhatCard">
+                <div class="eg-sowhat-label" data-i18n="soWhatLabel">So what</div>
+                <div class="eg-sowhat-head" id="soWhatHead">—</div>
+                <ul id="soWhatLines"></ul>
+                <div class="eg-meta-line" id="coverageLine"></div>
             </div>
-        </div>
 
-        <!-- KNOWLEDGE LIBRARY -->
-        <div class="knowledge-library">
-            <h2>
-                <span class="library-icon">&#x1F4DA;</span>
-                Knowledge Library
-            </h2>
-            <p class="open-source-disclaimer">
-                Note: Background information is compiled from open-source research and analysis. One-pager documents for each category are under development.
-            </p>
-            <div class="knowledge-categories">
+            <!-- STABILITY INDEX -->
+            <div class="stability-index-card">
+                <div class="stability-title" data-i18n="stabilityTitle">EGYPT STABILITY INDEX</div>
+                <div class="stability-score" id="stabilityScore">--</div>
+                <div class="stability-label" id="stabilityLabel">—</div>
+                <div class="stability-bar"><div class="stability-fill" id="stabilityFill" style="width:0%"></div></div>
+                <div class="stability-legend" data-i18n="stabilityLegend">100 = Stable · 0 = Critical. Unsensed dimensions are left out, never counted as calm.</div>
+                <div class="score-breakdown" id="excludedChips"></div>
+                <div class="eg-trend-wrap" style="margin-top:16px;"><canvas id="trendChart"></canvas></div>
+                <div class="eg-meta-line" id="trendNote"></div>
+            </div>
 
-                <!-- Suez Canal & Maritime Security -->
-                <div class="knowledge-card collapsed" id="card-suez">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('suez')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">🚢</span>
-                            <span>Suez Canal & Maritime Security</span>
+            <!-- SIX DIMENSIONS -->
+            <div class="section-title" style="margin-bottom:12px;">🧭 <span data-i18n="dimsTitle">Six load-bearing walls</span></div>
+            <div class="eg-dim-grid" id="dimGrid"></div>
+
+            <!-- FINANCIAL PULSE -->
+            <div class="financial-pulse-card">
+                <div class="financial-pulse-card-header">
+                    <div class="financial-pulse-card-title">📊 <span data-i18n="pulseTitle">Egypt Financial Pulse</span></div>
+                    <span class="financial-pulse-status-pill" id="pulseStatus">—</span>
+                </div>
+                <div class="financial-pulse-prose" data-i18n="pulseProse">The pound (pounds per US dollar, so a higher number is a weaker pound) and the EGX30 index. Sparklines show the last month. A market we could not read says so; we never fill in a number.</div>
+                <div class="financial-pulse-grid" id="pulseGrid"></div>
+            </div>
+
+            <!-- CALENDAR -->
+            <div class="eg-section">
+                <h2>📅 <span data-i18n="calTitle">Hard dates</span></h2>
+                <div class="eg-sub" data-i18n="calSub">The calendar amplifies active stress; it never creates it.</div>
+                <div class="eg-cal" id="calStrip"></div>
+            </div>
+
+            <!-- INDEPENDENT INSTRUMENTS -->
+            <div class="eg-section">
+                <h2>🔬 <span data-i18n="instTitle">Independent instruments</span></h2>
+                <div class="eg-sub" data-i18n="instSub">Separately sourced readings, shown side by side. When they agree, that is convergence; when one is unread, it says so.</div>
+                <div class="eg-inst-grid" id="instGrid"></div>
+            </div>
+
+            <!-- COMMODITY EXPOSURE (canonical card, honest label) -->
+            <div class="commodity-card" id="egyptCommodityCard">
+                <div class="commodity-card-title">🛢️ <span data-i18n="commodityTitle">Commodity exposure</span></div>
+                <div class="commodity-prose" id="commodityProse" data-i18n="commodityProseDefault">Loading the commodities Egypt produces, consumes or carries...</div>
+                <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+                <div class="commodity-grid" id="commodityGrid"></div>
+                <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+            </div>
+
+            <!-- LEADERSHIP + DATED ANCHORS -->
+            <div class="eg-section">
+                <h2>📌 <span data-i18n="anchorTitle">Dated anchors</span></h2>
+                <div class="eg-sub" id="anchorSub" data-i18n="anchorSub">Background facts, each stamped with the date it was true. Not live readings.</div>
+                <div class="leadership-grid" id="leaderGrid" style="margin-bottom:14px;"></div>
+                <div id="anchorList"></div>
+            </div>
+
+            <!-- MAP -->
+            <div class="map-section">
+                <h2>🗺️ <span data-i18n="mapTitle">Egypt: the crossroads</span></h2>
+                <div id="egypt-map"></div>
+            </div>
+
+            <!-- KNOWLEDGE LIBRARY -->
+            <div class="knowledge-library">
+                <h2><span style="font-size:28px;">📚</span> <span data-i18n="kbTitle">Knowledge Library</span></h2>
+                <p class="open-source-disclaimer" data-i18n="kbDisclaimer">Background compiled from open-source reporting. Each card is dated; the live dimensions above are the current reading.</p>
+                <div class="knowledge-categories">
+
+                    <div class="knowledge-card collapsed" id="card-hinge">
+                        <div class="knowledge-header" onclick="toggleKnowledgeCard('hinge')">
+                            <div class="knowledge-header-title"><span class="category-icon">🧭</span><span>Why Egypt is the hinge</span></div>
+                            <span class="collapse-icon">▼</span>
                         </div>
-                        <span class="collapse-icon">&#x25BC;</span>
+                        <div class="knowledge-content">
+                            <p><strong>Three crises meet here.</strong> With Hormuz shut, Saudi crude leaves through the East-West Petroline to Yanbu, then the Red Sea and Suez. The Houthis target that route, and Egypt's parliament authorised defending Saudi Arabia on 26 Oct 2026. Egypt is also the world's largest wheat importer, buying mostly from the Black Sea.</p>
+                            <p><strong>So what:</strong> a successful strike on the Petroline or Yanbu would cut Riyadh's exports, Egypt's canal revenue and world crude supply at once. Egypt's fiscal recovery is coupled to Saudi Arabia's bypass route.</p>
+                            <div class="open-source-disclaimer">As of 1 Nov 2026 · Asifah scoping note (Mecca Pact &amp; Egypt, 31 Oct 2026)</div>
+                        </div>
                     </div>
-                    <div class="knowledge-content">
-                        <p><strong>The Suez Canal is one of the world's most critical maritime chokepoints</strong>, handling approximately 12-15% of global trade and 25-30% of global container traffic. The canal generates over $9 billion annually in transit fees for Egypt.</p><p><strong>Current Threat:</strong> Houthi attacks in the Red Sea have significantly reduced Suez Canal traffic, with many shipping companies rerouting around the Cape of Good Hope. This has cost Egypt billions in lost revenue.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, think tank analysis, and government publications</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.suezcanal.gov.eg/" target="_blank" class="report-link">📑 Suez Canal Authority</a>
-                            <a href="https://www.cfr.org/backgrounder/how-much-trade-transits-suez-canal" target="_blank" class="report-link">📑 CFR - Suez Trade</a>
+
+                    <div class="knowledge-card collapsed" id="card-macro">
+                        <div class="knowledge-header" onclick="toggleKnowledgeCard('macro')">
+                            <div class="knowledge-header-title"><span class="category-icon">💱</span><span>The pound, the IMF and Gulf money</span></div>
+                            <span class="collapse-icon">▼</span>
                         </div>
+                        <div class="knowledge-content">
+                            <p>The $8bn IMF Extended Fund Facility expires on <strong>15 Dec 2026</strong>, with its final review planned for Q4 2026. The pound floated in March 2024 and has traded in roughly the 48-54 range in 2026. Gulf states hold billions in deposits at the central bank and are owed rollovers; the March 2024 Ras El-Hekma deal with the UAE was the largest single inflow.</p>
+                            <p><strong>Watch:</strong> the final review outcome and any successor programme, deposit rollovers, the parallel-market premium, and IMF pressure to sell down military-owned firms.</p>
+                            <div class="open-source-disclaimer">As of Oct 2026 · IMF, CBE, Ahram Online, Bloomberg</div>
+                            <div class="report-links-grid">
+                                <a href="https://www.imf.org/en/Countries/EGY" target="_blank" rel="noopener" class="report-link">📑 IMF: Egypt</a>
+                                <a href="https://www.cbe.org.eg/en" target="_blank" rel="noopener" class="report-link">📑 Central Bank of Egypt</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card collapsed" id="card-bread">
+                        <div class="knowledge-header" onclick="toggleKnowledgeCard('bread')">
+                            <div class="knowledge-header-title"><span class="category-icon">🍞</span><span>Bread: the political price</span></div>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="knowledge-content">
+                            <p>Baladi bread is subsidised for about 70 million people. Bread prices have historically been a trigger: the 1977 bread riots and the "bread, freedom, social justice" slogan of 2011. Mostakbal Misr, a military-linked agency, replaced GASC as the state wheat buyer in late 2024, which makes tender pricing less transparent.</p>
+                            <p><strong>Failure mode:</strong> fiscal first, street second. A wheat shock hits the subsidy bill and the FX position before it reaches bakeries, and reaches the street only if the state passes the cost on.</p>
+                            <div class="open-source-disclaimer">As of Jul-Oct 2026 · corridor_dependence registry, WFP, trade press</div>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card collapsed" id="card-energy">
+                        <div class="knowledge-header" onclick="toggleKnowledgeCard('energy')">
+                            <div class="knowledge-header-title"><span class="category-icon">⚡</span><span>Gas: the quiet hinge to Israel</span></div>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="knowledge-content">
+                            <p>Egypt went from gas exporter to importer as Zohr declined, leaving a gap of about 2 bcf/d. Israeli pipeline gas, from Leviathan and Tamar, fills part of it under a 2019 deal. A larger $35bn Leviathan deal was approved by Israel in Dec 2025. Flows stopped when the Iran war began on 28 Feb 2026 and resumed in early April. LNG imported through floating terminals covers the rest, paid in dollars.</p>
+                            <p><strong>So what:</strong> the treaty relationship is not only Rafah and Sinai. It is also Cairo's summer power cuts and the fertilizer plants that are shut first, which links into the wheat and fertilizer webs.</p>
+                            <div class="open-source-disclaimer">As of Apr 2026 · Ahram Online, The National, Israel Hayom</div>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card collapsed" id="card-suez">
+                        <div class="knowledge-header" onclick="toggleKnowledgeCard('suez')">
+                            <div class="knowledge-header-title"><span class="category-icon">🚢</span><span>Suez &amp; the Red Sea</span></div>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="knowledge-content">
+                            <p>Canal revenue collapsed after the Houthi shipping attacks began in late 2023: $10.25bn in 2023, then less than half that since. It has recovered in 2026, to $4.67bn in FY2025/26 and $567m in Aug 2026, carried by Saudi crude rerouted through Yanbu. The Houthis took Yemen's Red Sea west coast in Sep 2026 and have warned Cairo directly over the Saudi defence vote.</p>
+                            <div class="open-source-disclaimer">As of Sep-Oct 2026 · Suez Canal Authority, New Lines, Rio Times</div>
+                            <div class="report-links-grid">
+                                <a href="https://www.suezcanal.gov.eg/" target="_blank" rel="noopener" class="report-link">📑 Suez Canal Authority</a>
+                                <a href="rhetoric-yemen.html" class="report-link">📑 Yemen / Houthi tracker</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card collapsed" id="card-borders">
+                        <div class="knowledge-header" onclick="toggleKnowledgeCard('borders')">
+                            <div class="knowledge-header-title"><span class="category-icon">🛡️</span><span>Four borders, one army</span></div>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="knowledge-content">
+                            <ul>
+                                <li><strong>East:</strong> Gaza, Rafah and North Sinai, under the 1979 treaty with Israel. Egyptian troop levels in Sinai are a standing friction point.</li>
+                                <li><strong>South:</strong> Sudan's war; Egypt backs the SAF, and refugees cross north. Also the disputed Halaib Triangle and the Nile/GERD dispute with Ethiopia. The World Bank's extreme flag on Egypt is <em>water stress</em>.</li>
+                                <li><strong>West:</strong> Libya, where Egypt (with the UAE) backs Haftar's eastern camp.</li>
+                                <li><strong>Sea:</strong> the Red Sea, now including the Saudi defence commitment.</li>
+                            </ul>
+                            <div class="open-source-disclaimer">As of Nov 2026 · Asifah Sudan and Libya trackers</div>
+                            <div class="report-links-grid">
+                                <a href="rhetoric-libya.html" class="report-link">📑 Libya tracker</a>
+                                <a href="rhetoric-sudan.html" class="report-link">📑 Sudan tracker</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ARTICLES -->
+            <div class="articles-section">
+                <div class="section-title">📰 <span data-i18n="articlesTitle">What the sensors read</span></div>
+                <div class="article-tabs" id="articleTabs">
+                    <button class="article-tab active" data-tab="all" onclick="setArticleTab('all')"><span data-i18n="tabAll">All</span> <span class="tab-count" id="countAll">0</span></button>
+                    <button class="article-tab" data-tab="en" onclick="setArticleTab('en')"><span data-i18n="tabEn">English</span> <span class="tab-count" id="countEn">0</span></button>
+                    <button class="article-tab" data-tab="ar" onclick="setArticleTab('ar')"><span data-i18n="tabAr">Arabic</span> <span class="tab-count" id="countAr">0</span></button>
+                </div>
+                <div id="articlesContainer" class="article-list">
+                    <div style="text-align:center; color:var(--text-secondary); padding:30px;" data-i18n="loadingArticles">Loading articles...</div>
+                </div>
+            </div>
+
+        </div><!-- end #content -->
+
+        <!-- CANONICAL FOOTER -->
+        <footer class="asifah-footer">
+            <div class="asifah-footer-grid">
+                <div>
+                    <div class="asifah-footer-col-title">📡 <span data-i18n="footDataTitle">Data Sources</span></div>
+                    <div class="asifah-footer-col-text" data-i18n="footDataText">Ahram Online, Google News (English and Arabic), GDELT, NewsAPI, Yahoo Finance (USD/EGP, EGX30), WFP food prices (HDX), World Bank WDI, IMF, CBE, Suez Canal Authority.</div>
+                </div>
+                <div>
+                    <div class="asifah-footer-col-title">🔬 <span data-i18n="footMethodTitle">Methodology</span></div>
+                    <div class="asifah-footer-col-text" data-i18n="footMethodText">Six dimensions scored from reported stress, relief and independent instruments. One story can raise a dimension to watch; strained needs two or more. Unsensed dimensions are excluded. Social signal is structurally under-sensed in Egypt. Refreshed every 6 hours. Analysis text is in English.</div>
+                </div>
+                <div>
+                    <div class="asifah-footer-col-title">✉️ <span data-i18n="footContactTitle">Contact</span></div>
+                    <div class="asifah-footer-col-text">
+                        <span data-i18n="footContactText">Questions, corrections, or research collaboration:</span><br>
+                        <a href="mailto:asifahanalytics@gmail.com">asifahanalytics@gmail.com</a>
                     </div>
                 </div>
-
-                <!-- Sinai Insurgency & ISIS -->
-                <div class="knowledge-card collapsed" id="card-sinai">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('sinai')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">⚔️</span>
-                            <span>Sinai Insurgency & ISIS</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>The Sinai Peninsula has experienced a long-running insurgency</strong>, primarily from Wilayat Sinai (ISIS-Sinai Province). Egyptian military operations have significantly degraded the group but not eliminated it entirely.</p><p><strong>Current Status:</strong> Security operations continue in North Sinai. The area remains under military control with restricted civilian access. Cross-border dynamics with Gaza add complexity.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, think tank analysis, and government publications</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.crisisgroup.org/middle-east-north-africa/north-africa/egypt" target="_blank" class="report-link">📑 Crisis Group - Egypt</a>
-                            <a href="https://www.ecfr.eu/" target="_blank" class="report-link">📑 ECFR - Egypt Analysis</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gaza Spillover & Rafah Border -->
-                <div class="knowledge-card collapsed" id="card-gaza">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('gaza')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">🏥</span>
-                            <span>Gaza Spillover & Rafah Border</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>Egypt controls the Rafah border crossing</strong> with Gaza, making it a critical humanitarian corridor and political flashpoint. The ongoing conflict in Gaza has created immense pressure on Egypt regarding refugee flows, humanitarian access, and its Camp David peace obligations with Israel.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, think tank analysis, and government publications</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.unrwa.org/" target="_blank" class="report-link">📑 UNRWA</a>
-                            <a href="https://www.aljazeera.com/tag/egypt/" target="_blank" class="report-link">📑 Al Jazeera - Egypt</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Government & Political Stability -->
-                <div class="knowledge-card collapsed" id="card-political">
-                    <div class="knowledge-header" onclick="toggleKnowledgeCard('political')">
-                        <div class="knowledge-header-title">
-                            <span class="category-icon">🏛️</span>
-                            <span>Government & Political Stability</span>
-                        </div>
-                        <span class="collapse-icon">&#x25BC;</span>
-                    </div>
-                    <div class="knowledge-content">
-                        <p><strong>President Abdel Fattah el-Sisi</strong> has governed Egypt since 2014 following the 2013 military takeover. Egypt faces economic challenges including high inflation, currency devaluation, and IMF-mandated reforms. The government maintains strict security controls and limited political space for opposition.</p>
-                        <div class="open-source-disclaimer">* Based on open-source intelligence, think tank analysis, and government publications</div>
-                        <div class="report-links-grid">
-                            <a href="https://www.worldbank.org/en/country/egypt" target="_blank" class="report-link">📑 World Bank - Egypt</a>
-                            <a href="https://www.imf.org/en/Countries/EGY" target="_blank" class="report-link">📑 IMF - Egypt</a>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-        </div>
-
-        <!-- RECENT ARTICLES -->
-        <div class="articles-section">
-            <div class="section-title">&#x1F4F0; Recent Egypt, Suez Canal & Sinai Articles (Last 7 Days)</div>
-            <div id="articlesContainer">
-                <div style="text-align: center; color: var(--text-secondary); padding: 30px;">Loading articles...</div>
+            <div class="asifah-disclaimer">
+                <strong style="color:#dc2626;">⚠️ <span data-i18n="footDisclaimerLabel">Disclaimer:</span></strong>
+                <span data-i18n="footDisclaimerText">Asifah Analytics is an independent open-source OSINT project. Scores are convergence indicators built from public signals, not predictions and not official assessments. Not for operational use.</span>
             </div>
-        </div>
-
-        <footer>
-            <div>Data Sources: NewsAPI, GDELT, ACLED, Egyptian media, and OSINT sources</div>
-            <div style="margin-top:15px; font-size:0.85em;">
-                Multilingual content from Arabic, Hebrew, and Farsi feeds via GDELT.
+            <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin:18px 0 14px;">
+                <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; padding:10px 22px; background:linear-gradient(180deg, #fbbf24 0%, #d97706 100%); color:#fff; border:2px solid rgba(255,255,255,0.2); border-radius:6px; font-weight:bold; font-size:14px; text-decoration:none;" data-i18n="footer_bmc_pill">☕ Buy Me a Coffee</a>
+                <a href="mailto:asifahanalytics@gmail.com" style="display:inline-flex; align-items:center; gap:6px; padding:10px 22px; background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%); color:#fff; border:2px solid rgba(255,255,255,0.2); border-radius:6px; font-weight:bold; font-size:14px; text-decoration:none;" data-i18n="footer_contact_pill">✉️ Contact Asifah</a>
             </div>
-            <div style="margin-top:15px;">For inquiries, contact: asifahanalytics@gmail.com</div>
-            <div style="margin-top:25px; padding:15px; background:var(--article-bg); border-radius:8px;">
-                <div style="font-size:0.9em;">Asifah Analytics v1.0.0</div>
-                <div style="font-size:0.8em;">Updated every 30 minutes | Not for operational use</div>
+            <div style="margin-top:14px; text-align:center; font-size:0.75em; color:var(--text-muted);">
+                <a href="mission.html" style="color:var(--text-muted); text-decoration:none; margin:0 8px;" data-i18n="footer_mission_link">Mission Statement</a>·
+                <a href="privacy.html" style="color:var(--text-muted); text-decoration:none; margin:0 8px;" data-i18n="footer_privacy_link">Privacy Policy</a>·
+                <a href="index.html" style="color:var(--text-muted); text-decoration:none; margin:0 8px;" data-i18n="footer_home_link">Home</a>
             </div>
-            <div style="margin-top:20px; padding:15px; background:rgba(139,0,0,0.2); border-radius:8px;">
-                <span style="font-size:0.9em;">
-                    If you find Asifah Analytics useful, you can 
-                    <a href="https://www.buymeacoffee.com/asifahanalytics" target="_blank" style="color:var(--accent);">&#x2615; buy me a coffee</a>
-                </span>
-            </div>
-            <div style="margin-top:25px; font-size:0.75em; color:var(--text-muted);">
-                &copy; 2025 RCGG. All Rights Reserved. Proprietary and Confidential.<br>
-                Unauthorized use, reproduction, or distribution prohibited.
+            <div class="asifah-copy">
+                <span>Asifah Analytics · Egypt v2.0.0 · <span data-i18n="footRefreshNote">Refreshed every 6 hours</span></span>
+                <span>© 2025-2026 RCGG. <span data-i18n="footCopy">All Rights Reserved.</span></span>
             </div>
         </footer>
-    </div>
+    </div><!-- end .main-content -->
+    </div><!-- end .page-with-sidebar -->
+    </div><!-- end .container -->
 
     <script>
         const BACKEND_URL = 'https://asifah-backend.onrender.com';
+        const articleStore = { all: [], en: [], ar: [] };
+        let currentLang = 'en';
+        let lastData = null;
+        let trendChart = null;
+        let warmPolls = 0;
 
+        const translations = {
+ "en": {
+  "loadingTitle": "Loading Egypt Stability Data",
+  "loadStep1": "Reading the pound, EGX30 and reserves...",
+  "loadStep2": "Reading bread, wheat and energy signals...",
+  "loadStep3": "Reading Suez, borders and security...",
+  "loadStep4": "Rendering dashboard...",
+  "loadingNote": "Cached reads are fast; a first scan takes 1-2 minutes.",
+  "loadSlow": "This is taking longer than expected. The backend may be waking up; please wait or refresh.",
+  "loadFailed": "Could not reach the backend. Please refresh in a minute.",
+  "warming": "First scan is running (about 1-2 minutes). This page will reload the data automatically.",
+  "backLink": "← Middle East",
+  "pageTitle": "🇪🇬 EGYPT STABILITY INDEX",
+  "pageSubtitle": "The crossroads state: the pound, bread, gas, Suez, and four live borders",
+  "themeToggle": "Theme",
+  "advTitle": "Official travel guidance",
+  "advText": "Advisory levels change; read them at the source rather than from a copy on this page.",
+  "advEgypt": "Egypt advisory →",
+  "advWorldwide": "Worldwide Caution →",
+  "rhetTitle": "Egypt Rhetoric & Pressure Tracker",
+  "rhetSoon": "Deploying next: six fronts (Gulf defence, Suez & Red Sea, bread & balance sheet, Sudan & the Nile, Gaza/Sinai & Israeli gas, Libya). This page reads conditions; the tracker will read what actors say.",
+  "rhetPillSoon": "DEPLOYING",
+  "rhetLive": "Live: what Egyptian and regional actors are saying, on six fronts.",
+  "live": "LIVE",
+  "soWhatLabel": "So what",
+  "stabilityTitle": "EGYPT STABILITY INDEX",
+  "stabilityLegend": "100 = Stable · 0 = Critical. Unsensed dimensions are left out, never counted as calm.",
+  "dimsTitle": "Six load-bearing walls",
+  "pulseTitle": "Egypt Financial Pulse",
+  "pulseProse": "The pound (pounds per US dollar, so a higher number is a weaker pound) and the EGX30 index. Sparklines show the last month. A market we could not read says so; we never fill in a number.",
+  "calTitle": "Hard dates",
+  "calSub": "The calendar amplifies active stress; it never creates it.",
+  "instTitle": "Independent instruments",
+  "instSub": "Separately sourced readings, shown side by side. When they agree, that is convergence; when one is unread, it says so.",
+  "commodityTitle": "Commodity exposure",
+  "commodityProseDefault": "Loading the commodities Egypt produces, consumes or carries...",
+  "anchorTitle": "Dated anchors",
+  "anchorSub": "Background facts, each stamped with the date it was true. Not live readings.",
+  "mapTitle": "Egypt: the crossroads",
+  "kbTitle": "Knowledge Library",
+  "kbDisclaimer": "Background compiled from open-source reporting. Each card is dated; the live dimensions above are the current reading.",
+  "articlesTitle": "What the sensors read",
+  "tabAll": "All",
+  "tabEn": "English",
+  "tabAr": "Arabic",
+  "loadingArticles": "Loading articles...",
+  "noArticles": "No articles in this category.",
+  "readArticle": "Read article →",
+  "footDataTitle": "Data Sources",
+  "footDataText": "Ahram Online, Google News (English and Arabic), GDELT, NewsAPI, Yahoo Finance (USD/EGP, EGX30), WFP food prices (HDX), World Bank WDI, IMF, CBE, Suez Canal Authority.",
+  "footMethodTitle": "Methodology",
+  "footMethodText": "Six dimensions scored from reported stress, relief and independent instruments. One story can raise a dimension to watch; strained needs two or more. Unsensed dimensions are excluded. Social signal is structurally under-sensed in Egypt. Refreshed every 6 hours. Analysis text is in English.",
+  "footContactTitle": "Contact",
+  "footContactText": "Questions, corrections, or research collaboration:",
+  "footDisclaimerLabel": "Disclaimer:",
+  "footDisclaimerText": "Asifah Analytics is an independent open-source OSINT project. Scores are convergence indicators built from public signals, not predictions and not official assessments. Not for operational use.",
+  "footer_bmc_pill": "☕ Buy Me a Coffee",
+  "footer_contact_pill": "✉️ Contact Asifah",
+  "footer_mission_link": "Mission Statement",
+  "footer_privacy_link": "Privacy Policy",
+  "footer_home_link": "Home",
+  "footRefreshNote": "Refreshed every 6 hours",
+  "footCopy": "All Rights Reserved.",
+  "lastScan": "Last scan:",
+  "staleNote": "older than 12 hours; a rescan is due",
+  "covRead": "Read from",
+  "covEgypt": "Egypt articles",
+  "covCommentary": "commentary pieces set aside",
+  "notSensed": "Not Sensed",
+  "notCounted": "Not counted",
+  "driver": "Main driver",
+  "trendBuilding": "Building history ({n} day so far). The trendline appears after two days.",
+  "trendNote": "Stability over the last {n} days of scans.",
+  "cStress": "stress",
+  "cRelief": "relief",
+  "cMooted": "talked about",
+  "cOnTopic": "on-topic articles",
+  "unread": "unread",
+  "unreadThisCycle": "Unread this cycle",
+  "fxName": "USD / EGP",
+  "egxName": "EGX30",
+  "mktStress": "Market stress",
+  "noMarketMove": "no move above threshold",
+  "asOf": "as of",
+  "pulseAllRead": "Both read",
+  "pulsePartial": "Partly read",
+  "pulseUnread": "Unread",
+  "calImf": "days until the IMF programme expires on",
+  "calEnergy": "Summer power-demand peak (Jun-Sep): amplifies active energy stress",
+  "calRamadan": "Ramadan food-demand window (dates approximate): amplifies active food stress",
+  "on": "ON",
+  "off": "Off",
+  "instWfp": "WFP measured staple prices",
+  "instWb": "World Bank structural stress",
+  "instCorr": "Shipping corridors",
+  "instConv": "Convergence registry",
+  "band": "Band",
+  "dataAsOf": "data as of",
+  "staple": "Staple",
+  "month": "Month",
+  "wfpNote": "Bands compare each staple with its own trailing year. A convergence indicator, not a forecast.",
+  "severity": "Severity",
+  "stressors": "Stressors",
+  "wbNote": "Annual structural data. The extreme flag (⚠️) is the structural stressor, not this week's news.",
+  "corrNote": "Unread means no sensor record, not open.",
+  "loading": "Loading...",
+  "noConv": "No convergence entries for Egypt.",
+  "threshold": "fires at commodity level",
+  "convNote": "Standing watch until the coupled trigger is confirmed.",
+  "reviewed": "Reviewed",
+  "reviewDue": "Review due",
+  "commodityUnavailable": "Commodity exposure data temporarily unavailable.",
+  "newsPressure": "News-signal pressure on commodities Egypt touches",
+  "newsPressureNote": "Weighted volume of reporting worldwide, not prices and not Egyptian stress.",
+  "loudest": "Loudest",
+  "signals": "signals",
+  "band_Stable": "Stable",
+  "band_Pressured": "Pressured",
+  "band_Strained": "Strained",
+  "band_Fragile": "Fragile",
+  "band_Critical": "Critical",
+  "dim_macro_fx": "Macro & currency",
+  "dim_food_bread": "Food & bread",
+  "dim_energy_grid": "Energy & grid",
+  "dim_external_rev": "Suez & external revenue",
+  "dim_security": "Security & borders",
+  "dim_social": "Social & political",
+  "lvl_calm": "Calm",
+  "lvl_watch": "Watch",
+  "lvl_strained": "Strained",
+  "lvl_acute": "Acute",
+  "lvl_not_sensed": "Not sensed",
+  "lvl_under_sensed": "Under-sensed",
+  "dir_stress": "stress",
+  "dir_relief": "relief",
+  "dir_mooted": "talk"
+ },
+ "ar": {
+  "loadingTitle": "جارٍ تحميل بيانات استقرار مصر",
+  "loadStep1": "قراءة الجنيه ومؤشر EGX30 والاحتياطيات...",
+  "loadStep2": "قراءة إشارات الخبز والقمح والطاقة...",
+  "loadStep3": "قراءة السويس والحدود والأمن...",
+  "loadStep4": "عرض لوحة المعلومات...",
+  "loadingNote": "القراءة المخزنة سريعة؛ أول مسح يستغرق دقيقة أو دقيقتين.",
+  "loadSlow": "يستغرق التحميل وقتًا أطول من المتوقع. قد يكون الخادم في طور التشغيل؛ يرجى الانتظار أو التحديث.",
+  "loadFailed": "تعذّر الوصول إلى الخادم. يرجى التحديث بعد دقيقة.",
+  "warming": "أول مسح قيد التشغيل (دقيقة أو دقيقتان تقريبًا). ستُحمَّل البيانات تلقائيًا.",
+  "backLink": "← الشرق الأوسط",
+  "pageTitle": "🇪🇬 مؤشر استقرار مصر",
+  "pageSubtitle": "دولة مفترق الطرق: الجنيه والخبز والغاز والسويس وأربع حدود نشطة",
+  "themeToggle": "المظهر",
+  "advTitle": "إرشادات السفر الرسمية",
+  "advText": "تتغير مستويات التحذير؛ اقرأها من مصدرها لا من نسخة على هذه الصفحة.",
+  "advEgypt": "تحذير السفر لمصر ←",
+  "advWorldwide": "التحذير العالمي ←",
+  "rhetTitle": "متتبع الخطاب والضغوط في مصر",
+  "rhetSoon": "قيد الإطلاق: ست جبهات (الدفاع عن الخليج، السويس والبحر الأحمر، الخبز والميزانية، السودان والنيل، غزة/سيناء والغاز الإسرائيلي، ليبيا). هذه الصفحة تقرأ الأوضاع؛ والمتتبع سيقرأ ما يقوله الفاعلون.",
+  "rhetPillSoon": "قيد الإطلاق",
+  "rhetLive": "مباشر: ما يقوله الفاعلون المصريون والإقليميون على ست جبهات.",
+  "live": "مباشر",
+  "soWhatLabel": "ما الذي يعنيه ذلك",
+  "stabilityTitle": "مؤشر استقرار مصر",
+  "stabilityLegend": "100 = مستقر · 0 = حرج. الأبعاد غير المرصودة تُستبعد ولا تُحتسب هدوءًا.",
+  "dimsTitle": "ستة جدران حاملة",
+  "pulseTitle": "النبض المالي لمصر",
+  "pulseProse": "الجنيه (عدد الجنيهات مقابل الدولار، فالرقم الأعلى يعني جنيهًا أضعف) ومؤشر EGX30. الخطوط الصغيرة تُظهر الشهر الأخير. السوق الذي لم نتمكن من قراءته يُذكر كذلك؛ لا نملأ أي رقم.",
+  "calTitle": "مواعيد ثابتة",
+  "calSub": "التقويم يضخّم الضغط القائم ولا يصنعه.",
+  "instTitle": "أدوات قياس مستقلة",
+  "instSub": "قراءات من مصادر منفصلة، جنبًا إلى جنب. حين تتفق فذلك تقارب؛ وحين لا تُقرأ إحداها يُذكر ذلك.",
+  "commodityTitle": "التعرض للسلع",
+  "commodityProseDefault": "جارٍ تحميل السلع التي تنتجها مصر أو تستهلكها أو تنقلها...",
+  "anchorTitle": "مراسٍ مؤرخة",
+  "anchorSub": "حقائق خلفية، لكل منها تاريخ صحتها. ليست قراءات مباشرة.",
+  "mapTitle": "مصر: مفترق الطرق",
+  "kbTitle": "مكتبة المعرفة",
+  "kbDisclaimer": "خلفية مجمعة من مصادر مفتوحة. كل بطاقة مؤرخة؛ والأبعاد المباشرة أعلاه هي القراءة الحالية.",
+  "articlesTitle": "ما قرأته أجهزة الرصد",
+  "tabAll": "الكل",
+  "tabEn": "الإنجليزية",
+  "tabAr": "العربية",
+  "loadingArticles": "جارٍ تحميل المقالات...",
+  "noArticles": "لا مقالات في هذه الفئة.",
+  "readArticle": "اقرأ المقال ←",
+  "footDataTitle": "مصادر البيانات",
+  "footDataText": "الأهرام أونلاين، أخبار جوجل (بالإنجليزية والعربية)، GDELT، NewsAPI، ياهو فايننس (الدولار/الجنيه، EGX30)، أسعار الغذاء من برنامج الأغذية العالمي، البنك الدولي، صندوق النقد الدولي، البنك المركزي المصري، هيئة قناة السويس.",
+  "footMethodTitle": "المنهجية",
+  "footMethodText": "ستة أبعاد تُقيَّم من الضغوط والانفراجات المبلّغ عنها وأدوات قياس مستقلة. خبر واحد قد يرفع البعد إلى المراقبة؛ أما \"متوتر\" فيتطلب خبرين أو أكثر. الأبعاد غير المرصودة تُستبعد. الإشارة الاجتماعية ضعيفة الرصد بنيويًا في مصر. التحديث كل 6 ساعات. نص التحليل بالإنجليزية.",
+  "footContactTitle": "تواصل",
+  "footContactText": "للأسئلة أو التصحيحات أو التعاون البحثي:",
+  "footDisclaimerLabel": "إخلاء مسؤولية:",
+  "footDisclaimerText": "أسيفة أناليتكس مشروع مستقل مفتوح المصدر. الدرجات مؤشرات تقارب مبنية على إشارات علنية، وليست تنبؤات ولا تقييمات رسمية. ليست للاستخدام العملياتي.",
+  "footer_bmc_pill": "☕ ادعمنا بفنجان قهوة",
+  "footer_contact_pill": "✉️ تواصل مع أسيفة",
+  "footer_mission_link": "بيان المهمة",
+  "footer_privacy_link": "سياسة الخصوصية",
+  "footer_home_link": "الرئيسية",
+  "footRefreshNote": "يُحدَّث كل 6 ساعات",
+  "footCopy": "جميع الحقوق محفوظة.",
+  "lastScan": "آخر مسح:",
+  "staleNote": "أقدم من 12 ساعة؛ مسح جديد مستحق",
+  "covRead": "قُرئ من",
+  "covEgypt": "مقالًا عن مصر",
+  "covCommentary": "مقالات رأي استُبعدت",
+  "notSensed": "غير مرصود",
+  "notCounted": "غير محتسب",
+  "driver": "المحرك الرئيسي",
+  "trendBuilding": "جارٍ بناء السجل ({n} يوم حتى الآن). يظهر خط الاتجاه بعد يومين.",
+  "trendNote": "الاستقرار عبر آخر {n} يومًا من المسوح.",
+  "cStress": "ضغط",
+  "cRelief": "انفراج",
+  "cMooted": "مجرد حديث",
+  "cOnTopic": "مقالات ذات صلة",
+  "unread": "غير مقروء",
+  "unreadThisCycle": "لم يُقرأ هذه الدورة",
+  "fxName": "الدولار / الجنيه",
+  "egxName": "EGX30",
+  "mktStress": "ضغط السوق",
+  "noMarketMove": "لا تحرك فوق الحد",
+  "asOf": "حتى",
+  "pulseAllRead": "قُرئ كلاهما",
+  "pulsePartial": "قراءة جزئية",
+  "pulseUnread": "غير مقروء",
+  "calImf": "يومًا حتى انتهاء برنامج صندوق النقد في",
+  "calEnergy": "ذروة الطلب على الكهرباء صيفًا (يونيو-سبتمبر): تضخّم ضغط الطاقة القائم",
+  "calRamadan": "نافذة الطلب على الغذاء في رمضان (تواريخ تقريبية): تضخّم ضغط الغذاء القائم",
+  "on": "فعّال",
+  "off": "غير فعّال",
+  "instWfp": "أسعار السلع الأساسية المقيسة (برنامج الأغذية العالمي)",
+  "instWb": "الضغط البنيوي (البنك الدولي)",
+  "instCorr": "ممرات الشحن",
+  "instConv": "سجل التقارب",
+  "band": "النطاق",
+  "dataAsOf": "البيانات حتى",
+  "staple": "السلعة",
+  "month": "الشهر",
+  "wfpNote": "تقارن النطاقات كل سلعة بعامها الماضي. مؤشر تقارب لا تنبؤ.",
+  "severity": "الشدة",
+  "stressors": "الضغوط",
+  "wbNote": "بيانات بنيوية سنوية. علامة التطرف (⚠️) هي الضغط البنيوي، لا أخبار هذا الأسبوع.",
+  "corrNote": "غير مقروء يعني عدم وجود سجل رصد، لا أن الممر مفتوح.",
+  "loading": "جارٍ التحميل...",
+  "noConv": "لا توجد مدخلات تقارب لمصر.",
+  "threshold": "يُفعَّل عند مستوى السلعة",
+  "convNote": "مراقبة قائمة حتى يتأكد المحفز المقترن.",
+  "reviewed": "رُوجع في",
+  "reviewDue": "المراجعة مستحقة",
+  "commodityUnavailable": "بيانات التعرض للسلع غير متاحة مؤقتًا.",
+  "newsPressure": "ضغط الإشارات الإخبارية على سلع تمسّ مصر",
+  "newsPressureNote": "حجم التغطية العالمية الموزون، لا الأسعار ولا الضغط على مصر.",
+  "loudest": "الأعلى صوتًا",
+  "signals": "إشارة",
+  "band_Stable": "مستقر",
+  "band_Pressured": "تحت الضغط",
+  "band_Strained": "متوتر",
+  "band_Fragile": "هش",
+  "band_Critical": "حرج",
+  "dim_macro_fx": "الاقتصاد الكلي والعملة",
+  "dim_food_bread": "الغذاء والخبز",
+  "dim_energy_grid": "الطاقة والشبكة",
+  "dim_external_rev": "السويس والإيرادات الخارجية",
+  "dim_security": "الأمن والحدود",
+  "dim_social": "الوضع الاجتماعي والسياسي",
+  "lvl_calm": "هادئ",
+  "lvl_watch": "مراقبة",
+  "lvl_strained": "متوتر",
+  "lvl_acute": "حاد",
+  "lvl_not_sensed": "غير مرصود",
+  "lvl_under_sensed": "ضعيف الرصد",
+  "dir_stress": "ضغط",
+  "dir_relief": "انفراج",
+  "dir_mooted": "حديث"
+ },
+ "he": {
+  "loadingTitle": "טוען נתוני יציבות מצרים",
+  "loadStep1": "קורא את הלירה המצרית, EGX30 והרזרבות...",
+  "loadStep2": "קורא אותות לחם, חיטה ואנרגיה...",
+  "loadStep3": "קורא את סואץ, הגבולות והביטחון...",
+  "loadStep4": "מציג את הלוח...",
+  "loadingNote": "קריאה מהמטמון מהירה; סריקה ראשונה אורכת דקה-שתיים.",
+  "loadSlow": "הטעינה ארוכה מהצפוי. ייתכן שהשרת מתעורר; המתינו או רעננו.",
+  "loadFailed": "לא ניתן להגיע לשרת. רעננו בעוד דקה.",
+  "warming": "הסריקה הראשונה רצה (כדקה-שתיים). הנתונים ייטענו אוטומטית.",
+  "backLink": "← המזרח התיכון",
+  "pageTitle": "🇪🇬 מדד היציבות של מצרים",
+  "pageSubtitle": "מדינת צומת הדרכים: הלירה, הלחם, הגז, סואץ וארבעה גבולות פעילים",
+  "themeToggle": "ערכת נושא",
+  "advTitle": "הנחיות נסיעה רשמיות",
+  "advText": "רמות האזהרה משתנות; קראו אותן במקור ולא מעותק בעמוד הזה.",
+  "advEgypt": "אזהרת מסע למצרים ←",
+  "advWorldwide": "אזהרה עולמית ←",
+  "rhetTitle": "מעקב רטוריקה ולחצים - מצרים",
+  "rhetSoon": "בפריסה: שש חזיתות (הגנת המפרץ, סואץ והים האדום, לחם ותקציב, סודן והנילוס, עזה/סיני והגז הישראלי, לוב). העמוד הזה קורא תנאים; המעקב יקרא מה השחקנים אומרים.",
+  "rhetPillSoon": "בפריסה",
+  "rhetLive": "חי: מה שחקנים מצריים ואזוריים אומרים, בשש חזיתות.",
+  "live": "חי",
+  "soWhatLabel": "אז מה",
+  "stabilityTitle": "מדד היציבות של מצרים",
+  "stabilityLegend": "100 = יציב · 0 = קריטי. ממדים שלא נקלטו מוחרגים ולא נספרים כשקט.",
+  "dimsTitle": "שישה קירות נושאים",
+  "pulseTitle": "הדופק הפיננסי של מצרים",
+  "pulseProse": "הלירה המצרית (לירות לדולר, כך שמספר גבוה יותר הוא לירה חלשה יותר) ומדד EGX30. הקווים מראים את החודש האחרון. שוק שלא הצלחנו לקרוא מסומן ככזה; איננו ממלאים מספרים.",
+  "calTitle": "תאריכים קשיחים",
+  "calSub": "לוח השנה מגביר לחץ קיים; הוא לא יוצר אותו.",
+  "instTitle": "מכשירי מדידה עצמאיים",
+  "instSub": "קריאות ממקורות נפרדים, זו לצד זו. כשהן מסכימות זו התכנסות; כשאחת לא נקראה, נאמר זאת.",
+  "commodityTitle": "חשיפה לסחורות",
+  "commodityProseDefault": "טוען את הסחורות שמצרים מייצרת, צורכת או מעבירה...",
+  "anchorTitle": "עוגנים מתוארכים",
+  "anchorSub": "עובדות רקע, כל אחת עם התאריך שבו הייתה נכונה. לא קריאות חיות.",
+  "mapTitle": "מצרים: צומת הדרכים",
+  "kbTitle": "ספריית ידע",
+  "kbDisclaimer": "רקע ממקורות גלויים. כל כרטיס מתוארך; הממדים החיים למעלה הם הקריאה הנוכחית.",
+  "articlesTitle": "מה שהחיישנים קראו",
+  "tabAll": "הכול",
+  "tabEn": "אנגלית",
+  "tabAr": "ערבית",
+  "loadingArticles": "טוען כתבות...",
+  "noArticles": "אין כתבות בקטגוריה זו.",
+  "readArticle": "לכתבה ←",
+  "footDataTitle": "מקורות נתונים",
+  "footDataText": "אהראם אונליין, Google News (אנגלית וערבית), GDELT, NewsAPI, Yahoo Finance (דולר/לירה מצרית, EGX30), מחירי מזון של WFP, הבנק העולמי, קרן המטבע, הבנק המרכזי של מצרים, רשות תעלת סואץ.",
+  "footMethodTitle": "מתודולוגיה",
+  "footMethodText": "שישה ממדים המדורגים לפי לחץ והקלה מדווחים ומכשירי מדידה עצמאיים. ידיעה אחת יכולה להעלות ממד למעקב; \"מתוח\" דורש שתיים או יותר. ממדים שלא נקלטו מוחרגים. האות החברתי חסר-קליטה מבנית במצרים. מתעדכן כל 6 שעות. טקסט הניתוח באנגלית.",
+  "footContactTitle": "יצירת קשר",
+  "footContactText": "שאלות, תיקונים או שיתוף פעולה מחקרי:",
+  "footDisclaimerLabel": "הבהרה:",
+  "footDisclaimerText": "Asifah Analytics הוא פרויקט OSINT עצמאי בקוד פתוח. הציונים הם מדדי התכנסות מאותות פומביים, לא תחזיות ולא הערכות רשמיות. לא לשימוש מבצעי.",
+  "footer_bmc_pill": "☕ קנו לי קפה",
+  "footer_contact_pill": "✉️ צרו קשר",
+  "footer_mission_link": "הצהרת משימה",
+  "footer_privacy_link": "מדיניות פרטיות",
+  "footer_home_link": "דף הבית",
+  "footRefreshNote": "מתעדכן כל 6 שעות",
+  "footCopy": "כל הזכויות שמורות.",
+  "lastScan": "סריקה אחרונה:",
+  "staleNote": "ישן מ-12 שעות; נדרשת סריקה חדשה",
+  "covRead": "נקרא מתוך",
+  "covEgypt": "כתבות על מצרים",
+  "covCommentary": "מאמרי דעה הוחרגו",
+  "notSensed": "לא נקלט",
+  "notCounted": "לא נספר",
+  "driver": "המניע העיקרי",
+  "trendBuilding": "בונה היסטוריה ({n} ימים עד כה). קו המגמה יופיע אחרי יומיים.",
+  "trendNote": "יציבות לאורך {n} ימי הסריקה האחרונים.",
+  "cStress": "לחץ",
+  "cRelief": "הקלה",
+  "cMooted": "רק דיבורים",
+  "cOnTopic": "כתבות רלוונטיות",
+  "unread": "לא נקרא",
+  "unreadThisCycle": "לא נקרא במחזור הזה",
+  "fxName": "דולר / לירה מצרית",
+  "egxName": "EGX30",
+  "mktStress": "לחץ שוק",
+  "noMarketMove": "אין תנועה מעל הסף",
+  "asOf": "נכון ל",
+  "pulseAllRead": "שניהם נקראו",
+  "pulsePartial": "נקרא חלקית",
+  "pulseUnread": "לא נקרא",
+  "calImf": "ימים עד סיום תוכנית קרן המטבע ב",
+  "calEnergy": "שיא ביקוש החשמל בקיץ (יוני-ספטמבר): מגביר לחץ אנרגיה קיים",
+  "calRamadan": "חלון ביקוש המזון ברמדאן (תאריכים משוערים): מגביר לחץ מזון קיים",
+  "on": "פעיל",
+  "off": "לא פעיל",
+  "instWfp": "מחירי מזון בסיסי נמדדים (WFP)",
+  "instWb": "לחץ מבני (הבנק העולמי)",
+  "instCorr": "מסדרונות שיט",
+  "instConv": "רשם ההתכנסויות",
+  "band": "רצועה",
+  "dataAsOf": "נתונים נכון ל",
+  "staple": "מוצר",
+  "month": "חודש",
+  "wfpNote": "הרצועות משוות כל מוצר לשנה האחרונה שלו. מדד התכנסות, לא תחזית.",
+  "severity": "חומרה",
+  "stressors": "גורמי לחץ",
+  "wbNote": "נתונים מבניים שנתיים. סימן הקיצון (⚠️) הוא גורם הלחץ המבני, לא חדשות השבוע.",
+  "corrNote": "לא נקרא פירושו שאין רשומת חיישן, לא שהמסדרון פתוח.",
+  "loading": "טוען...",
+  "noConv": "אין רשומות התכנסות למצרים.",
+  "threshold": "מופעל ברמת הסחורה",
+  "convNote": "מעקב קבוע עד שהטריגר המצומד יאושר.",
+  "reviewed": "נבדק",
+  "reviewDue": "נדרשת בדיקה",
+  "commodityUnavailable": "נתוני החשיפה לסחורות אינם זמינים כרגע.",
+  "newsPressure": "לחץ אותות חדשותיים על סחורות הנוגעות למצרים",
+  "newsPressureNote": "נפח הדיווח העולמי המשוקלל, לא מחירים ולא לחץ על מצרים.",
+  "loudest": "הבולט ביותר",
+  "signals": "אותות",
+  "band_Stable": "יציב",
+  "band_Pressured": "תחת לחץ",
+  "band_Strained": "מתוח",
+  "band_Fragile": "שביר",
+  "band_Critical": "קריטי",
+  "dim_macro_fx": "מאקרו ומטבע",
+  "dim_food_bread": "מזון ולחם",
+  "dim_energy_grid": "אנרגיה ורשת",
+  "dim_external_rev": "סואץ והכנסות חוץ",
+  "dim_security": "ביטחון וגבולות",
+  "dim_social": "חברה ופוליטיקה",
+  "lvl_calm": "שקט",
+  "lvl_watch": "מעקב",
+  "lvl_strained": "מתוח",
+  "lvl_acute": "חריף",
+  "lvl_not_sensed": "לא נקלט",
+  "lvl_under_sensed": "חסר-קליטה",
+  "dir_stress": "לחץ",
+  "dir_relief": "הקלה",
+  "dir_mooted": "דיבור"
+ },
+ "fa": {
+  "loadingTitle": "در حال بارگذاری داده‌های ثبات مصر",
+  "loadStep1": "خواندن پوند، شاخص EGX30 و ذخایر...",
+  "loadStep2": "خواندن سیگنال‌های نان، گندم و انرژی...",
+  "loadStep3": "خواندن سوئز، مرزها و امنیت...",
+  "loadStep4": "نمایش داشبورد...",
+  "loadingNote": "خواندن از حافظه سریع است؛ نخستین اسکن یک تا دو دقیقه طول می‌کشد.",
+  "loadSlow": "بارگذاری بیش از حد انتظار طول کشیده است. ممکن است سرور در حال راه‌اندازی باشد؛ صبر کنید یا صفحه را تازه کنید.",
+  "loadFailed": "دسترسی به سرور ممکن نشد. یک دقیقه دیگر صفحه را تازه کنید.",
+  "warming": "نخستین اسکن در حال اجراست (حدود یک تا دو دقیقه). داده‌ها خودکار بارگذاری می‌شوند.",
+  "backLink": "← خاورمیانه",
+  "pageTitle": "🇪🇬 شاخص ثبات مصر",
+  "pageSubtitle": "کشور چهارراه: پوند، نان، گاز، سوئز و چهار مرز فعال",
+  "themeToggle": "پوسته",
+  "advTitle": "راهنمای رسمی سفر",
+  "advText": "سطوح هشدار تغییر می‌کنند؛ آن‌ها را از منبع بخوانید، نه از نسخه‌ای در این صفحه.",
+  "advEgypt": "هشدار سفر مصر ←",
+  "advWorldwide": "هشدار جهانی ←",
+  "rhetTitle": "ردیاب گفتمان و فشار مصر",
+  "rhetSoon": "در حال راه‌اندازی: شش جبهه (دفاع از خلیج، سوئز و دریای سرخ، نان و بودجه، سودان و نیل، غزه/سینا و گاز اسرائیل، لیبی). این صفحه شرایط را می‌خواند؛ ردیاب آنچه بازیگران می‌گویند را.",
+  "rhetPillSoon": "در حال راه‌اندازی",
+  "rhetLive": "زنده: آنچه بازیگران مصری و منطقه‌ای در شش جبهه می‌گویند.",
+  "live": "زنده",
+  "soWhatLabel": "یعنی چه",
+  "stabilityTitle": "شاخص ثبات مصر",
+  "stabilityLegend": "۱۰۰ = باثبات · ۰ = بحرانی. ابعاد رصدنشده کنار گذاشته می‌شوند و آرام شمرده نمی‌شوند.",
+  "dimsTitle": "شش دیوار باربر",
+  "pulseTitle": "نبض مالی مصر",
+  "pulseProse": "پوند (پوند در برابر دلار، پس عدد بالاتر یعنی پوند ضعیف‌تر) و شاخص EGX30. خطوط کوچک یک ماه اخیر را نشان می‌دهند. بازاری که نتوانستیم بخوانیم همین را می‌گوید؛ هیچ عددی را پر نمی‌کنیم.",
+  "calTitle": "تاریخ‌های قطعی",
+  "calSub": "تقویم فشار موجود را تشدید می‌کند؛ آن را نمی‌سازد.",
+  "instTitle": "ابزارهای سنجش مستقل",
+  "instSub": "خوانش‌هایی از منابع جداگانه، کنار هم. وقتی هم‌سو باشند همگرایی است؛ وقتی یکی خوانده نشود، گفته می‌شود.",
+  "commodityTitle": "مواجهه با کالاها",
+  "commodityProseDefault": "در حال بارگذاری کالاهایی که مصر تولید، مصرف یا ترانزیت می‌کند...",
+  "anchorTitle": "لنگرهای تاریخ‌دار",
+  "anchorSub": "واقعیت‌های پس‌زمینه، هر کدام با تاریخی که درست بود. خوانش زنده نیستند.",
+  "mapTitle": "مصر: چهارراه",
+  "kbTitle": "کتابخانه دانش",
+  "kbDisclaimer": "پس‌زمینه از منابع باز. هر کارت تاریخ دارد؛ ابعاد زنده بالا خوانش فعلی‌اند.",
+  "articlesTitle": "آنچه حسگرها خواندند",
+  "tabAll": "همه",
+  "tabEn": "انگلیسی",
+  "tabAr": "عربی",
+  "loadingArticles": "در حال بارگذاری مقالات...",
+  "noArticles": "مقاله‌ای در این دسته نیست.",
+  "readArticle": "خواندن مقاله ←",
+  "footDataTitle": "منابع داده",
+  "footDataText": "اهرام آنلاین، اخبار گوگل (انگلیسی و عربی)، GDELT، NewsAPI، یاهو فایننس (دلار/پوند، EGX30)، قیمت غذای WFP، بانک جهانی، صندوق بین‌المللی پول، بانک مرکزی مصر، سازمان کانال سوئز.",
+  "footMethodTitle": "روش‌شناسی",
+  "footMethodText": "شش بُعد بر اساس فشار و گشایش گزارش‌شده و ابزارهای سنجش مستقل امتیاز می‌گیرند. یک خبر می‌تواند بُعدی را به «زیر نظر» برساند؛ «تحت تنش» دو خبر یا بیشتر می‌خواهد. ابعاد رصدنشده کنار گذاشته می‌شوند. سیگنال اجتماعی در مصر ساختاراً کم‌رصد است. به‌روزرسانی هر ۶ ساعت. متن تحلیل انگلیسی است.",
+  "footContactTitle": "تماس",
+  "footContactText": "پرسش، اصلاحیه یا همکاری پژوهشی:",
+  "footDisclaimerLabel": "سلب مسئولیت:",
+  "footDisclaimerText": "آسیفه آنالیتیکس پروژه‌ای مستقل و متن‌باز است. امتیازها شاخص‌های همگرایی از سیگنال‌های عمومی‌اند، نه پیش‌بینی و نه ارزیابی رسمی. برای استفاده عملیاتی نیست.",
+  "footer_bmc_pill": "☕ برایم قهوه بخرید",
+  "footer_contact_pill": "✉️ تماس با آسیفه",
+  "footer_mission_link": "بیانیه مأموریت",
+  "footer_privacy_link": "سیاست حریم خصوصی",
+  "footer_home_link": "خانه",
+  "footRefreshNote": "به‌روزرسانی هر ۶ ساعت",
+  "footCopy": "همه حقوق محفوظ است.",
+  "lastScan": "آخرین اسکن:",
+  "staleNote": "قدیمی‌تر از ۱۲ ساعت؛ اسکن تازه لازم است",
+  "covRead": "خوانده‌شده از",
+  "covEgypt": "مقاله درباره مصر",
+  "covCommentary": "یادداشت نظر کنار گذاشته شد",
+  "notSensed": "رصد نشده",
+  "notCounted": "شمرده نشده",
+  "driver": "محرک اصلی",
+  "trendBuilding": "در حال ساخت سابقه ({n} روز تاکنون). خط روند پس از دو روز ظاهر می‌شود.",
+  "trendNote": "ثبات در {n} روز اخیر اسکن‌ها.",
+  "cStress": "فشار",
+  "cRelief": "گشایش",
+  "cMooted": "فقط حرف",
+  "cOnTopic": "مقاله مرتبط",
+  "unread": "خوانده نشده",
+  "unreadThisCycle": "در این دوره خوانده نشد",
+  "fxName": "دلار / پوند",
+  "egxName": "EGX30",
+  "mktStress": "فشار بازار",
+  "noMarketMove": "حرکتی بالاتر از آستانه نیست",
+  "asOf": "تا",
+  "pulseAllRead": "هر دو خوانده شد",
+  "pulsePartial": "خوانش ناقص",
+  "pulseUnread": "خوانده نشد",
+  "calImf": "روز تا پایان برنامه صندوق بین‌المللی پول در",
+  "calEnergy": "اوج تقاضای برق تابستان (ژوئن-سپتامبر): فشار انرژی موجود را تشدید می‌کند",
+  "calRamadan": "بازه تقاضای غذا در رمضان (تاریخ‌ها تقریبی): فشار غذایی موجود را تشدید می‌کند",
+  "on": "فعال",
+  "off": "غیرفعال",
+  "instWfp": "قیمت سنجیده اقلام اساسی (WFP)",
+  "instWb": "فشار ساختاری (بانک جهانی)",
+  "instCorr": "گذرگاه‌های کشتیرانی",
+  "instConv": "دفتر همگرایی",
+  "band": "باند",
+  "dataAsOf": "داده تا",
+  "staple": "قلم",
+  "month": "ماه",
+  "wfpNote": "باندها هر قلم را با یک سال گذشته خودش مقایسه می‌کنند. شاخص همگرایی، نه پیش‌بینی.",
+  "severity": "شدت",
+  "stressors": "عوامل فشار",
+  "wbNote": "داده‌های ساختاری سالانه. نشان افراطی (⚠️) عامل فشار ساختاری است، نه خبر این هفته.",
+  "corrNote": "خوانده نشده یعنی رکورد حسگری نیست، نه اینکه گذرگاه باز است.",
+  "loading": "در حال بارگذاری...",
+  "noConv": "مدخل همگرایی برای مصر نیست.",
+  "threshold": "در سطح کالا فعال می‌شود",
+  "convNote": "دیده‌بانی دائمی تا تأیید ماشه جفت‌شده.",
+  "reviewed": "بازبینی",
+  "reviewDue": "بازبینی لازم است",
+  "commodityUnavailable": "داده‌های مواجهه با کالا موقتاً در دسترس نیست.",
+  "newsPressure": "فشار سیگنال‌های خبری بر کالاهای مرتبط با مصر",
+  "newsPressureNote": "حجم وزن‌دار پوشش خبری جهانی، نه قیمت و نه فشار بر مصر.",
+  "loudest": "پرصداترین",
+  "signals": "سیگنال",
+  "band_Stable": "باثبات",
+  "band_Pressured": "زیر فشار",
+  "band_Strained": "تحت تنش",
+  "band_Fragile": "شکننده",
+  "band_Critical": "بحرانی",
+  "dim_macro_fx": "کلان و ارز",
+  "dim_food_bread": "غذا و نان",
+  "dim_energy_grid": "انرژی و شبکه",
+  "dim_external_rev": "سوئز و درآمد خارجی",
+  "dim_security": "امنیت و مرزها",
+  "dim_social": "اجتماعی و سیاسی",
+  "lvl_calm": "آرام",
+  "lvl_watch": "زیر نظر",
+  "lvl_strained": "تحت تنش",
+  "lvl_acute": "حاد",
+  "lvl_not_sensed": "رصد نشده",
+  "lvl_under_sensed": "کم‌رصد",
+  "dir_stress": "فشار",
+  "dir_relief": "گشایش",
+  "dir_mooted": "حرف"
+ }
+};
+
+        function t(key) { return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key; }
+        function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function fmtDate(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (isNaN(d)) return String(iso).slice(0, 16);
+            return d.toLocaleString(currentLang === 'en' ? 'en-US' : currentLang, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+        }
+        function fmtDay(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (isNaN(d)) return String(iso).slice(0, 10);
+            return d.toLocaleDateString(currentLang === 'en' ? 'en-US' : currentLang, { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // ===== THEME =====
         function initTheme() {
-            const saved = localStorage.getItem('asifah-theme') || 'light';
+            let saved = 'dark';
+            try { saved = localStorage.getItem('asifah-theme') || 'dark'; } catch (e) {}
             document.documentElement.setAttribute('data-theme', saved);
         }
         function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
+            const cur = document.documentElement.getAttribute('data-theme');
+            const next = cur === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('asifah-theme', next);
+            try { localStorage.setItem('asifah-theme', next); } catch (e) {}
         }
         initTheme();
 
-        function toggleKnowledgeCard(cardId) {
-            const card = document.getElementById('card-' + cardId);
-            if (card) card.classList.toggle('collapsed');
-        }
-
-        // Load articles
-        async function loadArticles() {
-            try {
-                const response = await fetch(BACKEND_URL + '/api/threat/egypt?days=7');
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                const data = await response.json();
-                const articles = data.top_scoring_articles || data.articles || data.recent_headlines || [];
-                if (articles.length > 0) {
-                    displayArticles(articles);
-                } else {
-                    displayFallback();
+        // ===== LOADING =====
+        let loadingStepIndex = 0, loadingInterval = null, loadingTimeout = null;
+        function startLoadingProgress() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            loadingInterval = setInterval(() => {
+                if (loadingStepIndex < steps.length - 1) {
+                    const cur = document.getElementById(steps[loadingStepIndex]);
+                    if (cur) { cur.classList.remove('active'); cur.classList.add('complete'); cur.querySelector('.step-icon').textContent = '✓'; }
+                    loadingStepIndex++;
+                    const nxt = document.getElementById(steps[loadingStepIndex]);
+                    if (nxt) nxt.classList.add('active');
                 }
-            } catch (error) {
-                console.warn('Article load failed:', error.message);
-                displayFallback();
-            }
+            }, 2500);
+            loadingTimeout = setTimeout(() => {
+                const el = document.getElementById('loadingError');
+                el.textContent = t('loadSlow');
+                el.style.display = 'block';
+            }, 60000);
+        }
+        function hideLoadingOverlay() {
+            if (loadingInterval) clearInterval(loadingInterval);
+            if (loadingTimeout) clearTimeout(loadingTimeout);
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.classList.add('hidden');
         }
 
-        function displayArticles(articles) {
-            const container = document.getElementById('articlesContainer');
-            container.innerHTML = articles.slice(0, 20).map(a => {
-                const title = a.title || a.article_title || 'Untitled';
-                const source = a.source || a.source_name || '';
-                const published = a.published || a.publishedAt || '';
-                const url = a.url || '#';
-                let dateStr = 'Recent';
-                if (published) { try { dateStr = new Date(published).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch(e) {} }
-                return '<div class="article-item">' +
-                    '<div class="article-title">' + title + '</div>' +
-                    '<div class="article-meta">' + source + ' &bull; ' + dateStr + '</div>' +
-                    (url !== '#' ? '<a href="' + url + '" target="_blank" class="article-link">Read article &rarr;</a>' : '') +
-                    '</div>';
+        // ===== MAIN LOAD =====
+        async function loadEgyptData() {
+            let data = null;
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/egypt/stability`);
+                data = await r.json();
+            } catch (e) {
+                hideLoadingOverlay();
+                showWarming(t('loadFailed'));
+                return;
+            }
+            if (!data || data.warming || !data.dimensions) {
+                hideLoadingOverlay();
+                showWarming(t('warming'));
+                if (warmPolls < 8) { warmPolls++; setTimeout(loadEgyptData, 30000); }
+                return;
+            }
+            document.getElementById('warmingBox').style.display = 'none';
+            lastData = data;
+            renderAll(data);
+            hideLoadingOverlay();
+            if (!window._egMapInit) { window._egMapInit = true; initEgyptMap(); }
+            loadTrends();
+        }
+
+        function showWarming(msg) {
+            const box = document.getElementById('warmingBox');
+            box.style.display = 'block';
+            box.textContent = msg;
+        }
+
+        function renderAll(data) {
+            document.getElementById('content').style.display = 'block';
+            const stale = data.stale ? ' · ' + t('staleNote') : '';
+            document.getElementById('lastUpdated').textContent = t('lastScan') + ' ' + fmtDate(data.scanned_at) + stale;
+            renderSoWhat(data);
+            renderStability(data.stability || {});
+            renderDimensions(data.dimensions || {});
+            renderPulse(data.markets || {});
+            renderCalendar(data.calendar || {});
+            renderInstruments(data.instruments || {});
+            renderAnchors(data);
+            renderTabbedArticles(data.articles || []);
+        }
+
+        // ===== SO WHAT =====
+        function renderSoWhat(data) {
+            const sw = data.so_what || {};
+            document.getElementById('soWhatHead').textContent = sw.headline || '—';
+            document.getElementById('soWhatLines').innerHTML = (sw.lines || []).map(l => `<li>${esc(l)}</li>`).join('');
+            const c = data.coverage || {}, s = c.sources || {};
+            const lang = c.by_language || {};
+            const rss = s.rss || {}, gd = s.gdelt || {}, na = s.newsapi || {};
+            const bits = [
+                `${t('covRead')} ${c.articles_egypt || 0} ${t('covEgypt')} (EN ${lang.en || 0} · AR ${lang.ar || 0})`,
+                `RSS ${rss.feeds_ok || 0}/${rss.feeds || 0}`,
+                `GDELT ${gd.sensed || 0}/${gd.queries || 0}`,
+                `NewsAPI ${na.sensed || 0}/${na.queries || 0}`,
+            ];
+            if (c.skipped_commentary) bits.push(`${c.skipped_commentary} ${t('covCommentary')}`);
+            document.getElementById('coverageLine').textContent = bits.join(' · ');
+        }
+
+        // ===== STABILITY =====
+        const BAND_CLASS = { Stable: 'green', Pressured: 'yellow', Strained: 'orange', Fragile: 'red', Critical: 'red' };
+        function renderStability(st) {
+            const scoreEl = document.getElementById('stabilityScore');
+            const labelEl = document.getElementById('stabilityLabel');
+            const cls = BAND_CLASS[st.label] || '';
+            scoreEl.className = 'stability-score ' + cls;
+            labelEl.className = 'stability-label ' + cls;
+            if (st.score == null) {
+                scoreEl.textContent = '—';
+                labelEl.textContent = t('notSensed');
+                document.getElementById('stabilityFill').style.width = '0%';
+            } else {
+                scoreEl.textContent = st.score;
+                labelEl.textContent = t('band_' + st.label) || st.label;
+                document.getElementById('stabilityFill').style.width = st.score + '%';
+            }
+            const chips = [];
+            (st.excluded || []).forEach(id => chips.push(`<span class="score-component neutral">${esc(t('notCounted'))}: ${esc(t('dim_' + id))}</span>`));
+            if (st.driver) chips.push(`<span class="score-component negative">${esc(t('driver'))}: ${esc(t('dim_' + st.driver))}</span>`);
+            document.getElementById('excludedChips').innerHTML = chips.join('');
+        }
+
+        async function loadTrends() {
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/egypt/stability/trends?days=60`);
+                const j = await r.json();
+                const pts = (j.points || []).map((p, i) => ({ d: j.dates[i], v: p.stability }));
+                const note = document.getElementById('trendNote');
+                if (pts.length < 2) { note.textContent = t('trendBuilding').replace('{n}', pts.length); return; }
+                note.textContent = t('trendNote').replace('{n}', pts.length);
+                if (typeof Chart === 'undefined') return;
+                const ctx = document.getElementById('trendChart');
+                if (trendChart) trendChart.destroy();
+                trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: pts.map(p => p.d), datasets: [{ data: pts.map(p => p.v), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.12)', fill: true, tension: 0.3, pointRadius: 2, spanGaps: false }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
+                });
+            } catch (e) { /* trend is optional */ }
+        }
+
+        // ===== DIMENSIONS =====
+        const DIM_ORDER = ['macro_fx', 'food_bread', 'energy_grid', 'external_rev', 'security', 'social'];
+        function renderDimensions(dims) {
+            const grid = document.getElementById('dimGrid');
+            grid.innerHTML = DIM_ORDER.filter(k => dims[k]).map(k => {
+                const d = dims[k];
+                const color = d.color || '#6b7280';
+                const sensed = d.sensed && d.score != null;
+                const levelTxt = t('lvl_' + d.level) || d.level;
+                const counts = sensed
+                    ? `${d.stress_count} ${t('cStress')} · ${d.relief_count} ${t('cRelief')} · ${d.mooted_count} ${t('cMooted')} · ${d.topic_articles} ${t('cOnTopic')}`
+                    : `${d.topic_articles} ${t('cOnTopic')}`;
+                const insts = (d.instruments || []).map(i =>
+                    `<span class="eg-chip ${i.sensed ? '' : 'grey'}">${esc(i.label)}: ${esc(i.note || (i.sensed ? '' : t('unread')))}</span>`).join('');
+                const ev = (d.evidence || []).slice(0, 4).map(e =>
+                    `<div class="eg-ev"><span class="eg-dir ${esc(e.direction)}">${esc(t('dir_' + e.direction))}</span>` +
+                    (e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>` : esc(e.title)) +
+                    ` <span style="color:var(--text-muted);font-size:10px;">${esc(e.source || '')}</span></div>`).join('');
+                const cal = d.calendar_note ? `<span class="eg-chip warn">⏱ ${esc(d.calendar_note)}</span>` : '';
+                const note = d.note ? `<div class="eg-dim-note">${esc(d.note)}</div>` : '';
+                return `<div class="eg-dim" style="border-left:4px solid ${color};">
+                    <div class="eg-dim-head">
+                        <span class="eg-dim-icon">${d.icon || ''}</span>
+                        <span class="eg-dim-name">${esc(t('dim_' + k))}</span>
+                        <span class="eg-pill" style="background:${color};color:#fff;">${esc(levelTxt)}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="eg-dim-score" style="color:${color};">${sensed ? d.score : '—'}</span>
+                        <div class="eg-dim-bar" style="flex:1;"><div class="eg-dim-fill" style="width:${sensed ? d.score : 0}%;background:${color};"></div></div>
+                    </div>
+                    <div class="eg-dim-counts">${counts}</div>
+                    ${note}
+                    ${insts || cal ? `<div>${insts}${cal}</div>` : ''}
+                    ${ev}
+                </div>`;
             }).join('');
         }
 
-        function displayFallback() {
-            const container = document.getElementById('articlesContainer');
-            container.innerHTML = 
-                '<div style="text-align:center; padding:30px; color:var(--text-secondary);">' +
-                '<p style="font-size:16px; margin-bottom:15px;">&#x1F4E1; Live article feed loading...</p>' +
-                '<p style="font-size:13px; margin-bottom:20px;">Check these curated OSINT sources:</p>' +
-                '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:15px;">' +
-                '<a href="https://www.aljazeera.com/tag/egypt/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">Al Jazeera - Egypt</a>' +
-                '<a href="https://www.reuters.com/world/middle-east/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">Reuters - Middle East</a>' +
-                '<a href="https://english.ahram.org.eg/" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">Ahram Online</a>' +
-                '<a href="https://www.acleddata.com/dashboard/#/dashboard" target="_blank" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">ACLED Dashboard</a>' +
-                "'</div>' +" +
-                "'</div>';";
+        // ===== FINANCIAL PULSE =====
+        function sparkSvg(arr) {
+            const vals = (arr || []).map(p => p.value).filter(v => typeof v === 'number');
+            if (vals.length < 2) return '';
+            const mn = Math.min(...vals), mx = Math.max(...vals), rg = (mx - mn) || 1;
+            const pts = vals.map((v, i) => `${(i / (vals.length - 1) * 100).toFixed(1)},${(100 - (v - mn) / rg * 100).toFixed(1)}`).join(' ');
+            const up = vals[vals.length - 1] >= vals[0];
+            return `<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:32px;"><polyline fill="none" stroke="${up ? '#38bdf8' : '#ef4444'}" stroke-width="2" points="${pts}"/></svg>`;
+        }
+        function renderPulse(m) {
+            const tiles = [];
+            const fx = m.fx || {}, egx = m.egx30 || {};
+            // USD/EGP: higher = WEAKER pound, so "up" is stress.
+            tiles.push(pulseTile(t('fxName'), 'EGP=X', fx, true));
+            tiles.push(pulseTile(t('egxName'), '^CASE30', egx, false));
+            const s = m.stress;
+            tiles.push(`<div class="financial-pulse-tile ${s == null ? '' : (s >= 50 ? 'tile-stress' : s >= 25 ? 'tile-warning' : 'tile-stable')}">
+                <div class="financial-pulse-tile-header"><span class="financial-pulse-tile-name">${esc(t('mktStress'))}</span></div>
+                <div class="financial-pulse-tile-value">${s == null ? '—' : s + '/100'}</div>
+                <div class="financial-pulse-tile-meta"><span>${esc((m.notes || []).join('; ') || t('noMarketMove'))}</span></div>
+            </div>`);
+            document.getElementById('pulseGrid').innerHTML = tiles.join('');
+            const pill = document.getElementById('pulseStatus');
+            const sensed = [fx, egx].filter(x => x.sensed).length;
+            pill.textContent = sensed === 2 ? t('pulseAllRead') : sensed === 1 ? t('pulsePartial') : t('pulseUnread');
+            pill.className = 'financial-pulse-status-pill ' + (sensed === 2 ? 'market-open' : sensed === 1 ? 'market-partial' : 'market-closed');
+        }
+        function pulseTile(name, ticker, d, upIsBad) {
+            if (!d.sensed) {
+                return `<div class="financial-pulse-tile">
+                    <div class="financial-pulse-tile-header"><span class="financial-pulse-tile-name">${esc(name)}</span><span class="financial-pulse-tile-ticker">${esc(ticker)}</span></div>
+                    <div class="financial-pulse-tile-value">—</div>
+                    <div class="financial-pulse-empty-state">${esc(t('unreadThisCycle'))} (${esc(d.reason || '')})</div></div>`;
+            }
+            const c30 = d.change_30d_pct;
+            const bad = c30 != null && (upIsBad ? c30 >= 3 : c30 <= -4);
+            const good = c30 != null && (upIsBad ? c30 <= -1 : c30 >= 2);
+            const cls = bad ? 'tile-stress' : good ? 'tile-rally' : 'tile-stable';
+            const chCls = c30 == null ? 'flat' : (c30 > 0 ? 'up' : c30 < 0 ? 'down' : 'flat');
+            const val = Number(d.value).toLocaleString('en-US', { maximumFractionDigits: upIsBad ? 2 : 0 });
+            return `<div class="financial-pulse-tile ${cls}">
+                <div class="financial-pulse-tile-header"><span class="financial-pulse-tile-name">${esc(name)}</span><span class="financial-pulse-tile-ticker">${esc(ticker)}</span></div>
+                <div class="financial-pulse-tile-value">${val}</div>
+                <div class="financial-pulse-tile-change ${chCls}">${c30 == null ? '' : (c30 > 0 ? '+' : '') + c30 + '% (30d)'}</div>
+                <div class="financial-pulse-tile-spark">${sparkSvg(d.sparkline)}</div>
+                <div class="financial-pulse-tile-meta"><span>${esc(t('asOf'))} ${esc(d.as_of || '')}</span><span>${esc(d.source || '')}</span></div>
+            </div>`;
         }
 
-        function switchLanguage(lang, button) {
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            if (lang === 'he' || lang === 'ar' || lang === 'fa') {
-                document.documentElement.setAttribute('dir', 'rtl');
+        // ===== CALENDAR =====
+        function renderCalendar(cal) {
+            const items = [];
+            if (cal.imf_eff_expiry) {
+                items.push(`<div class="eg-cal-item"><div class="eg-cal-days">${cal.days_to_imf_expiry}</div>
+                    <div class="eg-cal-label">${esc(t('calImf'))} <strong>${esc(fmtDay(cal.imf_eff_expiry + 'T12:00:00Z'))}</strong></div></div>`);
+            }
+            items.push(`<div class="eg-cal-item"><div class="eg-cal-days" style="font-size:18px;">${cal.energy_peak ? '☀️ ' + esc(t('on')) : esc(t('off'))}</div>
+                <div class="eg-cal-label">${esc(t('calEnergy'))}</div></div>`);
+            items.push(`<div class="eg-cal-item"><div class="eg-cal-days" style="font-size:18px;">${cal.ramadan ? '🌙 ' + esc(t('on')) : esc(t('off'))}</div>
+                <div class="eg-cal-label">${esc(t('calRamadan'))}</div></div>`);
+            document.getElementById('calStrip').innerHTML = items.join('');
+        }
+
+        // ===== INSTRUMENTS =====
+        function renderInstruments(inst) {
+            const out = [];
+            const fp = inst.food_pulse || {};
+            if (fp.sensed) {
+                const rows = Object.entries(fp.staples || {}).map(([k, v]) =>
+                    `<tr><td>${esc(k)}</td><td>${esc(v.band || '')}</td><td class="num">${v.yoy_pct == null ? '—' : (v.yoy_pct > 0 ? '+' : '') + v.yoy_pct + '%'}</td><td class="num">${esc(v.latest_month || '')}</td></tr>`).join('');
+                out.push(`<div class="eg-inst"><div class="eg-inst-title">🌾 ${esc(t('instWfp'))}</div>
+                    ${esc(t('band'))}: <strong>${esc(fp.band)}</strong> · ${esc(t('dataAsOf'))} ${esc(fp.data_as_of || '')}
+                    <table><tr><td><em>${esc(t('staple'))}</em></td><td><em>${esc(t('band'))}</em></td><td class="num"><em>y/y</em></td><td class="num"><em>${esc(t('month'))}</em></td></tr>${rows}</table>
+                    <div class="eg-meta-line">${esc(t('wfpNote'))}</div></div>`);
             } else {
-                document.documentElement.setAttribute('dir', 'ltr');
+                out.push(`<div class="eg-inst"><div class="eg-inst-title">🌾 ${esc(t('instWfp'))}</div>${esc(t('unread'))}: ${esc(fp.reason || '')}</div>`);
+            }
+            const sr = inst.structural || {};
+            if (sr.sensed) {
+                const ind = sr.indicators || {};
+                const rows = Object.entries(ind).map(([k, v]) =>
+                    `<tr><td>${esc(k.replace(/_/g, ' '))}${(sr.extreme || []).includes(k) ? ' ⚠️' : ''}</td><td class="num">${esc(v.value)}${esc(v.unit === '%' ? '%' : ' ' + (v.unit || ''))}</td><td class="num">${esc(v.year || '')}</td></tr>`).join('');
+                out.push(`<div class="eg-inst"><div class="eg-inst-title">🏦 ${esc(t('instWb'))}</div>
+                    ${esc(t('severity'))}: <strong>${sr.stress_severity}/3</strong> · ${esc(t('stressors'))}: ${esc((sr.stressed || []).join(', ') || '—')}
+                    ${rows ? `<table>${rows}</table>` : ''}
+                    <div class="eg-meta-line">${esc(t('wbNote'))}</div></div>`);
+            } else {
+                out.push(`<div class="eg-inst"><div class="eg-inst-title">🏦 ${esc(t('instWb'))}</div>${esc(t('unread'))}: ${esc(sr.reason || '')}</div>`);
+            }
+            const cors = inst.corridors || [];
+            out.push(`<div class="eg-inst"><div class="eg-inst-title">🚢 ${esc(t('instCorr'))}</div>` +
+                cors.map(c => `<div>${esc(c.label)}: <strong>${esc(c.sensed ? c.state.toUpperCase() : t('unread'))}</strong></div>`).join('') +
+                `<div class="eg-meta-line">${esc(t('corrNote'))}</div></div>`);
+            out.push(`<div class="eg-inst" id="convInst"><div class="eg-inst-title">🕸️ ${esc(t('instConv'))}</div>${esc(t('loading'))}</div>`);
+            document.getElementById('instGrid').innerHTML = out.join('');
+            loadConvergence();
+        }
+
+        async function loadConvergence() {
+            const el = document.getElementById('convInst');
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/convergence/by-country/egypt`);
+                const j = await r.json();
+                const m = (j.matches || []);
+                if (!m.length) { el.innerHTML = `<div class="eg-inst-title">🕸️ ${esc(t('instConv'))}</div>${esc(t('noConv'))}`; return; }
+                el.innerHTML = `<div class="eg-inst-title">🕸️ ${esc(t('instConv'))}</div>` + m.map(c =>
+                    `<div style="margin-bottom:6px;"><strong>${esc(c.icon || '')} ${esc(c.id)}</strong> · ${esc(t('threshold'))}: ${esc(c.commodity_threshold || '')}<br>
+                     <span style="font-size:11.5px;">${esc((c.facts || {}).failure_mode || '')}</span><br>
+                     <span class="eg-chip grey">${esc((c.data_completeness || '').split('--')[0].trim())}</span></div>`).join('') +
+                    `<div class="eg-meta-line">${esc(t('convNote'))}</div>`;
+            } catch (e) {
+                el.innerHTML = `<div class="eg-inst-title">🕸️ ${esc(t('instConv'))}</div>${esc(t('unread'))}`;
             }
         }
 
+        // ===== ANCHORS + LEADERSHIP =====
+        function renderAnchors(data) {
+            const lead = (data.leadership || []).map(p => `<div class="leadership-badge">
+                <span class="badge-flag">${p.icon || '🇪🇬'}</span>
+                <div class="badge-info"><div class="badge-name">${esc(p.name)}</div><div class="badge-title">${esc(p.title)}</div></div>
+                <span class="badge-status" style="background:rgba(56,189,248,0.15);color:#38bdf8;">${esc(p.status)}</span></div>`).join('');
+            document.getElementById('leaderGrid').innerHTML = lead +
+                `<div class="eg-meta-line">${esc(t('reviewed'))} ${esc(data.leadership_reviewed || '')}</div>`;
+            const due = data.static_review_due ? ` <span class="eg-chip warn">${esc(t('reviewDue'))}</span>` : '';
+            document.getElementById('anchorSub').innerHTML = esc(t('anchorSub')) + ` (${esc(t('reviewed'))} ${esc(data.static_reviewed || '')})` + due;
+            document.getElementById('anchorList').innerHTML = (data.static_anchors || []).map(a => `<div class="eg-anchor">
+                <strong>${esc(a.label)}</strong> <span class="eg-chip grey">${esc(t('dim_' + a.dimension))}</span><br>${esc(a.value)}
+                <div class="src">${esc(t('asOf'))} ${esc(a.as_of)} · ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.source)}</a>` : esc(a.source)}</div></div>`).join('');
+        }
+
+        // ===== COMMODITY CARD (honest label: news-signal pressure, not Egyptian stress) =====
+        async function updateEgyptCommodityCard() {
+            const proseEl = document.getElementById('commodityProse');
+            let data;
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/commodity-pressure/egypt`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                data = await r.json();
+            } catch (e) {
+                proseEl.textContent = t('commodityUnavailable');
+                return;
+            }
+            proseEl.textContent = data.prose || '';
+            const lvl = (data.alert_level || 'normal').toLowerCase();
+            const banner = document.getElementById('commodityAlertBanner');
+            const sums = data.commodity_summaries || [];
+            const loud = sums.slice().sort((a, b) => (b.signal_count || 0) - (a.signal_count || 0))[0];
+            banner.className = `commodity-alert-banner alert-${lvl} show`;
+            banner.innerHTML = `<strong>${esc(t('newsPressure'))}: ${esc(lvl.toUpperCase())}</strong>
+                <span class="ab-meta">${esc(t('newsPressureNote'))}${loud ? ' ' + esc(t('loudest')) + ': ' + esc(loud.name || loud.commodity) + ' (' + (loud.signal_count || 0) + ')' : ''}</span>`;
+            const grid = document.getElementById('commodityGrid');
+            grid.innerHTML = '';
+            sums.forEach(c => {
+                const ga = (c.global_alert_level || 'normal').toLowerCase();
+                const a = document.createElement('a');
+                a.className = 'commodity-pill';
+                a.href = `commodities.html#${encodeURIComponent(c.commodity)}`;
+                a.innerHTML = `<div class="commodity-pill-header"><div class="commodity-pill-icon">${c.icon || '📊'}</div>
+                    <div style="flex:1;"><div class="commodity-pill-name">${esc(c.name || c.commodity)}</div></div></div>
+                    <div class="commodity-pill-row"><span class="commodity-pill-alert commodity-alert-${esc(ga)}">${esc(ga)}</span>
+                    <span class="commodity-pill-role-badge">${esc(c.role || '')}</span>
+                    ${c.signal_count ? `<span class="commodity-pill-signal-count">${c.signal_count} ${esc(t('signals'))}</span>` : ''}</div>
+                    ${c.note ? `<div class="commodity-pill-note">${esc(c.note.slice(0, 170))}${c.note.length > 170 ? '…' : ''}</div>` : ''}`;
+                grid.appendChild(a);
+            });
+        }
+
+        // ===== RHETORIC BANNER =====
+        async function checkRhetoric() {
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/rhetoric/egypt`);
+                if (!r.ok) return;
+                const j = await r.json();
+                if (!j || j.success === false) return;
+                const pill = document.getElementById('rhetPill');
+                pill.textContent = 'L' + (j.theatre_level ?? j.theatre_escalation_level ?? '?') + ' · ' + t('live');
+                pill.style.background = '#16a34a';
+                document.getElementById('rhetBannerText').innerHTML = esc(t('rhetLive')) + ' <a href="rhetoric-egypt.html">rhetoric-egypt.html →</a>';
+            } catch (e) { /* tracker not deployed yet */ }
+        }
+
+        // ===== ARTICLES =====
+        function classifySource(a) {
+            const ft = (a.feed_type || '').toLowerCase();
+            if (ft === 'gdelt') return 'gdelt';
+            if (ft === 'newsapi') return 'newsapi';
+            return 'rss';
+        }
+        function renderTabbedArticles(arts) {
+            const seen = new Set();
+            articleStore.all = []; articleStore.en = []; articleStore.ar = [];
+            arts.forEach(a => {
+                if (!a.url || seen.has(a.url)) return;
+                seen.add(a.url);
+                const n = { title: a.title || '(no title)', url: a.url, source: a.source || '', published: a.published || '', sourceClass: classifySource(a) };
+                articleStore.all.push(n);
+                ((a.language || 'en') === 'ar' ? articleStore.ar : articleStore.en).push(n);
+            });
+            const ts = x => { const d = Date.parse(x.published); return isNaN(d) ? 0 : d; };
+            ['all', 'en', 'ar'].forEach(k => articleStore[k].sort((a, b) => ts(b) - ts(a)));
+            document.getElementById('countAll').textContent = articleStore.all.length;
+            document.getElementById('countEn').textContent = articleStore.en.length;
+            document.getElementById('countAr').textContent = articleStore.ar.length;
+            setArticleTab('all');
+        }
+        function setArticleTab(tab) {
+            document.querySelectorAll('.article-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            const box = document.getElementById('articlesContainer');
+            const list = articleStore[tab] || [];
+            if (!list.length) { box.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:30px;">${esc(t('noArticles'))}</div>`; return; }
+            box.innerHTML = list.map(a => `<div class="article-item">
+                <div class="article-title" dir="auto">${esc(a.title)}</div>
+                <div class="article-meta" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
+                    <span class="source-pill ${a.sourceClass}">${a.sourceClass}</span><span>${esc(a.source)}</span>
+                    ${a.published ? `<span>· ${esc(fmtDay(a.published))}</span>` : ''}</div>
+                <a href="${esc(a.url)}" target="_blank" rel="noopener" class="article-link">${esc(t('readArticle'))}</a></div>`).join('');
+        }
+
+        // ===== MAP =====
+        function initEgyptMap() {
+            if (typeof L === 'undefined') return;
+            const map = L.map('egypt-map', { center: [27.0, 31.5], zoom: 5, scrollWheelZoom: false });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 18
+            }).addTo(map);
+            const M = [
+                [30.0444, 31.2357, 'Cairo', 'Capital; seat of the Presidency and the Central Bank'],
+                [30.5965, 32.2715, 'Suez Canal (Ismailia)', 'Canal Authority HQ; revenue rides the Saudi bypass via Yanbu'],
+                [31.2653, 32.3019, 'Port Said', 'Northern canal entrance; container hub'],
+                [29.5967, 32.3516, 'Ain Sokhna', 'Red Sea port; LNG floating terminals nearby'],
+                [31.2862, 34.2481, 'Rafah crossing', 'Gaza border; treaty friction point'],
+                [31.1313, 33.7980, 'El-Arish', 'North Sinai; security zone'],
+                [29.4916, 34.8963, 'Taba', 'Israel border crossing; Red Sea drone exposure'],
+                [27.9158, 34.3299, 'Sharm el-Sheikh', 'Resort and summit city at the Strait of Tiran'],
+                [24.0889, 32.8998, 'Aswan / High Dam', 'Nile water: the GERD question'],
+                [22.2, 36.3, 'Halaib Triangle', 'Disputed with Sudan'],
+                [31.5546, 25.1595, 'Salloum', 'Libya border crossing'],
+                [31.2001, 29.9187, 'Alexandria', 'Mediterranean port; wheat imports land here'],
+                [31.9, 30.0, 'Zohr gas field (offshore)', 'Declining output; the import gap'],
+                [31.05, 28.45, 'El Dabaa', 'Nuclear plant under construction (Rosatom)'],
+            ];
+            M.forEach(m => L.marker([m[0], m[1]]).addTo(map).bindPopup(`<strong>${esc(m[2])}</strong><br>${esc(m[3])}`));
+        }
+
+        function toggleKnowledgeCard(id) {
+            const card = document.getElementById('card-' + id);
+            if (card) card.classList.toggle('collapsed');
+        }
+
+        // ===== LANGUAGE =====
+        function switchLanguage(lang, button) {
+            currentLang = translations[lang] ? lang : 'en';
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            if (button) button.classList.add('active');
+            document.documentElement.setAttribute('dir', (lang === 'he' || lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) el.textContent = translations[currentLang][key];
+            });
+            if (lastData) renderAll(lastData);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('lastUpdated').textContent = 
-                'Last updated: ' + new Date().toLocaleString('en-US', { 
-                    month: 'short', day: 'numeric', year: 'numeric', 
-                    hour: 'numeric', minute: '2-digit', hour12: true 
-                });
-            loadArticles();
+            startLoadingProgress();
+            loadEgyptData();
+            updateEgyptCommodityCard();
+            checkRhetoric();
         });
     </script>
 </body>
