@@ -3194,7 +3194,7 @@
    ======================================== */
 .bottom-content-wrapper {
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 1fr;   /* Nov 1 2026: IG column retired */
     gap: 30px;
     margin-bottom: 30px;
 }
@@ -6996,26 +6996,8 @@
 <!-- Bottom Section: OSINT Feed + NOTAMs/Flights side by side -->
 <div class="bottom-content-wrapper">
     
-    <!-- LEFT: OSINT Feed -->
-    <aside class="osint-sidebar osint-left">
-        <div class="osint-feed-container">
-            <div class="osint-feed-header">
-                <span style="font-size: 24px;">📸</span>
-                <h3>OSINT FEED</h3>
-            </div>
-            
-            <div class="osint-feed-widget">
-                <!-- SnapWidget -->
-                <script src="https://snapwidget.com/js/snapwidget.js"></script>
-                <iframe src="https://snapwidget.com/embed/1117696" class="snapwidget-widget" allowtransparency="true" frameborder="0" scrolling="no" style="border:none; overflow:hidden; border-radius:5px; width:100%; height:600px" title="Real-time OSINT + probability modeling for Middle East conflicts. Personal research project | Not affiliated with USG | Analysis ≠ official position"></iframe>
-            </div>
-            
-            <a href="https://www.instagram.com/asifahanalytics/" target="_blank" class="osint-follow-button">
-                📷 Follow @asifahanalytics →
-            </a>
-        </div>
-    </aside>
-    
+    <!-- (Nov 1 2026) Instagram embed retired -- socials now live in the standard footer -->
+
     <!-- RIGHT: NOTAMs + Flights stacked -->
     <div class="bottom-right-stack">
         
@@ -8557,7 +8539,7 @@ async function updateFlightCancellations() {
 
 // Update NOTAMs on page load and every 15 minutes
         window.addEventListener('DOMContentLoaded', () => {
-            updateNotams();  
+            // first load is in the main DOMContentLoaded block (Nov 1 2026: was loading twice)
             setInterval(updateNotams, 900000); // 15 minutes
         });
 
@@ -8799,7 +8781,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             try {
                 if (!window.__disableFlightCancellations) {
-                    updateFlightCancellations();
+                    // first load is in Promise.allSettled above (Nov 1 2026: was loading twice)
                     setInterval(() => {
                         if (!window.__disableFlightCancellations) {
                             updateFlightCancellations();
