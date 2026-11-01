@@ -137,6 +137,16 @@
             .header-logo { width:54px; height:54px; top:20px; left:20px; }
             .home-button { top:24px; left:84px; padding:5px 10px; font-size:12px; }
             .theme-toggle { top:24px; right:18px; }
+            /* Nov 1 2026: shell hamburger sits top-left -- push the header cluster clear of it and the title */
+            header { padding-top:84px; }
+            .header-logo { top:16px; left:auto; right:18px; width:46px; height:46px; }
+            .home-button { top:20px; left:72px; }
+            .theme-toggle { top:72px; left:18px; right:auto; }
+            .caution-banner { flex-wrap:wrap; padding:14px 16px !important; }
+            .caution-banner { flex-wrap:wrap !important; }
+            .caution-banner > div { min-width:0 !important; flex:1 1 220px !important; }
+            .caution-banner > div:first-child { flex:0 0 auto !important; }
+            .caution-banner a { margin-left:auto; }
             h1 { font-size:20px; }
             h2 { font-size:13px; }
         }
@@ -376,6 +386,8 @@
         .no-notams { text-align:center; padding:40px; width:100%; }
         .no-notams-title { font-size:16px; color:var(--text-secondary); margin-bottom:6px; }
         .no-notams-subtitle { font-size:12px; color:var(--text-muted); }
+        .no-notams.unread .no-notams-title::before { content:"? "; color:#9ca3af; font-weight:bold; }
+        .flight-curated-note { font-size:12px; line-height:1.5; padding:10px 14px; margin:0 0 14px; border-radius:8px; border:1px dashed #f59e0b; background:rgba(245,158,11,0.08); color:var(--text-secondary); }
         [data-theme="dark"] .notam-widget { background:linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border-color:#0c4a6e; }
 
         /* ───────── FLIGHT DISRUPTIONS (cloned from Europe) ───────── */
@@ -440,8 +452,9 @@
             opacity: 0.34;
         }
 </style>
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 </head>
-<body>
+<body data-asifah-ladder="off">
 <div class="watermark"></div>
 <div class="container">
 
@@ -461,20 +474,20 @@
             <div id="loadStep2">⏳ Waking up server (cold starts ~30s)...</div>
             <div id="loadStep3">⏳ Loading cached scores for 14 countries...</div>
             <div id="loadStep4">⏳ Loading travel advisories...</div>
-            <div id="loadStep5">⏳ Loading weather &amp; NOTAMs...</div>
+            <div id="loadStep5">⏳ Loading weather &amp; airspace...</div>
             <div id="loadStep6">⏳ Rendering dashboard...</div>
         </div>
         <div style="width:280px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;margin:0 auto 20px;">
             <div id="loadingBar" style="height:100%;width:0%;background:linear-gradient(90deg,#0c4a6e,#38bdf8);border-radius:2px;transition:width 0.4s ease;"></div>
         </div>
         <div id="loadingInfo" style="display:none;margin:0 auto 10px;max-width:360px;padding:10px 16px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:8px;color:#93c5fd;font-size:12px;line-height:1.5;">ℹ️ First visit builds your intelligence cache — this takes 1-2 minutes. Subsequent visits load instantly!</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:2px;">FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:2px;">FOR RESEARCH PURPOSES ONLY · CONVERGENCE, NOT PREDICTION</div>
     </div>
 </div>
 
 <header>
     <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
-    <a href="https://asifahanalytics.com" class="home-button">🏠 HOME</a>
+    <a href="https://asifahanalytics.com" class="home-button home-btn">🏠 HOME</a>
     <div class="theme-toggle">
         <span class="theme-toggle-label">TOGGLE: LIGHT - DARK</span>
         <div class="theme-toggle-switch" onclick="toggleTheme()"><div class="theme-toggle-slider"></div></div>
@@ -486,17 +499,17 @@
 </header>
 
 <!-- ════════════════════════════════════════════════════════════ -->
-<!-- WORLDWIDE CAUTION BANNER (Current State Dept text, Feb 28 2026) -->
+<!-- WORLDWIDE CAUTION BANNER (State Dept text issued Feb 28 2026; re-verified on travel.state.gov Nov 1 2026) -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
-    <div style="font-size:28px;flex-shrink:0;">🚨</div>
-    <div style="flex:1;">
-        <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
-        <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Due to heightened tensions in the Middle East, the security environment remains complex with the potential for unforeseen escalation. The Department of State advises Americans worldwide, and especially in the Middle East, to exercise increased caution and follow the guidance in security alerts issued by the nearest U.S. embassy or consulate. Flight cancellations and periodic airspace closures may cause travel disruptions. U.S. diplomatic facilities, including outside the Middle East, have been targeted; groups supportive of Iran may target U.S. interests worldwide.</div>
-        <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: July 18, 2026</div>
-    </div>
-    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">VIEW ADVISORY →</a>
-</div>
+<div class="caution-banner" style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
+            <div style="font-size:28px;flex-shrink:0;">🚨</div>
+            <div style="flex:1;">
+                <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
+                <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow the guidance in the latest security alerts issued by the nearest U.S. embassy or consulate. They may experience travel disruptions due to periodic airspace closures. The Department of State advises Americans worldwide to exercise increased caution.</div>
+                <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: February 28, 2026</div>
+            </div>
+            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">VIEW ADVISORY →</a>
+        </div>
 <style>@keyframes caution-pulse{0%,100%{box-shadow:0 4px 15px rgba(239,68,68,0.3)}50%{box-shadow:0 4px 25px rgba(239,68,68,0.5)}}</style>
 
 <div id="errorMessage" class="error-message"></div>
@@ -504,8 +517,7 @@
 <div class="main-content-wrapper">
 
 <!-- NAV SIDEBAR -->
-<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
-<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<!-- (Nov 1 2026) page hamburger + backdrop retired: the shared shell provides the mobile drawer -->
 
 <nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
@@ -2036,12 +2048,13 @@
 <!-- ============================================================== -->
 <div class="notam-widget" id="notamWidget">
     <div class="notam-widget-header">
-        <div class="notam-widget-title">Africa NOTAM Monitor</div>
+        <div class="notam-widget-title">Airspace Watch &mdash; Africa</div>
         <div class="notam-status-badge" id="notamStatusBadge">SCANNING...</div>
     </div>
+    <div id="airspaceLines" style="font-size:12.5px;line-height:1.5;margin:-8px 0 10px;"></div>
     <div class="notam-scroll-container">
         <div class="notam-cards-wrapper" id="notamCardsWrapper">
-            <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; width:100%;">Loading NOTAMs...</div>
+            <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; width:100%;">Reading airspace sources...</div>
         </div>
     </div>
 </div>
@@ -2064,24 +2077,13 @@
 <!-- ============================================================== -->
 <!-- FOOTER                                                         -->
 <!-- ============================================================== -->
-<div class="footer-info">
+<section class="footer-info" data-asifah-footer-extra>
     <p><strong>ASIFAH ANALYTICS · AFRICA REGIONAL DASHBOARD</strong></p>
-    <p>asifah-africa-backend.onrender.com · Updates every 12 hours · Force refresh via Scan OSINT</p>
-    <p>OSINT aggregation from GDELT (en/fr/ar/sw), NewsAPI, Brave Search, RSS, Telegram, Bluesky · Open-Meteo weather · FAA NOTAMs · U.S. State Department travel advisories</p>
-
-    <!-- Support + Contact CTAs -->
-    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
-    </div>
-
-    <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT POSITION · © 2025-2026 Asifah Analytics</p>
-    <p style="margin-top:10px;">
-        <a href="mission.html">Mission Statement</a> · 
-        <a href="privacy.html">Privacy Policy</a> · 
-        <a href="https://asifahanalytics.com">Home</a>
-    </p>
-</div>
+    <p>Updates every 12 hours · Scan OSINT refreshes on demand (rate-limited)</p>
+    <p><strong>Sources:</strong> OSINT aggregation from GDELT (en/fr/ar/sw), NewsAPI, Brave Search, RSS, Telegram, Bluesky · Open-Meteo weather · Airspace Watch: EASA conflict-zone bulletins, the FAA's published flight-restriction list, and open ADS-B traffic counts · U.S. State Department travel advisories (public data).</p>
+    <p><strong>Method:</strong> Country cards are convergence reads, not predictions. A source that was not read this cycle is shown as unread &mdash; unread is not the same as quiet.</p>
+    <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · Independent analysis · © 2025-2026 Asifah Analytics</p>
+</section>
 
 </div><!-- end .container -->
 
@@ -2429,19 +2431,34 @@ async function loadNotams(){
         displayNotams(data);
     }catch(err){
         console.error('NOTAM load error:',err);
-        document.getElementById('notamCardsWrapper').innerHTML='<div style="padding:30px;text-align:center;color:#c0392b;">Failed to load NOTAMs. Backend may be warming up.</div>';
-        document.getElementById('notamStatusBadge').textContent='ERROR';
+        displayNotams({state:'unread'});
     }
 }
 
 function displayNotams(data){
     var wrapper=document.getElementById('notamCardsWrapper');
     var badge=document.getElementById('notamStatusBadge');
+    data=data||{};
     var notams=data.notams||[];
+    // Nov 1 2026 -- Airspace Watch (shared module): lines + which sources were actually read
+    var linesEl=document.getElementById('airspaceLines');
+    if(linesEl){
+        var esc=function(t){return String(t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+        var word=function(st){return st==='read'?'read':st==='stale'?'last good read':st==='partial'?'partly read':'unread';};
+        var src=data.sources||{};
+        var parts=['EASA '+word((src.easa||{}).state),'FAA '+word((src.faa||{}).state)];
+        if(src.opensky)parts.push((src.opensky.provider==='al'?'adsb.lol':'OpenSky')+' traffic '+word(src.opensky.state));
+        linesEl.innerHTML=(data.lines||[]).slice(0,4).map(function(l){return '<div>• '+esc(l)+'</div>';}).join('')+
+            '<div style="opacity:.7;font-size:11px;margin-top:4px;">Sources: '+parts.join(' · ')+
+            (data.timestamp?' · '+new Date(data.timestamp).toLocaleString():'')+'</div>';
+    }
     if(notams.length===0){
-        wrapper.innerHTML='<div class="no-notams"><div class="no-notams-title">No Active Alerts</div><div class="no-notams-subtitle">No critical NOTAMs detected across African airspace</div></div>';
-        badge.textContent='CLEAR';
-        badge.style.background='#d1fae5';badge.style.color='#065f46';
+        var unread=!data.state||data.state==='unread';
+        wrapper.innerHTML=unread
+            ?'<div class="no-notams unread"><div class="no-notams-title">Airspace sources unread</div><div class="no-notams-subtitle">Not read this cycle &mdash; this is not the same as quiet airspace.</div></div>'
+            :'<div class="no-notams"><div class="no-notams-title">No active warnings or traffic anomalies</div><div class="no-notams-subtitle">Sources read; nothing flagged this cycle.</div></div>';
+        badge.textContent=unread?'UNREAD':'0 ACTIVE';
+        badge.style.background=unread?'#e5e7eb':'#d1fae5';badge.style.color=unread?'#374151':'#065f46';
         wrapper.style.animation='none';
         return;
     }
@@ -2450,10 +2467,10 @@ function displayNotams(data){
     var html='';
     var allNotams=[].concat(notams,notams);
     allNotams.forEach(function(notam){
-        var typeColor=getNotamTypeColor(notam.classification||notam.type||'');
+        var typeColor=notam.type_color||notam.color||getNotamTypeColor(notam.classification||notam.type||'');
         var displayCountry=notam.country||(notam.region?notam.region.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}):'Unknown');
         var fir=notam.icao_location||notam.fir||'';
-        var effective=notam.effective||notam.valid_from||'Immediately';
+        var effective=notam.effective||notam.valid_range||notam.valid_from||'See source';
         html+=
         '<div class="notam-card type-'+typeColor+'">'+
             '<div class="notam-header">'+
@@ -2525,11 +2542,18 @@ function displayFlights(data){
     var countEl=document.getElementById('flight-count');
     var disruptions=data.disruptions||data.cancellations||[];
     if(countEl)countEl.textContent=disruptions.length;
+    var curated=/curated/i.test(data.source||'');
+    var asOf=disruptions.reduce(function(m,d){return d.data_as_of&&d.data_as_of>m?d.data_as_of:m;},'');
     if(disruptions.length===0){
-        container.innerHTML='<div class="flight-empty">✅ No active flight disruptions found for Africa</div>';
+        container.innerHTML=curated
+            ?'<div class="flight-empty">Curated list is empty &mdash; not a live feed, so this is not a read of current routes.</div>'
+            :'<div class="flight-empty">✅ No active flight disruptions found for Africa</div>';
         return;
     }
-    var html='<div class="flight-cancellations-grid">';
+    var html=curated
+        ?'<div class="flight-curated-note"><strong>Curated list'+(asOf?', last reviewed '+new Date(asOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'')+'</strong> &mdash; not a live feed. Long-running suspensions only; a new suspension will not appear here until the list is reviewed.</div>'
+        :'';
+    html+='<div class="flight-cancellations-grid">';
     disruptions.forEach(function(d){
         var status=d.status||'Disrupted';
         var dateStr='';
@@ -2546,6 +2570,7 @@ function displayFlights(data){
                 (dateStr?'<span>📅 '+dateStr+'</span>':'')+
                 (d.duration&&d.duration!=='Unknown'?'<span>⏱️ '+d.duration+'</span>':'')+
                 (d.reason?'<span>📌 '+d.reason+'</span>':'')+
+                (d.data_as_of?'<span>🗂️ reviewed '+d.data_as_of+'</span>':'')+
             '</div>'+
             (d.source_url?'<div class="flight-source"><a href="'+d.source_url+'" target="_blank" rel="noopener">Read more ↗</a></div>':'')+
         '</div>';
@@ -2664,5 +2689,46 @@ window.addEventListener('load', function(){
     loadAllMilPosture();
 });
 </script>
+<script>
+// Nov 1 2026 -- standard card link row: Stability · Rhetoric · Military.
+// Rhetoric appears only when rhetoric-<id>.html exists, so a new tracker page
+// lights up its card the day it ships -- no edit here needed.
+(function(){
+  var css='.card-link-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 6px}'+
+    '.card-link-row a{font-size:12px;font-weight:700;text-decoration:none;padding:6px 12px;border-radius:16px;border:1.5px solid;white-space:nowrap}'+
+    '.card-link-row a.stab{color:#0369a1;border-color:rgba(3,105,161,.45)}'+
+    '.card-link-row a.rhet{color:#15803d;border-color:rgba(21,128,61,.45)}'+
+    '.card-link-row a.mil{color:#b45309;border-color:rgba(180,83,9,.45)}'+
+    '[data-theme="dark"] .card-link-row a.stab{color:#38bdf8}[data-theme="dark"] .card-link-row a.rhet{color:#4ade80}[data-theme="dark"] .card-link-row a.mil{color:#fbbf24}'+
+    '.card-link-sub{text-align:center;font-size:11px;font-style:italic;opacity:.7;margin:0 0 18px}';
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+  var seen={};
+  function exists(url){
+    if(seen[url]===undefined)seen[url]=fetch(url,{method:'HEAD'}).then(function(r){return r.ok;}).catch(function(){return false;});
+    return seen[url];
+  }
+  function build(){
+    Array.prototype.forEach.call(document.querySelectorAll('.target-card[id$="-card"]'),function(card){
+      var id=card.id.replace(/-card$/,'');
+      var btn=card.querySelector('a.country-stability-btn');
+      if(!btn)return;
+      var sub=btn.querySelector('.btn-subtitle');
+      var wrap=document.createElement('div');
+      wrap.innerHTML='<div class="card-link-row"><a class="stab" href="'+btn.getAttribute('href')+'">📊 Stability</a><a class="mil" href="military.html">🎖️ Military</a></div>'+
+        (sub?'<div class="card-link-sub">'+sub.innerHTML+'</div>':'');
+      wrap.addEventListener('click',function(e){e.stopPropagation();});
+      btn.replaceWith(wrap);
+      var rh='rhetoric-'+id+'.html';
+      exists(rh).then(function(ok){
+        if(!ok)return;
+        var a=document.createElement('a');a.className='rhet';a.href=rh;a.textContent='📡 Rhetoric';
+        var row=wrap.querySelector('.card-link-row');row.insertBefore(a,row.querySelector('a.mil'));
+      });
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
+</script>
+<script src="resources/asifah-standard-shell.js"></script>
 </body>
 </html>
