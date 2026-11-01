@@ -670,3 +670,20 @@ body.asifah-ladder-active.asifah-ladder-collapsed {
     padding-right: 0;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   RTL GRID FIX  (v1.1, Nov 1 2026)
+   Pages cloned from israel.html carry
+       [dir="rtl"] .page-with-sidebar { grid-template-columns: 1fr 200px; }
+   CSS grids already mirror themselves in right-to-left mode, so that rule
+   swapped the tracks a SECOND time: the sidebar landed in the 1fr track and
+   the main content was squeezed into 200px, pushing ~150px off-screen in
+   Arabic, Hebrew and Farsi at desktop width. One rule here fixes every page
+   that loads the shell, without touching the pages. Below 1200px the
+   sidebar is hidden and the grid is unused, so this is desktop-only by
+   construction.
+   ══════════════════════════════════════════════════════════════════ */
+html[dir="rtl"] .page-with-sidebar,
+html[dir="rtl"] body .page-with-sidebar {
+  grid-template-columns: 200px 1fr !important;
+}
