@@ -716,13 +716,13 @@ var TRANSLATIONS = {
 
 var currentLang = 'en';
 var TIER_LABELS = { 1:'TIER 1 \u2014 STRIKE', 2:'TIER 2 \u2014 ADVERSARY', 3:'TIER 3 \u2014 REGIONAL', 4:'TIER 4 \u2014 ALLIANCE' };
-var ASSET_ICONS = { carrier_strike_group:'\uD83D\uDEA2', submarine:'\uD83D\uDD31', bomber_deployment:'\u2708\uFE0F', amphibious_group:'\u2693', fighter_surge:'\uD83D\uDEE9\uFE0F', air_defense:'\uD83D\uDEE1\uFE0F', isr_assets:'\uD83D\uDC41\uFE0F', ground_forces:'\uD83E\uDE96', logistics:'\uD83D\uDCE6', missile_test:'\uD83D\uDE80', naval_exercise:'\u2693', base_evacuation:'\uD83D\uDEA8', military_posturing:'\u26A0\uFE0F', drone_incursion:'\uD83D\uDEF8', unspecified:'\u26A0\uFE0F' , hospital_ship:'\uD83C\uDFE5' };
-var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Submarines', bomber_deployment:'Strategic Bombers', amphibious_group:'Amphibious Groups', fighter_surge:'Fighter Surges', air_defense:'Air Defense', isr_assets:'ISR Assets', ground_forces:'Ground Forces', logistics:'Logistics', missile_test:'Missile Tests', naval_exercise:'Naval Exercises', base_evacuation:'Base Evacuations', military_posturing:'Posturing/Threats', drone_incursion:'Drone Incursions', unspecified:'General Activity' , hospital_ship:'Hospital Ships' };
+var ASSET_ICONS = { carrier_strike_group:'\uD83D\uDEA2', submarine:'\uD83D\uDD31', bomber_deployment:'\u2708\uFE0F', amphibious_group:'\u2693', fighter_surge:'\uD83D\uDEE9\uFE0F', air_defense:'\uD83D\uDEE1\uFE0F', isr_assets:'\uD83D\uDC41\uFE0F', ground_forces:'\uD83E\uDE96', logistics:'\uD83D\uDCE6', missile_test:'\uD83D\uDE80', naval_exercise:'\u2693', base_evacuation:'\uD83D\uDEA8', military_posturing:'\u26A0\uFE0F', drone_incursion:'\uD83D\uDEF8', unspecified:'\u26A0\uFE0F' , hospital_ship:'\uD83C\uDFE5', maritime_coercion:'\uD83C\uDF0A' };
+var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Submarines', bomber_deployment:'Strategic Bombers', amphibious_group:'Amphibious Groups', fighter_surge:'Fighter Surges', air_defense:'Air Defense', isr_assets:'ISR Assets', ground_forces:'Ground Forces', logistics:'Logistics', missile_test:'Missile Tests', naval_exercise:'Naval Exercises', base_evacuation:'Base Evacuations', military_posturing:'Posturing/Threats', drone_incursion:'Drone Incursions', unspecified:'General Activity' , hospital_ship:'Hospital Ships', maritime_coercion:'Maritime Coercion (Gray Zone)' };
 
 var THEATRE_ORDER = [
     { id:'global_northcom', label:'Global / NORTHCOM', icon:'\uD83C\uDF10', actors:['us'] },
     { id:'africa', label:'Africa Theatre', icon:'\uD83C\uDF0D', actors:['nigeria','somalia','mali','niger','burkina_faso','drc','sudan','south_sudan','libya','ethiopia','kenya','djibouti','central_african_republic','chad','mozambique','madagascar','equatorial_guinea','guinea','wagner_africa'] },
-    { id:'asia_pacific', label:'Asia & The Pacific Theatre', icon:'\uD83C\uDF0F', actors:['china','taiwan','vietnam','north_korea','pakistan','afghanistan','india','south_korea','japan'] },
+    { id:'asia_pacific', label:'Asia & The Pacific Theatre', icon:'\uD83C\uDF0F', actors:['china','taiwan','japan','philippines','vietnam','north_korea','pakistan','afghanistan','india','south_korea'] },
     { id:'europe', label:'European Theatre', icon:'\uD83C\uDF0D', actors:['armenia','azerbaijan','cyprus','denmark','greece','greenland','hungary','nato','poland','russia','turkey','ukraine'] },
     { id:'middle_east', label:'Middle East & North Africa', icon:'\uD83D\uDD4C', actors:['bahrain','egypt','iran','iraq','israel','jordan','kuwait','oman','qatar','saudi_arabia','uae','libya'] },
     { id:'western_hemisphere', label:'Western Hemisphere', icon:'\uD83C\uDF0E', actors:['brazil','colombia','cuba','haiti','mexico','panama','venezuela'] }
@@ -745,7 +745,8 @@ var THEATRE_MAPS = {
     ],
     asia_pacific: [
         { id:'korea', icon:'\uD83C\uDDF0\uD83C\uDDF7', label:'Korean Peninsula', url:'https://korea.liveuamap.com/', desc:'DMZ, DPRK activity \u2014 Korean Peninsula' },
-        { id:'china', icon:'\uD83C\uDDE8\uD83C\uDDF3', label:'China \u00B7 Taiwan Strait', url:'https://china.liveuamap.com/', desc:'PLA activity, Taiwan Strait, South China Sea' }
+        { id:'china', icon:'\uD83C\uDDE8\uD83C\uDDF3', label:'China \u00B7 Taiwan Strait', url:'https://china.liveuamap.com/', desc:'PLA activity, Taiwan Strait, South China Sea' },
+        { id:'amti', icon:'\uD83C\uDF0A', label:'South China Sea (CSIS AMTI)', url:'https://amti.csis.org/', desc:'Satellite imagery and tracking of the West Philippine Sea, Spratlys and Paracels' }
     ],
     western_hemisphere: [
         { id:'americas', icon:'\uD83C\uDF0E', label:'Americas \u00B7 Latin America', url:'https://liveuamap.com/en/americas', desc:'Venezuela, Haiti, Colombia, Mexico \u2014 Regional conflict events' }
@@ -1160,19 +1161,34 @@ function renderTheaterAnalysis(interp) {
     var mvData    = interp.asset_movement_prose || {};
 
     if (mvSection) {
-        if (mvData.active && mvData.movements && mvData.movements.length > 0) {
+        /* v3.15 (Nov 2 2026): movements are CHRONOLOGICAL paths read back from the
+           30-day history; sightings are ships seen in one place. Arrows only
+           appear when the order is known. */
+        var mvList = mvData.movements || [];
+        var svList = mvData.sightings || [];
+        if (mvData.active && (mvList.length > 0 || svList.length > 0)) {
             mvSection.style.display = '';
-            mvCount.textContent = '(' + mvData.movements.length + ')';
+            mvCount.textContent = '(' + (mvList.length + svList.length) + ')';
             var mvHtml = '';
-            for (var mi = 0; mi < mvData.movements.length; mi++) {
-                var mv = mvData.movements[mi] || {};
+            if (mvData.ordering === 'unordered' && mvList.length) {
+                mvHtml += '<div style="font-size:11px;opacity:.75;margin-bottom:6px;">Places below are from this scan only; their order is not known.</div>';
+            }
+            for (var mi = 0; mi < mvList.length; mi++) {
+                var mv = mvList[mi] || {};
                 mvHtml += '<div class="ta-prose-block lvl-monitored">';
                 mvHtml += '<div class="ta-prose-label">'
                     + '<span>🚢 ' + escapeHtml(mv.ship || 'Unknown') + '</span>'
-                    + '<span class="ta-prose-pill lvl-monitored">' + (mv.positions ? mv.positions.length : 0) + ' POSITIONS</span>'
+                    + '<span class="ta-prose-pill lvl-monitored">' + (mv.positions ? mv.positions.length : 0) + (mv.moved ? ' STOPS' : ' PLACES') + '</span>'
                     + '</div>';
                 mvHtml += '<div>' + escapeHtml(mv.prose || '') + '</div>';
                 mvHtml += '</div>';
+            }
+            if (svList.length) {
+                mvHtml += '<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.75;margin:8px 0 4px;">Latest reported positions</div>';
+                for (var si = 0; si < svList.length; si++) {
+                    var sv = svList[si] || {};
+                    mvHtml += '<div style="font-size:12px;padding:3px 0;">📍 <strong>' + escapeHtml(sv.ship || '') + '</strong> — ' + escapeHtml(sv.location || '') + '</div>';
+                }
             }
             mvBody.innerHTML = mvHtml;
         } else {
