@@ -406,6 +406,16 @@
         .flight-card-status.Cancelled { background:#fee2e2; color:#991b1b; }
         .flight-card-status.Suspended { background:#e2f0fb; color:#0c4a6e; }
         .flight-card-status.Disrupted { background:#dbeafe; color:#1e40af; }
+        .flight-card-status.Extended { background:#fde68a; color:#78350f; }
+        .flight-card-status.Rerouted { background:#ede9fe; color:#5b21b6; }
+        .flight-card-status.Resumed { background:#dcfce7; color:#166534; }
+        .flight-card-status.Passed { background:#e5e7eb; color:#374151; margin-left:6px; }
+        .flight-card.passed { opacity:.8; border-style:dashed; }
+        .flight-lines { font-size:13px; line-height:1.55; margin:0 0 14px; color:var(--text-primary); }
+        .flight-src { font-size:11px; opacity:.7; margin-top:4px; }
+        .flight-subhead { font-size:13px; font-weight:bold; margin:18px 0 10px; color:var(--text-secondary); }
+        .flight-standing { margin-top:18px; }
+        .flight-standing summary { cursor:pointer; font-size:13px; font-weight:bold; color:var(--text-secondary); margin-bottom:10px; }
         .flight-airline { font-size:14px; font-weight:bold; color:var(--text-primary); margin-bottom:5px; }
         .flight-route { font-size:11px; color:var(--text-muted); margin-bottom:5px; }
         .flight-headline { font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:8px; }
@@ -2080,7 +2090,7 @@
 <section class="footer-info" data-asifah-footer-extra>
     <p><strong>ASIFAH ANALYTICS · AFRICA REGIONAL DASHBOARD</strong></p>
     <p>Updates every 12 hours · Scan OSINT refreshes on demand (rate-limited)</p>
-    <p><strong>Sources:</strong> OSINT aggregation from GDELT (en/fr/ar/sw), NewsAPI, Brave Search, RSS, Telegram, Bluesky · Open-Meteo weather · Airspace Watch: EASA conflict-zone bulletins, the FAA's published flight-restriction list, and open ADS-B traffic counts · U.S. State Department travel advisories (public data).</p>
+    <p><strong>Sources:</strong> OSINT aggregation from GDELT (en/fr/ar/sw), NewsAPI, Brave Search, RSS, Telegram, Bluesky · Open-Meteo weather · Airspace Watch: EASA conflict-zone bulletins, the FAA's published flight-restriction list, and open ADS-B traffic counts · Flight Watch: airline announcements via Google News · U.S. State Department travel advisories (public data).</p>
     <p><strong>Method:</strong> Country cards are convergence reads, not predictions. A source that was not read this cycle is shown as unread &mdash; unread is not the same as quiet.</p>
     <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · Independent analysis · © 2025-2026 Asifah Analytics</p>
 </section>
@@ -2538,44 +2548,56 @@ async function loadFlights(){
 }
 
 function displayFlights(data){
+    // Nov 1 2026 -- Flight Watch (shared module): live airline announcements, declared
+    // end dates, a resumptions lane, and the old hand-kept list as a labelled strip.
+    data=data||{};
     var container=document.getElementById('flight-container');
     var countEl=document.getElementById('flight-count');
-    var disruptions=data.disruptions||data.cancellations||[];
-    if(countEl)countEl.textContent=disruptions.length;
-    var curated=/curated/i.test(data.source||'');
-    var asOf=disruptions.reduce(function(m,d){return d.data_as_of&&d.data_as_of>m?d.data_as_of:m;},'');
-    if(disruptions.length===0){
-        container.innerHTML=curated
-            ?'<div class="flight-empty">Curated list is empty &mdash; not a live feed, so this is not a read of current routes.</div>'
-            :'<div class="flight-empty">✅ No active flight disruptions found for Africa</div>';
-        return;
-    }
-    var html=curated
-        ?'<div class="flight-curated-note"><strong>Curated list'+(asOf?', last reviewed '+new Date(asOf+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'')+'</strong> &mdash; not a live feed. Long-running suspensions only; a new suspension will not appear here until the list is reviewed.</div>'
-        :'';
-    html+='<div class="flight-cancellations-grid">';
-    disruptions.forEach(function(d){
+    var esc=function(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+    var fmt=function(iso){try{return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return iso;}};
+    var active=data.active||(data.disruptions||[]).filter(function(d){return d.status!=='Resumed';});
+    var resumed=data.resumptions||(data.disruptions||[]).filter(function(d){return d.status==='Resumed';});
+    var standing=data.standing||[];
+    var st=data.state||'unread';
+    if(countEl)countEl.textContent=st==='unread'?'?':active.length;
+    var word={read:'read',partial:'partly read',stale:'last good read',unread:'unread'}[st]||'unread';
+    var html='<div class="flight-lines">'+(data.lines||[]).map(function(l){return '<div>• '+esc(l)+'</div>';}).join('')+
+        '<div class="flight-src">Source: airline announcements via Google News ('+word+')'+
+        (data.scanned_at?' · scanned '+esc(new Date(data.scanned_at).toLocaleString()):'')+'</div></div>';
+    function card(d,extra){
         var status=d.status||'Disrupted';
-        var dateStr='';
-        if(d.date){
-            try{dateStr=new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-            catch(e){dateStr=d.date;}
-        }else if(d.since){dateStr=d.since;}
-        html+='<div class="flight-card">'+
-            '<span class="flight-card-status '+status+'">'+status+'</span>'+
-            '<div class="flight-airline">✈️ '+(d.airline||'Unknown Airline')+'</div>'+
-            (d.route||d.destination?'<div class="flight-route">🗺️ '+(d.route||d.destination)+'</div>':'')+
-            '<div class="flight-headline">'+(d.headline||d.title||'')+'</div>'+
+        var passed=d.deadline_state==='passed';
+        return '<div class="flight-card'+(passed?' passed':'')+'">'+
+            '<span class="flight-card-status '+esc(status)+'">'+esc(status)+'</span>'+
+            (passed?'<span class="flight-card-status Passed">End date passed</span>':'')+
+            '<div class="flight-airline">✈️ '+esc(d.airline||'Not named')+'</div>'+
+            '<div class="flight-route">'+esc(d.flag||'🗺️')+' '+esc(d.route||d.destination||'')+'</div>'+
+            '<div class="flight-headline">'+esc(d.headline||d.title||'')+'</div>'+
             '<div class="flight-meta">'+
-                (dateStr?'<span>📅 '+dateStr+'</span>':'')+
-                (d.duration&&d.duration!=='Unknown'?'<span>⏱️ '+d.duration+'</span>':'')+
-                (d.reason?'<span>📌 '+d.reason+'</span>':'')+
-                (d.data_as_of?'<span>🗂️ reviewed '+d.data_as_of+'</span>':'')+
+                (d.date?'<span>📅 '+fmt(d.date)+'</span>':(d.since?'<span>📅 since '+esc(d.since)+'</span>':''))+
+                (d.duration&&d.duration!=='Unknown'?'<span>⏱️ '+esc(d.duration)+'</span>':'')+
+                (d.reason?'<span>📌 '+esc(d.reason)+'</span>':'')+(extra||'')+
             '</div>'+
-            (d.source_url?'<div class="flight-source"><a href="'+d.source_url+'" target="_blank" rel="noopener">Read more ↗</a></div>':'')+
+            (d.source_url?'<div class="flight-source"><a href="'+esc(d.source_url)+'" target="_blank" rel="noopener">'+(d.source?esc(d.source)+' ':'Source ')+'↗</a></div>':'')+
         '</div>';
-    });
-    html+='</div>';
+    }
+    if(active.length){
+        html+='<div class="flight-cancellations-grid">'+active.map(function(d){return card(d);}).join('')+'</div>';
+    }else{
+        html+='<div class="flight-empty">'+(st==='unread'
+            ?'Airline sources not read yet &mdash; this is not the same as no disruptions.'
+            :'No live carrier suspensions reported in the last '+((data.windows||{}).news_days||30)+' days.')+'</div>';
+    }
+    if(resumed.length){
+        html+='<div class="flight-subhead">✅ Resumptions ('+resumed.length+') &mdash; the other direction</div>'+
+              '<div class="flight-cancellations-grid">'+resumed.map(function(d){return card(d);}).join('')+'</div>';
+    }
+    if(standing.length){
+        html+='<details class="flight-standing"><summary>🗂️ Standing suspensions ('+standing.length+') &mdash; hand-kept list, last reviewed '+
+              esc(fmt((data.standing_reviewed||'')+'T12:00:00Z'))+'</summary>'+
+              '<div class="flight-curated-note">Long-running suspensions no newsroom reports any more. Each one retires itself when a newer headline about the same airline and country appears above.</div>'+
+              '<div class="flight-cancellations-grid">'+standing.map(function(d){return card(d,'<span>🗂️ reviewed '+esc(d.data_as_of)+'</span>');}).join('')+'</div></details>';
+    }
     container.innerHTML=html;
 }
 
