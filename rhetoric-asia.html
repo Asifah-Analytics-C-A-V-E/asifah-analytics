@@ -527,12 +527,12 @@
 <div class="section-title" style="margin-top:24px;">🔜 In Development</div>
 <div class="trackers-list">
     <div class="coming-soon-banner">
-        <div class="coming-soon-name">🇵🇭 Philippines Rhetoric Tracker</div>
-        <span class="coming-soon-badge">Queued · H2 2026</span>
+        <div class="coming-soon-name">🇨🇳 China Spoke-and-Wheel Expansion</div>
+        <span class="coming-soon-badge">Under way · Philippines writes China + US spokes (Nov 2026)</span>
     </div>
     <div class="coming-soon-banner">
-        <div class="coming-soon-name">🇨🇳 China Spoke-and-Wheel Expansion</div>
-        <span class="coming-soon-badge">Scoped · after Russia arc</span>
+        <div class="coming-soon-name">🇰🇷 South Korea Rhetoric Tracker</div>
+        <span class="coming-soon-badge">Queued</span>
     </div>
 </div>
 
@@ -835,6 +835,15 @@ function renderConvergencePanel(panel) {
             url:        'rhetoric-pakistan.html',
         },
         {
+            id:         'philippines',
+            name:       'Philippines West Philippine Sea Tracker',
+            flag:       '🇵🇭',
+            actors:     'China at Sea (CCG/Militia) · Beijing Coercion · Economic Pressure · Palace/DFA · AFP/PCG · US Alliance · Japan/Australia & Partners · Duterte Camp (the pull toward Beijing) · Bangsamoro Peace Process & Militancy',
+            vectors:    ['China Push', 'US Anchor', 'Duterte Pull', 'Coercion-Response', 'MDT Trip-wire', 'Mindanao'],
+            summaryUrl: API_BASE + '/api/rhetoric/philippines/summary',
+            url:        'rhetoric-philippines.html',
+        },
+        {
             id:         'taiwan',
             name:       'Taiwan Deterrence Tracker',
             flag:       '🇹🇼',
@@ -908,6 +917,10 @@ function renderConvergencePanel(panel) {
                 const out = data.outbound_score ?? 0;
                 const inb = data.inbound_score ?? 0;
                 scoreLine = `<span style="font-size:10px;color:var(--text-muted);">Outbound ${out}/100 · China SCS Pressure ${inb}/100 · ${data.total_articles ?? 0} articles</span>`;
+            } else if (tracker.id === 'philippines') {
+                const pp  = data.push_pull || {};
+                const st  = { contested:'⚖️ contested ground', china_push:'🇨🇳 China pushing', us_anchor:'🇺🇸 US anchor active', quiet:'both wheels quiet' }[pp.state] || 'push-pull unread';
+                scoreLine = `<span style="font-size:10px;color:var(--text-muted);">China pressure ${data.inbound_score ?? 0}/100 · Manila + allies ${data.outbound_score ?? 0}/100 · ${st} · Duterte pull L${data.duterte_pull_level ?? 0} · Mindanao L${data.bangsamoro_level ?? 0}${data.mdt_watch ? ' · 🛡️ MDT band' : ''}</span>`;
             } else if (tracker.id === 'dprk') {
                 // DPRK score line — leverage is INVERTED (low = dangerous), so we
                 // show the leverage STATE, not just a number, plus any live provocation.
@@ -934,6 +947,9 @@ function renderConvergencePanel(panel) {
                     ${tracker.name}
                 </div>
                 <div class="tracker-actors">${tracker.actors}</div>
+                ${data && data.success && data.top_indicator
+                    ? `<div style="font-size:11.5px;line-height:1.45;color:var(--text-primary);margin-top:6px;border-left:3px solid #f59e0b;padding-left:8px;">📡 ${String(data.top_indicator).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`
+                    : ''}
             </div>
             <div class="tracker-middle">
                 <div class="tracker-vectors">${vectorPills}</div>
@@ -1026,6 +1042,7 @@ function renderConvergencePanel(panel) {
     const _ASIA_RHET_PAGE = {
         china:'rhetoric-china.html', taiwan:'rhetoric-taiwan.html', japan:'rhetoric-japan.html',
         india:'rhetoric-india.html', pakistan:'rhetoric-pakistan.html', vietnam:'rhetoric-vietnam.html',
+        philippines:'rhetoric-philippines.html',
         afghanistan:'rhetoric-afghanistan.html', dprk:'rhetoric-dprk.html',
     };
     const _AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
@@ -1052,7 +1069,7 @@ function renderConvergencePanel(panel) {
     function _locName(theatre) {
         const t = String(theatre||'').toLowerCase();
         const map = { china:'China', taiwan:'Taiwan', japan:'Japan', india:'India',
-                      pakistan:'Pakistan', vietnam:'Vietnam', afghanistan:'Afghanistan',
+                      pakistan:'Pakistan', vietnam:'Vietnam', afghanistan:'Afghanistan', philippines:'Philippines',
                       dprk:'North Korea', regional:'Asia-Pacific' };
         return map[t] || (t ? t.charAt(0).toUpperCase()+t.slice(1) : 'Asia-Pacific');
     }
