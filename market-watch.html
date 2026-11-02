@@ -671,7 +671,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
             <a href="https://asifahanalytics.com" style="color:var(--accent);text-decoration:none;margin:0 10px;">Home</a>
         </div>
         <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch · fragility detector v1.4.0 — Proprietary.
+            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch v1.5.0 · fragility detector v1.4.0 — Proprietary.
         </div>
     </footer>
 
@@ -691,16 +691,28 @@ const PULSES = [
     { region: 'me',     name: 'Iran',          flag: '\uD83C\uDDEE\uD83C\uDDF7', backend: 'https://asifah-backend.onrender.com',     path: '/api/iran/financial-pulse', key: 'financial_pulse' },
     { region: 'europe', name: 'Russia',        flag: '\uD83C\uDDF7\uD83C\uDDFA', backend: 'https://asifa-europe-backend.onrender.com', path: '/api/stability/russia', key: 'financial_pulse' },
     { region: 'africa', name: 'Nigeria',       flag: '\uD83C\uDDF3\uD83C\uDDEC', backend: 'https://asifah-africa-backend.onrender.com', path: '/api/nigeria/stability', key: 'financial_pulse' },
-    { region: 'apac',   name: 'China',         flag: '\uD83C\uDDE8\uD83C\uDDF3', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/china/stability', key: 'financial_pulse' },
-    { region: 'apac',   name: 'Japan',         flag: '\uD83C\uDDEF\uD83C\uDDF5', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/asia/market/japan', key: 'instruments' },
+    // Nov 2 2026 (v1.5.0): Saudi / Qatar / UAE added -- their backends have built the
+    // canonical pulse since May and the board never showed them. All three read
+    // the cache-only /summary route, and China moved to its /summary too: the
+    // full stability route runs a LIVE SCAN on a cold cache, which a public page
+    // load should never trigger.
+    { region: 'me',     name: 'Saudi Arabia',  flag: '\uD83C\uDDF8\uD83C\uDDE6', backend: 'https://asifah-backend.onrender.com',     path: '/api/saudi/stability/summary', key: 'financial_pulse' },
+    { region: 'me',     name: 'Qatar',         flag: '\uD83C\uDDF6\uD83C\uDDE6', backend: 'https://asifah-backend.onrender.com',     path: '/api/qatar/stability/summary', key: 'financial_pulse' },
+    { region: 'me',     name: 'UAE',           flag: '\uD83C\uDDE6\uD83C\uDDEA', backend: 'https://asifah-backend.onrender.com',     path: '/api/uae/stability/summary', key: 'financial_pulse' },
+    { region: 'apac',   name: 'China',         flag: '\uD83C\uDDE8\uD83C\uDDF3', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/china/stability/summary', key: 'financial_pulse' },
+    // Japan now reads the canonical pulse (asia_market_quotes v1.1.0): its pill
+    // was hard-coded 'closed' at every hour of every day.
+    { region: 'apac',   name: 'Japan',         flag: '\uD83C\uDDEF\uD83C\uDDF5', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/asia/market/japan', key: 'financial_pulse' },
+    { region: 'apac',   name: 'Philippines',   flag: '\uD83C\uDDF5\uD83C\uDDED', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/asia/market/philippines', key: 'financial_pulse' },
 ];
 
 // Instruments priced globally rather than by any one market. Rendered once in
 // the global strip; country cards reference them by name instead of repeating
 // the tile. Keyed by the ticker each pulse reports.
 const GLOBAL_BENCHMARKS = {
-    'BZ=F': { name: 'Brent Crude',  note: 'Global oil benchmark. Referenced by Russia, Iran and Nigeria as a state-revenue baseline.' },
+    'BZ=F': { name: 'Brent Crude',  note: 'Global oil benchmark: a state-revenue baseline for exporters, an import bill for importers.' },
     'CL=F': { name: 'WTI Crude',    note: 'US oil benchmark. Referenced by Mexico (Pemex formulas are WTI-linked).' },
+    'TTF=F': { name: 'Dutch TTF Gas', note: 'European gas benchmark. Referenced by Qatar (LNG pricing into Europe).' },
 };
 
 
@@ -770,6 +782,11 @@ function tileHTML(prefix, key, t){
 }
 
 function drawSpark(cid, spark, tier){
+    // Nov 2 2026: backends send sparklines as plain numbers OR as {time, value}
+    // points (China, Saudi, Qatar, UAE, Nigeria, Philippines). Chart.js cannot
+    // plot {time, value}, so those tiles drew empty boxes. Normalise first.
+    if(Array.isArray(spark)) spark = spark.map(p => (typeof p === 'number') ? p
+        : (p && (p.value ?? p.close ?? p.y))).filter(v => typeof v === 'number');
     if(typeof Chart==='undefined' || !spark || spark.length<2) return;
     const ctx = document.getElementById(cid);
     if(!ctx) return;
@@ -853,13 +870,36 @@ function countryCardHTML(p, fp, tiles){
          + '</summary>' + body + '</details>';
 }
 
+// Nov 2 2026: a pulse that fails or comes back empty used to vanish without a
+// trace, so a dead backend looked like a country we never covered. It now
+// leaves an UNREAD card. Unread is not quiet.
+function unreadCardHTML(p, why){
+    return '<details class="country-card" style="border:1px dashed var(--card-border);'
+         + 'border-left:3px solid #6b7280;border-radius:10px;padding:14px 18px;margin-bottom:12px;'
+         + 'background:var(--card-bg);opacity:.8;"><summary style="cursor:pointer;list-style:none;'
+         + 'display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">'
+         + '<span style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.15rem;">'
+         + (p.flag||'') + '</span><span style="font-weight:800;">' + esc(p.name) + '</span></span>'
+         + '<span style="font-family:\'Courier New\',monospace;font-size:10px;font-weight:800;letter-spacing:1px;'
+         + 'padding:3px 9px;border-radius:999px;background:#6b728022;border:1px solid #6b728066;color:#9ca3af;">UNREAD</span>'
+         + '</summary><div class="nyse-empty-state" style="margin-top:10px;">No market read this cycle ('
+         + esc(why) + '). This is a gap in our data, not a quiet market.</div></details>';
+}
+function markUnread(p, why){
+    const board = el('board-'+p.region);
+    if(!board) return;
+    board.insertAdjacentHTML('beforeend', unreadCardHTML(p, why));
+    _regionHas[p.region] = true;
+    if(_regionTab) buildRegionTabs();
+}
+
 async function loadPulse(p){
     try {
         const r = await fetch(p.backend + p.path);
-        if(!r.ok) return;
+        if(!r.ok){ markUnread(p, 'backend answered HTTP ' + r.status); return; }
         const data = await r.json();
         let fp = dig(data, p.key);
-        if(!fp) return;
+        if(!fp){ markUnread(p, 'no financial pulse in the cached scan yet'); return; }
 
         // Shape adapters -- each backend reports its own dialect.
         let tiles = fp.tiles;
@@ -886,7 +926,7 @@ async function loadPulse(p){
             });
             fp = { market_status: 'closed', tiles: tiles };
         }
-        if(!tiles || !Object.keys(tiles).length) return;
+        if(!tiles || !Object.keys(tiles).length){ markUnread(p, 'no instruments reported'); return; }
 
         const board = el('board-'+p.region);
         if(!board) return;
@@ -903,7 +943,7 @@ async function loadPulse(p){
             drawSpark('spark_'+prefix+'_'+k, t.sparkline, t.tier);
         });
         renderGlobalStrip();
-    } catch(e){ console.warn('[Market Watch] pulse failed:', p.name, e); }
+    } catch(e){ console.warn('[Market Watch] pulse failed:', p.name, e); markUnread(p, 'backend unreachable'); }
 }
 
 function renderGlobalStrip(){
@@ -913,7 +953,10 @@ function renderGlobalStrip(){
     if(!tks.length) return;
     board.innerHTML = tks.map(tk=>{
         const g = GLOBAL_BENCHMARKS[tk], s = _globalSeen[tk];
-        const t = Object.assign({}, s.tile, { name: g.name, note: g.note });
+        // Nov 2 2026: name the cards that lean on it (was a hand-typed list that went stale).
+        const who = (_countryRefs[tk] || []).filter((v,i,a)=>a.indexOf(v)===i);
+        const t = Object.assign({}, s.tile, { name: g.name,
+            note: g.note + (who.length ? ' Referenced by: ' + who.join(', ') + '.' : '') });
         return tileHTML('global', s.key, t);
     }).join('');
     tks.forEach(tk=>{
