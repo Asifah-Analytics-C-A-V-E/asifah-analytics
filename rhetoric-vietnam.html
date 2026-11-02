@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Vietnam Rhetoric & South China Sea Tracker v1.0.0 — June 2026 -->
+<!-- Asifah Analytics — Vietnam Rhetoric & South China Sea Tracker v1.1.0 — Nov 2 2026 (top indicator, chronological history, escaped feed text, Vietnam question text) · v1.0.0 June 2026 -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -423,6 +423,10 @@
         <span class="nav-btn-label">🇻🇳 Vietnam Stability</span>
         <span class="nav-btn-status">● Live</span>
     </a>
+    <a href="rhetoric-philippines.html" class="nav-btn rhetoric-btn">
+        <span class="nav-btn-label">🇵🇭 Philippines (the other claimant)</span>
+        <span class="nav-btn-status">● Live</span>
+    </a>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -443,7 +447,13 @@
     </div>
 </div>
 
-<!-- SO WHAT CARD (v1.1.0 — backend-synthesized via taiwan_signal_interpreter) -->
+<!-- TOP INDICATOR (v1.1.0 page / tracker v1.2.0) — the one plain-language line -->
+<div id="topIndicatorBox" style="display:none;background:var(--card-bg);border:1px solid var(--card-border);border-left:4px solid #f59e0b;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:2px;color:#f59e0b;font-family:'Courier New',monospace;margin-bottom:6px;">📡 TOP INDICATOR</div>
+    <div style="font-size:0.98rem;line-height:1.5;color:var(--text-primary);" id="topIndicatorText"></div>
+</div>
+
+<!-- SO WHAT CARD (backend-synthesized via vietnam_signal_interpreter) -->
 <div class="interp-so-what" id="soWhatCard" style="display:none;">
     <div class="interp-scenario-header">
         <span class="interp-scenario-icon" id="soWhatIcon">⚪</span>
@@ -459,7 +469,7 @@
         <div class="interp-bottomline-text" id="soWhatBottomLine">--</div>
     </div>
 
-    <!-- Four-vector readout (Taiwan-specific — includes DETERRENCE GAP) -->
+    <!-- Four-vector readout — includes the COERCION-RESPONSE GAP -->
     <div class="vector-readout" id="soWhatVectors">
         <div class="vector-stat">
             <div class="vector-stat-label">Response Strength</div>
@@ -531,10 +541,10 @@
 
 <!-- DUAL DASHBOARD -->
 <div class="dual-dashboard">
-    <!-- OUTBOUND (Taiwan) -->
+    <!-- OUTBOUND (Vietnam posture) -->
     <div class="dashboard-card outbound">
         <div class="dashboard-title">🇻🇳 <span data-i18n="outboundTitle">OUTBOUND — VIETNAM POSTURE</span></div>
-        <div class="dashboard-q" data-i18n="outboundQ">Q: Is Taiwan hardening its posture in ways that could trigger a PLA response?</div>
+        <div class="dashboard-q" data-i18n="outboundQ">Q: Is Vietnam hardening its SCS posture, and is its response keeping pace with Chinese pressure?</div>
         <div style="display:flex;align-items:flex-end;gap:14px;margin-bottom:16px;">
             <div>
                 <div class="dashboard-score" id="outboundScore">--</div>
@@ -546,7 +556,7 @@
     <!-- INBOUND (China pressure) -->
     <div class="dashboard-card inbound">
         <div class="dashboard-title">🇨🇳 <span data-i18n="inboundTitle">INBOUND — CHINA PRESSURE</span></div>
-        <div class="dashboard-q" data-i18n="inboundQ">Q: What is Beijing signaling at Taiwan right now?</div>
+        <div class="dashboard-q" data-i18n="inboundQ">Q: What is Beijing signaling toward Vietnam in the South China Sea right now?</div>
         <div style="display:flex;align-items:flex-end;gap:14px;margin-bottom:16px;">
             <div>
                 <div class="dashboard-score" id="inboundScore">--</div>
@@ -567,7 +577,7 @@
 <!-- HISTORY CHART -->
 <div class="history-chart-card">
     <div class="history-chart-header">
-        <div class="history-chart-title" data-i18n="trendTitle">📈 DETERRENCE TREND</div>
+        <div class="history-chart-title" data-i18n="trendTitle">📈 COERCION–RESPONSE TREND</div>
         <div class="history-toggle-group">
             <button class="history-toggle-btn active" id="btn7d" onclick="setHistoryView('7d')">7D</button>
             <button class="history-toggle-btn" id="btn30d" onclick="setHistoryView('30d')">30D</button>
@@ -603,7 +613,7 @@
         <a href="mailto:asifahanalytics@gmail.com" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.45);color:var(--accent);font-size:0.75rem;font-weight:700;text-decoration:none;">✉️ Contact Asifah</a>
     </div>
     <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.55;padding-top:14px;border-top:1px solid var(--card-border);">
-        This composite is a <strong>CONVERGENCE indicator, NOT a probability of action.</strong> OSINT-based pattern analysis, not certainty. Updated every ~6h &middot; Not for operational use. &copy; 2025-2026 Asifah Analytics — v1.0.0-vietnam.
+        This composite is a <strong>CONVERGENCE indicator, NOT a probability of action.</strong> OSINT-based pattern analysis, not certainty. Updated every ~6h &middot; Not for operational use. &copy; 2025-2026 Asifah Analytics — page v1.1.0 · tracker v1.2.0-vietnam.
     </div>
     <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:12px;">
         <a href="mission.html" style="color:var(--text-secondary);text-decoration:none;">Mission Statement</a> &middot;
@@ -732,6 +742,12 @@
         },
     };
 
+    // Feed text (titles, triggers) is untrusted -- escape before innerHTML.
+    const esc = (x) => String(x ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const safeUrl = (u) => /^https?:\/\//i.test(u || '') ? u : '#';
+    // /history returns newest first (Redis LPUSH); charts read oldest first.
+    const _chrono = (h) => (h || []).slice().sort((a, b) => new Date(a.ts) - new Date(b.ts));
+
     // ── STATE ──
     let currentLang = 'en';
     let currentData = null;
@@ -823,7 +839,7 @@
             const resp = await fetch(HISTORY_CONFIG.historyUrl + '?limit=120');
             if (!resp.ok) return;
             const data = await resp.json();
-            const history = data.history || [];
+            const history = _chrono(data.history);
             const entries = _sliceEntries(history, _historyView);
             const legendEl = document.getElementById('historyLegend');
             if (legendEl) legendEl.innerHTML = `
@@ -843,12 +859,12 @@
             );
             let maxEntries = [];
             results.forEach(r => {
-                const h = r.status==='fulfilled' && r.value?.history ? _sliceEntries(r.value.history, _historyView) : [];
+                const h = r.status==='fulfilled' && r.value?.history ? _sliceEntries(_chrono(r.value.history), _historyView) : [];
                 if (h.length > maxEntries.length) maxEntries = h;
             });
             const labels = maxEntries.map(e => _fmtLabel(e.ts));
             const datasets = HISTORY_CONFIG.compareTheatres.map((t, i) => {
-                const h = results[i].status==='fulfilled' && results[i].value?.history ? _sliceEntries(results[i].value.history, _historyView) : [];
+                const h = results[i].status==='fulfilled' && results[i].value?.history ? _sliceEntries(_chrono(results[i].value.history), _historyView) : [];
                 const field = t.field || 'outbound_score';
                 return { label:t.label, data:h.map(x=>x[field]??0), borderColor:t.color, backgroundColor:'transparent', borderWidth:2, pointRadius:h.length<15?3:0, pointHoverRadius:4, fill:false, tension:0.35 };
             });
@@ -1022,7 +1038,7 @@
             const triggers = (a.matched_triggers || []).slice(0, 4);
             const triggerPills = triggers.map(tr => {
                 const isTW = tr.startsWith('TRIPWIRE:');
-                return `<span class="trigger-pill${isTW?' tripwire':''}">${tr.replace('TRIPWIRE: ','⚡ ')}</span>`;
+                return `<span class="trigger-pill${isTW?' tripwire':''}">${esc(tr.replace('TRIPWIRE: ','⚡ '))}</span>`;
             }).join('');
 
             const card = document.createElement('div');
@@ -1068,10 +1084,10 @@
                 const item = document.createElement('div');
                 item.className = 'article-item';
                 const dt = art.publishedAt ? new Date(art.publishedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-                const triggerLabel = art.trigger ? `<span class="article-trigger">${art.trigger}</span>` : '';
+                const triggerLabel = art.trigger ? `<span class="article-trigger">${esc(art.trigger)}</span>` : '';
                 item.innerHTML = `
-                    <a href="${art.url||'#'}" target="_blank" rel="noopener" class="article-link">${art.title||'Untitled'}</a>${triggerLabel}
-                    <div class="article-meta">${art.source||''} ${dt?'· '+dt:''} · Contribution: ${(art.contribution||0).toFixed(2)}</div>
+                    <a href="${esc(safeUrl(art.url))}" target="_blank" rel="noopener" class="article-link">${esc(art.title||'Untitled')}</a>${triggerLabel}
+                    <div class="article-meta">${esc(art.source||'')} ${dt?'· '+dt:''} · Contribution: ${(art.contribution||0).toFixed(2)}</div>
                 `;
                 section.appendChild(item);
             });
@@ -1095,13 +1111,16 @@
         renderSoWhat(data);
         renderRedLines(data);
         renderTopSignals(data);
+        const tib = document.getElementById('topIndicatorBox');
+        const ti = data.top_indicator || (data.top_signals?.[0]?.long_text) || '';
+        if (tib) { tib.style.display = ti ? 'block' : 'none'; document.getElementById('topIndicatorText').textContent = ti; }
         const artCount = document.getElementById('articlesClassified');
         if (artCount) artCount.textContent = `📰 ${data.total_articles||0} articles analyzed · Corresponding articles in Top Articles by Actor below`;
         loadHistoryData();
     }
 
     // ── RENDER: SO WHAT CARD (v1.1.0) ──
-    // Taiwan-specific: 4-vector readout includes deterrence_gap (the key metric)
+    // 4-vector readout includes the coercion-response gap (the key metric)
     function renderSoWhat(data) {
         const sw = data.so_what;
         if (!sw) { document.getElementById('soWhatCard').style.display = 'none'; return; }
@@ -1117,7 +1136,7 @@
         scenEl.textContent = sw.scenario || '--';
         scenEl.style.color = sw.scenario_color || '#6b7280';
 
-        // Taiwan 4-vector readout
+        // 4-vector readout
         document.getElementById('vecDeterrence').textContent = 'L' + (sw.response_strength ?? 0);
         document.getElementById('vecInbound').textContent    = 'L' + (sw.inbound_pressure  ?? 0);
         document.getElementById('vecResolve').textContent    = 'L' + (sw.partner_strength  ?? 0);
@@ -1149,7 +1168,7 @@
             const isBreached   = text.toUpperCase().includes('BREACHED') || text.toUpperCase().includes('RED LINE');
             const isHistorical = text.toLowerCase().includes('historical') || text.toLowerCase().includes('analog');
             div.className = `interp-indicator${isBreached ? ' breached-ind' : isHistorical ? ' historical-ind' : ''}`;
-            div.innerHTML = `${icon ? `<span style="margin-right:6px;">${icon}</span>` : ''}${text}`;
+            div.innerHTML = `${icon ? `<span style="margin-right:6px;">${esc(icon)}</span>` : ''}${esc(text)}`;
             indEl.appendChild(div);
         });
 
@@ -1168,7 +1187,7 @@
     }
 
     // ── RENDER: RED LINES CARD (v1.1.0) ──
-    // Taiwan-specific: handles POSITIVE (deterrence-positive green line) events too
+    // Handles POSITIVE (deterrence-positive green line) events too
     function renderRedLines(data) {
         const rls = data.red_lines || [];
         const card = document.getElementById('redLinesCard');
@@ -1176,7 +1195,7 @@
 
         card.style.display = 'block';
 
-        // Taiwan trinary: BREACHED (red) / APPROACHING (orange) / POSITIVE (green — Japan formalization, etc.)
+        // Trinary: BREACHED (red) / APPROACHING (orange) / POSITIVE (green — US-Vietnam security upgrade)
         // Positive events are identified by color=#22c55e in the red-line def
         const breached    = rls.filter(r => r.status === 'BREACHED' && r.color !== '#22c55e');
         const approaching = rls.filter(r => r.status === 'APPROACHING');
@@ -1187,10 +1206,10 @@
         document.getElementById('redLinePositiveCount').textContent    = positive.length;
 
         const catLabels = {
-            'deterrence_failure':    '📉 DETERRENCE FAILURE',
-            'asymmetric_threshold':  '🦔 ASYMMETRIC THRESHOLD',
+            'sovereignty_erosion':   '🏝️ SOVEREIGNTY EROSION',
+            'kinetic_threshold':     '🚨 KINETIC THRESHOLD',
             'coalition_cohesion':    '🤝 COALITION COHESION',
-            'domestic_resolve':      '🗳️ DOMESTIC RESOLVE',
+            'hedging_balance':       '🎋 HEDGING BALANCE',
             'china_direct':          '⚔️ CHINA DIRECT',
         };
 
@@ -1216,8 +1235,8 @@
                         <span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">${catLabel}</span>
                         ${r.severity ? `<span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">SEV ${r.severity}/3</span>` : ''}
                     </div>
-                    <div class="red-line-trigger">${r.trigger || r.detail || ''}</div>
-                    ${r.source ? `<div class="red-line-source">${r.source}</div>` : ''}
+                    <div class="red-line-trigger">${esc(r.trigger || r.detail || '')}${r.outlets ? ` <span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">· ${r.outlets} OUTLET${r.outlets===1?'':'S'}</span>` : ''}</div>
+                    ${r.source ? `<div class="red-line-source">${esc(r.source)}</div>` : ''}
                 </div>`;
             itemsEl.appendChild(item);
         });
@@ -1272,7 +1291,7 @@
     async function triggerScan() {
         const btn = document.getElementById('scanBtn');
         if (btn) { btn.style.opacity='0.5'; btn.disabled=true; document.getElementById('scanBtnIcon').innerHTML='<span class="spin">⟳</span>'; }
-        document.getElementById('theatreScanInfo').textContent = 'Scan triggered — reading all sources (~4 min, inbound from China fingerprint)...';
+        document.getElementById('theatreScanInfo').textContent = 'Scan triggered — reading all sources (~4 min)...';
         await loadRhetoricData(true);
     }
 
