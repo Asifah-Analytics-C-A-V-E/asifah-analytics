@@ -824,13 +824,39 @@
             border-radius: 50%;
             opacity: 0.34;
         }
+
+        /* ── Nov 2 2026 retrofit (asia.html recipe) ── */
+        .flight-widget { background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid #e74c3c; }
+        .flight-widget-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+        .flight-widget-title { font-size: 17px; font-weight: bold; color: #c0392b; letter-spacing: 0.5px; }
+        .flight-widget-title::before { content: "✈️ "; font-size: 20px; margin-right: 8px; }
+        .flight-status-badge { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .flight-status-badge.normal { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+        .flight-status-badge.active { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        .flight-cancellations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px,100%), 1fr)); gap: 15px; }
+        .cancellation-card { background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); border: 2px solid #fecaca; border-radius: 10px; padding: 18px; transition: all 0.3s ease; }
+        .cancellation-card:hover { border-color: #f87171; transform: translateY(-4px); }
+        .cancellation-airline { font-size: 16px; font-weight: bold; color: #991b1b; margin-bottom: 8px; }
+        .cancellation-details { font-size: 13px; color: #6b7280; line-height: 1.6; }
+        .no-cancellations { text-align: center; padding: 30px; color: #6b7280; font-style: italic; }
+        .no-cancellations::before { content: "✓"; display: block; font-size: 48px; color: #10b981; margin-bottom: 10px; }
+        [data-theme="dark"] .flight-widget { background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border-color: #991b1b; }
+        [data-theme="dark"] .cancellation-card { background: linear-gradient(145deg, #1e293b 0%, #450a0a 100%); border-color: #991b1b; }
+        [data-theme="dark"] .cancellation-details { color: #cbd5e1; }
+        [data-theme="dark"] .cancellation-airline { color: #fca5a5; }
+        [data-theme="dark"] .flight-widget-title { color: #f87171; }
+        @media (max-width: 768px) {
+            .caution-banner { flex-wrap:wrap !important; padding:14px 16px !important; }
+            .caution-banner > div { min-width:0 !important; flex:1 1 220px !important; }
+            .caution-banner > div:first-child { flex:0 0 auto !important; }
+            .caution-banner a { margin-left:auto; }
+        }
 </style>
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 </head>
-<body>
-<div class="watermark"></div>
-<!-- MOBILE HAMBURGER BUTTON + DRAWER BACKDROP (Gold Standard v1.2 -- May 18, 2026) -->
-<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
-<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+<body data-asifah-ladder="off">
+<!-- Nov 2 2026: logo watermark removed -- the regional page carries its bespoke background (Ukraine_on_fire.png).
+     The page's own hamburger + backdrop are gone too: the shared shell owns the drawer. -->
 
     <!-- ========== LOADING OVERLAY ========== -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -866,7 +892,7 @@
             <div class="loading-error" id="loadingError" style="background: rgba(0, 180, 255, 0.08); border: 1px solid rgba(0, 180, 255, 0.25); color: #67e8f9;">
                 ⏳ Still loading — scanning all monitored countries across multiple intelligence sources. This is normal for a first visit. Almost there!
             <div style="margin-top: 20px; font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 2px;">
-                FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT
+                FOR RESEARCH PURPOSES ONLY · CONVERGENCE, NOT PREDICTION
             </div>
             </div>
         </div>
@@ -875,7 +901,7 @@
     <div class="container">
         <header>
             <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
-            <a href="https://asifahanalytics.com" class="home-button" title="Home">🏠 <span data-i18n="homeButton">HOME</span></a>
+            <a href="https://asifahanalytics.com" class="home-button home-btn" title="Home">🏠 <span data-i18n="homeButton">HOME</span></a>
             <div class="language-switcher">
                 <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
                 <button class="lang-btn" onclick="switchLanguage('ru', this)">RU</button>
@@ -895,7 +921,7 @@
         <!-- ════════════════════════════════════════════════════════════ -->
         <!-- WORLDWIDE CAUTION BANNER (canonical; current State Dept text, Security Alert Mar 22 2026, page last updated May 28 2026) -->
         <!-- ════════════════════════════════════════════════════════════ -->
-        <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
+        <div class="caution-banner" style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
             <div style="font-size:28px;flex-shrink:0;">🚨</div>
             <div style="flex:1;">
                 <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
@@ -960,7 +986,7 @@
                     <button class="collapse-toggle-btn" onclick="toggleCard('albania-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
                     <a href="albania-stability.html" class="country-stability-btn">
                         🇦🇱 Albania Stability Index
-                        <span class="btn-subtitle">NATO eastern flank, defense spending & border dynamics</span>
+                        <span class="btn-subtitle">Western Balkans, EU accession &amp; organised-crime corridors</span>
                     </a>
                     <div class="card-scan-controls">
                         <div class="card-time-window">
@@ -991,7 +1017,7 @@
                         <span class="intel-pill inactive">💬 Reddit</span>
                     </div>
                     <div class="weather-section" id="albania-weather">
-                        <div class="weather-title">🌤️ 7-Day Forecast — Warsaw</div>
+                        <div class="weather-title">🌤️ 7-Day Forecast — Tirana</div>
                         <div class="weather-forecast" id="albania-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
                     </div>
                     <div class="timeline-display">
@@ -1265,7 +1291,7 @@
                     <button class="collapse-toggle-btn" onclick="toggleCard('belgium-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
                     <a href="belgium-stability.html" class="country-stability-btn">
                         🇧🇪 Belgium Stability Index
-                        <span class="btn-subtitle">NATO eastern flank, defense spending & border dynamics</span>
+                        <span class="btn-subtitle">EU &amp; NATO headquarters, hybrid threats &amp; critical infrastructure</span>
                     </a>
                     <div class="card-scan-controls">
                         <div class="card-time-window">
@@ -1296,7 +1322,7 @@
                         <span class="intel-pill inactive">💬 Reddit</span>
                     </div>
                     <div class="weather-section" id="belgium-weather">
-                        <div class="weather-title">🌤️ 7-Day Forecast — Warsaw</div>
+                        <div class="weather-title">🌤️ 7-Day Forecast — Brussels</div>
                         <div class="weather-forecast" id="belgium-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
                     </div>
                     <div class="timeline-display">
@@ -2166,95 +2192,42 @@
         </div><!-- end targets-grid -->
         </div><!-- end page-with-sidebar -->
 
-        <!-- ========== NOTAM WIDGET ========== -->
+        <!-- ========== AIRSPACE WATCH (shared airspace_watch.py) ========== -->
         <div class="notam-widget" id="notamWidget">
             <div class="notam-widget-header">
-                <div class="notam-widget-title" data-i18n="notamTitle">European NOTAM Monitor</div>
-                <div class="notam-status-badge" id="notamStatusBadge" data-i18n="notamScanning">SCANNING...</div>
+                <div class="notam-widget-title" data-i18n="notamTitle">Airspace Watch — Europe</div>
+                <div class="notam-status-badge" id="notamStatusBadge">SCANNING...</div>
             </div>
+            <div id="airspaceLines" style="font-size:12.5px;line-height:1.5;margin:-8px 0 10px;"></div>
             <div class="notam-scroll-container">
                 <div class="notam-cards-wrapper" id="notamCardsWrapper">
-                    <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; width:100%;">Loading NOTAMs...</div>
+                    <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; width:100%;">Loading airspace reads...</div>
                 </div>
             </div>
         </div>
 
-        <!-- ========== FLIGHT WIDGET ========== -->
-        <!-- ========== FLIGHT CANCELLATIONS WIDGET ========== -->
-        <div class="flight-section">
-            <div class="flight-header">
-                <h3>🛫 Flight Disruptions — Europe
-                    <span class="flight-count-badge" id="flight-count">—</span>
-                </h3>
-                <button class="flight-toggle-btn" onclick="toggleFlights()" id="flight-toggle-btn">▼ Show</button>
+        <!-- ========== FLIGHT WATCH (shared flight_watch.py) ========== -->
+        <div class="flight-widget" id="flightWidget">
+            <div class="flight-widget-header">
+                <div class="flight-widget-title" data-i18n="flightTitle">Flight Watch — Europe</div>
+                <div class="flight-status-badge normal" id="flightStatusBadge">SCANNING...</div>
             </div>
-            <div id="flight-container" style="display:none;">
-                <div class="flight-loading">⏳ Loading flight disruption data...</div>
+            <div id="flightLines" style="font-size:12.5px;line-height:1.5;margin:0 0 12px;"></div>
+            <div class="flight-cancellations-grid" id="flightCancellationsGrid">
+                <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; grid-column:1/-1;">Loading flight data...</div>
             </div>
         </div>
 
-        <!-- ========== RATE LIMIT ========== -->
-        <div class="rate-limit-box" id="rateLimitBox">
-            <div class="rate-limit-item">
-                <div class="rate-limit-label" data-i18n="rlRequests">Requests Used</div>
-                <div class="rate-limit-value" id="rlUsed">--</div>
-            </div>
-            <div class="rate-limit-item">
-                <div class="rate-limit-label" data-i18n="rlRemaining">Remaining</div>
-                <div class="rate-limit-value success" id="rlRemaining">--</div>
-            </div>
-            <div class="rate-limit-item">
-                <div class="rate-limit-label" data-i18n="rlLimit">Daily Limit</div>
-                <div class="rate-limit-value" id="rlLimit">--</div>
-            </div>
-            <div class="rate-limit-item">
-                <div class="rate-limit-label" data-i18n="rlReset">Resets In</div>
-                <div class="rate-limit-value" id="rlReset">--</div>
-            </div>
-        </div>
+        <!-- Nov 2 2026: requests-used box retired (as on asia.html) -->
 
-        <!-- ========== FOOTER ========== -->
-        <footer>
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4 data-i18n="footerAbout">About</h4>
-                    <p><strong>ASIFAH ANALYTICS · EUROPE DASHBOARD</strong></p>
-                    <p>asifa-europe-backend.onrender.com · Updates every 12 hours · Force refresh via Scan OSINT</p>
-                </div>
-                <div class="footer-section">
-                    <h4 data-i18n="footerSources">Data Sources</h4>
-                    <p>OSINT aggregation from GDELT (en/fr/de/ru), NewsAPI, Brave Search, RSS Feeds (Kyiv Post, Meduza, ISW, Arctic Today), Reddit · Open-Meteo weather · FAA NOTAMs · U.S. State Department travel advisories</p>
-                </div>
-                <div class="footer-section">
-                    <h4 data-i18n="footerMethodology">Methodology</h4>
-                    <p>Source-weighted OSINT aggregation with time-decay scoring, keyword severity multipliers, de-escalation detection, and momentum analysis. Index floor: 10%, ceiling: 95%.</p>
-                </div>
-            </div>
-
-            <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-            <div style="margin:28px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-                <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
-            </div>
-
-            <div class="disclaimer">
-                <strong>⚠️ DISCLAIMER</strong>
-                This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Probabilities reflect media signal intensity and should not be interpreted as ground-truth predictions. Always consult authoritative sources for decision-making.
-            </div>
-
-            <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px;">
-                <a href="mission.html" style="color:#67e8f9; text-decoration:none; margin:0 10px;">Mission Statement</a>
-                <span style="color:#64748b;">·</span>
-                <a href="privacy.html" style="color:#67e8f9; text-decoration:none; margin:0 10px;">Privacy Policy</a>
-                <span style="color:#64748b;">·</span>
-                <a href="https://asifahanalytics.com" style="color:#67e8f9; text-decoration:none; margin:0 10px;">Home</a>
-            </div>
-
-            <div class="copyright-footer">
-                © 2025-2026 Asifah Analytics. All Rights Reserved. Proprietary and Confidential.<br>
-                Unauthorized use, reproduction, or distribution prohibited.
-            </div>
-        </footer>
+        <!-- Page-specific sources & method: the shared shell moves this block into its footer -->
+        <section class="footer-info" data-asifah-footer-extra>
+            <p><strong>ASIFAH ANALYTICS · EUROPE DASHBOARD</strong></p>
+            <p>Updates every 12 hours · Scan OSINT refreshes on demand (rate-limited)</p>
+            <p><strong>Sources:</strong> OSINT aggregation from GDELT (en/fr/de/ru/uk), NewsAPI, Brave Search, RSS (Kyiv Post, Meduza, ISW, Arctic Today and others), Reddit · Open-Meteo weather · Airspace Watch: EASA conflict-zone bulletins, the FAA's published flight-restriction list, and open ADS-B traffic counts · Flight Watch: airline announcements via Google News · U.S. State Department travel advisories (public data).</p>
+            <p><strong>Method:</strong> Country cards are convergence reads, not predictions: source-weighted aggregation with time decay, de-escalation detection and momentum, plus each country's rhetoric tracker and the military tracker where they exist. A source not read this cycle is shown as unread &mdash; unread is not the same as quiet.</p>
+            <p style="margin-top:12px;font-size:10px;opacity:.75;">FOR RESEARCH PURPOSES ONLY · Independent analysis · Not intelligence assessments, military advice or policy recommendations · © 2025-2026 Asifah Analytics</p>
+        </section>
     </div><!-- end container -->
 
     <script>
@@ -2382,9 +2355,9 @@
             targetHungary: "HUNGARY",
             targetPoland: "POLAND", targetRussia: "RUSSIA",
             targetTurkey: "TURKEY", targetUkraine: "UKRAINE",
-            notamTitle: "European NOTAM Monitor",
+            notamTitle: "Airspace Watch — Europe",
             notamScanning: "SCANNING...",
-            flightTitle: "European Flight Disruption Monitor",
+            flightTitle: "Flight Watch — Europe",
             flightScanning: "SCANNING...",
             rlRequests: "Requests Used", rlRemaining: "Remaining",
             rlLimit: "Daily Limit", rlReset: "Resets In",
@@ -2406,8 +2379,8 @@
             targetHungary: "ВЕНГРИЯ",
             targetPoland: "ПОЛЬША", targetRussia: "РОССИЯ",
             targetTurkey: "ТУРЦИЯ", targetUkraine: "УКРАИНА",
-            notamTitle: "Европейский монитор NOTAM", notamScanning: "СКАНИРОВАНИЕ...",
-            flightTitle: "Монитор нарушений рейсов в Европе", flightScanning: "СКАНИРОВАНИЕ...",
+            notamTitle: "Наблюдение за воздушным пространством — Европа", notamScanning: "СКАНИРОВАНИЕ...",
+            flightTitle: "Наблюдение за рейсами — Европа", flightScanning: "СКАНИРОВАНИЕ...",
             rlRequests: "Запросов использовано", rlRemaining: "Осталось",
             rlLimit: "Дневной лимит", rlReset: "Сброс через",
             footerSources: "Источники данных", footerMethodology: "Методология", footerContact: "Контакт"
@@ -2428,8 +2401,8 @@
             targetHungary: "HONGRIE",
             targetPoland: "POLOGNE", targetRussia: "RUSSIE",
             targetTurkey: "TURQUIE", targetUkraine: "UKRAINE",
-            notamTitle: "Moniteur NOTAM européen", notamScanning: "ANALYSE...",
-            flightTitle: "Moniteur des perturbations de vols européens", flightScanning: "ANALYSE...",
+            notamTitle: "Veille de l’espace aérien — Europe", notamScanning: "ANALYSE...",
+            flightTitle: "Veille des vols — Europe", flightScanning: "ANALYSE...",
             rlRequests: "Requêtes utilisées", rlRemaining: "Restant",
             rlLimit: "Limite quotidienne", rlReset: "Réinitialisation dans",
             footerSources: "Sources de données", footerMethodology: "Méthodologie", footerContact: "Contact"
@@ -2450,8 +2423,8 @@
             targetHungary: "UNGARN",
             targetPoland: "POLEN", targetRussia: "RUSSLAND",
             targetTurkey: "TÜRKEI", targetUkraine: "UKRAINE",
-            notamTitle: "Europäischer NOTAM-Monitor", notamScanning: "SCANNEN...",
-            flightTitle: "Europäischer Flugstörungsmonitor", flightScanning: "SCANNEN...",
+            notamTitle: "Luftraumbeobachtung — Europa", notamScanning: "SCANNEN...",
+            flightTitle: "Flugbeobachtung — Europa", flightScanning: "SCANNEN...",
             rlRequests: "Anfragen verwendet", rlRemaining: "Verbleibend",
             rlLimit: "Tageslimit", rlReset: "Zurücksetzung in",
             footerSources: "Datenquellen", footerMethodology: "Methodik", footerContact: "Kontakt"
@@ -2752,165 +2725,145 @@ async function loadCachedScoresFallback() {
     }
 
     // ===== NOTAM LOADER =====
+    // ===== AIRSPACE WATCH (shared module airspace_watch.py, Nov 2026) =====
     async function loadNotams() {
         try {
             const response = await fetch(`${API_BASE}/api/europe/notams`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            displayNotams(data);
-        } catch (err) {
-            console.error('NOTAM load error:', err);
-            document.getElementById('notamCardsWrapper').innerHTML = '<div style="padding:30px;text-align:center;color:#c0392b;">Failed to load NOTAMs. Backend may be warming up.</div>';
-            document.getElementById('notamStatusBadge').textContent = 'ERROR';
+            displayNotams(await response.json());
+        } catch(err) {
+            displayNotams({state: 'unread'});
         }
     }
 
+    function _esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function _safeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : '#'; }
+
     function displayNotams(data) {
+        data = data || {};
         const wrapper = document.getElementById('notamCardsWrapper');
         const badge = document.getElementById('notamStatusBadge');
         const notams = data.notams || [];
+        const linesEl = document.getElementById('airspaceLines');
+        if (linesEl) {
+            const word = st => st === 'read' ? 'read' : st === 'stale' ? 'last good read' : st === 'partial' ? 'partly read' : 'unread';
+            const src = data.sources || {};
+            const parts = ['EASA ' + word((src.easa||{}).state), 'FAA ' + word((src.faa||{}).state)];
+            if (src.opensky) parts.push((src.opensky.provider === 'al' ? 'adsb.lol' : 'OpenSky') + ' traffic ' + word(src.opensky.state));
+            linesEl.innerHTML = (data.lines || []).slice(0, 4).map(l => `<div>• ${_esc(l)}</div>`).join('') +
+                `<div style="opacity:.7;font-size:11px;margin-top:4px;">Sources: ${parts.join(' · ')}${data.timestamp ? ' · ' + new Date(data.timestamp).toLocaleString() : ''}</div>`;
+        }
         if (notams.length === 0) {
-            wrapper.innerHTML = '<div class="no-notams"><div class="no-notams-title">No Active Alerts</div><div class="no-notams-subtitle">No critical NOTAMs detected across European airspace</div></div>';
-            badge.textContent = 'CLEAR';
-            badge.style.background = '#d1fae5'; badge.style.color = '#065f46';
+            const unread = !data.state || data.state === 'unread';
+            wrapper.innerHTML = unread
+                ? '<div class="no-notams"><div>? Airspace sources unread</div><div>Not read this cycle — this is not the same as quiet airspace.</div></div>'
+                : '<div class="no-notams"><div>No active warnings or traffic anomalies</div><div>Sources read; nothing flagged this cycle.</div></div>';
+            badge.textContent = unread ? 'UNREAD' : '0 ACTIVE';
+            badge.style.background = unread ? '#e5e7eb' : '#d1fae5'; badge.style.color = unread ? '#374151' : '#065f46';
             wrapper.style.animation = 'none';
             return;
         }
-        badge.textContent = `${notams.length} ACTIVE`;
-        badge.style.background = '#fef3c7'; badge.style.color = '#92400e';
+        badge.textContent = `${notams.length} ACTIVE`; badge.style.background = '#fef3c7'; badge.style.color = '#92400e';
         let html = '';
-        const allNotams = [...notams, ...notams];
-        allNotams.forEach(notam => {
-            const typeColor = getNotamTypeColor(notam.classification || notam.type || '');
-            const displayCountry = notam.country || (notam.region ? notam.region.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Unknown');
+        [...notams, ...notams].forEach(notam => {
+            const typeColor = notam.type_color || notam.color || getNotamTypeColor(notam.classification || notam.type || '');
+            const displayCountry = notam.country || (notam.region ? notam.region.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'Unknown');
             const fir = notam.icao_location || notam.fir || '';
-            const effective = notam.effective || notam.valid_from || 'Immediately';
-            html += `
-            <div class="notam-card type-${typeColor}">
+            html += `<div class="notam-card type-${_esc(typeColor)}">
                 <div class="notam-header">
-                    <div class="notam-country">${notam.flag || ''} ${displayCountry}${fir ? ' (' + fir + ')' : ''}</div>
-                    <span class="notam-type-badge type-${typeColor}">${notam.classification || notam.type || 'NOTICE'}</span>
+                    <div class="notam-country">${_esc(notam.flag||'')} ${_esc(displayCountry)}${fir?' ('+_esc(fir)+')':''}</div>
+                    <span class="notam-type-badge type-${_esc(typeColor)}">${_esc(notam.classification||notam.type||'NOTICE')}</span>
                 </div>
-                <div class="notam-summary">${notam.summary || notam.description || 'No details available'}</div>
+                <div class="notam-summary">${_esc(notam.summary||notam.description||'No details available')}</div>
                 <div class="notam-details">
-                    ${fir ? `<div><strong>FIR:</strong> ${fir}</div>` : ''}
-                    <div><strong>Effective:</strong> ${effective}</div>
-                    ${notam.source_url ? `<a class="notam-link" href="${notam.source_url}" target="_blank">View Source →</a>` : ''}
+                    ${fir?`<div><strong>FIR:</strong> ${_esc(fir)}</div>`:''}
+                    <div><strong>Effective:</strong> ${_esc(notam.effective||notam.valid_range||notam.valid_from||'See source')}</div>
+                    ${notam.source_url?`<a class="notam-link" href="${_esc(_safeUrl(notam.source_url))}" target="_blank" rel="noopener">View Source →</a>`:''}
                 </div>
             </div>`;
         });
-        
         wrapper.innerHTML = html;
     }
 
     function getNotamTypeColor(type) {
-        const t = (type || '').toLowerCase();
-        if (t.includes('conflict') || t.includes('closure') || t.includes('no-fly')) return 'red';
-        if (t.includes('military') || t.includes('drone') || t.includes('exercise')) return 'orange';
-        if (t.includes('gps') || t.includes('restricted') || t.includes('interference')) return 'yellow';
+        const t = (type||'').toLowerCase();
+        if (t.includes('conflict')||t.includes('closure')||t.includes('no-fly')) return 'red';
+        if (t.includes('military')||t.includes('drone')||t.includes('exercise')) return 'orange';
+        if (t.includes('gps')||t.includes('restricted')||t.includes('interference')) return 'yellow';
         return 'blue';
     }
 
-    // ===== FLIGHT LOADER =====
-    var _flightVisible = false;
-    var _flightLoaded  = false;
-
-    function toggleFlights() {
-        _flightVisible = !_flightVisible;
-        var container = document.getElementById('flight-container');
-        var btn       = document.getElementById('flight-toggle-btn');
-        if (_flightVisible) {
-            container.style.display = 'block';
-            btn.textContent = '▲ Hide';
-            if (!_flightLoaded) { loadFlights(); }
-        } else {
-            container.style.display = 'none';
-            btn.textContent = '▼ Show';
-        }
-    }
-
+    // ===== FLIGHT WATCH (shared module flight_watch.py, Nov 2026) =====
     async function loadFlights() {
-        const container = document.getElementById('flight-container');
         try {
-            console.log('[Flights] Fetching /api/europe/flights...');
             const response = await fetch(`${API_BASE}/api/europe/flights`);
-            console.log('[Flights] HTTP status:', response.status);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            console.log('[Flights] Data received:', data);
-            _flightLoaded = true;
-            try {
-                displayFlights(data);
-            } catch (renderErr) {
-                console.error('[Flights] Render error:', renderErr);
-                const disruptions = data.disruptions || data.cancellations || [];
-                container.innerHTML = '<div class="flight-empty">⚠️ Render error: ' + renderErr.message +
-                    ' (received ' + disruptions.length + ' disruptions — check console)</div>';
-            }
-        } catch (err) {
-            console.error('[Flights] Load error:', err);
-            container.innerHTML =
-                '<div class="flight-empty">⚠️ Flight disruption data unavailable — ' + err.message + '</div>';
+            displayFlights(await response.json());
+        } catch(err) {
+            displayFlights({state: 'unread'});
         }
     }
+
+    let flightDisruptionsData = [], flightVisibleCount = 4;
+    const FLIGHT_PAGE_SIZE = 4, FLIGHT_MAX_VISIBLE = 20;
 
     function displayFlights(data) {
-        var container    = document.getElementById('flight-container');
-        var countEl      = document.getElementById('flight-count');
-        var disruptions  = data.disruptions || data.cancellations || [];
-
-        if (countEl) countEl.textContent = disruptions.length;
-
+        const grid = document.getElementById('flightCancellationsGrid');
+        const badge = document.getElementById('flightStatusBadge');
+        data = data || {};
+        const disruptions = data.disruptions || data.cancellations || [];
+        flightDisruptionsData = disruptions; flightVisibleCount = FLIGHT_PAGE_SIZE;
+        const st = data.state || 'unread';
+        const word = {read: 'read', partial: 'partly read', stale: 'last good read', unread: 'unread'}[st] || 'unread';
+        const fl = document.getElementById('flightLines');
+        if (fl) fl.innerHTML = (data.lines || []).slice(0, 4).map(l => `<div>• ${_esc(l)}</div>`).join('') +
+            `<div style="opacity:.7;font-size:11px;margin-top:4px;">Source: airline announcements via Google News (${word})${data.scanned_at ? ' · scanned ' + new Date(data.scanned_at).toLocaleString() : ''}</div>`;
         if (disruptions.length === 0) {
-            container.innerHTML = '<div class="flight-empty">✅ No active flight disruptions found for Europe</div>';
-            return;
+            grid.innerHTML = st === 'unread'
+                ? '<div class="no-cancellations" style="grid-column:1/-1;"><div style="font-size:16px;font-weight:bold;margin-bottom:8px;">Unread</div><div>Airline sources not read yet — this is not the same as no disruptions.</div></div>'
+                : '<div class="no-cancellations" style="grid-column:1/-1;"><div style="font-size:16px;font-weight:bold;margin-bottom:8px;">No carrier suspensions reported</div><div>Nothing in the last 30 days for watched European destinations.</div></div>';
+            badge.textContent = st === 'unread' ? 'UNREAD' : 'NONE REPORTED'; badge.className = 'flight-status-badge normal'; return;
         }
-
-        var html = '<div class="flight-cancellations-grid">';
-        disruptions.forEach(function(d) {
-            var status  = d.status || 'Disrupted';
-            var dateStr = '';
-            if (d.date) {
-                try { dateStr = new Date(d.date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}); }
-                catch(e) { dateStr = d.date; }
-            } else if (d.since) { dateStr = d.since; }
-            html += '<div class="flight-card">' +
-                '<span class="flight-card-status ' + status + '">' + status + '</span>' +
-                '<div class="flight-airline">✈️ ' + (d.airline || 'Unknown Airline') + '</div>' +
-                (d.route || d.destination ? '<div class="flight-route">🗺️ ' + (d.route || d.destination) + '</div>' : '') +
-                '<div class="flight-headline">' + (d.headline || d.title || '') + '</div>' +
-                '<div class="flight-meta">' +
-                    (dateStr ? '<span>📅 ' + dateStr + '</span>' : '') +
-                    (d.duration && d.duration !== 'Unknown' ? '<span>⏱️ ' + d.duration + '</span>' : '') +
-                    (d.reason ? '<span>📌 ' + d.reason + '</span>' : '') +
-                '</div>' +
-                (d.source_url ? '<div class="flight-source"><a href="' + d.source_url + '" target="_blank" rel="noopener">Read more ↗</a></div>' : '') +
-            '</div>';
-        });
-        html += '</div>';
-        container.innerHTML = html;
+        badge.textContent = `${disruptions.length} DISRUPTION${disruptions.length>1?'S':''}`; badge.className = 'flight-status-badge active';
+        renderFlightCards();
     }
 
-    // ===== RATE LIMITS =====
-    async function fetchRateLimits() {
-        try {
-            const response = await fetch(`${API_BASE}/rate-limit`);
-            if (!response.ok) return;
-            const data = await response.json();
-            const used = data.requests_today || 0;
-            const limit = data.daily_limit || 100;
-            const remaining = data.remaining || (limit - used);
-            const reset = data.reset_time || 'Midnight UTC';
-            document.getElementById('rlUsed').textContent = used;
-            document.getElementById('rlRemaining').textContent = remaining;
-            document.getElementById('rlLimit').textContent = limit;
-            document.getElementById('rlReset').textContent = reset;
-            const pct = used / limit;
-            const remEl = document.getElementById('rlRemaining');
-            remEl.className = 'rate-limit-value ' + (pct > 0.9 ? 'danger' : pct > 0.7 ? 'warning' : 'success');
-        } catch (err) {
-            console.error('Rate limit fetch error:', err);
+    function renderFlightCards() {
+        const grid = document.getElementById('flightCancellationsGrid');
+        const visible = flightDisruptionsData.slice(0, flightVisibleCount);
+        let html = '';
+        visible.forEach(d => {
+            const icon = d.status === 'Resumed' ? '✅' : '🚫';
+            html += `<div class="cancellation-card">
+                <div class="cancellation-airline">${icon} ${_esc(d.airline||'Not named')}${d.status?` · ${_esc(d.status)}`:''}${d.deadline_state==='passed'?' · end date passed':''}</div>
+                <div class="cancellation-details">
+                    ${d.route||d.destination?`<div><strong>Route:</strong> ${_esc(d.flag||'')} ${_esc(d.route||d.destination)}</div>`:''}
+                    ${d.duration&&d.duration!=='Unknown'?`<div><strong>Declared:</strong> ${_esc(d.duration)}</div>`:''}
+                    ${d.date?`<div><strong>Reported:</strong> ${_esc(new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))}</div>`:''}
+                    ${d.headline||d.title?`<div><strong>Headline:</strong> ${_esc(d.headline||d.title)}</div>`:''}
+                    ${d.source_url?`<div><a href="${_esc(_safeUrl(d.source_url))}" target="_blank" rel="noopener" style="color:#2563eb;font-weight:600;">${_esc(d.source||'Source')} →</a></div>`:''}
+                </div>
+            </div>`;
+        });
+        const remaining = flightDisruptionsData.length - flightVisibleCount;
+        if (remaining > 0 && flightVisibleCount < FLIGHT_MAX_VISIBLE) {
+            const nextBatch = Math.min(remaining, FLIGHT_PAGE_SIZE);
+            html += `<div style="grid-column:1/-1;text-align:center;padding:15px;">
+                <button onclick="loadMoreFlights()" style="background:linear-gradient(180deg,#34495e 0%,#2c3e50 100%);color:white;border:none;padding:10px 25px;font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;">
+                    Show ${nextBatch} More (${remaining} remaining)
+                </button></div>`;
         }
+        grid.innerHTML = html;
+    }
+
+    function loadMoreFlights() {
+        flightVisibleCount = Math.min(flightVisibleCount + FLIGHT_PAGE_SIZE, FLIGHT_MAX_VISIBLE);
+        renderFlightCards();
+    }
+
+    // ===== RATE LIMITS (box retired Nov 2 2026; kept as a no-op for old callers) =====
+    async function fetchRateLimits() {
+        if (!document.getElementById('rlUsed')) return;
     }
 
     // ===== ERROR HANDLING =====
@@ -3295,20 +3248,56 @@ async function loadCachedScoresFallback() {
             console.warn('Some init loads failed:', e);
         }
 
-        // Fetch flight count in background for the badge (don't block page load)
-        fetch(`${API_BASE}/api/europe/flights`)
-            .then(r => r.json())
-            .then(data => {
-                var disruptions = data.disruptions || data.cancellations || [];
-                var el = document.getElementById('flight-count');
-                if (el) el.textContent = disruptions.length;
-            })
-            .catch(function() {});
+        // Flight Watch loads in the background (don't block page load)
+        loadFlights();
 
         // Hide overlay
         hideLoadingOverlay();
     });
 
     </script>
+<script>
+// Nov 1 2026 -- standard card link row: Stability · Rhetoric · Military.
+// Rhetoric appears only when rhetoric-<id>.html exists, so a new tracker page
+// lights up its card the day it ships -- no edit here needed.
+(function(){
+  var css='.card-link-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 6px}'+
+    '.card-link-row a{font-size:12px;font-weight:700;text-decoration:none;padding:6px 12px;border-radius:16px;border:1.5px solid;white-space:nowrap}'+
+    '.card-link-row a.stab{color:#0369a1;border-color:rgba(3,105,161,.45)}'+
+    '.card-link-row a.rhet{color:#15803d;border-color:rgba(21,128,61,.45)}'+
+    '.card-link-row a.mil{color:#b45309;border-color:rgba(180,83,9,.45)}'+
+    '[data-theme="dark"] .card-link-row a.stab{color:#38bdf8}[data-theme="dark"] .card-link-row a.rhet{color:#4ade80}[data-theme="dark"] .card-link-row a.mil{color:#fbbf24}'+
+    '.card-link-sub{text-align:center;font-size:11px;font-style:italic;opacity:.7;margin:0 0 18px}';
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+  var RHET={};   // Europe card ids match their rhetoric page names
+  var seen={};
+  function exists(url){
+    if(seen[url]===undefined)seen[url]=fetch(url,{method:'HEAD'}).then(function(r){return r.ok;}).catch(function(){return false;});
+    return seen[url];
+  }
+  function build(){
+    Array.prototype.forEach.call(document.querySelectorAll('.target-card[id$="-card"]'),function(card){
+      var id=card.id.replace(/-card$/,'');
+      var btn=card.querySelector('a.country-stability-btn');
+      if(!btn)return;
+      var sub=btn.querySelector('.btn-subtitle');
+      var wrap=document.createElement('div');
+      var stab=card.hasAttribute('data-no-stability')?'':'<a class="stab" href="'+btn.getAttribute('href')+'">📊 Stability</a>';
+      wrap.innerHTML='<div class="card-link-row">'+stab+'<a class="mil" href="military.html">🎖️ Military</a></div>'+
+        (sub?'<div class="card-link-sub">'+sub.innerHTML+'</div>':'');
+      wrap.addEventListener('click',function(e){e.stopPropagation();});
+      btn.replaceWith(wrap);
+      var rh='rhetoric-'+(RHET[id]||id)+'.html';
+      exists(rh).then(function(ok){
+        if(!ok)return;
+        var a=document.createElement('a');a.className='rhet';a.href=rh;a.textContent='📡 Rhetoric';
+        var row=wrap.querySelector('.card-link-row');row.insertBefore(a,row.querySelector('a.mil'));
+      });
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
+</script>
+<script src="resources/asifah-standard-shell.js"></script>
 </body>
 </html>
