@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Philippines Stability Index v1.0.0 (Nov 2 2026) -->
+<!-- Asifah Analytics - Philippines Stability Index v1.1.0 (Nov 2 2026: standard information pattern, Financial Pulse, map guards) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -593,6 +593,161 @@
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Chart.js for the Financial Pulse sparklines (same build as china-stability.html) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ── FINANCIAL PULSE CARD (v1.0.0 May 29 2026) ── */
+        /* Canonical 3-tile equity card mirroring NYSE/Israel pattern.
+         * HKEX Hang Seng · Shanghai Composite · CNY/USD. */
+        .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(14,165,233,0.03));
+            border: 1.5px solid rgba(56,189,248,0.4);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin: 16px 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme="dark"] .financial-pulse-card {
+            background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(14,165,233,0.05));
+            box-shadow: 0 0 18px rgba(56,189,248,0.10);
+        }
+        .financial-pulse-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            opacity: 0.6;
+        }
+        .financial-pulse-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .financial-pulse-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .financial-pulse-status-pill {
+            background: rgba(56,189,248,0.18);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(56,189,248,0.4);
+        }
+        .financial-pulse-status-pill.market-open      { background: rgba(34,197,94,0.18);  color: #22c55e; border-color: rgba(34,197,94,0.4); }
+        .financial-pulse-status-pill.market-closed    { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+        .financial-pulse-status-pill.market-premarket { background: rgba(234,179,8,0.18);  color: #eab308; border-color: rgba(234,179,8,0.4); }
+        .financial-pulse-status-pill.market-afterhours{ background: rgba(167,139,250,0.18); color: #a78bfa; border-color: rgba(167,139,250,0.4); }
+        .financial-pulse-status-pill.market-partial   { background: rgba(96,165,250,0.18);  color: #60a5fa; border-color: rgba(96,165,250,0.4); }
+
+        .financial-pulse-prose {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .financial-pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .financial-pulse-grid { grid-template-columns: 1fr; }
+        }
+
+        .financial-pulse-tile {
+            background: var(--card-bg, rgba(255,255,255,0.5));
+            border: 1px solid var(--card-border, rgba(0,0,0,0.08));
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+        [data-theme="dark"] .financial-pulse-tile {
+            background: rgba(13,27,46,0.6);
+            border-color: rgba(56,189,248,0.18);
+        }
+        .financial-pulse-tile.tile-rally   { border-left: 3px solid #38bdf8; }
+        .financial-pulse-tile.tile-stable  { border-left: 3px solid #22c55e; }
+        .financial-pulse-tile.tile-warning { border-left: 3px solid #eab308; }
+        .financial-pulse-tile.tile-stress  { border-left: 3px solid #ef4444; }
+
+        .financial-pulse-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .financial-pulse-tile-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .financial-pulse-tile-ticker {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            opacity: 0.7;
+        }
+        .financial-pulse-tile-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .financial-pulse-tile-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .financial-pulse-tile-change.up   { color: #22c55e; }
+        .financial-pulse-tile-change.down { color: #ef4444; }
+        .financial-pulse-tile-change.flat { color: var(--text-muted); }
+        .financial-pulse-tile-spark {
+            height: 32px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .financial-pulse-tile-spark canvas {
+            display: block;
+            width: 100% !important;
+            height: 32px !important;
+        }
+        .financial-pulse-tile-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+        .financial-pulse-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+    </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
@@ -689,56 +844,45 @@
             </div>
         </div>
 
-        <!-- RHETORIC CARD -->
+        <!-- RHETORIC CARD — standard size: level + key actors + link. Analysis lives on the rhetoric pages. -->
         <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--card-border);box-shadow:0 4px 12px rgba(0,0,0,0.08);">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_title">📡 WEST PHILIPPINE SEA TRACKER</div>
             <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
                 <div style="font-size:32px;font-weight:700;color:var(--text-primary);" id="rhetoricScore">--</div>
                 <span id="rhetoricTheatreLabel" style="font-size:13px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
-                <span id="mdtBadge" style="display:none;font-size:12px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#7f1d1d;color:#fecaca;border:1px solid #ef4444;">🛡️ MDT WATCH</span>
                 <span id="corpusBadge" style="display:none;font-size:12px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#374151;color:#e5e7eb;">📡 THIN READ</span>
             </div>
-            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Theatre level · China's pressure vs Manila's answer · Updated every 6h</div>
-            <div id="rhetoricBottomLine" style="display:none;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-left:3px solid #38bdf8;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">The Bottom Line</div>
-                <div style="font-size:12px;line-height:1.5;color:var(--text-primary);" id="rhetoricBottomLineText"></div>
-                <div id="rhetoricWatch" style="display:none;font-size:11px;color:var(--text-secondary);margin-top:7px;padding-top:7px;border-top:1px solid var(--card-border);"></div>
-            </div>
-            <div id="gapRow" style="display:none;margin-bottom:12px;"></div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Theatre level · Updated every 6h</div>
             <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;">Loading...</span></div>
-            <div id="redLineList" style="margin-top:12px;"></div>
+            <div style="margin-top:15px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="rhetoric-asia.html" style="color:#7dd3fc;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="view_full_rhetoric">Full analysis in the Asia Rhetoric BLUF →</a>
+            </div>
             <div id="rhetoricScanInfo" style="margin-top:8px;font-size:10px;color:var(--text-secondary);text-align:center;">--</div>
         </div>
 
-        <!-- ACTOR PAIRS (Asia Actor Matrix, filtered to the Philippines) -->
-        <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px dashed rgba(167,139,250,.55);">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#a78bfa;margin-bottom:10px;" data-i18n="matrix_title">🧭 WHO IS PRESSING WHOM — PHILIPPINES</div>
-            <div id="matrixLines" style="font-size:12px;line-height:1.55;color:var(--text-primary);margin-bottom:10px;"><span style="font-style:italic;color:var(--text-secondary);">Loading...</span></div>
-            <div id="matrixPairs"></div>
-            <div style="margin-top:10px;font-size:10px;color:var(--text-secondary);">Read from the Asia Actor Matrix. "Not sensed" and "Unread" are gaps, not calm.</div>
+        <!-- FINANCIAL PULSE CARD (canonical 3-tile pattern, as china-stability.html) -->
+        <div class="financial-pulse-card" id="phFinancialPulseCard">
+            <div class="financial-pulse-card-header">
+                <div class="financial-pulse-card-title">💹 <span data-i18n="financialPulseTitle">Philippines Financial Pulse</span></div>
+                <span class="financial-pulse-status-pill" id="phFinancialPulseStatus">Loading…</span>
+            </div>
+            <div class="financial-pulse-prose" data-i18n="financialPulseProse">
+                The Philippine Stock Exchange index (PSEi), the peso against the dollar, and Brent crude. A rising USD/PHP means a weaker peso; the Philippines imports nearly all of its oil. PSE trades about 09:30–15:00 Manila time with a midday break; currency and oil prices update during global trading hours.
+            </div>
+            <div class="financial-pulse-grid" id="phFinancialPulseGrid">
+                <div class="financial-pulse-empty-state">Loading financial indicators…</div>
+            </div>
         </div>
 
         <!-- COMMODITY EXPOSURE CARD -->
         <div class="commodity-card" id="philippinesCommodityCard">
-            <div class="commodity-card-title">📊 <span data-i18n="commodityTitle">PHILIPPINES COMMODITY &amp; CONVERGENCE EXPOSURE</span></div>
-            <div class="commodity-convergence-alert" id="alertMdt">
-                <div class="cca-title">🛡️ Treaty trip-wire convergence: ACTIVE</div>
-                <div class="cca-detail" id="alertMdtDetail"></div>
-            </div>
-            <div class="commodity-convergence-alert alert-trilateral" id="alertTaiwan">
-                <div class="cca-title">🌊 Taiwan + West Philippine Sea pressed together: ACTIVE</div>
-                <div class="cca-detail" id="alertTaiwanDetail"></div>
-            </div>
-            <div class="commodity-convergence-alert alert-trilateral" id="alertTwoClaimants">
-                <div class="cca-title">⚓ Two South China Sea claimants pressed at once: ACTIVE</div>
-                <div class="cca-detail" id="alertTwoClaimantsDetail"></div>
-            </div>
+            <div class="commodity-card-title">📊 <span data-i18n="commodityTitle">PHILIPPINES COMMODITY EXPOSURE</span></div>
             <div class="commodity-prose" id="commodityProse" data-i18n="commodityLoading">Loading exposure profile…</div>
             <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
             <div class="commodity-grid" id="commodityGrid"></div>
             <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
             <div style="margin-top:14px;padding:10px 14px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:8px;font-size:11px;color:var(--text-secondary);line-height:1.55;">
-                <strong style="color:#38bdf8;">Strategic Linkage:</strong> The Philippines is <strong>a nickel heavyweight with an energy and food import habit</strong>. It is the world's #2 nickel producer (the battery and stainless supply chain), a long-standing chip assembly-and-test hub, and one of the world's largest rice importers, so an export ban by India or Vietnam lands in Manila as a kitchen-table price story. It imports nearly all of its oil, much of it from the Gulf, and its one domestic gas field (Malampaya) is running down, which is why <strong>Reed Bank's undeveloped gas inside the Philippine EEZ is an energy-security question as much as a sovereignty one</strong>. Read commodity surges here as household-price and power-cost pressure, and South China Sea incidents near Reed Bank as an energy story.
+                <strong style="color:#38bdf8;">Exposure profile:</strong> Producer of <strong>nickel</strong> (world #2) and an assembly-and-test hub for <strong>semiconductors</strong>. Importer of <strong>rice</strong> (among the world's largest), <strong>oil</strong> (nearly all of it; one remaining refinery), <strong>coal</strong> (mostly from Indonesia; roughly 60% of power generation), <strong>wheat</strong> (all of it) and, as the Malampaya field declines, <strong>LNG</strong>. Undeveloped gas at Reed (Recto) Bank lies inside the Philippine EEZ in waters China also claims.
             </div>
             <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
                 <a href="commodities.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
@@ -756,8 +900,27 @@
         <!-- KNOWLEDGE LIBRARY -->
         <div class="knowledge-library">
             <h2><span class="library-icon">&#x1F4DA;</span><span data-i18n="knowledgeLibraryTitle">Knowledge Library</span></h2>
-            <p class="open-source-disclaimer">Note: Background information is compiled from open-source research and analysis. Updated November 2026.</p>
+            <p class="open-source-disclaimer">Background compiled from open-source reporting. Last reviewed November 2, 2026.</p>
             <div class="knowledge-categories">
+
+                <div class="knowledge-card collapsed" id="card-facts">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('facts')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F4CB;</span><span>Key Facts</span></div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <ul>
+                            <li><strong>Capital:</strong> Manila. <strong>Population:</strong> about 113 million (2024 census).</li>
+                            <li><strong>Government:</strong> Presidential republic. President Ferdinand Marcos Jr. (single six-year term, 2022–2028); Vice President Sara Duterte, elected separately.</li>
+                            <li><strong>Geography:</strong> More than 7,600 islands in three groups (Luzon, the Visayas, Mindanao), bordered by the South China Sea to the west and the Philippine Sea (Pacific) to the east. The Luzon Strait separates northern Luzon from Taiwan.</li>
+                            <li><strong>Alliances:</strong> U.S. treaty ally (Mutual Defense Treaty, 1951). Founding member of ASEAN; 2026 ASEAN chair.</li>
+                            <li><strong>U.S. travel advisory:</strong> Level 2 nationwide; Level 4 for the Sulu Archipelago and Marawi; Level 3 for most of Mindanao.</li>
+                        </ul>
+                        <div class="report-links-grid">
+                            <a href="https://psa.gov.ph/" target="_blank" class="report-link">&#x1F4D1; Philippine Statistics Authority</a>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="knowledge-card collapsed" id="card-wps">
                     <div class="knowledge-header" onclick="toggleKnowledgeCard('wps')">
@@ -765,17 +928,15 @@
                         <span class="collapse-icon">&#x25BC;</span>
                     </div>
                     <div class="knowledge-content">
-                        <p><strong>The busiest front of the South China Sea.</strong> Manila calls the waters inside its exclusive economic zone the West Philippine Sea. The 2016 arbitral award (a case the Philippines brought) found China's nine-dash line has no legal basis; Beijing rejects the ruling and enforces its claim with the China Coast Guard and maritime militia.</p>
-                        <p><strong>The features that matter:</strong></p>
+                        <p>Manila calls the part of the South China Sea inside its exclusive economic zone the <strong>West Philippine Sea</strong>. In 2016 an arbitral tribunal, in a case the Philippines brought under UNCLOS, found that China's nine-dash line has no legal basis. China rejects the award and patrols the area with its coast guard and maritime militia.</p>
                         <ul>
-                            <li><strong>Second Thomas Shoal (Ayungin):</strong> A handful of Philippine Marines live aboard the BRP Sierra Madre, a WWII-era ship deliberately grounded in 1999. Every resupply run is a test; water cannon, ramming and a 2024 boarding have all happened here. If the outpost is towed, seized or starved out, the status quo changes.</li>
-                            <li><strong>Scarborough Shoal (Bajo de Masinloc):</strong> Under effective Chinese control since a 2012 standoff. China declared a "nature reserve" there in 2025 and water-cannoned Philippine vessels nearby in July 2026. The tell to watch is construction: Scarborough is close enough to Manila and Subic that a built-up feature would change the military map.</li>
-                            <li><strong>Sabina Shoal (Escoda):</strong> Close to Second Thomas; the scene of 2024 collisions and a months-long Philippine Coast Guard presence.</li>
-                            <li><strong>Thitu (Pag-asa):</strong> The largest Philippine-held feature, with a civilian community and a runway, shadowed by militia swarms from nearby Subi Reef.</li>
-                            <li><strong>Reed (Recto) Bank:</strong> Undeveloped gas inside the Philippine EEZ, the logical successor to the depleting Malampaya field. Survey and drilling plans here are where sovereignty and energy security meet.</li>
-                            <li><strong>Mischief Reef:</strong> A Chinese-built airbase inside the Philippine EEZ, the staging point for much of the pressure on Second Thomas and Sabina.</li>
+                            <li><strong>Second Thomas Shoal (Ayungin):</strong> Philippine Marines live aboard the BRP Sierra Madre, a WWII-era ship grounded there in 1999 and resupplied by sea. Resupply missions have met water cannon, ramming and, in June 2024, a boarding by Chinese coast guard personnel.</li>
+                            <li><strong>Scarborough Shoal (Bajo de Masinloc):</strong> Under effective Chinese control since a 2012 standoff. China declared a "nature reserve" there in 2025; Chinese vessels water-cannoned Philippine ships nearby in July 2026. It lies about 220 km west of Luzon.</li>
+                            <li><strong>Sabina Shoal (Escoda):</strong> Near Second Thomas; site of Philippine–Chinese vessel collisions in August 2024.</li>
+                            <li><strong>Thitu Island (Pag-asa):</strong> The largest Philippine-held feature in the Spratlys, with a civilian community and an airstrip.</li>
+                            <li><strong>Reed (Recto) Bank:</strong> Undeveloped natural gas inside the Philippine EEZ; exploration has been repeatedly suspended.</li>
+                            <li><strong>Mischief and Subi Reefs:</strong> Chinese-built artificial islands with runways, within the Philippine EEZ as defined by the 2016 award.</li>
                         </ul>
-                        <div class="open-source-disclaimer">* Based on open-source reporting and the 2016 PCA award.</div>
                         <div class="report-links-grid">
                             <a href="https://amti.csis.org/" target="_blank" class="report-link">&#x1F4D1; CSIS AMTI</a>
                             <a href="https://pca-cpa.org/en/cases/7/" target="_blank" class="report-link">&#x1F4D1; 2016 PCA Award</a>
@@ -787,45 +948,44 @@
 
                 <div class="knowledge-card collapsed" id="card-alliance">
                     <div class="knowledge-header" onclick="toggleKnowledgeCard('alliance')">
-                        <div class="knowledge-header-title"><span class="category-icon">&#x1F6E1;&#xFE0F;</span><span>The Alliance, the Missiles &amp; the Partners</span></div>
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F6E1;&#xFE0F;</span><span>Defense, the Alliance &amp; Partners</span></div>
                         <span class="collapse-icon">&#x25BC;</span>
                     </div>
                     <div class="knowledge-content">
-                        <p><strong>The only South China Sea claimant with a U.S. defense treaty.</strong> That is what makes a shoal incident here different from one off Vietnam: past a certain line it becomes a question for Washington.</p>
                         <ul>
-                            <li><strong>1951 Mutual Defense Treaty:</strong> Washington has said repeatedly that Article IV covers armed attacks on Philippine armed forces, public vessels and aircraft, including the coast guard, anywhere in the South China Sea. The treaty has never been invoked.</li>
-                            <li><strong>EDCA:</strong> U.S. rotational access to nine Philippine bases, four of them added in 2023. Several sit in northern Luzon facing Taiwan, not the Spratlys.</li>
-                            <li><strong>Missiles:</strong> The U.S. Army's Typhon mid-range system arrived in northern Luzon in 2024 and stayed. Marine NMESIS anti-ship launchers deployed to Batanes, on the Luzon Strait, for Balikatan 2026, and more Typhons were announced in 2026. The Philippines operates Indian-made BrahMos anti-ship missiles.</li>
-                            <li><strong>Partners:</strong> The Japan-Philippines Reciprocal Access Agreement entered into force in September 2025, letting each deploy forces to the other. Australia has a visiting-forces agreement; joint sails (maritime cooperative activities) with the U.S., Japan, Australia and others are now routine.</li>
+                            <li><strong>Mutual Defense Treaty (1951):</strong> U.S. officials have stated that Article IV covers armed attacks on Philippine armed forces, public vessels and aircraft, including the coast guard, anywhere in the South China Sea. The treaty has never been invoked.</li>
+                            <li><strong>EDCA:</strong> U.S. rotational access to nine Philippine military sites, four of them added in 2023, including sites in Cagayan and Isabela in northern Luzon.</li>
+                            <li><strong>Missile systems:</strong> The U.S. Army's Typhon mid-range system deployed to northern Luzon in 2024 and remained; U.S. Marine NMESIS anti-ship launchers deployed to Batanes, on the Luzon Strait, for Balikatan 2026; additional Typhon deployments were announced in 2026. The Philippines operates Indian-built BrahMos anti-ship missiles.</li>
+                            <li><strong>Exercises:</strong> Balikatan (annual, U.S.–Philippine, with partners) and KAMANDAG; multinational joint sails ("maritime cooperative activities") in the West Philippine Sea.</li>
+                            <li><strong>Other agreements:</strong> Japan–Philippines Reciprocal Access Agreement (in force September 2025); visiting forces agreements with the U.S. and Australia.</li>
+                            <li><strong>Philippine forces:</strong> Armed Forces of the Philippines (AFP), the Philippine Coast Guard (PCG) and the Bureau of Fisheries and Aquatic Resources (BFAR), which patrol the West Philippine Sea; the AFP is midway through a multi-year modernization program.</li>
                         </ul>
-                        <p><strong>Why it is a global story:</strong> The Luzon Strait between Batanes and Taiwan is the northern door between the South China Sea and the Pacific, and it carries undersea cables and PLA Navy traffic. Any Taiwan contingency involves Philippine territory within a few hundred kilometres, which is why northern Luzon matters as much as the Spratlys.</p>
-                        <div class="open-source-disclaimer">* Based on open-source reporting through November 2026.</div>
                         <div class="report-links-grid">
                             <a href="https://news.usni.org/" target="_blank" class="report-link">&#x1F4D1; USNI News</a>
                             <a href="https://www.navalnews.com/" target="_blank" class="report-link">&#x1F4D1; Naval News</a>
-                            <a href="https://www.csis.org/regions/asia/southeast-asia" target="_blank" class="report-link">&#x1F4D1; CSIS - SE Asia</a>
-                            <a href="https://www.ph.emb-japan.go.jp/" target="_blank" class="report-link">&#x1F4D1; Japan Embassy - RAA</a>
+                            <a href="https://www.csis.org/regions/asia/southeast-asia" target="_blank" class="report-link">&#x1F4D1; CSIS – SE Asia</a>
+                            <a href="military.html" class="report-link">&#x1F396;&#xFE0F; Asifah Military Tracker</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="knowledge-card collapsed" id="card-politics">
                     <div class="knowledge-header" onclick="toggleKnowledgeCard('politics')">
-                        <div class="knowledge-header-title"><span class="category-icon">&#x1F3DB;&#xFE0F;</span><span>Politics: the Marcos-Duterte Rupture</span></div>
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F3DB;&#xFE0F;</span><span>Politics &amp; Government</span></div>
                         <span class="collapse-icon">&#x25BC;</span>
                     </div>
                     <div class="knowledge-content">
-                        <p><strong>The 2022 Marcos-Duterte alliance has become the country's main political fault line,</strong> and it maps onto foreign policy: Rodrigo Duterte's presidency leaned toward Beijing; Ferdinand Marcos Jr. has leaned hard back toward Washington.</p>
                         <ul>
-                            <li><strong>Rodrigo Duterte:</strong> Arrested in Manila in March 2025 on an ICC warrant over the drug war and flown to The Hague; the ICC confirmed the charges in April 2026 and sent the case to trial.</li>
-                            <li><strong>Sara Duterte:</strong> The Vice President was impeached by the House a second time in May 2026; the Senate trial opened in July 2026. She is widely seen as a 2028 presidential contender, so the verdict shapes the next election.</li>
-                            <li><strong>Why it matters for the sea:</strong> A divided Manila answers more slowly, and a future administration could change the West Philippine Sea policy itself. Asifah tracks this as an internal actor; it can colour the theatre level but never makes it a sea crisis on its own.</li>
-                            <li><strong>ASEAN chair 2026:</strong> Manila chairs ASEAN this year and has pushed to conclude a South China Sea Code of Conduct with China. Most analysts expected that to be unlikely.</li>
+                            <li><strong>Marcos–Duterte split:</strong> President Marcos and Vice President Sara Duterte ran together in 2022; the alliance broke down in 2024.</li>
+                            <li><strong>Rodrigo Duterte:</strong> The former president was arrested in Manila in March 2025 on an International Criminal Court warrant over drug-war killings and transferred to The Hague. The ICC confirmed the charges in April 2026 and sent the case to trial.</li>
+                            <li><strong>Sara Duterte:</strong> Impeached by the House of Representatives a second time on May 11, 2026. The Senate trial opened July 6, 2026; conviction requires 16 of 24 senators. A verdict was expected by mid-December 2026.</li>
+                            <li><strong>Next elections:</strong> Presidential and vice-presidential elections in May 2028.</li>
+                            <li><strong>ASEAN chair 2026:</strong> Manila chairs ASEAN this year and has sought to conclude a South China Sea Code of Conduct with China.</li>
                         </ul>
                         <div class="report-links-grid">
+                            <a href="https://www.icc-cpi.int/philippines/duterte" target="_blank" class="report-link">&#x1F4D1; ICC – Duterte case</a>
                             <a href="https://www.rappler.com/" target="_blank" class="report-link">&#x1F4D1; Rappler</a>
-                            <a href="https://www.icc-cpi.int/philippines/duterte" target="_blank" class="report-link">&#x1F4D1; ICC - Duterte case</a>
-                            <a href="https://www.chathamhouse.org/2025/12/philippines-asean-chair-south-china-sea-agreement-unlikely-be-concluded-2026" target="_blank" class="report-link">&#x1F4D1; Chatham House - ASEAN</a>
+                            <a href="https://www.chathamhouse.org/2025/12/philippines-asean-chair-south-china-sea-agreement-unlikely-be-concluded-2026" target="_blank" class="report-link">&#x1F4D1; Chatham House – ASEAN</a>
                             <a href="https://freedomhouse.org/country/philippines" target="_blank" class="report-link">&#x1F4D1; Freedom House</a>
                         </div>
                     </div>
@@ -833,44 +993,43 @@
 
                 <div class="knowledge-card collapsed" id="card-economy">
                     <div class="knowledge-header" onclick="toggleKnowledgeCard('economy')">
-                        <div class="knowledge-header-title"><span class="category-icon">&#x1F3ED;</span><span>Economy, Remittances &amp; Exposure</span></div>
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F3ED;</span><span>Economy &amp; Trade</span></div>
                         <span class="collapse-icon">&#x25BC;</span>
                     </div>
                     <div class="knowledge-content">
-                        <p><strong>A consumption economy powered from abroad.</strong> Remittances from millions of overseas Filipino workers (many in the Gulf) and the outsourcing (BPO) industry carry household spending.</p>
                         <ul>
-                            <li><strong>Gulf link:</strong> A Middle East war hits the Philippines twice: through oil prices and through the safety and earnings of overseas workers in the Gulf. That is a convergence the ME trackers can feed.</li>
-                            <li><strong>Rice:</strong> Among the world's largest importers, mostly from Vietnam; rice prices are acutely political.</li>
-                            <li><strong>Nickel:</strong> The world's #2 producer; Manila has weighed an Indonesia-style ore export ban to force processing at home.</li>
-                            <li><strong>Energy:</strong> Nearly all oil imported; coal-heavy power; LNG imports began in 2023 as Malampaya declines.</li>
-                            <li><strong>China:</strong> A top trading partner and a past user of trade pressure (the 2012 banana import curbs during the Scarborough standoff).</li>
+                            <li><strong>Structure:</strong> Services-led and consumption-driven. Business-process outsourcing (BPO) and remittances from overseas Filipino workers are major sources of foreign currency; remittances equal roughly 8% of GDP.</li>
+                            <li><strong>Overseas workers:</strong> A large share of overseas Filipino workers are employed in Gulf states, so Middle East security and oil prices both bear on household income.</li>
+                            <li><strong>Exports:</strong> Electronics and semiconductors (assembly, test and packaging) lead merchandise exports; nickel ore is the main mineral export.</li>
+                            <li><strong>Imports:</strong> Rice (mostly from Vietnam), wheat, oil and refined fuel, coal (mostly from Indonesia) and, since 2023, LNG.</li>
+                            <li><strong>China:</strong> A top trading partner. During the 2012 Scarborough standoff, China tightened inspections of Philippine banana imports.</li>
+                            <li><strong>Currency:</strong> Philippine peso (PHP); central bank is the Bangko Sentral ng Pilipinas (BSP).</li>
                         </ul>
                         <div class="report-links-grid">
-                            <a href="https://www.worldbank.org/en/country/philippines" target="_blank" class="report-link">&#x1F4D1; World Bank</a>
                             <a href="https://www.bsp.gov.ph/" target="_blank" class="report-link">&#x1F4D1; Bangko Sentral</a>
+                            <a href="https://www.worldbank.org/en/country/philippines" target="_blank" class="report-link">&#x1F4D1; World Bank</a>
                             <a href="https://psa.gov.ph/" target="_blank" class="report-link">&#x1F4D1; PSA Statistics</a>
-                            <a href="https://asia.nikkei.com/" target="_blank" class="report-link">&#x1F4D1; Nikkei Asia</a>
+                            <a href="commodities.html" class="report-link">&#x1F6E2;&#xFE0F; Asifah Commodity Tracker</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="knowledge-card collapsed" id="card-mindanao">
                     <div class="knowledge-header" onclick="toggleKnowledgeCard('mindanao')">
-                        <div class="knowledge-header-title"><span class="category-icon">&#x1F334;</span><span>Mindanao &amp; Internal Security</span></div>
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F334;</span><span>Mindanao, Bangsamoro &amp; Internal Security</span></div>
                         <span class="collapse-icon">&#x25BC;</span>
                     </div>
                     <div class="knowledge-content">
-                        <p><strong>The older security story, quieter but not over.</strong></p>
                         <ul>
-                            <li><strong>Bangsamoro (BARMM):</strong> The autonomous region created by the 2014 peace deal with the MILF. Its first regional parliamentary election has been repeatedly postponed; delays strain the peace process.</li>
-                            <li><strong>Militancy:</strong> Abu Sayyaf and the Islamic State-linked groups behind the 2017 Marawi siege have been badly degraded, but the U.S. still rates the Sulu Archipelago and Marawi as Do Not Travel.</li>
-                            <li><strong>Communist insurgency:</strong> The NPA is far weaker than a decade ago.</li>
-                            <li><strong>Disasters:</strong> One of the world's most typhoon-exposed countries. Asifah's sensors deliberately exclude storm deaths from the sea-incident read.</li>
+                            <li><strong>Bangsamoro (BARMM):</strong> The Muslim autonomous region created under the 2014 peace agreement with the Moro Islamic Liberation Front. Its first parliamentary election, postponed four times, was held on September 14, 2026; no party won a majority of the 80 seats (Bangsamoro Federalist Party 31, United Bangsamoro Justice Party 30). The new parliament was due to take office on October 30, 2026.</li>
+                            <li><strong>Militancy:</strong> Abu Sayyaf and the Islamic State-linked groups behind the 2017 Marawi siege have been heavily degraded; the U.S. advisory still rates the Sulu Archipelago and Marawi as Do Not Travel.</li>
+                            <li><strong>Communist insurgency:</strong> The New People's Army is much reduced from its peak.</li>
+                            <li><strong>Natural hazards:</strong> One of the most typhoon- and earthquake-exposed countries in the world, with frequent disaster-driven displacement.</li>
                         </ul>
                         <div class="report-links-grid">
                             <a href="https://www.crisisgroup.org/asia/south-east-asia/philippines" target="_blank" class="report-link">&#x1F4D1; Crisis Group</a>
                             <a href="https://reliefweb.int/country/phl" target="_blank" class="report-link">&#x1F4D1; ReliefWeb</a>
-                            <a href="https://www.osac.gov/" target="_blank" class="report-link">&#x1F4D1; OSAC</a>
+                            <a href="https://en.wikipedia.org/wiki/2026_Bangsamoro_Parliament_election" target="_blank" class="report-link">&#x1F4D1; 2026 BARMM election</a>
                         </div>
                     </div>
                 </div>
@@ -898,7 +1057,7 @@
             <div class="footer-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:25px;margin-bottom:20px;">
                 <div>
                     <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_methodology_title">Methodology</h4>
-                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n="footer_methodology_text">Multi-factor stability read integrating China's pressure at sea and in words (co-occurrence sensor, two-outlet rule for L3+), Manila's and its partners' response, the Mutual Defense Treaty trip-wire, the Marcos-Duterte rupture, and commodity exposure. Theatre level from /api/rhetoric/philippines; actor pairs from the Asia Actor Matrix. A thin source read is reported as thin, never as calm.</p>
+                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n="footer_methodology_text">Information page: the U.S. travel advisory, the West Philippine Sea tracker level and key actors (/api/rhetoric/philippines), market data (PSEi, USD/PHP, Brent via /api/asia/market/philippines), commodity exposure, a reference map and background. Analysis and convergence reads live on the Asia Rhetoric BLUF and the Asia Actor Matrix. A blank or "unread" card is a gap in our data, not a quiet situation.</p>
                 </div>
                 <div>
                     <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_sources_title">Data Sources</h4>
@@ -1036,17 +1195,13 @@
                 '</div></div>';
         }
 
-        // ── WEST PHILIPPINE SEA TRACKER (full payload: actors, red lines, so what) ──
-        let _rhetoric = null;
+        // ── WEST PHILIPPINE SEA TRACKER — standard card: level + key actors (no analysis here) ──
         const ACTOR_ORDER = [
             ['china_scs_pressure', '🇨🇳 China at sea (CCG / militia)'],
             ['beijing_coercion',   '🇨🇳 Beijing political coercion'],
-            ['economic_pressure',  '🇨🇳 China economic pressure'],
-            ['marcos_state',       '🏛️ Palace / DFA / NSC'],
             ['afp_pcg',            '⚓ AFP / Philippine Coast Guard'],
             ['us_alliance',        '🇺🇸 US alliance (MDT / EDCA)'],
-            ['regional_partners',  '🌏 Partners (Japan, Australia, others)'],
-            ['duterte_faction',    '⚖️ Marcos-Duterte rupture'],
+            ['duterte_faction',    '⚖️ Marcos-Duterte split'],
         ];
         async function loadRhetoricData() {
             const badge = document.getElementById('rhetoricLevelBadge');
@@ -1054,7 +1209,6 @@
                 const r = await fetch(BACKEND_URL + '/api/rhetoric/philippines');
                 const data = await r.json();
                 if (!r.ok || !data || data.success === false) throw new Error((data && data.error) || ('HTTP ' + r.status));
-                _rhetoric = data;
                 const level = data.overall_level || 0;
                 const color = LEVEL_COLORS[level];
                 badge.style.background = color;
@@ -1062,96 +1216,80 @@
                 document.getElementById('rhetoricScore').textContent = `L${level}`;
                 const lab = document.getElementById('rhetoricTheatreLabel');
                 lab.textContent = LEVEL_LABELS[level] || '--'; lab.style.background = color;
-                const sw = data.so_what || {};
-                if (sw.mdt_watch) document.getElementById('mdtBadge').style.display = 'inline-block';
                 const ch = data.corpus_health || {};
                 if (ch.status === 'degraded') {
                     const cb = document.getElementById('corpusBadge');
                     cb.style.display = 'inline-block';
                     cb.title = `${ch.articles || 0} articles from ${ch.live_sources || 0} live sources -- low levels mean less evidence, not a calm sea`;
                 }
-                // Bottom line + watch
-                if (data.bluf) {
-                    document.getElementById('rhetoricBottomLineText').textContent = data.bluf;
-                    document.getElementById('rhetoricBottomLine').style.display = 'block';
-                }
-                if (data.watch_indicators) {
-                    const w = document.getElementById('rhetoricWatch');
-                    w.textContent = '👁️ ' + data.watch_indicators; w.style.display = 'block';
-                }
-                // Coercion-response gap row
-                const gap = document.getElementById('gapRow');
-                const bar = (lbl, v, c) => `<div style="display:flex;align-items:center;gap:8px;font-size:11px;margin:3px 0;">
-                    <span style="width:150px;color:var(--text-secondary);">${lbl}</span>
-                    <span style="flex:1;height:8px;background:var(--card-border);border-radius:4px;overflow:hidden;"><span style="display:block;height:100%;width:${(v/5)*100}%;background:${c};"></span></span>
-                    <span style="width:28px;font-weight:700;color:${c};">L${v}</span></div>`;
-                gap.innerHTML = bar("China's pressure", sw.inbound_pressure || 0, '#ef4444') +
-                                bar("Manila's answer", sw.response_strength || 0, '#38bdf8') +
-                                bar("Partners' answer", sw.partner_strength || 0, '#a78bfa') +
-                                ((sw.coercion_gap || 0) >= 2 ? `<div style="font-size:11px;color:#f97316;margin-top:4px;">📉 Coercion-response gap: ${sw.coercion_gap} levels.</div>` : '');
-                gap.style.display = 'block';
-                // Actors
                 const actors = data.actors || {};
                 document.getElementById('rhetoricActorList').innerHTML = ACTOR_ORDER.filter(([k]) => actors[k]).map(([k, lbl]) => {
-                    const a = actors[k]; const lv = a.level || 0;
-                    const via = (a.matched_triggers || []).some(t => String(t).startsWith('cooc:')) ? ' <span title="raised by the co-occurrence sensor (2+ outlets for L3+)" style="font-size:9px;opacity:.7;">◆</span>' : '';
+                    const lv = actors[k].level || 0;
                     return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--card-border);">
-                        <span>${lbl}${via}</span><span style="font-weight:700;color:${LEVEL_COLORS[lv]};">L${lv}</span></div>`;
+                        <span>${lbl}</span><span style="font-weight:700;color:${LEVEL_COLORS[lv]};">L${lv}</span></div>`;
                 }).join('');
-                // Red lines
-                const rl = data.red_lines || [];
-                document.getElementById('redLineList').innerHTML = rl.length ? '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px;">Red lines</div>' +
-                    rl.map(x => `<div style="font-size:11px;padding:4px 8px;margin:3px 0;border-left:3px solid ${x.color};background:rgba(255,255,255,0.03);">
-                        ${esc(x.icon)} <strong>${x.status === 'BREACHED' ? 'CORROBORATED' : 'SINGLE SOURCE'}</strong> — ${esc(x.label)}
-                        <span style="color:var(--text-secondary);">(${x.outlets} outlet${x.outlets === 1 ? '' : 's'})</span></div>`).join('') : '';
-                const scanEl = document.getElementById('rhetoricScanInfo');
                 if (data.scanned_at) {
                     const ago = Math.round((Date.now() - new Date(data.scanned_at)) / 60000);
-                    scanEl.textContent = `Last scan: ${ago < 60 ? ago + 'm' : Math.round(ago / 60) + 'h'} ago · ${data.total_articles || 0} articles`;
+                    document.getElementById('rhetoricScanInfo').textContent =
+                        `Last scan: ${ago < 60 ? ago + 'm' : Math.round(ago / 60) + 'h'} ago · ${data.total_articles || 0} articles`;
                 }
-                renderConvergenceAlerts(data);
             } catch (e) {
                 console.warn('[Philippines tracker]', e.message);
                 badge.textContent = '📡 Unread';
                 document.getElementById('rhetoricActorList').innerHTML =
-                    '<span style="font-style:italic;">The tracker has not produced a read yet (first scan runs a few minutes after the backend starts). Unread is not quiet.</span>';
+                    '<span style="font-style:italic;">No tracker read yet. Unread is not quiet.</span>';
             }
         }
 
-        function renderConvergenceAlerts(data) {
-            const sw = data.so_what || {}, ct = data.crosstheater || {};
-            const show = (id, on, html) => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.classList.toggle('active', !!on);
-                if (on) document.getElementById(id + 'Detail').innerHTML = html;
-            };
-            show('alertMdt', sw.mdt_watch,
-                `China's pressure at sea is at L${sw.inbound_pressure || 0} with the alliance track at L${sw.partner_strength || 0}. This is the band where the 1951 Mutual Defense Treaty stops being background. Watch Washington's wording on Article IV ("public vessels... anywhere in the South China Sea"), not just Manila's.`);
-            show('alertTaiwan', ct.taiwan_and_wps_pressed,
-                `Beijing's pressure on Taiwan (L${ct.taiwan_inbound_max || 0}) and on the Philippines (L${data.inbound_max_level || 0}) are both at Confrontation or above. The two fronts meet at the Luzon Strait, where U.S. NMESIS and Typhon launchers sit in northern Luzon and Batanes.`);
-            show('alertTwoClaimants', ct.scs_two_claimants_pressed,
-                `China is pressing both South China Sea claimants at once: Vietnam (L${ct.vietnam_china_scs || 0}) and the Philippines (L${data.inbound_max_level || 0}). Simultaneous pressure suggests a policy, not an incident.`);
-        }
-
-        // ── ACTOR PAIRS ──
-        async function loadMatrix() {
-            const linesEl = document.getElementById('matrixLines'), pairsEl = document.getElementById('matrixPairs');
+        // ── FINANCIAL PULSE (asia_market_quotes v1.1.0 → canonical pulse shape) ──
+        window._phPulseCharts = {};
+        const PULSE_STATUS = { 'open':['● Market open','market-open'], 'closed':['○ Market closed','market-closed'],
+            'pre-market':['◐ Pre-market','market-premarket'], 'after-hours':['◑ Between sessions','market-afterhours'],
+            'partial':['◐ Partially open','market-partial'] };
+        async function loadFinancialPulse() {
+            const grid = document.getElementById('phFinancialPulseGrid');
+            const pill = document.getElementById('phFinancialPulseStatus');
             try {
-                const r = await fetch(BACKEND_URL + '/api/asia/actor-matrix?actor=philippines');
-                const d = await r.json();
-                if (!d || d.success === false) throw new Error('matrix unavailable');
-                linesEl.innerHTML = (d.lines || []).map(l => '• ' + esc(l)).join('<br>') || '<span style="color:var(--text-secondary);">No lines this cycle.</span>';
-                pairsEl.innerHTML = (d.pairs || []).map(c => {
-                    const read = c.state === 'read';
-                    const col = read ? LEVEL_COLORS[c.level] : '#6b7280';
-                    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;margin:4px 0;border:1px solid var(--card-border);border-radius:8px;font-size:12px;">
-                        <span>${esc(c.actor_flag)} ${esc(c.actor)} → ${esc(c.target_flag)} ${esc(c.target)}
-                        <span style="display:block;font-size:10px;color:var(--text-secondary);">${esc(c.kind_label || '')}</span></span>
-                        <span style="flex-shrink:0;font-weight:700;color:white;background:${col};padding:2px 8px;border-radius:4px;">${read ? 'L' + c.level + ' ' + esc(c.word) : esc(c.word)}</span></div>`;
+                const r = await fetch(BACKEND_URL + '/api/asia/market/philippines');
+                const data = await r.json();
+                const fp = (data && data.financial_pulse) || {};
+                const tiles = fp.tiles || {};
+                const order = fp.tile_order || Object.keys(tiles);
+                const st = PULSE_STATUS[fp.market_status] || PULSE_STATUS.closed;
+                pill.textContent = st[0]; pill.className = 'financial-pulse-status-pill ' + st[1];
+                if (!order.length) {
+                    grid.innerHTML = '<div class="financial-pulse-empty-state">No market read this cycle. A blank card is a fetch failure, not a quiet market.</div>';
+                    return;
+                }
+                grid.innerHTML = order.map(k => {
+                    const t = tiles[k] || {};
+                    const chg = typeof t.change_pct_24h === 'number' ? t.change_pct_24h : 0;
+                    const val = (t.value == null) ? '--' : Number(t.value).toLocaleString(undefined, { maximumFractionDigits: Math.abs(t.value) < 1000 ? 2 : 0 });
+                    return `<div class="financial-pulse-tile tile-${esc(t.tier || 'stable')}">
+                        <div class="financial-pulse-tile-header"><span class="financial-pulse-tile-name">${esc(t.name || k)}</span><span class="financial-pulse-tile-ticker">${esc(t.ticker || '')}</span></div>
+                        <div class="financial-pulse-tile-value">${val}</div>
+                        <div class="financial-pulse-tile-change ${chg > 0.05 ? 'up' : chg < -0.05 ? 'down' : 'flat'}">${chg > 0 ? '+' : ''}${chg.toFixed(2)}% (1d)</div>
+                        <div class="financial-pulse-tile-spark"><canvas id="phPulseSpark_${esc(k)}"></canvas></div>
+                        <div class="financial-pulse-tile-meta"><span>${esc(t.note || '')}</span></div>
+                    </div>`;
                 }).join('');
+                if (typeof Chart === 'undefined') return;
+                order.forEach(k => {
+                    const t = tiles[k] || {}, pts = t.sparkline || [];
+                    const vals = pts.map(p => typeof p === 'number' ? p : p && p.value).filter(v => typeof v === 'number');
+                    const cv = document.getElementById('phPulseSpark_' + k);
+                    if (!cv || vals.length < 2) return;
+                    const up = vals[vals.length - 1] >= vals[0];
+                    const good = t.polarity === 'inverted' ? !up : up;
+                    const col = good ? '#22c55e' : '#ef4444';
+                    try { if (window._phPulseCharts[k]) window._phPulseCharts[k].destroy(); } catch (e) {}
+                    window._phPulseCharts[k] = new Chart(cv, { type: 'line',
+                        data: { labels: vals.map((_, i) => i), datasets: [{ data: vals, borderColor: col, backgroundColor: col + '20', borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: true }] },
+                        options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } }, responsive: true, maintainAspectRatio: false } });
+                });
             } catch (e) {
-                linesEl.innerHTML = '<span style="color:var(--text-secondary);font-style:italic;">Actor matrix unread right now.</span>';
+                pill.textContent = 'Unread'; pill.className = 'financial-pulse-status-pill market-closed';
+                grid.innerHTML = '<div class="financial-pulse-empty-state">Financial pulse unreachable right now. A blank card is a fetch failure, not a quiet market.</div>';
             }
         }
 
@@ -1217,9 +1355,34 @@
         }
 
         // ── MAP ──
+        // Nov 2 2026: the map did not always appear on first load. Three guards:
+        //  1. If Leaflet (unpkg) failed to load, fetch it from a second CDN and retry.
+        //  2. Re-measure the map whenever its container changes size (the shell
+        //     rearranges the layout and the loading overlay lifts after init).
+        //  3. If both CDNs fail, say so in the box instead of leaving it blank.
+        let _phMap = null;
+        function loadLeafletFallback(cb) {
+            const css = document.createElement('link');
+            css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+            document.head.appendChild(css);
+            const js = document.createElement('script');
+            js.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+            js.onload = cb;
+            js.onerror = () => {
+                const el = document.getElementById('philippinesMap');
+                if (el) el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-secondary);font-style:italic;">Map library could not be loaded. Refresh to retry.</div>';
+            };
+            document.head.appendChild(js);
+        }
         function initMap() {
-            if (typeof L === 'undefined') return;
+            if (_phMap) return;
+            if (typeof L === 'undefined') { loadLeafletFallback(initMap); return; }
+            const el = document.getElementById('philippinesMap');
+            if (!el) return;
             const map = L.map('philippinesMap', { scrollWheelZoom: false }).setView([14.5, 119.5], 5);
+            _phMap = map;
+            if (window.ResizeObserver) new ResizeObserver(() => map.invalidateSize()).observe(el);
+            window.addEventListener('load', () => map.invalidateSize());
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO', subdomains: 'abcd', maxZoom: 19
             }).addTo(map);
@@ -1253,8 +1416,8 @@
                 themeToggle: 'Theme',
                 rhetoric_banner_title: '📡 West Philippine Sea Tracker',
                 rhetoric_card_title: '📡 WEST PHILIPPINE SEA TRACKER',
-                matrix_title: '🧭 WHO IS PRESSING WHOM — PHILIPPINES',
-                commodityTitle: 'PHILIPPINES COMMODITY & CONVERGENCE EXPOSURE',
+                commodityTitle: 'PHILIPPINES COMMODITY EXPOSURE',
+                financialPulseTitle: 'Philippines Financial Pulse',
                 mapTitle: 'Philippines — West Philippine Sea & Luzon Strait',
                 knowledgeLibraryTitle: 'Knowledge Library',
                 articles_title: '📰 Recent Philippines & West Philippine Sea Articles',
@@ -1269,8 +1432,8 @@
                 themeToggle: 'Tema',
                 rhetoric_banner_title: '📡 Tracker ng West Philippine Sea',
                 rhetoric_card_title: '📡 TRACKER NG WEST PHILIPPINE SEA',
-                matrix_title: '🧭 SINO ANG GUMIGIPIT KANINO — PILIPINAS',
                 commodityTitle: 'PAGKALANTAD NG PILIPINAS SA MGA KALAKAL',
+                financialPulseTitle: 'Pulso ng Pananalapi ng Pilipinas',
                 mapTitle: 'Pilipinas — West Philippine Sea at Luzon Strait',
                 knowledgeLibraryTitle: 'Aklatan ng Kaalaman',
                 articles_title: '📰 Mga Bagong Artikulo tungkol sa Pilipinas at West Philippine Sea',
@@ -1285,8 +1448,8 @@
                 themeToggle: '主题',
                 rhetoric_banner_title: '📡 西菲律宾海追踪器',
                 rhetoric_card_title: '📡 西菲律宾海追踪器',
-                matrix_title: '🧭 谁在向谁施压 — 菲律宾',
-                commodityTitle: '菲律宾大宗商品与汇聚风险',
+                commodityTitle: '菲律宾大宗商品风险',
+                financialPulseTitle: '菲律宾金融脉搏',
                 mapTitle: '菲律宾 — 南海与吕宋海峡',
                 knowledgeLibraryTitle: '知识库',
                 articles_title: '📰 菲律宾与南海最新文章',
@@ -1301,8 +1464,8 @@
                 themeToggle: 'テーマ',
                 rhetoric_banner_title: '📡 西フィリピン海トラッカー',
                 rhetoric_card_title: '📡 西フィリピン海トラッカー',
-                matrix_title: '🧭 誰が誰に圧力をかけているか — フィリピン',
-                commodityTitle: 'フィリピンのコモディティ・収束リスク',
+                commodityTitle: 'フィリピンのコモディティ・エクスポージャー',
+                financialPulseTitle: 'フィリピン金融パルス',
                 mapTitle: 'フィリピン — 西フィリピン海とルソン海峡',
                 knowledgeLibraryTitle: 'ナレッジライブラリ',
                 articles_title: '📰 フィリピン・西フィリピン海の最新記事',
@@ -1355,8 +1518,8 @@
             startLoadingProgress();
             initMap();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
-            Promise.allSettled([loadRhetoricData(), loadMatrix(), loadCommodity(), loadArticles()])
-                .finally(hideLoadingOverlay);
+            Promise.allSettled([loadRhetoricData(), loadFinancialPulse(), loadCommodity(), loadArticles()])
+                .finally(() => { hideLoadingOverlay(); if (_phMap) setTimeout(() => _phMap.invalidateSize(), 600); });
         });
     </script>
 </body>
