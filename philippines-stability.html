@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics - Philippines Stability Index v1.0.0 (Nov 2 2026) -->
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Philippines Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-color: #f5f5f5;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #e1e8ed;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --text-muted: #95a5a6;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #2c5282;
+            --header-text: #ffffff;
+            --metric-bg: #ffffff;
+            --metric-hover-shadow: rgba(0,0,0,0.15);
+            --article-bg: #f8f9fa;
+            --article-hover: #e8f4f8;
+            --watermark-opacity: 0.50;
+            --watermark-filter: grayscale(20%) brightness(0.8);
+            --watermark-size: 1800px;
+            --watermark-blend: normal;
+            --loading-overlay-bg: rgba(245, 245, 245, 0.98);
+            --loading-spinner-bg: rgba(100, 149, 237, 0.2);
+            --accent: #6495ED;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --card-bg: #2d2d2d;
+            --card-border: #404040;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --header-gradient-start: #1e3a5f;
+            --header-gradient-end: #2c5282;
+            --header-text: #ffffff;
+            --metric-bg: #2d2d2d;
+            --metric-hover-shadow: rgba(255,255,255,0.1);
+            --article-bg: #353535;
+            --article-hover: #404040;
+            --watermark-opacity: 0.18;
+            --watermark-filter: drop-shadow(0 0 30px rgba(0,212,255,0.9)) drop-shadow(0 0 60px rgba(0,212,255,0.5)) drop-shadow(0 0 90px rgba(0,180,255,0.3)) saturate(2) brightness(1.4);
+            --watermark-size: 1800px;
+            --watermark-blend: screen;
+            --loading-overlay-bg: rgba(26, 26, 26, 0.98);
+            --loading-spinner-bg: rgba(100, 149, 237, 0.3);
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: var(--watermark-size, 1800px);
+            height: var(--watermark-size, 1800px);
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: var(--watermark-opacity);
+            filter: var(--watermark-filter, none);
+            mix-blend-mode: var(--watermark-blend, normal);
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--loading-overlay-bg);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; }
+        .loading-spinner {
+            width: 60px; height: 60px;
+            border: 5px solid var(--loading-spinner-bg);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-status { text-align: center; max-width: 500px; padding: 0 20px; }
+        .loading-title { font-size: 24px; font-weight: bold; color: var(--accent); margin-bottom: 20px; letter-spacing: 1px; }
+        .loading-steps { margin-top: 20px; }
+        .loading-step {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 12px; font-size: 15px; color: var(--text-secondary); transition: all 0.3s ease;
+        }
+        .loading-step.active { color: var(--accent); font-weight: bold; }
+        .loading-step.complete { color: #4ade80; }
+        .step-icon { font-size: 18px; min-width: 20px; }
+        .loading-progress { margin-top: 25px; font-size: 13px; color: var(--text-secondary); font-style: italic; }
+        .loading-error {
+            color: #f87171; font-size: 16px; margin-top: 20px; padding: 15px;
+            background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); border-radius: 8px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+        header {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: var(--header-text);
+            padding: 35px; border-radius: 12px; margin-bottom: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            position: relative; display: flex; align-items: center; gap: 30px;
+        }
+        .header-logo { width: 80px; height: 80px; flex-shrink: 0; border-radius: 50%; margin-top: 48px; }
+        .header-content { flex: 1; text-align: center; }
+        h1 { font-size: 28px; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .subtitle { font-size: 16px; font-weight: normal; opacity: 0.95; letter-spacing: 0.5px; }
+        .last-updated { font-size: 13px; opacity: 0.85; margin-top: 10px; }
+
+        .header-controls {
+            position: absolute; top: 35px; right: 35px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 1000;
+        }
+        [dir="rtl"] .header-controls { right: auto; left: 35px; }
+
+        .language-switcher {
+            display: flex; gap: 8px;
+            background: rgba(255,255,255,0.15); padding: 8px 12px;
+            border-radius: 8px; backdrop-filter: blur(10px);
+        }
+        .theme-toggle {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(255,255,255,0.15); padding: 8px 12px;
+            border-radius: 8px; backdrop-filter: blur(10px);
+        }
+        .theme-toggle-label {
+            font-size: 11px; color: rgba(255,255,255,0.9); margin-right: 8px;
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+        }
+        .theme-toggle-switch {
+            position: relative; width: 50px; height: 26px;
+            background: rgba(255,255,255,0.2); border-radius: 13px; cursor: pointer;
+            transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3);
+        }
+        .theme-toggle-switch:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+        .theme-toggle-slider {
+            position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+            background: white; border-radius: 50%; transition: transform 0.3s ease;
+            display: flex; align-items: center; justify-content: center; font-size: 10px;
+        }
+        .theme-toggle-slider::before { content: '\2600\FE0F'; }
+        [data-theme="dark"] .theme-toggle-slider { transform: translateX(24px); }
+        [data-theme="dark"] .theme-toggle-slider::before { content: '\1F319'; }
+
+        .lang-btn {
+            background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);
+            color: white; padding: 6px 14px; font-family: 'Times New Roman', Times, serif;
+            font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .lang-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+        .lang-btn.active { background: white; color: #1e3a5f; border-color: white; }
+
+        .back-link {
+            display: inline-block; position: absolute; top: 20px; left: 20px; margin: 0;
+            padding: 12px 24px; background: rgba(255,255,255,0.2); color: white;
+            text-decoration: none; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.2s ease; font-size: 14px; font-weight: bold;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+
+        .map-section {
+            background: var(--container-bg); border: 2px solid var(--card-border);
+            border-radius: 12px; padding: 25px; margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .map-section h2 { font-size: 20px; margin-bottom: 10px; color: var(--text-primary); }
+        .map-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; font-style: italic; }
+
+        .knowledge-library {
+            background: var(--container-bg); border: 2px solid var(--card-border);
+            border-radius: 12px; padding: 25px; margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .knowledge-library h2 { font-size: 24px; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+        .library-icon { font-size: 28px; }
+        .knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .knowledge-card { background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; }
+        .knowledge-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px var(--metric-hover-shadow); }
+        .knowledge-header {
+            background: linear-gradient(135deg, rgba(100, 149, 237, 0.1) 0%, rgba(30, 82, 130, 0.1) 100%);
+            padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; transition: background 0.3s ease;
+        }
+        .knowledge-header:hover { background: linear-gradient(135deg, rgba(100, 149, 237, 0.15) 0%, rgba(30, 82, 130, 0.15) 100%); }
+        .knowledge-header-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: bold; color: var(--text-primary); }
+        .category-icon { font-size: 22px; }
+        .collapse-icon { font-size: 20px; color: var(--accent); transition: transform 0.3s ease; }
+        .knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+        .knowledge-content { padding: 20px; max-height: 500px; overflow-y: auto; transition: max-height 0.3s ease, padding 0.3s ease; }
+        .knowledge-card.collapsed .knowledge-content { max-height: 0; padding: 0 20px; overflow: hidden; }
+        .knowledge-content p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 12px; }
+        .knowledge-content ul { margin-left: 20px; margin-bottom: 12px; }
+        .knowledge-content li { font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 6px; }
+        .knowledge-content strong { color: var(--text-primary); }
+        .open-source-disclaimer { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--card-border); }
+        .report-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; }
+        .report-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 16px; background: var(--accent); color: white;
+            text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .report-link:hover { background: #4169E1; transform: translateX(3px); box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3); }
+        [dir="rtl"] .report-link:hover { transform: translateX(-3px); }
+        .knowledge-content::-webkit-scrollbar { width: 8px; }
+        .knowledge-content::-webkit-scrollbar-track { background: var(--article-bg); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+        .knowledge-content::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        .articles-section {
+            background: var(--container-bg); border-radius: 12px; padding: 25px; margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .section-title { font-size: 20px; margin-bottom: 20px; color: var(--text-primary); font-weight: bold; letter-spacing: 0.5px; }
+        .article-item {
+            background: var(--article-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px;
+            transition: background 0.2s ease, transform 0.2s; border-left: 4px solid #1e3a5f;
+        }
+        [dir="rtl"] .article-item { border-left: none; border-right: 4px solid #1e3a5f; }
+        .article-item:hover { background: var(--article-hover); transform: translateX(4px); }
+        [dir="rtl"] .article-item:hover { transform: translateX(-4px); }
+        .article-title { color: var(--text-primary); font-size: 14px; margin-bottom: 5px; font-weight: 500; }
+        .article-meta { font-size: 12px; color: var(--text-secondary); }
+        .article-link { color: var(--accent); text-decoration: none; font-size: 13px; }
+        .article-link:hover { text-decoration: underline; }
+
+        /* ── RHETORIC BANNER + CARD ── */
+        .rhetoric-link-banner {
+            background: linear-gradient(135deg, #052e16, #064e23);
+            border: 2px solid rgba(34,197,94,0.4);
+            border-radius: 10px; padding: 14px 20px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 15px; flex-wrap: wrap;
+        }
+        .rhetoric-vector-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+        .rhetoric-vector-pill {
+            font-size: 10px; font-weight: 700; padding: 2px 8px;
+            border-radius: 4px; color: white; letter-spacing: 0.5px;
+        }
+
+        footer {
+            background: var(--container-bg); padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border);
+            font-size: 12px; text-align: center; margin-top: 40px; color: var(--text-secondary);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; padding: 25px 20px; }
+            .header-logo { width: 60px; height: 60px; }
+            .header-content { text-align: center; }
+            .header-controls { position: static; align-items: center; }
+            h1 { font-size: 24px; }
+            .back-link { position: static; display: block; width: fit-content; margin: 0 auto 15px; }
+            .knowledge-categories { grid-template-columns: 1fr; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+           Mirrors russia.html + china-stability.html canonical pattern.
+           Always-rendered. Prose + adaptive alert banner + tiles + Strategic Linkage.
+           Philippines: treaty trip-wire, Taiwan + WPS, and two-claimant convergence alerts.
+           ═══════════════════════════════════════════════════════════ */
+        .commodity-card {
+            background: var(--container-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .commodity-card {
+            box-shadow: 0 0 6px rgba(56,189,248,0.15);
+        }
+        .commodity-card-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-bottom: 9px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .commodity-prose {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            margin: 10px 0 16px 0;
+            padding: 12px 14px;
+            background: rgba(2,6,23,0.5);
+            border-left: 3px solid #38bdf8;
+            border-radius: 6px;
+        }
+        [data-theme="light"] .commodity-prose { background: #f8fbfe; }
+        .commodity-convergence-alert {
+            display: none;
+            margin: 10px 0 14px 0;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+        }
+        .commodity-convergence-alert.active { display: block; }
+        .commodity-convergence-alert.alert-trilateral {
+            background: linear-gradient(135deg, rgba(56,189,248,0.18) 0%, rgba(14,165,233,0.18) 100%);
+            border-color: #0ea5e9;
+        }
+        .commodity-convergence-alert.alert-trilateral .cca-title { color: #0ea5e9; }
+        .commodity-convergence-alert.alert-trilateral .cca-detail { color: #7dd3fc; }
+        .cca-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #f59e0b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .cca-detail {
+            font-size: 11px;
+            color: #fbbf24;
+            line-height: 1.5;
+        }
+        .commodity-alert-banner {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 12px;
+            display: none;
+        }
+        .commodity-alert-banner.show { display: block; }
+        .commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+        .commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+        .commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+        .commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+        .commodity-alert-banner strong { letter-spacing: 1.5px; }
+        .commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+        .commodity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .commodity-pill {
+            background: rgba(2,6,23,0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        [data-theme="light"] .commodity-pill { background: #f8fbfe; }
+        .commodity-pill:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+        }
+        .commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+        .commodity-pill-icon { font-size: 22px; line-height: 1; }
+        .commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+        .commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .commodity-pill-alert {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+        .commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+        .commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .commodity-pill-role-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(56,189,248,0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56,189,248,0.25);
+        }
+        .commodity-pill-signal-count {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .commodity-pill-price {
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        .commodity-pill-price .price-up   { color: #22c55e; }
+        .commodity-pill-price .price-down { color: #ef4444; }
+        .commodity-pill-spark { width: 100%; height: 28px; display: block; }
+        .commodity-pill-note {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-top: 4px;
+        }
+        .commodity-top-signals {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: rgba(2,6,23,0.5);
+            border-radius: 6px;
+            border-left: 3px solid var(--text-muted);
+            font-size: 11px;
+        }
+        [data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+        .commodity-top-signals .ts-title {
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+        .commodity-top-signals a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            padding: 3px 0;
+            line-height: 1.45;
+        }
+        .commodity-top-signals a:hover { color: #38bdf8; }
+        .commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+    
+        /* ═══════════════════════════════════════════════════════════
+           CANONICAL ASIA SIDEBAR (Gold Standard — May 8, 2026)
+           ═══════════════════════════════════════════════════════════ */
+        .page-with-sidebar { display: flex; gap: 20px; align-items: flex-start; }
+        .nav-sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+            background: var(--container-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .nav-sidebar-label {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            padding: 8px 8px 4px 8px;
+        }
+        .nav-divider {
+            height: 1px;
+            background: var(--card-border);
+            margin: 6px 4px;
+        }
+        .nav-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.18s;
+        }
+        .nav-btn:hover {
+            background: rgba(56,189,248,0.08);
+            border-color: rgba(56,189,248,0.20);
+            color: var(--text-primary);
+        }
+        .nav-btn-label { flex: 1; }
+        .nav-btn-status {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .active-nav .nav-btn-status { color: #38bdf8; }
+        .rhetoric-btn:hover { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.20); }
+        .rhetoric-btn .nav-btn-status { color: #22c55e; }
+        .military-btn:hover { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.25); }
+        .military-btn .nav-btn-status { color: #a855f7; }
+        .commodity-btn:hover { background: rgba(250,204,21,0.08); border-color: rgba(250,204,21,0.25); }
+        .commodity-btn .nav-btn-status { color: #facc15; }
+        .inactive-nav { opacity: 0.45; cursor: not-allowed; }
+        .inactive-nav .nav-btn-status { color: var(--text-muted); }
+        .current-page {
+            background: rgba(56,189,248,0.12);
+            border-color: rgba(56,189,248,0.40);
+            color: var(--text-primary);
+            cursor: default;
+        }
+        .current-page .nav-btn-status { color: #38bdf8; font-weight: 700; }
+        .main-content { flex: 1; min-width: 0; }
+        /* ── Mobile drawer (<=1199px) ── */
+        .menu-toggle {
+            display: none;
+            position: fixed; top: 14px; left: 14px; z-index: 1600;
+            width: 44px; height: 44px; border-radius: 8px;
+            background: var(--accent); color: #fff; border: none;
+            font-size: 22px; line-height: 1; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+        .sidebar-backdrop {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 1400;
+        }
+        .sidebar-backdrop.open { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
+            .page-with-sidebar { flex-direction: column; }
+            .nav-sidebar {
+                position: fixed; top: 0; left: 0; height: 100vh; width: 260px;
+                transform: translateX(-100%); transition: transform 0.25s ease;
+                z-index: 1500; overflow-y: auto; flex-direction: column;
+                flex-wrap: nowrap; border-radius: 0; padding-top: 64px;
+            }
+            .nav-sidebar.open { transform: translateX(0); }
+            .nav-sidebar-label { width: auto; }
+            .nav-divider { display: block; }
+        }
+            /* Phone: caution banners wrap instead of squeezing (same rule as asia.html / africa.html) */
+        @media (max-width: 640px) {
+            .caution-banner { flex-wrap:wrap !important; padding:14px 16px !important; }
+            .caution-banner > div { min-width:0 !important; flex:1 1 220px !important; }
+            .caution-banner > div:first-child { flex:0 0 auto !important; }
+            .caution-banner a { margin-left:auto; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="resources/asifah-standard-shell.css">
+<script src="resources/asifah-standard-shell.js" defer></script>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-status">
+            <div class="loading-title">Loading Philippines Stability Data</div>
+            <div class="loading-steps" id="loadingSteps">
+                <div class="loading-step active" id="step1"><span class="step-icon">&#x23F3;</span><span>Fetching OSINT articles on the Philippines...</span></div>
+                <div class="loading-step" id="step2"><span class="step-icon">&#x23F3;</span><span>Reading the West Philippine Sea tracker...</span></div>
+                <div class="loading-step" id="step3"><span class="step-icon">&#x23F3;</span><span>Checking Second Thomas, Scarborough and Sabina...</span></div>
+                <div class="loading-step" id="step4"><span class="step-icon">&#x23F3;</span><span>Reading the alliance and actor pairs...</span></div>
+                <div class="loading-step" id="step5"><span class="step-icon">&#x23F3;</span><span>Rendering dashboard...</span></div>
+            </div>
+            <div class="loading-progress" id="loadingProgress">This may take 20-40 seconds...</div>
+            <div class="loading-error" id="loadingError" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="asia.html" class="back-link" data-i18n="backLink">&#8592; Back to Dashboard</a>
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
+            <div class="header-content">
+                <h1 data-i18n="pageTitle">🇵🇭 PHILIPPINES STABILITY INDEX</h1>
+                <div class="subtitle" data-i18n="pageSubtitle">Multi-Factor Analysis: West Philippine Sea Coercion, the U.S. Treaty Trip-Wire, the Marcos-Duterte Rupture, Commodity Exposure</div>
+                <div class="last-updated" id="lastUpdated" data-i18n="lastUpdated">Last updated: Loading...</div>
+            </div>
+            <div class="header-controls" style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                <div class="language-switcher">
+                    <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
+                    <button class="lang-btn" onclick="switchLanguage('fil', this)">Filipino</button>
+                    <button class="lang-btn" onclick="switchLanguage('zh', this)">中文</button>
+                    <button class="lang-btn" onclick="switchLanguage('ja', this)">日本語</button>
+                </div>
+                <div class="theme-toggle" style="padding:4px 8px;">
+                    <span class="theme-toggle-label" style="font-size:9px;" data-i18n="themeToggle">Theme</span>
+                    <div class="theme-toggle-switch" onclick="toggleTheme()" style="width:36px;height:20px;">
+                        <div class="theme-toggle-slider" style="width:14px;height:14px;"></div>
+                    </div>
+                </div>
+                <a href="military.html" style="padding:4px 10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:11px;font-weight:bold;white-space:nowrap;">🎖️ Mil Tracker</a>
+            </div>
+        </header>
+
+        <div class="page-with-sidebar">
+        <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+        <nav class="nav-sidebar" id="navSidebar">
+            <div data-asifah-nav-extra="Philippines">
+            <a href="philippines-stability.html">🇵🇭 Philippines Stability</a>
+            <a href="rhetoric-asia.html">📡 Asia Rhetoric BLUF</a>
+            <a href="vietnam-stability.html">🇻🇳 Vietnam (the other SCS claimant)</a>
+            <a href="taiwan-stability.html">🇹🇼 Taiwan (across the Luzon Strait)</a>
+        </div>
+        </nav>
+
+        <div class="main-content">
+
+        <!-- U.S. STATE DEPARTMENT — WORLDWIDE CAUTION -->
+        <div class="caution-banner" style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%); border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);">
+            <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+            <div style="flex: 1;">
+                <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+                <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+            </div>
+            <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+        </div>
+
+        <!-- PHILIPPINES TRAVEL ADVISORY — Level 2 (Level 4 Sulu / Marawi; Level 3 most of Mindanao) -->
+        <div class="caution-banner" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="font-size: 24px; flex-shrink: 0;">🇵🇭</div>
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+                    <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Philippines Travel Advisory</span>
+                    <span style="background: #d97706; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;" data-i18n="travel_level">LEVEL 2</span>
+                </div>
+                <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n-html="travel_text"><strong style='color: #fbbf24;'>Exercise Increased Caution</strong> nationwide (crime, terrorism, civil unrest, kidnapping). <strong>Do Not Travel</strong> to the Sulu Archipelago and Sulu Sea, or Marawi City. <strong>Reconsider Travel</strong> to Mindanao outside Davao City, Davao del Norte, Siargao and the Dinagat Islands.</div>
+            </div>
+            <a href="https://travel.state.gov/en/international-travel/travel-advisories/philippines.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="travel_button">VIEW ADVISORY →</a>
+        </div>
+
+        <!-- RHETORIC BANNER -->
+        <div class="rhetoric-link-banner">
+            <div>
+                <div style="font-size:13px;font-weight:bold;color:white;" data-i18n="rhetoric_banner_title">📡 West Philippine Sea Tracker</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:3px;" data-i18n="rhetoric_banner_actors">China at Sea · Beijing Coercion · Palace/DFA · AFP/Coast Guard · US Alliance · Partners · Duterte Rupture</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                <span id="rhetoricLevelBadge" style="background:#6b7280;color:white;font-size:12px;font-weight:700;padding:5px 14px;border-radius:6px;letter-spacing:0.5px;">📡 Loading…</span>
+                <a href="rhetoric-asia.html" style="padding:8px 18px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;" data-i18n="open_tracker">Asia BLUF →</a>
+            </div>
+        </div>
+
+        <!-- RHETORIC CARD -->
+        <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--card-border);box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_title">📡 WEST PHILIPPINE SEA TRACKER</div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+                <div style="font-size:32px;font-weight:700;color:var(--text-primary);" id="rhetoricScore">--</div>
+                <span id="rhetoricTheatreLabel" style="font-size:13px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#6b7280;color:white;">--</span>
+                <span id="mdtBadge" style="display:none;font-size:12px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#7f1d1d;color:#fecaca;border:1px solid #ef4444;">🛡️ MDT WATCH</span>
+                <span id="corpusBadge" style="display:none;font-size:12px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#374151;color:#e5e7eb;">📡 THIN READ</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Theatre level · China's pressure vs Manila's answer · Updated every 6h</div>
+            <div id="rhetoricBottomLine" style="display:none;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-left:3px solid #38bdf8;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">The Bottom Line</div>
+                <div style="font-size:12px;line-height:1.5;color:var(--text-primary);" id="rhetoricBottomLineText"></div>
+                <div id="rhetoricWatch" style="display:none;font-size:11px;color:var(--text-secondary);margin-top:7px;padding-top:7px;border-top:1px solid var(--card-border);"></div>
+            </div>
+            <div id="gapRow" style="display:none;margin-bottom:12px;"></div>
+            <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;">Loading...</span></div>
+            <div id="redLineList" style="margin-top:12px;"></div>
+            <div id="rhetoricScanInfo" style="margin-top:8px;font-size:10px;color:var(--text-secondary);text-align:center;">--</div>
+        </div>
+
+        <!-- ACTOR PAIRS (Asia Actor Matrix, filtered to the Philippines) -->
+        <div style="background:var(--container-bg);border-radius:12px;padding:20px;margin-bottom:20px;border:1px dashed rgba(167,139,250,.55);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#a78bfa;margin-bottom:10px;" data-i18n="matrix_title">🧭 WHO IS PRESSING WHOM — PHILIPPINES</div>
+            <div id="matrixLines" style="font-size:12px;line-height:1.55;color:var(--text-primary);margin-bottom:10px;"><span style="font-style:italic;color:var(--text-secondary);">Loading...</span></div>
+            <div id="matrixPairs"></div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text-secondary);">Read from the Asia Actor Matrix. "Not sensed" and "Unread" are gaps, not calm.</div>
+        </div>
+
+        <!-- COMMODITY EXPOSURE CARD -->
+        <div class="commodity-card" id="philippinesCommodityCard">
+            <div class="commodity-card-title">📊 <span data-i18n="commodityTitle">PHILIPPINES COMMODITY &amp; CONVERGENCE EXPOSURE</span></div>
+            <div class="commodity-convergence-alert" id="alertMdt">
+                <div class="cca-title">🛡️ Treaty trip-wire convergence: ACTIVE</div>
+                <div class="cca-detail" id="alertMdtDetail"></div>
+            </div>
+            <div class="commodity-convergence-alert alert-trilateral" id="alertTaiwan">
+                <div class="cca-title">🌊 Taiwan + West Philippine Sea pressed together: ACTIVE</div>
+                <div class="cca-detail" id="alertTaiwanDetail"></div>
+            </div>
+            <div class="commodity-convergence-alert alert-trilateral" id="alertTwoClaimants">
+                <div class="cca-title">⚓ Two South China Sea claimants pressed at once: ACTIVE</div>
+                <div class="cca-detail" id="alertTwoClaimantsDetail"></div>
+            </div>
+            <div class="commodity-prose" id="commodityProse" data-i18n="commodityLoading">Loading exposure profile…</div>
+            <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+            <div class="commodity-grid" id="commodityGrid"></div>
+            <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"></div>
+            <div style="margin-top:14px;padding:10px 14px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:8px;font-size:11px;color:var(--text-secondary);line-height:1.55;">
+                <strong style="color:#38bdf8;">Strategic Linkage:</strong> The Philippines is <strong>a nickel heavyweight with an energy and food import habit</strong>. It is the world's #2 nickel producer (the battery and stainless supply chain), a long-standing chip assembly-and-test hub, and one of the world's largest rice importers, so an export ban by India or Vietnam lands in Manila as a kitchen-table price story. It imports nearly all of its oil, much of it from the Gulf, and its one domestic gas field (Malampaya) is running down, which is why <strong>Reed Bank's undeveloped gas inside the Philippine EEZ is an energy-security question as much as a sovereignty one</strong>. Read commodity surges here as household-price and power-cost pressure, and South China Sea incidents near Reed Bank as an energy story.
+            </div>
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
+                <a href="commodities.html" style="color:#38bdf8;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
+            </div>
+            <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+        </div>
+
+        <!-- MAP SECTION -->
+        <div class="map-section">
+            <h2>&#x1F5FA;&#xFE0F; <span data-i18n="mapTitle">Philippines — West Philippine Sea &amp; Luzon Strait</span></h2>
+            <div class="map-subtitle" data-i18n="mapSubtitle">Cyan = cities and bases; amber = contested features; red = China-built bases; violet = the Luzon Strait, the northern door to the Pacific.</div>
+            <div id="philippinesMap" style="width: 100%; height: 480px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; z-index: 1;"></div>
+        </div>
+
+        <!-- KNOWLEDGE LIBRARY -->
+        <div class="knowledge-library">
+            <h2><span class="library-icon">&#x1F4DA;</span><span data-i18n="knowledgeLibraryTitle">Knowledge Library</span></h2>
+            <p class="open-source-disclaimer">Note: Background information is compiled from open-source research and analysis. Updated November 2026.</p>
+            <div class="knowledge-categories">
+
+                <div class="knowledge-card collapsed" id="card-wps">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('wps')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#x2694;&#xFE0F;</span><span>The West Philippine Sea &amp; the Shoals</span></div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The busiest front of the South China Sea.</strong> Manila calls the waters inside its exclusive economic zone the West Philippine Sea. The 2016 arbitral award (a case the Philippines brought) found China's nine-dash line has no legal basis; Beijing rejects the ruling and enforces its claim with the China Coast Guard and maritime militia.</p>
+                        <p><strong>The features that matter:</strong></p>
+                        <ul>
+                            <li><strong>Second Thomas Shoal (Ayungin):</strong> A handful of Philippine Marines live aboard the BRP Sierra Madre, a WWII-era ship deliberately grounded in 1999. Every resupply run is a test; water cannon, ramming and a 2024 boarding have all happened here. If the outpost is towed, seized or starved out, the status quo changes.</li>
+                            <li><strong>Scarborough Shoal (Bajo de Masinloc):</strong> Under effective Chinese control since a 2012 standoff. China declared a "nature reserve" there in 2025 and water-cannoned Philippine vessels nearby in July 2026. The tell to watch is construction: Scarborough is close enough to Manila and Subic that a built-up feature would change the military map.</li>
+                            <li><strong>Sabina Shoal (Escoda):</strong> Close to Second Thomas; the scene of 2024 collisions and a months-long Philippine Coast Guard presence.</li>
+                            <li><strong>Thitu (Pag-asa):</strong> The largest Philippine-held feature, with a civilian community and a runway, shadowed by militia swarms from nearby Subi Reef.</li>
+                            <li><strong>Reed (Recto) Bank:</strong> Undeveloped gas inside the Philippine EEZ, the logical successor to the depleting Malampaya field. Survey and drilling plans here are where sovereignty and energy security meet.</li>
+                            <li><strong>Mischief Reef:</strong> A Chinese-built airbase inside the Philippine EEZ, the staging point for much of the pressure on Second Thomas and Sabina.</li>
+                        </ul>
+                        <div class="open-source-disclaimer">* Based on open-source reporting and the 2016 PCA award.</div>
+                        <div class="report-links-grid">
+                            <a href="https://amti.csis.org/" target="_blank" class="report-link">&#x1F4D1; CSIS AMTI</a>
+                            <a href="https://pca-cpa.org/en/cases/7/" target="_blank" class="report-link">&#x1F4D1; 2016 PCA Award</a>
+                            <a href="https://dispatch.wps-ph.org/" target="_blank" class="report-link">&#x1F4D1; WPS Dispatch</a>
+                            <a href="https://www.benarnews.org/english/news/philippine" target="_blank" class="report-link">&#x1F4D1; BenarNews</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-alliance">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('alliance')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F6E1;&#xFE0F;</span><span>The Alliance, the Missiles &amp; the Partners</span></div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The only South China Sea claimant with a U.S. defense treaty.</strong> That is what makes a shoal incident here different from one off Vietnam: past a certain line it becomes a question for Washington.</p>
+                        <ul>
+                            <li><strong>1951 Mutual Defense Treaty:</strong> Washington has said repeatedly that Article IV covers armed attacks on Philippine armed forces, public vessels and aircraft, including the coast guard, anywhere in the South China Sea. The treaty has never been invoked.</li>
+                            <li><strong>EDCA:</strong> U.S. rotational access to nine Philippine bases, four of them added in 2023. Several sit in northern Luzon facing Taiwan, not the Spratlys.</li>
+                            <li><strong>Missiles:</strong> The U.S. Army's Typhon mid-range system arrived in northern Luzon in 2024 and stayed. Marine NMESIS anti-ship launchers deployed to Batanes, on the Luzon Strait, for Balikatan 2026, and more Typhons were announced in 2026. The Philippines operates Indian-made BrahMos anti-ship missiles.</li>
+                            <li><strong>Partners:</strong> The Japan-Philippines Reciprocal Access Agreement entered into force in September 2025, letting each deploy forces to the other. Australia has a visiting-forces agreement; joint sails (maritime cooperative activities) with the U.S., Japan, Australia and others are now routine.</li>
+                        </ul>
+                        <p><strong>Why it is a global story:</strong> The Luzon Strait between Batanes and Taiwan is the northern door between the South China Sea and the Pacific, and it carries undersea cables and PLA Navy traffic. Any Taiwan contingency involves Philippine territory within a few hundred kilometres, which is why northern Luzon matters as much as the Spratlys.</p>
+                        <div class="open-source-disclaimer">* Based on open-source reporting through November 2026.</div>
+                        <div class="report-links-grid">
+                            <a href="https://news.usni.org/" target="_blank" class="report-link">&#x1F4D1; USNI News</a>
+                            <a href="https://www.navalnews.com/" target="_blank" class="report-link">&#x1F4D1; Naval News</a>
+                            <a href="https://www.csis.org/regions/asia/southeast-asia" target="_blank" class="report-link">&#x1F4D1; CSIS - SE Asia</a>
+                            <a href="https://www.ph.emb-japan.go.jp/" target="_blank" class="report-link">&#x1F4D1; Japan Embassy - RAA</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-politics">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('politics')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F3DB;&#xFE0F;</span><span>Politics: the Marcos-Duterte Rupture</span></div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The 2022 Marcos-Duterte alliance has become the country's main political fault line,</strong> and it maps onto foreign policy: Rodrigo Duterte's presidency leaned toward Beijing; Ferdinand Marcos Jr. has leaned hard back toward Washington.</p>
+                        <ul>
+                            <li><strong>Rodrigo Duterte:</strong> Arrested in Manila in March 2025 on an ICC warrant over the drug war and flown to The Hague; the ICC confirmed the charges in April 2026 and sent the case to trial.</li>
+                            <li><strong>Sara Duterte:</strong> The Vice President was impeached by the House a second time in May 2026; the Senate trial opened in July 2026. She is widely seen as a 2028 presidential contender, so the verdict shapes the next election.</li>
+                            <li><strong>Why it matters for the sea:</strong> A divided Manila answers more slowly, and a future administration could change the West Philippine Sea policy itself. Asifah tracks this as an internal actor; it can colour the theatre level but never makes it a sea crisis on its own.</li>
+                            <li><strong>ASEAN chair 2026:</strong> Manila chairs ASEAN this year and has pushed to conclude a South China Sea Code of Conduct with China. Most analysts expected that to be unlikely.</li>
+                        </ul>
+                        <div class="report-links-grid">
+                            <a href="https://www.rappler.com/" target="_blank" class="report-link">&#x1F4D1; Rappler</a>
+                            <a href="https://www.icc-cpi.int/philippines/duterte" target="_blank" class="report-link">&#x1F4D1; ICC - Duterte case</a>
+                            <a href="https://www.chathamhouse.org/2025/12/philippines-asean-chair-south-china-sea-agreement-unlikely-be-concluded-2026" target="_blank" class="report-link">&#x1F4D1; Chatham House - ASEAN</a>
+                            <a href="https://freedomhouse.org/country/philippines" target="_blank" class="report-link">&#x1F4D1; Freedom House</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-economy">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('economy')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F3ED;</span><span>Economy, Remittances &amp; Exposure</span></div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>A consumption economy powered from abroad.</strong> Remittances from millions of overseas Filipino workers (many in the Gulf) and the outsourcing (BPO) industry carry household spending.</p>
+                        <ul>
+                            <li><strong>Gulf link:</strong> A Middle East war hits the Philippines twice: through oil prices and through the safety and earnings of overseas workers in the Gulf. That is a convergence the ME trackers can feed.</li>
+                            <li><strong>Rice:</strong> Among the world's largest importers, mostly from Vietnam; rice prices are acutely political.</li>
+                            <li><strong>Nickel:</strong> The world's #2 producer; Manila has weighed an Indonesia-style ore export ban to force processing at home.</li>
+                            <li><strong>Energy:</strong> Nearly all oil imported; coal-heavy power; LNG imports began in 2023 as Malampaya declines.</li>
+                            <li><strong>China:</strong> A top trading partner and a past user of trade pressure (the 2012 banana import curbs during the Scarborough standoff).</li>
+                        </ul>
+                        <div class="report-links-grid">
+                            <a href="https://www.worldbank.org/en/country/philippines" target="_blank" class="report-link">&#x1F4D1; World Bank</a>
+                            <a href="https://www.bsp.gov.ph/" target="_blank" class="report-link">&#x1F4D1; Bangko Sentral</a>
+                            <a href="https://psa.gov.ph/" target="_blank" class="report-link">&#x1F4D1; PSA Statistics</a>
+                            <a href="https://asia.nikkei.com/" target="_blank" class="report-link">&#x1F4D1; Nikkei Asia</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card collapsed" id="card-mindanao">
+                    <div class="knowledge-header" onclick="toggleKnowledgeCard('mindanao')">
+                        <div class="knowledge-header-title"><span class="category-icon">&#x1F334;</span><span>Mindanao &amp; Internal Security</span></div>
+                        <span class="collapse-icon">&#x25BC;</span>
+                    </div>
+                    <div class="knowledge-content">
+                        <p><strong>The older security story, quieter but not over.</strong></p>
+                        <ul>
+                            <li><strong>Bangsamoro (BARMM):</strong> The autonomous region created by the 2014 peace deal with the MILF. Its first regional parliamentary election has been repeatedly postponed; delays strain the peace process.</li>
+                            <li><strong>Militancy:</strong> Abu Sayyaf and the Islamic State-linked groups behind the 2017 Marawi siege have been badly degraded, but the U.S. still rates the Sulu Archipelago and Marawi as Do Not Travel.</li>
+                            <li><strong>Communist insurgency:</strong> The NPA is far weaker than a decade ago.</li>
+                            <li><strong>Disasters:</strong> One of the world's most typhoon-exposed countries. Asifah's sensors deliberately exclude storm deaths from the sea-incident read.</li>
+                        </ul>
+                        <div class="report-links-grid">
+                            <a href="https://www.crisisgroup.org/asia/south-east-asia/philippines" target="_blank" class="report-link">&#x1F4D1; Crisis Group</a>
+                            <a href="https://reliefweb.int/country/phl" target="_blank" class="report-link">&#x1F4D1; ReliefWeb</a>
+                            <a href="https://www.osac.gov/" target="_blank" class="report-link">&#x1F4D1; OSAC</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RECENT ARTICLES — TABBED -->
+        <div class="articles-section">
+            <div class="section-title" data-i18n="articles_title">📰 Recent Philippines &amp; West Philippine Sea Articles</div>
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <button onclick="switchArticleTab('en')" id="tab-en" style="padding:6px 16px;border-radius:6px;border:2px solid var(--accent);background:var(--accent);color:white;font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">🇺🇸 English</button>
+                <button onclick="switchArticleTab('bluesky')" id="tab-bluesky" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">🦋 Bluesky</button>
+                <button onclick="switchArticleTab('reddit')" id="tab-reddit" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">💬 Reddit</button>
+                <button onclick="switchArticleTab('telegram')" id="tab-telegram" style="padding:6px 16px;border-radius:6px;border:2px solid var(--card-border);background:transparent;color:var(--text-secondary);font-family:'Times New Roman',serif;font-size:13px;font-weight:bold;cursor:pointer;">📡 Telegram</button>
+            </div>
+            <div id="articlesContainer"><div style="text-align:center;color:var(--text-secondary);padding:30px;">Loading articles...</div></div>
+        </div>
+
+        </div> <!-- /main-content -->
+        </div> <!-- /page-with-sidebar -->
+
+        <!-- Page-specific footer content: the shell moves this into its one canonical footer. -->
+        <section class="footer-info" data-asifah-footer-extra>
+            <div class="footer-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:25px;margin-bottom:20px;">
+                <div>
+                    <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_methodology_title">Methodology</h4>
+                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n="footer_methodology_text">Multi-factor stability read integrating China's pressure at sea and in words (co-occurrence sensor, two-outlet rule for L3+), Manila's and its partners' response, the Mutual Defense Treaty trip-wire, the Marcos-Duterte rupture, and commodity exposure. Theatre level from /api/rhetoric/philippines; actor pairs from the Asia Actor Matrix. A thin source read is reported as thin, never as calm.</p>
+                </div>
+                <div>
+                    <h4 style="font-size:0.95em;margin-bottom:8px;color:var(--text-primary);" data-i18n="footer_sources_title">Data Sources</h4>
+                    <p style="font-size:0.8em;color:var(--text-secondary);line-height:1.55;" data-i18n="footer_sources_text">Google News (Philippine edition, English, Filipino and Chinese queries), Inquirer, Philstar, Rappler, GMA, Philippine News Agency, BenarNews, CSIS AMTI, USNI News, The Diplomat, SCMP, GDELT (shared gateway), Telegram and Bluesky Asia aggregators. Background: CSIS AMTI, PCA, Crisis Group, ICC.</p>
+                </div>
+            </div>
+            <div style="padding:15px; background:rgba(139,0,0,0.15); border-radius:8px; font-size:0.8em; color:var(--text-secondary); line-height:1.55;" data-i18n-html="footer_disclaimer">
+                <strong>⚠️ DISCLAIMER:</strong> Convergence, not prediction. This dashboard aggregates open-source reporting and algorithmic analysis. It is not an intelligence assessment, military advice, or a policy recommendation. Levels reflect corroborated media signal, not ground truth. Not for operational use.
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://asifah-asia-backend.onrender.com';
+        const RTL_LANGS = [];
+        const LEVEL_COLORS = { 0:'#6b7280',1:'#3b82f6',2:'#f59e0b',3:'#f97316',4:'#ef4444',5:'#dc2626',6:'#7f1d1d' };
+        const LEVEL_LABELS = { 0:'Baseline',1:'Rhetoric',2:'Warning',3:'Confrontation',4:'High Alert',5:'Active Conflict' };
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        // Theme
+        function initTheme() {
+            let saved = 'dark';
+            try { saved = localStorage.getItem('asifah-theme') || 'dark'; } catch (e) {}
+            document.documentElement.setAttribute('data-theme', saved);
+        }
+        function toggleTheme() {
+            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('asifah-theme', next); } catch (e) {}
+        }
+        initTheme();
+
+        function toggleKnowledgeCard(cardId) {
+            const card = document.getElementById('card-' + cardId);
+            if (card) card.classList.toggle('collapsed');
+        }
+
+        // Loading overlay
+        let loadingStepIndex = 0, loadingInterval = null, loadingTimeout = null;
+        const STEP_COUNT = 5;
+        function startLoadingProgress() {
+            loadingInterval = setInterval(() => {
+                if (loadingStepIndex < STEP_COUNT - 1) {
+                    const cur = document.getElementById('step' + (loadingStepIndex + 1));
+                    if (cur) { cur.classList.remove('active'); cur.classList.add('complete'); cur.querySelector('.step-icon').textContent = '✓'; }
+                    loadingStepIndex++;
+                    const next = document.getElementById('step' + (loadingStepIndex + 1));
+                    if (next) next.classList.add('active');
+                }
+            }, 5000);
+            loadingTimeout = setTimeout(() => {
+                const el = document.getElementById('loadingError');
+                el.style.display = 'block';
+                el.textContent = '⚠️ Loading is taking longer than expected. Please wait or refresh.';
+            }, 60000);
+        }
+        function hideLoadingOverlay() {
+            if (loadingInterval) clearInterval(loadingInterval);
+            if (loadingTimeout) clearTimeout(loadingTimeout);
+            document.querySelectorAll('.loading-step').forEach(step => {
+                step.classList.remove('active'); step.classList.add('complete');
+                step.querySelector('.step-icon').textContent = '✓';
+            });
+            setTimeout(() => { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('hidden'); }, 500);
+        }
+
+        // ── ARTICLES (cached front-card scan; never forces a scan) ──
+        let _allArticles = [];
+        async function loadArticles() {
+            try {
+                const response = await fetch(BACKEND_URL + '/api/asia/threat/philippines');
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                const combined = [
+                    ...(data.articles_en || data.articles || []).map(a => ({...a, language: a.language || 'en'})),
+                    ...(data.articles_bluesky || []).map(a => ({...a, language: 'bluesky'})),
+                    ...(data.articles_reddit || []).map(a => ({...a, language: 'reddit'})),
+                    ...(data.articles_telegram || []).map(a => ({...a, language: 'telegram'})),
+                ];
+                if (combined.length) { _allArticles = combined; switchArticleTab('en'); }
+                else displayArticlesFallbackStatic();
+            } catch (error) {
+                console.warn('[Philippines articles]', error.message);
+                displayArticlesFallbackStatic();
+            }
+        }
+        function switchArticleTab(tab) {
+            ['en','bluesky','reddit','telegram'].forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                if (!btn) return;
+                const on = t === tab;
+                btn.style.background = on ? 'var(--accent)' : 'transparent';
+                btn.style.color = on ? 'white' : 'var(--text-secondary)';
+                btn.style.borderColor = on ? 'var(--accent)' : 'var(--card-border)';
+            });
+            const filtered = _allArticles.filter(a => {
+                const src = (typeof a.source === 'object' ? (a.source && a.source.name) : (a.source || a.source_name) || '').toLowerCase();
+                const lng = (a.language || '').toLowerCase();
+                if (tab === 'reddit') return src.includes('r/') || src.includes('reddit') || lng === 'reddit';
+                if (tab === 'telegram') return src.includes('telegram') || lng === 'telegram';
+                if (tab === 'bluesky') return src.includes('bluesky') || lng === 'bluesky';
+                return !['reddit','telegram','bluesky'].includes(lng) && !src.includes('r/') && !src.includes('telegram') && !src.includes('bluesky');
+            });
+            renderArticleList(filtered);
+        }
+        function renderArticleList(articles) {
+            const container = document.getElementById('articlesContainer');
+            if (!articles || !articles.length) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-style:italic;">Nothing in this tab yet. An empty tab means nothing was collected, not that nothing happened.</div>';
+                return;
+            }
+            container.innerHTML = articles.slice(0, 20).map(a => {
+                const source = typeof a.source === 'object' ? ((a.source && a.source.name) || '') : (a.source || a.source_name || '');
+                const published = a.published || a.publishedAt || a.date || '';
+                const url = a.url || a.link || '';
+                const desc = a.description || '';
+                let dateStr = '';
+                if (published) { const d = new Date(published); dateStr = isNaN(d) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+                return '<div class="article-item">' +
+                    '<div class="article-title">' + esc(a.title || 'Untitled') + '</div>' +
+                    (desc && desc !== a.title ? '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;">' + esc(desc.substring(0, 200)) + (desc.length > 200 ? '...' : '') + '</div>' : '') +
+                    '<div class="article-meta">' + esc(source) + (dateStr ? ' · ' + dateStr : '') + '</div>' +
+                    (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="article-link">Read article →</a>' : '') +
+                    '</div>';
+            }).join('');
+        }
+        function displayArticlesFallbackStatic() {
+            const links = [['https://globalnation.inquirer.net/','Inquirer Global Nation'],['https://www.rappler.com/','Rappler'],
+                           ['https://amti.csis.org/','CSIS AMTI'],['https://news.usni.org/','USNI News']];
+            document.getElementById('articlesContainer').innerHTML =
+                '<div style="text-align:center; padding:30px; color:var(--text-secondary);">' +
+                '<p style="font-size:15px; margin-bottom:15px;">&#x1F4E1; The article feed has not been collected yet (the first scan runs after the backend starts).</p>' +
+                '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">' +
+                links.map(l => '<a href="' + l[0] + '" target="_blank" rel="noopener" style="padding:10px 18px; background:var(--accent); color:white; border-radius:6px; text-decoration:none; font-size:13px; font-weight:bold;">' + l[1] + '</a>').join('') +
+                '</div></div>';
+        }
+
+        // ── WEST PHILIPPINE SEA TRACKER (full payload: actors, red lines, so what) ──
+        let _rhetoric = null;
+        const ACTOR_ORDER = [
+            ['china_scs_pressure', '🇨🇳 China at sea (CCG / militia)'],
+            ['beijing_coercion',   '🇨🇳 Beijing political coercion'],
+            ['economic_pressure',  '🇨🇳 China economic pressure'],
+            ['marcos_state',       '🏛️ Palace / DFA / NSC'],
+            ['afp_pcg',            '⚓ AFP / Philippine Coast Guard'],
+            ['us_alliance',        '🇺🇸 US alliance (MDT / EDCA)'],
+            ['regional_partners',  '🌏 Partners (Japan, Australia, others)'],
+            ['duterte_faction',    '⚖️ Marcos-Duterte rupture'],
+        ];
+        async function loadRhetoricData() {
+            const badge = document.getElementById('rhetoricLevelBadge');
+            try {
+                const r = await fetch(BACKEND_URL + '/api/rhetoric/philippines');
+                const data = await r.json();
+                if (!r.ok || !data || data.success === false) throw new Error((data && data.error) || ('HTTP ' + r.status));
+                _rhetoric = data;
+                const level = data.overall_level || 0;
+                const color = LEVEL_COLORS[level];
+                badge.style.background = color;
+                badge.textContent = `⚡ Level ${level} — ${LEVEL_LABELS[level] || ''}`;
+                document.getElementById('rhetoricScore').textContent = `L${level}`;
+                const lab = document.getElementById('rhetoricTheatreLabel');
+                lab.textContent = LEVEL_LABELS[level] || '--'; lab.style.background = color;
+                const sw = data.so_what || {};
+                if (sw.mdt_watch) document.getElementById('mdtBadge').style.display = 'inline-block';
+                const ch = data.corpus_health || {};
+                if (ch.status === 'degraded') {
+                    const cb = document.getElementById('corpusBadge');
+                    cb.style.display = 'inline-block';
+                    cb.title = `${ch.articles || 0} articles from ${ch.live_sources || 0} live sources -- low levels mean less evidence, not a calm sea`;
+                }
+                // Bottom line + watch
+                if (data.bluf) {
+                    document.getElementById('rhetoricBottomLineText').textContent = data.bluf;
+                    document.getElementById('rhetoricBottomLine').style.display = 'block';
+                }
+                if (data.watch_indicators) {
+                    const w = document.getElementById('rhetoricWatch');
+                    w.textContent = '👁️ ' + data.watch_indicators; w.style.display = 'block';
+                }
+                // Coercion-response gap row
+                const gap = document.getElementById('gapRow');
+                const bar = (lbl, v, c) => `<div style="display:flex;align-items:center;gap:8px;font-size:11px;margin:3px 0;">
+                    <span style="width:150px;color:var(--text-secondary);">${lbl}</span>
+                    <span style="flex:1;height:8px;background:var(--card-border);border-radius:4px;overflow:hidden;"><span style="display:block;height:100%;width:${(v/5)*100}%;background:${c};"></span></span>
+                    <span style="width:28px;font-weight:700;color:${c};">L${v}</span></div>`;
+                gap.innerHTML = bar("China's pressure", sw.inbound_pressure || 0, '#ef4444') +
+                                bar("Manila's answer", sw.response_strength || 0, '#38bdf8') +
+                                bar("Partners' answer", sw.partner_strength || 0, '#a78bfa') +
+                                ((sw.coercion_gap || 0) >= 2 ? `<div style="font-size:11px;color:#f97316;margin-top:4px;">📉 Coercion-response gap: ${sw.coercion_gap} levels.</div>` : '');
+                gap.style.display = 'block';
+                // Actors
+                const actors = data.actors || {};
+                document.getElementById('rhetoricActorList').innerHTML = ACTOR_ORDER.filter(([k]) => actors[k]).map(([k, lbl]) => {
+                    const a = actors[k]; const lv = a.level || 0;
+                    const via = (a.matched_triggers || []).some(t => String(t).startsWith('cooc:')) ? ' <span title="raised by the co-occurrence sensor (2+ outlets for L3+)" style="font-size:9px;opacity:.7;">◆</span>' : '';
+                    return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--card-border);">
+                        <span>${lbl}${via}</span><span style="font-weight:700;color:${LEVEL_COLORS[lv]};">L${lv}</span></div>`;
+                }).join('');
+                // Red lines
+                const rl = data.red_lines || [];
+                document.getElementById('redLineList').innerHTML = rl.length ? '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px;">Red lines</div>' +
+                    rl.map(x => `<div style="font-size:11px;padding:4px 8px;margin:3px 0;border-left:3px solid ${x.color};background:rgba(255,255,255,0.03);">
+                        ${esc(x.icon)} <strong>${x.status === 'BREACHED' ? 'CORROBORATED' : 'SINGLE SOURCE'}</strong> — ${esc(x.label)}
+                        <span style="color:var(--text-secondary);">(${x.outlets} outlet${x.outlets === 1 ? '' : 's'})</span></div>`).join('') : '';
+                const scanEl = document.getElementById('rhetoricScanInfo');
+                if (data.scanned_at) {
+                    const ago = Math.round((Date.now() - new Date(data.scanned_at)) / 60000);
+                    scanEl.textContent = `Last scan: ${ago < 60 ? ago + 'm' : Math.round(ago / 60) + 'h'} ago · ${data.total_articles || 0} articles`;
+                }
+                renderConvergenceAlerts(data);
+            } catch (e) {
+                console.warn('[Philippines tracker]', e.message);
+                badge.textContent = '📡 Unread';
+                document.getElementById('rhetoricActorList').innerHTML =
+                    '<span style="font-style:italic;">The tracker has not produced a read yet (first scan runs a few minutes after the backend starts). Unread is not quiet.</span>';
+            }
+        }
+
+        function renderConvergenceAlerts(data) {
+            const sw = data.so_what || {}, ct = data.crosstheater || {};
+            const show = (id, on, html) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.toggle('active', !!on);
+                if (on) document.getElementById(id + 'Detail').innerHTML = html;
+            };
+            show('alertMdt', sw.mdt_watch,
+                `China's pressure at sea is at L${sw.inbound_pressure || 0} with the alliance track at L${sw.partner_strength || 0}. This is the band where the 1951 Mutual Defense Treaty stops being background. Watch Washington's wording on Article IV ("public vessels... anywhere in the South China Sea"), not just Manila's.`);
+            show('alertTaiwan', ct.taiwan_and_wps_pressed,
+                `Beijing's pressure on Taiwan (L${ct.taiwan_inbound_max || 0}) and on the Philippines (L${data.inbound_max_level || 0}) are both at Confrontation or above. The two fronts meet at the Luzon Strait, where U.S. NMESIS and Typhon launchers sit in northern Luzon and Batanes.`);
+            show('alertTwoClaimants', ct.scs_two_claimants_pressed,
+                `China is pressing both South China Sea claimants at once: Vietnam (L${ct.vietnam_china_scs || 0}) and the Philippines (L${data.inbound_max_level || 0}). Simultaneous pressure suggests a policy, not an incident.`);
+        }
+
+        // ── ACTOR PAIRS ──
+        async function loadMatrix() {
+            const linesEl = document.getElementById('matrixLines'), pairsEl = document.getElementById('matrixPairs');
+            try {
+                const r = await fetch(BACKEND_URL + '/api/asia/actor-matrix?actor=philippines');
+                const d = await r.json();
+                if (!d || d.success === false) throw new Error('matrix unavailable');
+                linesEl.innerHTML = (d.lines || []).map(l => '• ' + esc(l)).join('<br>') || '<span style="color:var(--text-secondary);">No lines this cycle.</span>';
+                pairsEl.innerHTML = (d.pairs || []).map(c => {
+                    const read = c.state === 'read';
+                    const col = read ? LEVEL_COLORS[c.level] : '#6b7280';
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;margin:4px 0;border:1px solid var(--card-border);border-radius:8px;font-size:12px;">
+                        <span>${esc(c.actor_flag)} ${esc(c.actor)} → ${esc(c.target_flag)} ${esc(c.target)}
+                        <span style="display:block;font-size:10px;color:var(--text-secondary);">${esc(c.kind_label || '')}</span></span>
+                        <span style="flex-shrink:0;font-weight:700;color:white;background:${col};padding:2px 8px;border-radius:4px;">${read ? 'L' + c.level + ' ' + esc(c.word) : esc(c.word)}</span></div>`;
+                }).join('');
+            } catch (e) {
+                linesEl.innerHTML = '<span style="color:var(--text-secondary);font-style:italic;">Actor matrix unread right now.</span>';
+            }
+        }
+
+        // ── COMMODITY EXPOSURE (Asia proxy first, ME backend fallback) ──
+        async function loadCommodity() {
+            const COUNTRY_KEY = 'philippines';
+            const ME_BACKEND = 'https://asifah-backend.onrender.com';
+            let data = null, usedFallback = false;
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/asia/commodity/${COUNTRY_KEY}`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                data = await r.json();
+                if (!data || data.success === false) throw new Error('proxy failure');
+            } catch (e) {
+                try {
+                    const r = await fetch(`${ME_BACKEND}/api/commodity-pressure/${COUNTRY_KEY}`);
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    data = await r.json(); usedFallback = true;
+                } catch (e2) {
+                    document.getElementById('commodityProse').textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
+                    return;
+                }
+            }
+            document.getElementById('commodityProse').textContent = data.prose ||
+                `The Philippines tracks ${(data.commodity_summaries || []).length} strategic commodity exposures. See the tiles for live status and the Strategic Linkage for why they matter.`;
+            const banner = document.getElementById('commodityAlertBanner');
+            const lvl = (data.alert_level || 'normal').toLowerCase();
+            const labels = { normal:'✓ NO ACTIVE COMMODITY PRESSURE', elevated:'◐ ELEVATED COMMODITY PRESSURE', high:'▲ HIGH COMMODITY PRESSURE', surge:'🚨 COMMODITY PRESSURE SURGE' };
+            banner.className = `commodity-alert-banner alert-${lvl} show`;
+            banner.innerHTML = `<strong>${labels[lvl] || labels.normal}</strong><span class="ab-meta">Pressure score: ${Number(data.commodity_pressure || 0).toFixed(1)} · ${(data.commodity_summaries || []).length} exposures tracked${data.has_live_data === false ? ' · awaiting live signals' : ''}</span>`;
+            const grid = document.getElementById('commodityGrid');
+            grid.innerHTML = '';
+            (data.commodity_summaries || []).forEach(c => {
+                const g = (c.global_alert_level || 'normal').toLowerCase();
+                let spark = '', price = '';
+                if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
+                    const s = c.sparkline.spark, mn = Math.min(...s), mx = Math.max(...s), rg = mx - mn || 1;
+                    const pts = s.map((v, i) => `${((i / (s.length - 1)) * 100).toFixed(1)},${(100 - ((v - mn) / rg) * 100).toFixed(1)}`).join(' ');
+                    const pc = c.sparkline.change_pct_30d || 0, sc = pc >= 0 ? '#22c55e' : '#ef4444';
+                    spark = `<svg class="commodity-pill-spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="${sc}" stroke-width="2" points="${pts}"/></svg>`;
+                    price = `<div class="commodity-pill-price">$${c.sparkline.price != null ? Number(c.sparkline.price).toFixed(2) : '--'} <span class="${pc >= 0 ? 'price-up' : 'price-down'}">${pc >= 0 ? '▲' : '▼'} ${pc.toFixed(2)}% (30d)</span></div>`;
+                }
+                const tile = document.createElement('a');
+                tile.className = 'commodity-pill';
+                tile.href = `commodities.html#${c.commodity}`;
+                tile.innerHTML = `<div class="commodity-pill-header"><div class="commodity-pill-icon">${c.icon || '📊'}</div><div style="flex:1;">
+                        <div class="commodity-pill-name">${esc(c.name || c.commodity)}</div>${c.rank ? `<div class="commodity-pill-rank">#${c.rank} globally</div>` : ''}</div></div>
+                    <div class="commodity-pill-row"><span class="commodity-pill-alert commodity-alert-${g}">${g}</span><span class="commodity-pill-role-badge">${esc(c.role || 'consumer')}</span>
+                    ${c.signal_count > 0 ? `<span class="commodity-pill-signal-count">${c.signal_count} signal${c.signal_count !== 1 ? 's' : ''}</span>` : ''}</div>
+                    ${price}${spark}${c.note ? `<div class="commodity-pill-note">${esc(c.note.slice(0, 180))}${c.note.length > 180 ? '…' : ''}</div>` : ''}`;
+                grid.appendChild(tile);
+            });
+            const ts = document.getElementById('commodityTopSignals'), top = data.top_signals || [];
+            if (top.length) {
+                ts.innerHTML = '<div class="ts-title">Top live signals</div>' + top.slice(0, 3).map(s =>
+                    `<a href="${esc(s.article_url)}" target="_blank" rel="noopener">${s.commodity_icon || '📰'} <strong>${esc(s.commodity_name)}:</strong> ${esc(s.article_title)} <span class="ts-source">— ${esc(s.source)}</span></a>`).join('');
+                ts.style.display = 'block';
+            }
+            const cachedAt = data.proxy_cached_at || data.last_updated;
+            const note = document.getElementById('commodityCacheNote');
+            if (cachedAt) { const m = Math.floor((Date.now() - new Date(cachedAt).getTime()) / 60000); note.textContent = `Cache: ${data.cache_status || (usedFallback ? 'me-direct' : 'proxy')} · ${m < 60 ? m + 'm' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm'} ago`; }
+            else if (usedFallback) note.textContent = 'Source: ME backend (Asia proxy unavailable)';
+        }
+
+        // ── MAP ──
+        function initMap() {
+            if (typeof L === 'undefined') return;
+            const map = L.map('philippinesMap', { scrollWheelZoom: false }).setView([14.5, 119.5], 5);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+            }).addTo(map);
+            const mark = (lat, lon, color, name, role) => L.circleMarker([lat, lon], { radius: 7, color, weight: 2, fillColor: color, fillOpacity: 0.55 })
+                .addTo(map).bindPopup('<strong>' + name + '</strong><br>' + role);
+            const CYAN = '#38bdf8', AMBER = '#f59e0b', RED = '#ef4444', VIOLET = '#a78bfa';
+            mark(14.5995, 120.9842, CYAN, 'Manila', 'Capital');
+            mark(14.80, 120.27, CYAN, 'Subic Bay', 'Former US naval base; deep-water port facing Scarborough');
+            mark(15.18, 120.56, CYAN, 'Clark', 'Air base / economic zone');
+            mark(9.74, 118.74, CYAN, 'Puerto Princesa (Palawan)', 'AFP Western Command -- the Spratly front');
+            mark(18.18, 120.53, CYAN, 'Laoag (northern Luzon)', 'Where the US Typhon system first deployed (2024)');
+            mark(7.07, 125.61, CYAN, 'Davao', 'Mindanao hub; Duterte family base');
+            mark(15.15, 117.76, AMBER, 'Scarborough Shoal (Bajo de Masinloc)', 'Chinese control since 2012; "nature reserve" claim; watch for construction');
+            mark(9.73, 115.86, AMBER, 'Second Thomas Shoal (Ayungin)', 'BRP Sierra Madre outpost; resupply runs are the test');
+            mark(9.75, 116.48, AMBER, 'Sabina Shoal (Escoda)', '2024 collisions; coast guard presence');
+            mark(11.05, 114.28, AMBER, 'Thitu Island (Pag-asa)', 'Largest Philippine-held feature; runway and civilians');
+            mark(11.45, 116.85, AMBER, 'Reed Bank (Recto Bank)', 'Undeveloped gas inside the Philippine EEZ -- the energy-security link');
+            mark(9.90, 115.53, RED, 'Mischief Reef', 'Chinese-built airbase inside the Philippine EEZ');
+            mark(10.92, 114.08, RED, 'Subi Reef', 'Chinese-built base; source of militia swarms around Thitu');
+            mark(20.45, 121.97, VIOLET, 'Batanes / Luzon Strait', 'Northern door to the Pacific, ~200 km from Taiwan; US NMESIS deployed here (2026)');
+            setTimeout(() => map.invalidateSize(), 250);
+        }
+
+        // ── TRANSLATIONS (EN complete; other languages cover the page chrome, the rest falls back to English) ──
+        const translations = {
+            en: {
+                backLink: '← Back to Dashboard',
+                pageTitle: '🇵🇭 PHILIPPINES STABILITY INDEX',
+                pageSubtitle: 'Multi-Factor Analysis: West Philippine Sea Coercion, the U.S. Treaty Trip-Wire, the Marcos-Duterte Rupture, Commodity Exposure',
+                lastUpdated: 'Last updated: ',
+                themeToggle: 'Theme',
+                rhetoric_banner_title: '📡 West Philippine Sea Tracker',
+                rhetoric_card_title: '📡 WEST PHILIPPINE SEA TRACKER',
+                matrix_title: '🧭 WHO IS PRESSING WHOM — PHILIPPINES',
+                commodityTitle: 'PHILIPPINES COMMODITY & CONVERGENCE EXPOSURE',
+                mapTitle: 'Philippines — West Philippine Sea & Luzon Strait',
+                knowledgeLibraryTitle: 'Knowledge Library',
+                articles_title: '📰 Recent Philippines & West Philippine Sea Articles',
+                travel_label: 'U.S. State Department — Philippines Travel Advisory',
+                open_tracker: 'Asia BLUF →'
+            },
+            fil: {
+                backLink: '← Bumalik sa Dashboard',
+                pageTitle: '🇵🇭 INDEKS NG KATATAGAN NG PILIPINAS',
+                pageSubtitle: 'Pagsusuri: Panggigipit sa West Philippine Sea, ang Mutual Defense Treaty, ang Hidwaang Marcos-Duterte, at mga Kalakal',
+                lastUpdated: 'Huling update: ',
+                themeToggle: 'Tema',
+                rhetoric_banner_title: '📡 Tracker ng West Philippine Sea',
+                rhetoric_card_title: '📡 TRACKER NG WEST PHILIPPINE SEA',
+                matrix_title: '🧭 SINO ANG GUMIGIPIT KANINO — PILIPINAS',
+                commodityTitle: 'PAGKALANTAD NG PILIPINAS SA MGA KALAKAL',
+                mapTitle: 'Pilipinas — West Philippine Sea at Luzon Strait',
+                knowledgeLibraryTitle: 'Aklatan ng Kaalaman',
+                articles_title: '📰 Mga Bagong Artikulo tungkol sa Pilipinas at West Philippine Sea',
+                travel_label: 'U.S. State Department — Travel Advisory para sa Pilipinas',
+                open_tracker: 'Asia BLUF →'
+            },
+            zh: {
+                backLink: '← 返回仪表板',
+                pageTitle: '🇵🇭 菲律宾稳定指数',
+                pageSubtitle: '多因素分析：南海（西菲律宾海）压力、美菲共同防御条约、马科斯与杜特尔特之争、大宗商品风险',
+                lastUpdated: '最后更新：',
+                themeToggle: '主题',
+                rhetoric_banner_title: '📡 西菲律宾海追踪器',
+                rhetoric_card_title: '📡 西菲律宾海追踪器',
+                matrix_title: '🧭 谁在向谁施压 — 菲律宾',
+                commodityTitle: '菲律宾大宗商品与汇聚风险',
+                mapTitle: '菲律宾 — 南海与吕宋海峡',
+                knowledgeLibraryTitle: '知识库',
+                articles_title: '📰 菲律宾与南海最新文章',
+                travel_label: '美国国务院 — 菲律宾旅行警告',
+                open_tracker: '亚洲综述 →'
+            },
+            ja: {
+                backLink: '← ダッシュボードに戻る',
+                pageTitle: '🇵🇭 フィリピン安定指数',
+                pageSubtitle: '多要素分析：西フィリピン海での圧力、米比相互防衛条約、マルコス対ドゥテルテ、コモディティ',
+                lastUpdated: '最終更新：',
+                themeToggle: 'テーマ',
+                rhetoric_banner_title: '📡 西フィリピン海トラッカー',
+                rhetoric_card_title: '📡 西フィリピン海トラッカー',
+                matrix_title: '🧭 誰が誰に圧力をかけているか — フィリピン',
+                commodityTitle: 'フィリピンのコモディティ・収束リスク',
+                mapTitle: 'フィリピン — 西フィリピン海とルソン海峡',
+                knowledgeLibraryTitle: 'ナレッジライブラリ',
+                articles_title: '📰 フィリピン・西フィリピン海の最新記事',
+                travel_label: '米国務省 — フィリピン渡航勧告',
+                open_tracker: 'アジアBLUF →'
+            }
+        };
+        let currentLang = 'en';
+        try { const s = localStorage.getItem('asifah-philippines-lang'); if (s && translations[s]) currentLang = s; } catch (e) {}
+        function applyTranslations() {
+            const t = translations[currentLang] || translations.en;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] === undefined) return;
+                if (key === 'lastUpdated') {
+                    const cur = el.textContent, i = cur.indexOf(': ');
+                    el.textContent = t[key] + (i >= 0 ? cur.slice(i + 2) : 'Loading...');
+                } else el.textContent = t[key];
+            });
+            document.documentElement.setAttribute('lang', currentLang === 'fil' ? 'fil' : currentLang);
+            document.documentElement.setAttribute('dir', RTL_LANGS.includes(currentLang) ? 'rtl' : 'ltr');
+        }
+        function switchLanguage(lang, button) {
+            currentLang = lang;
+            try { localStorage.setItem('asifah-philippines-lang', lang); } catch (e) {}
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            if (button) button.classList.add('active');
+            applyTranslations();
+        }
+
+        // Mobile drawer (the shell owns the rail; these keep the page's own toggle working)
+        function toggleSidebar() {
+            const sb = document.getElementById('navSidebar'), bd = document.getElementById('sidebarBackdrop');
+            if (!sb) return;
+            const open = sb.classList.toggle('open');
+            if (bd) bd.classList.toggle('open', open);
+        }
+        function closeSidebar() {
+            const sb = document.getElementById('navSidebar'), bd = document.getElementById('sidebarBackdrop');
+            if (sb) sb.classList.remove('open');
+            if (bd) bd.classList.remove('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const labelMap = { en: 'EN', fil: 'Filipino', zh: '中文', ja: '日本語' };
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === labelMap[currentLang]));
+            document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            applyTranslations();
+            startLoadingProgress();
+            initMap();
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+            Promise.allSettled([loadRhetoricData(), loadMatrix(), loadCommodity(), loadArticles()])
+                .finally(hideLoadingOverlay);
+        });
+    </script>
+</body>
+</html>
