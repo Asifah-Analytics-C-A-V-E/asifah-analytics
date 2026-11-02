@@ -31,7 +31,7 @@
     afghanistan: 'asia.html', china: 'asia.html', india: 'asia.html', japan: 'asia.html',
     kazakhstan: 'asia.html', 'north-korea': 'asia.html', pakistan: 'asia.html',
     'south-korea': 'asia.html', taiwan: 'asia.html', turkmenistan: 'asia.html',
-    vietnam: 'asia.html',
+    vietnam: 'asia.html', philippines: 'asia.html',
 
     albania: 'europe.html', armenia: 'europe.html', azerbaijan: 'europe.html',
     belarus: 'europe.html', belgium: 'europe.html', cyprus: 'europe.html',
