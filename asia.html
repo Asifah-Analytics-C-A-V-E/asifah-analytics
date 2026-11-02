@@ -298,6 +298,8 @@
         .rate-limit-value.danger { color: #c0392b; }
 
         /* FOOTER */
+        .footer-info { font-size: 11.5px; line-height: 1.7; color: var(--text-secondary); }
+        .footer-info p { margin-bottom: 6px; }
         footer { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid var(--card-border); font-size: 12px; }
         .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 25px; }
         .footer-section { flex: 1; min-width: 250px; }
@@ -682,10 +684,19 @@
             border-radius: 50%;
             opacity: 0.34;
         }
+        /* Nov 2 2026: caution banner + shell hamburger on phones */
+        @media (max-width: 768px) {
+            .caution-banner { flex-wrap:wrap !important; padding:14px 16px !important; }
+            .caution-banner > div { min-width:0 !important; flex:1 1 220px !important; }
+            .caution-banner > div:first-child { flex:0 0 auto !important; }
+            .caution-banner a { margin-left:auto; }
+            header { padding-top:70px !important; }
+        }
 </style>
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 </head>
-<body>
-<div class="watermark"></div>
+<body data-asifah-ladder="off">
+<!-- Nov 2 2026: logo watermark removed -- the regional page carries its bespoke background (China_on_Fire.png) -->
 
     <!-- LOADING OVERLAY -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -709,7 +720,7 @@
             <div class="loading-error" id="loadingError" style="background:rgba(0,180,255,0.08); border:1px solid rgba(0,180,255,0.25); color:#67e8f9;">
                 ⏳ Still loading — scanning 8 countries across multiple intelligence sources. This is normal for a first visit. Almost there!
             <div style="margin-top:20px; font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:2px;">
-                FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT
+                FOR RESEARCH PURPOSES ONLY · CONVERGENCE, NOT PREDICTION
             </div>
             </div>
         </div>
@@ -718,7 +729,7 @@
     <div class="container">
         <header>
             <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics Logo" class="header-logo">
-            <a href="https://asifahanalytics.com" class="home-button" title="Home">🏠 <span data-i18n="homeButton">HOME</span></a>
+            <a href="https://asifahanalytics.com" class="home-button home-btn" title="Home">🏠 <span data-i18n="homeButton">HOME</span></a>
             <div class="language-switcher">
                 <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
                 <button class="lang-btn" onclick="switchLanguage('zh', this)">中文</button>
@@ -738,7 +749,7 @@
         <!-- ════════════════════════════════════════════════════════════ -->
         <!-- WORLDWIDE CAUTION BANNER (canonical, Feb 28 2026 State Dept) -->
         <!-- ════════════════════════════════════════════════════════════ -->
-        <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
+        <div class="caution-banner" style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
             <div style="font-size:28px;flex-shrink:0;">🚨</div>
             <div style="flex:1;">
                 <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
@@ -755,8 +766,7 @@
         <div class="page-with-sidebar">
 
         <!-- LEFT NAV SIDEBAR -->
-        <button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
-        <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+        <!-- Nov 2 2026: page hamburger + backdrop retired -- the shared shell provides the mobile drawer -->
 
         <nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
@@ -782,6 +792,7 @@
 
         <!-- TARGET CARDS (ALPHABETICAL) -->
         <div class="targets-grid">
+            <section id="actorMatrixPanel" class="amx-panel" style="grid-column:1 / -1;" aria-label="Asia actor matrix"></section>
 
             <!-- AFGHANISTAN -->
             <div class="target-card collapsed" id="afghanistan-card" data-target="afghanistan">
@@ -1454,9 +1465,10 @@
         <!-- NOTAM WIDGET -->
         <div class="notam-widget" id="notamWidget">
             <div class="notam-widget-header">
-                <div class="notam-widget-title" data-i18n="notamTitle">Asia-Pacific NOTAM Monitor</div>
+                <div class="notam-widget-title" data-i18n="notamTitle">Airspace Watch — Asia-Pacific</div>
                 <div class="notam-status-badge" id="notamStatusBadge">SCANNING...</div>
             </div>
+            <div id="airspaceLines" style="font-size:12.5px;line-height:1.5;margin:-8px 0 10px;"></div>
             <div class="notam-scroll-container">
                 <div class="notam-cards-wrapper" id="notamCardsWrapper">
                     <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; width:100%;">Loading NOTAMs...</div>
@@ -1467,76 +1479,25 @@
         <!-- FLIGHT WIDGET -->
         <div class="flight-widget" id="flightWidget">
             <div class="flight-widget-header">
-                <div class="flight-widget-title" data-i18n="flightTitle">Asia-Pacific Flight Disruption Monitor</div>
+                <div class="flight-widget-title" data-i18n="flightTitle">Flight Watch — Asia-Pacific</div>
                 <div class="flight-status-badge normal" id="flightStatusBadge">SCANNING...</div>
             </div>
+            <div id="flightLines" style="font-size:12.5px;line-height:1.5;margin:0 0 12px;"></div>
             <div class="flight-cancellations-grid" id="flightCancellationsGrid">
                 <div style="padding:30px; text-align:center; color:#7f8c8d; font-style:italic; grid-column:1/-1;">Loading flight data...</div>
             </div>
         </div>
 
-        <!-- RATE LIMIT -->
-        <div class="rate-limit-box" id="rateLimitBox">
-            <div class="rate-limit-item">
-                <div class="rate-limit-label">Requests Used</div>
-                <div class="rate-limit-value" id="rlUsed">--</div>
-            </div>
-            <div class="rate-limit-item">
-                <div class="rate-limit-label">Remaining</div>
-                <div class="rate-limit-value success" id="rlRemaining">--</div>
-            </div>
-            <div class="rate-limit-item">
-                <div class="rate-limit-label">Daily Limit</div>
-                <div class="rate-limit-value" id="rlLimit">--</div>
-            </div>
-            <div class="rate-limit-item">
-                <div class="rate-limit-label">Resets In</div>
-                <div class="rate-limit-value" id="rlReset">--</div>
-            </div>
-        </div>
+        <!-- Nov 2 2026: requests-used box retired (old news, per Rachel) -->
 
-        <!-- FOOTER -->
-        <footer>
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>About</h4>
-                    <p><strong>ASIFAH ANALYTICS · ASIA & PACIFIC DASHBOARD</strong></p>
-                    <p>asifah-asia-backend.onrender.com · Updates every 12 hours · Force refresh via Scan OSINT</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Data Sources</h4>
-                    <p>OSINT aggregation from GDELT (en/zh/ja/ko/ur), NewsAPI, Brave Search, RSS, Reddit · Open-Meteo weather · FAA NOTAMs · U.S. State Department travel advisories</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Methodology</h4>
-                    <p>Source-weighted OSINT aggregation with time-decay scoring, keyword severity multipliers, de-escalation detection, and momentum analysis. Index floor: 10%, ceiling: 95%.</p>
-                </div>
-            </div>
-
-            <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-            <div style="margin:28px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-                <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
-            </div>
-
-            <div class="disclaimer">
-                <strong>⚠️ DISCLAIMER</strong>
-                This dashboard provides probability estimates based on open-source intelligence aggregation and algorithmic analysis. It does not constitute intelligence assessments, military advice, or policy recommendations. Probabilities reflect media signal intensity and should not be interpreted as ground-truth predictions. Always consult authoritative sources for decision-making.
-            </div>
-
-            <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px;">
-                <a href="mission.html" style="color:#67e8f9; text-decoration:none; margin:0 10px;">Mission Statement</a>
-                <span style="color:#64748b;">·</span>
-                <a href="privacy.html" style="color:#67e8f9; text-decoration:none; margin:0 10px;">Privacy Policy</a>
-                <span style="color:#64748b;">·</span>
-                <a href="https://asifahanalytics.com" style="color:#67e8f9; text-decoration:none; margin:0 10px;">Home</a>
-            </div>
-
-            <div class="copyright-footer">
-                © 2025-2026 Asifah Analytics. All Rights Reserved. Proprietary and Confidential.<br>
-                Unauthorized use, reproduction, or distribution prohibited.
-            </div>
-        </footer>
+        <!-- Page-specific sources & method: the shared shell moves this block into its footer -->
+        <section class="footer-info" data-asifah-footer-extra>
+            <p><strong>ASIFAH ANALYTICS · ASIA & PACIFIC DASHBOARD</strong></p>
+            <p>Updates every 12 hours · Scan OSINT refreshes on demand (rate-limited)</p>
+            <p><strong>Sources:</strong> OSINT aggregation from GDELT (en/zh/ja/ko/ur), NewsAPI, Brave Search, RSS, Reddit · Open-Meteo weather · Airspace Watch: EASA conflict-zone bulletins, the FAA's published flight-restriction list, and open ADS-B traffic counts · Flight Watch: airline announcements via Google News · U.S. State Department travel advisories (public data).</p>
+            <p><strong>Method:</strong> Country cards are convergence reads, not predictions: source-weighted aggregation with time decay, de-escalation detection and momentum. The Actor Matrix reads the country rhetoric trackers and scans nothing itself. A source not read this cycle is shown as unread &mdash; unread is not the same as quiet.</p>
+            <p style="margin-top:12px;font-size:10px;opacity:.75;">FOR RESEARCH PURPOSES ONLY · Independent analysis · Not intelligence assessments, military advice or policy recommendations · © 2025-2026 Asifah Analytics</p>
+        </section>
     </div>
 
     <script>
@@ -1608,7 +1569,7 @@
             targetAfghanistan: "AFGHANISTAN", targetChina: "CHINA", targetIndia: "INDIA",
             targetJapan: "JAPAN", targetNorthKorea: "NORTH KOREA", targetPakistan: "PAKISTAN",
             targetSouthKorea: "SOUTH KOREA", targetTaiwan: "TAIWAN", targetVietnam: "VIETNAM",
-            notamTitle: "Asia-Pacific NOTAM Monitor", flightTitle: "Asia-Pacific Flight Disruption Monitor"
+            notamTitle: "Airspace Watch — Asia-Pacific", flightTitle: "Flight Watch — Asia-Pacific"
         },
         zh: {
             header: "阿西法分析", subtitle: "地区压力指数：亚洲和太平洋",
@@ -1623,7 +1584,7 @@
             targetAfghanistan: "阿富汗", targetChina: "中国", targetIndia: "印度",
             targetJapan: "日本", targetNorthKorea: "朝鲜", targetPakistan: "巴基斯坦",
             targetSouthKorea: "韩国", targetTaiwan: "台湾", targetVietnam: "越南",
-            notamTitle: "亚太地区NOTAM监控", flightTitle: "亚太地区航班中断监控"
+            notamTitle: "空域观察 — 亚太地区", flightTitle: "航班观察 — 亚太地区"
         },
         ja: {
             header: "アシファ・アナリティクス", subtitle: "地域圧力指数：アジア・太平洋",
@@ -1638,7 +1599,7 @@
             targetAfghanistan: "アフガニスタン", targetChina: "中国", targetIndia: "インド",
             targetJapan: "日本", targetNorthKorea: "北朝鮮", targetPakistan: "パキスタン",
             targetSouthKorea: "韓国", targetTaiwan: "台湾", targetVietnam: "ベトナム",
-            notamTitle: "アジア太平洋NOTAMモニター", flightTitle: "アジア太平洋航空便混乱モニター"
+            notamTitle: "空域ウォッチ — アジア太平洋", flightTitle: "フライトウォッチ — アジア太平洋"
         },
         ko: {
             header: "아시파 애널리틱스", subtitle: "지역 압력 지수: 아시아 및 태평양",
@@ -1653,7 +1614,7 @@
             targetAfghanistan: "아프가니스탄", targetChina: "중국", targetIndia: "인도",
             targetJapan: "일본", targetNorthKorea: "북한", targetPakistan: "파키스탄",
             targetSouthKorea: "한국", targetTaiwan: "대만", targetVietnam: "베트남",
-            notamTitle: "아시아태평양 NOTAM 모니터", flightTitle: "아시아태평양 항공편 장애 모니터"
+            notamTitle: "공역 감시 — 아시아태평양", flightTitle: "항공편 감시 — 아시아태평양"
         }
     };
 
@@ -1902,44 +1863,58 @@ async function scanSingleTarget(target) {
         fetchRateLimits();
     }
 
-    // ===== NOTAMS =====
+    // ===== AIRSPACE WATCH (shared module airspace_watch.py, Nov 2026) =====
     async function loadNotams() {
         try {
             const response = await fetch(`${API_BASE}/api/asia/notams`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            displayNotams(data);
+            displayNotams(await response.json());
         } catch(err) {
-            document.getElementById('notamCardsWrapper').innerHTML = '<div style="padding:30px;text-align:center;color:#c0392b;">Failed to load NOTAMs. Backend may be warming up.</div>';
-            document.getElementById('notamStatusBadge').textContent = 'ERROR';
+            displayNotams({state: 'unread'});
         }
     }
 
+    function _esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
     function displayNotams(data) {
+        data = data || {};
         const wrapper = document.getElementById('notamCardsWrapper');
         const badge = document.getElementById('notamStatusBadge');
         const notams = data.notams || [];
+        const linesEl = document.getElementById('airspaceLines');
+        if (linesEl) {
+            const word = st => st === 'read' ? 'read' : st === 'stale' ? 'last good read' : st === 'partial' ? 'partly read' : 'unread';
+            const src = data.sources || {};
+            const parts = ['EASA ' + word((src.easa||{}).state), 'FAA ' + word((src.faa||{}).state)];
+            if (src.opensky) parts.push((src.opensky.provider === 'al' ? 'adsb.lol' : 'OpenSky') + ' traffic ' + word(src.opensky.state));
+            linesEl.innerHTML = (data.lines || []).slice(0, 4).map(l => `<div>• ${_esc(l)}</div>`).join('') +
+                `<div style="opacity:.7;font-size:11px;margin-top:4px;">Sources: ${parts.join(' · ')}${data.timestamp ? ' · ' + new Date(data.timestamp).toLocaleString() : ''}</div>`;
+        }
         if (notams.length === 0) {
-            wrapper.innerHTML = '<div class="no-notams"><div>No Active Alerts</div><div>No critical NOTAMs detected across Asia-Pacific airspace</div></div>';
-            badge.textContent = 'CLEAR'; badge.style.background = '#d1fae5'; badge.style.color = '#065f46';
+            const unread = !data.state || data.state === 'unread';
+            wrapper.innerHTML = unread
+                ? '<div class="no-notams"><div>? Airspace sources unread</div><div>Not read this cycle — this is not the same as quiet airspace.</div></div>'
+                : '<div class="no-notams"><div>No active warnings or traffic anomalies</div><div>Sources read; nothing flagged this cycle.</div></div>';
+            badge.textContent = unread ? 'UNREAD' : '0 ACTIVE';
+            badge.style.background = unread ? '#e5e7eb' : '#d1fae5'; badge.style.color = unread ? '#374151' : '#065f46';
             return;
         }
         badge.textContent = `${notams.length} ACTIVE`; badge.style.background = '#fef3c7'; badge.style.color = '#92400e';
         let html = '';
         [...notams, ...notams].forEach(notam => {
-            const typeColor = getNotamTypeColor(notam.classification || notam.type || '');
+            const typeColor = notam.type_color || notam.color || getNotamTypeColor(notam.classification || notam.type || '');
             const displayCountry = notam.country || (notam.region ? notam.region.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'Unknown');
             const fir = notam.icao_location || notam.fir || '';
             html += `<div class="notam-card type-${typeColor}">
                 <div class="notam-header">
-                    <div class="notam-country">${notam.flag||''} ${displayCountry}${fir?' ('+fir+')':''}</div>
-                    <span class="notam-type-badge type-${typeColor}">${notam.classification||notam.type||'NOTICE'}</span>
+                    <div class="notam-country">${_esc(notam.flag||'')} ${_esc(displayCountry)}${fir?' ('+_esc(fir)+')':''}</div>
+                    <span class="notam-type-badge type-${typeColor}">${_esc(notam.classification||notam.type||'NOTICE')}</span>
                 </div>
-                <div class="notam-summary">${notam.summary||notam.description||'No details available'}</div>
+                <div class="notam-summary">${_esc(notam.summary||notam.description||'No details available')}</div>
                 <div class="notam-details">
-                    ${fir?`<div><strong>FIR:</strong> ${fir}</div>`:''}
-                    <div><strong>Effective:</strong> ${notam.effective||notam.valid_from||'Immediately'}</div>
-                    ${notam.source_url?`<a class="notam-link" href="${notam.source_url}" target="_blank">View Source →</a>`:''}
+                    ${fir?`<div><strong>FIR:</strong> ${_esc(fir)}</div>`:''}
+                    <div><strong>Effective:</strong> ${_esc(notam.effective||notam.valid_range||notam.valid_from||'See source')}</div>
+                    ${notam.source_url?`<a class="notam-link" href="${_esc(notam.source_url)}" target="_blank" rel="noopener">View Source →</a>`:''}
                 </div>
             </div>`;
         });
@@ -1959,10 +1934,9 @@ async function scanSingleTarget(target) {
         try {
             const response = await fetch(`${API_BASE}/api/asia/flights`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            displayFlights(data);
+            displayFlights(await response.json());
         } catch(err) {
-            document.getElementById('flightCancellationsGrid').innerHTML = '<div style="padding:30px;text-align:center;color:#c0392b;grid-column:1/-1;">Failed to load flight data.</div>';
+            displayFlights({state: 'unread'});
         }
     }
 
@@ -1972,11 +1946,20 @@ async function scanSingleTarget(target) {
     function displayFlights(data) {
         const grid = document.getElementById('flightCancellationsGrid');
         const badge = document.getElementById('flightStatusBadge');
+        data = data || {};
         const disruptions = data.disruptions || data.cancellations || [];
         flightDisruptionsData = disruptions; flightVisibleCount = FLIGHT_PAGE_SIZE;
+        // Nov 2 2026 -- Flight Watch (shared flight_watch.py): So-What lines + which source was read
+        const st = data.state || 'unread';
+        const word = {read: 'read', partial: 'partly read', stale: 'last good read', unread: 'unread'}[st] || 'unread';
+        const fl = document.getElementById('flightLines');
+        if (fl) fl.innerHTML = (data.lines || []).slice(0, 4).map(l => `<div>• ${_esc(l)}</div>`).join('') +
+            `<div style="opacity:.7;font-size:11px;margin-top:4px;">Source: airline announcements via Google News (${word})${data.scanned_at ? ' · scanned ' + new Date(data.scanned_at).toLocaleString() : ''}</div>`;
         if (disruptions.length === 0) {
-            grid.innerHTML = '<div class="no-cancellations" style="grid-column:1/-1;"><div style="font-size:16px;font-weight:bold;margin-bottom:8px;">No Active Disruptions</div><div>All monitored Asia-Pacific carriers operating normally</div></div>';
-            badge.textContent = 'NORMAL'; badge.className = 'flight-status-badge normal'; return;
+            grid.innerHTML = st === 'unread'
+                ? '<div class="no-cancellations" style="grid-column:1/-1;"><div style="font-size:16px;font-weight:bold;margin-bottom:8px;">Unread</div><div>Airline sources not read yet — this is not the same as no disruptions.</div></div>'
+                : '<div class="no-cancellations" style="grid-column:1/-1;"><div style="font-size:16px;font-weight:bold;margin-bottom:8px;">No carrier suspensions reported</div><div>Nothing in the last 30 days for watched Asia-Pacific destinations.</div></div>';
+            badge.textContent = st === 'unread' ? 'UNREAD' : 'NONE REPORTED'; badge.className = 'flight-status-badge normal'; return;
         }
         badge.textContent = `${disruptions.length} DISRUPTION${disruptions.length>1?'S':''}`; badge.className = 'flight-status-badge active';
         renderFlightCards();
@@ -1987,15 +1970,15 @@ async function scanSingleTarget(target) {
         const visible = flightDisruptionsData.slice(0, flightVisibleCount);
         let html = '';
         visible.forEach(d => {
+            const icon = d.status === 'Resumed' ? '✅' : '🚫';
             html += `<div class="cancellation-card">
-                <div class="cancellation-airline">🚫 ${d.airline||'Unknown Airline'}</div>
+                <div class="cancellation-airline">${icon} ${_esc(d.airline||'Not named')}${d.status?` · ${_esc(d.status)}`:''}${d.deadline_state==='passed'?' · end date passed':''}</div>
                 <div class="cancellation-details">
-                    ${d.title?`<div><strong>Headline:</strong> ${d.title}</div>`:''}
-                    ${d.destination?`<div><strong>Route:</strong> ${d.destination}</div>`:d.route?`<div><strong>Route:</strong> ${d.route}</div>`:''}
-                    ${d.reason?`<div><strong>Reason:</strong> ${d.reason}</div>`:''}
-                    ${d.status?`<div><strong>Status:</strong> ${d.status}</div>`:''}
-                    ${d.source?`<div><strong>Source:</strong> ${d.source}</div>`:''}
-                    ${d.source_url?`<div><a href="${d.source_url}" target="_blank" style="color:#2563eb;font-weight:600;">View Source →</a></div>`:''}
+                    ${d.route||d.destination?`<div><strong>Route:</strong> ${_esc(d.flag||'')} ${_esc(d.route||d.destination)}</div>`:''}
+                    ${d.duration&&d.duration!=='Unknown'?`<div><strong>Declared:</strong> ${_esc(d.duration)}</div>`:''}
+                    ${d.date?`<div><strong>Reported:</strong> ${_esc(new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))}</div>`:''}
+                    ${d.headline||d.title?`<div><strong>Headline:</strong> ${_esc(d.headline||d.title)}</div>`:''}
+                    ${d.source_url?`<div><a href="${_esc(d.source_url)}" target="_blank" rel="noopener" style="color:#2563eb;font-weight:600;">${_esc(d.source||'Source')} →</a></div>`:''}
                 </div>
             </div>`;
         });
@@ -2017,6 +2000,7 @@ async function scanSingleTarget(target) {
 
     // ===== RATE LIMITS =====
     async function fetchRateLimits() {
+        if (!document.getElementById('rlUsed')) return;   // Nov 2 2026: box retired
         try {
             const response = await fetch(`${API_BASE}/rate-limit`);
             if (!response.ok) return;
@@ -2276,5 +2260,140 @@ async function scanSingleTarget(target) {
     });
 
     </script>
+<script>
+// Nov 1 2026 -- standard card link row: Stability · Rhetoric · Military.
+// Rhetoric appears only when rhetoric-<id>.html exists, so a new tracker page
+// lights up its card the day it ships -- no edit here needed.
+(function(){
+  var css='.card-link-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 6px}'+
+    '.card-link-row a{font-size:12px;font-weight:700;text-decoration:none;padding:6px 12px;border-radius:16px;border:1.5px solid;white-space:nowrap}'+
+    '.card-link-row a.stab{color:#0369a1;border-color:rgba(3,105,161,.45)}'+
+    '.card-link-row a.rhet{color:#15803d;border-color:rgba(21,128,61,.45)}'+
+    '.card-link-row a.mil{color:#b45309;border-color:rgba(180,83,9,.45)}'+
+    '[data-theme="dark"] .card-link-row a.stab{color:#38bdf8}[data-theme="dark"] .card-link-row a.rhet{color:#4ade80}[data-theme="dark"] .card-link-row a.mil{color:#fbbf24}'+
+    '.card-link-sub{text-align:center;font-size:11px;font-style:italic;opacity:.7;margin:0 0 18px}';
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+  var RHET={north_korea:'dprk'};
+  var seen={};
+  function exists(url){
+    if(seen[url]===undefined)seen[url]=fetch(url,{method:'HEAD'}).then(function(r){return r.ok;}).catch(function(){return false;});
+    return seen[url];
+  }
+  function build(){
+    Array.prototype.forEach.call(document.querySelectorAll('.target-card[id$="-card"]'),function(card){
+      var id=card.id.replace(/-card$/,'');
+      var btn=card.querySelector('a.country-stability-btn');
+      if(!btn)return;
+      var sub=btn.querySelector('.btn-subtitle');
+      var wrap=document.createElement('div');
+      wrap.innerHTML='<div class="card-link-row"><a class="stab" href="'+btn.getAttribute('href')+'">📊 Stability</a><a class="mil" href="military.html">🎖️ Military</a></div>'+
+        (sub?'<div class="card-link-sub">'+sub.innerHTML+'</div>':'');
+      wrap.addEventListener('click',function(e){e.stopPropagation();});
+      btn.replaceWith(wrap);
+      var rh='rhetoric-'+(RHET[id]||id)+'.html';
+      exists(rh).then(function(ok){
+        if(!ok)return;
+        var a=document.createElement('a');a.className='rhet';a.href=rh;a.textContent='📡 Rhetoric';
+        var row=wrap.querySelector('.card-link-row');row.insertBefore(a,row.querySelector('a.mil'));
+      });
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();
+</script>
+<script>
+// Nov 2 2026 -- Asia Actor Matrix (asia_actor_matrix.py): is Beijing pressing on several
+// fronts at once? Plus who pushes back, who backs whom, and the region's rivalries. Read from the rhetoric trackers;
+// pairs touching a card also appear inside that card. Gaps are gaps, never L0.
+(function(){
+  var API=(typeof API_BASE!=='undefined'?API_BASE:'https://asifah-asia-backend.onrender.com')+'/api/asia/actor-matrix';
+  var FALLBACK={0:['Monitoring','#64748b'],1:['Rhetoric','#3b82f6'],2:['Warning','#ca8a04'],3:['Confrontation','#f97316'],
+                4:['Coercion','#ef4444'],5:['Active Conflict','#b91c1c'],6:['Red Line Breached','#7f1d1d']};
+  function rung(n){try{if(window.AsifahLadder){var r=window.AsifahLadder.get(n);if(r)return[r.label,r.color];}}catch(e){}return FALLBACK[n]||['L'+n,'#64748b'];}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  var KORDER=['pressure','response','patron','dyad'];
+  var KLAB={pressure:'⚔️ Who is pressing whom',response:'🛡️ Who is pushing back',patron:'🤝 Who is backing whom',dyad:'⇄ Rivalries (both directions)'};
+  var css='.amx-panel{background:var(--card-bg,#fff);border:2px solid rgba(167,139,250,.45);border-left:5px solid #a78bfa;border-radius:12px;padding:18px 20px;margin:0 0 4px}'+
+    '[data-theme="dark"] .amx-panel{background:#1e293b}'+
+    '.amx-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#7c3aed}[data-theme="dark"] .amx-title{color:#a78bfa}'+
+    '.amx-q{font-size:12.5px;font-style:italic;opacity:.75;margin:2px 0 10px}'+
+    '.amx-lines{margin:6px 0 12px 18px;padding:0}.amx-lines li{font-size:13px;line-height:1.55;margin-bottom:4px}'+
+    '.amx-kind{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.75;margin:12px 0 6px}'+
+    '.amx-kind.patron{color:#b45309;opacity:1}[data-theme="dark"] .amx-kind.patron{color:#fbbf24}'+
+    '.amx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(270px,100%),1fr));gap:8px}'+
+    '.amx-row{display:flex;align-items:center;gap:8px;border:1px solid rgba(148,163,184,.35);border-radius:8px;padding:8px 10px;min-width:0}'+
+    '.amx-row.patron{border-color:rgba(245,158,11,.5)}'+
+    '.amx-pair{flex:1;min-width:0;font-size:12.5px;line-height:1.35}'+
+    '.amx-src{display:block;font-size:10.5px;opacity:.65;font-family:"Courier New",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'+
+    '.amx-chip{flex:none;font-size:10.5px;font-weight:800;color:#fff;padding:3px 8px;border-radius:5px;white-space:nowrap}'+
+    '.amx-gap{opacity:.55}.amx-gap .amx-chip{background:#94a3b8 !important}'+
+    '.amx-meta{font-size:10.5px;opacity:.6;font-style:italic;margin-top:10px}'+
+    '.amx-card{margin:4px 0 18px;padding:12px 14px;border:1px dashed rgba(167,139,250,.55);border-radius:10px}'+
+    '.amx-card .amx-title{font-size:11px}';
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+
+  function rowHtml(c){
+    var gap=c.state!=='read';var r=gap?[c.word,'#94a3b8']:rung(c.level);
+    var s=c.source||{},src;
+    if(c.state==='read')src='read from '+s.tracker.replace('_',' ')+' tracker · '+s.kind+' '+s.id+(s.basis&&s.basis!=='tracker'?' · '+s.basis+' read':'')+(s.capped?' (capped at tracker level)':'')+(s.freshness!=='live'?' · last good read':'');
+    else if(c.state==='not_sensed')src='tracker read; this actor/vector absent';
+    else src='tracker not read this cycle';
+    var delta=(c.delta&&c.delta!==0)?(c.delta>0?' ▲':' ▼'):'';
+    return '<div class="amx-row '+esc(c.kind)+(gap?' amx-gap':'')+'"'+(c.note?' title="'+esc(c.note)+'"':'')+'>'+
+      '<div class="amx-pair">'+esc(c.actor_flag)+' '+esc(c.actor)+' → '+esc(c.target_flag)+' '+esc(c.target)+
+      '<span class="amx-src" title="'+esc(src)+'">'+esc(src)+'</span></div>'+
+      '<span class="amx-chip" style="background:'+r[1]+';">'+(gap?esc(c.word):'L'+c.level+' '+esc(r[0]))+delta+'</span></div>';
+  }
+  function grouped(pairs){
+    return KORDER.map(function(k){
+      var ps=pairs.filter(function(c){return c.kind===k;}).sort(function(a,b){return (b.state==='read')-(a.state==='read')||(b.level||0)-(a.level||0);});
+      return ps.length?'<div class="amx-kind '+k+'">'+KLAB[k]+'</div><div class="amx-grid">'+ps.map(rowHtml).join('')+'</div>':'';
+    }).join('');
+  }
+  function linesHtml(ls,n){ls=(ls||[]).slice(0,n);return ls.length?'<ul class="amx-lines">'+ls.map(function(l){return '<li>'+esc(l)+'</li>';}).join('')+'</ul>':'';}
+  function meta(d){
+    return '<div class="amx-meta">Built '+(d.built_at?esc(new Date(d.built_at).toLocaleString()):'--')+
+      ' · read from the '+esc((d.trackers_read||[]).join(', ').replace(/_/g,' ')||'--')+' trackers, each capped at its own corroborated level'+
+      ' · article-count reads cap at L3 · '+esc(((d.coverage||{}).gaps||[]).join(' '))+' · gaps are gaps, not L0.</div>';
+  }
+  // Pairs whose ids match the backend keys (same rule as ?actor=)
+  function forCard(d,id){return (d.pairs||[]).filter(function(c){return (c.keys||[]).indexOf(id)>=0;});}
+
+  function cards(d){
+    Array.prototype.forEach.call(document.querySelectorAll('.target-card[id$="-card"]'),function(card){
+      var id=card.id.replace(/-card$/,'');var ps=forCard(d,id);
+      var old=card.querySelector('.amx-card');if(old)old.remove();
+      if(!ps.length)return;                    // no tracker touches this country yet: no panel
+      var box=document.createElement('div');box.className='amx-card';
+      var read=ps.filter(function(c){return c.state==='read';});
+      var top=read.sort(function(a,b){return b.level-a.level;})[0];
+      box.innerHTML='<div class="amx-title">🧭 Actor pairs touching this country</div>'+
+        '<div class="amx-q">'+(top?'Highest: '+esc(top.actor)+' → '+esc(top.target)+' · L'+top.level+' '+esc(rung(top.level)[0]):'No pair read this cycle')+'</div>'+
+        grouped(ps);
+      box.addEventListener('click',function(e){e.stopPropagation();});
+      var anchor=card.querySelector('.card-link-sub')||card.querySelector('.card-link-row');
+      if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(box,anchor.nextSibling);
+      else (card.querySelector('.card-expanded, .expanded-content')||card).appendChild(box);
+    });
+  }
+  function load(){
+    var host=document.getElementById('actorMatrixPanel');if(!host)return;
+    var head='<div class="amx-title">🧭 Asia Actor Matrix — is Beijing pressing on several fronts at once?</div>';
+    host.innerHTML=head+'<div class="amx-meta">Loading…</div>';
+    fetch(API).then(function(r){return r.json();}).then(function(d){
+      if(!d||!d.pairs){throw new Error('no pairs');}
+      var h=d.headline;
+      host.innerHTML=head+'<div class="amx-q">'+(h?'Highest: '+esc(h.pair)+' · L'+h.level+' '+esc(rung(h.level)[0]):'No pair read this cycle')+'</div>'+
+        linesHtml(d.lines,5)+grouped(d.pairs)+meta(d);
+      // card link rows are built on DOMContentLoaded; wait a tick so the anchor exists
+      setTimeout(function(){cards(d);},0);
+    }).catch(function(){
+      host.innerHTML=head+'<div class="amx-meta">Could not reach the matrix just now -- unread, not quiet.</div>';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load);else load();
+})();
+</script>
+<script src="resources/asifah-standard-shell.js"></script>
 </body>
 </html>
