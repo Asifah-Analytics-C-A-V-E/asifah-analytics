@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Philippines Stability Index v1.1.0 (Nov 2 2026: standard information pattern, Financial Pulse, map guards) -->
+<!-- Asifah Analytics - Philippines Stability Index v1.1.1 (top indicator line, CARTO key)  v1.1.0 (Nov 2 2026: standard information pattern, Financial Pulse, map guards) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -853,6 +853,11 @@
                 <span id="corpusBadge" style="display:none;font-size:12px;font-weight:bold;padding:3px 10px;border-radius:4px;background:#374151;color:#e5e7eb;">📡 THIN READ</span>
             </div>
             <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="rhetoric_card_subtitle">Theatre level · Updated every 6h</div>
+            <!-- TOP INDICATOR: one plain-language line from the tracker (site-wide card standard) -->
+            <div id="rhetoricTopIndicator" style="display:none;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-left:3px solid #38bdf8;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;" data-i18n="top_indicator_label">Top indicator</div>
+                <div style="font-size:12.5px;line-height:1.5;color:var(--text-primary);" id="rhetoricTopIndicatorText"></div>
+            </div>
             <div id="rhetoricActorList" style="font-size:12px;color:var(--text-secondary);"><span style="font-style:italic;">Loading...</span></div>
             <div style="margin-top:15px;padding-top:12px;border-top:1px solid var(--card-border);text-align:center;">
                 <a href="rhetoric-asia.html" style="color:#7dd3fc;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="view_full_rhetoric">Full analysis in the Asia Rhetoric BLUF →</a>
@@ -1222,6 +1227,13 @@
                     cb.style.display = 'inline-block';
                     cb.title = `${ch.articles || 0} articles from ${ch.live_sources || 0} live sources -- low levels mean less evidence, not a calm sea`;
                 }
+                // Top indicator: the tracker's own plain-language line (v1.1); older
+                // payloads fall back to the first top signal.
+                const ti = data.top_indicator || ((data.top_signals || [])[0] || {}).long_text || '';
+                if (ti) {
+                    document.getElementById('rhetoricTopIndicatorText').textContent = ti;
+                    document.getElementById('rhetoricTopIndicator').style.display = 'block';
+                }
                 const actors = data.actors || {};
                 document.getElementById('rhetoricActorList').innerHTML = ACTOR_ORDER.filter(([k]) => actors[k]).map(([k, lbl]) => {
                     const lv = actors[k].level || 0;
@@ -1383,9 +1395,19 @@
             _phMap = map;
             if (window.ResizeObserver) new ResizeObserver(() => map.invalidateSize()).observe(el);
             window.addEventListener('load', () => map.invalidateSize());
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            // CARTO basemaps need a key now. It lives in ONE place -- the CARTO_API_KEY
+            // env var -- and the ME backend serves it at /api/config/map (same as
+            // military.html). It is a publishable, domain-restricted key, not a secret.
+            const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+            const tileUrl = (key) => 'https://{s}.basemaps.cartocdn.com/' + (isDark ? 'dark_all' : 'light_all') +
+                '/{z}/{x}/{y}{r}.png' + (key ? '?key=' + encodeURIComponent(key) : '');
+            const tiles = L.tileLayer(tileUrl(null), {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO', subdomains: 'abcd', maxZoom: 19
             }).addTo(map);
+            fetch('https://asifah-backend.onrender.com/api/config/map')
+                .then(r => r.json())
+                .then(cfg => { if (cfg && cfg.carto_key) tiles.setUrl(tileUrl(cfg.carto_key)); })
+                .catch(() => console.warn('[Philippines map] map config unreachable -- tiles may show the CARTO key notice'));
             const mark = (lat, lon, color, name, role) => L.circleMarker([lat, lon], { radius: 7, color, weight: 2, fillColor: color, fillOpacity: 0.55 })
                 .addTo(map).bindPopup('<strong>' + name + '</strong><br>' + role);
             const CYAN = '#38bdf8', AMBER = '#f59e0b', RED = '#ef4444', VIOLET = '#a78bfa';
@@ -1418,6 +1440,7 @@
                 rhetoric_card_title: '📡 WEST PHILIPPINE SEA TRACKER',
                 commodityTitle: 'PHILIPPINES COMMODITY EXPOSURE',
                 financialPulseTitle: 'Philippines Financial Pulse',
+                top_indicator_label: 'Top indicator',
                 mapTitle: 'Philippines — West Philippine Sea & Luzon Strait',
                 knowledgeLibraryTitle: 'Knowledge Library',
                 articles_title: '📰 Recent Philippines & West Philippine Sea Articles',
@@ -1434,6 +1457,7 @@
                 rhetoric_card_title: '📡 TRACKER NG WEST PHILIPPINE SEA',
                 commodityTitle: 'PAGKALANTAD NG PILIPINAS SA MGA KALAKAL',
                 financialPulseTitle: 'Pulso ng Pananalapi ng Pilipinas',
+                top_indicator_label: 'Pangunahing indikasyon',
                 mapTitle: 'Pilipinas — West Philippine Sea at Luzon Strait',
                 knowledgeLibraryTitle: 'Aklatan ng Kaalaman',
                 articles_title: '📰 Mga Bagong Artikulo tungkol sa Pilipinas at West Philippine Sea',
@@ -1450,6 +1474,7 @@
                 rhetoric_card_title: '📡 西菲律宾海追踪器',
                 commodityTitle: '菲律宾大宗商品风险',
                 financialPulseTitle: '菲律宾金融脉搏',
+                top_indicator_label: '首要指标',
                 mapTitle: '菲律宾 — 南海与吕宋海峡',
                 knowledgeLibraryTitle: '知识库',
                 articles_title: '📰 菲律宾与南海最新文章',
@@ -1466,6 +1491,7 @@
                 rhetoric_card_title: '📡 西フィリピン海トラッカー',
                 commodityTitle: 'フィリピンのコモディティ・エクスポージャー',
                 financialPulseTitle: 'フィリピン金融パルス',
+                top_indicator_label: '主要指標',
                 mapTitle: 'フィリピン — 西フィリピン海とルソン海峡',
                 knowledgeLibraryTitle: 'ナレッジライブラリ',
                 articles_title: '📰 フィリピン・西フィリピン海の最新記事',
