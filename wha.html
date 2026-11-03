@@ -34,7 +34,8 @@
             background-color: var(--bg-color); color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
             line-height: 1.6; padding: 20px;
-            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            /* Nov 3 2026: the regional bespoke background (as europe.html uses Ukraine_on_fire.png) */
+            background-image: url('Venezuela_on_fire.png');
             background-position: center center; background-repeat: no-repeat;
             background-size: cover; background-attachment: fixed;
         }
@@ -567,9 +568,20 @@
             opacity: 0.34;
         }
 </style>
+    <style>
+        /* Nov 3 2026: phone layout for the caution banner (as europe.html) */
+        @media (max-width: 768px) {
+            .caution-banner { flex-wrap:wrap !important; padding:14px 16px !important; }
+            .caution-banner > div { min-width:0 !important; flex:1 1 220px !important; }
+            .caution-banner > div:first-child { flex:0 0 auto !important; }
+            .caution-banner a { margin-left:auto; }
+        }
+    </style>
+    <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 </head>
-<body>
-<div class="watermark"></div>
+<body data-asifah-ladder="off">
+<!-- Nov 3 2026: logo watermark removed -- the regional page carries its bespoke background (Venezuela_on_fire.png).
+     The page's own hamburger + backdrop are gone too: the shared shell owns the drawer and the footer. -->
 <div class="container">
 
 <!-- PAGE LOAD SCREEN -->
@@ -599,7 +611,7 @@
 
 <header>
     <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
-    <a href="https://asifahanalytics.com" class="home-button">🏠 HOME</a>
+    <a href="https://asifahanalytics.com" class="home-button home-btn" title="Home">🏠 HOME</a>
     <div class="language-switcher">
         <button class="lang-btn active" onclick="switchLanguage('en',this)">EN</button>
         <button class="lang-btn" onclick="switchLanguage('es',this)">ES</button>
@@ -616,7 +628,7 @@
 </header>
 
 <!-- WORLDWIDE CAUTION BANNER (canonical, Feb 28 2026 State Dept) -->
-<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
+<div class="caution-banner" style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
     <div style="font-size:28px;flex-shrink:0;">🚨</div>
     <div style="flex:1;">
         <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
@@ -632,8 +644,7 @@
 <div class="main-content-wrapper">
 
 <!-- NAV SIDEBAR -->
-<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
-<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
+
 
 <nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
@@ -1685,47 +1696,14 @@
             </div>
         </div>
 
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>About</h4>
-            <p><strong>ASIFAH ANALYTICS · WESTERN HEMISPHERE DASHBOARD</strong></p>
-            <p>asifah-wha-backend.onrender.com · Updates every 12 hours · Force refresh via Scan OSINT</p>
-        </div>
-        <div class="footer-section">
-            <h4>Data Sources</h4>
-            <p>OSINT aggregation from GDELT (en/es/pt), NewsAPI, Brave Search, RSS, Bluesky · Open-Meteo weather · FAA NOTAMs · U.S. State Department travel advisories · ME Backend Military Tracker</p>
-        </div>
-        <div class="footer-section">
-            <h4>Methodology</h4>
-            <p>Source-weighted OSINT aggregation with time-decay scoring, keyword severity multipliers, de-escalation detection, and momentum analysis. Index floor: 10%, ceiling: 95%.</p>
-        </div>
-    </div>
-
-    <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-    <div style="margin:28px auto 16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
-    </div>
-
-    <div class="disclaimer">
-        <strong>⚠️ Research & Educational Use Only</strong>
-        <span>This index is an analytical tool for educational and research purposes only. Pressure scores are based on open-source news aggregation and keyword analysis. This tool does not represent official U.S. government assessments or policy positions. Users should consult official sources for operational decision-making.</span>
-    </div>
-
-    <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.1); font-size:12px;">
-        <a href="mission.html" style="color:#3498db; text-decoration:none; margin:0 10px;">Mission Statement</a>
-        <span style="color:#64748b;">·</span>
-        <a href="privacy.html" style="color:#3498db; text-decoration:none; margin:0 10px;">Privacy Policy</a>
-        <span style="color:#64748b;">·</span>
-        <a href="https://asifahanalytics.com" style="color:#3498db; text-decoration:none; margin:0 10px;">Home</a>
-    </div>
-
-    <div class="copyright-footer">
-        © 2025-2026 Asifah Analytics. All Rights Reserved. Proprietary and Confidential.<br>
-        Unauthorized use, reproduction, or distribution prohibited.
-    </div>
-</footer>
+<!-- Page-specific sources & method: the shared shell moves this block into its footer (Nov 3 2026) -->
+<section class="footer-info" data-asifah-footer-extra>
+    <p><strong>ASIFAH ANALYTICS · WESTERN HEMISPHERE DASHBOARD</strong></p>
+    <p>Updates every 12 hours · Scan OSINT refreshes on demand (rate-limited)</p>
+    <p><strong>Sources:</strong> OSINT aggregation from GDELT (en/es/pt), NewsAPI, Brave Search, RSS, Bluesky · Open-Meteo weather · Airspace Watch: conflict-zone bulletins and the FAA's published flight-restriction list · U.S. State Department travel advisories (public data feed) · Asifah Military Tracker.</p>
+    <p><strong>Method:</strong> Country cards are convergence reads, not predictions: source-weighted aggregation with time decay, keyword severity, de-escalation detection and momentum, plus each country's rhetoric tracker and the military tracker where they exist. Index floor 10%, ceiling 95%. A source not read this cycle is shown as unread &mdash; unread is not the same as quiet.</p>
+    <p style="margin-top:12px;font-size:10px;opacity:.75;">FOR RESEARCH PURPOSES ONLY · Independent analysis · Not intelligence assessments, military advice or policy recommendations · © 2025-2026 Asifah Analytics</p>
+</section>
 
 </div><!-- end main-content -->
 </div><!-- end main-content-wrapper -->
@@ -2545,5 +2523,6 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeMobileDrawer();
 });
 </script>
+<script src="resources/asifah-standard-shell.js"></script>
 </body>
 </html>

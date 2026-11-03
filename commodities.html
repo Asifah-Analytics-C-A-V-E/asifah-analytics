@@ -1754,6 +1754,8 @@
             opacity: 0.34;
         }
 </style>
+<!-- Nov 3 2026: plain-language read + "what this means" (ME /api/tracker-voice) -->
+<script src="resources/asifah-tracker-voice.js" data-desk="commodities" data-anchor="caExecBlock" defer></script>
 </head>
 <body data-theme="dark">
 
@@ -2788,6 +2790,23 @@ function renderCommodityAnalysis() {
             }
             html += '</div>';
             html += '<div>' + escapeCaHtml(c.prose || '') + '</div>';
+            // Nov 3 2026: the registry's own WHAT IT MEANS, facts and watch list
+            // (interpreter v1.3.0). They used to be cut off at 280 characters.
+            if (c.what_it_means) {
+                html += '<div style="margin-top:8px;"><b>What it means:</b> ' + escapeCaHtml(c.what_it_means) + '</div>';
+            }
+            var cf = c.facts || {};
+            var cfk = Object.keys(cf);
+            if (cfk.length || c.watch || c.not_implied) {
+                html += '<details style="margin-top:6px;"><summary style="cursor:pointer;font-weight:700;">Facts, what to watch, what it does not mean</summary><ul style="margin:6px 0 0 18px;">';
+                for (var fi = 0; fi < cfk.length && fi < 8; fi++) {
+                    html += '<li><b>' + escapeCaHtml(cfk[fi]) + ':</b> ' + escapeCaHtml(String(cf[cfk[fi]])) + '</li>';
+                }
+                html += '</ul>';
+                if (c.watch) html += '<div style="margin-top:6px;"><b>Watch:</b> ' + escapeCaHtml(c.watch) + '</div>';
+                if (c.not_implied) html += '<div style="margin-top:6px;"><b>Not implied:</b> ' + escapeCaHtml(c.not_implied) + '</div>';
+                html += '</details>';
+            }
             html += '</div>';
         }
         butterflyBody.innerHTML = html;

@@ -419,6 +419,8 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 .ep-shock { background: rgba(167,139,250,0.15); color: #a78bfa; }
 .ep-other { background: rgba(107,114,128,0.15); color: var(--text-muted); }
 </style>
+<!-- Nov 3 2026: plain-language read + "what this means" (ME /api/tracker-voice) -->
+<script src="resources/asifah-tracker-voice.js" data-desk="market" data-anchor="headlineBanner" defer></script>
 </head>
 <body data-theme="dark">
 <div class="watermark"></div>
@@ -540,6 +542,10 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 
                 <div class="feature-section-label">Closest Historical Analogs</div>
                 <div id="similarityMatches"><div class="nyse-empty-state">Loading similarity matches…</div></div>
+
+                <!-- Nov 3 2026: every market on its own index + currency (Rachel: "are we ONLY watching US markets?") -->
+                <div class="feature-section-label">Market-by-Market Pattern Read</div>
+                <div id="regionalReads"><div class="nyse-empty-state">Loading market-by-market read…</div></div>
 
                 <div class="disclaimer-strip" id="disclaimerStrip">
                     <strong>⚠️ CONVERGENCE READ, NOT A FORECAST</strong> — loading disclaimer…
@@ -671,7 +677,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
             <a href="https://asifahanalytics.com" style="color:var(--accent);text-decoration:none;margin:0 10px;">Home</a>
         </div>
         <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch v1.5.0 · fragility detector v1.4.0 — Proprietary.
+            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch v1.6.0 · fragility detector v1.5.0 — Proprietary.
         </div>
     </footer>
 
@@ -704,6 +710,14 @@ const PULSES = [
     // was hard-coded 'closed' at every hour of every day.
     { region: 'apac',   name: 'Japan',         flag: '\uD83C\uDDEF\uD83C\uDDF5', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/asia/market/japan', key: 'financial_pulse' },
     { region: 'apac',   name: 'Philippines',   flag: '\uD83C\uDDF5\uD83C\uDDED', backend: 'https://asifah-asia-backend.onrender.com', path: '/api/asia/market/philippines', key: 'financial_pulse' },
+    // Nov 3 2026 (v1.6.0): six Western Hemisphere pulses (WHA backend wha_market_quotes v1.0.0).
+    // The board had only the US and Mexico for the whole hemisphere.
+    { region: 'wha',    name: 'Argentina',     flag: '\uD83C\uDDE6\uD83C\uDDF7', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/wha/market/argentina', key: 'financial_pulse' },
+    { region: 'wha',    name: 'Brazil',        flag: '\uD83C\uDDE7\uD83C\uDDF7', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/wha/market/brazil', key: 'financial_pulse' },
+    { region: 'wha',    name: 'Canada',        flag: '\uD83C\uDDE8\uD83C\uDDE6', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/wha/market/canada', key: 'financial_pulse' },
+    { region: 'wha',    name: 'Chile',         flag: '\uD83C\uDDE8\uD83C\uDDF1', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/wha/market/chile', key: 'financial_pulse' },
+    { region: 'wha',    name: 'Colombia',      flag: '\uD83C\uDDE8\uD83C\uDDF4', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/wha/market/colombia', key: 'financial_pulse' },
+    { region: 'wha',    name: 'Peru',          flag: '\uD83C\uDDF5\uD83C\uDDEA', backend: 'https://asifah-wha-backend.onrender.com', path: '/api/wha/market/peru', key: 'financial_pulse' },
 ];
 
 // Instruments priced globally rather than by any one market. Rendered once in
@@ -711,8 +725,12 @@ const PULSES = [
 // the tile. Keyed by the ticker each pulse reports.
 const GLOBAL_BENCHMARKS = {
     'BZ=F': { name: 'Brent Crude',  note: 'Global oil benchmark: a state-revenue baseline for exporters, an import bill for importers.' },
-    'CL=F': { name: 'WTI Crude',    note: 'US oil benchmark. Referenced by Mexico (Pemex formulas are WTI-linked).' },
+    'CL=F': { name: 'WTI Crude',    note: 'US oil benchmark. Referenced by Mexico (Pemex formulas are WTI-linked) and Canada (its largest export to the US).' },
     'TTF=F': { name: 'Dutch TTF Gas', note: 'European gas benchmark. Referenced by Qatar (LNG pricing into Europe).' },
+    // Nov 3 2026 -- the Western Hemisphere's export benchmarks, priced globally
+    'ZS=F':  { name: 'Soybeans (CBOT)', note: 'Referenced by Argentina and Brazil: their largest export, and China decides much of the price.' },
+    'HG=F':  { name: 'Copper (COMEX)',  note: 'Referenced by Chile and Peru, the world\'s two largest producers.' },
+    'KC=F':  { name: 'Coffee (arabica)', note: 'Referenced by Colombia.' },
 };
 
 
@@ -1302,9 +1320,11 @@ function renderFragility(d){
 
             return '<div class="similarity-row"><span class="sim-pct" style="color:'+c+';">'
                  + Math.round(m.similarity_pct)+'%</span><span>'+label+' ('+esc(m.event_month)+') \u00b7 '
-                 + esc(m.drawdown||'')+'</span></div>' + grid;
+                 + esc(m.drawdown||'')+'</span></div>' + grid + lensHTML((d.analog_lens||[]).find(z=>z.id===m.id));
         }).join('');
     } else { sm.innerHTML='<div class="nyse-empty-state">No analogs above threshold.</div>'; }
+
+    renderRegionalReads(d.regional_reads, d.spine_note);
 
     if(d.disclaimer) el('disclaimerStrip').innerHTML = '<strong>⚠️ CONVERGENCE READ, NOT A FORECAST</strong> — ' + esc(d.disclaimer);
 
@@ -1313,6 +1333,78 @@ function renderFragility(d){
     renderHeadline();
 
     if(d.last_updated){ el('lastUpdated').textContent = 'Detector as of ' + d.as_of_month + ' · fetched ' + new Date(d.last_updated).toLocaleString(); }
+}
+
+// ── ANALOG LENS (Nov 3 2026) -- what happened then, how long it took, the
+// effects, what the match is NOT, and which steps of that chain are visible
+// and lit today. Dates and figures are research awaiting review; labelled.
+function lensHTML(z){
+    if(!z) return '';
+    const S = 'font-size:12px;line-height:1.55;color:var(--text-secondary);';
+    const H = 'font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-top:9px;';
+    let h = '<details style="margin:6px 0 14px 46px;"><summary style="cursor:pointer;font-size:11px;color:var(--accent);'
+          + 'font-family:\'Courier New\',monospace;letter-spacing:1px;">WHAT HAPPENED THEN \u2014 AND WHAT WE CAN SEE NOW</summary>';
+    if(z.what_the_match_is_not) h += '<div style="'+S+'margin-top:8px;border-left:3px solid #f59e0b;padding-left:9px;"><b>What this match is not:</b> '+esc(z.what_the_match_is_not)+'</div>';
+    h += '<div style="'+H+'">The chain of events</div><ol style="'+S+'margin:4px 0 0 18px;padding:0;">'
+       + (z.chain||[]).map(x=>'<li>'+esc(x)+'</li>').join('') + '</ol>';
+    if(z.interval_then) h += '<div style="'+H+'">How long it took then</div><div style="'+S+'">'+esc(z.interval_then)+'</div>';
+    const ef = z.effects||{};
+    const rows = [['Local',ef.local],['Regional',ef.regional],['Global',ef.global],['Economy',ef.economy]].filter(r=>r[1]);
+    if(rows.length) h += '<div style="'+H+'">Effects then</div>' + rows.map(r=>'<div style="'+S+'"><b>'+r[0]+':</b> '+esc(r[1])+'</div>').join('');
+    if((z.live_checks||[]).length){
+        h += '<div style="'+H+'">Each step of that chain, today</div>' + z.live_checks.map(c=>{
+            const tag = !c.visible ? '<span style="color:var(--text-muted);">NOT VISIBLE</span>'
+                      : c.lit ? '<span style="color:#ef4444;font-weight:700;">LIT</span>'
+                      : '<span style="color:#10b981;">NOT LIT</span>';
+            return '<div style="'+S+'">'+tag+' \u2014 '+esc(c.step)+' <span style="color:var(--text-muted);">('+esc(c.evidence)+')</span></div>';
+        }).join('');
+    }
+    h += '<div style="font-size:10.5px;color:var(--text-muted);margin-top:8px;font-style:italic;">'
+       + esc(z.basis||'') + '. What happened then, not a projection of what happens next.</div></details>';
+    return h;
+}
+
+// ── MARKET-BY-MARKET READ (Nov 3 2026) -- each market on its own index and
+// currency, matched against every episode. Flagged markets first.
+function renderRegionalReads(r, spineNote){
+    const box = el('regionalReads');
+    if(!box) return;
+    const mk = (r && r.markets) || {};
+    const keys = Object.keys(mk);
+    if(!keys.length){ box.innerHTML = '<div class="nyse-empty-state">Market-by-market read not available this cycle \u2014 unread, not quiet.</div>'; return; }
+    const simOf = m => (((m.closest||[])[0]||{}).similarity_pct) || 0;
+    keys.sort((a,b)=> ((mk[b].flagged?1:0)-(mk[a].flagged?1:0)) || (simOf(mk[b]) - simOf(mk[a])));
+    const flags = (r.flags||[]);
+    let h = '<div style="font-size:12px;line-height:1.55;color:var(--text-secondary);margin-bottom:10px;">'
+          + esc(spineNote || '') + ' ' + esc(r.note||'') + '</div>';
+    if(flags.length){
+        h += '<div style="border-radius:8px;padding:10px 13px;margin-bottom:10px;background:rgba(239,68,68,0.07);border-left:3px solid #ef4444;font-size:12.5px;line-height:1.55;">'
+           + '<b>' + flags.length + ' market' + (flags.length>1?'s':'') + ' matching a past pattern on their own data:</b><ul style="margin:4px 0 0 18px;padding:0;">'
+           + flags.map(f=>'<li>'+esc(f.text)+(f.home_region?'':' <i>(episode from another region)</i>')+'</li>').join('') + '</ul></div>';
+    } else {
+        h += '<div style="font-size:12.5px;margin-bottom:10px;color:var(--text-primary);">No market outside the US matches a past pattern on its own index and currency this cycle.</div>';
+    }
+    h += keys.map(k=>{
+        const m = mk[k];
+        const top = (m.closest||[])[0];
+        const conds = (m.conditions_now||[]).map(c=>c.words);
+        const det = m.detail||{};
+        const figs = [];
+        if(det.pct_from_24m_high!=null) figs.push(det.pct_from_24m_high+'% vs 2-yr high');
+        if(det.fx_6m_pct!=null) figs.push(m.currency+' '+(det.fx_6m_pct>0?'+':'')+det.fx_6m_pct+'% (6m)');
+        return '<details style="border-top:1px solid var(--card-border);padding:5px 0;"><summary style="cursor:pointer;font-size:12.5px;">'
+             + (m.flagged?'<span style="color:#ef4444;">\u25CF</span> ':'<span style="color:var(--text-muted);">\u25CB</span> ')
+             + '<b>'+esc(m.name)+'</b> <span style="color:var(--text-muted);font-size:11px;">'+esc(m.region_name||'')
+             + (figs.length?' \u00b7 '+esc(figs.join(' \u00b7 ')):'') + '</span>'
+             + (top ? ' <span style="font-size:11px;">\u2014 closest: '+esc(top.label)+' '+top.similarity_pct+'%</span>' : '')
+             + '</summary><div style="font-size:12px;line-height:1.55;color:var(--text-secondary);margin:6px 0 4px 16px;">'
+             + (conds.length ? '<b>Present now:</b> '+esc(conds.join('; '))+'.' : '<b>Present now:</b> none of the tracked conditions.')
+             + (top && top.then_only && top.then_only.length ? '<br><b>Part of that pattern, not present:</b> '+esc(top.then_only.map(x=>x.replace(/_/g,' ')).join(', '))+'.' : '')
+             + (top && top.unmeasured_in_episode && top.unmeasured_in_episode.length ? '<br><b>Not visible in these prices:</b> '+esc(top.unmeasured_in_episode.map(x=>x.replace(/_/g,' ')).join(', '))+'.' : '')
+             + ((m.unmeasured||[]).length ? '<br><span style="color:var(--text-muted);">Unmeasured this cycle: '+esc(m.unmeasured.join(', ').replace(/_/g,' '))+'.</span>' : '')
+             + '</div></details>';
+    }).join('');
+    box.innerHTML = h;
 }
 
 async function loadDetector(){
@@ -1436,6 +1528,8 @@ function renderHeadline(){
     el('headlineTitle').textContent = lead.title;
     let prose = lead.prose;
     if(second){ prose += ' <strong>Also:</strong> ' + (second===frH ? second.prose : second.title + '.'); }
+    const rf = (fr && fr.regional_flags) || [];
+    if(rf.length){ prose += ' <strong>Outside the US:</strong> ' + esc(rf.slice(0,2).map(f=>f.name+' \u2014 '+f.label+' pattern ('+f.similarity_pct+'%)').join('; ')) + '.'; }
     el('headlineProse').innerHTML = prose;
 }
 
