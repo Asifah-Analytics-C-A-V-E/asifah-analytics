@@ -309,10 +309,31 @@
     .diplomatic-score-fill { height: 100%; background: linear-gradient(90deg, #10b981, #84cc16); transition: width 0.5s ease; }
     .max-pressure-alert { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.3); border-left: 3px solid #dc2626; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
 
+    /* Nov 3 2026: the six-step ladder overflowed phones by ~94px -- let it wrap */
+    @media (max-width: 600px) { .ladder-row { flex-wrap: wrap; } .ladder-step { flex: 1 1 30%; min-width: 0; } }
+
     /* ── TOP BLUF STRIP ── */
     .bluf-strip { display:none; background: linear-gradient(180deg, rgba(56,189,248,0.07), rgba(56,189,248,0.02)); border:1px solid #1e3a5f; border-left:4px solid #38bdf8; border-radius:10px; padding:12px 18px; margin-bottom:18px; box-shadow: var(--card-glow); }
     .bluf-strip .bluf-label { font-size:0.6rem; font-family:'Courier New',monospace; letter-spacing:2px; color:#38bdf8; text-transform:uppercase; margin-bottom:4px; }
     .bluf-strip .bluf-text { font-size:0.88rem; line-height:1.5; font-weight:600; }
+
+    /* ── v1.2 (Nov 3 2026): thin read, spokes card, evidence ── */
+    .thin-banner { display:none; background: rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.4); border-left:4px solid #f59e0b; border-radius:10px; padding:10px 16px; margin-bottom:18px; font-size:0.8rem; line-height:1.5; }
+    .thin-banner strong { color:#b45309; letter-spacing:1px; } [data-theme="dark"] .thin-banner strong { color:#fbbf24; }
+    .spokes-card { background: var(--card-bg, #fff); border:1px solid rgba(59,130,246,0.3); border-left:4px solid #3b82f6; border-radius:12px; padding:18px 22px; margin-bottom:18px; box-shadow: var(--card-glow); }
+    [data-theme="dark"] .spokes-card { background:#111827; }
+    .spokes-title { font-size:0.72rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#2563eb; margin-bottom:4px; } [data-theme="dark"] .spokes-title { color:#60a5fa; }
+    .spokes-sub { font-size:0.72rem; color:var(--text-muted); font-style:italic; margin-bottom:12px; }
+    .spokes-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(260px,100%),1fr)); gap:12px; }
+    .spoke-col { border:1px solid rgba(148,163,184,0.35); border-radius:10px; padding:12px 14px; min-width:0; }
+    .spoke-col h4 { margin:0 0 6px; font-size:0.78rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .spoke-pill { font-size:0.6rem; font-weight:800; color:#fff; padding:2px 8px; border-radius:10px; letter-spacing:0.5px; text-transform:uppercase; }
+    .spoke-read { font-size:0.78rem; line-height:1.5; margin-bottom:6px; }
+    .spoke-kv { font-size:0.68rem; font-family:'Courier New',monospace; color:var(--text-muted); line-height:1.6; }
+    .spoke-base { font-size:0.7rem; line-height:1.5; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(148,163,184,0.4); }
+    .evidence-list { margin:6px 0 0; padding:0; list-style:none; }
+    .evidence-list li { font-size:0.68rem; line-height:1.45; margin:3px 0; overflow:hidden; text-overflow:ellipsis; }
+    .evidence-list a { color:inherit; } .evidence-outlet { font-family:'Courier New',monospace; color:var(--text-muted); }
 
     /* ── COMMODITY CARD ── */
     .commodity-card { background: linear-gradient(180deg, rgba(245,158,11,0.05), rgba(217,119,6,0.02)); border: 1px solid rgba(245,158,11,0.3); border-left: 4px solid #f59e0b; border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; box-shadow: var(--card-glow); }
@@ -502,6 +523,8 @@
 </div>
 
 <!-- TOP BLUF STRIP -->
+<div class="thin-banner" id="thinReadBanner"></div>
+
 <div class="bluf-strip" id="blufStrip">
     <div class="bluf-label" data-i18n="blufLabel">BLUF</div>
     <div class="bluf-text" id="blufText"></div>
@@ -566,6 +589,17 @@
     <div class="interp-section-title" style="margin-top:14px;" data-i18n="watchFor">WATCH FOR</div>
     <div id="soWhatWatchList"></div>
     <div class="interp-confidence-note" id="soWhatNote"></div>
+</div>
+
+<!-- v1.2 (Nov 3 2026): THE THREE OUTSIDE QUESTIONS -- Washington, NATO, the Iran link -->
+<div class="spokes-card" id="spokesCard" style="display:none;">
+    <div class="spokes-title">🧭 Washington · NATO · the Iran link</div>
+    <div class="spokes-sub">Who is Washington leaning on, where the NATO bid stands, and how this war reaches the Middle East. Counted by publishers, not articles.</div>
+    <div class="spokes-grid">
+        <div class="spoke-col" id="us-vector"></div>
+        <div class="spoke-col" id="nato-track"></div>
+        <div class="spoke-col" id="iran-link"></div>
+    </div>
 </div>
 
 <!-- ESCALATION LADDER -->
@@ -1005,6 +1039,71 @@ function levelBadge(level, label) {
 // ══════════════════════════════════════════════════════════════
 // RENDER ACTORS — DUAL PANEL
 // ══════════════════════════════════════════════════════════════
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { return /^https?:\/\//i.test(String(u || '')) ? String(u) : '#'; }
+function evidenceHTML(ev) {
+    if (!ev || !ev.length) return '';
+    return '<ul class="evidence-list">' + ev.slice(0, 3).map(e =>
+        `<li>· <a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="evidence-outlet">— ${esc(e.outlet || '')}</span></li>`).join('') + '</ul>';
+}
+
+// v1.2: the three outside questions. Every string from the feed is escaped.
+function renderSpokes(data) {
+    const us = data.us_vector, nato = data.nato_track, dr = data.drone_diplomacy;
+    const card = document.getElementById('spokesCard');
+    if (!card) return;
+    if (!us && !nato && !dr) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    const POSTURE = { pressing_kyiv: ['Leaning on Kyiv', '#ef4444'], pressing_both: ['Leaning on both', '#f97316'],
+                      pressing_moscow: ['Leaning on Moscow', '#3b82f6'], mediating: ['Mediating', '#64748b'],
+                      quiet: ['Quiet', '#94a3b8'] };
+    const AID = { suspended: 'suspended', thinning: 'thinning', flowing: 'flowing', questioned: 'questioned', not_reported: 'not in corpus' };
+    if (us) {
+        const p = POSTURE[us.posture] || ['--', '#94a3b8'];
+        document.getElementById('us-vector').innerHTML =
+            `<h4>🇺🇸 Washington <span class="spoke-pill" style="background:${p[1]}">${esc(p[0])}</span></h4>` +
+            `<div class="spoke-read">${esc(us.read)}</div>` +
+            `<div class="spoke-kv">aid pipeline: ${esc(AID[us.aid_pipeline] || us.aid_pipeline)}<br>pressure on Kyiv: L${us.pressure_on_kyiv || 0} · on Moscow: L${us.pressure_on_moscow || 0}<br>easing on Moscow: L${us.easing_on_moscow || 0} · envoy track: L${us.envoy_track || 0}</div>` +
+            evidenceHTML(us.evidence);
+    }
+    if (nato) {
+        const NS = { renunciation_on_table: ['Renunciation on table', '#ef4444'], guarantees_in_play: ['Guarantees in play', '#f59e0b'],
+                     raised: ['Raised', '#3b82f6'], quiet: ['Quiet', '#94a3b8'] };
+        const n = NS[nato.status] || ['--', '#94a3b8'];
+        const b = nato.baseline || {};
+        document.getElementById('nato-track').innerHTML =
+            `<h4>🛡️ NATO bid <span class="spoke-pill" style="background:${n[1]}">${esc(n[0])}</span></h4>` +
+            `<div class="spoke-read">${esc(nato.read)}</div>` + evidenceHTML(nato.evidence) +
+            `<div class="spoke-base"><strong>Where it stands (as of ${esc(b.as_of || '--')}):</strong> ${esc(b.membership || '')}<br>` +
+            `<strong>Moscow:</strong> ${esc(b.moscow_demand || '')}<br><strong>Kyiv:</strong> ${esc(b.kyiv_position || '')}<br>` +
+            `<strong>Support:</strong> ${esc(b.support || '')}</div>`;
+    }
+    if (dr) {
+        const c = dr.level >= 2 ? '#a855f7' : dr.level >= 1 ? '#3b82f6' : '#94a3b8';
+        document.getElementById('iran-link').innerHTML =
+            `<h4>🛸 The Iran link <span class="spoke-pill" style="background:${c}">L${dr.level || 0}</span></h4>` +
+            `<div class="spoke-read">${esc(dr.read)}</div>` +
+            `<div class="spoke-kv">Gulf drone defence: ${dr.gulf_outlets || 0} outlets<br>Iran→Russia supply line: ${dr.supply_line_outlets || 0} outlets<br>Iran–Ukraine friction: ${dr.iran_friction_outlets || 0} outlets</div>` +
+            evidenceHTML(dr.evidence) +
+            `<div class="spoke-base">Since March 2026 Ukraine has sent counter-drone specialists to the Gulf and offered its Shahed interceptors to Gulf states -- the same Iranian design it faces at home. The link ties this war to the Middle East in both directions.</div>`;
+    }
+}
+
+function renderThinRead(data) {
+    const el = document.getElementById('thinReadBanner');
+    if (!el) return;
+    const h = data.corpus_health || {};
+    if (data.thin_read) {
+        el.innerHTML = `<strong>THIN READ</strong> -- this scan is under-read (${esc(h.reason || 'too few sources')}). Quiet lines below may be unread, not quiet.`;
+        el.style.display = 'block';
+    } else if (h.partial_sources) {
+        el.innerHTML = `<strong>PARTIAL SOURCES</strong> -- GDELT did not answer this cycle; the read rests on ${h.articles || 0} articles from ${h.outlets || 0} outlets (RSS, Google News, Telegram).`;
+        el.style.display = 'block';
+    } else {
+        el.style.display = 'none';
+    }
+}
+
 function renderActors(data) {
     const actors = data.actor_summaries || data.actors || {};
     function buildActorHTML(key, panelClass) {
@@ -1013,10 +1112,12 @@ function renderActors(data) {
         const articles = (a.top_articles || []).slice(0, 3);
         const articlesHTML = articles.map(art => `
             <div class="article-item">
-                <a href="${art.url || '#'}" target="_blank" class="article-link">${(art.title || '').slice(0, 90)}${art.title?.length > 90 ? '…' : ''}</a>
-                <div class="article-meta">${art.source || ''} · ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
+                <a href="${esc(safeUrl(art.url))}" target="_blank" rel="noopener" class="article-link">${esc((art.title || '').slice(0, 90))}${art.title?.length > 90 ? '…' : ''}</a>
+                <div class="article-meta">${esc(art.source || '')} · ${art.published ? esc(new Date(art.published).toLocaleDateString()) : ''}</div>
             </div>`).join('');
-        const score = a.actor_score || 0;
+        // v1.2: tracker v1.2 emits a per-actor `level` (breadth + red lines, cap L4).
+        // `actor_score` was never in actor_summaries, so every badge read L0.
+        const score = (typeof a.level === 'number') ? a.level : 0;
         const articleCount = a.article_count || 0;
         return `
             <div class="actor-card ${panelClass}">
@@ -1029,7 +1130,7 @@ function renderActors(data) {
                     ${levelBadge(score, '')}
                 </div>
                 <div class="actor-stats">
-                    <div class="actor-stat"><span>${articleCount}</span> articles</div>
+                    <div class="actor-stat"><span>${articleCount}</span> articles${typeof a.outlet_count === 'number' ? ` · <span>${a.outlet_count}</span> outlets` : ''}</div>
                 </div>
                 ${articleCount === 0 ? '<div class="silence-alert">⚠️ No signals captured this scan</div>' : ''}
                 ${articlesHTML}
@@ -1070,7 +1171,12 @@ function renderBluf(data) {
     if (!strip || !txt) return;
     const parts = [];
     const sw = data.so_what || {};
-    if (sw.scenario) parts.push(sw.scenario.replace(':', ' --'));
+    if (data.top_indicator) parts.push(data.top_indicator);
+    else if (sw.scenario) parts.push(sw.scenario.replace(':', ' --'));
+    const us = data.us_vector;
+    if (us && us.posture && us.posture !== 'quiet') parts.push('Washington: ' + us.posture.replace(/_/g, ' '));
+    const nt = data.nato_track;
+    if (nt && (nt.status === 'renunciation_on_table' || nt.status === 'guarantees_in_play')) parts.push('NATO: ' + nt.status.replace(/_/g, ' '));
     const dtier = dipTier(data.diplomatic_track);
     if (dtier.show) {
         parts.push('Diplomacy: ' + dtier.label
@@ -1083,9 +1189,11 @@ function renderBluf(data) {
     }
     const aid = ((data.red_lines || {}).triggered || [])
         .find(r => r.id === 'us_aid_suspension_total');
-    if (aid) {
+    if (us && us.aid_pipeline && us.aid_pipeline !== 'not_reported') {
+        parts.push('US aid ' + us.aid_pipeline.replace(/_/g, ' '));
+    } else if (aid) {
         const st = (aid.status || 'INACTIVE').toUpperCase();
-        parts.push(st === 'INACTIVE' ? 'US aid intact' : 'US aid: ' + st.toLowerCase());
+        parts.push(st === 'INACTIVE' ? 'No US aid suspension reported' : 'US aid: ' + st.toLowerCase());
     }
     if (parts.length) {
         txt.textContent = parts.join(' \u00b7 ');
@@ -1095,11 +1203,18 @@ function renderBluf(data) {
     }
 }
 
+function warLevel(data) {
+    const rp = data.russia_pressure;
+    if (rp && typeof rp.level === 'number') return Math.min(5, rp.level);
+    const a = (data.alert_level || 'elevated').toLowerCase();
+    return a === 'critical' ? 5 : 4;
+}
+
 function renderBanner(data) {
     const score = data.theatre_score || data.pressure_score || 0;
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
-    const level = ALERT_TO_LEVEL[alertLevel] ?? 0;
+    // v1.2: an active war's floor is L4, not L1. 'elevated' IS the war floor on this
+    // tracker (see _alert_level_from_score); the evidence-based Russia read wins when present.
+    const level = warLevel(data);
     const lv = lvl(level);
 
     document.getElementById('theatreScore').textContent = score;
@@ -1122,12 +1237,11 @@ function renderBanner(data) {
     const fp = data.cross_theater_fingerprints || {};
     const actors = data.actor_summaries || {};
 
-    const frontlineLvl = (actors.russian_forces_in_ukraine?.actor_score || 0); // proxies frontline pressure
-    const aidLvl       = Math.max(0, 5 - (actors.us_government?.actor_score || 0)); // inverse: low US activity = high aid risk; clamp
-    // simpler: aidLvl directly from us_government score (which captures aid debate signals)
-    const aidLvlAlt    = (actors.us_government?.actor_score || 0);
-    const strikesLvl   = (actors.ukrainian_armed_forces?.actor_score || 0);
-    const dibLvl       = (actors.defense_industrial_base?.actor_score || 0);
+    // v1.2: pills read the per-actor levels and the US vector (actor_score never existed here)
+    const frontlineLvl = (actors.russian_forces_in_ukraine?.level || 0);
+    const aidLvlAlt    = (data.us_vector?.level ?? actors.us_government?.level ?? 0);
+    const strikesLvl   = (actors.ukrainian_armed_forces?.level || 0);
+    const dibLvl       = Math.max(actors.defense_industrial_base?.level || 0, data.drone_diplomacy?.level || 0);
     const ceasefireLvl = dipTier(data.diplomatic_track).level;
 
     const pillData = [
@@ -1309,9 +1423,12 @@ function renderInterpretation(data) {
                         <span class="red-line-status-badge ${badgeClass}">${status}</span>
                         <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${r.category || ''}</span>
                         <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">SEV ${r.severity}/5</span>
+                        ${(r.breach_outlets || r.approach_outlets) ? `<span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${r.breach_outlets || 0}+${r.approach_outlets || 0} OUTLETS</span>` : ''}
                     </div>
                     <div class="red-line-trigger">${r.description || ''}</div>
+                    ${evidenceHTML(r.evidence)}
                 </div>`;
+            item.id = r.id;
             rlEl.appendChild(item);
         });
         // Show scroll hint when list exceeds 5 visible items
@@ -1356,6 +1473,7 @@ function renderInterpretation(data) {
                         <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${g.category || ''}</span>
                     </div>
                     <div class="red-line-trigger">${g.description || ''}</div>
+                    ${evidenceHTML(g.evidence)}
                 </div>`;
             glEl.appendChild(item);
         });
@@ -1401,8 +1519,8 @@ function renderArticles(data) {
                 <div class="article-list-item">
                     <span class="article-list-source-pill ${sourceType}">${sourceType}</span>
                     <div style="flex:1;">
-                        <a href="${a.url || '#'}" target="_blank" class="article-link">${(a.title || '').slice(0, 130)}${a.title?.length > 130 ? '…' : ''}</a>
-                        <div class="article-meta">${a.source || ''} · ${dt}</div>
+                        <a href="${esc(safeUrl(a.url))}" target="_blank" rel="noopener" class="article-link">${esc((a.title || '').slice(0, 130))}${a.title?.length > 130 ? '…' : ''}</a>
+                        <div class="article-meta">${esc(a.source || '')} · ${esc(dt)}</div>
                     </div>
                 </div>`;
         }).join('');
@@ -1446,11 +1564,11 @@ function renderAll(data) {
     renderCrimeaPosture(data);
     renderActors(data);
     renderInterpretation(data);
+    renderThinRead(data);
+    renderSpokes(data);
     renderArticles(data);
 
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
-    renderLadder(ALERT_TO_LEVEL[alertLevel] ?? 0);
+    renderLadder(warLevel(data));
 
     const classified = Object.values(data.actor_summaries || {}).reduce((s, a) => s + (a.article_count || 0), 0);
     document.getElementById('articlesClassified').textContent = `${T[currentLang].articlesClassified || 'Articles classified:'} ${classified}`;

@@ -299,6 +299,16 @@
     .diplomatic-score-fill { height: 100%; background: linear-gradient(90deg, #10b981, #84cc16); transition: width 0.5s ease; }
     .max-pressure-alert { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.3); border-left: 3px solid #dc2626; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
 
+    /* ── v1.2 (Nov 3 2026): thin read + evidence ── */
+    .thin-banner { display:none; background: rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.4); border-left:4px solid #f59e0b; border-radius:10px; padding:10px 16px; margin-bottom:18px; font-size:0.8rem; line-height:1.5; }
+    .thin-banner strong { color:#b45309; letter-spacing:1px; } [data-theme="dark"] .thin-banner strong { color:#fbbf24; }
+    .evidence-list { margin:6px 0 0; padding:0; list-style:none; }
+    .evidence-list li { font-size:0.68rem; line-height:1.45; margin:3px 0; overflow:hidden; text-overflow:ellipsis; }
+    .evidence-list a { color:inherit; } .evidence-outlet { font-family:'Courier New',monospace; color:var(--text-muted); }
+
+    /* Nov 3 2026: the six-step ladder overflowed phones by ~94px -- let it wrap */
+    @media (max-width: 600px) { .ladder-row { flex-wrap: wrap; } .ladder-step { flex: 1 1 30%; min-width: 0; } }
+
     /* ── TOP BLUF STRIP ── */
     .bluf-strip { display:none; background: linear-gradient(180deg, rgba(56,189,248,0.07), rgba(56,189,248,0.02)); border:1px solid #1e3a5f; border-left:4px solid #38bdf8; border-radius:10px; padding:12px 18px; margin-bottom:18px; box-shadow: var(--card-glow); }
     .bluf-strip .bluf-label { font-size:0.6rem; font-family:'Courier New',monospace; letter-spacing:2px; color:#38bdf8; text-transform:uppercase; margin-bottom:4px; }
@@ -472,6 +482,10 @@
                 <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecGagauzia">🏴 GAGAUZIA</div>
                 <div style="font-size:0.8rem;font-weight:800;" id="dibPill">--</div>
             </div>
+            <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(168,85,247,0.4);background:rgba(168,85,247,0.06);">
+                <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;">🛸 AIRSPACE</div>
+                <div style="font-size:0.8rem;font-weight:800;" id="airspacePill">--</div>
+            </div>
             <div style="text-align:center;padding:6px 12px;border-radius:6px;border:1px solid rgba(16,185,129,0.4);background:rgba(16,185,129,0.06);">
                 <div style="font-size:0.6rem;color:#94a3b8;font-family:'Courier New',monospace;" data-i18n="vecAnchor">⚓ EU ANCHOR</div>
                 <div style="font-size:0.8rem;font-weight:800;" id="ceasefirePill">--</div>
@@ -488,6 +502,8 @@
         </div>
     </div>
 </div>
+
+<div class="thin-banner" id="thinReadBanner"></div>
 
 <!-- TOP BLUF STRIP -->
 <div class="bluf-strip" id="blufStrip">
@@ -641,7 +657,7 @@
     <div class="section-title" data-i18n="articlesTitle">📰 RHETORIC SIGNALS — ARTICLES</div>
     <div class="article-tabs" id="articleTabs">
         <div class="article-tab active" data-tab="en"  onclick="setArticleTab('en')">EN <span class="article-tab-count" id="cnt_en">0</span></div>
-        <div class="article-tab" data-tab="uk"  onclick="setArticleTab('uk')">UK <span class="article-tab-count" id="cnt_uk">0</span></div>
+        <div class="article-tab" data-tab="uk"  onclick="setArticleTab('uk')">RO <span class="article-tab-count" id="cnt_uk">0</span></div>
         <div class="article-tab" data-tab="ru"  onclick="setArticleTab('ru')">RU <span class="article-tab-count" id="cnt_ru">0</span></div>
         <div class="article-tab" data-tab="social"  onclick="setArticleTab('social')">SOCIAL <span class="article-tab-count" id="cnt_social">0</span></div>
         <div class="article-tab" data-tab="all"  onclick="setArticleTab('all')">ALL <span class="article-tab-count" id="cnt_all">0</span></div>
@@ -749,7 +765,7 @@ const T = {
         breached: 'BREACHED', approaching: 'APPROACHING',
         diplomaticTitle: 'INTEGRATION ANCHOR / DE-ESCALATION TRACK',
         diplomaticSub: 'Integration Anchor (EU Accession) — Accession Cluster Progress · Western Support Package · Energy Diversification',
-        active: 'ACTIVE', signaled: 'SIGNALED', momentum: 'DIPLOMATIC MOMENTUM',
+        active: 'ACTIVE', signaled: 'SIGNALED', momentum: 'CAPTURE ⟷ ANCHOR',
         maxPressureLabel: 'MAXIMUM PRESSURE — NO DIPLOMATIC TRACK',
         maxPressureBody: 'Multiple capture-pressure lines elevated with no active integration anchor. This is the tilt toward capture-from-within — pressure outrunning the anchor.',
         greenLinesNote: 'Green lines track diplomatic off-ramp signals. ACTIVE = confirmed in current scan. SIGNALED = contextual signal present.',
@@ -968,6 +984,28 @@ function levelBadge(level, label) {
 // ══════════════════════════════════════════════════════════════
 // RENDER ACTORS — DUAL PANEL
 // ══════════════════════════════════════════════════════════════
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { return /^https?:\/\//i.test(String(u || '')) ? String(u) : '#'; }
+function evidenceHTML(ev) {
+    if (!ev || !ev.length) return '';
+    return '<ul class="evidence-list">' + ev.slice(0, 3).map(e =>
+        `<li>· <a href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="evidence-outlet">— ${esc(e.outlet || '')}</span></li>`).join('') + '</ul>';
+}
+function renderThinRead(data) {
+    const el = document.getElementById('thinReadBanner');
+    if (!el) return;
+    const h = data.corpus_health || {};
+    if (data.thin_read) {
+        el.innerHTML = `<strong>THIN READ</strong> -- this scan is under-read (${esc(h.reason || 'too few sources')}). Quiet levers below may be unread, not quiet.`;
+        el.style.display = 'block';
+    } else if (h.partial_sources) {
+        el.innerHTML = `<strong>PARTIAL SOURCES</strong> -- GDELT did not answer this cycle; the read rests on ${h.articles || 0} items from ${h.outlets || 0} outlets (RSS, Google News, Telegram).`;
+        el.style.display = 'block';
+    } else {
+        el.style.display = 'none';
+    }
+}
+
 function renderActors(data) {
     const actors = data.actor_summaries || data.actors || {};
     function buildActorHTML(key, panelClass) {
@@ -976,10 +1014,11 @@ function renderActors(data) {
         const articles = (a.top_articles || []).slice(0, 3);
         const articlesHTML = articles.map(art => `
             <div class="article-item">
-                <a href="${art.url || '#'}" target="_blank" class="article-link">${(art.title || '').slice(0, 90)}${art.title?.length > 90 ? '…' : ''}</a>
-                <div class="article-meta">${art.source || ''} · ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
+                <a href="${esc(safeUrl(art.url))}" target="_blank" rel="noopener" class="article-link">${esc((art.title || '').slice(0, 90))}${art.title?.length > 90 ? '…' : ''}</a>
+                <div class="article-meta">${esc(art.source || '')} · ${art.published ? esc(new Date(art.published).toLocaleDateString()) : ''}</div>
             </div>`).join('');
-        const score = a.actor_score || 0;
+        // v1.2: per-actor `level` from tracker v1.2 (actor_score never existed in actor_summaries)
+        const score = (typeof a.level === 'number') ? a.level : 0;
         const articleCount = a.article_count || 0;
         return `
             <div class="actor-card ${panelClass}">
@@ -1033,23 +1072,17 @@ function renderBluf(data) {
     if (!strip || !txt) return;
     const parts = [];
     const sw = data.so_what || {};
-    if (sw.scenario) parts.push(sw.scenario.replace(':', ' --'));
-    const dtier = dipTier(data.diplomatic_track);
-    if (dtier.show) {
-        parts.push('Diplomacy: ' + dtier.label
-            + (dtier.framework ? ' (framework active)' : ' -- talk, not terms'));
-    }
+    if (data.top_indicator) parts.push(data.top_indicator);
+    else if (sw.scenario) parts.push(sw.scenario.replace(':', ' --'));
+    const cva = data.capture_vs_anchor;
+    if (cva && cva.tilt) parts.push('Capture vs anchor: ' + cva.tilt + (cva.tilt !== 'unread' ? ` (${cva.balance > 0 ? '+' : ''}${cva.balance})` : ''));
     const cs = data.commodity_signal;
     if (cs && cs.alert && cs.alert !== 'normal') {
         const m = ((cs.band || {}).short_text || '').match(/[-\u2014]\s*([A-Z ]+?)\s*\(/);
         parts.push('Commodity ' + cs.alert.toUpperCase() + (m ? ' (' + m[1].trim().toLowerCase() + ')' : ''));
     }
-    const aid = ((data.red_lines || {}).triggered || [])
-        .find(r => r.id === 'us_aid_suspension_total');
-    if (aid) {
-        const st = (aid.status || 'INACTIVE').toUpperCase();
-        parts.push(st === 'INACTIVE' ? 'US aid intact' : 'US aid: ' + st.toLowerCase());
-    }
+    const acc = data.accession_momentum;
+    if (acc && acc.maturity) parts.push('EU anchor ' + acc.maturity);
     if (parts.length) {
         txt.textContent = parts.join(' \u00b7 ');
         strip.style.display = 'block';
@@ -1058,11 +1091,17 @@ function renderBluf(data) {
     }
 }
 
+function pressureLevel(data) {
+    // v1.2: the strongest corroborated capture lever (tracker russia_pressure, cap L4).
+    const rp = data.russia_pressure;
+    if (rp && typeof rp.level === 'number') return Math.min(4, rp.level);
+    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
+    return ALERT_TO_LEVEL[(data.alert_level || 'normal').toLowerCase()] ?? 0;
+}
+
 function renderBanner(data) {
     const score = data.theatre_score || data.pressure_score || 0;
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
-    const level = ALERT_TO_LEVEL[alertLevel] ?? 0;
+    const level = pressureLevel(data);
     const lv = lvl(level);
 
     document.getElementById('theatreScore').textContent = score;
@@ -1099,6 +1138,7 @@ function renderBanner(data) {
     const transnistriaLvl  = statusLvl((data.transnistria_watch || {}).status);
     const gagauziaLvl      = statusLvl((data.gagauzia_watch || {}).status);
     const anchorLvl        = statusLvl((data.accession_momentum || {}).maturity);
+    const airspaceLvl      = statusLvl((data.airspace_watch || {}).status);
 
     const pillData = [
         { id: 'frontlinePill', level: energyLvl       },
@@ -1106,15 +1146,25 @@ function renderBanner(data) {
         { id: 'strikesPill',   level: transnistriaLvl },
         { id: 'dibPill',       level: gagauziaLvl     },
         { id: 'ceasefirePill', level: anchorLvl       },
+        { id: 'airspacePill',  level: airspaceLvl     },
     ];
     pillData.forEach(v => {
         const el = document.getElementById(v.id);
         if (el) {
             const lv2 = lvl(v.level);
-            el.textContent = `L${v.level} ${lv2.label}`;
-            el.style.color = lv2.color;
+            if (data.thin_read && v.level === 0) {     // a blank on a thin scan is unread, not baseline
+                el.textContent = 'Unread';
+                el.style.color = '#94a3b8';
+            } else {
+                el.textContent = `L${v.level} ${lv2.label}`;
+                el.style.color = lv2.color;
+            }
         }
     });
+    if ((data.accession_momentum || {}).maturity === 'advancing') {
+        const ap = document.getElementById('ceasefirePill');
+        if (ap) { ap.textContent = 'Advancing'; ap.style.color = '#10b981'; }
+    }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1148,13 +1198,25 @@ function renderInterpretation(data) {
         const iconMap = { 'normal': '⚪', 'elevated': '🟡', 'high': '🟠', 'critical': '🔴' };
         document.getElementById('soWhatIcon').textContent = iconMap[sw.priority] || '⚪';
         document.getElementById('soWhatScenario').textContent = sw.scenario || '--';
-        document.getElementById('soWhatSituation').textContent = sw.assessment || '';
+        // v1.2: Moldova's So What carries `situation` (Ukraine's carries `assessment`)
+        document.getElementById('soWhatSituation').textContent = sw.situation || sw.assessment || '';
 
         // Multi-dimensional analyst read (D) -- structured, tone-colored threads
         const narrEl = document.getElementById('soWhatNarrative');
         if (narrEl) {
             narrEl.innerHTML = '';
-            (sw.narrative || []).forEach(t => {
+            // v1.2: Moldova's threads are its six levers, each with its own read.
+            const TONE = st => ({ BREACHED: 'alert', APPROACHING: 'elevated', WATCHING: 'watch' }[(st || '').toUpperCase()] || 'calm');
+            const threads = sw.narrative || [
+                { label: 'TRANSNISTRIA', v: data.transnistria_watch },
+                { label: 'AIRSPACE', v: data.airspace_watch },
+                { label: 'ENERGY', v: data.energy_lever },
+                { label: 'INTERFERENCE', v: data.interference_tempo },
+                { label: 'GAGAUZIA', v: data.gagauzia_watch },
+                { label: 'EU ANCHOR', v: data.accession_momentum },
+            ].filter(t => t.v && t.v.read).map(t => ({ label: t.label, text: t.v.read,
+                tone: t.label === 'EU ANCHOR' ? (t.v.maturity === 'advancing' ? 'calm' : 'watch') : TONE(t.v.status) }));
+            threads.forEach(t => {
                 const div = document.createElement('div');
                 div.className = 'narr-thread tone-' + (t.tone || 'calm');
                 const lab = document.createElement('div');
@@ -1169,11 +1231,11 @@ function renderInterpretation(data) {
             });
         }
 
-        // Diplomatic headline strip -- scenario-driven (v1.3), not raw-score-gated.
+        // Diplomatic headline strip -- Moldova has no ceasefire track; hidden unless one appears.
         const dt = data.diplomatic_track;
         const dtier = dipTier(dt);
         const dLine = document.getElementById('diplomaticScenarioLine');
-        if (dtier.show) {
+        if (dt && dtier.show) {
             dLine.style.display = 'block';
             dLine.style.borderColor = dtier.color;
             document.getElementById('diplomaticScenarioText').textContent = dtier.label;
@@ -1187,23 +1249,23 @@ function renderInterpretation(data) {
             dLine.style.display = 'none';
         }
 
-        // Watch list — derive from approaching red lines
+        // Watch list — the interpreter's own list (v1.2), else live red lines
         const wlEl = document.getElementById('soWhatWatchList');
         wlEl.innerHTML = '';
         const rl = data.red_lines || {};
-        const watching = (rl.triggered || []).filter(r => r.status === 'WATCHING' || r.status === 'APPROACHING');
-        watching.slice(0, 5).forEach(r => {
+        const wl = (sw.watch_list && sw.watch_list.length) ? sw.watch_list
+            : (rl.triggered || []).filter(r => r.status === 'WATCHING' || r.status === 'APPROACHING').map(r => r.title);
+        wl.slice(0, 6).forEach(t => {
             const div = document.createElement('div');
             div.className = 'interp-watch-item';
-            div.textContent = `→ ${r.title}`;
+            div.textContent = `→ ${t}`;
             wlEl.appendChild(div);
         });
 
-        // Assessment — use so_what assessment again as fallback or watch summary
-        const _dn = (dt && dt.score) || 0;
+        const cva = data.capture_vs_anchor || {};
         document.getElementById('soWhatAssessment').textContent =
-            `Active red lines: ${rl.breached_count || 0} breached, ${rl.approaching_count || 0} approaching. ` +
-            `Diplomatic track: ${dtier.label.toLowerCase()} (${_dn} signal${_dn === 1 ? '' : 's'}).`;
+            `Red lines: ${rl.breached_count || 0} breached, ${rl.approaching_count || 0} approaching. ` +
+            (cva.tilt ? `Capture vs anchor: ${cva.tilt}${cva.tilt !== 'unread' ? ' (balance ' + cva.balance + ')' : ''}.` : '');
 
         document.getElementById('soWhatNote').textContent = '';
     }
@@ -1235,9 +1297,12 @@ function renderInterpretation(data) {
                         <span class="red-line-status-badge ${badgeClass}">${status}</span>
                         <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${r.category || ''}</span>
                         <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">SEV ${r.severity}/5</span>
+                        ${(r.breach_outlets || r.approach_outlets) ? `<span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${r.breach_outlets || 0}+${r.approach_outlets || 0} OUTLETS</span>` : ''}
                     </div>
                     <div class="red-line-trigger">${r.description || ''}</div>
+                    ${evidenceHTML(r.evidence)}
                 </div>`;
+            item.id = r.id;
             rlEl.appendChild(item);
         });
         // Show scroll hint when list exceeds 5 visible items
@@ -1253,18 +1318,17 @@ function renderInterpretation(data) {
         document.getElementById('greenLineActiveCount').textContent = gl.active_count || 0;
         document.getElementById('greenLineSignaledCount').textContent = gl.signaled_count || 0;
 
-        const dscore = dt.score || 0;
-        const dtier2 = dipTier(dt);
-        const _sigWord = dscore === 1 ? 'signal' : 'signals';
-        // Honest display (v1.3): score is a signal COUNT, not a percentage.
-        // Show "N signals"; bar fill + color are tier-based, not the raw number.
-        document.getElementById('diplomaticScoreDisplay').textContent = `${dscore} ${_sigWord}`;
-        document.getElementById('diplomaticScoreFill').style.width = `${dtier2.fill}%`;
-        document.getElementById('diplomaticScoreFill').style.background = dtier2.color;
-        document.getElementById('diplomaticScenarioLabel').textContent =
-            dtier2.framework ? `${dtier2.label} - framework active`
-                             : (dtier2.show ? `${dtier2.label} - signals only`
-                                            : (dt.scenario || 'No Active Track'));
+        // v1.2: Moldova has no ceasefire track -- this bar is the CAPTURE-vs-ANCHOR dial.
+        // Left = capture outrunning the anchor, right = integration lock-in.
+        const cva2 = data.capture_vs_anchor || {};
+        const bal = typeof cva2.balance === 'number' ? cva2.balance : 0;
+        const unread = cva2.tilt === 'unread';
+        const col = unread ? '#94a3b8' : bal <= -20 ? '#ef4444' : bal >= 20 ? '#10b981' : '#f59e0b';
+        document.getElementById('diplomaticScoreDisplay').textContent = unread ? 'UNREAD' : `${bal > 0 ? '+' : ''}${bal}`;
+        document.getElementById('diplomaticScoreDisplay').style.color = col;
+        document.getElementById('diplomaticScoreFill').style.width = unread ? '0%' : `${Math.max(4, Math.min(100, (bal + 100) / 2))}%`;
+        document.getElementById('diplomaticScoreFill').style.background = col;
+        document.getElementById('diplomaticScenarioLabel').textContent = cva2.read || '';
 
         const glEl = document.getElementById('greenLineItems');
         glEl.innerHTML = '';
@@ -1282,6 +1346,7 @@ function renderInterpretation(data) {
                         <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${g.category || ''}</span>
                     </div>
                     <div class="red-line-trigger">${g.description || ''}</div>
+                    ${evidenceHTML(g.evidence)}
                 </div>`;
             glEl.appendChild(item);
         });
@@ -1296,7 +1361,7 @@ function renderInterpretation(data) {
 // ══════════════════════════════════════════════════════════════
 function renderArticles(data) {
     const en      = data.articles_en      || [];
-    const uk      = data.articles_uk      || [];
+    const uk      = data.articles_ro      || [];   // v1.2: Moldova's second language is Romanian (tab id kept as 'uk')
     const ru      = data.articles_ru      || [];
     const social  = []; // bluesky, telegram, reddit if exposed; else combine
     const all = [...en, ...uk, ...ru].slice(0, 100);
@@ -1327,8 +1392,8 @@ function renderArticles(data) {
                 <div class="article-list-item">
                     <span class="article-list-source-pill ${sourceType}">${sourceType}</span>
                     <div style="flex:1;">
-                        <a href="${a.url || '#'}" target="_blank" class="article-link">${(a.title || '').slice(0, 130)}${a.title?.length > 130 ? '…' : ''}</a>
-                        <div class="article-meta">${a.source || ''} · ${dt}</div>
+                        <a href="${esc(safeUrl(a.url))}" target="_blank" rel="noopener" class="article-link">${esc((a.title || '').slice(0, 130))}${a.title?.length > 130 ? '…' : ''}</a>
+                        <div class="article-meta">${esc(a.source || '')} · ${esc(dt)}</div>
                     </div>
                 </div>`;
         }).join('');
@@ -1371,11 +1436,10 @@ function renderAll(data) {
     renderCommodity(data);
     renderActors(data);
     renderInterpretation(data);
+    renderThinRead(data);
     renderArticles(data);
 
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const ALERT_TO_LEVEL = { normal: 0, elevated: 1, high: 2, critical: 4, surge: 3 };
-    renderLadder(ALERT_TO_LEVEL[alertLevel] ?? 0);
+    renderLadder(pressureLevel(data));
 
     const classified = Object.values(data.actor_summaries || {}).reduce((s, a) => s + (a.article_count || 0), 0);
     document.getElementById('articlesClassified').textContent = `${T[currentLang].articlesClassified || 'Articles classified:'} ${classified}`;
