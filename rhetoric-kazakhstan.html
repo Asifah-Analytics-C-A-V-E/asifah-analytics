@@ -1,3 +1,4 @@
+<!-- Asifah Analytics — Kazakhstan tracker page, Nov 3 2026: evidence layer v1.3 (top indicator, four-wheel card, dated tracks, evidence under every red line), escaping; backend v1.3.0 -->
 <!-- Asifah Analytics — Kazakhstan Multi-Vector Tracker v1.0.0 — July 2026 (cloned from rhetoric-armenia.html; hedging-integrity instrument, first China-wheel spoke writer) -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -612,6 +613,10 @@
             </div>
         </div>
     </div>
+    <div style="font-size:0.72rem;color:var(--text-secondary);line-height:1.45;margin:0 0 8px;">
+        <strong>How to read these:</strong> a line is <strong>BREACHED</strong> only when two or more different outlets carry it (three where the line needs three phrases).
+        One outlet = <strong>APPROACHING</strong>. Social chatter only = <strong>WATCHING</strong>. The headlines behind each status are listed under it.
+    </div>
     <div id="redLineItems" class="signal-list-scroll"></div>
     <div class="signal-list-scroll-hint" id="redLineScrollHint" style="display:none;" data-i18n="scrollHint">↕ scroll for full list</div>
 </div>
@@ -736,6 +741,11 @@
 // ══════════════════════════════════════════════════════════════
 const API_BASE = 'https://asifa-europe-backend.onrender.com';
 const KAZAKHSTAN_API = API_BASE + '/api/rhetoric/kazakhstan';
+
+// Nov 3 2026 -- feed titles, outlet names and URLs are third-party text: escape them.
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+const STATUS_WORDS = { BREACHED: 'BREACHED', APPROACHING: 'APPROACHING', WATCHING: 'WATCHING', QUIET: 'QUIET', INACTIVE: 'QUIET' };
 
 const ESCALATION_LEVELS = {
     0: { label: 'Baseline',     color: '#6b7280', desc: 'Below escalation threshold' },
@@ -1009,8 +1019,8 @@ function renderActors(data) {
         const articles = (a.top_articles || []).slice(0, 3);
         const articlesHTML = articles.map(art => `
             <div class="article-item">
-                <a href="${art.url || '#'}" target="_blank" class="article-link">${(art.title || '').slice(0, 90)}${art.title?.length > 90 ? '…' : ''}</a>
-                <div class="article-meta">${art.source || ''} · ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
+                <a href="${safeUrl(art.url)}" target="_blank" rel="noopener" class="article-link">${esc((art.title || '').slice(0, 90))}${art.title?.length > 90 ? '…' : ''}</a>
+                <div class="article-meta">${esc(art.source || '')} · ${art.published ? new Date(art.published).toLocaleDateString() : ''}</div>
             </div>`).join('');
         const score = a.actor_score || 0;
         const articleCount = a.article_count || 0;
@@ -1312,12 +1322,12 @@ function renderInterpretation(data) {
                 <span class="red-line-icon">${r.severity >= 4 ? '🚨' : '⚠️'}</span>
                 <div style="flex:1;">
                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                        <span class="red-line-label">${r.title}</span>
-                        <span class="red-line-status-badge ${badgeClass}">${status}</span>
-                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${r.category || ''}</span>
-                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">SEV ${r.severity}/5</span>
+                        <span class="red-line-label">${esc(r.plain || r.title || r.category)}</span>
+                        <span class="red-line-status-badge ${badgeClass}">${STATUS_WORDS[status] || esc(status)}</span>
+                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${esc(r.category || '')}</span>
+                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">SEV ${esc(r.severity)}/5</span>
                     </div>
-                    <div class="red-line-trigger">${r.description || ''}</div>
+                    <div class="red-line-trigger">${esc(r.description || '')}</div>
                 </div>`;
             rlEl.appendChild(item);
         });
@@ -1358,11 +1368,11 @@ function renderInterpretation(data) {
                 <span class="red-line-icon">🟢</span>
                 <div style="flex:1;">
                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                        <span class="red-line-label">${g.title}</span>
+                        <span class="red-line-label">${esc(g.title || g.category)}</span>
                         <span class="green-line-status-badge ${statusClass}">${status}</span>
-                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${g.category || ''}</span>
+                        <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${esc(g.outlets != null ? g.outlets + ' outlet' + (g.outlets === 1 ? '' : 's') : (g.category || ''))}</span>
                     </div>
-                    <div class="red-line-trigger">${g.description || ''}</div>
+                    <div class="red-line-trigger">${esc(g.description || '')}</div>
                 </div>`;
             glEl.appendChild(item);
         });
@@ -1408,8 +1418,8 @@ function renderArticles(data) {
                 <div class="article-list-item">
                     <span class="article-list-source-pill ${sourceType}">${sourceType}</span>
                     <div style="flex:1;">
-                        <a href="${a.url || '#'}" target="_blank" class="article-link">${(a.title || '').slice(0, 130)}${a.title?.length > 130 ? '…' : ''}</a>
-                        <div class="article-meta">${a.source || ''} · ${dt}</div>
+                        <a href="${safeUrl(a.url)}" target="_blank" rel="noopener" class="article-link">${esc((a.title || '').slice(0, 130))}${a.title?.length > 130 ? '…' : ''}</a>
+                        <div class="article-meta">${esc(a.source || '')} · ${dt}</div>
                     </div>
                 </div>`;
         }).join('');
@@ -1628,5 +1638,278 @@ function closeMobileDrawer() {
 }
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
 </script>
+<script>window.EV_FLAT = true; window.EV_ANCHOR = 'theatreBanner';</script>
+<!-- ══ Evidence layer v1.3 (Nov 3 2026, late): + HUB WHEEL card (data.hub_read), flat payloads
+     (window.EV_FLAT: the tracker result IS the interpretation), track title override,
+     Kurdish + deconfliction tracks, evidence-cap note.
+     v1.2: top indicator, thin read, track cards
+     (any of agreement / settlement / peace / talks / international / accountability),
+     dated ledger, wheels card (spoke mode or HUB mode), red-line evidence.
+     Config (optional, set before this block): window.EV_ANCHOR (element id to insert
+     after), window.EV_RL_SELECTOR (red-line item selector), window.EV_NO_WRAP. ══ -->
+<style>
+.ev-wrap{display:flex;flex-direction:column;gap:10px;margin:12px 0 14px;}
+.ev-top{border:1px solid var(--card-border);border-left:4px solid var(--accent,#3b82f6);background:var(--card-bg);border-radius:10px;padding:10px 14px;}
+.ev-kicker{font-size:0.6rem;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);font-family:'Courier New',monospace;margin-bottom:4px;}
+.ev-top-text{font-size:0.95rem;font-weight:700;color:var(--text-primary);line-height:1.4;}
+.ev-thin{border:1px dashed #f59e0b;background:rgba(245,158,11,0.08);color:var(--text-primary);border-radius:10px;padding:8px 14px;font-size:0.78rem;line-height:1.45;}
+.ev-thin b{color:#f59e0b;}
+.ev-card{border:1px solid var(--card-border);background:var(--card-bg);border-radius:10px;padding:12px 14px;min-width:0;}
+.ev-card h3{margin:0 0 8px;font-size:0.72rem;letter-spacing:1.5px;font-weight:800;color:var(--text-secondary);font-family:'Courier New',monospace;}
+.ev-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.62rem;font-weight:800;letter-spacing:1px;color:#fff;vertical-align:middle;}
+.ev-read{font-size:0.82rem;color:var(--text-primary);line-height:1.5;margin:6px 0;}
+.ev-base{font-size:0.74rem;color:var(--text-secondary);line-height:1.5;margin:4px 0 0;padding-left:16px;}
+.ev-base li{margin:2px 0;}
+.ev-base a{color:var(--text-secondary);text-decoration:underline;text-decoration-color:var(--card-border);}
+.ev-src{font-size:0.66rem;color:var(--text-muted);margin-top:6px;word-break:break-word;}
+.ev-src a{color:var(--text-muted);}
+.ev-wheels{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;}
+.ev-wheel{border:1px solid var(--card-border);border-radius:8px;padding:8px 10px;background:var(--article-bg,transparent);min-width:0;}
+.ev-wheel-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.ev-wheel-name{font-weight:800;font-size:0.8rem;color:var(--text-primary);}
+.ev-wheel-class{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px;}
+.ev-wheel-note{font-size:0.7rem;color:var(--text-secondary);margin-top:4px;line-height:1.4;overflow-wrap:anywhere;}
+.ev-rl{margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45;}
+.ev-rl-trig{font-weight:700;color:var(--text-primary);}
+.ev-rl ul{margin:3px 0 0;padding-left:16px;}
+.ev-rl li{margin:2px 0;overflow-wrap:anywhere;}
+.ev-rl a{color:var(--text-secondary);}
+.ev-outlet{font-family:'Courier New',monospace;font-size:0.62rem;color:var(--text-muted);}
+.ev-ledger{list-style:none;margin:4px 0 0;padding:0;}
+.ev-ledger li{display:flex;gap:10px;font-size:0.76rem;color:var(--text-secondary,var(--text-2));line-height:1.45;padding:3px 0;border-bottom:1px dotted var(--card-border);}
+.ev-ledger li:last-child{border-bottom:none;}
+.ev-date{font-family:'Courier New',monospace;font-size:0.66rem;color:var(--text-muted);flex:0 0 78px;}
+.ev-wheel.dim{opacity:0.55;}
+.ev-wheel.lit{border-color:#f59e0b;box-shadow:0 0 0 1px rgba(245,158,11,0.25) inset;}
+.ev-wheel-kind{font-size:0.58rem;letter-spacing:1px;font-weight:800;font-family:'Courier New',monospace;color:var(--text-muted);text-transform:uppercase;}
+.ev-hub-head{font-size:0.86rem;font-weight:700;color:var(--text-primary);line-height:1.45;margin:2px 0 8px;}
+.ev-hub-sub{font-size:0.62rem;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);font-family:'Courier New',monospace;margin:10px 0 6px;}
+.ev-cap{font-size:0.72rem;color:var(--text-secondary);margin-top:4px;}
+/* pre-existing phone overflow: ladder grid children need min-width:0 */
+.ladder-step{min-width:0;}
+.ladder-step-label{overflow-wrap:anywhere;}
+</style>
+<script>
+(function () {
+    // ---- escaping: feed titles and URLs are third-party text ----
+    window.esc = window.esc || function (s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+            ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    };
+    window.safeUrl = window.safeUrl || function (u) {
+        const s = String(u || '').trim();
+        return /^https?:\/\//i.test(s) ? esc(s) : '#';
+    };
+
+    const COUNTRY = 'Kazakhstan';
+    const HUBS = {
+        us: ['\u{1F1FA}\u{1F1F8}', 'United States'], russia: ['\u{1F1F7}\u{1F1FA}', 'Russia'],
+        china: ['\u{1F1E8}\u{1F1F3}', 'China'], turkey: ['\u{1F1F9}\u{1F1F7}', 'Turkey'],
+        israel: ['\u{1F1EE}\u{1F1F1}', 'Israel'], iran: ['\u{1F1EE}\u{1F1F7}', 'Iran'],
+    };
+    const NODE_WORDS = {
+        inbound_target: 'pressing on ' + COUNTRY, adversary: 'adversary', security_partner: 'security partner',
+        target: COUNTRY + ' as a target', aligned_multiplier: 'aligned partner', friction: 'friction',
+        broker: 'broker', resource_interest: 'resource interest', security_assistance: 'security assistance',
+        axis_reversal_watch: 'axis-reversal watch', opposition_channel: 'via the opposition (Orb\u00e1n)',
+        investment_partner: 'investment partner', contested_node: 'contested node', contested: 'contested node',
+        expeditionary_client: 'expeditionary client', ruptured: 'ruptured', peer: 'peer',
+        normalisation_track: 'normalisation track', turkic_affinity: 'Turkic affinity',
+        hard_power: 'hard power', diplomatic: 'diplomatic', economic: 'economic', dormant: 'dormant',
+        playbook_ladder: 'playbook ladder', soft_power: 'soft power',
+        conditional_buffer: 'conditional buffer (TRIPP is the flip-meter)', corridor_anchor: 'corridor anchor (TRIPP)',
+        transit_partner: 'transit partner (Caspian / rail)', bri_corridor: 'Belt & Road corridor',
+    };
+    const TRACK_STATUS = {
+        holding: ['HOLDING', '#10b981'], contested: ['CONTESTED', '#f59e0b'], strain: ['STRAIN', '#ef4444'],
+        quiet: ['NOT IN CORPUS', '#6b7280'], ACTIVE: ['ACTIVE', '#10b981'], SIGNALED: ['SIGNALLED', '#84cc16'],
+        DORMANT: ['DORMANT', '#6b7280'],
+    };
+    function levelColor(n) {
+        try { return (ESCALATION_LEVELS[n] || ESCALATION_LEVELS[0]).color; } catch (e) {}
+        try { return LEVEL_COLORS[n] || '#6b7280'; } catch (e) {}
+        return ['#6b7280', '#3b82f6', '#f59e0b', '#f97316', '#ef4444', '#dc2626'][n] || '#6b7280';
+    }
+
+    function ensureWrap() {
+        let w = document.getElementById('evLayer');
+        if (w) return w;
+        w = document.createElement('div');
+        w.id = 'evLayer';
+        w.className = 'ev-wrap';
+        const anchor = document.getElementById(window.EV_ANCHOR || 'theatreBanner');
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(w, anchor.nextSibling);
+        else document.body.prepend(w);
+        return w;
+    }
+
+    const TRACKS = [
+        ['agreement_track',      'THE NEGOTIATED TRACK \u2014 2026 DEFENCE AGREEMENT'],
+        ['settlement_momentum',  'SETTLEMENT MOMENTUM (THE GREEN READ)'],
+        ['talks_track',          'THE TALKS TRACK \u2014 ABU DHABI ROUND'],
+        ['international_track',  'ORB\u00c1N ABROAD \u2014 THE UN SECRETARY-GENERAL PUSH'],
+        ['accountability_track', 'ACCOUNTABILITY \u2014 OR RETRIBUTION? BOTH FRAMES READ'],
+        ['kurdish_track',        'THE KURDISH FILE'],
+        ['peace_track',          'THE PEACE GATE'],
+        ['lever_track',          "MOSCOW'S LEVERS"],
+        ['politics_track',       'THE NEW ORDER'],
+        ['route_track',          'THE EXPORT ROUTE'],
+        ['deconfliction_track',  'DECONFLICTION'],
+    ];
+    Object.assign(TRACK_STATUS, {
+        active: ['ACTIVE', '#10b981'], signalled: ['SIGNALLED', '#84cc16'], floated: ['FLOATED', '#3b82f6'],
+        nominated: ['NOMINATED', '#f59e0b'], proceeding: ['PROCEEDING', '#8b5cf6'], framing: ['FRAMING', '#f59e0b'],
+    });
+    const FACT_KEYS = ['what', 'sovereignty', 'status', 'rhetoric_gap', 'treaty', 'tripp', 'constraint',
+                       'round', 'positions', 'washington', 'rules', 'reactions'];
+
+    function oneTrack(tr, title) {
+        const st = TRACK_STATUS[tr.status] || [String(tr.status || '').toUpperCase(), '#6b7280'];
+        const b = tr.baseline || {};
+        const facts = FACT_KEYS.filter(k => b[k]).map(k => `<li>${esc(b[k])}</li>`).join('');
+        const srcs = (b.sources || []).map(s => /^https?:/.test(s)
+            ? `<a href="${safeUrl(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a>`
+            : esc(s)).join(' \u00b7 ');
+        const ev = (tr.evidence || []).slice(0, 3).map(e =>
+            `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="ev-outlet">${esc(e.outlet || '')}</span></li>`).join('');
+        title = tr.title ? esc(tr.title) : title;
+        return `<div class="ev-card"><h3>${title} <span class="ev-pill" style="background:${st[1]}">${esc(st[0])}</span></h3>
+            <div class="ev-read">${esc(tr.read || '')}</div>
+            ${ev ? `<ul class="ev-base">${ev}</ul>` : ''}
+            ${facts ? `<div class="ev-kicker" style="margin-top:8px;">BACKGROUND${b.as_of ? ' \u00b7 AS OF ' + esc(b.as_of) : ''}</div><ul class="ev-base">${facts}</ul>` : ''}
+            ${srcs ? `<div class="ev-src">Sources: ${srcs}</div>` : ''}</div>`;
+    }
+
+    function trackHTML(interp) {
+        return TRACKS.filter(([k]) => interp[k]).map(([k, t]) => oneTrack(interp[k], t)).join('');
+    }
+
+    function ledgerHTML(interp) {
+        const L = interp.reversal_ledger;
+        if (!L || !(L.events || []).length) return '';
+        const rows = L.events.map(e => `<li><span class="ev-date">${esc(e.date)}</span><span>${esc(e.what)}</span></li>`).join('');
+        const open = (L.still_open || []).map(x => `<li>${esc(x)}</li>`).join('');
+        const srcs = (L.sources || []).map(s => `<a href="${safeUrl(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a>`).join(' \u00b7 ');
+        return `<div class="ev-card"><h3>THE REVERSAL LEDGER \u2014 WHAT HAS ALREADY HAPPENED <span class="ev-pill" style="background:#38bdf8">AS OF ${esc(L.as_of || '')}</span></h3>
+            <div class="ev-read">Background, not this scan: the milestones are in. The scan above asks whether they are holding.</div>
+            <ul class="ev-ledger">${rows}</ul>
+            ${open ? `<div class="ev-kicker" style="margin-top:8px;">STILL OPEN</div><ul class="ev-base">${open}</ul>` : ''}
+            ${srcs ? `<div class="ev-src">Sources: ${srcs}</div>` : ''}</div>`;
+    }
+
+    function hubHTML(reads) {
+        const keys = Object.keys(reads || {});
+        if (!keys.length) return '';
+        const lit = keys.filter(k => reads[k].present && reads[k].fresh).length;
+        const cards = keys.sort((a, b) => (reads[b].level || 0) - (reads[a].level || 0)).map(k => {
+            const r = reads[k] || {};
+            const ok = r.present && r.fresh;
+            const lv = r.level || 0;
+            const state = !r.present ? 'not reporting' : (!r.fresh ? 'stale (over 24h)' : (NODE_WORDS[r.node_class] || r.node_class || ''));
+            return `<div class="ev-wheel${ok ? '' : ' dim'}"><div class="ev-wheel-top"><span class="ev-wheel-name">${esc(k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))}</span>
+                ${ok ? `<span class="ev-pill" style="background:${levelColor(lv)}">L${lv}</span>` : '<span class="ev-pill" style="background:#6b7280">\u2014</span>'}</div>
+                <div class="ev-wheel-class">${esc(state)}</div></div>`;
+        }).join('');
+        return `<div class="ev-card"><h3>${esc(COUNTRY.toUpperCase())}'S WHEEL \u2014 WHAT ITS SPOKES REPORT (${lit} OF ${keys.length} LIVE)</h3>
+            <div class="ev-wheels">${cards}</div>
+            <div class="ev-src">Each spoke is the country's own tracker writing to the shared wheel. Grey = not reporting or older than 24h: unread, not calm.</div></div>`;
+    }
+
+    // v1.3 -- HUB WHEEL: a hub tracker's own read of its rim (data.hub_read).
+    function hubWheelHTML(h) {
+        if (!h || !(h.nodes || []).length) return '';
+        const KIND = h.kind_words || {periphery: 'reacting', projection: 'pushing in'};
+        const card = n => {
+            const silent = n.state === 'not_reporting';
+            const lit = !silent && n.level >= 2;
+            const cls = silent ? ' dim' : (lit ? ' lit' : '');
+            const word = silent ? 'not reporting \u2014 unread, not calm' : (NODE_WORDS[n.node_class] || n.node_class || '');
+            return `<div class="ev-wheel${cls}"><div class="ev-wheel-top"><span class="ev-wheel-name">${esc(n.display || n.theatre)}</span>
+                ${silent ? '<span class="ev-pill" style="background:#6b7280">\u2014</span>' : `<span class="ev-pill" style="background:${levelColor(n.level)}">L${n.level}</span>`}</div>
+                <div class="ev-wheel-kind">${esc(KIND[n.kind] || n.kind || '')}</div>
+                <div class="ev-wheel-class">${esc(word)}</div>
+                ${n.top && !silent ? `<div class="ev-wheel-note">${esc(String(n.top).slice(0, 140))}</div>` : ''}</div>`;
+        };
+        const proj = h.nodes.filter(n => n.kind === 'projection').map(card).join('');
+        const peri = h.nodes.filter(n => n.kind !== 'projection').map(card).join('');
+        const pill = h.converged ? '<span class="ev-pill" style="background:#f59e0b">CONVERGED</span>'
+                                 : '<span class="ev-pill" style="background:#38bdf8">NOT CONVERGED</span>';
+        return `<div class="ev-card" id="hubWheel"><h3>${esc(COUNTRY.toUpperCase())}'S WHEEL \u2014 WHAT ITS SPOKES ARE REPORTING ${pill}</h3>
+            <div class="ev-hub-head">${esc(h.headline || '')}</div>
+            ${h.projection_bluf ? `<div class="ev-read">${esc(h.projection_bluf)}</div>` : ''}
+            ${proj ? `<div class="ev-hub-sub">WHERE ANKARA IS PUSHING IN</div><div class="ev-wheels">${proj}</div>` : ''}
+            ${peri ? `<div class="ev-hub-sub">WHO IS REACTING TO ANKARA</div><div class="ev-wheels">${peri}</div>` : ''}
+            ${h.note ? `<div class="ev-cap">${esc(h.note)}</div>` : ''}
+            <div class="ev-src">${esc(h.gate || '')} Each spoke is that country's own tracker writing to the shared wheel (30h freshness). Grey = not reporting: unread, not calm.</div></div>`;
+    }
+
+    function wheelsHTML(interp, data) {
+        if (data && data.hub_read) return hubWheelHTML(data.hub_read);
+        const sp = interp.spokes || {};
+        const keys = Object.keys(sp);
+        if (!keys.length) return hubHTML((data || {}).spoke_reads);
+        const cards = keys.map(h => {
+            const s = sp[h] || {};
+            const [flag, name] = HUBS[h] || ['', h];
+            const lv = s.level || 0;
+            return `<div class="ev-wheel"><div class="ev-wheel-top"><span class="ev-wheel-name">${flag} ${esc(name)}</span>
+                <span class="ev-pill" style="background:${levelColor(lv)}">L${lv}</span></div>
+                <div class="ev-wheel-class">${esc(NODE_WORDS[s.node_class] || s.node_class || '')}</div>
+                ${s.note ? `<div class="ev-wheel-note">${esc(s.note)}</div>` : ''}</div>`;
+        }).join('');
+        return `<div class="ev-card"><h3>WHEELS ON ${esc(COUNTRY.toUpperCase())} — WHO IS TURNING THIS SPOKE</h3>
+            <div class="ev-wheels">${cards}</div>
+            <div class="ev-src">Each wheel is written to its hub's spoke-and-wheel key every scan (30h freshness). A quiet wheel is L0, not absent.</div></div>`;
+    }
+
+    function redLineEvidence(interp) {
+        const rl = (interp.red_lines || {}).triggered || [];
+        const items = document.querySelectorAll(window.EV_RL_SELECTOR || '#redLineItems .red-line-item');
+        rl.forEach((r, i) => {
+            const host = items[i];
+            if (!host || host.querySelector('.ev-rl')) return;
+            const body = host.querySelector('div[style*="flex:1"]') || host;
+            if (!(r.evidence || []).length && !r.trigger) return;
+            const ev = (r.evidence || []).slice(0, 3).map(e =>
+                `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="ev-outlet">${esc(e.outlet || '')}${e.phrase ? ' · “' + esc(e.phrase) + '”' : ''}</span></li>`).join('');
+            const d = document.createElement('div');
+            d.className = 'ev-rl';
+            d.innerHTML = `<div class="ev-rl-trig">${esc(r.trigger || '')}</div>${ev ? `<ul>${ev}</ul>` : ''}`;
+            body.appendChild(d);
+        });
+    }
+
+    function renderEvidenceLayer(data) {
+        const interp = (data && data.interpretation) || (window.EV_FLAT ? (data || {}) : {});
+        const w = ensureWrap();
+        const health = interp.corpus_health || {};
+        const sensing = data.sensing || {};
+        let html = '';
+        if (interp.top_indicator && !window.EV_NO_TOP) {
+            html += `<div class="ev-top"><div class="ev-kicker">TOP INDICATOR — THE ONE THING TO KNOW</div>
+                <div class="ev-top-text">${esc(interp.top_indicator)}</div>
+                ${data && data.alert_cap_note ? `<div class="ev-cap">${esc(data.alert_cap_note)}</div>` : ''}</div>`;
+        }
+        if (interp.thin_read || sensing.degraded) {
+            const why = [health.reason, sensing.degraded ? 'a source family did not answer' : ''].filter(Boolean).join('; ');
+            html += `<div class="ev-thin"><b>THIN READ.</b> This scan is under-read${why ? ' (' + esc(why) + ')' : ''}.
+                Quiet lines on this page may be <i>unread</i>, not calm. Levels are capped by how many outlets carried the story.</div>`;
+        }
+        html += trackHTML(interp) + ledgerHTML(interp) + wheelsHTML(interp, data);
+        w.innerHTML = html;
+        redLineEvidence(interp);
+    }
+    window.renderEvidenceLayer = renderEvidenceLayer;
+
+    if (!window.EV_NO_WRAP && typeof renderAll === 'function') {
+        const _orig = renderAll;
+        renderAll = function (data) {
+            _orig(data);
+            try { renderEvidenceLayer(data); } catch (e) { console.warn('[Evidence layer]', e); }
+        };
+    }
+})();
+</script>
+
 </body>
 </html>
