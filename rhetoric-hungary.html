@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Hungary Rhetoric & Pressure Tracker v1.0.0 — May 18 2026 -->
+<!-- Asifah Analytics — Hungary Rhetoric & Pressure Tracker v1.1.0 — Nov 3 2026 (v1.0.0 May 18 2026) -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -245,6 +245,16 @@ header {
 .red-line-status { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-weight: 700; color: #fff; }
 .red-line-status.BREACHED { background: var(--red); }
 .red-line-status.APPROACHING { background: var(--amber); }
+.red-line-status.WATCHING { background: #64748b; }
+.red-line.watching { border-left-color: #64748b; }
+.status-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.status-chip { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 8px 12px; min-width: 150px; flex: 1 1 150px; }
+.status-chip-k { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-family: 'Courier New', monospace; }
+.status-chip-v { font-size: 13px; font-weight: 700; margin-top: 2px; }
+.ev-list { margin: 6px 0 0; padding-left: 16px; font-size: 11px; color: var(--text-2); }
+.ev-list li { margin: 2px 0; overflow-wrap: anywhere; }
+.ev-list a { color: var(--text-2); }
+.ladder-step { min-width: 0; }
 .red-line-detail { font-size: 12px; color: var(--text-2); margin-bottom: 4px; }
 .red-line-trigger { font-size: 11px; color: var(--text-muted); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--card-border); }
 .red-line-source { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 4px; }
@@ -346,7 +356,6 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 <!-- MOBILE HAMBURGER + DRAWER BACKDROP -->
 <button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
 <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
-<button class="mobile-hamburger" onclick="toggleMobileDrawer()" aria-label="Open navigation">☰</button>
 
 <div class="container">
 
@@ -358,7 +367,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
     <div class="header-center">
         <div class="header-flag">🇭🇺 HUNGARY</div>
         <div class="header-title" data-i18n="pageTitle">HUNGARY PRESSURE TRACKER</div>
-        <div class="header-subtitle" data-i18n="pageSubtitle">Axis Reversal · Tisza Government · Orban Opposition · Druzhba Pipeline · Returned Assets</div>
+        <div class="header-subtitle" data-i18n="pageSubtitle">Is the turn from Moscow holding? · Moscow's levers · Fidesz at home · Orbán abroad · Accountability</div>
         <div class="header-ts">Last updated: <span id="lastUpdated">Loading...</span></div>
     </div>
     <div class="header-right">
@@ -462,19 +471,15 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 <div class="posture-banner baseline" id="postureBanner">
     <div class="posture-icon" id="postureIcon">⚪</div>
     <div class="posture-body">
-        <div class="posture-label" data-i18n="postureLabel">AXIS REVERSAL STATUS</div>
-        <div class="posture-headline" id="postureHeadline">Loading Hungary axis reversal status...</div>
-        <div class="posture-detail" id="postureDetail">Hungary rhetoric tracker is initializing. First scan results will appear here once the post-April 2026 Tisza election signals are processed.</div>
+        <div class="posture-label" data-i18n="postureLabel">IS THE REVERSAL HOLDING?</div>
+        <div class="posture-headline" id="postureHeadline">Reading the latest scan…</div>
+        <div class="posture-detail" id="postureDetail">Since April 2026 Budapest has turned from Moscow toward Brussels. This banner says, in one line, whether anything in this cycle's reporting is pushing it back.</div>
     </div>
 </div>
 
 <!-- 5 VECTOR PILLS -->
-<div class="vector-pills" id="vectorPills">
-    <div class="vector-pill"><span class="vector-pill-dot"></span>Axis Reversal</div>
-    <div class="vector-pill"><span class="vector-pill-dot"></span>Orban Revival</div>
-    <div class="vector-pill"><span class="vector-pill-dot"></span>EU Loan Unlock</div>
-    <div class="vector-pill"><span class="vector-pill-dot"></span>Druzhba Pipeline</div>
-    <div class="vector-pill"><span class="vector-pill-dot"></span>Returned Assets</div>
+<div class="status-chip-row" id="vectorPills">
+    <div class="status-chip"><div class="status-chip-k">Loading</div><div class="status-chip-v">…</div></div>
 </div>
 
 <!-- HOW TO READ THIS TRACKER (plain-language key) -->
@@ -513,7 +518,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- DIPLOMATIC TRACK / GREEN LINES CARD -->
 <div class="card">
-    <div class="card-title" data-i18n="cardDiplomatic">🕊️ DIPLOMATIC TRACK · GREEN LINES</div>
+    <div class="card-title" data-i18n="cardDiplomatic">🕊️ WHAT'S MOVING FORWARD · GREEN LINES</div>
     <div class="diplomatic-track-header">
         <div class="diplomatic-track-score" id="diplomaticScore">--/100</div>
         <div class="diplomatic-track-scenario" id="diplomaticScenario">Loading diplomatic track score...</div>
@@ -527,20 +532,20 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
 
 <!-- ACTORS CARD -->
 <div class="card">
-    <div class="card-title" data-i18n="cardActors">🏛️ HUNGARY RHETORIC ACTORS · 5 TRACKERS</div>
+    <div class="card-title" data-i18n="cardActors">🏛️ WHO IS TALKING · 5 CORE ACTORS + 3 WATCH LINES</div>
     <div class="actors-grid" id="actorsGrid">
         <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px; font-style: italic;">
-            Loading 5 actor data from /api/rhetoric/hungary...
+            Loading…
         </div>
     </div>
 </div>
 
 <!-- RED LINES CARD -->
 <div class="card">
-    <div class="card-title" data-i18n="cardRedLines">🚨 RED LINES</div>
+    <div class="card-title" data-i18n="cardRedLines">🚨 RISKS TO THE REVERSAL · RED LINES</div>
     <div class="red-line-list" id="redLineList">
         <div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 12px;">
-            Red lines (axis_reversal_in_progress, orban_revival_signal, eu_loan_unlock_active, druzhba_pipeline_dispute, seized_assets_returned) will appear here once first scan completes.
+            Four risks are read every scan: a Fidesz comeback at home, Moscow pushing back, Druzhba disrupted, and a break with Kyiv. Corroborated = two or more outlets.
         </div>
     </div>
 </div>
@@ -593,7 +598,7 @@ footer p { margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
         </div>
         <div class="footer-section">
             <h4 data-i18n="footMethod">Methodology:</h4>
-            <span>Five-actor analytical model (Tisza Government · Orban/Fidesz Opposition · EU Track · Russia Axis [reversing] · Ukraine Track). Five red lines tagged by pressure_type ('diplomatic' or 'economic') for GPI axis routing. Three historical precedents (1989 transition · 1956 revolution · Orban 2002-2010 wilderness) for analytical context. Cross-theater fingerprints emitted to shared Redis. 12-hour background refresh cadence.</span>
+            <span>Five core actors (Magyar government · Fidesz opposition · EU track · Russia axis · Ukraine track) plus three watch lines (accountability drive · Orbán abroad · China investment). Four RISK red lines scored per article -- corroborated means two or more outlets. Green lines for what is moving forward; a dated reversal ledger for what has already happened. Spokes written to the Russia, US and China wheels. 12-hour refresh.</span>
         </div>
         <div class="footer-section">
             <h4 data-i18n="footUpdated">Last Updated:</h4>
@@ -648,13 +653,13 @@ const T = {
     en: {
         backLink: '← Back to Hungary Stability',
         pageTitle: 'HUNGARY PRESSURE TRACKER',
-        pageSubtitle: 'Axis Reversal · Tisza Government · Orban Opposition · Druzhba Pipeline · Returned Assets',
-        postureLabel: 'AXIS REVERSAL STATUS',
+        pageSubtitle: 'Is the turn from Moscow holding? · Moscow\'s levers · Fidesz at home · Orbán abroad · Accountability',
+        postureLabel: 'IS THE REVERSAL HOLDING?',
         cardHowTo: '🧭 HOW TO READ THIS TRACKER',
         cardSoWhat: '⚡ SO-WHAT · ANALYTICAL SCENARIO',
-        cardDiplomatic: '🕊️ DIPLOMATIC TRACK · GREEN LINES',
-        cardActors: '🏛️ HUNGARY RHETORIC ACTORS · 5 TRACKERS',
-        cardRedLines: '🚨 RED LINES',
+        cardDiplomatic: '🕊️ WHAT\'S MOVING FORWARD · GREEN LINES',
+        cardActors: '🏛️ WHO IS TALKING · 5 CORE ACTORS + 3 WATCH LINES',
+        cardRedLines: '🚨 RISKS TO THE REVERSAL · RED LINES',
         cardPrecedents: '📜 HISTORICAL PRECEDENTS',
         footBackend: 'Live Backend:', footSources: 'Data Sources:',
         footMethod: 'Methodology:', footUpdated: 'Last Updated:',
@@ -756,7 +761,10 @@ const ACTOR_COLORS = {
     hungary_opposition:    '#f97316',
     hungary_eu_track:      '#3b82f6',
     hungary_russia_axis:   '#dc2626',
-    hungary_ukraine_track: '#22c55e'
+    hungary_ukraine_track: '#22c55e',
+    hungary_accountability: '#8b5cf6',
+    orban_international:   '#3b82f6',
+    china_investment:      '#7c3aed'
 };
 
 // ── MAIN FETCHERS ──
@@ -786,6 +794,7 @@ async function loadHungaryRhetoric() {
         renderDiplomaticTrack(data.interpretation || {});
         renderRedLines((data.interpretation || {}).red_lines || {});
         renderHistorical((data.interpretation || {}).historical_matches || []);
+        try { renderEvidenceLayer(data); } catch (ee) { console.warn('[Evidence layer]', ee); }
     } catch (e) {
         console.error('loadHungaryRhetoric error:', e);
         renderBaseline();
@@ -799,60 +808,57 @@ function renderBaseline() {
     const detail = document.getElementById('postureDetail');
     if (banner) banner.className = 'posture-banner baseline';
     if (icon) icon.textContent = '⚪';
-    if (headline) headline.textContent = 'Hungary tracker baseline -- pending deployment or first scan';
-    if (detail) detail.textContent = 'Backend module rhetoric_tracker_hungary.py and hungary_signal_interpreter.py need to be deployed to Europe backend. Once live, axis-reversal status, red lines, and so-what scenario will populate here. Static content (historical precedents) is already visible below.';
+    if (headline) headline.textContent = 'UNREAD -- no scan available right now';
+    if (detail) detail.textContent = 'The Hungary tracker did not answer this load. That is unread, not calm. The historical precedents below are static background.';
 }
 
 function renderPostureBanner(data) {
-    const ct = data.cross_theater || {};
-    const reversal = ct.axis_reversal_active || false;
-    const revival = ct.orban_revival_signal || false;
-    const druzhba = ct.druzhba_pipeline_status || 'unknown';
-
+    // v1.1: the banner reads the interpreter's posture and its one-line topline.
+    const interp = data.interpretation || {};
+    const posture = interp.posture || 'unread';
+    const MAP = {
+        holding: ['', '🪜', 'REVERSAL HOLDING'],
+        tested:  ['contested', '⚖️', 'REVERSAL BEING TESTED'],
+        eroding: ['revival', '⚠️', 'REVERSAL ERODING'],
+        unread:  ['baseline', '⚪', 'UNREAD'],
+    };
+    const [cls, iconChar, label] = MAP[posture] || MAP.unread;
     const banner = document.getElementById('postureBanner');
-    const icon = document.getElementById('postureIcon');
-    const headline = document.getElementById('postureHeadline');
-    const detail = document.getElementById('postureDetail');
-
-    let cls = 'baseline', iconChar = '⚪', label = 'BASELINE -- LIMITED SIGNAL';
-    if (reversal && !revival) { cls = ''; iconChar = '🪜'; label = 'AXIS REVERSAL CONSOLIDATING'; }
-    else if (reversal && revival) { cls = 'contested'; iconChar = '⚖️'; label = 'CONTESTED REVERSAL'; }
-    else if (revival && !reversal) { cls = 'revival'; iconChar = '⚠️'; label = 'ORBAN COMEBACK FORMING'; }
-
     if (banner) banner.className = `posture-banner ${cls}`;
+    const icon = document.getElementById('postureIcon');
     if (icon) icon.textContent = iconChar;
-    if (headline) headline.textContent = label;
-    if (detail) {
-        const score = data.theatre_score || 0;
-        const lvl = data.theatre_level || 0;
-        const articles = data.total_articles || 0;
-        detail.textContent = `Theatre score ${score}/100 (L${lvl}). ${articles} articles scanned. Druzhba pipeline: ${druzhba}. ${reversal ? 'Axis reversal symptoms detected. ' : ''}${revival ? 'Orban/Fidesz revival signals active.' : ''}`;
-    }
+    const headline = document.getElementById('postureHeadline');
+    if (headline) headline.textContent = (interp.thin_read ? 'THIN READ -- ' : '') + label;
+    const detail = document.getElementById('postureDetail');
+    if (detail) detail.textContent = interp.top_indicator ||
+        `Theatre score ${data.theatre_score || 0}/100 (L${data.theatre_level || 0}); ${data.total_articles || 0} articles scanned.`;
 }
 
 function renderVectorPills(data) {
+    // v1.1: plain-language status chips (were on/off pills keyed to good-news "red lines")
     const interp = data.interpretation || {};
-    const rls = (interp.red_lines || {}).triggered || [];
-    const ct = data.cross_theater || {};
-
-    const VECTOR_MAP = [
-        { name: 'Axis Reversal', test: () => ct.axis_reversal_active || rls.some(r => r.id === 'axis_reversal_in_progress' && r.status === 'BREACHED') },
-        { name: 'Orban Revival', test: () => ct.orban_revival_signal || rls.some(r => r.id === 'orban_revival_signal' && r.status === 'BREACHED') },
-        { name: 'EU Loan Unlock', test: () => rls.some(r => r.id === 'eu_loan_unlock_active') },
-        { name: 'Druzhba Pipeline', test: () => ct.druzhba_pipeline_status && ct.druzhba_pipeline_status !== 'unknown' },
-        { name: 'Returned Assets', test: () => rls.some(r => r.id === 'seized_assets_returned') }
+    const st = {};
+    ((interp.red_lines || {}).triggered || []).forEach(r => { st[r.id] = r.status; });
+    const actors = data.actors || {};
+    const word = s => ({ BREACHED: ['Corroborated', '#ef4444'], APPROACHING: ['Reported', '#f59e0b'],
+                         WATCHING: ['One outlet', '#64748b'] }[s] || ['Quiet', '#22c55e']);
+    const P = { holding: ['Holding', '#22c55e'], tested: ['Being tested', '#f59e0b'], eroding: ['Eroding', '#f97316'], unread: ['Unread', '#64748b'] };
+    const I = { nominated: ['Nominated', '#f59e0b'], floated: ['Floated', '#3b82f6'], signalled: ['One outlet', '#64748b'], quiet: ['Quiet', '#64748b'] };
+    const A = { proceeding: ['Proceeding', '#8b5cf6'], contested: ['Contested', '#f59e0b'], framing: ['Framing fight', '#f59e0b'],
+                signalled: ['One outlet', '#64748b'], quiet: ['Quiet', '#64748b'] };
+    const chips = [
+        ['The reversal', P[interp.posture || 'unread'] || P.unread],
+        ['Fidesz at home', word(st.orban_revival_signal)],
+        ['Moscow pushes back', word(st.russia_counter_pressure)],
+        ['Druzhba oil', word(st.druzhba_pipeline_dispute)],
+        ['Budapest–Kyiv', word(st.ukraine_track_rupture)],
+        ['Accountability', A[(interp.accountability_track || {}).status || 'quiet'] || A.quiet],
+        ['Orbán abroad', I[(interp.international_track || {}).status || 'quiet'] || I.quiet],
     ];
-
     const grid = document.getElementById('vectorPills');
     if (!grid) return;
-    grid.innerHTML = '';
-    VECTOR_MAP.forEach(v => {
-        const active = v.test();
-        const pill = document.createElement('div');
-        pill.className = `vector-pill ${active ? 'active' : ''}`;
-        pill.innerHTML = `<span class="vector-pill-dot"></span>${v.name}`;
-        grid.appendChild(pill);
-    });
+    grid.innerHTML = chips.map(([k, v]) =>
+        `<div class="status-chip"><div class="status-chip-k">${esc(k)}</div><div class="status-chip-v" style="color:${v[1]}">${esc(v[0])}</div></div>`).join('');
 }
 
 function renderActors(actors) {
@@ -863,7 +869,8 @@ function renderActors(actors) {
         return;
     }
     grid.innerHTML = '';
-    const ORDER = ['hungary_government', 'hungary_opposition', 'hungary_eu_track', 'hungary_russia_axis', 'hungary_ukraine_track'];
+    const ORDER = ['hungary_government', 'hungary_opposition', 'hungary_eu_track', 'hungary_russia_axis', 'hungary_ukraine_track',
+                   'hungary_accountability', 'orban_international', 'china_investment'];
     ORDER.forEach(key => {
         const a = actors[key];
         if (!a) return;
@@ -933,7 +940,7 @@ function renderDiplomaticTrack(interp) {
     if (scEl) scEl.textContent = `${dt.scenario_icon || ''} ${scenario}`;
     if (listEl) {
         if (triggered.length === 0) {
-            listEl.innerHTML = '<div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 12px;">No green lines triggered yet.</div>';
+            listEl.innerHTML = '<div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 12px;">Nothing new moving forward in this cycle\'s reporting -- the ledger below holds what has already happened.</div>';
         } else {
             listEl.innerHTML = triggered.map(g => `
                 <div class="green-line ${(g.status || '').toLowerCase() === 'active' ? '' : 'inactive'}">
@@ -954,20 +961,25 @@ function renderRedLines(redLinesObj) {
     if (!list) return;
     const triggered = redLinesObj.triggered || [];
     if (triggered.length === 0) {
-        list.innerHTML = '<div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 12px;">No red lines triggered yet.</div>';
+        list.innerHTML = '<div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 12px;">No risk to the reversal is in this cycle\'s reporting. (Quiet on a thin read may be unread -- see the banner.)</div>';
         return;
     }
-    list.innerHTML = triggered.map(r => `
-        <div class="red-line ${(r.status || '').toLowerCase()}">
+    const WORD = { BREACHED: 'CORROBORATED', APPROACHING: 'REPORTED', WATCHING: 'ONE OUTLET' };
+    list.innerHTML = triggered.map(r => {
+        const ev = (r.evidence || []).slice(0, 3).map(e =>
+            `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--text-muted);">${esc(e.outlet || '')}</span></li>`).join('');
+        return `
+        <div class="red-line ${esc((r.status || '').toLowerCase())}">
             <div class="red-line-header">
-                <span class="red-line-label">${r.icon || '⚠️'} ${(r.label || r.id || '').replace(/</g, '&lt;')}</span>
-                <span class="red-line-status ${r.status || 'BREACHED'}">${r.status || 'BREACHED'}</span>
+                <span class="red-line-label">${esc(r.icon || '⚠️')} ${esc(r.label || r.id || '')}</span>
+                <span class="red-line-status ${esc(r.status || '')}">${esc(WORD[r.status] || r.status || '')}</span>
             </div>
-            <div class="red-line-detail">${(r.detail || '').replace(/</g, '&lt;')}</div>
-            ${r.trigger ? `<div class="red-line-trigger"><strong>Trigger:</strong> ${String(r.trigger).replace(/</g, '&lt;')}</div>` : ''}
-            ${r.source ? `<div class="red-line-source">Source: ${String(r.source).replace(/</g, '&lt;')}</div>` : ''}
-        </div>
-    `).join('');
+            <div class="red-line-detail">${esc(r.detail || '')}</div>
+            ${r.trigger ? `<div class="red-line-trigger"><strong>This cycle:</strong> ${esc(r.trigger)}</div>` : ''}
+            ${ev ? `<ul class="ev-list">${ev}</ul>` : ''}
+            ${r.source ? `<div class="red-line-source">Precedent: ${esc(r.source)}</div>` : ''}
+        </div>`;
+    }).join('');
 }
 
 function renderHistorical(matches) {
@@ -995,5 +1007,228 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHungaryRhetoric();
 });
 </script>
+<script>window.EV_ANCHOR='vectorPills'; window.EV_NO_TOP=true; window.EV_NO_WRAP=true; window.EV_RL_SELECTOR='#__none__';</script>
+<!-- ══ Evidence layer v1.2 (Nov 3 2026, eve): top indicator, thin read, track cards
+     (any of agreement / settlement / peace / talks / international / accountability),
+     dated ledger, wheels card (spoke mode or HUB mode), red-line evidence.
+     Config (optional, set before this block): window.EV_ANCHOR (element id to insert
+     after), window.EV_RL_SELECTOR (red-line item selector), window.EV_NO_WRAP. ══ -->
+<style>
+.ev-wrap{display:flex;flex-direction:column;gap:10px;margin:12px 0 14px;}
+.ev-top{border:1px solid var(--card-border);border-left:4px solid var(--accent,#3b82f6);background:var(--card-bg);border-radius:10px;padding:10px 14px;}
+.ev-kicker{font-size:0.6rem;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);font-family:'Courier New',monospace;margin-bottom:4px;}
+.ev-top-text{font-size:0.95rem;font-weight:700;color:var(--text-primary);line-height:1.4;}
+.ev-thin{border:1px dashed #f59e0b;background:rgba(245,158,11,0.08);color:var(--text-primary);border-radius:10px;padding:8px 14px;font-size:0.78rem;line-height:1.45;}
+.ev-thin b{color:#f59e0b;}
+.ev-card{border:1px solid var(--card-border);background:var(--card-bg);border-radius:10px;padding:12px 14px;min-width:0;}
+.ev-card h3{margin:0 0 8px;font-size:0.72rem;letter-spacing:1.5px;font-weight:800;color:var(--text-secondary);font-family:'Courier New',monospace;}
+.ev-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.62rem;font-weight:800;letter-spacing:1px;color:#fff;vertical-align:middle;}
+.ev-read{font-size:0.82rem;color:var(--text-primary);line-height:1.5;margin:6px 0;}
+.ev-base{font-size:0.74rem;color:var(--text-secondary);line-height:1.5;margin:4px 0 0;padding-left:16px;}
+.ev-base li{margin:2px 0;}
+.ev-base a{color:var(--text-secondary);text-decoration:underline;text-decoration-color:var(--card-border);}
+.ev-src{font-size:0.66rem;color:var(--text-muted);margin-top:6px;word-break:break-word;}
+.ev-src a{color:var(--text-muted);}
+.ev-wheels{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;}
+.ev-wheel{border:1px solid var(--card-border);border-radius:8px;padding:8px 10px;background:var(--article-bg,transparent);min-width:0;}
+.ev-wheel-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.ev-wheel-name{font-weight:800;font-size:0.8rem;color:var(--text-primary);}
+.ev-wheel-class{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px;}
+.ev-wheel-note{font-size:0.7rem;color:var(--text-secondary);margin-top:4px;line-height:1.4;overflow-wrap:anywhere;}
+.ev-rl{margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45;}
+.ev-rl-trig{font-weight:700;color:var(--text-primary);}
+.ev-rl ul{margin:3px 0 0;padding-left:16px;}
+.ev-rl li{margin:2px 0;overflow-wrap:anywhere;}
+.ev-rl a{color:var(--text-secondary);}
+.ev-outlet{font-family:'Courier New',monospace;font-size:0.62rem;color:var(--text-muted);}
+.ev-ledger{list-style:none;margin:4px 0 0;padding:0;}
+.ev-ledger li{display:flex;gap:10px;font-size:0.76rem;color:var(--text-secondary,var(--text-2));line-height:1.45;padding:3px 0;border-bottom:1px dotted var(--card-border);}
+.ev-ledger li:last-child{border-bottom:none;}
+.ev-date{font-family:'Courier New',monospace;font-size:0.66rem;color:var(--text-muted);flex:0 0 78px;}
+.ev-wheel.dim{opacity:0.55;}
+/* pre-existing phone overflow: ladder grid children need min-width:0 */
+.ladder-step{min-width:0;}
+.ladder-step-label{overflow-wrap:anywhere;}
+</style>
+<script>
+(function () {
+    // ---- escaping: feed titles and URLs are third-party text ----
+    window.esc = window.esc || function (s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+            ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    };
+    window.safeUrl = window.safeUrl || function (u) {
+        const s = String(u || '').trim();
+        return /^https?:\/\//i.test(s) ? esc(s) : '#';
+    };
+
+    const COUNTRY = 'Hungary';
+    const HUBS = {
+        us: ['\u{1F1FA}\u{1F1F8}', 'United States'], russia: ['\u{1F1F7}\u{1F1FA}', 'Russia'],
+        china: ['\u{1F1E8}\u{1F1F3}', 'China'], turkey: ['\u{1F1F9}\u{1F1F7}', 'Turkey'],
+        israel: ['\u{1F1EE}\u{1F1F1}', 'Israel'], iran: ['\u{1F1EE}\u{1F1F7}', 'Iran'],
+    };
+    const NODE_WORDS = {
+        inbound_target: 'pressing on ' + COUNTRY, adversary: 'adversary', security_partner: 'security partner',
+        target: COUNTRY + ' as a target', aligned_multiplier: 'aligned partner', friction: 'friction',
+        broker: 'broker', resource_interest: 'resource interest', security_assistance: 'security assistance',
+        axis_reversal_watch: 'axis-reversal watch', opposition_channel: 'via the opposition (Orb\u00e1n)',
+        investment_partner: 'investment partner', contested_node: 'contested node', contested: 'contested node',
+        expeditionary_client: 'expeditionary client', ruptured: 'ruptured', peer: 'peer',
+    };
+    const TRACK_STATUS = {
+        holding: ['HOLDING', '#10b981'], contested: ['CONTESTED', '#f59e0b'], strain: ['STRAIN', '#ef4444'],
+        quiet: ['NOT IN CORPUS', '#6b7280'], ACTIVE: ['ACTIVE', '#10b981'], SIGNALED: ['SIGNALLED', '#84cc16'],
+        DORMANT: ['DORMANT', '#6b7280'],
+    };
+    function levelColor(n) {
+        try { return (ESCALATION_LEVELS[n] || ESCALATION_LEVELS[0]).color; } catch (e) {}
+        try { return LEVEL_COLORS[n] || '#6b7280'; } catch (e) {}
+        return ['#6b7280', '#3b82f6', '#f59e0b', '#f97316', '#ef4444', '#dc2626'][n] || '#6b7280';
+    }
+
+    function ensureWrap() {
+        let w = document.getElementById('evLayer');
+        if (w) return w;
+        w = document.createElement('div');
+        w.id = 'evLayer';
+        w.className = 'ev-wrap';
+        const anchor = document.getElementById(window.EV_ANCHOR || 'theatreBanner');
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(w, anchor.nextSibling);
+        else document.body.prepend(w);
+        return w;
+    }
+
+    const TRACKS = [
+        ['agreement_track',      'THE NEGOTIATED TRACK \u2014 2026 DEFENCE AGREEMENT'],
+        ['settlement_momentum',  'SETTLEMENT MOMENTUM (THE GREEN READ)'],
+        ['peace_track',          'PEACE TRACK \u2014 TREATY & CORRIDOR'],
+        ['talks_track',          'THE TALKS TRACK \u2014 ABU DHABI ROUND'],
+        ['international_track',  'ORB\u00c1N ABROAD \u2014 THE UN SECRETARY-GENERAL PUSH'],
+        ['accountability_track', 'ACCOUNTABILITY \u2014 OR RETRIBUTION? BOTH FRAMES READ'],
+    ];
+    Object.assign(TRACK_STATUS, {
+        active: ['ACTIVE', '#10b981'], signalled: ['SIGNALLED', '#84cc16'], floated: ['FLOATED', '#3b82f6'],
+        nominated: ['NOMINATED', '#f59e0b'], proceeding: ['PROCEEDING', '#8b5cf6'], framing: ['FRAMING', '#f59e0b'],
+    });
+    const FACT_KEYS = ['what', 'sovereignty', 'status', 'rhetoric_gap', 'treaty', 'tripp', 'constraint',
+                       'round', 'positions', 'washington', 'rules', 'reactions'];
+
+    function oneTrack(tr, title) {
+        const st = TRACK_STATUS[tr.status] || [String(tr.status || '').toUpperCase(), '#6b7280'];
+        const b = tr.baseline || {};
+        const facts = FACT_KEYS.filter(k => b[k]).map(k => `<li>${esc(b[k])}</li>`).join('');
+        const srcs = (b.sources || []).map(s => /^https?:/.test(s)
+            ? `<a href="${safeUrl(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a>`
+            : esc(s)).join(' \u00b7 ');
+        const ev = (tr.evidence || []).slice(0, 3).map(e =>
+            `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="ev-outlet">${esc(e.outlet || '')}</span></li>`).join('');
+        return `<div class="ev-card"><h3>${title} <span class="ev-pill" style="background:${st[1]}">${esc(st[0])}</span></h3>
+            <div class="ev-read">${esc(tr.read || '')}</div>
+            ${ev ? `<ul class="ev-base">${ev}</ul>` : ''}
+            ${facts ? `<div class="ev-kicker" style="margin-top:8px;">BACKGROUND${b.as_of ? ' \u00b7 AS OF ' + esc(b.as_of) : ''}</div><ul class="ev-base">${facts}</ul>` : ''}
+            ${srcs ? `<div class="ev-src">Sources: ${srcs}</div>` : ''}</div>`;
+    }
+
+    function trackHTML(interp) {
+        return TRACKS.filter(([k]) => interp[k]).map(([k, t]) => oneTrack(interp[k], t)).join('');
+    }
+
+    function ledgerHTML(interp) {
+        const L = interp.reversal_ledger;
+        if (!L || !(L.events || []).length) return '';
+        const rows = L.events.map(e => `<li><span class="ev-date">${esc(e.date)}</span><span>${esc(e.what)}</span></li>`).join('');
+        const open = (L.still_open || []).map(x => `<li>${esc(x)}</li>`).join('');
+        const srcs = (L.sources || []).map(s => `<a href="${safeUrl(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a>`).join(' \u00b7 ');
+        return `<div class="ev-card"><h3>THE REVERSAL LEDGER \u2014 WHAT HAS ALREADY HAPPENED <span class="ev-pill" style="background:#38bdf8">AS OF ${esc(L.as_of || '')}</span></h3>
+            <div class="ev-read">Background, not this scan: the milestones are in. The scan above asks whether they are holding.</div>
+            <ul class="ev-ledger">${rows}</ul>
+            ${open ? `<div class="ev-kicker" style="margin-top:8px;">STILL OPEN</div><ul class="ev-base">${open}</ul>` : ''}
+            ${srcs ? `<div class="ev-src">Sources: ${srcs}</div>` : ''}</div>`;
+    }
+
+    function hubHTML(reads) {
+        const keys = Object.keys(reads || {});
+        if (!keys.length) return '';
+        const lit = keys.filter(k => reads[k].present && reads[k].fresh).length;
+        const cards = keys.sort((a, b) => (reads[b].level || 0) - (reads[a].level || 0)).map(k => {
+            const r = reads[k] || {};
+            const ok = r.present && r.fresh;
+            const lv = r.level || 0;
+            const state = !r.present ? 'not reporting' : (!r.fresh ? 'stale (over 24h)' : (NODE_WORDS[r.node_class] || r.node_class || ''));
+            return `<div class="ev-wheel${ok ? '' : ' dim'}"><div class="ev-wheel-top"><span class="ev-wheel-name">${esc(k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))}</span>
+                ${ok ? `<span class="ev-pill" style="background:${levelColor(lv)}">L${lv}</span>` : '<span class="ev-pill" style="background:#6b7280">\u2014</span>'}</div>
+                <div class="ev-wheel-class">${esc(state)}</div></div>`;
+        }).join('');
+        return `<div class="ev-card"><h3>${esc(COUNTRY.toUpperCase())}'S WHEEL \u2014 WHAT ITS SPOKES REPORT (${lit} OF ${keys.length} LIVE)</h3>
+            <div class="ev-wheels">${cards}</div>
+            <div class="ev-src">Each spoke is the country's own tracker writing to the shared wheel. Grey = not reporting or older than 24h: unread, not calm.</div></div>`;
+    }
+
+    function wheelsHTML(interp, data) {
+        const sp = interp.spokes || {};
+        const keys = Object.keys(sp);
+        if (!keys.length) return hubHTML((data || {}).spoke_reads);
+        const cards = keys.map(h => {
+            const s = sp[h] || {};
+            const [flag, name] = HUBS[h] || ['', h];
+            const lv = s.level || 0;
+            return `<div class="ev-wheel"><div class="ev-wheel-top"><span class="ev-wheel-name">${flag} ${esc(name)}</span>
+                <span class="ev-pill" style="background:${levelColor(lv)}">L${lv}</span></div>
+                <div class="ev-wheel-class">${esc(NODE_WORDS[s.node_class] || s.node_class || '')}</div>
+                ${s.note ? `<div class="ev-wheel-note">${esc(s.note)}</div>` : ''}</div>`;
+        }).join('');
+        return `<div class="ev-card"><h3>WHEELS ON ${esc(COUNTRY.toUpperCase())} — WHO IS TURNING THIS SPOKE</h3>
+            <div class="ev-wheels">${cards}</div>
+            <div class="ev-src">Each wheel is written to its hub's spoke-and-wheel key every scan (30h freshness). A quiet wheel is L0, not absent.</div></div>`;
+    }
+
+    function redLineEvidence(interp) {
+        const rl = (interp.red_lines || {}).triggered || [];
+        const items = document.querySelectorAll(window.EV_RL_SELECTOR || '#redLineItems .red-line-item');
+        rl.forEach((r, i) => {
+            const host = items[i];
+            if (!host || host.querySelector('.ev-rl')) return;
+            const body = host.querySelector('div[style*="flex:1"]') || host;
+            const ev = (r.evidence || []).slice(0, 3).map(e =>
+                `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="ev-outlet">${esc(e.outlet || '')}${e.phrase ? ' · “' + esc(e.phrase) + '”' : ''}</span></li>`).join('');
+            const d = document.createElement('div');
+            d.className = 'ev-rl';
+            d.innerHTML = `<div class="ev-rl-trig">${esc(r.trigger || '')}</div>${ev ? `<ul>${ev}</ul>` : ''}`;
+            body.appendChild(d);
+        });
+    }
+
+    function renderEvidenceLayer(data) {
+        const interp = (data && data.interpretation) || {};
+        const w = ensureWrap();
+        const health = interp.corpus_health || {};
+        const sensing = data.sensing || {};
+        let html = '';
+        if (interp.top_indicator && !window.EV_NO_TOP) {
+            html += `<div class="ev-top"><div class="ev-kicker">TOP INDICATOR — THE ONE THING TO KNOW</div>
+                <div class="ev-top-text">${esc(interp.top_indicator)}</div></div>`;
+        }
+        if (interp.thin_read || sensing.degraded) {
+            const why = [health.reason, sensing.degraded ? 'a source family did not answer' : ''].filter(Boolean).join('; ');
+            html += `<div class="ev-thin"><b>THIN READ.</b> This scan is under-read${why ? ' (' + esc(why) + ')' : ''}.
+                Quiet lines on this page may be <i>unread</i>, not calm. Levels are capped by how many outlets carried the story.</div>`;
+        }
+        html += trackHTML(interp) + ledgerHTML(interp) + wheelsHTML(interp, data);
+        w.innerHTML = html;
+        redLineEvidence(interp);
+    }
+    window.renderEvidenceLayer = renderEvidenceLayer;
+
+    if (!window.EV_NO_WRAP && typeof renderAll === 'function') {
+        const _orig = renderAll;
+        renderAll = function (data) {
+            _orig(data);
+            try { renderEvidenceLayer(data); } catch (e) { console.warn('[Evidence layer]', e); }
+        };
+    }
+})();
+</script>
+
 </body>
 </html>

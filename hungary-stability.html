@@ -516,6 +516,45 @@
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
+<script>
+/* v1.1 (Nov 3 2026): feed titles / URLs are third-party text -- escape before innerHTML. */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--border,#1e3a5f);border-left:4px solid var(--accent,#38bdf8);background:var(--card,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text,#e2e8f0);}
+.top-ind-r{font-size:13px;line-height:1.45;color:var(--text-2,#94a3b8);margin-top:6px;}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+/* Financial Pulse card (canonical nyse-card, 4 tiles) */
+.nyse-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; position: relative; }
+[data-theme="dark"] .nyse-card { background: linear-gradient(135deg, rgba(13,27,46,0.85), rgba(6,13,26,0.92)); }
+.nyse-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+.nyse-card-title { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; }
+.nyse-status-pill { background: rgba(56,189,248,0.18); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; border: 1px solid rgba(56,189,248,0.4); }
+.nyse-status-pill.market-open { background: rgba(34,197,94,0.18); color: #22c55e; border-color: rgba(34,197,94,0.4); }
+.nyse-status-pill.market-closed { background: rgba(107,114,128,0.18); color: #9ca3af; border-color: rgba(107,114,128,0.4); }
+.nyse-prose { font-size: 0.85rem; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+.nyse-read { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 12px; line-height: 1.45; }
+.nyse-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 1100px) { .nyse-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .nyse-grid { grid-template-columns: 1fr; } }
+.nyse-tile { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+[data-theme="dark"] .nyse-tile { background: rgba(6,13,26,0.55); border-color: rgba(56,189,248,0.18); }
+.nyse-tile.tile-rally { border-left: 3px solid #38bdf8; } .nyse-tile.tile-stable { border-left: 3px solid #22c55e; }
+.nyse-tile.tile-warning { border-left: 3px solid #eab308; } .nyse-tile.tile-stress { border-left: 3px solid #ef4444; }
+.nyse-tile-header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.nyse-tile-name { font-size: 0.70rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.nyse-tile-ticker { font-size: 0.62rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+.nyse-tile-value { font-size: 1.35rem; font-weight: 700; color: var(--text); font-family: 'Courier New', monospace; line-height: 1; }
+.nyse-tile-change { font-size: 0.82rem; font-weight: 600; font-family: 'Courier New', monospace; }
+.nyse-tile-change.up { color: #22c55e; } .nyse-tile-change.down { color: #ef4444; } .nyse-tile-change.flat { color: var(--text-muted); }
+.nyse-tile-spark svg { display: block; width: 100%; height: 30px; }
+.nyse-tile-meta { font-size: 0.63rem; color: var(--text-muted); font-style: italic; line-height: 1.3; }
+.nyse-empty-state { text-align: center; padding: 18px; color: var(--text-muted); font-style: italic; grid-column: 1/-1; }
+</style>
 </head>
 <body>
 <div class="watermark"></div>
@@ -620,6 +659,12 @@
 
 <!-- MAIN CONTENT -->
 <div style="flex:1; min-width:0;">
+<div class="top-ind" id="topIndicator">
+    <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+    <div class="top-ind-t" id="topIndicatorText">Reading the latest scan&hellip;</div>
+    <div class="top-ind-r" id="topIndicatorRhet"></div>
+    <div class="top-ind-m" id="topIndicatorMeta"></div>
+</div>
 
 
 
@@ -646,25 +691,15 @@
     <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/hungary-travel-advisory.html" target="_blank" style="padding:7px 14px;background:rgba(245,158,11,0.18);border:1px solid rgba(245,158,11,0.45);border-radius:6px;color:#fde68a;text-decoration:none;font-size:0.63rem;font-weight:700;white-space:nowrap;" data-i18n="viewAdvisory">VIEW ADVISORY →</a>
 </div>
 
-<!-- ELECTION CONTEXT BANNER -->
-<div style="background:linear-gradient(135deg,#0d1b2e,#1e3a5f);border:2px solid rgba(56,189,248,0.4);border-radius:12px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-    <div>
-        <div style="font-size:0.63rem;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:5px;">📊 APRIL 12, 2026 — ELECTION RESULT</div>
-        <div style="font-size:0.82rem;color:var(--text);font-weight:700;">Magyar / Tisza: 138 seats (53.6%) — Constitutional Supermajority</div>
-        <div style="font-size:0.72rem;color:var(--text-2);margin-top:3px;">Orbán / Fidesz: 55 seats (37.8%) · Turnout: 77% (record) · Orbán conceded</div>
-    </div>
-    <div style="text-align:right;">
-        <div style="font-size:0.58rem;color:var(--text-muted);letter-spacing:1px;">Von der Leyen:</div>
-        <div style="font-size:0.72rem;color:var(--accent);font-style:italic;">"Hungary has chosen Europe."</div>
-    </div>
-</div>
+<!-- (v1.1, Nov 3 2026: April election-result banner retired -- the result now lives in the
+     knowledge library and the rhetoric tracker's dated reversal ledger.) -->
 
 <!-- ── RHETORIC TRACKER LINK BANNER (Gold Standard v2.0 -- Cuba pattern) ── -->
 <div class="rhetoric-link-banner">
     <span class="icon">📡</span>
     <div class="text-block">
         <h3 data-i18n="rhTitle">Hungary Rhetoric &amp; Pressure Tracker</h3>
-        <div class="subnote" data-i18n="rhSubtitle">Axis Reversal · Orban Revival · EU Loan Unlock · Druzhba Status · Returned Assets</div>
+        <div class="subnote" data-i18n="rhSubtitle">Is the turn from Moscow holding? · Moscow's levers · Fidesz at home · Orbán abroad · Accountability</div>
     </div>
     <span class="level-pill" id="rhetoricLevelPill" data-i18n="loading">Loading...</span>
     <a href="rhetoric-hungary.html" class="open-tracker-btn" data-i18n="rhBtn">Open Tracker →</a>
@@ -716,6 +751,21 @@
     </div>
 </div>
 
+<!-- ═══ HUNGARY FINANCIAL PULSE (v1.1, Nov 3 2026 -- hungary_financial_pulse.py) ═══ -->
+<div class="nyse-card" id="financialPulseCard">
+    <div class="nyse-card-header">
+        <div class="nyse-card-title">📊 Hungary Financial Pulse</div>
+        <span class="nyse-status-pill" id="pulseStatusPill">Loading…</span>
+    </div>
+    <div class="nyse-read" id="pulseRead"></div>
+    <div class="nyse-prose">
+        What money thinks of the reversal. <strong>EUR/HUF</strong> is the forint (inverted: a rising rate is a weaker forint),
+        <strong>BUX</strong> is Budapest's stock index, <strong>OTP</strong> is the largest bank (with a regional Russia/Ukraine footprint) and
+        <strong>MOL</strong> is the Druzhba refiner (Russian-crude exposure). Updated every 12 hours.
+    </div>
+    <div class="nyse-grid" id="pulseGrid"><div class="nyse-empty-state">Loading market data…</div></div>
+</div>
+
 <!-- MAP -->
 <div class="card">
     <div class="card-title">🗺️ <span data-i18n="mapTitle">HUNGARY — STRATEGIC OVERVIEW</span></div>
@@ -736,37 +786,37 @@
         <!-- Tile 1: Axis Reversal Index -->
         <div class="qg-tile">
             <div class="qg-tile-header">
-                <span class="qg-tile-label" data-i18n="axisReversalLabel">🪜 Axis Reversal Index</span>
+                <span class="qg-tile-label">🪜 Is the reversal holding?</span>
                 <span class="qg-tile-pill" id="axisReversalPill" style="background:#64748b;">--</span>
             </div>
             <div class="qg-tile-score" id="axisReversalScore" style="color:#22c55e;">--</div>
             <div class="qg-tile-band" id="axisReversalBand" data-i18n="loading">Loading...</div>
-            <div class="qg-tile-detail" data-i18n="axisReversalDetail">
-                Composite signal: Hungary's structural shift from Russia-axis dependency toward EU normalization. Higher = consolidating reversal. Lower = baseline or reversed momentum.
+            <div class="qg-tile-detail">
+                Since April 2026 Budapest has turned from Moscow toward Brussels. This reads whether anything in the reporting is pushing it back: Moscow's energy levers, a Fidesz comeback, a break with Kyiv.
             </div>
         </div>
         <!-- Tile 2: Orban Revival Index -->
         <div class="qg-tile">
             <div class="qg-tile-header">
-                <span class="qg-tile-label" data-i18n="orbanRevivalLabel">⚠️ Orban Revival Index</span>
+                <span class="qg-tile-label">⚠️ Fidesz at home</span>
                 <span class="qg-tile-pill" id="orbanRevivalPill" style="background:#64748b;">--</span>
             </div>
             <div class="qg-tile-score" id="orbanRevivalScore" style="color:#f97316;">--</div>
             <div class="qg-tile-band" id="orbanRevivalBand" data-i18n="loading">Loading...</div>
-            <div class="qg-tile-detail" data-i18n="orbanRevivalDetail">
-                Fidesz opposition rhetoric volume + revival-signal triggers. Higher = comeback narrative forming (2002-2010 precedent). Lower = opposition baseline.
+            <div class="qg-tile-detail">
+                Is Fidesz regaining ground with Hungarian voters -- poll leads, mass rallies? Orbán's UN bid is read separately (next tile).
             </div>
         </div>
         <!-- Tile 3: EU Integration Index -->
         <div class="qg-tile">
             <div class="qg-tile-header">
-                <span class="qg-tile-label" data-i18n="euIntegrationLabel">🇪🇺 EU Integration Index</span>
+                <span class="qg-tile-label">🌐 Orbán abroad</span>
                 <span class="qg-tile-pill" id="euIntegrationPill" style="background:#64748b;">--</span>
             </div>
             <div class="qg-tile-score" id="euIntegrationScore" style="color:#3b82f6;">--</div>
             <div class="qg-tile-band" id="euIntegrationBand" data-i18n="loading">Loading...</div>
-            <div class="qg-tile-detail" data-i18n="euIntegrationDetail">
-                EU track signal: loan unlock, rule of law alignment, Article 7 status. Higher = active normalization with Brussels. Lower = friction or stalled track.
+            <div class="qg-tile-detail">
+                The reported US-backed push (with Russian and Chinese support reported) for Orbán as UN Secretary-General -- an exit path as much as a comeback, while his former officials face arrest at home.
             </div>
         </div>
         <!-- Tile 4: Druzhba Pipeline Status -->
@@ -837,7 +887,13 @@
                     <li><strong>Péter Magyar:</strong> A 45-year-old lawyer and former Fidesz insider, Magyar emerged as a national figure in 2024 after breaking with the party following a presidential pardoning scandal. He built Tisza from a minor party into Hungary's dominant political force in under two years.</li>
                     <li><strong>Supermajority Risk:</strong> Analysts note that Magyar's unconstrained constitutional majority replicates the structural conditions that allowed Orbán to consolidate power in 2010. The absence of meaningful parliamentary opposition raises governance accountability questions.</li>
                 </ul>
-                <div class="kl-note">* Based on Al Jazeera, BBC, CBC, CBS News, and CNN live election reporting · April 12, 2026</div>
+                <p style="margin-top:10px;"><strong>Six months on (as of Nov 3 2026):</strong></p>
+                <ul>
+                    <li><strong>In office since May:</strong> the Magyar government secured release of EUR 16.4bn in frozen EU funds (May 29) and lifted Budapest's veto on Ukraine's first accession clusters (June), with more following Kyiv's minority-rights law (Oct 12).</li>
+                    <li><strong>Accountability drive:</strong> former ministers Miklós Seszták and Balázs Hankó were taken into custody on Sep 29 after parliament lifted their immunity; ex-central-bank governor György Matolcsy on Oct 21. All deny wrongdoing. The government calls it ending "state capture"; Fidesz calls it politically motivated and points to the removal of former President Tamás Sulyok by constitutional amendment. <em>So what:</em> due process in these cases is now the credibility test for the supermajority.</li>
+                    <li><strong>Orbán abroad:</strong> on Oct 26 the WSJ reported Trump administration officials favour Orbán for UN Secretary-General, possibly with Russian and Chinese backing; no decision announced, and a member state would have to nominate him.</li>
+                </ul>
+                <div class="kl-note">* Election: Al Jazeera, BBC, CBC, CBS News, CNN (Apr 12 2026). Update: Euronews (May 29, Sep 29, Oct 12, Oct 26 2026), EUobserver (Oct 21 2026).</div>
                 <div class="report-links-grid">
                     <a href="https://freedomhouse.org/country/hungary" target="_blank" class="report-link">📑 Freedom House</a>
                     <a href="https://www.osce.org/odihr/elections" target="_blank" class="report-link">📑 OSCE/ODIHR</a>
@@ -861,7 +917,7 @@
                     <li><strong>EU Rule of Law Conflict:</strong> The European Commission launched Article 7 proceedings against Hungary in 2018 over rule-of-law concerns. Approximately €21.7 billion in EU cohesion funds were frozen as conditionality measures. Orbán repeatedly blocked EU consensus positions on Ukraine, migration, and enlargement.</li>
                     <li><strong>Russia Alignment:</strong> Orbán cultivated close ties with Vladimir Putin — maintaining energy dependence on Russia, blocking EU military support packages for Ukraine, and refusing to allow weapons transit through Hungarian territory. This made Hungary Putin's primary EU ally.</li>
                     <li><strong>Trump Alliance:</strong> Orbán became a model figure for the global far right and a close ally of Donald Trump. JD Vance visited Hungary days before the election to shore up support. Orbán hosted CPAC in Budapest and positioned Hungary as a laboratory for right-wing governance.</li>
-                    <li><strong>Frozen EU Funds:</strong> As of April 2026, approximately €21.7B in EU funds remained frozen over rule-of-law concerns. Magyar's election is expected to unlock these funds as Hungary re-engages with EU conditionality requirements.</li>
+                    <li><strong>Frozen EU Funds:</strong> As of April 2026, approximately €21.7B in EU funds remained frozen over rule-of-law concerns. (Update: on May 29 2026 the EU agreed to release EUR 16.4bn -- EUR 10bn immediately, the rest with reforms.) Magyar's election was expected to unlock these funds as Hungary re-engages with EU conditionality requirements.</li>
                 </ul>
                 <div class="kl-note">* Based on European Commission, Politico Europe, Carnegie Europe, and Freedom House reporting</div>
                 <div class="report-links-grid">
@@ -880,10 +936,10 @@
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="knowledge-content">
-                <p><strong>Magyar's election is expected to dramatically alter Hungary's relationship with the European Union</strong> — ending years of institutional conflict and unlocking significant frozen funding while requiring substantial democratic reform.</p>
+                <p><strong>Magyar's election has altered Hungary's relationship with the European Union</strong> (EUR 16.4bn unlocked May 29 2026; accession vetoes on Ukraine lifted June and October 2026) — ending years of institutional conflict and unlocking significant frozen funding while requiring substantial democratic reform.</p>
                 <ul>
                     <li><strong>Frozen Funds:</strong> Approximately €21.7 billion in EU cohesion and recovery funds were suspended over rule-of-law concerns. Magyar's government is expected to meet EU conditionality requirements — restoring judicial independence, media freedom, and anti-corruption mechanisms — unlocking the funds progressively.</li>
-                    <li><strong>Ukraine Aid Unblocked:</strong> Orbán repeatedly blocked or delayed EU military and financial support packages for Ukraine, and blocked a €90 billion EU loan to Ukraine. Magyar's government is expected to end Hungary's veto on Ukraine-related EU decisions — a significant shift in the EU's ability to act collectively.</li>
+                    <li><strong>Ukraine Aid Unblocked:</strong> Orbán repeatedly blocked or delayed EU military and financial support packages for Ukraine, and blocked a €90 billion EU loan to Ukraine. (Update: Budapest lifted its Ukraine accession vetoes in June and October 2026.) Magyar's government was expected to end Hungary's veto on Ukraine-related EU decisions — a significant shift in the EU's ability to act collectively.</li>
                     <li><strong>Article 7 Proceedings:</strong> The European Commission's rule-of-law proceedings against Hungary, suspended in a political compromise under Orbán, are expected to be formally closed as Magyar demonstrates credible reform commitments.</li>
                     <li><strong>Judicial Independence:</strong> Restoring the independence of Hungary's courts — packed with Fidesz loyalists — will be among Magyar's most complex reform challenges. Constitutional amendment (which his supermajority enables) will be required for some institutional changes.</li>
                     <li><strong>Media Landscape:</strong> The Fidesz-aligned media oligarchy controls a majority of Hungary's national media. Magyar faces the challenge of restoring public broadcasting independence without replicating state control under a different political banner.</li>
@@ -1140,10 +1196,10 @@ function displayArticles() {
         let ds = '';
         if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds = pub; } }
         return '<div class="article-item">' +
-            '<div class="article-title">' + title + '</div>' +
-            (desc ? '<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">' + desc.substring(0,180) + (desc.length>180?'...':'') + '</div>' : '') +
-            '<div class="article-meta">' + source + (ds ? ' \u00b7 ' + ds : '') + '</div>' +
-            (url !== '#' ? '<a href="' + url + '" target="_blank" class="article-link">Read article &rarr;</a>' : '') +
+            '<div class="article-title">' + esc(title) + '</div>' +
+            (desc ? '<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">' + esc(desc.substring(0,180)) + (desc.length>180?'...':'') + '</div>' : '') +
+            '<div class="article-meta">' + esc(source) + (ds ? ' \u00b7 ' + ds : '') + '</div>' +
+            (url !== '#' ? '<a href="' + safeUrl(url) + '" target="_blank" rel="noopener" class="article-link">Read article &rarr;</a>' : '') +
         '</div>';
     }).join('');
 }
@@ -1359,7 +1415,9 @@ function renderRhetoricBlufCard(summary) {
     card.style.setProperty('--rbluf-accent', color);
 
     const bandEl = document.getElementById('rblufBand');
-    if (bandEl) { bandEl.textContent = 'L' + lvl + ' \u00b7 ' + label; bandEl.style.color = color; }
+    // v1.1: lead with the plain-language posture, not the volume band
+    const PCOL = { holding: '#22c55e', tested: '#f59e0b', eroding: '#f97316' };
+    if (bandEl) { bandEl.textContent = (summary.posture_label || ('L' + lvl + ' \u00b7 ' + label)); bandEl.style.color = PCOL[summary.posture] || color; }
     const scoreEl = document.getElementById('rblufScore');
     if (scoreEl) scoreEl.textContent = 'pressure score ' + score + '/100';
 
@@ -1374,7 +1432,14 @@ function renderRhetoricBlufCard(summary) {
         scenEl.style.display = scen ? 'block' : 'none';
     }
     const proseEl = document.getElementById('rblufProse');
-    if (proseEl) proseEl.textContent = summary.so_what_situation || summary.so_what_assessment || 'No significant rhetoric signals in the current scan window.';
+    if (proseEl) {
+        // v1.1: the BLUF reads one topline sentence first, then the situation.
+        const top = summary.top_indicator || '';
+        const rest = summary.so_what_situation || summary.so_what_assessment || '';
+        proseEl.innerHTML = (top ? '<strong>' + _escRbluf(top) + '</strong>' : '') +
+            (rest ? (top ? '<br><span style="font-size:0.92em;">' : '<span>') + _escRbluf(rest) + '</span>' : '') ||
+            'No significant rhetoric signals in the current scan window.';
+    }
 
     const sigEl = document.getElementById('rblufSignals');
     if (sigEl) {
@@ -1386,7 +1451,7 @@ function renderRhetoricBlufCard(summary) {
             const tagColor = status === 'BREACHED' ? '#dc2626' : (status === 'APPROACHING' ? '#f59e0b' : '#3b82f6');
             const tag = status ? '<span class="sig-tag" style="background:' + tagColor + ';">' + status + '</span>' : '';
             return '<li><b>' + _escRbluf(name) + '</b>' + tag + (desc ? '<br><span style="color:var(--text-2);font-size:11.5px;">' + _escRbluf(desc) + '</span>' : '') + '</li>';
-        }).join('') : '<li>No triggered red-line signals in the current scan window.</li>';
+        }).join('') : '<li>No risk to the reversal is corroborated in the current scan window.</li>';
     }
 
     const watchEl = document.getElementById('rblufWatch');
@@ -1412,41 +1477,27 @@ function renderRhetoricBlufCard(summary) {
 
 function renderQuickGlance(summary) {
     if (!summary) return;
+    // v1.1 (Nov 3 2026): plain-language tiles read the interpreter's verdicts,
+    // not arithmetic on volume levels (the old "Axis Reversal Index" was
+    // government level minus Russia level, x20).
 
-    // ── Tile 1: Axis Reversal Index ──
-    // Composite: government_level - russia_axis_level (positive = reversal forming)
-    const govLevel = summary.hungary_government_level || 0;
-    const russiaLevel = summary.hungary_russia_axis_level || 0;
-    const axisDelta = govLevel - russiaLevel;
-    const axisScore = Math.min(Math.max(axisDelta * 20, 0), 100);
-    const axisLabel = summary.axis_reversal_active ? 'CONSOLIDATING' :
-                      (axisScore >= 40 ? 'FORMING' :
-                       axisScore >= 20 ? 'EARLY SIGNAL' : 'BASELINE');
-    const axisColor = summary.axis_reversal_active ? '#22c55e' :
-                      (axisScore >= 40 ? '#3b82f6' : '#64748b');
-    _setTile('axisReversal', axisScore.toFixed(0), axisLabel, axisColor);
+    // ── Tile 1: Is the reversal holding? ──
+    const P = { holding: ['HOLDING', '#22c55e', 85], tested: ['BEING TESTED', '#f59e0b', 55],
+                eroding: ['ERODING', '#f97316', 25], unread: ['UNREAD', '#64748b', 0] };
+    const pv = P[summary.posture || 'unread'] || P.unread;
+    _setTile('axisReversal', pv[0], summary.thin_read ? 'thin read -- quiet may be unread' : 'Turn from Moscow toward Brussels', pv[1]);
 
-    // ── Tile 2: Orban Revival Index ──
+    // ── Tile 2: Fidesz at home ──
     const oppLevel = summary.hungary_opposition_level || 0;
     const revivalActive = summary.orban_revival_signal || false;
-    const revivalScore = revivalActive ? Math.max(oppLevel * 20, 60) : oppLevel * 20;
-    const revivalLabel = revivalActive ? 'COMEBACK FORMING' :
-                          (oppLevel >= 3 ? 'OPPOSITION ACTIVE' :
-                           oppLevel >= 1 ? 'WATCHING' : 'QUIET');
-    const revivalColor = revivalActive ? '#f97316' :
-                         (oppLevel >= 3 ? '#f59e0b' : '#64748b');
-    _setTile('orbanRevival', revivalScore.toFixed(0), revivalLabel, revivalColor);
+    const revivalLabel = revivalActive ? 'COMEBACK FORMING' : (oppLevel >= 3 ? 'OPPOSITION LOUD' : oppLevel >= 1 ? 'OPPOSITION ROUTINE' : 'QUIET');
+    _setTile('orbanRevival', revivalLabel, 'Fidesz in Hungarian politics (L' + oppLevel + ')', revivalActive ? '#f97316' : (oppLevel >= 3 ? '#f59e0b' : '#64748b'));
 
-    // ── Tile 3: EU Integration Index ──
-    const euLevel = summary.hungary_eu_track_level || 0;
-    const euScore = euLevel * 20;
-    const euLabel = euLevel >= 4 ? 'ACTIVELY ALIGNING' :
-                    euLevel >= 2 ? 'NORMALIZING' :
-                    euLevel >= 1 ? 'TENTATIVE' : 'BASELINE';
-    const euColor = euLevel >= 4 ? '#22c55e' :
-                    euLevel >= 2 ? '#3b82f6' :
-                    euLevel >= 1 ? '#64748b' : '#6b7280';
-    _setTile('euIntegration', euScore.toFixed(0), euLabel, euColor);
+    // ── Tile 3: Orban abroad (the UN Secretary-General push) ──
+    const I = { nominated: ['NOMINATED', '#f59e0b'], floated: ['FLOATED', '#3b82f6'], signalled: ['SIGNALLED', '#64748b'], quiet: ['QUIET', '#64748b'] };
+    const iv = I[summary.international_status || 'quiet'] || I.quiet;
+    const acc = summary.accountability_status ? ('accountability drive: ' + summary.accountability_status) : 'UN Secretary-General push';
+    _setTile('euIntegration', iv[0], acc, iv[1]);
 
     // ── Tile 4: Druzhba Pipeline Status ──
     const druzhba = (summary.druzhba_pipeline_status || 'unknown').toUpperCase();
@@ -1642,6 +1693,71 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCommodityHungary();    // → full Cuba-pattern commodity card
     loadRhetoricActors();      // → rhetoric actors card (lower on page)
 });
+</script>
+<script>
+/* v1.1 (Nov 3 2026): TOP INDICATOR + Hungary Financial Pulse. Absence-honest. */
+(function () {
+    const base = 'https://asifa-europe-backend.onrender.com';
+    function spark(sp) {
+        if (!sp || sp.length < 2) return '';
+        const v = sp.map(p => (p && typeof p === 'object') ? p.value : p);
+        const mn = Math.min(...v), mx = Math.max(...v), rg = (mx - mn) || 1;
+        const pts = v.map((x, i) => (i / (v.length - 1) * 100).toFixed(1) + ',' + (100 - (x - mn) / rg * 100).toFixed(1)).join(' ');
+        return '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline fill="none" stroke="' + (v[v.length - 1] >= v[0] ? '#22c55e' : '#ef4444') + '" stroke-width="2" points="' + pts + '"/></svg>';
+    }
+    async function loadPulse() {
+        const grid = document.getElementById('pulseGrid'), pill = document.getElementById('pulseStatusPill'),
+              read = document.getElementById('pulseRead');
+        if (!grid) return null;
+        try {
+            const d = await (await fetch(base + '/api/europe/hungary/financial-pulse')).json();
+            const fp = d && d.financial_pulse;
+            if (!fp || !fp.tiles) throw new Error('no tiles');
+            const agg = fp.market_status || 'closed';
+            pill.className = 'nyse-status-pill market-' + agg;
+            pill.textContent = { open: 'Open', closed: 'Closed', partial: 'Partial' }[agg] || agg;
+            if (read) read.textContent = d.top_indicator || '';
+            grid.innerHTML = (fp.tile_order || Object.keys(fp.tiles)).map(k => {
+                const t = fp.tiles[k] || {};
+                const val = (t.value !== null && t.value !== undefined) ? Number(t.value).toLocaleString(undefined, { maximumFractionDigits: 2 }) : 'N/A';
+                const c = t.change_pct_24h;
+                let cls = c > 0.05 ? 'up' : (c < -0.05 ? 'down' : 'flat');
+                if (t.inverted && cls !== 'flat') cls = (cls === 'up') ? 'down' : 'up';   // EUR/HUF falling = stronger forint
+                const cs = (c !== null && c !== undefined && t.value !== null) ? ((c >= 0 ? '+' : '') + Number(c).toFixed(2) + '% 24h') : '--';
+                const m30 = (t.change_30d !== null && t.change_30d !== undefined) ? ' &middot; ' + (t.change_30d >= 0 ? '+' : '') + Number(t.change_30d).toFixed(1) + '% 30d' : '';
+                return '<div class="nyse-tile tile-' + esc(t.tier || 'stable') + '"><div class="nyse-tile-header"><span class="nyse-tile-name">' + esc(t.name || k) +
+                    '</span><span class="nyse-tile-ticker">' + esc(t.ticker || '') + '</span></div><div class="nyse-tile-value">' + esc(val) +
+                    '</div><div class="nyse-tile-change ' + cls + '">' + esc(cs) + m30 + '</div><div class="nyse-tile-spark">' + spark(t.sparkline) +
+                    '</div><div class="nyse-tile-meta">' + esc(t.note || '') + '</div></div>';
+            }).join('');
+            return d;
+        } catch (e) {
+            if (pill) { pill.className = 'nyse-status-pill market-closed'; pill.textContent = 'Unavailable'; }
+            grid.innerHTML = '<div class="nyse-empty-state">Market data unavailable this load -- unread, not calm.</div>';
+            return null;
+        }
+    }
+    async function loadTop(pulse) {
+        const t = document.getElementById('topIndicatorText'), rr = document.getElementById('topIndicatorRhet'),
+              m = document.getElementById('topIndicatorMeta'), box = document.getElementById('topIndicator');
+        if (!t) return;
+        let any = false, meta = [];
+        try {
+            const r = await (await fetch(base + '/api/rhetoric/hungary/summary')).json();
+            if (r && r.top_indicator) {
+                t.textContent = r.top_indicator; any = true;
+                if (r.thin_read) { box.classList.add('thin'); meta.push('<strong style="color:#f59e0b;">thin read</strong>'); }
+                if (r.scanned_at) meta.push('rhetoric scan ' + Math.max(0, Math.round((Date.now() - new Date(r.scanned_at)) / 3600000)) + 'h ago');
+                meta.push('<a href="rhetoric-hungary.html" style="color:inherit;">full tracker &rarr;</a>');
+            }
+        } catch (e) {}
+        if (pulse && pulse.top_indicator) { (any ? rr : t).textContent = (any ? 'Markets: ' : '') + pulse.top_indicator; any = true; }
+        if (!any) t.textContent = 'No top indicator published yet -- unread, not calm.';
+        m.innerHTML = meta.join(' &middot; ');
+    }
+    document.addEventListener('DOMContentLoaded', async () => { loadTop(await loadPulse()); });
+    if (document.readyState !== 'loading') { loadPulse().then(loadTop); }
+})();
 </script>
 </body>
 </html>

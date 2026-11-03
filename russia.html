@@ -701,6 +701,19 @@
     </style>
     <link rel="stylesheet" href="resources/asifah-standard-shell.css">
     <script src="resources/asifah-standard-shell.js" defer></script>
+<script>
+/* v1.3 (Nov 3 2026): feed titles / URLs are third-party text -- escape before innerHTML. */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--card-border,#1e3a5f);border-left:4px solid var(--accent,#38bdf8);background:var(--card-bg,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text-primary,var(--text,#e2e8f0));}
+.top-ind-r{font-size:13px;line-height:1.45;color:var(--text-secondary,#94a3b8);margin-top:6px;}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+</style>
 </head>
 <body>
 
@@ -830,6 +843,12 @@
 
 <!-- MAIN CONTENT -->
 <div style="flex:1; min-width:0;">
+<div class="top-ind" id="topIndicator">
+    <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+    <div class="top-ind-t" id="topIndicatorText">Reading the latest scan&hellip;</div>
+    <div class="top-ind-r" id="topIndicatorRhet"></div>
+    <div class="top-ind-m" id="topIndicatorMeta"></div>
+</div>
 
 
 <!-- WORLDWIDE CAUTION (canonical bright red) -->
@@ -878,7 +897,7 @@
         </div>
         <div style="border-left:1px solid rgba(56,189,248,0.2);padding-left:18px;">
             <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);font-family:'Courier New',monospace;margin-bottom:3px;" data-i18n="contextLabel">📡 STRATEGIC CONTEXT — RUSSIA</div>
-            <div style="font-size:0.85rem;color:var(--text-primary);font-weight:700;line-height:1.4;" data-i18n="contextHeadline">4th year of war in Ukraine · Mobilization pressure · Mounting Western sanctions · Elevated nuclear rhetoric · Arctic posture</div>
+            <div style="font-size:0.85rem;color:var(--text-primary);font-weight:700;line-height:1.4;" data-i18n="contextHeadline">5th year of war in Ukraine · Abu Dhabi talks round · Mobilization pressure · Mounting Western sanctions · Elevated nuclear rhetoric · Arctic posture</div>
             <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:3px;line-height:1.4;" data-i18n="contextSub">Composite stability index drawing on sanctions impact, military posture, internal cohesion, leadership signals, and global alignment. Updated every 12 hours · Open-source signals only.</div>
         </div>
     </div>
@@ -1033,14 +1052,14 @@
             </div>
             <div class="static-item">
                 <div class="static-label" data-i18n="econInflation">Inflation (CPI)</div>
-                <div class="static-value">~9–12%</div>
-                <div class="static-note" data-i18n="econInflationNote">Wartime distortion · Rosstat 2023 (state figures — actual likely higher)</div>
+                <div class="static-value">~6.8%</div>
+                <div class="static-note" data-i18n="econInflationNote">Annual, Oct 19 2026 · Bank of Russia estimate (official figures — wartime distortion)</div>
             </div>
             <div class="static-item">
                 <div class="static-label" data-i18n="econCBR">CBR Key Rate</div>
-                <div class="static-value">21%</div>
-                <div class="static-note" data-i18n="econCBRNote">Emergency rate to defend ruble</div>
-                <div class="static-source">Central Bank of Russia · cbr.ru · Oct 2024</div>
+                <div class="static-value">14%</div>
+                <div class="static-note" data-i18n="econCBRNote">Held Oct 23 2026 · down from the 21% emergency peak of late 2024</div>
+                <div class="static-source">Central Bank of Russia · cbr.ru · Oct 2026</div>
             </div>
             <div class="static-item">
                 <div class="static-label" data-i18n="econChina">China Trade Dependency</div>
@@ -1065,9 +1084,9 @@
         </div>
         <div class="war-card">
             <div class="war-label" data-i18n="warCasualties">Est. Casualties</div>
-            <div class="war-value amber">300,000+</div>
+            <div class="war-value amber">~1.5M</div>
             <div class="war-note" data-i18n="warCasualtiesNote">KIA + WIA since Feb 2022</div>
-            <div class="war-source">UK MoD / USG estimates</div>
+            <div class="war-source">UK Ministry of Defence · Sep 2026</div>
         </div>
         <div class="war-card">
             <div class="war-label" data-i18n="warICC">ICC Arrest Warrant</div>
@@ -1090,7 +1109,7 @@
         <div class="war-card">
             <div class="war-label" data-i18n="warDiplomatic">Diplomatic Track</div>
             <div class="war-value amber">LOW</div>
-            <div class="war-note" data-i18n="warDiplomaticNote">Easter ceasefire · No framework · Live signal</div>
+            <div class="war-note" data-i18n="warDiplomaticNote">Abu Dhabi trilateral round (Nov 2026) · Live signal</div>
             <div class="war-source">State Dept · OSCE · ISW</div>
         </div>
     </div>
@@ -1118,7 +1137,7 @@
         <div class="pressure-card">
             <div class="pressure-icon">✖️</div>
             <div class="pressure-label" data-i18n="pressCasualties">Military Casualties</div>
-            <div class="pressure-value">300,000+</div>
+            <div class="pressure-value">~1.5M</div>
             <div class="pressure-detail">
                 <div data-i18n="pressCasualtiesNote">Estimated Russian KIA + WIA since Feb 2022. Disproportionate losses among ethnic minority regions.</div>
                 <ul>
@@ -1252,7 +1271,7 @@
                 <ul>
                     <li><strong>Nuclear Arsenal:</strong> ~5,580 nuclear warheads — world's largest stockpile. Strategic triad: ICBMs (Topol-M, Yars), submarine-launched (Bulava on Borei-class SSBNs), and air-launched cruise missiles.</li>
                     <li><strong>Nuclear Doctrine (2024):</strong> Revised doctrine lowered threshold for nuclear use — aggression by a non-nuclear state supported by a nuclear power could trigger nuclear response. Analysts: deliberate ambiguity to deter Western involvement.</li>
-                    <li><strong>Ukraine Losses:</strong> 300,000+ casualties (KIA + WIA), thousands of tanks and armored vehicles. Pre-war force structure fundamentally degraded.</li>
+                    <li><strong>Ukraine Losses:</strong> ~1.5 million casualties (killed + wounded; UK MoD, Sep 2026), thousands of tanks and armored vehicles. Pre-war force structure fundamentally degraded.</li>
                     <li><strong>Mobilization:</strong> Sept 2022 partial mobilization: ~300,000 reservists. Now relies on high-salary contracts, prison recruitment, and foreign fighters (Nepal, Central Africa, DPRK).</li>
                     <li><strong>DPRK &amp; Iranian Support:</strong> North Korea: millions of artillery shells, reportedly deployed troops. Iran: Shahed-series drones. China: dual-use components confirmed (NYT, Apr 2026).</li>
                 </ul>
@@ -1793,10 +1812,10 @@ function renderArticleList(articles) {
         let ds = '';
         if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds=pub; } }
         return `<div class="article-item">
-            <div class="article-title">${title}</div>
-            ${desc?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${desc.substring(0,180)}${desc.length>180?'...':''}</div>`:''}
-            <div class="article-meta">${src}${ds?' · '+ds:''}</div>
-            ${url!=='#'?`<a href="${url}" target="_blank" rel="noopener" class="article-link">Read article →</a>`:''}
+            <div class="article-title">${esc(title)}</div>
+            ${desc?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${esc(desc.substring(0,180))}${desc.length>180?'...':''}</div>`:''}
+            <div class="article-meta">${esc(src)}${ds?' · '+ds:''}</div>
+            ${url!=='#'?`<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="article-link">Read article →</a>`:''}
         </div>`;
     }).join('');
 }
@@ -1926,9 +1945,9 @@ async function loadCommodity() {
     const topSignals = data.top_signals || [];
     if (topSignals.length > 0) {
         const items = topSignals.slice(0, 3).map(s => `
-            <a href="${s.article_url}" target="_blank" rel="noopener">
-                ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
-                <span class="ts-source">— ${s.source}</span>
+            <a href="${safeUrl(s.article_url)}" target="_blank" rel="noopener">
+                ${s.commodity_icon || '📰'} <strong>${esc(s.commodity_name)}:</strong> ${esc(s.article_title)}
+                <span class="ts-source">— ${esc(s.source)}</span>
             </a>
         `).join('');
         tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
@@ -2114,7 +2133,7 @@ const T = {
         step3:'Analyzing military posture & OSINT signals...', step4:'Rendering dashboard...',
         loadingProgress:'This may take 20–40 seconds...',
         stabScoreLabel:'STABILITY INDEX / 100', vectorsLabel:'PRESSURE VECTORS',
-        contextLabel:'📡 STRATEGIC CONTEXT — RUSSIA', contextHeadline:'4th year of war in Ukraine · Mobilization pressure · Mounting Western sanctions · Elevated nuclear rhetoric · Arctic posture', contextSub:'Composite stability index drawing on sanctions impact, military posture, internal cohesion, leadership signals, and global alignment. Updated every 12 hours · Open-source signals only.',
+        contextLabel:'📡 STRATEGIC CONTEXT — RUSSIA', contextHeadline:'5th year of war in Ukraine · Abu Dhabi talks round · Mobilization pressure · Mounting Western sanctions · Elevated nuclear rhetoric · Arctic posture', contextSub:'Composite stability index drawing on sanctions impact, military posture, internal cohesion, leadership signals, and global alignment. Updated every 12 hours · Open-source signals only.',
         cautionLabel:'U.S. STATE DEPARTMENT — WORLDWIDE CAUTION',
         cautionText:'U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in STEP.',
         viewCaution:'VIEW CAUTION →',
@@ -2132,7 +2151,7 @@ const T = {
         warICC:'ICC Arrest Warrant', warICCNote:'Putin + Lvova-Belova · March 2023',
         warAxis:'DPRK/Iran Supply', warAxisNote:'Cross-theater coordination · Live signal',
         warFront:'Active Front', warFrontNote:'Contact line · Zaporizhzhia to Kharkiv',
-        warDiplomatic:'Diplomatic Track', warDiplomaticNote:'Easter ceasefire · No framework · Live signal',
+        warDiplomatic:'Diplomatic Track', warDiplomaticNote:'Abu Dhabi trilateral round (Nov 2026) · Live signal',
         warSources:'Sources: ISW, UK MoD, ICC, Asifah cross-theater fingerprint · Data as of April 2026',
         pressureTitle:'INTERNAL PRESSURE MONITOR',
         pressProtests:'War Protests / Dissent', pressProtestsNote:'Detained in Feb–Mar 2022 anti-war protests. Organized opposition now almost entirely suppressed or in exile.',
@@ -2175,8 +2194,8 @@ const T = {
         econCap:'G7 Oil Price Cap', econCapNote:'Russia selling above cap via shadow fleet',
         econSWIFT:'SWIFT Status', econSWIFTNote:'Major banks disconnected Feb 2022',
         econBrainDrain:'Brain Drain', econBrainDrainNote:'Emigrated since Feb 2022 · disproportionately tech-skilled',
-        econInflation:'Inflation (CPI)', econInflationNote:'Wartime distortion · Rosstat 2023',
-        econCBR:'CBR Key Rate', econCBRNote:'Emergency rate to defend ruble',
+        econInflation:'Inflation (CPI)', econInflationNote:'Annual, Oct 19 2026 · Bank of Russia estimate (official figures — wartime distortion)',
+        econCBR:'CBR Key Rate', econCBRNote:'Held Oct 23 2026 · down from the 21% emergency peak of late 2024',
         econChina:'China Trade Dependency', econChinaNote:"Russia's primary trading partner, replacing Western goods",
         leadershipTitle:'KEY LEADERSHIP',
         mapTitle:'RUSSIA — STRATEGIC OVERVIEW',
@@ -2220,7 +2239,7 @@ const T = {
         step4:'Rendu du tableau de bord...',
         loadingProgress:'Cela peut prendre 20–40 secondes...',
         stabScoreLabel:'INDICE DE STABILITÉ / 100', vectorsLabel:'VECTEURS DE PRESSION',
-        contextLabel:'📡 CONTEXTE STRATÉGIQUE — RUSSIE', contextHeadline:'4e année de guerre en Ukraine · Pression de mobilisation · Sanctions occidentales croissantes · Rhétorique nucléaire élevée · Posture arctique', contextSub:'Indice composite basé sur l\'impact des sanctions, la posture militaire, la cohésion interne, les signaux de leadership et l\'alignement mondial. Mis à jour toutes les 12 heures · Sources ouvertes uniquement.',
+        contextLabel:'📡 CONTEXTE STRATÉGIQUE — RUSSIE', contextHeadline:'5e année de guerre en Ukraine · Pourparlers d\'Abou Dhabi · Pression de mobilisation · Sanctions occidentales croissantes · Rhétorique nucléaire élevée · Posture arctique', contextSub:'Indice composite basé sur l\'impact des sanctions, la posture militaire, la cohésion interne, les signaux de leadership et l\'alignement mondial. Mis à jour toutes les 12 heures · Sources ouvertes uniquement.',
         cautionLabel:'DÉPARTEMENT D\'ÉTAT — MISE EN GARDE MONDIALE',
         cautionText:'Les citoyens américains dans le monde entier doivent rester vigilants.',
         viewCaution:'VOIR LA MISE EN GARDE →',
@@ -2237,7 +2256,7 @@ const T = {
         warICC:'Mandat CPI', warICCNote:'Poutine + Lvova-Belova · mars 2023',
         warAxis:'Approvisionnement RPDC/Iran', warAxisNote:'Coordination interétatique · Signal direct',
         warFront:'Front actif', warFrontNote:'Ligne de contact · Zaporizhzhia à Kharkiv',
-        warDiplomatic:'Piste diplomatique', warDiplomaticNote:'Cessez-le-feu · Aucun cadre · Signal direct',
+        warDiplomatic:'Piste diplomatique', warDiplomaticNote:'Pourparlers trilatéraux d\'Abou Dhabi (nov. 2026) · Signal direct',
         warSources:'Sources: ISW, MoD britannique, CPI · Données d\'avril 2026',
         pressureTitle:'MONITEUR DE PRESSION INTERNE',
         econTitle:'INDICATEURS ÉCONOMIQUES — RUSSIE EN TEMPS DE GUERRE',
@@ -2285,7 +2304,7 @@ const T = {
         econSWIFT:'Statut SWIFT', econSWIFTNote:'Banques majeures déconnectées fév. 2022',
         econBrainDrain:'Fuite des cerveaux', econBrainDrainNote:'Émigrés depuis fév. 2022',
         econInflation:'Inflation (IPC)', econInflationNote:'Distorsion économique de guerre',
-        econCBR:'Taux directeur BCR', econCBRNote:'Taux d\'urgence pour défendre le rouble',
+        econCBR:'Taux directeur BCR', econCBRNote:'Maintenu le 23 oct. 2026 · en baisse depuis le pic d\'urgence de 21 % fin 2024',
         econChina:'Dépendance commerciale Chine', econChinaNote:'Principal partenaire commercial de la Russie',
     },
     ru: {
@@ -2299,7 +2318,7 @@ const T = {
         step4:'Рендеринг панели...',
         loadingProgress:'Это может занять 20–40 секунд...',
         stabScoreLabel:'ИНДЕКС СТАБИЛЬНОСТИ / 100', vectorsLabel:'ВЕКТОРЫ ДАВЛЕНИЯ',
-        contextLabel:'📡 СТРАТЕГИЧЕСКИЙ КОНТЕКСТ — РОССИЯ', contextHeadline:'4-й год войны на Украине · Давление мобилизации · Растущие западные санкции · Повышенная ядерная риторика · Арктическая позиция', contextSub:'Композитный индекс стабильности на основе воздействия санкций, военной позиции, внутренней сплочённости, сигналов руководства и глобального позиционирования. Обновляется каждые 12 часов · Только открытые источники.',
+        contextLabel:'📡 СТРАТЕГИЧЕСКИЙ КОНТЕКСТ — РОССИЯ', contextHeadline:'5-й год войны на Украине · Давление мобилизации · Растущие западные санкции · Повышенная ядерная риторика · Арктическая позиция', contextSub:'Композитный индекс стабильности на основе воздействия санкций, военной позиции, внутренней сплочённости, сигналов руководства и глобального позиционирования. Обновляется каждые 12 часов · Только открытые источники.',
         cautionLabel:'ГОСУДАРСТВЕННЫЙ ДЕПАРТАМЕНТ — МИРОВОЕ ПРЕДУПРЕЖДЕНИЕ',
         cautionText:'Гражданам США во всем мире следует сохранять бдительность.',
         viewCaution:'СМОТРЕТЬ →',
@@ -2317,7 +2336,7 @@ const T = {
         warICC:'Ордер МУС', warICCNote:'Путин + Львова-Белова · март 2023',
         warAxis:'Поставки КНДР/Ирана', warAxisNote:'Межтеатральная координация · Сигнал',
         warFront:'Активный фронт', warFrontNote:'Линия соприкосновения · Запорожье – Харьков',
-        warDiplomatic:'Дипломатический трек', warDiplomaticNote:'Пасхальное перемирие · Нет рамок',
+        warDiplomatic:'Дипломатический трек', warDiplomaticNote:'Трёхсторонний раунд в Абу-Даби (нояб. 2026)',
         warSources:'Источники: ISW, МО Великобритании, МУС · Данные на апрель 2026',
         pressureTitle:'МОНИТОР ВНУТРЕННЕГО ДАВЛЕНИЯ',
         econTitle:'ЭКОНОМИЧЕСКИЕ ПОКАЗАТЕЛИ — РОССИЯ В ВОЕННОЕ ВРЕМЯ',
@@ -2365,7 +2384,7 @@ const T = {
         econSWIFT:'Статус SWIFT', econSWIFTNote:'Крупные банки отключены фев. 2022',
         econBrainDrain:'Утечка мозгов', econBrainDrainNote:'Эмигрировали с фев. 2022',
         econInflation:'Инфляция (ИПЦ)', econInflationNote:'Военное искажение экономики',
-        econCBR:'Ключевая ставка ЦБ', econCBRNote:'Антикризисная ставка для защиты рубля',
+        econCBR:'Ключевая ставка ЦБ', econCBRNote:'Сохранена 23 окт. 2026 · ниже пика 21% конца 2024 г.',
         econChina:'Зависимость от торговли с Китаем', econChinaNote:'Основной торговый партнёр России',
     },
     de: {
@@ -2379,7 +2398,7 @@ const T = {
         step4:'Dashboard wird gerendert...',
         loadingProgress:'Dies kann 20–40 Sekunden dauern...',
         stabScoreLabel:'STABILITÄTSINDEX / 100', vectorsLabel:'DRUCKVEKTOREN',
-        contextLabel:'📡 STRATEGISCHER KONTEXT — RUSSLAND', contextHeadline:'4. Jahr des Ukraine-Kriegs · Mobilisierungsdruck · Zunehmende westliche Sanktionen · Erhöhte Nuklearrhetorik · Arktische Haltung', contextSub:'Kompositer Stabilitätsindex aus Sanktionswirkung, militärischer Haltung, innerer Kohäsion, Führungssignalen und globaler Ausrichtung. Alle 12 Stunden aktualisiert · Nur quelloffene Signale.',
+        contextLabel:'📡 STRATEGISCHER KONTEXT — RUSSLAND', contextHeadline:'5. Jahr des Ukraine-Kriegs · Mobilisierungsdruck · Zunehmende westliche Sanktionen · Erhöhte Nuklearrhetorik · Arktische Haltung', contextSub:'Kompositer Stabilitätsindex aus Sanktionswirkung, militärischer Haltung, innerer Kohäsion, Führungssignalen und globaler Ausrichtung. Alle 12 Stunden aktualisiert · Nur quelloffene Signale.',
         cautionLabel:'US-AUSSENMINISTERIUM — WELTWEITE WARNUNG',
         cautionText:'US-Bürger weltweit sollten wachsam bleiben.',
         viewCaution:'WARNUNG ANZEIGEN →',
@@ -2397,7 +2416,7 @@ const T = {
         warICC:'IStGH-Haftbefehl', warICCNote:'Putin + Lwowa-Belowa · März 2023',
         warAxis:'DVRK/Iran-Lieferungen', warAxisNote:'Theaterübergreifende Koordination',
         warFront:'Aktive Front', warFrontNote:'Kontaktlinie · Saporischschja bis Charkiw',
-        warDiplomatic:'Diplomatischer Track', warDiplomaticNote:'Osterfeuer · Kein Rahmen',
+        warDiplomatic:'Diplomatischer Track', warDiplomaticNote:'Dreiergespräche in Abu Dhabi (Nov. 2026)',
         warSources:'Quellen: ISW, UK MoD, IStGH · Daten vom April 2026',
         pressureTitle:'MONITOR FÜR INNEREN DRUCK',
         econTitle:'WIRTSCHAFTSINDIKATOREN — RUSSLAND IM KRIEG',
@@ -2445,7 +2464,7 @@ const T = {
         econSWIFT:'SWIFT-Status', econSWIFTNote:'Große Banken Feb. 2022 getrennt',
         econBrainDrain:'Abwanderung von Fachkräften', econBrainDrainNote:'Emigriert seit Feb. 2022',
         econInflation:'Inflation (VPI)', econInflationNote:'Verzerrung durch Kriegswirtschaft',
-        econCBR:'ZBR-Leitzins', econCBRNote:'Notfallzinssatz zur Rubelverteidigung',
+        econCBR:'ZBR-Leitzins', econCBRNote:'Am 23. Okt. 2026 gehalten · unter dem Notfallhoch von 21 % Ende 2024',
         econChina:'Handelsabhängigkeit China', econChinaNote:'Russlands wichtigster Handelspartner',
     },
 };
@@ -2470,6 +2489,30 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCommodity();
     loadStability();
 });
+</script>
+<script>
+/* TOP INDICATOR (v1.3, Nov 3 2026): the stability backend's plain-language line,
+   with the rhetoric tracker's line underneath. Absence-honest. */
+(async function () {
+    const t = document.getElementById('topIndicatorText'), rr = document.getElementById('topIndicatorRhet'),
+          m = document.getElementById('topIndicatorMeta'), box = document.getElementById('topIndicator');
+    if (!t) return;
+    const base = 'https://asifa-europe-backend.onrender.com';
+    let any = false, thin = false, meta = [];
+    try {
+        const d = await (await fetch(base + '/api/stability/russia/summary')).json();
+        if (d && d.top_indicator) { t.textContent = d.top_indicator; any = true; thin = thin || !!d.thin_read;
+            if (d.scanned_at) meta.push('stability scan ' + Math.max(0, Math.round((Date.now() - new Date(d.scanned_at)) / 3600000)) + 'h ago'); }
+    } catch (e) {}
+    try {
+        const r = await (await fetch(base + '/api/rhetoric/russia/summary')).json();
+        if (r && r.top_indicator) { (any ? rr : t).textContent = (any ? 'Rhetoric: ' : '') + r.top_indicator; thin = thin || !!r.thin_read; any = true;
+            meta.push('<a href="rhetoric-russia.html" style="color:inherit;">rhetoric tracker &rarr;</a>'); }
+    } catch (e) {}
+    if (!any) { t.textContent = 'No top indicator published yet -- unread, not calm.'; return; }
+    if (thin) { box.classList.add('thin'); meta.push('<strong style="color:#f59e0b;">thin read</strong>'); }
+    m.innerHTML = meta.join(' &middot; ');
+})();
 </script>
 </body>
 </html>
