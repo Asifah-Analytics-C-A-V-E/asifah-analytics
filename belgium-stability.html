@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Asifah Analytics — Belgium Stability Index v1.0.0 — June 2026 (Gold Standard, Russia baseline) -->
+<!-- Asifah Analytics — Belgium Stability Index v1.1.0 — Nov 3 2026 (TOP INDICATOR, dated facts card, escaping) -->
+<!-- v1.0.0 — June 2026 (Gold Standard, Russia baseline) -->
 <title>Belgium Stability Index | Asifah Analytics</title>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -702,6 +703,28 @@
         .key-row { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-2,#93c5fd); }
         .key-dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
     </style>
+<script>
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--border,#1e3a5f);border-left:4px solid #38bdf8;background:var(--card,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;font-family:'Courier New',monospace;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text,#e2e8f0);}
+.top-ind-r{font-size:13px;line-height:1.45;color:var(--text-2,#94a3b8);margin-top:6px;}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+.facts{list-style:none;margin:6px 0 0;padding:0;}
+.facts li{display:flex;gap:10px;font-size:12.5px;line-height:1.55;color:var(--text);padding:5px 0;border-bottom:1px dotted var(--border);}
+.facts li:last-child{border-bottom:none;}
+.facts .d{font-family:'Courier New',monospace;font-size:10.5px;color:var(--text-muted);flex:0 0 82px;padding-top:2px;}
+.sowhat{margin-top:10px;padding:10px 12px;border-left:3px solid #f59e0b;background:rgba(245,158,11,0.07);border-radius:6px;font-size:12.5px;line-height:1.55;color:var(--text);}
+.src-row a{word-break:break-word;}
+.live-ev{margin-top:10px;font-size:12px;color:var(--text-2);}
+.live-ev ul{margin:4px 0 0;padding-left:18px;}
+.live-ev li{margin:3px 0;overflow-wrap:anywhere;}
+.live-ev a{color:var(--text-2);}
+</style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
@@ -731,9 +754,9 @@
         <a href="europe.html" class="back-link">&#8592; Back to Europe</a>
     </div>
     <div class="header-center">
-        <div class="header-flag">&#127462;&#127473; BELGIUM</div>
+        <div class="header-flag">&#127463;&#127466; BELGIUM</div>
         <div class="header-title">BELGIUM STABILITY INDEX</div>
-        <div class="header-subtitle">Civil Unrest &middot; Governance Stress &middot; EU-Accession Risk &middot; Coastal-Development Conflict</div>
+        <div class="header-subtitle">EU &amp; NATO Seat &middot; Euroclear &amp; Frozen Russian Assets &middot; Antwerp Diamonds &middot; Federal Politics</div>
         <div class="header-ts">Last updated: <span id="lastUpdated">Loading...</span></div>
     </div>
     <div class="header-right">
@@ -824,6 +847,14 @@
 <!-- MAIN CONTENT -->
 <div style="flex:1; min-width:0;">
 
+<!-- TOP INDICATOR (v1.1.0) -- one plain-language line, built from the latest scan -->
+<div class="top-ind" id="topIndicator">
+    <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+    <div class="top-ind-t" id="topIndicatorText">Reading the latest Belgium scan&hellip;</div>
+    <div class="top-ind-r" id="topIndicatorWhy"></div>
+    <div class="top-ind-m" id="topIndicatorMeta"></div>
+</div>
+
 <!-- WORLDWIDE CAUTION (canonical bright red) -->
 <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);">
     <div style="font-size:24px;flex-shrink:0;">&#128680;</div>
@@ -854,7 +885,7 @@
         </div>
         <div style="border-left:1px solid rgba(56,189,248,0.2);padding-left:18px;">
             <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);font-family:'Courier New',monospace;margin-bottom:3px;">&#128225; PRESSURE INDEX &mdash; BELGIUM</div>
-            <div style="font-size:0.85rem;color:var(--text);font-weight:700;line-height:1.4;">EU and NATO institutional core (Brussels) &middot; stable federal governance &middot; Antwerp global diamond-trade hub &middot; low baseline pressure</div>
+            <div style="font-size:0.85rem;color:var(--text);font-weight:700;line-height:1.4;">EU and NATO institutional core (Brussels) &middot; stable federal governance &middot; Antwerp global diamond-trade hub &middot; Euroclear holds most of the frozen Russian central-bank assets &middot; low baseline pressure</div>
             <div style="font-size:0.72rem;color:var(--text-2);margin-top:3px;line-height:1.4;">Composite open-source pressure index. Lower = more stable, peaceful, prosperous; higher = greater pressure toward instability or crisis. Convergence framing, not prediction &middot; updated on scan.</div>
         </div>
     </div>
@@ -863,6 +894,24 @@
         <div id="vectorRows"></div>
         <div class="stab-scan-info" id="stabScanInfo" style="font-size:0.65rem;color:var(--text-muted);margin-top:8px;font-family:'Courier New',monospace;">Loading...</div>
     </div>
+</div>
+
+<!-- RUSSIA'S MONEY RUNS THROUGH BELGIUM (v1.1.0) -- the influence story -->
+<div class="card" id="euroclearCard">
+    <div class="card-title">&#127974; <span>Russia's Money Runs Through Belgium &mdash; The Euroclear File</span></div>
+    <p class="ctx-prose">Belgium's pressure score sits low, and that is honest: it is not a country at risk. Its weight is <strong>what passes through it</strong>. Most of the Russian central-bank money frozen in the EU sits at <strong>Euroclear</strong> in Brussels, and the world's biggest rough-diamond market sits in <strong>Antwerp</strong> &mdash; the two Russian revenue streams Europe has tried hardest to choke. That makes a mid-sized EU state the hinge of a Russia-pressure question.</p>
+    <ul class="facts">
+        <li><span class="d">Dec 2025</span><span>EU leaders chose a <strong>&euro;90bn joint-borrowing</strong> facility for Ukraine (2026&ndash;27) instead of a loan backed by the frozen assets, after Belgium refused to carry the legal risk alone.</span></li>
+        <li><span class="d">May 15 2026</span><span>A Moscow court ordered Euroclear to pay about <strong>18.17 trillion rubles</strong> (~$249bn). Nine investor notices of dispute have been filed against Belgium under investment treaties.</span></li>
+        <li><span class="d">Jun 30 2026</span><span>Euroclear filed its own suit in Brussels; proceedings are ongoing.</span></li>
+        <li><span class="d">Oct 15&ndash;16 2026</span><span>PM <strong>Bart De Wever</strong> kept his veto on using the ~<strong>&euro;185bn</strong> held at Euroclear: risks must be shared by all 27 states first, or &ldquo;Russian retaliation might only hit Belgium.&rdquo; Sweden, the Netherlands, Poland and Spain asked the Commission to revive the mechanism.</span></li>
+        <li><span class="d">Dec 2026</span><span>Next decision point: the <strong>December European Council</strong>. Ukraine's unfunded 2027 gap is put at about $78bn.</span></li>
+        <li><span class="d">Diamonds</span><span>Antwerp has run the first G7 Russian-diamond certification node since March 2024; since March 2025 EU imports need the exact mining country on the certificate. Full mine-to-market traceability was set for Jan 1 2026 after two delays &mdash; whether it is now fully enforced is a watch item we have not verified.</span></li>
+    </ul>
+    <div class="sowhat"><strong>So what:</strong> if the December summit moves on the assets, Belgium becomes the first target of Russian legal and hybrid retaliation &mdash; and this page's score should be expected to rise for reasons that have nothing to do with Belgian domestic stability. If it does not move, Ukraine's 2027 financing gap stays open. Either way, the decision runs through Brussels, not Kyiv.</div>
+    <div class="live-ev" id="euroclearLive"></div>
+    <div class="src-row">Sources: <a href="https://www.latintimes.com/belgium-blocks-eur185-billion-deal-ukraine-faces-78-billion-funding-cliff-next-year-600258" target="_blank" rel="noopener">Latin Times (Oct 16 2026)</a> &middot; <a href="https://nationaljeweler.com/articles/13682-eu-once-again-pushes-back-deadline-on-diamond-traceability" target="_blank" rel="noopener">National Jeweler</a> &middot; <a href="https://www.awdc.be/g7eu-sanctions-faq" target="_blank" rel="noopener">AWDC G7/EU FAQ</a>
+        <span style="display:block;margin-top:5px;font-style:italic;">Dated background as of Nov 3, 2026. The live line above reads this scan's headlines.</span></div>
 </div>
 
 <!-- ═══ COMMODITY EXPOSURE CARD — Gold Standard v1.0 ═══ -->
@@ -924,6 +973,10 @@
         <div style="font-weight:bold;color:var(--text);font-size:14px;margin-bottom:5px;">&#128142; Antwerp &amp; the Global Diamond Trade</div>
         <p class="ctx-prose">The Antwerp World Diamond Centre (AWDC) historically handles ~84% of the world's rough diamonds by value (~$50B annual trade) across four diamond exchanges, supporting ~30,000 Belgian jobs. Since March 2024, Belgium hosts the first operational G7 Russian-diamond sanctions-certification node, making Antwerp the enforcement chokepoint for the G7 diamond ban. Watch: AWDC trade statistics, Belgian customs seizures, G7 technical-team statements.</p>
     </div>
+    <div style="margin-bottom:14px;">
+        <div style="font-weight:bold;color:var(--text);font-size:14px;margin-bottom:5px;">&#127974; Euroclear &amp; the Frozen Russian Assets</div>
+        <p class="ctx-prose">Euroclear, the Brussels-based securities depository, holds the bulk of the Russian central-bank reserves immobilised in the EU since 2022 (~&euro;185bn of ~&euro;210bn). Windfall profits on those assets already fund Ukraine; using the principal is the fight. Belgium's position &mdash; risk shared by all 27 or no deal &mdash; has held through the October 2026 summit. See the Euroclear card above for the dated sequence.</p>
+    </div>
     <div>
         <div style="font-weight:bold;color:var(--text);font-size:14px;margin-bottom:5px;">&#127963;&#65039; Federal Politics, Security &amp; Energy</div>
         <p class="ctx-prose">Belgium's multi-party federal coalitions (Flanders / Wallonia / Brussels) are generally stable but slow to form. A general terrorism-vigilance posture persists across Western Europe. The Zeebrugge LNG terminal (Fluxys) and imec semiconductor R&amp;D (Leuven) are Belgium's outsized strategic assets &mdash; punching well above its economic weight.</p>
@@ -971,7 +1024,7 @@ let _step=0,_loadInt=null;
 function startLoading(){ const steps=['step1','step2','step3','step4']; _loadInt=setInterval(()=>{ if(_step<steps.length-1){ const c=document.getElementById(steps[_step]); if(c){c.classList.remove('active');c.classList.add('complete');c.querySelector('.step-icon').textContent='✓';} _step++; const n=document.getElementById(steps[_step]); if(n)n.classList.add('active'); } },2500); }
 function hideLoading(){ if(_loadInt)clearInterval(_loadInt); document.querySelectorAll('.loading-step').forEach(s=>{s.classList.remove('active');s.classList.add('complete');var i=s.querySelector('.step-icon');if(i)i.textContent='✓';}); setTimeout(()=>{const o=document.getElementById('loadingOverlay');if(o)o.classList.add('hidden');},500); }
 
-// ── MAP (simple, Tirana-centered) ──
+// ── MAP (simple, Brussels-centered) ──
 let countryMap=null;
 function cIcon(color,size){ return L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,.85);box-shadow:0 0 6px ${color}"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]}); }
 function initMap(){
@@ -1004,19 +1057,31 @@ async function loadPressure(){
         const sc=document.getElementById('stabScore'); sc.textContent=prob===null?'--':Math.round(prob); sc.style.color=band.color;
         const ll=document.getElementById('stabLabel'); ll.textContent=band.label; ll.style.background=band.color;
         const rows=[['Momentum',d.momentum||'unknown'],['Timeline',d.timeline||'Unknown'],['Confidence',d.confidence||'n/a'],['Articles',d.total_articles||0]];
-        document.getElementById('vectorRows').innerHTML=rows.map(x=>`<div style="display:flex;justify-content:space-between;gap:18px;font-size:0.72rem;color:var(--text-2);padding:2px 0;"><span style="color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-family:'Courier New',monospace;font-size:0.62rem;">${x[0]}</span><span style="font-weight:700;color:var(--text);">${x[1]}</span></div>`).join('');
+        document.getElementById('vectorRows').innerHTML=rows.map(x=>`<div style="display:flex;justify-content:space-between;gap:18px;font-size:0.72rem;color:var(--text-2);padding:2px 0;"><span style="color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-family:'Courier New',monospace;font-size:0.62rem;">${x[0]}</span><span style="font-weight:700;color:var(--text);">${esc(x[1])}</span></div>`).join('');
         document.getElementById('stabScanInfo').textContent = d.cached ? ('cached '+(d.cache_age_human||'')) : 'fresh scan';
         const arts=d.articles||d.top_scoring_articles||d.recent_headlines||[];
+        renderTopIndicator(prob, band, d, arts);
         const hc=document.getElementById('headlinesContainer');
         if(hc){
             if(arts.length){
-                hc.innerHTML=arts.slice(0,12).map(a=>{ const title=a.title||a.headline||a.text||'(untitled)'; const url=a.url||a.link||'#'; const src=(typeof a.source==='string')?a.source:((a.source&&a.source.name)||''); return `<a href="${url}" target="_blank" rel="noopener" class="article-link"><span class="article-title">${title}</span>${src?`<span class="article-source">${src}</span>`:''}</a>`; }).join('');
+                hc.innerHTML=arts.slice(0,12).map(a=>{ const title=a.title||a.headline||a.text||'(untitled)'; const url=a.url||a.link||'#'; const src=(typeof a.source==='string')?a.source:((a.source&&a.source.name)||''); return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="article-link"><span class="article-title">${esc(title)}</span>${src?`<span class="article-source">${esc(src)}</span>`:''}</a>`; }).join('');
             } else { hc.innerHTML='<div style="color:var(--text-muted);font-style:italic;padding:14px;">No headlines cached yet &mdash; run a scan from the Europe dashboard to populate.</div>'; }
         }
     }catch(e){
         console.warn('[Belgium] pressure fetch failed:',e.message);
+        renderTopIndicator(null, null, {}, [], true);
         document.getElementById('stabScanInfo').textContent='Pressure data unavailable — try a scan on the Europe dashboard.';
     }
+}
+
+function renderLiveEvidence(arts){
+    const el = document.getElementById('euroclearLive');
+    if (!el) return;
+    const words = ['euroclear','frozen','reparations','russian assets','central bank assets'];
+    const hits = (arts || []).filter(a => words.some(w => String(a.title||a.headline||'').toLowerCase().includes(w)));
+    if (!hits.length) { el.innerHTML = '<strong>In this scan:</strong> no Euroclear headline in the top results &mdash; unread this cycle, not settled.'; return; }
+    el.innerHTML = `<strong>In this scan:</strong> ${hits.length} headline${hits.length===1?'':'s'} on the Euroclear file<ul>` +
+        hits.slice(0,3).map(a => `<li><a href="${safeUrl(a.url||a.link)}" target="_blank" rel="noopener">${esc(String(a.title||a.headline||'').slice(0,120))}</a></li>`).join('') + '</ul>';
 }
 
 async function loadCommodity() {
@@ -1134,6 +1199,38 @@ async function loadCommodity() {
     }
     const cacheEl = document.getElementById('commodityCacheNote');
     if (cacheEl) cacheEl.textContent = cacheText;
+}
+
+const THEMES = [
+    {k:'euroclear', words:['euroclear','frozen','reparations','central bank assets','de wever','russian assets'], say:'the frozen Russian assets at Euroclear'},
+    {k:'diamonds', words:['diamond','antwerp','awdc','kimberley','g7 node'], say:'Antwerp and the diamond sanctions'},
+    {k:'politics', words:['government','coalition','strike','budget','protest','union','de wever'], say:'federal politics and strikes'},
+    {k:'security', words:['terror','security alert','shooting','drone','threat level','ocam'], say:'domestic security'},
+];
+function themeCounts(arts){
+    const txt = a => String((a.title||a.headline||a.text||'') + ' ' + (a.description||'')).toLowerCase();
+    return THEMES.map(t => ({...t, n: arts.filter(a => t.words.some(w => txt(a).includes(w))).length}))
+                 .sort((x, y) => y.n - x.n);
+}
+function renderTopIndicator(prob, band, d, arts, failed){
+    const box = document.getElementById('topIndicator');
+    const t = document.getElementById('topIndicatorText'), w = document.getElementById('topIndicatorWhy'), m = document.getElementById('topIndicatorMeta');
+    if (failed || prob === null) {
+        t.textContent = failed ? 'The Belgium scan did not answer this visit — the score below is unread, not calm.'
+                               : 'No Belgium scan is cached yet — the page is unread, not calm. The background refresh fills it.';
+        box.classList.add('thin'); return;
+    }
+    const n = d.total_articles || arts.length || 0;
+    const tc = themeCounts(arts);
+    const lead = tc[0] && tc[0].n ? tc[0] : null;
+    t.textContent = `Belgium reads ${band.label} (${Math.round(prob)}/100)` + (lead
+        ? ` — and the story moving it is ${lead.say} (${lead.n} of ${arts.length} top headlines).`
+        : ' — with no single story leading the headlines.');
+    w.textContent = lead && lead.k === 'euroclear' ? 'One country holds most of the Russian central-bank money frozen in the EU — and its prime minister\'s veto is the hinge on Ukraine\'s 2027 funding.' : 'Belgium\'s score runs low by design; its weight is in what passes through it — Russian state money at Euroclear and Russian stones at Antwerp.';
+    m.textContent = `${n} articles · momentum ${d.momentum || 'unknown'}` + (d.cache_age_human ? ` · ${d.cache_age_human}` : '');
+    box.classList.toggle('thin', n < 10);
+    if (n < 10) t.textContent = 'Thin read — ' + t.textContent;
+    if (typeof renderLiveEvidence === 'function') renderLiveEvidence(arts);
 }
 
 document.addEventListener('DOMContentLoaded',()=>{

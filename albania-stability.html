@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Asifah Analytics — Albania Stability Index v1.0.0 — June 2026 (Gold Standard, Russia baseline) -->
+<!-- Asifah Analytics — Albania Stability Index v1.1.0 — Nov 3 2026 (TOP INDICATOR, dated facts card, escaping) -->
+<!-- v1.0.0 — June 2026 (Gold Standard, Russia baseline) -->
 <title>Albania Stability Index | Asifah Analytics</title>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -702,6 +703,28 @@
         .key-row { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-2,#93c5fd); }
         .key-dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
     </style>
+<script>
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--border,#1e3a5f);border-left:4px solid #38bdf8;background:var(--card,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;font-family:'Courier New',monospace;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text,#e2e8f0);}
+.top-ind-r{font-size:13px;line-height:1.45;color:var(--text-2,#94a3b8);margin-top:6px;}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+.facts{list-style:none;margin:6px 0 0;padding:0;}
+.facts li{display:flex;gap:10px;font-size:12.5px;line-height:1.55;color:var(--text);padding:5px 0;border-bottom:1px dotted var(--border);}
+.facts li:last-child{border-bottom:none;}
+.facts .d{font-family:'Courier New',monospace;font-size:10.5px;color:var(--text-muted);flex:0 0 82px;padding-top:2px;}
+.sowhat{margin-top:10px;padding:10px 12px;border-left:3px solid #f59e0b;background:rgba(245,158,11,0.07);border-radius:6px;font-size:12.5px;line-height:1.55;color:var(--text);}
+.src-row a{word-break:break-word;}
+.live-ev{margin-top:10px;font-size:12px;color:var(--text-2);}
+.live-ev ul{margin:4px 0 0;padding-left:18px;}
+.live-ev li{margin:3px 0;overflow-wrap:anywhere;}
+.live-ev a{color:var(--text-2);}
+</style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
@@ -824,6 +847,14 @@
 <!-- MAIN CONTENT -->
 <div style="flex:1; min-width:0;">
 
+<!-- TOP INDICATOR (v1.1.0) -- one plain-language line, built from the latest scan -->
+<div class="top-ind" id="topIndicator">
+    <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+    <div class="top-ind-t" id="topIndicatorText">Reading the latest Albania scan&hellip;</div>
+    <div class="top-ind-r" id="topIndicatorWhy"></div>
+    <div class="top-ind-m" id="topIndicatorMeta"></div>
+</div>
+
 <!-- WORLDWIDE CAUTION (canonical bright red) -->
 <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);">
     <div style="font-size:24px;flex-shrink:0;">&#128680;</div>
@@ -854,7 +885,7 @@
         </div>
         <div style="border-left:1px solid rgba(56,189,248,0.2);padding-left:18px;">
             <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);font-family:'Courier New',monospace;margin-bottom:3px;">&#128225; PRESSURE INDEX &mdash; ALBANIA</div>
-            <div style="font-size:0.85rem;color:var(--text);font-weight:700;line-height:1.4;">"Flamingo Revolution" protests over a Kushner-linked coastal resort &middot; calls for PM Rama to resign &middot; EU-accession risk &middot; riot-police clashes in Tirana and Vlora</div>
+            <div style="font-size:0.85rem;color:var(--text);font-weight:700;line-height:1.4;">"Flamingo Revolution" protests over a Kushner-linked coastal resort &middot; student-led wave since October &middot; calls for PM Rama to resign &middot; EU-accession risk (4 of 33 chapters closed) &middot; riot-police clashes in Tirana and Vlora</div>
             <div style="font-size:0.72rem;color:var(--text-2);margin-top:3px;line-height:1.4;">Composite open-source pressure index. Lower = more stable, peaceful, prosperous; higher = greater pressure toward instability or crisis. Convergence framing, not prediction &middot; updated on scan.</div>
         </div>
     </div>
@@ -877,8 +908,22 @@
         <a href="https://www.reuters.com/world/albania-is-not-sale-protesters-say-over-kushner-linked-luxury-resort-near-2026-06-05/" target="_blank" rel="noopener">Reuters</a>
         <a href="https://www.dw.com/en/jared-kushner-trump-albania-luxury-resort-protests/a-77409540" target="_blank" rel="noopener">DW</a>
         <a href="https://www.politico.eu/article/eu-warns-albania-membership-bid-jared-kushner-project-protests/" target="_blank" rel="noopener">POLITICO</a>
-        <span style="display:block;margin-top:5px;font-style:italic;">Context as of June 2026. Static reference &mdash; live signal flow appears in the pressure index above and headlines below.</span>
+        <span style="display:block;margin-top:5px;font-style:italic;">Context as of June 2026 &mdash; see &ldquo;What Has Changed Since June&rdquo; below for the autumn. Static reference; the live read is the top indicator and headlines.</span>
     </div>
+</div>
+
+<!-- WHAT HAS CHANGED (v1.1.0) -- dated background -->
+<div class="card" id="albaniaFacts">
+    <div class="card-title">&#128204; <span>What Has Changed Since June &mdash; Background as of Nov 3, 2026</span></div>
+    <ul class="facts">
+        <li><span class="d">Apr 23 2026</span><span>Italy's migrant centres in Albania got a legal lifeline: an EU Court of Justice adviser called the deal compatible with EU law in principle. The court's ruling is still pending.</span></li>
+        <li><span class="d">May&ndash;Jun 2026</span><span>Protests start over the <strong>Kushner-linked resort</strong> on Sazan Island and the protected Zvërnec / Vjosa-Narta coast; thousands march in Tirana under &ldquo;Albania is not for sale.&rdquo;</span></li>
+        <li><span class="d">Jul 14 2026</span><span>Albania closes its <strong>first three EU accession chapters</strong>.</span></li>
+        <li><span class="d">Oct 13 2026</span><span>A fourth chapter closes; <strong>29 of 33 remain open</strong>, including the rule-of-law chapters (23 and 24). Tirana's target is to finish talks by end-2027.</span></li>
+        <li><span class="d">Oct 2026</span><span>A <strong>student-led wave</strong> joins the movement (tuition, jobs, corruption); demands now include PM <strong>Edi Rama</strong>'s resignation. Police have used tear gas and water cannon; an organiser puts arrests above 500 (not independently verified). Rama, in office 13 years with a majority, refuses to resign and warns the unrest could hurt the EU bid. Next scheduled election: 2029.</span></li>
+    </ul>
+    <div class="sowhat"><strong>So what:</strong> the outside influence in Albania is not Russian or Chinese &mdash; it is <strong>American private capital with a political name attached</strong>, fast-tracked by a government whose EU timeline depends on rule-of-law reforms. The resort, the protests and the accession chapters are one story: if the street keeps growing, Brussels' rule-of-law chapters become the pressure point, and the 2027 target is the first casualty.</div>
+    <div class="src-row">Sources: <a href="https://www.aljazeera.com/news/2026/6/4/thousands-protest-kushner-linked-coastal-resort-project-in-albania" target="_blank" rel="noopener">Al Jazeera</a> &middot; <a href="https://europeanwesternbalkans.com/2026/07/15/albania-closes-its-first-three-negotiating-chapters" target="_blank" rel="noopener">European Western Balkans</a> &middot; <a href="https://brusselssignal.eu/2026/10/albania-closes-its-fourth-eu-accession-chapter-with-29-left-to-go/" target="_blank" rel="noopener">Brussels Signal</a> &middot; <a href="https://www.democracynow.org/2026/10/21/albania_protests_edi_rama" target="_blank" rel="noopener">Democracy Now! (Oct 21)</a> &middot; <a href="https://www.thestar.com.my/news/world/2026/04/23/italy039s-contested-deal-to-send-migrants-to-albania-gets-legal-lifeline" target="_blank" rel="noopener">Reuters via The Star</a></div>
 </div>
 
 <!-- MAP -->
@@ -1004,19 +1049,53 @@ async function loadPressure(){
         const sc=document.getElementById('stabScore'); sc.textContent=prob===null?'--':Math.round(prob); sc.style.color=band.color;
         const ll=document.getElementById('stabLabel'); ll.textContent=band.label; ll.style.background=band.color;
         const rows=[['Momentum',d.momentum||'unknown'],['Timeline',d.timeline||'Unknown'],['Confidence',d.confidence||'n/a'],['Articles',d.total_articles||0]];
-        document.getElementById('vectorRows').innerHTML=rows.map(x=>`<div style="display:flex;justify-content:space-between;gap:18px;font-size:0.72rem;color:var(--text-2);padding:2px 0;"><span style="color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-family:'Courier New',monospace;font-size:0.62rem;">${x[0]}</span><span style="font-weight:700;color:var(--text);">${x[1]}</span></div>`).join('');
+        document.getElementById('vectorRows').innerHTML=rows.map(x=>`<div style="display:flex;justify-content:space-between;gap:18px;font-size:0.72rem;color:var(--text-2);padding:2px 0;"><span style="color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-family:'Courier New',monospace;font-size:0.62rem;">${x[0]}</span><span style="font-weight:700;color:var(--text);">${esc(x[1])}</span></div>`).join('');
         document.getElementById('stabScanInfo').textContent = d.cached ? ('cached '+(d.cache_age_human||'')) : 'fresh scan';
         const arts=d.articles||d.top_scoring_articles||d.recent_headlines||[];
+        renderTopIndicator(prob, band, d, arts);
         const hc=document.getElementById('headlinesContainer');
         if(hc){
             if(arts.length){
-                hc.innerHTML=arts.slice(0,12).map(a=>{ const title=a.title||a.headline||a.text||'(untitled)'; const url=a.url||a.link||'#'; const src=(typeof a.source==='string')?a.source:((a.source&&a.source.name)||''); return `<a href="${url}" target="_blank" rel="noopener" class="article-link"><span class="article-title">${title}</span>${src?`<span class="article-source">${src}</span>`:''}</a>`; }).join('');
+                hc.innerHTML=arts.slice(0,12).map(a=>{ const title=a.title||a.headline||a.text||'(untitled)'; const url=a.url||a.link||'#'; const src=(typeof a.source==='string')?a.source:((a.source&&a.source.name)||''); return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="article-link"><span class="article-title">${esc(title)}</span>${src?`<span class="article-source">${esc(src)}</span>`:''}</a>`; }).join('');
             } else { hc.innerHTML='<div style="color:var(--text-muted);font-style:italic;padding:14px;">No headlines cached yet &mdash; run a scan from the Europe dashboard to populate.</div>'; }
         }
     }catch(e){
         console.warn('[Albania] pressure fetch failed:',e.message);
+        renderTopIndicator(null, null, {}, [], true);
         document.getElementById('stabScanInfo').textContent='Pressure data unavailable — try a scan on the Europe dashboard.';
     }
+}
+
+const THEMES = [
+    {k:'protests', words:['protest','student','rally','demonstrat','tear gas','police','clash','resign','flamingo','riot'], say:'the anti-government protests'},
+    {k:'resort', words:['kushner','sazan','zvernec','zvërnec','vjosa','narta','resort','affinity'], say:'the Kushner-linked resort'},
+    {k:'eu', words:['accession','chapter','eu membership','brussels','kos','enlargement'], say:'the EU accession track'},
+    {k:'migrants', words:['gjader','gjadër','shengjin','shëngjin','migrant','italy','meloni','asylum'], say:'the Italy migrant centres'},
+];
+function themeCounts(arts){
+    const txt = a => String((a.title||a.headline||a.text||'') + ' ' + (a.description||'')).toLowerCase();
+    return THEMES.map(t => ({...t, n: arts.filter(a => t.words.some(w => txt(a).includes(w))).length}))
+                 .sort((x, y) => y.n - x.n);
+}
+function renderTopIndicator(prob, band, d, arts, failed){
+    const box = document.getElementById('topIndicator');
+    const t = document.getElementById('topIndicatorText'), w = document.getElementById('topIndicatorWhy'), m = document.getElementById('topIndicatorMeta');
+    if (failed || prob === null) {
+        t.textContent = failed ? 'The Albania scan did not answer this visit — the score below is unread, not calm.'
+                               : 'No Albania scan is cached yet — the page is unread, not calm. The background refresh fills it.';
+        box.classList.add('thin'); return;
+    }
+    const n = d.total_articles || arts.length || 0;
+    const tc = themeCounts(arts);
+    const lead = tc[0] && tc[0].n ? tc[0] : null;
+    t.textContent = `Albania reads ${band.label} (${Math.round(prob)}/100)` + (lead
+        ? ` — and the story moving it is ${lead.say} (${lead.n} of ${arts.length} top headlines).`
+        : ' — with no single story leading the headlines.');
+    w.textContent = lead && lead.k === 'resort' ? 'The resort is where US-linked capital, the Rama government and the street meet — the influence story on this page.' : (lead && lead.k === 'protests' ? 'Protests that began over a coastal resort in May 2026 have become a broader anti-government movement; the next scheduled election is 2029.' : 'Background: protests since May 2026, 4 of 33 EU chapters closed, Italy\'s centres awaiting an EU court ruling.');
+    m.textContent = `${n} articles · momentum ${d.momentum || 'unknown'}` + (d.cache_age_human ? ` · ${d.cache_age_human}` : '');
+    box.classList.toggle('thin', n < 10);
+    if (n < 10) t.textContent = 'Thin read — ' + t.textContent;
+    if (typeof renderLiveEvidence === 'function') renderLiveEvidence(arts);
 }
 
 document.addEventListener('DOMContentLoaded',()=>{

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Turkey Stability Monitor v1.0.0 (cloned from ukraine.html canonical exemplar, Jun 10 2026) -->
+<!-- Asifah Analytics - Turkey Stability Monitor v1.1.0 (Nov 3 2026: TOP INDICATOR, hub wheel, latest-facts card, news from the tracker, escaping) -->
+<!-- v1.0.0 (cloned from ukraine.html canonical exemplar, Jun 10 2026) -->
 <html lang="en">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
@@ -187,6 +188,30 @@
     </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
+<script>
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--card-border,#1e3a5f);border-left:4px solid var(--accent,#38bdf8);background:var(--card-bg,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text-primary,var(--text,#e2e8f0));}
+.top-ind-r{font-size:13px;line-height:1.45;color:var(--text-secondary,#94a3b8);margin-top:6px;}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+.facts-card{border:1px solid var(--card-border);border-radius:12px;padding:16px 18px;margin-bottom:15px;background:var(--card-bg);}
+.facts-card h3{margin:0 0 10px;font-size:11px;letter-spacing:1.5px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;}
+.facts-card ul{margin:0;padding-left:18px;}
+.facts-card li{font-size:12.5px;line-height:1.55;color:var(--text-primary);margin:4px 0;}
+.facts-card .src{font-size:10.5px;color:var(--text-muted);margin-top:8px;line-height:1.6;word-break:break-word;}
+.facts-card .src a{color:var(--text-muted);}
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px;}
+.hub-node{border:1px solid var(--card-border);border-radius:8px;padding:7px 9px;min-width:0;}
+.hub-node.lit{border-color:#f59e0b;}
+.hub-node.dim{opacity:.55;}
+.hub-node b{font-size:12px;color:var(--text-primary);}
+.hub-node span{display:block;font-size:10px;color:var(--text-muted);margin-top:2px;overflow-wrap:anywhere;}
+</style>
 </head>
 <body>
     <div class="loading-overlay" id="loadingOverlay">
@@ -264,6 +289,14 @@
         <!-- MAIN CONTENT -->
         <div class="main-content">
 
+        <!-- TOP INDICATOR (v1.1.0) -- the one plain-language line, from the Turkey tracker -->
+        <div class="top-ind" id="topIndicator">
+            <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+            <div class="top-ind-t" id="topIndicatorText">Reading the latest Turkey scan&hellip;</div>
+            <div class="top-ind-r" id="topIndicatorHub"></div>
+            <div class="top-ind-m" id="topIndicatorMeta"></div>
+        </div>
+
         <!-- WORLDWIDE CAUTION -->
         <div class="travel-alert" style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,.3);">
             <div style="font-size:24px;flex-shrink:0;">🚨</div>
@@ -317,9 +350,31 @@
             <div style="margin-top:7px;font-size:9.5px;color:var(--text-muted);text-align:center;font-style:italic;" data-i18n="soWhatDisclaimer">Convergence indicator, not a prediction — the reader completes the inference.</div>
         </div>
 
-        <!-- TRACKER IN-DEV STRIP (auto-hides when tracker ships) -->
+        <!-- TRACKER STATUS STRIP (hides once the tracker answers) -->
         <div id="turkeyTrackerInDev" style="border:1px dashed var(--card-border);border-radius:10px;padding:12px 16px;margin-bottom:15px;font-size:12px;color:var(--text-muted);">
-            📡 <strong style="color:var(--text-secondary);">Turkey Alignment Tracker — in development.</strong> The platform's first swing-state tracker: NATO-anchor vs strategic-autonomy indices, plus Levant expansion vectors (Syria lead indicator, Lebanon playbook ladder). This card auto-activates on deploy — no page changes needed.
+            📡 <strong style="color:var(--text-secondary);">Turkey Alignment Tracker — loading.</strong> If this note stays, the tracker did not answer this visit: the cards below are unread, not calm.
+        </div>
+
+        <!-- TURKEY'S WHEEL (v1.1.0) -- the hub read: who is reacting, where Ankara is pushing in -->
+        <div class="rhetoric-card" id="turkeyHubCard" style="display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#f59e0b;margin-bottom:8px;">☸️ TURKEY'S WHEEL — WHAT ITS SPOKES ARE REPORTING <span id="hubPill" style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:10px;background:#38bdf8;color:white;margin-left:6px;">--</span></div>
+            <div id="hubHeadline" style="font-size:13px;font-weight:700;color:var(--text-primary);line-height:1.5;"></div>
+            <div id="hubGrid" class="hub-grid"></div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:8px;line-height:1.5;">Turkey is a hub: Greece, Cyprus, Azerbaijan, Armenia and Kazakhstan react to it; Libya, Syria, Iraq and Lebanon are theatres it pushes into. Each country's own tracker writes its read to the shared wheel. Grey = not reporting: unread, not calm. <a href="rhetoric-turkey.html#hubWheel" style="color:#f59e0b;">Full wheel →</a></div>
+        </div>
+
+        <!-- LATEST FACTS (v1.1.0) -- dated background, not this scan -->
+        <div class="facts-card" id="turkeyFacts">
+            <h3>📌 What has changed since June — background as of Nov 3, 2026</h3>
+            <ul>
+                <li><strong>The opposition split.</strong> On May 21, 2026 an Ankara court annulled the CHP's 2023 congress, removed leader Özgür Özel and installed Kemal Kılıçdaroğlu. Özel left and founded a new party on July 24 (91 of 600 seats). Ekrem İmamoğlu, jailed since March 2025, backs it.</li>
+                <li><strong>İmamoğlu's cases.</strong> The main corruption trial has run since March 2026. On Sept 11 he was sentenced to two years (with a possible political ban) in an insult case — not final until upheld on appeal.</li>
+                <li><strong>The PKK process became law.</strong> On Aug 10, 2026 parliament passed the framework law for the PKK's dissolution (468 votes; AKP, MHP and DEM). Öcalan's status and wider Kurdish rights remain open.</li>
+                <li><strong>NATO came to Ankara.</strong> At the July 7–8 summit, Washington signalled it would work toward lifting CAATSA sanctions and reopening F-35 talks (nothing signed). Turkey announced about $24bn for its "Steel Dome" air defence and signed a defence partnership with the UK.</li>
+                <li><strong>Turkey and Israel in Syria.</strong> On Aug 18 Israel struck the runway at Abu al-Duhur airfield (Idlib) over reports that Turkey would use it. Ankara was not warned. The US says it is building a stronger deconfliction mechanism.</li>
+                <li><strong>Money.</strong> The central bank cut its policy rate to 36% on Oct 22, 2026; annual inflation was 29.73% in September. The May court ruling had briefly triggered a market-wide circuit breaker on Borsa Istanbul.</li>
+            </ul>
+            <div class="src">Sources: <a href="https://www.aljazeera.com/news/2026/5/22/turkish-court-ousts-leader-of-main-opposition-party" target="_blank" rel="noopener">Al Jazeera</a> · <a href="https://en.wikipedia.org/wiki/New_Party_(Turkey,_2026)" target="_blank" rel="noopener">Wikipedia (new party)</a> · <a href="https://www.turkishminute.com/2026/09/11/jailed-istanbul-mayor-imamoglu-sentenced-to-2-years-in-insult-case/" target="_blank" rel="noopener">Turkish Minute</a> · <a href="https://www.al-monitor.com/originals/2026/08/turkish-parliament-passes-landmark-law-advance-pkk-peace-process" target="_blank" rel="noopener">Al-Monitor / Reuters</a> · <a href="https://trtworld.com/article/9ba215822ad3" target="_blank" rel="noopener">TRT World</a> · <a href="https://www.thenationalnews.com/news/mena/2026/08/19/us-working-on-deconfliction-mechanism-between-turkey-syria-and-israel-says-barrack/" target="_blank" rel="noopener">The National</a> · <a href="https://english.news.cn/europe/20261022/40972187e6e74bcd9b7a89836875368c/c.html" target="_blank" rel="noopener">Xinhua</a>. Static background — the live read is the top indicator and the tracker cards.</div>
         </div>
 
         <!-- TURKEY ALIGNMENT TRACKER DETAIL CARD (canonical Russia pattern) -->
@@ -533,6 +588,7 @@
                         <ul>
                             <li><strong>The Dual-Track Method:</strong> Armed Ukraine while expanding Russia trade; leveraged Sweden's NATO accession for F-16 progress; enforces Montreux warship limits while hosting TurkStream. The pattern is maximizing both tracks, never choosing.</li>
                             <li><strong>The Analytical Signal:</strong> Because the baseline is "high on both," the tracker watches for <em>decoupling</em> — strategic-autonomy signals rising while Alliance cooperation falls. Membership in either camp is not the question; divergence between the two indices is.</li>
+                            <li><strong>Ankara Summit (Jul 7–8, 2026):</strong> Turkey hosted NATO. The US signalled work toward lifting CAATSA sanctions and reopening F-35 talks (no agreement signed); Ankara announced ~$24bn for its Steel Dome air-defence system. The anchor track is the strongest it has been since the S-400 purchase — which makes any autonomy surge more, not less, informative.</li>
                             <li><strong>Iran War Posture (2026):</strong> Analysts assess Erdogan has avoided entanglement in the Iran-US war largely for electoral reasons — while Iranian missiles striking a Turkish airbase in March 2026 tested that caution.</li>
                             <li><strong>Leverage Instruments:</strong> Straits closure authority (Montreux), migration gatekeeping toward Europe, Incirlik basing rights, and a defense industry (Bayraktar) that buys influence across three continents.</li>
                         </ul>
@@ -566,6 +622,7 @@
                     <div class="knowledge-content">
                         <p><strong>Turkey's deepest regional position is northern Syria</strong> — troops, proxy networks, intelligence infrastructure, and economic integration far exceeding any Lebanon presence. This makes Syria rhetoric the lead indicator for broader regional ambition.</p>
                         <ul>
+                            <li><strong>Abu al-Duhur (Aug 18, 2026):</strong> Israel struck the runway of an Idlib airfield over reports Turkey would use it; Ankara was not warned and denied any troop move. The US envoy says a stronger Turkey–Israel–Syria deconfliction mechanism is being built. This is the "denial before emplacement" pattern the tracker's tempo emitter watches.</li>
                             <li><strong>Post-Assad Position:</strong> Ankara backs the post-2024 Damascus transition and competes directly with Israel for influence over Syria's trajectory — both capitals now accuse the other of expansionism there.</li>
                             <li><strong>Mirror-Imaging Dynamic (June 2026):</strong> Erdogan states Israeli operations in Syria and Lebanon "threaten Turkey too" — threat-perimeter extension — while Israeli officials warn of Turkish takeover ambitions. Both rhetorics escalating in sync is itself a tracked friction index.</li>
                             <li><strong>Kurdish Variable:</strong> SDF integration, the PKK dissolution process, and fear of a Kurdish corridor in any Iran-collapse scenario tie the Syria file directly to Ankara's core security doctrine.</li>
@@ -600,8 +657,9 @@
                     <div class="knowledge-content">
                         <p><strong>Erdogan's term math requires a new constitution or early elections to run again (~2028)</strong> — and the clock is already governing foreign policy: election proximity is assessed to be suppressing appetite for war entanglement. The tracker treats election proximity as a timing multiplier, not a standalone signal.</p>
                         <ul>
-                            <li><strong>Opposition Crackdown:</strong> The Imamoglu case and pressure on the CHP are protest-risk sensors — domestic instability transmits to foreign-policy risk appetite in both directions.</li>
-                            <li><strong>Economy:</strong> Lira fragility, CBRT independence questions, and inflation stress; bread subsidies make wheat prices politically sensitive (see commodity card). Erdogan's rate-pressure history places him in the platform's leader-intervention (jawboning) layer.</li>
+                            <li><strong>Opposition Split (2026):</strong> A May 21 court ruling removed CHP leader Özgür Özel and installed Kılıçdaroğlu; Özel founded a new party on July 24 (91 seats), backed by the jailed İmamoğlu. The opposition now runs through two parties — watch for cases against the new one, which the tracker treats as a domestic tripwire.</li>
+                            <li><strong>İmamoğlu:</strong> Jailed since March 2025; the main corruption trial opened March 2026; a Sept 11, 2026 insult-case sentence (with a possible political ban) is not final until upheld on appeal.</li>
+                            <li><strong>Economy:</strong> Policy rate 36% after the Oct 22, 2026 cut; inflation 29.73% (Sept). Lira fragility, CBRT independence questions, and inflation stress; bread subsidies make wheat prices politically sensitive (see commodity card). Erdogan's rate-pressure history places him in the platform's leader-intervention (jawboning) layer.</li>
                             <li><strong>New-Constitution Campaign:</strong> Framed as democratic modernization by supporters and term-limit reset by critics; investor reaction is the constraint analysts watch.</li>
                         </ul>
                         <div class="open-source-disclaimer">* Based on Freedom House, FDD, and financial press reporting</div>
@@ -615,7 +673,7 @@
                         <span class="collapse-icon">▼</span>
                     </div>
                     <div class="knowledge-content">
-                        <p><strong>The Kurdish question remains Ankara's deepest security doctrine driver.</strong> The PKK dissolution process (2025) opened a historic window, but the file's regional dimensions — SDF in Syria, the KRG relationship, and Iranian Kurdistan scenarios — keep it tightly coupled to every theater the tracker watches.</p>
+                        <p><strong>The Kurdish question remains Ankara's deepest security doctrine driver.</strong> The PKK dissolution process (2025) opened a historic window, and on Aug 10, 2026 parliament wrote it into law (468 votes; AKP, MHP and DEM), but the file's regional dimensions — SDF in Syria, the KRG relationship, and Iranian Kurdistan scenarios — keep it tightly coupled to every theater the tracker watches.</p>
                         <ul>
                             <li><strong>Reversal Risk:</strong> Kurdish-file reversals (renewed operations, peace-process collapse) are escalation tells with direct read-across to Syria and Iraq postures.</li>
                             <li><strong>Iran-Collapse Scenario:</strong> Ankara's stated fear of a Kurdish independence push in Iranian Kurdistan — with US/Israeli sympathy — is the thread connecting the Kurdish file to the buffer-zone allegations of March 2026.</li>
@@ -637,7 +695,7 @@
 
         <footer class="asifah-footer">
             <div class="asifah-footer-title">Asifah Analytics &mdash; Turkey Module</div>
-            <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/europe/commodity/turkey &middot; rhetoric tracker in development</div>
+            <div class="asifah-footer-backend">api: asifa-europe-backend.onrender.com/api/europe/commodity/turkey &middot; /api/rhetoric/turkey (tracker v1.5, hub read)</div>
             <div class="asifah-footer-cadence">Commodity via 12-hour Europe proxy &middot; Food Price Pulse weekly (WFP) &middot; Last update timestamp above</div>
             <div class="asifah-footer-sources">WFP VAM/HDX &middot; GDELT &middot; Daily Sabah &middot; H&uuml;rriyet &middot; Duvar English &middot; Al-Monitor &middot; Europe Article Gatherer (GDELT + NewsAPI + RSS + Reddit + Telegram) &middot; NATO &middot; CSIS / MEI / FDD</div>
             <div class="asifah-footer-pills">
@@ -776,20 +834,22 @@
 
     // ── NEWS FEED (tabbed) ──
     let newsData=null;
-    async function loadNews(){
+    // v1.1.0: there is no /api/turkey/news endpoint -- the old call always fell
+    // back to the static link list. The tracker payload already carries the
+    // articles, so the news card reads those (one fetch, zero new endpoints).
+    function loadNewsFromTracker(d){
         try{
-            const r=await fetch(API_BASE+'/api/turkey/news');
-            if(!r.ok)throw new Error('HTTP '+r.status);
-            newsData=await r.json();
-            if(newsData.success)renderNewsTabs(newsData);
-            else displayFallback();
-        }catch(e){console.warn('News load failed:',e.message);displayFallback()}
+            const en=d.articles_en||[], tr=d.articles_tr||[], ot=d.articles_other||[];
+            if(!(en.length||tr.length||ot.length)){displayFallback();return;}
+            newsData={articles:{english:en,turkish:tr,other:ot},counts:{english:en.length,turkish:tr.length,other:ot.length}};
+            renderNewsTabs(newsData);
+        }catch(e){console.warn('News render failed:',e.message);displayFallback()}
     }
     function renderNewsTabs(data){
         const tabs=document.getElementById('newsTabs');
         const counts=data.counts||{};
-        const order=['english','turkish','french','german','russian','reddit'];
-        const labels={english:'English',turkish:'Türkçe',french:'Français',german:'Deutsch',russian:'Russian',reddit:'Reddit'};
+        const order=['english','turkish','other'];
+        const labels={english:'English',turkish:'Türkçe',other:'Other languages'};
         tabs.innerHTML=order.map((k,i)=>`<div class="news-tab${i===0?' active':''}" onclick="showNewsTab('${k}',this)">${labels[k]||k} (${counts[k]||0})</div>`).join('');
         showNewsTab(order[0],tabs.querySelector('.news-tab'));
     }
@@ -804,7 +864,7 @@
         c.innerHTML=articles.slice(0,20).map(a=>{
             const title=a.title||'Untitled';const source=a.source||'';const published=a.published||'';const url=a.url||'#';
             let ds='Recent';if(published){try{ds=new Date(published).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}catch(e){ds=published}}
-            return`<div class="article-item"><div class="article-title">${title}</div><div class="article-meta">${source} • ${ds}${a.score?' • ↑'+a.score:''}</div>${url!=='#'?`<a href="${url}" target="_blank" class="article-link">Read article →</a>`:''}</div>`
+            return`<div class="article-item"><div class="article-title">${esc(title)}</div><div class="article-meta">${esc(source)} • ${esc(ds)}${a.score?' • ↑'+esc(a.score):''}</div>${url!=='#'?`<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="article-link">Read article →</a>`:''}</div>`
         }).join('');
     }
     function displayFallback(){
@@ -958,7 +1018,7 @@
         const LEVEL_LABELS = { 0: 'Baseline', 1: 'Rhetoric', 2: 'Warning', 3: 'Confrontation', 4: 'Coercion', 5: 'Active Conflict' };
         try {
             const r = await fetch(`${API_BASE}/api/rhetoric/turkey`);
-            if (!r.ok) return;
+            if (!r.ok) throw new Error('HTTP ' + r.status);
             const d = await r.json();
             const score = d.theatre_score || d.pressure_score || 0;
             const alert = (d.alert_level || 'normal').toLowerCase();
@@ -972,6 +1032,9 @@
             // ── Green banner (top) ──
             const dev = document.getElementById('turkeyTrackerInDev');
             if (dev) dev.style.display = 'none';
+            renderTopIndicator(d);
+            renderHub(d.hub_read);
+            loadNewsFromTracker(d);
             const card = document.getElementById('rhetoricPressureCard');
             if (card) {
                 card.style.display = 'flex';
@@ -987,7 +1050,7 @@
                 const approaching = rl.approaching_count || 0;
                 const greenActive = (d.green_lines || {}).active_count || 0;
                 document.getElementById('rhetoricDetail').textContent =
-                    `${breached} breached · ${approaching} approaching · ${greenActive} active diplomatic signals · Diplomatic track: ${dt.scenario || 'No Active Track'} (${dt.score || 0} signal${(dt.score || 0) === 1 ? '' : 's'}). ${sw.assessment || ''}`;
+                    `${breached} breached · ${approaching} approaching · ${greenActive} active stabilising tracks · Diplomatic track: ${dt.scenario || 'No Active Track'} (${dt.score || 0} outlet${(dt.score || 0) === 1 ? '' : 's'}). ${sw.assessment || ''}`;
             }
 
             // ── So What Factor card (analyst toplines) ──
@@ -1015,7 +1078,7 @@
                                 security:'#ef4444', kinetic_risk:'#dc2626',
                                 normal:'#6b7280', simmering:'#f59e0b', elevated:'#f97316', high:'#ef4444' };
                 const chip = (txt, color) =>
-                    `<span style="font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:12px;border:1px solid ${color};color:${color};font-family:'Courier New',monospace;white-space:nowrap;">${txt}</span>`;
+                    `<span data-c="1" style="font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:12px;border:1px solid ${color};color:${color};font-family:'Courier New',monospace;white-space:nowrap;">${txt}</span>`;
                 const chips = [];
                 if (al.nato_anchor_index !== undefined) {
                     chips.push(chip('⚓ ANCHOR ' + al.nato_anchor_index + '/100', '#10b981'));
@@ -1054,7 +1117,7 @@
                             let sc = s.color || LVL_COLORS[s.level];
                             if (!sc || sc === '#6b7280') sc = '#38bdf8';
                             if (s.category === 'diplomatic') sc = '#10b981';
-                            return `<div class="rhetoric-signal-row" style="border-left:3px solid ${sc};padding-left:9px;">${cat ? `<span class="rhetoric-signal-label" style="color:${sc};">${cat}</span>` : ''}${txt}</div>`;
+                            return `<div class="rhetoric-signal-row" style="border-left:3px solid ${sc};padding-left:9px;">${cat ? `<span class="rhetoric-signal-label" style="color:${sc};">${esc(cat)}</span>` : ''}${esc(txt)}</div>`;
                         }).join('');
                     } else {
                         // Fallback: red/green/diplomatic counts as actor-row entries
@@ -1069,7 +1132,7 @@
                             { label: '📊 Diplomatic Signals',     val: (dt.score || 0), color: '#38bdf8' },
                         ];
                         let html = rows.map(r => `<div class="rhetoric-actor-row"><span>${r.label}</span><span style="font-weight:700;color:${r.color};">${r.val}</span></div>`).join('');
-                        if (sw.scenario) html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--card-border);font-style:italic;color:var(--text-muted);font-size:11px;line-height:1.5;">${sw.scenario}</div>`;
+                        if (sw.scenario) html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--card-border);font-style:italic;color:var(--text-muted);font-size:11px;line-height:1.5;">${esc(sw.scenario)}</div>`;
                         signalEl.innerHTML = html;
                     }
                 }
@@ -1082,7 +1145,44 @@
                     scanEl.textContent = `Last scan: ${agoStr} ago · ${d.total_articles || 0} articles analyzed`;
                 }
             }
-        } catch(e) { console.warn('[Turkey] Alignment tracker fetch pending (in development):', e.message); }
+        } catch(e) {
+            console.warn('[Turkey] Alignment tracker fetch failed:', e.message);
+            const t = document.getElementById('topIndicatorText');
+            if (t) t.textContent = 'The Turkey tracker did not answer this visit — the cards below are unread, not calm.';
+            document.getElementById('topIndicator').classList.add('thin');
+            displayFallback();
+        }
+    }
+
+    function renderTopIndicator(d) {
+        const box = document.getElementById('topIndicator');
+        const t = document.getElementById('topIndicatorText');
+        const h = document.getElementById('topIndicatorHub');
+        const m = document.getElementById('topIndicatorMeta');
+        t.textContent = d.top_indicator || ((d.so_what || {}).scenario || 'Turkey tracker read');
+        h.textContent = (d.hub_read || {}).headline || '';
+        const bits = [];
+        if (d.cached_at) bits.push('Scan ' + new Date(d.cached_at).toLocaleString('en-US', {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}));
+        if (d.total_articles != null) bits.push(d.total_articles + ' articles');
+        if (d.alert_cap_note) bits.push(d.alert_cap_note);
+        m.textContent = bits.join(' · ');
+        box.classList.toggle('thin', !!d.thin_read);
+    }
+
+    function renderHub(h) {
+        const card = document.getElementById('turkeyHubCard');
+        if (!card || !h || !(h.nodes || []).length) return;
+        card.style.display = 'block';
+        const pill = document.getElementById('hubPill');
+        pill.textContent = h.converged ? 'CONVERGED' : 'NOT CONVERGED';
+        pill.style.background = h.converged ? '#f59e0b' : '#38bdf8';
+        document.getElementById('hubHeadline').textContent = h.headline || '';
+        const KIND = { periphery: 'reacting', projection: 'Turkey pushing in' };
+        document.getElementById('hubGrid').innerHTML = h.nodes.map(n => {
+            const silent = n.state === 'not_reporting';
+            const cls = silent ? ' dim' : (n.level >= 2 ? ' lit' : '');
+            return `<div class="hub-node${cls}"><b>${esc(n.display || n.theatre)}</b> ${silent ? '—' : 'L' + esc(n.level)}<span>${esc(KIND[n.kind] || n.kind || '')}${silent ? ' · not reporting' : ''}</span></div>`;
+        }).join('');
     }
 
     document.addEventListener('DOMContentLoaded',()=>{
@@ -1090,7 +1190,7 @@
         document.getElementById('lastUpdated').textContent='Last updated: '+new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
         initMap();
         loadRhetoric();
-        Promise.all([loadFoodPulse(),loadNews(),loadCommodity()]).then(()=>hideLoadingOverlay()).catch(()=>hideLoadingOverlay());
+        Promise.all([loadFoodPulse(),loadCommodity()]).then(()=>hideLoadingOverlay()).catch(()=>hideLoadingOverlay());
     });
     </script>
 </body>
