@@ -318,6 +318,18 @@
     </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
+<script>
+/* v1.1 (Nov 3 2026): feed titles / URLs are third-party text -- escape before innerHTML. */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--card-border,#1e3a5f);border-left:4px solid var(--accent,#38bdf8);background:var(--card-bg,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text-primary,var(--text,#e2e8f0));}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+</style>
 </head>
 <body>
 <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
@@ -433,6 +445,11 @@
 
 <!-- MAIN CONTENT -->
 <div class="main-content">
+<div class="top-ind" id="topIndicator">
+    <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+    <div class="top-ind-t" id="topIndicatorText">Reading the latest scan&hellip;</div>
+    <div class="top-ind-m" id="topIndicatorMeta"></div>
+</div>
 
 <!-- WORLDWIDE CAUTION (canonical bright red) -->
 <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);">
@@ -828,7 +845,8 @@
                 <p><strong>The Nagorno-Karabakh conflict is over.</strong> Azerbaijan's September 2023 offensive ended three decades of de facto Armenian control in a single day, displacing nearly the entire ethnic Armenian population (~100,000). What remains is a peace process — advanced but unratified — and a redrawn South Caucasus order in which Baku negotiates from decisive strength. This is a settled outcome, not an active front.</p>
                 <ul>
                     <li><strong>September 2023 — Decisive Resolution:</strong> A roughly 24-hour Azerbaijani operation forced the dissolution of the breakaway Republic of Artsakh. Armenian forces and civilians evacuated via the Lachin corridor; the territory is fully reintegrated into Azerbaijan.</li>
-                    <li><strong>August 2025 — Washington Declaration:</strong> Aliyev, Pashinyan, and Trump unveiled a peace framework at the White House and the <strong>"TRIPP" corridor</strong> (Trump Route for International Peace and Prosperity) — the rebranded Zangezur route across Armenia's Syunik province linking mainland Azerbaijan to the Nakhchivan exclave, with the United States reportedly holding long-term (~99-year) development rights.</li>
+                    <li><strong>August 2025 — Washington Declaration:</strong> Aliyev, Pashinyan, and Trump unveiled a peace framework at the White House and the <strong>"TRIPP" corridor</strong> (Trump Route for International Peace and Prosperity) — the rebranded Zangezur route across Armenia's Syunik province linking mainland Azerbaijan to the Nakhchivan exclave, with long-term US development rights.</li>
+                    <li><strong>October 2026 — TRIPP ratified in Yerevan:</strong> Armenia's parliament ratified the TRIPP framework on Oct 28 (63–32): a US-majority (74/26) joint venture runs the route for 49 years. The corridor is now law in Armenia; the peace treaty still is not.</li>
                     <li><strong>The Unratified Treaty (the live variable):</strong> The peace agreement is initialed but NOT signed or ratified. Baku conditions signature on Armenia amending its constitution to drop implicit territorial references — a step requiring an Armenian referendum. "Ready for signature" is not "signed"; this is the reversibility seam to watch, and the analyst layer where residual conflict rhetoric belongs.</li>
                     <li><strong>Iran's Objection:</strong> Tehran opposes TRIPP as a US/Turkish wedge that would sever its short border with Armenia and its overland access to the South Caucasus, warning of a "harsh response." Iran's sizeable ethnic-Azeri population adds a second sensitivity.</li>
                     <li><strong>Russia Displaced:</strong> Russian peacekeepers withdrew in 2024, and a US-brokered corridor on post-Soviet ground marks a strategic displacement of Moscow — which is seeking re-entry. Their departure also removed the last neutral on-the-ground monitoring presence.</li>
@@ -1078,11 +1096,11 @@ function switchArticleTab(tab) {
             return `<div style="padding:11px 14px;background:${o.bg};border:1px solid ${o.border};border-radius:8px;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
                     <span style="font-size:10px;font-weight:700;color:${o.color};text-transform:uppercase;letter-spacing:1px;">${o.label}</span>
-                    ${author ? `<span style="font-size:11px;color:var(--text-muted);">${author}</span>` : ''}
+                    ${author ? `<span style="font-size:11px;color:var(--text-muted);">${esc(author)}</span>` : ''}
                     ${ds ? `<span style="font-size:10px;color:var(--text-muted);">${ds}</span>` : ''}
                 </div>
-                <div style="font-size:13px;color:var(--text);line-height:1.5;">${text.substring(0,260)}${text.length>260?'…':''}</div>
-                ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener" style="color:${o.color};text-decoration:none;font-size:11px;font-weight:600;margin-top:5px;display:inline-block;">View post →</a>` : ''}
+                <div style="font-size:13px;color:var(--text);line-height:1.5;">${esc(text.substring(0,260))}${text.length>260?'…':''}</div>
+                ${url !== '#' ? `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="color:${o.color};text-decoration:none;font-size:11px;font-weight:600;margin-top:5px;display:inline-block;">View post →</a>` : ''}
             </div>`;
         }).join('');
         return;
@@ -1103,10 +1121,10 @@ function switchArticleTab(tab) {
         let ds = '';
         if (pub) { try { ds = new Date(pub).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ ds = pub; } }
         return `<div class="article-item">
-            <div class="article-title">${title}</div>
-            ${desc ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${desc.substring(0,180)}${desc.length>180?'...':''}</div>` : ''}
-            <div class="article-meta">${src}${ds ? ' · '+ds : ''}</div>
-            ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener" class="article-link">Read article →</a>` : ''}
+            <div class="article-title">${esc(title)}</div>
+            ${desc ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${esc(desc.substring(0,180))}${desc.length>180?'...':''}</div>` : ''}
+            <div class="article-meta">${esc(src)}${ds ? ' · '+ds : ''}</div>
+            ${url !== '#' ? `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="article-link">Read article →</a>` : ''}
         </div>`;
     }).join('');
 }
@@ -1217,9 +1235,9 @@ async function loadCommodity() {
     const topSignals = data.top_signals || [];
     if (topSignals.length > 0) {
         const items = topSignals.slice(0, 3).map(s => `
-            <a href="${s.article_url}" target="_blank" rel="noopener">
-                ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${s.article_title}
-                <span class="ts-source">— ${s.source}</span>
+            <a href="${safeUrl(s.article_url)}" target="_blank" rel="noopener">
+                ${s.commodity_icon || '📰'} <strong>${s.commodity_name}:</strong> ${esc(s.article_title)}
+                <span class="ts-source">— ${esc(s.source)}</span>
             </a>
         `).join('');
         tsEl.innerHTML = `<div class="ts-title">Top live signals</div>${items}`;
@@ -1307,7 +1325,7 @@ function renderPulse(fp) {
                 <div class="nyse-tile-value">${valPrefix}${val}${valSuffix}</div>
                 <div class="nyse-tile-change ${chgClass}">${chgStr}</div>
                 <div class="nyse-tile-spark">${_pulseSvgSpark(t.sparkline)}</div>
-                <div class="nyse-tile-meta">${t.source || ''}</div>
+                <div class="nyse-tile-meta">${esc(t.source || '')}</div>
                 ${extraBlock}
             </div>`;
     }).filter(Boolean);
@@ -1622,6 +1640,32 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFinancialPulse();
     loadRhetoric();
 });
+</script>
+<script>
+/* TOP INDICATOR (v1.1, Nov 3 2026): one plain-language line from the rhetoric
+   interpreter. Absence-honest: if the tracker is not reporting, say so. */
+(async function () {
+    const t = document.getElementById('topIndicatorText'), m = document.getElementById('topIndicatorMeta');
+    const box = document.getElementById('topIndicator');
+    if (!t) return;
+    try {
+        const r = await fetch('https://asifa-europe-backend.onrender.com/api/rhetoric/azerbaijan/summary');
+        const d = await r.json();
+        if (!d || !d.top_indicator) {
+            t.textContent = d && d.awaiting_scan ? 'First scan in progress -- unread, not calm.'
+                : 'The rhetoric tracker has not published a top indicator yet -- unread, not calm.';
+            return;
+        }
+        t.textContent = d.top_indicator;
+        if (d.thin_read) box.classList.add('thin');
+        const ago = d.scanned_at ? Math.round((Date.now() - new Date(d.scanned_at).getTime()) / 3600000) : null;
+        m.innerHTML = 'From the rhetoric tracker' + (ago != null ? ' &middot; scanned ' + (ago < 1 ? 'under an hour' : ago + 'h') + ' ago' : '')
+            + (d.thin_read ? ' &middot; <strong style="color:#f59e0b;">thin read</strong>' : '')
+            + ' &middot; <a href="rhetoric-azerbaijan.html" style="color:inherit;">full tracker &rarr;</a>';
+    } catch (e) {
+        t.textContent = 'Rhetoric tracker unreachable this load -- unread, not calm.';
+    }
+})();
 </script>
 </body>
 </html>

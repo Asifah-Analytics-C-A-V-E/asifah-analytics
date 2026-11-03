@@ -767,7 +767,7 @@
                     ? new Date(art.published).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'2-digit'})
                     : '';
                 artHtml += `<div class="actor-article">
-                    <a href="${art.url || '#'}" target="_blank" rel="noopener">${art.title || 'Untitled'}</a>
+                    <a href="${safeUrl(art.url)}" target="_blank" rel="noopener">${esc(art.title || 'Untitled')}</a>
                     <div class="actor-article-meta">${dt}${kws ? ' · ' + kws : ''}</div>
                 </div>`;
             });
@@ -779,7 +779,7 @@
                     <div class="actor-flag-name">
                         <div class="actor-flag">${a.flag || ''} ${a.icon || ''}</div>
                         <div>
-                            <div class="actor-name">${a.name}</div>
+                            <div class="actor-name">${esc(a.name)}</div>
                             <div class="actor-role">${a.role || ''}</div>
                         </div>
                     </div>
@@ -871,7 +871,7 @@
             const resp = await fetch(`${API_BASE}/api/rhetoric/greenland/history?limit=120`);
             if (!resp.ok) return;
             const data = await resp.json();
-            const entries = _sliceEntries(data.entries || [], _historyView);
+            const entries = _sliceEntries(data.entries || data.history || [], _historyView);
             const legendEl = document.getElementById('historyLegend');
             if (legendEl) legendEl.innerHTML = `
                 <div class="history-legend-item"><div class="history-legend-dot" style="background:#38bdf8;"></div> Theatre Score</div>
@@ -881,7 +881,7 @@
             renderHistoryChart([
                 { label:'Theatre',   data: entries.map(e => e.theatre_score    || 0), borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.07)',  borderWidth:2, pointRadius:entries.length<15?3:0, fill:true,  tension:0.35 },
                 { label:'US',        data: entries.map(e => e.us_pressure_level*20 || 0), borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, fill:false, tension:0.35 },
-                { label:'Greenland', data: entries.map(e => (e.greenland_level||0 + (e.denmark_level||0))*10), borderColor:'#22c55e', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, fill:false, tension:0.35 },
+                { label:'Greenland', data: entries.map(e => ((e.greenland_level||0) + (e.denmark_level||0))*10), borderColor:'#22c55e', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, fill:false, tension:0.35 },
                 { label:'Russia',    data: entries.map(e => e.russia_level*20   || 0), borderColor:'#ef4444', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, fill:false, tension:0.35 },
             ], entries.map(e => _fmtLabel(e.timestamp)));
         } catch(e) { console.warn('[Greenland History]', e); }
@@ -913,19 +913,19 @@
 
             const section = document.createElement('div');
             section.style.marginBottom = '18px';
-            section.innerHTML = `<div style="font-size:0.7rem;font-weight:700;color:${color};letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--card-border);">${a.flag || ''} ${a.name}</div>`;
+            section.innerHTML = `<div style="font-size:0.7rem;font-weight:700;color:${color};letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--card-border);">${a.flag || ''} ${esc(a.name)}</div>`;
 
             a.top_articles.slice(0, 3).forEach(art => {
                 const dt  = art.published
                     ? new Date(art.published).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})
                     : '';
                 const kws = (art.matched_keywords || []).slice(0, 2).map(k =>
-                    `<span class="article-kw">${k}</span>`).join('');
+                    `<span class="article-kw">${esc(k)}</span>`).join('');
                 const item = document.createElement('div');
                 item.className = 'article-item';
                 item.innerHTML = `
-                    <a href="${art.url || '#'}" target="_blank" rel="noopener" class="article-link">${art.title || 'Untitled'}</a>${kws}
-                    <div class="article-meta">${art.source ? art.source.replace(/https?:\/\/[^/]+\/rss[^?]*/,'RSS') : ''} ${dt ? '· ' + dt : ''}</div>`;
+                    <a href="${safeUrl(art.url)}" target="_blank" rel="noopener" class="article-link">${esc(art.title || 'Untitled')}</a>${kws}
+                    <div class="article-meta">${esc(art.source || '')} ${dt ? '· ' + dt : ''}</div>`;
                 section.appendChild(item);
             });
             list.appendChild(section);
@@ -1010,13 +1010,13 @@
                     <span class="red-line-icon">${r.icon || '⚠️'}</span>
                     <div style="flex:1;">
                         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                            <span class="red-line-label">${r.label}</span>
+                            <span class="red-line-label">${esc(r.label)}</span>
                             <span class="red-line-status-badge ${badgeClass}">${r.status}</span>
                             <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">${catLabel}</span>
                             <span style="font-size:0.55rem;color:#94a3b8;font-family:'Courier New',monospace;">SEV ${r.severity}/3</span>
                         </div>
-                        <div class="red-line-trigger">${r.trigger || ''}</div>
-                        <div class="red-line-source">${r.source || ''}</div>
+                        <div class="red-line-trigger">${esc(r.trigger || '')}</div>
+                        <div class="red-line-source">${esc(r.source || '')}</div>
                     </div>`;
                 rlEl.appendChild(item);
             });
@@ -1031,19 +1031,19 @@
             hm.forEach(h => {
                 const confColor = h.similarity >= 80 ? '#dc2626' : h.similarity >= 60 ? '#0e7490' : '#64748b';
                 const tags = (h.matched_signals || []).map(s =>
-                    `<span class="hist-signal-tag">&#10003; ${s}</span>`
+                    `<span class="hist-signal-tag">&#10003; ${esc(s)}</span>`
                 ).join('');
                 const item = document.createElement('div');
                 item.className = 'hist-match-item';
                 item.innerHTML = `
                     <div class="hist-match-header">
                         <span class="hist-similarity-badge" style="background:${confColor};">${h.similarity}% MATCH</span>
-                        <span class="hist-match-label">${h.label}</span>
+                        <span class="hist-match-label">${esc(h.label)}</span>
                         <span style="font-size:0.62rem;color:#64748b;font-family:'Courier New',monospace;margin-left:auto;">
                             Confidence: ${h.confidence} · Window: ${h.window_hours > 0 ? h.window_hours + 'h' : 'N/A'}
                         </span>
                     </div>
-                    <div class="hist-match-outcome">-> ${h.outcome}</div>
+                    <div class="hist-match-outcome">-> ${esc(h.outcome)}</div>
                     <div class="hist-matched-signals">${tags}</div>
                     <div class="hist-match-meta" style="margin-top:6px;">Source: ${h.source}</div>`;
                 hmEl.appendChild(item);
@@ -1144,5 +1144,170 @@ function closeMobileDrawer() {
 }
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
 </script>
+<!-- ══ Evidence layer v1.1 (Nov 3 2026): top indicator, thin read, track card,
+     wheels card, red-line evidence. Wraps renderAll; reads data.interpretation. ══ -->
+<style>
+.ev-wrap{display:flex;flex-direction:column;gap:10px;margin:12px 0 14px;}
+.ev-top{border:1px solid var(--card-border);border-left:4px solid var(--accent,#3b82f6);background:var(--card-bg);border-radius:10px;padding:10px 14px;}
+.ev-kicker{font-size:0.6rem;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);font-family:'Courier New',monospace;margin-bottom:4px;}
+.ev-top-text{font-size:0.95rem;font-weight:700;color:var(--text-primary);line-height:1.4;}
+.ev-thin{border:1px dashed #f59e0b;background:rgba(245,158,11,0.08);color:var(--text-primary);border-radius:10px;padding:8px 14px;font-size:0.78rem;line-height:1.45;}
+.ev-thin b{color:#f59e0b;}
+.ev-card{border:1px solid var(--card-border);background:var(--card-bg);border-radius:10px;padding:12px 14px;min-width:0;}
+.ev-card h3{margin:0 0 8px;font-size:0.72rem;letter-spacing:1.5px;font-weight:800;color:var(--text-secondary);font-family:'Courier New',monospace;}
+.ev-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:0.62rem;font-weight:800;letter-spacing:1px;color:#fff;vertical-align:middle;}
+.ev-read{font-size:0.82rem;color:var(--text-primary);line-height:1.5;margin:6px 0;}
+.ev-base{font-size:0.74rem;color:var(--text-secondary);line-height:1.5;margin:4px 0 0;padding-left:16px;}
+.ev-base li{margin:2px 0;}
+.ev-base a{color:var(--text-secondary);text-decoration:underline;text-decoration-color:var(--card-border);}
+.ev-src{font-size:0.66rem;color:var(--text-muted);margin-top:6px;word-break:break-word;}
+.ev-src a{color:var(--text-muted);}
+.ev-wheels{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;}
+.ev-wheel{border:1px solid var(--card-border);border-radius:8px;padding:8px 10px;background:var(--article-bg,transparent);min-width:0;}
+.ev-wheel-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.ev-wheel-name{font-weight:800;font-size:0.8rem;color:var(--text-primary);}
+.ev-wheel-class{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px;}
+.ev-wheel-note{font-size:0.7rem;color:var(--text-secondary);margin-top:4px;line-height:1.4;overflow-wrap:anywhere;}
+.ev-rl{margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45;}
+.ev-rl-trig{font-weight:700;color:var(--text-primary);}
+.ev-rl ul{margin:3px 0 0;padding-left:16px;}
+.ev-rl li{margin:2px 0;overflow-wrap:anywhere;}
+.ev-rl a{color:var(--text-secondary);}
+.ev-outlet{font-family:'Courier New',monospace;font-size:0.62rem;color:var(--text-muted);}
+/* pre-existing phone overflow: ladder grid children need min-width:0 */
+.ladder-step{min-width:0;}
+.ladder-step-label{overflow-wrap:anywhere;}
+</style>
+<script>
+(function () {
+    // ---- escaping: feed titles and URLs are third-party text ----
+    window.esc = window.esc || function (s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+            ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    };
+    window.safeUrl = window.safeUrl || function (u) {
+        const s = String(u || '').trim();
+        return /^https?:\/\//i.test(s) ? esc(s) : '#';
+    };
+
+    const COUNTRY = 'Greenland';
+    const HUBS = {
+        us: ['\u{1F1FA}\u{1F1F8}', 'United States'], russia: ['\u{1F1F7}\u{1F1FA}', 'Russia'],
+        china: ['\u{1F1E8}\u{1F1F3}', 'China'], turkey: ['\u{1F1F9}\u{1F1F7}', 'Turkey'],
+        israel: ['\u{1F1EE}\u{1F1F1}', 'Israel'], iran: ['\u{1F1EE}\u{1F1F7}', 'Iran'],
+    };
+    const NODE_WORDS = {
+        inbound_target: 'pressing on ' + COUNTRY, adversary: 'adversary', security_partner: 'security partner',
+        target: COUNTRY + ' as a target', aligned_multiplier: 'aligned partner', friction: 'friction',
+        broker: 'broker', resource_interest: 'resource interest', security_assistance: 'security assistance',
+    };
+    const TRACK_STATUS = {
+        holding: ['HOLDING', '#10b981'], contested: ['CONTESTED', '#f59e0b'], strain: ['STRAIN', '#ef4444'],
+        quiet: ['NOT IN CORPUS', '#6b7280'], ACTIVE: ['ACTIVE', '#10b981'], SIGNALED: ['SIGNALLED', '#84cc16'],
+        DORMANT: ['DORMANT', '#6b7280'],
+    };
+    function levelColor(n) {
+        try { return (ESCALATION_LEVELS[n] || ESCALATION_LEVELS[0]).color; } catch (e) { return '#6b7280'; }
+    }
+
+    function ensureWrap() {
+        let w = document.getElementById('evLayer');
+        if (w) return w;
+        w = document.createElement('div');
+        w.id = 'evLayer';
+        w.className = 'ev-wrap';
+        const anchor = document.getElementById('theatreBanner');
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(w, anchor.nextSibling);
+        else document.body.prepend(w);
+        return w;
+    }
+
+    function trackHTML(interp) {
+        const tr = interp.agreement_track || interp.settlement_momentum || interp.peace_track;
+        if (!tr) return '';
+        const title = interp.agreement_track ? 'THE NEGOTIATED TRACK — 2026 DEFENCE AGREEMENT'
+            : interp.settlement_momentum ? 'SETTLEMENT MOMENTUM (THE GREEN READ)'
+            : 'PEACE TRACK — TREATY & CORRIDOR';
+        const st = TRACK_STATUS[tr.status] || [String(tr.status || '').toUpperCase(), '#6b7280'];
+        const b = tr.baseline || {};
+        const facts = ['what', 'sovereignty', 'status', 'rhetoric_gap', 'treaty', 'tripp', 'constraint']
+            .filter(k => b[k]).map(k => `<li>${esc(b[k])}</li>`).join('');
+        const srcs = (b.sources || []).map(s => /^https?:/.test(s)
+            ? `<a href="${safeUrl(s)}" target="_blank" rel="noopener">${esc(s.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a>`
+            : esc(s)).join(' · ');
+        const ev = (tr.evidence || []).slice(0, 3).map(e =>
+            `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="ev-outlet">${esc(e.outlet || '')}</span></li>`).join('');
+        return `<div class="ev-card"><h3>${title} <span class="ev-pill" style="background:${st[1]}">${esc(st[0])}</span></h3>
+            <div class="ev-read">${esc(tr.read || '')}</div>
+            ${ev ? `<ul class="ev-base">${ev}</ul>` : ''}
+            ${facts ? `<div class="ev-kicker" style="margin-top:8px;">BACKGROUND${b.as_of ? ' · AS OF ' + esc(b.as_of) : ''}</div><ul class="ev-base">${facts}</ul>` : ''}
+            ${srcs ? `<div class="ev-src">Sources: ${srcs}</div>` : ''}</div>`;
+    }
+
+    function wheelsHTML(interp) {
+        const sp = interp.spokes || {};
+        const keys = Object.keys(sp);
+        if (!keys.length) return '';
+        const cards = keys.map(h => {
+            const s = sp[h] || {};
+            const [flag, name] = HUBS[h] || ['', h];
+            const lv = s.level || 0;
+            return `<div class="ev-wheel"><div class="ev-wheel-top"><span class="ev-wheel-name">${flag} ${esc(name)}</span>
+                <span class="ev-pill" style="background:${levelColor(lv)}">L${lv}</span></div>
+                <div class="ev-wheel-class">${esc(NODE_WORDS[s.node_class] || s.node_class || '')}</div>
+                ${s.note ? `<div class="ev-wheel-note">${esc(s.note)}</div>` : ''}</div>`;
+        }).join('');
+        return `<div class="ev-card"><h3>WHEELS ON ${esc(COUNTRY.toUpperCase())} — WHO IS TURNING THIS SPOKE</h3>
+            <div class="ev-wheels">${cards}</div>
+            <div class="ev-src">Each wheel is written to its hub's spoke-and-wheel key every scan (30h freshness). A quiet wheel is L0, not absent.</div></div>`;
+    }
+
+    function redLineEvidence(interp) {
+        const rl = (interp.red_lines || {}).triggered || [];
+        const items = document.querySelectorAll('#redLineItems .red-line-item');
+        rl.forEach((r, i) => {
+            const host = items[i];
+            if (!host || host.querySelector('.ev-rl')) return;
+            const body = host.querySelector('div[style*="flex:1"]') || host;
+            const ev = (r.evidence || []).slice(0, 3).map(e =>
+                `<li><a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc((e.title || '').slice(0, 110))}</a> <span class="ev-outlet">${esc(e.outlet || '')}${e.phrase ? ' · “' + esc(e.phrase) + '”' : ''}</span></li>`).join('');
+            const d = document.createElement('div');
+            d.className = 'ev-rl';
+            d.innerHTML = `<div class="ev-rl-trig">${esc(r.trigger || '')}</div>${ev ? `<ul>${ev}</ul>` : ''}`;
+            body.appendChild(d);
+        });
+    }
+
+    function renderEvidenceLayer(data) {
+        const interp = (data && data.interpretation) || {};
+        const w = ensureWrap();
+        const health = interp.corpus_health || {};
+        const sensing = data.sensing || {};
+        let html = '';
+        if (interp.top_indicator) {
+            html += `<div class="ev-top"><div class="ev-kicker">TOP INDICATOR — THE ONE THING TO KNOW</div>
+                <div class="ev-top-text">${esc(interp.top_indicator)}</div></div>`;
+        }
+        if (interp.thin_read || sensing.degraded) {
+            const why = [health.reason, sensing.degraded ? 'a source family did not answer' : ''].filter(Boolean).join('; ');
+            html += `<div class="ev-thin"><b>THIN READ.</b> This scan is under-read${why ? ' (' + esc(why) + ')' : ''}.
+                Quiet lines on this page may be <i>unread</i>, not calm. Levels are capped by how many outlets carried the story.</div>`;
+        }
+        html += trackHTML(interp) + wheelsHTML(interp);
+        w.innerHTML = html;
+        redLineEvidence(interp);
+    }
+    window.renderEvidenceLayer = renderEvidenceLayer;
+
+    if (typeof renderAll === 'function') {
+        const _orig = renderAll;
+        renderAll = function (data) {
+            _orig(data);
+            try { renderEvidenceLayer(data); } catch (e) { console.warn('[Evidence layer]', e); }
+        };
+    }
+})();
+</script>
+
 </body>
 </html>

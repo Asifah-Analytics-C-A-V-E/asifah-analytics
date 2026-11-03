@@ -304,6 +304,18 @@
     </style>
     <link rel="stylesheet" href="resources/asifah-standard-shell.css">
     <script src="resources/asifah-standard-shell.js" defer></script>
+<script>
+/* v1.1 (Nov 3 2026): feed titles / URLs are third-party text -- escape before innerHTML. */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+</script>
+<style>
+.top-ind{border:1px solid var(--card-border,#1e3a5f);border-left:4px solid var(--accent,#38bdf8);background:var(--card-bg,rgba(15,23,42,.6));border-radius:10px;padding:10px 14px;margin:0 0 14px;}
+.top-ind-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted,#94a3b8);margin-bottom:4px;}
+.top-ind-t{font-size:15px;font-weight:700;line-height:1.45;color:var(--text-primary,var(--text,#e2e8f0));}
+.top-ind-m{font-size:11px;color:var(--text-muted,#94a3b8);margin-top:4px;}
+.top-ind.thin{border-left-color:#f59e0b;}
+</style>
 </head>
 <body>
 <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Open navigation">☰</button>
@@ -421,6 +433,11 @@
 
 <!-- MAIN CONTENT -->
 <div style="flex:1; min-width:0;">
+<div class="top-ind" id="topIndicator">
+    <div class="top-ind-k">TOP INDICATOR &mdash; THE ONE THING TO KNOW</div>
+    <div class="top-ind-t" id="topIndicatorText">Reading the latest scan&hellip;</div>
+    <div class="top-ind-m" id="topIndicatorMeta"></div>
+</div>
 
 
         <!-- RHETORIC BANNER -->
@@ -453,8 +470,12 @@
             <div id="rhetoricScanInfo" style="margin-top:8px;font-size:10px;color:var(--text-secondary);text-align:center;">--</div>
         </div>
 
-        <!-- MAP -->
-        <div style="flex:1;">
+        <!-- WORLDWIDE CAUTION (canonical bright red). v1.1 fix: this banner had lost
+             its outer container, and a stray closing div tag ended the main-content
+             column early -- on desktop every card below it fell into the sidebar row. -->
+        <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);">
+            <div style="font-size:24px;flex-shrink:0;">🚨</div>
+            <div style="flex:1;">
                 <div style="font-size:12px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;" data-i18n="cautionLabel">⚠️ U.S. State Department — Worldwide Caution</div>
                 <div style="font-size:12px;color:#fde8e8;line-height:1.4;" data-i18n="cautionText">U.S. citizens worldwide should remain vigilant. Terrorist groups, criminals, and other violent actors continue to plot attacks globally. Monitor local media, heed official guidance, and enroll in the Smart Traveler Enrollment Program (STEP).</div>
             </div>
@@ -502,6 +523,7 @@
                 <a href="commodities.html" style="color:#f59e0b;text-decoration:none;font-size:12px;font-weight:600;" data-i18n="commodityFullLink">View Full Commodity Tracker →</a>
             </div>
             <div id="commodityCacheNote" style="margin-top:8px;font-size:10px;color:var(--text-muted);font-style:italic;text-align:right;"></div>
+        </div><!-- /commodity-card (v1.1: closing tag was missing) -->
         
 
         <div class="map-section">
@@ -633,12 +655,15 @@
                         <p><strong>Greenland has become a focal point of great-power competition</strong> between the United States, China, Russia, and the EU — driven by its strategic location, critical mineral wealth, and the geopolitical implications of Arctic climate change.</p>
                         <ul>
                             <li><strong>Trump "Purchase" Proposal:</strong> Trump proposed purchasing Greenland in 2019 and returned to the theme in 2025, stating he would not rule out military or economic pressure.</li>
+                            <li><strong>The 2026 crisis:</strong> January 2026 brought US tariff threats against European allies over Greenland, European troop deployments to the island, a "framework" announced at Davos (Jan 21) and NATO's Operation Arctic Sentry (Feb 11).</li>
+                            <li><strong>The September 2026 defence agreement:</strong> Announced Sept 18, it amends the 1951 defence agreement — Pituffik modernised and expanded, new US defence areas at Narsarsuaq and Mestersvig, non-NATO militaries excluded, investment screening for non-NATO/non-EU money, no transfer of mineral rights, no end date. It needs approval by both the Inatsisartut (Nuuk) and the Folketing (Copenhagen). Washington called it "permanent control"; Copenhagen and Nuuk call it a sovereignty-respecting pact — <em>that gap is the thing to watch.</em></li>
+                            <li><strong>Who decides in Nuuk:</strong> Premier Jens-Frederik Nielsen (Demokraatit) has led a broad coalition since April 2025; in Copenhagen, Mette Frederiksen leads a minority government formed in June 2026.</li>
                             <li><strong>U.S. Military Presence:</strong> Pituffik Space Base plus a reopened consulate in Nuuk (2020) and a $12.1M investment package.</li>
                             <li><strong>Chinese Interest:</strong> A Chinese state-owned company attempted to win Greenland airport contracts in 2018 — blocked after U.S. and Danish pressure.</li>
                             <li><strong>Danish Defense:</strong> Denmark announced a DKK 1.5B Arctic Capacity Package including drones, patrol vessels, and surveillance infrastructure.</li>
                             <li><strong>EU Partnership:</strong> EU-Greenland strategic partnership on raw materials (signed 2023) to develop secure supply chains.</li>
                         </ul>
-                        <div class="open-source-disclaimer">* Based on CSIS, Brookings, Atlantic Council, Danish DIIS, and CRS reporting</div>
+                        <div class="open-source-disclaimer">* Based on CSIS, Brookings, Atlantic Council, Danish DIIS, CRS, European Parliament Research Service (Oct 2026) and Al Jazeera (Sept 18 2026) reporting</div>
                         <div class="report-links-grid">
                             <a href="https://www.csis.org/" target="_blank" class="report-link">📑 CSIS</a>
                             <a href="https://www.brookings.edu/" target="_blank" class="report-link">📑 Brookings</a>
@@ -725,7 +750,7 @@
             const desc = a.description || '';
             let ds = 'Recent';
             if (published) { try { ds = new Date(published).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); } catch(e) { ds = published; } }
-            return `<div class="article-item"><div class="article-title">${title}</div>${desc ? `<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;">${desc.substring(0,200)}${desc.length > 200 ? '...' : ''}</div>` : ''}<div class="article-meta">${source} • ${ds}</div>${url !== '#' ? `<a href="${url}" target="_blank" class="article-link">Read article →</a>` : ''}</div>`;
+            return `<div class="article-item"><div class="article-title">${esc(title)}</div>${desc ? `<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;">${esc(desc.substring(0,200))}${desc.length > 200 ? '...' : ''}</div>` : ''}<div class="article-meta">${esc(source)} • ${ds}</div>${url !== '#' ? `<a href="${safeUrl(url)}" target="_blank" class="article-link">Read article →</a>` : ''}</div>`;
         }).join('');
     }
     function displayFallback() {
@@ -871,7 +896,7 @@
                 const sigs = d.signals || d.active_signals || [];
                 if (banner && sigs.length) {
                     banner.className = 'commodity-alert-banner alert-elevated show';
-                    banner.innerHTML = '<strong>ACTIVE SIGNALS</strong><span class="ab-meta">' + sigs.slice(0,3).map(s => (typeof s === 'string' ? s : (s.title || s.headline || ''))).join(' · ') + '</span>';
+                    banner.innerHTML = '<strong>ACTIVE SIGNALS</strong><span class="ab-meta">' + sigs.slice(0,3).map(s => esc(typeof s === 'string' ? s : (s.title || s.headline || ''))).join(' · ') + '</span>';
                 }
             } catch (e) {
                 if (prose) prose.textContent = 'Commodity pressure feed unavailable (tracker may be cold-starting) — absence reported honestly, not invented.';
@@ -879,5 +904,31 @@
         }
         loadCommodityPressure();
     </script>
+<script>
+/* TOP INDICATOR (v1.1, Nov 3 2026): one plain-language line from the rhetoric
+   interpreter. Absence-honest: if the tracker is not reporting, say so. */
+(async function () {
+    const t = document.getElementById('topIndicatorText'), m = document.getElementById('topIndicatorMeta');
+    const box = document.getElementById('topIndicator');
+    if (!t) return;
+    try {
+        const r = await fetch('https://asifa-europe-backend.onrender.com/api/rhetoric/greenland/summary');
+        const d = await r.json();
+        if (!d || !d.top_indicator) {
+            t.textContent = d && d.awaiting_scan ? 'First scan in progress -- unread, not calm.'
+                : 'The rhetoric tracker has not published a top indicator yet -- unread, not calm.';
+            return;
+        }
+        t.textContent = d.top_indicator;
+        if (d.thin_read) box.classList.add('thin');
+        const ago = d.scanned_at ? Math.round((Date.now() - new Date(d.scanned_at).getTime()) / 3600000) : null;
+        m.innerHTML = 'From the rhetoric tracker' + (ago != null ? ' &middot; scanned ' + (ago < 1 ? 'under an hour' : ago + 'h') + ' ago' : '')
+            + (d.thin_read ? ' &middot; <strong style="color:#f59e0b;">thin read</strong>' : '')
+            + ' &middot; <a href="rhetoric-greenland.html" style="color:inherit;">full tracker &rarr;</a>';
+    } catch (e) {
+        t.textContent = 'Rhetoric tracker unreachable this load -- unread, not calm.';
+    }
+})();
+</script>
 </body>
 </html>
