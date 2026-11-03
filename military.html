@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Military Asset & Deployment Tracker v3.0.0 - March 2026 -->
+<!-- Asifah Analytics - Military Asset & Deployment Tracker v3.0.0 - March 2026 · Nov 3 2026: drone_strike class + Belarus/Moldova/Kazakhstan in the Europe theatre -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- v3.0.0: Western Hemisphere theatre + Global/NORTHCOM US anchor -->
 <html lang="en" dir="ltr" data-theme="dark">
@@ -716,14 +716,14 @@ var TRANSLATIONS = {
 
 var currentLang = 'en';
 var TIER_LABELS = { 1:'TIER 1 \u2014 STRIKE', 2:'TIER 2 \u2014 ADVERSARY', 3:'TIER 3 \u2014 REGIONAL', 4:'TIER 4 \u2014 ALLIANCE' };
-var ASSET_ICONS = { carrier_strike_group:'\uD83D\uDEA2', submarine:'\uD83D\uDD31', bomber_deployment:'\u2708\uFE0F', amphibious_group:'\u2693', fighter_surge:'\uD83D\uDEE9\uFE0F', air_defense:'\uD83D\uDEE1\uFE0F', isr_assets:'\uD83D\uDC41\uFE0F', ground_forces:'\uD83E\uDE96', logistics:'\uD83D\uDCE6', missile_test:'\uD83D\uDE80', naval_exercise:'\u2693', base_evacuation:'\uD83D\uDEA8', military_posturing:'\u26A0\uFE0F', drone_incursion:'\uD83D\uDEF8', unspecified:'\u26A0\uFE0F' , hospital_ship:'\uD83C\uDFE5', maritime_coercion:'\uD83C\uDF0A' };
-var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Submarines', bomber_deployment:'Strategic Bombers', amphibious_group:'Amphibious Groups', fighter_surge:'Fighter Surges', air_defense:'Air Defense', isr_assets:'ISR Assets', ground_forces:'Ground Forces', logistics:'Logistics', missile_test:'Missile Tests', naval_exercise:'Naval Exercises', base_evacuation:'Base Evacuations', military_posturing:'Posturing/Threats', drone_incursion:'Drone Incursions', unspecified:'General Activity' , hospital_ship:'Hospital Ships', maritime_coercion:'Maritime Coercion (Gray Zone)' };
+var ASSET_ICONS = { carrier_strike_group:'\uD83D\uDEA2', submarine:'\uD83D\uDD31', bomber_deployment:'\u2708\uFE0F', amphibious_group:'\u2693', fighter_surge:'\uD83D\uDEE9\uFE0F', air_defense:'\uD83D\uDEE1\uFE0F', isr_assets:'\uD83D\uDC41\uFE0F', ground_forces:'\uD83E\uDE96', logistics:'\uD83D\uDCE6', missile_test:'\uD83D\uDE80', naval_exercise:'\u2693', base_evacuation:'\uD83D\uDEA8', military_posturing:'\u26A0\uFE0F', drone_incursion:'\uD83D\uDEF8', drone_strike:'\uD83D\uDCA5', unspecified:'\u26A0\uFE0F' , hospital_ship:'\uD83C\uDFE5', maritime_coercion:'\uD83C\uDF0A' };
+var ASSET_LABELS = { carrier_strike_group:'Carrier Strike Groups', submarine:'Submarines', bomber_deployment:'Strategic Bombers', amphibious_group:'Amphibious Groups', fighter_surge:'Fighter Surges', air_defense:'Air Defense', isr_assets:'ISR Assets', ground_forces:'Ground Forces', logistics:'Logistics', missile_test:'Missile Tests', naval_exercise:'Naval Exercises', base_evacuation:'Base Evacuations', military_posturing:'Posturing/Threats', drone_incursion:'Drone Incursions (into a country not at war)', drone_strike:'Drone Strikes (war zone)', unspecified:'General Activity' , hospital_ship:'Hospital Ships', maritime_coercion:'Maritime Coercion (Gray Zone)' };
 
 var THEATRE_ORDER = [
     { id:'global_northcom', label:'Global / NORTHCOM', icon:'\uD83C\uDF10', actors:['us'] },
     { id:'africa', label:'Africa Theatre', icon:'\uD83C\uDF0D', actors:['nigeria','somalia','mali','niger','burkina_faso','drc','sudan','south_sudan','libya','ethiopia','kenya','djibouti','central_african_republic','chad','mozambique','madagascar','equatorial_guinea','guinea','wagner_africa'] },
     { id:'asia_pacific', label:'Asia & The Pacific Theatre', icon:'\uD83C\uDF0F', actors:['china','taiwan','japan','philippines','vietnam','north_korea','pakistan','afghanistan','india','south_korea'] },
-    { id:'europe', label:'European Theatre', icon:'\uD83C\uDF0D', actors:['armenia','azerbaijan','cyprus','denmark','greece','greenland','hungary','nato','poland','russia','turkey','ukraine'] },
+    { id:'europe', label:'European Theatre', icon:'\uD83C\uDF0D', actors:['armenia','azerbaijan','belarus','cyprus','denmark','greece','greenland','hungary','kazakhstan','moldova','nato','poland','russia','turkey','ukraine'] },
     { id:'middle_east', label:'Middle East & North Africa', icon:'\uD83D\uDD4C', actors:['bahrain','egypt','iran','iraq','israel','jordan','kuwait','oman','qatar','saudi_arabia','uae','libya'] },
     { id:'western_hemisphere', label:'Western Hemisphere', icon:'\uD83C\uDF0E', actors:['brazil','colombia','cuba','haiti','mexico','panama','venezuela'] }
 ];
@@ -1750,6 +1750,7 @@ var ASSET_COLORS = {
     'base_evacuation':      '#ef4444',
     'ground_forces':        '#22c55e',
     'drone_incursion':      '#06b6d4',
+    'drone_strike':         '#f97316',   // v3.16: battlefield strikes, split from incursions
     'military_posturing':   '#6b7280',
     'isr_assets':           '#06b6d4',
     'logistics':            '#6b7280',
