@@ -361,6 +361,8 @@
         [data-theme="dark"] .ta-recently-changed { background:rgba(59,130,246,0.2); color:#60a5fa; }
         .ta-summary { font-size:11px; color:var(--text-secondary); line-height:1.4; }
         [data-theme="dark"] .ta-summary { color:#94a3b8; }
+        .ta-link-icon { font-size:16px; color:var(--text-muted); }
+        [data-theme="dark"] .ta-link-icon { color:#94a3b8; }
         .ta-loading { font-size:12px; color:var(--text-muted); font-style:italic; padding:10px; }
 
         /* ── WEATHER ── */
@@ -2329,26 +2331,30 @@ function renderTravelAdvisory(country,advisory,suffix){
         container.innerHTML=
             '<a href="'+safeUrl(advisory.link)+'" target="_blank" rel="noopener" class="travel-advisory-widget level-0"'+stop+'>'+
                 '<div class="ta-level-badge" style="background:#6b7280;"><div class="ta-level-num">?</div><div class="ta-level-word">Level</div></div>'+
-                '<div class="ta-body"><div class="ta-title-row"><div class="ta-title">🏛️ U.S. travel advisory — level not read this visit</div></div>'+
+                '<div class="ta-body"><div class="ta-title-row"><div class="ta-title">🏛️ U.S. travel advisory — feed not read yet</div></div>'+
                 '<div class="ta-summary">Open travel.state.gov for the current level ↗</div></div>'+
             '</a>';
         return;
     }
     var level=advisory.level||0;
     var color=advisory.level_color||'#6b7280';
+    // Nov 3 2026 (v1.6.1): same card as the ME page -- level badge, level words,
+    // the advisory's own first paragraph, and the change line when recent.
     var recentBadge=advisory.recently_changed?'<span class="ta-recently-changed">⬆ Recently Updated</span>':'';
-    var staleNote=advisory.stale?' · last good reading kept':'';
+    var changeLine=advisory.change_description?'<div class="ta-summary" style="margin-top:2px;font-style:italic;">'+esc(advisory.change_description)+'</div>':'';
+    var staleNote=advisory.stale?'<div class="ta-summary" style="margin-top:2px;">Last good reading kept — the feed missed this country on the latest pass.</div>':'';
     container.innerHTML=
-        '<a href="'+safeUrl(advisory.link)+'" target="_blank" rel="noopener" class="travel-advisory-widget level-'+level+'"'+stop+'>'+
+        '<a href="'+safeUrl(advisory.link)+'" target="_blank" rel="noopener" class="travel-advisory-widget level-'+esc(level)+'" title="View full advisory on travel.state.gov"'+stop+'>'+
             '<div class="ta-level-badge" style="background:'+esc(color)+';">'+
                 '<div class="ta-level-num">'+esc(level)+'</div>'+
                 '<div class="ta-level-word">Level</div>'+
             '</div>'+
             '<div class="ta-body">'+
                 '<div class="ta-title-row"><div class="ta-title">🏛️ U.S. State Dept: '+esc(advisory.level_short||'')+'</div>'+recentBadge+'</div>'+
-                '<div class="ta-summary">travel.state.gov — View full advisory'+staleNote+'</div>'+
+                '<div class="ta-summary">'+esc(advisory.short_summary||advisory.title||'View full advisory')+'</div>'+
+                changeLine+staleNote+
             '</div>'+
-            '<div style="font-size:16px;color:var(--text-muted);">↗</div>'+
+            '<div class="ta-link-icon">→</div>'+
         '</a>';
 }
 
