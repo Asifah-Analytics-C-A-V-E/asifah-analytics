@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics - United Kingdom Stability Index v1.0.0 - Nov 4, 2026 (Europe backend: uk_city_pulse) -->
+<!-- Gold Standard shell (from argentina-stability 1.0.1): sidebar drawer, Europe sweep, City pulse (uk_city_pulse.py), commodity card, polar card, dated analytic cards. EN full, FR labels. -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" data-theme="dark">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>United Kingdom Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
+    --watermark-opacity: 0.5;
+    --watermark-size: 500px;
+    --loading-overlay-bg: rgba(248,250,252,0.98);
+    --loading-spinner-bg: rgba(14,165,233,0.2);
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
+    --watermark-opacity: 1;
+    --watermark-size: 800px;
+    --loading-overlay-bg: rgba(6,13,26,0.98);
+    --loading-spinner-bg: rgba(56,189,248,0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+.watermark {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--watermark-size); height: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    pointer-events: none; z-index: 0;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: 135%; background-repeat: no-repeat; background-position: center;
+    border-radius: 50%; transition: all 0.4s ease;
+}
+
+/* ── CONTAINER + LAYOUT ── */
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+/* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+/* Gold Standard ambient layers: grid 40 + scanlines 2 (canon item 3) */
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px); }
+
+.menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+    background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+    color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+.sidebar-backdrop.show { display: block; }
+@media (max-width: 1199px) {
+    .menu-toggle { display: block; }
+    .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+        overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+        background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+        z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+    .nav-sidebar.open { transform: translateX(0); }
+}
+
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    padding: 22px 30px;
+    margin-bottom: 22px;
+    border-radius: 0 0 12px 12px;
+    color: var(--header-text);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; gap: 24px;
+}
+.header-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.header-logo {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    object-fit: cover;
+}
+.back-link {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    transition: all 0.3s;
+}
+.back-link:hover { background: rgba(56,189,248,0.08); }
+.header-content { flex: 1; }
+header h1 {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--header-text);
+    margin-bottom: 4px;
+}
+.subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+.header-controls { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-label { font-size: 11px; color: var(--text-muted); }
+.theme-toggle-switch {
+    width: 44px; height: 22px; border-radius: 22px;
+    background: var(--card-border); position: relative; cursor: pointer;
+    transition: background 0.3s;
+}
+[data-theme="dark"] .theme-toggle-switch { background: var(--accent); }
+.theme-toggle-slider {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; position: absolute; top: 2px; left: 2px;
+    transition: left 0.3s;
+}
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; align-self: flex-start; }
+.nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+.nav-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 8px;
+    background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.18);
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 12px; font-weight: 600;
+    transition: all 0.25s;
+}
+.nav-btn-label { flex: 1; }
+.nav-btn-status { font-size: 10px; color: var(--text-muted); margin-left: 8px; }
+.nav-btn:hover { transform: translateY(-1px); border-color: var(--accent); color: var(--text-primary); }
+.nav-btn.active-nav { background: linear-gradient(135deg, rgba(0,180,255,0.15), rgba(0,120,200,0.10)); border-color: rgba(0,200,255,0.5); color: var(--text-primary); }
+.nav-btn.active-nav:hover { box-shadow: 0 0 18px rgba(0,180,255,0.25); }
+.nav-btn.current-page { background: linear-gradient(135deg, rgba(0,200,255,0.20), rgba(0,150,200,0.15)); border-color: rgba(0,220,255,0.7); color: var(--text-primary); box-shadow: 0 0 16px rgba(0,200,255,0.22); }
+.nav-btn.inactive-nav { opacity: 0.4; cursor: default; border-color: rgba(100,100,100,0.2); background: transparent; }
+.nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(21,128,61,0.05)); }
+.nav-btn.rhetoric-btn:hover { border-color: rgba(34,197,94,0.8); box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+.nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+.nav-btn.rhetoric-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(21,128,61,0.12)); }
+.nav-btn.military-btn { border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(91,33,182,0.05)); }
+.nav-btn.military-btn:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 18px rgba(139,92,246,0.2); }
+.nav-btn.military-btn .nav-btn-status { color: #a78bfa; }
+.nav-btn.commodity-btn { border-color: rgba(250,204,21,0.4); background: linear-gradient(135deg, rgba(250,204,21,0.08), rgba(202,138,4,0.05)); }
+.nav-btn.commodity-btn:hover { border-color: rgba(250,204,21,0.8); box-shadow: 0 0 18px rgba(250,204,21,0.2); }
+.nav-btn.commodity-btn .nav-btn-status { color: #fde047; }
+.nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.05)); }
+.nav-btn.tracker-btn:hover { border-color: rgba(245,158,11,0.8); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
+.nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+.nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--loading-overlay-bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s; backdrop-filter: blur(8px);
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner {
+    width: 70px; height: 70px;
+    border: 4px solid var(--loading-spinner-bg);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-status {
+    text-align: center; color: var(--text-primary);
+    max-width: 460px; padding: 22px 28px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; box-shadow: var(--card-glow);
+}
+.loading-title {
+    font-size: 1rem; font-weight: 700; letter-spacing: 1.5px;
+    margin-bottom: 14px; color: var(--accent);
+    text-transform: uppercase;
+}
+.loading-progress { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* ── TRAVEL ADVISORY BANNERS ── */
+.advisory-row { margin-bottom: 12px; }
+
+/* ── RHETORIC PLACEHOLDER (no tracker yet — flag-only) ── */
+.rhetoric-placeholder {
+    background: linear-gradient(135deg, rgba(100,116,139,0.10), rgba(71,85,105,0.05));
+    border: 1px dashed rgba(100,116,139,0.35);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* ── GENERIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+.subsection-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* ── STABILITY SCORE PLACEHOLDER ── */
+.stability-score-big {
+    font-size: 3rem; font-weight: 700; line-height: 1;
+    color: var(--accent);
+}
+.stability-score-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px;
+}
+.stability-label {
+    font-size: 0.8rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;
+    color: white;
+}
+.stability-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 0.8rem;
+}
+.stability-meta-item {
+    padding: 8px 10px;
+    background: var(--article-bg);
+    border-radius: 6px;
+}
+.stability-meta-label {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.stability-meta-value { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
+
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.knowledge-library h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+}
+.library-icon { font-size: 1.2rem; }
+.open-source-disclaimer {
+    font-size: 0.78rem; color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 14px;
+}
+.knowledge-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+}
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.knowledge-card:hover { border-color: var(--accent); box-shadow: var(--card-glow); }
+.knowledge-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+}
+.knowledge-card.collapsed .knowledge-header { border-bottom: none; }
+.knowledge-header-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
+}
+.category-icon { font-size: 1.2rem; }
+.collapse-icon {
+    color: var(--text-muted); font-size: 0.7rem;
+    transition: transform 0.3s;
+}
+.knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+.knowledge-content { padding: 14px 16px; font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); }
+.knowledge-card.collapsed .knowledge-content { display: none; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content strong { color: var(--text-primary); }
+.knowledge-content ul { padding-left: 22px; margin-bottom: 10px; }
+.knowledge-content ul li { margin-bottom: 6px; }
+.report-links-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+.report-link {
+    padding: 5px 10px;
+    background: rgba(56,189,248,0.10);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 5px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.72rem; font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: rgba(56,189,248,0.18); transform: translateY(-1px); }
+
+/* ── ARTICLES SECTION (tabbed) ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.article-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+}
+.article-tab {
+    padding: 6px 14px;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.article-tab:hover { border-color: var(--accent); color: var(--accent); }
+.article-tab.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.article-tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    background: rgba(56,189,248,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.articles-list { list-style: none; padding: 0; max-height: 600px; overflow-y: auto; }
+.articles-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85rem; line-height: 1.5;
+}
+.articles-list li:last-child { border-bottom: none; }
+.articles-list a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.articles-list a:hover { color: var(--accent); }
+.articles-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+.article-source-pill {
+    display: inline-block;
+    padding: 1px 7px; border-radius: 3px;
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    margin-right: 6px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ── FOOTER ── */
+footer {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+@media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+/* v1.1.0: phones -- header controls wrap instead of pushing the page sideways */
+@media (max-width: 600px) {
+    html, body { overflow-x: hidden; }
+    .header-controls { align-items: flex-start; max-width: 100%; }
+    .header-controls .language-switcher { flex-wrap: wrap; }
+    header { flex-wrap: wrap; padding: 18px 16px 18px 60px; }
+}
+/* v1.1.0: the sticky sidebar rule above was overriding the mobile drawer,
+   so the hidden menu still took 200px and squeezed the page into a strip */
+@media (max-width: 1199px) {
+    .page-with-sidebar > .nav-sidebar { position: fixed; top: 0; height: 100vh; }
+}
+footer .footer-disclaimer {
+    padding: 12px 14px;
+    background: var(--article-bg); border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+}
+footer .footer-support { text-align: center; padding: 10px; font-size: 0.85rem; }
+footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+footer .footer-copyright {
+    text-align: center; font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+}
+
+/* ── LEVEL COLORS ── */
+.level-0 { background: #6b7280; color: white; }
+.level-1 { background: #3b82f6; color: white; }
+.level-2 { background: #f59e0b; color: white; }
+.level-3 { background: #f97316; color: white; }
+.level-4 { background: #ef4444; color: white; }
+.level-5 { background: #dc2626; color: white; }
+
+/* ── LOADING DOTS ── */
+.loading-dot { display: inline-block; animation: pulse 1.4s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+   ═══════════════════════════════════════════════════════════ */
+.language-switcher {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.lang-btn {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.lang-btn:hover {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.45);
+}
+.lang-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+[data-theme="light"] .lang-btn { background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.30); color: var(--text-primary); }
+[data-theme="light"] .lang-btn:hover { background: rgba(14,165,233,0.18); }
+[data-theme="light"] .lang-btn.active { background: var(--accent); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+   ═══════════════════════════════════════════════════════════ */
+.commodity-card {
+    background: var(--container-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .commodity-card {
+    box-shadow: 0 0 6px rgba(56,189,248,0.15);
+}
+.commodity-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--card-border);
+}
+.commodity-prose {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 10px 0 16px 0;
+    padding: 12px 14px;
+    background: rgba(2,6,23,0.5);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+}
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+
+.commodity-convergence-alert {
+    display: none;
+    margin: 10px 0 14px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+}
+.commodity-convergence-alert.active { display: block; }
+.cca-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f59e0b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.cca-detail {
+    font-size: 11px;
+    color: #fbbf24;
+    line-height: 1.5;
+}
+
+.commodity-alert-banner {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-size: 12px;
+    display: none;
+}
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+.commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.commodity-pill {
+    background: rgba(2,6,23,0.5);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+}
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 22px; line-height: 1; }
+.commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+.commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.commodity-pill-alert {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-pill-role-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.25);
+}
+.commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+.commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+.commodity-pill-price .price-up   { color: #22c55e; }
+.commodity-pill-price .price-down { color: #ef4444; }
+.commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+.commodity-top-signals {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(2,6,23,0.5);
+    border-radius: 6px;
+    border-left: 3px solid var(--text-muted);
+    font-size: 11px;
+}
+[data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+.commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+.commodity-top-signals a { color: var(--text-secondary); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+.commodity-top-signals a:hover { color: #38bdf8; }
+.commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+.strategic-linkage {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(56,189,248,0.05);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+/* ── RHETORIC TRACKER BANNER (canonical green pointer) ── */
+.rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+.rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+.rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+.rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+/* ── Argentina page (v1.0.0 Nov 4 2026) ── */
+.ar-body { font-size: 0.86rem; line-height: 1.62; color: var(--text-primary); }
+.ar-body p { margin: 0 0 10px; }
+.ar-sub { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; margin: -4px 0 12px; }
+.ar-muted { color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+.ar-live-line { margin-top: 8px; padding: 8px 12px; border-radius: 6px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.25); font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+.ar-live-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 10px; }
+.ar-stat { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; }
+.ar-stat-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.ar-stat-value { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.ar-coverage { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.ar-pulse-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.ar-tile { border: 1px solid var(--card-border); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 10px 12px; }
+.ar-tile.tier-warning { border-left-color: #f59e0b; } .ar-tile.tier-stress { border-left-color: #ef4444; } .ar-tile.tier-rally { border-left-color: #22c55e; }
+.ar-tile-name { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+.ar-tile-value { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 2px 0; }
+.ar-tile-chg { font-size: 0.78rem; color: var(--text-secondary); }
+.ar-tile-tier { font-size: 0.72rem; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
+.ar-tile-note { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
+.ar-pulse-read { margin-top: 10px; font-size: 0.82rem; line-height: 1.55; color: var(--text-primary); }
+.ar-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.ar-patron { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; }
+.ar-patron-head { font-weight: 800; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-primary); }
+.ar-sowhat { margin-top: 6px; padding: 10px 12px; border-radius: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); font-size: 0.84rem; line-height: 1.55; color: var(--text-primary); }
+.ar-watch { margin-top: 10px; }
+.ar-watch-title { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.ar-watch ul { margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); }
+.ar-pending { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #94a3b8; border: 1px dashed currentColor; border-radius: 4px; padding: 3px 8px; margin-bottom: 10px; }
+.adv-btn { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+@media (max-width: 760px) {
+    .ar-live-grid { grid-template-columns: 1fr 1fr; }
+    .ar-pulse-grid, .ar-two-col { grid-template-columns: 1fr; }
+    .advisory-row { flex-wrap: wrap; }
+}
+.ar-tba-live a, .ar-watch a { color: var(--accent, #38bdf8); text-decoration: underline; }
+
+/* ── Footer extra for the shared shell (Nov 4 2026) ──
+   The shell (resources/asifah-standard-shell.js) REWRITES <footer>: it keeps only a
+   <section data-asifah-footer-extra> and adds the standard title, pills, socials and
+   links. So the page-specific block lives in that section, and the <footer> carries
+   no inline width/size styles (those survived the rewrite and made it a 900px strip). */
+.asf-extra .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; text-align: left; }
+.asf-extra h4 { color: var(--text-primary, #e2f0fb); font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
+.asf-extra p { margin: 0; color: var(--text-secondary, #93c5fd); font-size: 14px; line-height: 1.6; }
+.asf-extra .asf-f-head { text-align: center; font-weight: 800; font-size: 16px; letter-spacing: 1.5px; color: var(--text-primary, #e2f0fb); margin-bottom: 14px; }
+@media (max-width: 900px) { .asf-extra .asf-f-grid { grid-template-columns: 1fr; } }
+
+/* ── UK page (Nov 4 2026) ── */
+.uk-lens { border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+.uk-lens-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.uk-lens-title { font-weight: 800; font-size: 0.92rem; color: var(--text-primary); }
+.uk-pill { font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 3px 9px; border-radius: 999px; color: #04111f; white-space: nowrap; }
+.uk-lens-read { font-size: 0.85rem; font-weight: 700; line-height: 1.5; color: var(--text-primary); margin-bottom: 8px; }
+.uk-lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; margin-top: 8px; }
+.uk-lane { border: 1px solid var(--card-border); border-left: 3px solid #64748b; border-radius: 8px; padding: 8px 10px; font-size: 0.78rem; line-height: 1.5; color: var(--text-secondary); }
+.uk-lane b { color: var(--text-primary); }
+.uk-lane ul { margin: 6px 0 0; padding-left: 16px; }
+.uk-lane a { color: var(--accent, #38bdf8); }
+.uk-read { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 0.84rem; line-height: 1.55; color: var(--text-primary); }
+.uk-read .k { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; font-weight: 800; }
+.uk-territories { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+.uk-terr { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; line-height: 1.55; color: var(--text-secondary); }
+.uk-terr h4 { margin: 0 0 4px; font-size: 0.86rem; color: var(--text-primary); }
+.uk-terr .w { margin-top: 6px; font-size: 0.74rem; color: var(--text-muted); }
+.uk-top { border: 1px solid var(--card-border); border-left: 4px solid var(--accent, #38bdf8); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
+.uk-top .k { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 4px; }
+.uk-top .t { font-size: 15px; font-weight: 700; line-height: 1.45; color: var(--text-primary); }
+.uk-top .m { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+@media (max-width: 760px) { .uk-lanes, .uk-territories { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="resources/asifah-standard-shell.css">
+<script src="resources/asifah-standard-shell.js" defer></script>
+<script src="resources/polar-gateways.js" defer></script>
+</head>
+<body>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-status">
+        <div class="loading-title" data-i18n="loading_title">Loading United Kingdom Stability Data</div>
+        <div class="loading-progress"><span data-i18n="loading_progress">Connecting to backend... This may take 20-40 seconds on cold cache.</span></div>
+    </div>
+</div>
+
+<div class="container">
+
+<header>
+    <div class="header-logo-wrap">
+        <a href="europe.html" class="back-link" data-i18n="back_to_europe">← Europe</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1 data-i18n="page_title">🇬🇧 UNITED KINGDOM STABILITY INDEX</h1>
+        <div class="subtitle" data-i18n="page_subtitle">The City of London &amp; Other People's Money · Gilts &amp; Fiscal Stress · Lloyd's &amp; the LME · Overseas Territories · Scotland &amp; Northern Ireland · AUKUS</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="language-switcher"><button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button><button class="lang-btn" onclick="switchLanguage('fr', this)">FR</button></div>
+        <div class="theme-toggle">
+            <span class="theme-toggle-label" data-i18n="theme_label">Theme</span>
+            <div class="theme-toggle-switch" onclick="toggleTheme()"><div class="theme-toggle-slider"></div></div>
+        </div>
+    </div>
+</header>
+
+<div class="page-with-sidebar">
+
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_asia_pacific">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_europe">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_me">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_wha">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_global_trackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_commodities">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_gpi">🌐 Global Pressure</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_market_watch">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_military">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_rhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_me">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_asia">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_europe">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_wha">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_uk">United Kingdom</div>
+    <a href="uk-stability.html" class="nav-btn current-page"><span class="nav-btn-label" data-i18n="nav_uk_stability">🇬🇧 UK Stability</span><span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span></a>
+</nav>
+
+<div class="main-content">
+
+<!-- ── TOP INDICATOR (live, from uk_city_pulse) ── -->
+<div class="uk-top" id="ukTop">
+    <div class="k" data-i18n="top_k">TOP INDICATOR — THE ONE THING TO KNOW</div>
+    <div class="t" id="ukTopText">Reading the City pulse…</div>
+    <div class="m" id="ukTopMeta"></div>
+</div>
+
+<!-- ── WORLDWIDE CAUTION ── -->
+<div class="advisory-row" style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%); border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);">
+    <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+</div>
+
+<!-- ── UK TRAVEL ADVISORY (dynamic) ── -->
+<div class="advisory-row" id="ukTravelAdvisory" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #22c55e; border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="font-size: 24px; flex-shrink: 0;">🇬🇧</div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+            <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — United Kingdom Travel Advisory</span>
+            <span id="ukTravelLevel" style="background: #6b7280; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LOADING…</span>
+        </div>
+        <div id="ukTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n="travel_text">Live level from the State Department feed.</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/united-kingdom-travel-advisory.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="travel_button">VIEW ADVISORY →</a>
+</div>
+
+<!-- ── SITUATION (dated) ── -->
+<div class="metric-card" id="ukSituationCard">
+    <div class="section-title" data-i18n="sit_title">🧭 Situation — as of November 4, 2026</div>
+    <div class="ar-body" data-i18n-html="sit_body">
+        <p><strong>Andy Burnham</strong> became prime minister on 20 July 2026 after replacing Keir Starmer as Labour leader — Britain's seventh prime minister in ten years. <strong>John Healey</strong> moved from Defence to the Treasury and delivered his first Budget on 28 October; markets took it calmly and the fiscal rules held. Labour and <strong>Reform UK</strong> have swapped the polling lead since the summer. In Scotland, the May 2026 election returned a pro-independence majority at Holyrood (SNP 58, Greens 15 of 129).</p>
+        <p><strong>The So What:</strong> Britain is not a conflict state; it is a <em>pressure</em> state, and the pressure runs through money. The City of London is where much of the world's influence is banked, insured and priced — which makes it both Britain's quiet global reach and its soft underbelly. Three things decide whether the UK's story stays political or becomes a stability story: whether the gilt market keeps trusting the Treasury, whether money and people keep choosing London, and whether the overseas edge (Falklands, Chagos, Akrotiri) stays a diplomatic file rather than a military one.</p>
+    </div>
+</div>
+
+<!-- ── LIVE NEWS READ (Europe scan) ── -->
+<div class="metric-card" id="ukLiveCard" style="border-left: 4px solid #38bdf8;">
+    <div class="section-title" data-i18n="live_title">📡 Live News Read</div>
+    <div class="ar-sub" data-i18n="live_sub">What the Europe scanner sees for the UK this cycle. This is the regional sweep, not a full rhetoric tracker — a dedicated UK tracker comes next.</div>
+    <div class="ar-live-grid">
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_level">Pressure read (30-day window)</div><div class="ar-stat-value" id="ukLiveLevel">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_articles">Articles</div><div class="ar-stat-value" id="ukLiveArticles">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_sources">Separate outlets</div><div class="ar-stat-value" id="ukLiveSources">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_military">Military posture</div><div class="ar-stat-value" id="ukLiveMil">—</div></div>
+    </div>
+    <div class="ar-coverage" id="ukCoverage"></div>
+</div>
+
+<!-- ── UK FINANCIAL PULSE ── -->
+<div class="metric-card" id="ukPulseCard" style="border-left: 4px solid #a78bfa;">
+    <div class="section-title" data-i18n="pulse_title">💹 United Kingdom Financial Pulse</div>
+    <div class="ar-sub" data-i18n="pulse_sub">The pound, what the government pays to borrow (10-year gilt), the global earners (FTSE 100) and domestic Britain (FTSE 250), the Lloyd's underwriters, and copper as a stand-in for the London Metal Exchange. Updated every 6 hours.</div>
+    <div class="ar-pulse-grid" id="ukPulseGrid"><div class="ar-muted" data-i18n="pulse_loading">Loading market data…</div></div>
+    <div class="uk-read" id="ukCredRead" style="display:none;"><div class="k" data-i18n="cred_k">The credibility check — gilts against the pound</div><div id="ukCredText"></div></div>
+    <div class="uk-read" id="ukHvwRead" style="display:none;"><div class="k" data-i18n="hvw_k">Home vs. world — FTSE 250 against FTSE 100</div><div id="ukHvwText"></div></div>
+    <div class="ar-sowhat" data-i18n-html="pulse_sowhat"><strong>So What:</strong> normally, higher gilt yields pull the pound <em>up</em> — better returns attract money. When yields jump <em>and</em> the pound falls at the same time, markets are not pricing growth; they are pricing the government. That was September 2022, when a budget took down a prime minister in six weeks. The check above is built to catch that shape early.</div>
+</div>
+
+<!-- ── CITY OF LONDON (three lenses) ── -->
+<div class="metric-card" id="ukCityCard" style="border-left: 4px solid #f59e0b;">
+    <div class="section-title" data-i18n="city_title">🏦 The City of London — three lenses</div>
+    <div class="ar-sub" data-i18n="city_sub">Ten narrow news lanes, read every 6 hours. Volume alone never goes above L2; L3 needs the same concrete development (sanctioned, seized, takeover, sell-off…) reported by two separate outlets. A lane that did not answer says so.</div>
+    <div id="ukLenses"><div class="ar-muted" data-i18n="city_loading">Loading the City read…</div></div>
+</div>
+
+<!-- ── FISCAL-STRESS ACTOR ── -->
+<div class="metric-card" id="ukFiscalCard" style="border-left: 4px solid #ef4444;">
+    <div class="section-title" data-i18n="fiscal_title">⚖️ Fiscal stress — tax, talent &amp; the gilt market</div>
+    <div class="uk-lens-head"><div class="uk-lens-read" id="ukFiscalRead" style="margin:0;">Loading…</div><span class="uk-pill" id="ukFiscalPill" style="background:#6b7280;">—</span></div>
+    <div class="ar-two-col" style="margin-top:10px;">
+        <div class="ar-patron"><div class="ar-patron-head" data-i18n="fiscal_a_head">Reading one — tax and talent</div><div class="ar-body" id="ukFiscalA" style="font-size:0.82rem;"></div></div>
+        <div class="ar-patron"><div class="ar-patron-head" data-i18n="fiscal_b_head">Reading two — fill the hole</div><div class="ar-body" id="ukFiscalB" style="font-size:0.82rem;"></div></div>
+    </div>
+    <div class="ar-sowhat" id="ukFiscalWhy"></div>
+</div>
+
+<!-- ── OVERSEAS TERRITORIES & BASES ── -->
+<div class="metric-card" id="ukTerritoriesCard" style="border-left: 4px solid #22d3ee;">
+    <div class="section-title" data-i18n="terr_title">🌍 The overseas edge — territories &amp; bases</div>
+    <div class="ar-sub" data-i18n="terr_sub">Where a British domestic decision becomes someone else's security question. Dated facts; re-verified on a 45-day cycle (next ~Dec 19, 2026).</div>
+    <div class="uk-territories">
+        <div class="uk-terr"><h4>🇫🇰 Falklands &amp; the South Atlantic</h4>Argentina re-opened the dispute in September 2026 after President Trump declined to say the US would back Britain; Milei sanctioned firms on the Sea Lion oil project. Britain's garrison and Typhoons at Mount Pleasant outclass anything Argentina can field. The islands and South Georgia anchor Britain's Antarctic claim.<div class="w"><b>Watch:</b> US wording on sovereignty · Sea Lion contractors · incidents at sea · see the <a href="argentina-stability.html">Argentina page</a></div></div>
+        <div class="uk-terr"><h4>🇬🇮 Gibraltar</h4>The UK–EU treaty on Gibraltar was signed in July 2026: the border fence with Spain came down and checks moved to the port and airport, with Schengen-style controls run with EU officials. The naval base and its submarine berth stay British.<div class="w"><b>Watch:</b> ratification and implementation glitches · Spanish politics · any change to military access</div></div>
+        <div class="uk-terr"><h4>🏝️ Chagos &amp; Diego Garcia</h4>Britain signed a treaty in May 2025 to hand the Chagos Islands to Mauritius while keeping the US–UK base on Diego Garcia on a long lease. Ratification stalled in 2026 after Washington turned against the deal; Burnham told Mauritius in September he would work "with the USA" towards ratification.<div class="w"><b>Watch:</b> the Commons bill · US statements · Chinese interest in Mauritius · base access during Middle East operations</div></div>
+        <div class="uk-terr"><h4>🇨🇾 Akrotiri &amp; Dhekelia (Cyprus)</h4>Britain's two Sovereign Base Areas. On 2 March 2026 an Iranian-made drone launched from Lebanon hit RAF Akrotiri, causing limited damage — the first strike on a British base in the Iran war. Akrotiri flies strike and surveillance missions over the Middle East.<div class="w"><b>Watch:</b> drone or rocket incidents · Cypriot politics on the bases · see the <a href="cyprus-stability.html">Cyprus page</a></div></div>
+    </div>
+    <div class="ar-sowhat" data-i18n-html="terr_sowhat"><strong>So What:</strong> each of these is a promise Britain made to someone else — islanders, Washington, Mauritius, Cyprus. The common thread in 2026 is the <strong>American guarantee</strong>: on the Falklands and on Chagos, Washington's position moved and London had to adjust. Read the territories as a gauge of how much room Britain has to act on its own.</div>
+</div>
+
+<!-- ── ANTARCTIC GATEWAY (shared polar card, reads WHA polar_gateways.py) ── -->
+<div class="metric-card" style="border-left: 4px solid #22d3ee;">
+    <div class="section-title" data-i18n="ant_title">🧊 Britain at the bottom of the world</div>
+    <div class="ar-sub" data-i18n="ant_sub">Through the Falklands, South Georgia and the British Antarctic Territory, Britain is the third claimant on the Antarctic Peninsula with Argentina and Chile. The shared polar card below reads the southern gateway live.</div>
+    <div data-polar-gateway="antarctic"></div>
+</div>
+
+<!-- ── COMMODITY EXPOSURE ── -->
+<div class="commodity-card" id="commodityCard">
+    <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+    <div class="commodity-prose" id="commodityProse"><span data-i18n="commodity_prose_loading">Loading commodity exposure profile…</span></div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"><div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;" data-i18n="commodity_loading">⏳ Loading commodity exposure tiles…</div></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;">
+        <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
+        <div id="commodityTopSignalsList"></div>
+    </div>
+    <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Britain produces little; it <strong>prices and insures</strong>. The London Metal Exchange sets world prices for copper, aluminium, nickel and zinc (and since 2024 refuses new Russian metal); London is the biggest gold market and the Bank of England vaults hold gold for central banks around the world; Brent crude trades in London; Lloyd's writes much of the world's war-risk shipping cover. At home, Britain is exposed to <strong>gas</strong> — it heats most homes and sets the electricity price.</div>
+</div>
+
+<!-- ── RHETORIC TRACKER (coming next) ── -->
+<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
+    <div class="section-title" data-i18n="rh_title">📡 UK Rhetoric &amp; Pressure Tracker</div>
+    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">COMING NEXT</div>
+    <div class="ar-sub" data-i18n="rh_sub">Planned actors: the Burnham government · Reform UK and the opposition · the City &amp; fiscal stress · the overseas territories · Scotland &amp; Northern Ireland · the US relationship · Ukraine · AUKUS. With a mini spoke-and-wheel (Falklands, Gibraltar, Chagos, Cyprus bases, Northern Ireland, the US, Scotland, Ukraine, AUKUS, and the Caribbean Commonwealth). It is what will feed the UK into the Europe regional summary and the Global Pressure Index as a full country.</div>
+</div>
+
+<!-- ── MAP ── -->
+<div class="map-section">
+    <h2 data-i18n="map_title">🗺️ United Kingdom — Strategic Overview</h2>
+    <div class="map-subtitle" data-i18n="map_subtitle">London and the City, Faslane (the nuclear deterrent), the North Sea, Northern Ireland and the Irish Sea border, and the GIUK gap that Russian submarines must cross.</div>
+    <div style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden;">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-11%2C49.5%2C3%2C61&layer=mapnik&marker=51.5134%2C-0.0890" width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;" title="Map of the United Kingdom"></iframe>
+    </div>
+</div>
+
+<!-- ── KNOWLEDGE LIBRARY ── -->
+<div class="knowledge-library">
+    <h2><span class="library-icon">📚</span><span data-i18n="kl_title">Knowledge Library</span></h2>
+    <p class="open-source-disclaimer" data-i18n="kl_disclaimer">Background compiled from open-source reporting. Dated facts are re-verified on a 45-day cycle (next ~Dec 19, 2026).</p>
+    <div class="knowledge-categories">
+        <div class="knowledge-card collapsed" id="card-city">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('city')"><div class="knowledge-header-title"><span class="category-icon">🏦</span><span data-i18n="kl_city_title">How the City works — and why others use it</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content">
+                <p><strong>The machinery:</strong> English law and courts that foreigners trust, a deep property market, the London Stock Exchange, Lloyd's of London, the London Metal Exchange, the gold market and Bank of England vaults, and the network of overseas territories and Crown Dependencies with their own company registries. Together they make London the place where a lot of the world's money is held, insured and argued over.</p>
+                <p><strong>Why it matters for influence:</strong> after 2022 the "Londongrad" years ended in sanctions (OFSI freezes, the register of overseas entities, unexplained wealth orders) — but enforcement has been slow. Gulf sovereign funds are now among the largest buyers of British assets, from property to football clubs, and in 2024–25 the fight over who may own a national newspaper (the Telegraph) became a test case. Chinese money is smaller but politically sharper (the Royal Mint Court embassy).</p>
+                <div class="report-links-grid"><a href="https://www.gov.uk/government/organisations/office-of-financial-sanctions-implementation" target="_blank" class="report-link">📑 OFSI</a><a href="https://www.transparency.org.uk/" target="_blank" class="report-link">📑 Transparency International UK</a><a href="https://www.cityoflondon.gov.uk/" target="_blank" class="report-link">📑 City of London Corporation</a></div>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-gilts">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('gilts')"><div class="knowledge-header-title"><span class="category-icon">📉</span><span data-i18n="kl_gilts_title">September 2022 — when the gilt market ended a government</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content">
+                <p>On 23 September 2022 the "mini-budget" announced large unfunded tax cuts. Within days the pound hit a record low against the dollar and long-dated gilt yields jumped; pension funds using leveraged "LDI" strategies faced collateral calls, and on 28 September the Bank of England began emergency bond buying. Liz Truss resigned on 20 October. The FTSE 100, full of overseas earners, barely moved — the damage was in the pound, gilts and the government's credibility.</p>
+                <p><strong>Why it is the template:</strong> it showed that a bond market can discipline a British government in weeks. The credibility check on this page looks for that shape: yields up <em>and</em> the pound down at once.</p>
+                <div class="report-links-grid"><a href="https://www.bankofengland.co.uk/" target="_blank" class="report-link">📑 Bank of England</a><a href="https://obr.uk/" target="_blank" class="report-link">📑 Office for Budget Responsibility</a><a href="https://www.dmo.gov.uk/" target="_blank" class="report-link">📑 UK Debt Management Office</a></div>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-politics">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('politics')"><div class="knowledge-header-title"><span class="category-icon">🏛️</span><span data-i18n="kl_pol_title">Politics — Burnham, Reform and the union</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content">
+                <p><strong>Government:</strong> Andy Burnham (PM since 20 July 2026), Chancellor John Healey, Foreign Secretary Ed Miliband. Labour won a large majority in July 2024; the next general election is due by mid-2029.</p>
+                <p><strong>Opposition:</strong> Reform UK under Nigel Farage led the polls for much of 2025–26; Labour drew level after Burnham took over. The Conservatives (Kemi Badenoch) trail both.</p>
+                <p><strong>The union:</strong> the May 2026 Holyrood election left the SNP the largest party (58 of 129) and a pro-independence majority with the Greens; John Swinney is pressing for a second referendum. In Northern Ireland the Windsor Framework governs trade across the Irish Sea.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-defence">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('defence')"><div class="knowledge-header-title"><span class="category-icon">🛡️</span><span data-i18n="kl_def_title">Defence, AUKUS &amp; Ukraine</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content">
+                <p><strong>Nuclear:</strong> Britain's deterrent is four Vanguard-class submarines with Trident missiles, based at Faslane in Scotland — which is why Scottish independence is also a defence question.</p>
+                <p><strong>AUKUS:</strong> with the US and Australia, Britain is designing the next generation of nuclear-powered attack submarines (SSN-AUKUS); Australia's boats will be part-built in Adelaide and part in Barrow-in-Furness.</p>
+                <p><strong>Ukraine:</strong> Britain has been one of Kyiv's largest military backers (Storm Shadow missiles, training) and co-leads the "coalition of the willing" planning for a post-ceasefire force. Russian spy ships and submarines around British cables and pipelines are a standing concern.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── RECENT ARTICLES ── -->
+<div class="articles-section">
+    <div class="section-title" data-i18n="articles_title">📰 Recent United Kingdom Articles (Europe scan)</div>
+    <ul class="articles-list" id="articlesList">
+        <li style="text-align: center; color: var(--text-muted); padding: 30px;"><span data-i18n="articles_loading">Loading articles...</span></li>
+    </ul>
+</div>
+
+<footer class="asifah-footer">
+    <section class="asf-extra" data-asifah-footer-extra>
+        <div class="asf-f-head">ASIFAH ANALYTICS — UNITED KINGDOM</div>
+        <div class="asf-f-grid">
+            <div><h4>About this page</h4><p>Backend: asifa-europe-backend.onrender.com · City pulse refreshes every 6 hours; the Europe scan every 6–12 hours.</p></div>
+            <div><h4>Data Sources</h4><p>Google News (en-GB), GDELT, RSS, NewsAPI and Reddit via the Europe scan; Yahoo Finance, Stooq and the Bank of England statistical database for market tiles; the Commodities and Military trackers; the shared polar-gateway card; US State Department travel advisories.</p></div>
+            <div><h4>Methodology</h4><p>Information, not analysis: market reads, City lanes and the Knowledge Library are dated. News lanes cap at L2 on volume; L3 needs two separate outlets reporting the same concrete development. Evidence-graded analysis (red lines, So What) will live on the UK rhetoric tracker.</p></div>
+        </div>
+    </section>
+    <!-- Fallback if the shared shell does not load; the shell replaces everything below. -->
+    <div style="text-align:center;margin-top:16px;"><a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a> · <a href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a> · <a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
+</footer>
+
+</div> <!-- /main-content -->
+</div> <!-- /page-with-sidebar -->
+</div> <!-- /container -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// UNITED KINGDOM STABILITY — Frontend Logic v1.0.0 (Nov 4 2026)
+// Live sources:
+//   Europe  /api/europe/travel-advisories      State Dept level
+//   Europe  /api/europe/threat/uk              regional sweep (articles, read, coverage)
+//   Europe  /api/europe/uk/city-pulse          markets + City lenses + fiscal actor (uk_city_pulse.py)
+//   Europe  /api/europe/commodity/uk           commodity exposure (proxied from ME)
+//   ME      /api/military-posture/uk           UK actor (military tracker v3.18)
+//   WHA     /api/wha/polar-gateways/antarctic  via resources/polar-gateways.js
+// EN full; FR labels (long analytic cards stay in English).
+// ════════════════════════════════════════════════════════════
+const EUROPE_BACKEND = 'https://asifa-europe-backend.onrender.com';
+const ME_BACKEND = 'https://asifah-backend.onrender.com';
+
+const TRANSLATIONS = {
+  en: {},
+  fr: {
+    back_to_europe: '← Europe',
+    page_title: '🇬🇧 INDICE DE STABILITÉ DU ROYAUME-UNI',
+    page_subtitle: 'La City de Londres et l’argent des autres · Gilts et tension budgétaire · Lloyd’s et le LME · Territoires d’outre-mer · Écosse et Irlande du Nord · AUKUS',
+    theme_label: 'Thème', loading_title: 'Chargement des données du Royaume-Uni',
+    nav_dashboards: 'Tableaux de bord', nav_global_trackers: 'Suivis mondiaux', nav_rhetoric: 'Rhétorique régionale',
+    nav_uk: 'Royaume-Uni', nav_uk_stability: '🇬🇧 Stabilité du Royaume-Uni', nav_here: '◉ Vous êtes ici',
+    top_k: 'INDICATEUR PRINCIPAL — L’ESSENTIEL',
+    ww_caution_label: '⚠️ Département d’État américain — Mise en garde mondiale',
+    ww_caution_button: 'VOIR →', travel_button: 'VOIR →',
+    travel_label: 'Département d’État américain — Avis aux voyageurs, Royaume-Uni',
+    sit_title: '🧭 Situation — au 4 novembre 2026',
+    live_title: '📡 Lecture en direct', live_level: 'Lecture de pression (30 jours)', live_articles: 'Articles',
+    live_sources: 'Médias distincts', live_military: 'Posture militaire',
+    pulse_title: '💹 Pouls financier du Royaume-Uni', pulse_loading: 'Chargement des données de marché…',
+    cred_k: 'Le test de crédibilité — gilts contre livre sterling', hvw_k: 'Intérieur contre monde — FTSE 250 contre FTSE 100',
+    city_title: '🏦 La City de Londres — trois angles', city_loading: 'Chargement…',
+    fiscal_title: '⚖️ Tension budgétaire — impôts, talents et marché des gilts',
+    fiscal_a_head: 'Lecture un — impôts et talents', fiscal_b_head: 'Lecture deux — combler le trou',
+    terr_title: '🌍 Les marges — territoires et bases', ant_title: '🧊 La Grande-Bretagne au bout du monde',
+    commodity_title: '🛢️ Exposition aux matières premières et pression stratégique',
+    rh_title: '📡 Suivi de la rhétorique et des pressions — Royaume-Uni', rh_pending: 'PROCHAINEMENT',
+    map_title: '🗺️ Royaume-Uni — Vue stratégique', kl_title: 'Bibliothèque',
+    articles_title: '📰 Articles récents sur le Royaume-Uni (balayage Europe)', articles_loading: 'Chargement des articles…',
+  },
+};
+
+// ── language ────────────────────────────────────────────────
+let currentLang = 'en';
+const EN_DEFAULTS = {};
+function captureDefaults() {
+    document.querySelectorAll('[data-i18n]').forEach(function (e) { EN_DEFAULTS['t:' + e.getAttribute('data-i18n')] = e.textContent; });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (e) { EN_DEFAULTS['h:' + e.getAttribute('data-i18n-html')] = e.innerHTML; });
+}
+function applyTranslations() {
+    const t = TRANSLATIONS[currentLang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function (e) {
+        const k = e.getAttribute('data-i18n');
+        e.textContent = (t[k] !== undefined) ? t[k] : EN_DEFAULTS['t:' + k];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (e) {
+        const k = e.getAttribute('data-i18n-html');
+        e.innerHTML = (t[k] !== undefined) ? t[k] : EN_DEFAULTS['h:' + k];
+    });
+    document.documentElement.setAttribute('lang', currentLang);
+}
+function switchLanguage(lang, button) {
+    currentLang = lang;
+    try { localStorage.setItem('asifah-uk-lang', lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.remove('active'); });
+    if (button) button.classList.add('active');
+    applyTranslations();
+}
+try { const s = localStorage.getItem('asifah-uk-lang'); if (s && TRANSLATIONS[s]) currentLang = s; } catch (e) {}
+
+// ── theme ───────────────────────────────────────────────────
+function initTheme() { try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asifah-theme') || 'dark'); } catch (e) {} }
+function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch (e) {}
+}
+initTheme();
+
+// ── helpers ─────────────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+}
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? escapeHtml(s) : '#'; }
+function em(s) { return String(s || '').replace(/--/g, '—'); }
+function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso); if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    const m = Math.round((Date.now() - d) / 60000);
+    if (m < 60) return m + 'm ago'; if (m < 1440) return Math.round(m / 60) + 'h ago';
+    return Math.round(m / 1440) + 'd ago';
+}
+function toggleKnowledgeCard(id) { const c = el('card-' + id); if (c) c.classList.toggle('collapsed'); }
+function hideLoadingOverlay() { const o = el('loadingOverlay'); if (o) { o.classList.add('hidden'); setTimeout(function () { o.style.display = 'none'; }, 600); } }
+async function getJSON(base, path) {
+    const r = await fetch(base + path);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+}
+const LVL_COL = ['#6b7280', '#38bdf8', '#f59e0b', '#f97316', '#ef4444', '#dc2626'];
+const LVL_TXT = ['L0 quiet', 'L1 routine', 'L2 busy', 'L3 corroborated', 'L4', 'L5'];
+
+// ── travel advisory ─────────────────────────────────────────
+async function loadTravelAdvisory() {
+    try {
+        const data = await getJSON(EUROPE_BACKEND, '/api/europe/travel-advisories');
+        const ad = data && data.advisories && data.advisories.uk;
+        if (!ad) { el('ukTravelLevel').textContent = 'NOT READ'; return; }
+        const lvl = ad.level || 1, col = ({1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'})[lvl] || '#6b7280';
+        el('ukTravelLevel').textContent = 'LEVEL ' + lvl; el('ukTravelLevel').style.background = col;
+        el('ukTravelAdvisory').style.borderColor = col;
+        const txt = [ad.level_label, ad.short_summary, ad.change_description].filter(Boolean).join(' — ');
+        if (txt) el('ukTravelText').textContent = txt;
+    } catch (e) { el('ukTravelLevel').textContent = 'NOT READ'; }
+}
+
+// ── live read (Europe sweep) ────────────────────────────────
+function renderLive(d) {
+    const sb = d.scoring_breakdown || {};
+    const n = d.total_articles || 0, src = sb.unique_sources || 0;
+    if (d.pending_scan || d.probability == null) {
+        el('ukLiveLevel').textContent = 'Not scanned yet';
+        el('ukCoverage').textContent = 'The Europe scanner has not reached the UK yet (it was added on Nov 4) — unread, not calm.';
+        return;
+    }
+    el('ukLiveLevel').textContent = d.probability + '%';
+    el('ukLiveArticles').textContent = n;
+    el('ukLiveSources').textContent = src;
+    let cov;
+    if (!n) cov = 'No UK articles reached the scanner this cycle — unread, not calm.';
+    else if (src < 3 || n < 30) cov = 'Thin coverage: ' + n + ' articles from ' + src + ' outlet' + (src === 1 ? '' : 's') + '. Treat this read as a sample, not a picture.';
+    else cov = n + ' articles from ' + src + ' separate outlets this cycle. The percentage is the Europe card’s pressure read (a weighted measure of escalation language in the coverage), not a probability of war.';
+    el('ukCoverage').textContent = cov;
+    if (d.last_updated || d.timestamp) el('lastUpdated').textContent = 'Last scan: ' + formatDate(d.last_updated || d.timestamp);
+}
+async function loadLive() {
+    try {
+        const d = await getJSON(EUROPE_BACKEND, '/api/europe/threat/uk');
+        renderLive(d);
+        renderArticles(d.articles_en || []);
+    } catch (e) {
+        el('ukCoverage').textContent = 'Europe scanner unavailable this load — unread, not calm.';
+        renderArticles(null);
+    }
+}
+function renderArticles(list) {
+    const ul = el('articlesList'); if (!ul) return;
+    if (!list || !list.length) {
+        ul.innerHTML = '<li style="color:var(--text-muted);font-style:italic;padding:20px;text-align:center;">No articles yet — the cache may be warming up.</li>';
+        return;
+    }
+    ul.innerHTML = list.slice(0, 30).map(function (a) {
+        const src = (a.source && a.source.name) || a.source || '';
+        return '<li><a href="' + safeUrl(a.url) + '" target="_blank" rel="noopener">' + escapeHtml(a.title || 'Untitled') + '</a>' +
+            '<div class="articles-meta"><span class="article-source-pill">' + escapeHtml(String(src).slice(0, 24).toUpperCase() || 'SRC') + '</span>' +
+            (a.publishedAt ? escapeHtml(formatDate(a.publishedAt)) : '') + '</div></li>';
+    }).join('');
+}
+
+// ── military posture (ME tracker, UK actor since v3.18) ─────
+async function loadMilitary() {
+    try {
+        const d = await getJSON(ME_BACKEND, '/api/military-posture/uk');
+        const hasSignals = (d.top_signals || []).length > 0 || (d.military_bonus || 0) > 0;
+        el('ukLiveMil').textContent = hasSignals ? String(d.alert_label || d.alert_level || 'Normal') : 'No signals this scan';
+        el('ukLiveMil').title = hasSignals ? '' : 'The UK actor is tracked (Royal Navy, Akrotiri, Falklands garrison, AUKUS) but nothing matched this scan.';
+    } catch (e) { el('ukLiveMil').textContent = 'Unread'; }
+}
+
+// ── City pulse: markets, reads, lenses, fiscal actor ────────
+const TIER_TXT = { stable: 'steady', warning: 'under some pressure', stress: 'under stress', rally: 'strong move' };
+function tileHTML(t) {
+    if (!t || t.value == null) {
+        return '<div class="ar-tile"><div class="ar-tile-name">' + escapeHtml(t && t.name || '') + '</div>' +
+            '<div class="ar-tile-value">—</div><div class="ar-tile-tier" style="color:var(--text-muted)">Not read this cycle</div>' +
+            '<div class="ar-tile-note">' + escapeHtml(t && t.note || '') + '</div></div>';
+    }
+    const isYield = t.unit === '%';
+    let chg;
+    if (isYield) {
+        const b1 = t.change_bp_24h, b30 = t.change_bp_30d;
+        chg = (b1 == null ? '' : (b1 >= 0 ? '+' : '') + b1.toFixed(0) + 'bp today') + (b30 == null ? '' : ' · ' + (b30 >= 0 ? '+' : '') + b30.toFixed(0) + 'bp 30d');
+    } else {
+        const c = t.change_pct_24h, c30 = t.change_pct_30d;
+        chg = (c == null ? '' : (c >= 0 ? '+' : '') + Number(c).toFixed(2) + '% today') + (c30 == null ? '' : ' · ' + (c30 >= 0 ? '+' : '') + Number(c30).toFixed(1) + '% 30d');
+    }
+    const val = isYield ? Number(t.value).toFixed(2) + '%' : Number(t.value).toLocaleString(undefined, {maximumFractionDigits: t.name.indexOf('GBP') >= 0 ? 4 : 2});
+    return '<div class="ar-tile tier-' + escapeHtml(t.tier || 'stable') + '">' +
+        '<div class="ar-tile-name">' + escapeHtml(t.name) + (t.is_substitute ? ' · <span title="Substitute or proxy source">proxy</span>' : '') + '</div>' +
+        '<div class="ar-tile-value">' + escapeHtml(val) + '</div>' +
+        '<div class="ar-tile-chg">' + escapeHtml(chg) + '</div>' +
+        '<div class="ar-tile-tier">' + escapeHtml(TIER_TXT[t.tier] || 'steady') + (isYield ? ' (rising yield = stress)' : '') + '</div>' +
+        '<div class="ar-tile-note">' + escapeHtml(t.note || '') + (t.members_read ? ' Read: ' + escapeHtml(t.members_read) + '.' : '') +
+        ' <span style="opacity:.7">— ' + escapeHtml(t.source || '') + '</span></div></div>';
+}
+function laneHTML(l) {
+    const col = l.state !== 'read' ? '#6b7280' : LVL_COL[Math.min(5, l.level || 0)];
+    const items = (l.items || []).slice(0, 3).map(function (i) {
+        return '<li>' + (i.event ? '⚡ ' : '') + '<a href="' + safeUrl(i.url) + '" target="_blank" rel="noopener">' + escapeHtml(i.title) + '</a> <span style="opacity:.7">— ' + escapeHtml(i.outlet || '') + '</span></li>';
+    }).join('');
+    return '<div class="uk-lane" style="border-left-color:' + col + ';"><b>' + escapeHtml(l.label) + '</b> · ' +
+        '<span style="color:' + col + ';font-weight:800;">' + (l.state !== 'read' ? 'UNREAD' : LVL_TXT[l.level || 0]) + '</span><br>' +
+        escapeHtml(em((function(x){return x.charAt(0).toUpperCase()+x.slice(1);})(String(l.sentence || '').replace(l.label + ': ', '')))) + (items ? '<ul>' + items + '</ul>' : '') + '</div>';
+}
+function renderCity(d) {
+    // top indicator
+    el('ukTopText').textContent = em(d.top_indicator || 'City pulse unread this load — unread, not calm.');
+    el('ukTopMeta').textContent = 'City pulse · ' + (d.tiles_live || 0) + '/6 market tiles · ' + (d.lanes_read || 0) + '/10 news lanes · scanned ' + formatDate(d.scanned_at);
+    // tiles
+    const fp = d.financial_pulse || {};
+    const order = fp.tile_order || Object.keys(fp.tiles || {});
+    el('ukPulseGrid').innerHTML = order.map(function (k) { return tileHTML((fp.tiles || {})[k]); }).join('') ||
+        '<div class="ar-muted">Market data unavailable this load — a fetch failure, not a quiet market.</div>';
+    const cred = d.credibility_check || {}, hvw = d.home_vs_world || {};
+    if (cred.text) {
+        el('ukCredRead').style.display = 'block';
+        const col = cred.state === 'credibility_stress' ? '#ef4444' : cred.state === 'rates_rising' ? '#f59e0b' : cred.state === 'unread' ? '#6b7280' : '#22c55e';
+        el('ukCredRead').style.borderLeft = '4px solid ' + col;
+        el('ukCredText').textContent = em(cred.text);
+    }
+    if (hvw.text) { el('ukHvwRead').style.display = 'block'; el('ukHvwText').textContent = em(hvw.text); }
+    if (d.scanned_at) el('lastUpdated').textContent = 'City pulse: ' + formatDate(d.scanned_at);
+    // lenses
+    const lanes = d.lanes || {};
+    const lensOrder = ['foreign_money', 'world_desk', 'home_economy'];
+    el('ukLenses').innerHTML = lensOrder.map(function (lid) {
+        const L = (d.lenses || {})[lid]; if (!L) return '';
+        const allUnread = (L.unread_lanes || []).length === (L.lanes || []).length;
+        const col = allUnread ? '#6b7280' : LVL_COL[Math.min(5, L.level || 0)];
+        return '<div class="uk-lens" style="border-left:4px solid ' + col + ';"><div class="uk-lens-head"><span class="uk-lens-title">' + escapeHtml(L.title) + '</span>' +
+            '<span class="uk-pill" style="background:' + col + ';">' + (allUnread ? 'UNREAD' : LVL_TXT[L.level || 0].toUpperCase()) + '</span></div>' +
+            '<div class="uk-lens-read">' + escapeHtml(em(L.sentence)) + '</div>' +
+            '<div class="ar-sowhat"><strong>So What:</strong> ' + escapeHtml(em(L.so_what)) + '</div>' +
+            '<div class="uk-lanes">' + (L.lanes || []).map(function (id) { return lanes[id] ? laneHTML(lanes[id]) : ''; }).join('') + '</div></div>';
+    }).join('');
+    // fiscal actor
+    const a = d.fiscal_actor || {};
+    el('ukFiscalRead').textContent = em(a.reading || '—');
+    el('ukFiscalPill').textContent = LVL_TXT[Math.min(5, a.level || 0)].toUpperCase();
+    el('ukFiscalPill').style.background = LVL_COL[Math.min(5, a.level || 0)];
+    const two = a.two_readings || [];
+    el('ukFiscalA').textContent = em(two[0] || '');
+    el('ukFiscalB').textContent = em(two[1] || '');
+    el('ukFiscalWhy').innerHTML = '<strong>So What:</strong> ' + escapeHtml(em(a.why_it_matters || ''));
+}
+function cityUnread(why) {
+    el('ukTopText').textContent = 'City pulse unread this load (' + why + ') — unread, not calm.';
+    el('ukPulseGrid').innerHTML = '<div class="ar-muted">Market data unavailable this load — a fetch failure, not a quiet market.</div>';
+    el('ukLenses').innerHTML = '<div class="ar-muted">City lanes unread this load (' + escapeHtml(why) + ').</div>';
+    el('ukFiscalRead').textContent = 'Unread this load.';
+}
+async function loadCity() {
+    try {
+        const d = await getJSON(EUROPE_BACKEND, '/api/europe/uk/city-pulse');
+        if (!d || d.success === false) { cityUnread(d && d.error || 'first scan pending'); return; }
+        window._ukCity = d; renderCity(d);
+    } catch (e) { cityUnread(e.message); }
+}
+
+// ── commodity card (Gold Standard v2.0 renderer) ────────────
+async function loadCommodity() {
+    let data = null;
+    try { data = await getJSON(EUROPE_BACKEND, '/api/europe/commodity/uk'); } catch (e) {}
+    const grid = el('commodityGrid');
+    if (!data || !(data.commodity_summaries || []).length) {
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">Commodity data unavailable — not read, not quiet.</div>';
+        return;
+    }
+    if (data.prose) el('commodityProse').textContent = data.prose;
+    const banner = el('commodityAlertBanner'), al = (data.alert_level || 'normal').toLowerCase();
+    if (banner && al !== 'normal') {
+        banner.className = 'commodity-alert-banner show alert-' + al;
+        banner.innerHTML = '<strong>' + escapeHtml(al.toUpperCase()) + '</strong> Commodity news pressure (how much is being written, not prices)' +
+            '<span class="ab-meta">' + (data.profile_count || 0) + ' commodities tracked</span>';
+    }
+    grid.innerHTML = data.commodity_summaries.map(function (t) {
+        const a = (t.global_alert_level || 'normal').toLowerCase();
+        return '<div class="commodity-pill"><div class="commodity-pill-header"><span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+            '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+            (t.rank ? '<span class="commodity-pill-rank">#' + escapeHtml(t.rank) + '</span>' : '') + '</div>' +
+            '<div class="commodity-pill-row"><span class="commodity-pill-alert commodity-alert-' + escapeHtml(a) + '">' + escapeHtml(a) + '</span>' +
+            (t.role ? '<span class="commodity-pill-role-badge">' + escapeHtml(String(t.role).replace(/_/g, ' ').toUpperCase()) + '</span>' : '') + '</div>' +
+            (t.note ? '<div class="commodity-pill-note">' + escapeHtml(t.note) + '</div>' : '') + '</div>';
+    }).join('');
+    const sigs = data.top_signals || [], wrap = el('commodityTopSignals');
+    if (sigs.length && al !== 'normal') {
+        wrap.style.display = 'block';
+        el('commodityTopSignalsList').innerHTML = sigs.slice(0, 5).map(function (s) {
+            return '<a href="' + safeUrl(s.article_url || s.url) + '" target="_blank" rel="noopener">▸ ' +
+                escapeHtml(s.article_title || s.title || 'Signal') + ' <span class="ts-source">' + escapeHtml(s.source || '') + '</span></a>';
+        }).join('');
+    }
+}
+
+// ── main ────────────────────────────────────────────────────
+async function loadData() {
+    captureDefaults();
+    applyTranslations();
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.toggle('active', b.textContent.toLowerCase() === currentLang); });
+    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadCity(), loadCommodity(), loadMilitary()]);
+    hideLoadingOverlay();
+}
+document.addEventListener('DOMContentLoaded', loadData);
+
+// ── canonical mobile drawer ─────────────────────────────────
+function toggleSidebar() {
+    const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (!sb) return;
+    const open = sb.classList.toggle('open'); if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    const sb = el('navSidebar'), bd = el('sidebarBackdrop');
+    if (sb) sb.classList.remove('open'); if (bd) bd.classList.remove('show'); document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    const sb = el('navSidebar'); if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
+</body>
+</html>

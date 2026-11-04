@@ -677,7 +677,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
             <a href="https://asifahanalytics.com" style="color:var(--accent);text-decoration:none;margin:0 10px;">Home</a>
         </div>
         <div style="text-align:center;margin-top:15px;font-size:11px;color:var(--text-muted);">
-            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch v1.6.0 · fragility detector v1.5.0 — Proprietary.
+            © 2025-2026 Asifah Analytics. All Rights Reserved. Market Watch v1.7.0 · fragility detector v1.5.0 — Proprietary.
         </div>
     </footer>
 
@@ -696,6 +696,10 @@ const PULSES = [
     { region: 'me',     name: 'Israel',        flag: '\uD83C\uDDEE\uD83C\uDDF1', backend: 'https://asifah-backend.onrender.com',     path: '/scan-israel-stability', key: 'financial_pulse' },
     { region: 'me',     name: 'Iran',          flag: '\uD83C\uDDEE\uD83C\uDDF7', backend: 'https://asifah-backend.onrender.com',     path: '/api/iran/financial-pulse', key: 'financial_pulse' },
     { region: 'europe', name: 'Russia',        flag: '\uD83C\uDDF7\uD83C\uDDFA', backend: 'https://asifa-europe-backend.onrender.com', path: '/api/stability/russia', key: 'financial_pulse' },
+    // Nov 4 2026 (v1.7.0): the United Kingdom (uk_city_pulse -- pound, 10-year gilt, FTSE 100/250,
+    // Lloyd's underwriters, copper as the LME stand-in) and Hungary (its pulse has existed since Nov 3).
+    { region: 'europe', name: 'United Kingdom', flag: '\uD83C\uDDEC\uD83C\uDDE7', backend: 'https://asifa-europe-backend.onrender.com', path: '/api/europe/uk/city-pulse', key: 'financial_pulse' },
+    { region: 'europe', name: 'Hungary',       flag: '\uD83C\uDDED\uD83C\uDDFA', backend: 'https://asifa-europe-backend.onrender.com', path: '/api/europe/hungary/financial-pulse', key: 'financial_pulse' },
     { region: 'africa', name: 'Nigeria',       flag: '\uD83C\uDDF3\uD83C\uDDEC', backend: 'https://asifah-africa-backend.onrender.com', path: '/api/nigeria/stability', key: 'financial_pulse' },
     // Nov 2 2026 (v1.5.0): Saudi / Qatar / UAE added -- their backends have built the
     // canonical pulse since May and the board never showed them. All three read
@@ -729,7 +733,7 @@ const GLOBAL_BENCHMARKS = {
     'TTF=F': { name: 'Dutch TTF Gas', note: 'European gas benchmark. Referenced by Qatar (LNG pricing into Europe).' },
     // Nov 3 2026 -- the Western Hemisphere's export benchmarks, priced globally
     'ZS=F':  { name: 'Soybeans (CBOT)', note: 'Referenced by Argentina and Brazil: their largest export, and China decides much of the price.' },
-    'HG=F':  { name: 'Copper (COMEX)',  note: 'Referenced by Chile and Peru, the world\'s two largest producers.' },
+    'HG=F':  { name: 'Copper (COMEX)',  note: 'Referenced by Chile and Peru, the world\'s two largest producers, and by the UK as the stand-in for the London Metal Exchange price.' },
     'KC=F':  { name: 'Coffee (arabica)', note: 'Referenced by Colombia.' },
 };
 
@@ -787,7 +791,9 @@ function tileHTML(prefix, key, t){
     const valNum = (t.value!=null) ? Number(t.value).toLocaleString(undefined,{maximumFractionDigits: (Math.abs(t.value)<1000?2:0)}) : 'N/A';
     const chg = t.change_pct_24h;
     const chgClass = (chg>0.05)?'up':(chg<-0.05)?'down':'flat';
-    const chgStr = (chg!=null) ? ((chg>=0?'+':'')+Number(chg).toFixed(2)+'%') : '—';
+    let chgStr = (chg!=null) ? ((chg>=0?'+':'')+Number(chg).toFixed(2)+'%') : '—';
+    // Nov 4 2026: a yield moves in basis points, not percent (UK 10-year gilt)
+    if (t.change_bp_24h != null) chgStr = (t.change_bp_24h>=0?'+':'')+Number(t.change_bp_24h).toFixed(0)+'bp';
     const stale = t.stale ? ' · last known' : '';
     const cid = 'spark_'+prefix+'_'+key;
     return '<div class="nyse-tile tile-'+tier+'">'
