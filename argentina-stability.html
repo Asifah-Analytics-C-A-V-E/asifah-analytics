@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Argentina Stability Index v1.0.0 — Nov 4, 2026 -->
+<!-- Asifah Analytics — Argentina Stability Index v1.0.1 — Nov 4, 2026: Tri-Border card reads the live Hizballah LatAm module -->
 <!-- Gold Standard shell (cloned from peru-stability 1.1.0): sidebar drawer, live WHA sweep, market pulse, commodity card, dated analytic cards. EN/ES full, PT labels. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
@@ -734,6 +734,7 @@ footer .footer-copyright {
     .ar-pulse-grid, .ar-two-col { grid-template-columns: 1fr; }
     .advisory-row { flex-wrap: wrap; }
 }
+.ar-tba-live a, .ar-watch a { color: var(--accent, #38bdf8); text-decoration: underline; }
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -915,7 +916,8 @@ footer .footer-copyright {
 <!-- ── TRI-BORDER AREA (module pending) ── -->
 <div class="metric-card" id="arTbaCard" style="border-left: 4px solid #64748b;">
     <div class="section-title" data-i18n="tba_title">🕸️ Tri-Border Area &amp; Hizballah Finance</div>
-    <div class="ar-pending" data-i18n="tba_pending">NOT REPORTING YET — the shared Hizballah Latin America module (next build) will feed this card. Until then, background only.</div>
+    <div class="ar-pending" id="arTbaPending" data-i18n="tba_pending">NOT REPORTING YET — the shared Hizballah Latin America module will feed this card. Until then, background only.</div>
+    <div class="ar-tba-live" id="arTbaLive" style="display:none;"></div>
     <div class="ar-body" data-i18n-html="tba_body">
         <p>Where Argentina, Brazil and Paraguay meet (Puerto Iguazú – Foz do Iguaçu – Ciudad del Este) is the hemisphere's best-known Hizballah finance and smuggling hub. Argentina suffered the <strong>1992 Israeli embassy</strong> and <strong>1994 AMIA</strong> bombings (85 killed), which its courts attribute to Iran and Hizballah. Argentina listed Hizballah as a terrorist organisation in 2019; a 2025 law allows the accused Iranian officials to be tried in absentia.</p>
         <p><em>Honesty rule for this card:</em> the local effect is mostly crime and money (smuggling, laundering, the Brazilian PCC gang). The headline So What is money flowing to Lebanon — not a local bombing risk, unless corroborated reporting says otherwise.</p>
@@ -1063,7 +1065,7 @@ const TRANSLATIONS = {
     ant_sowhat: '<strong>Y qué:</strong> la disputa por Malvinas no es solo por 3.500 isleños. Es por el Atlántico Sur, la puerta a la Antártida y los minerales de las décadas de 2030 y 2040 — y a quién deja entrar Argentina entre Washington, Pekín y Londres. Una instalación construida por EE.UU. en Ushuaia, dinero chino en el litio y una guarnición británica en Malvinas son tres piezas del mismo tablero.',
     ant_watch: '<li>Obras o presencia estadounidense en Ushuaia; cualquier acuerdo chino de puerto, logística o apoyo pesquero en Tierra del Fuego</li><li>Contratos de litio y cobre — quién compra la producción (socios de EE.UU. o empresas chinas)</li><li>Reuniones del Tratado Antártico y cualquier propuesta de revisar la prohibición minera</li>',
     tba_title: '🕸️ Triple Frontera y financiamiento de Hezbolá',
-    tba_pending: 'SIN DATOS AÚN — el módulo compartido de Hezbolá en América Latina (próxima construcción) alimentará esta tarjeta. Por ahora, solo contexto.',
+    tba_pending: 'SIN DATOS AÚN — el módulo compartido de Hezbolá en América Latina alimentará esta tarjeta. Por ahora, solo contexto.',
     tba_body: '<p>Donde se unen Argentina, Brasil y Paraguay (Puerto Iguazú – Foz do Iguaçu – Ciudad del Este) está el centro de financiamiento y contrabando de Hezbolá más conocido del hemisferio. Argentina sufrió los atentados contra la <strong>Embajada de Israel (1992)</strong> y la <strong>AMIA (1994)</strong>, con 85 muertos, que su justicia atribuye a Irán y Hezbolá. Argentina declaró a Hezbolá organización terrorista en 2019; una ley de 2025 permite juzgar en ausencia a los funcionarios iraníes acusados.</p><p><em>Regla de honestidad:</em> el efecto local es sobre todo delito y dinero (contrabando, lavado, la banda brasileña PCC). El "y qué" principal es el dinero que fluye hacia el Líbano — no un riesgo de atentado local, salvo que informes corroborados digan lo contrario.</p>',
     commodity_title: '🛢️ Exposición a materias primas y presión estratégica',
     strategic_linkage: '<strong>🎯 Qué significa:</strong> Argentina es el mayor exportador mundial de <strong>harina y aceite de soja</strong> — China y los compradores de alimento animal sienten una sequía o una retención argentina. Es uno de los cinco mayores productores de <strong>litio</strong>, con producción en rápido aumento bajo el RIGI, y <strong>Vaca Muerta</strong> convirtió a Argentina en exportador de petróleo y gas. Una buena cosecha o un récord en Vaca Muerta son dólares para el Banco Central; una sequía (como en 2023) es una crisis cambiaria.',
@@ -1118,6 +1120,7 @@ function applyTranslations() {
     document.documentElement.setAttribute('lang', currentLang);
     if (window._arThreat) renderLive(window._arThreat);
     if (window._arPulse) renderPulse(window._arPulse);
+    if (window._tbaCountry) loadTba(window._tbaCountry);
 }
 function switchLanguage(lang, button) {
     currentLang = lang;
@@ -1310,12 +1313,41 @@ async function loadCommodity() {
     }
 }
 
+// ── Tri-Border / Hizballah (shared module, hizballah_latam.py) ──
+const TBA_LANE = {
+    corroborated: ['confirmed by 2+ outlets', 'confirmado por 2+ medios'],
+    single_source: ['one outlet, not yet corroborated', 'un medio, sin corroborar'],
+    rumint: ['rumour / hedged only', 'solo rumor o lenguaje condicional'],
+    background: ['background / commentary only', 'solo contexto o comentario'],
+    none: ['nothing reported', 'nada reportado'],
+};
+async function loadTba(country) {
+    const box = el('arTbaLive'); if (!box) return;
+    let r = null;
+    try { r = await getJSON('/api/wha/hizballah-latam/' + country); } catch (e) {}
+    if (!r || r.success === false) return;      // module not deployed yet: keep the "not reporting" badge
+    const lvl = r.level || 0, col = ['#64748b', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'][Math.min(4, lvl)];
+    const pend = el('arTbaPending');
+    if (pend) { pend.textContent = L('LIVE — shared Hizballah Latin America module', 'EN VIVO — módulo compartido de Hezbolá en América Latina'); pend.style.color = col; }
+    const ev = (r.events || []).map(function (e) {
+        return '<li>' + escapeHtml(e.what) + ' — <em>' + escapeHtml((TBA_LANE[e.lane] || [e.lane, e.lane])[currentLang === 'es' ? 1 : 0]) + '</em>' +
+            ((e.outlets || []).length ? ' (' + escapeHtml(e.outlets.join(', ')) + ')' : '') + '</li>';
+    }).join('');
+    const items = (r.items || []).slice(0, 3).map(function (a) {
+        return '<li><a href="' + escapeHtml(a.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(a.title) + '</a> <span style="opacity:.7">— ' + escapeHtml(a.outlet || '') + '</span></li>';
+    }).join('');
+    box.innerHTML = '<div class="ar-sowhat" style="border-color:' + col + ';background:transparent;"><strong>L' + lvl + '</strong> · ' + escapeHtml(r.sentence || '') + '</div>' +
+        (ev ? '<div class="ar-watch"><div class="ar-watch-title">' + escapeHtml(L('Events this cycle', 'Eventos en este ciclo')) + '</div><ul>' + ev + '</ul></div>' : '') +
+        (items ? '<div class="ar-watch"><div class="ar-watch-title">' + escapeHtml(L('Latest items', 'Últimas notas')) + '</div><ul>' + items + '</ul></div>' : '');
+    box.style.display = 'block';
+}
+
 // ── main ────────────────────────────────────────────────────
 async function loadData() {
     captureDefaults();
     applyTranslations();
     document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.toggle('active', b.textContent.toLowerCase() === currentLang); });
-    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadPulse(), loadCommodity(), loadMilitary()]);
+    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadPulse(), loadCommodity(), loadMilitary(), (window._tbaCountry = 'argentina', loadTba('argentina'))]);
     hideLoadingOverlay();
 }
 document.addEventListener('DOMContentLoaded', loadData);

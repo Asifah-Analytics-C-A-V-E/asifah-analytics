@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics — Canada Stability Index v1.0.0 — Nov 4, 2026 -->
+<!-- Gold Standard shell (cloned from peru-stability 1.1.0): sidebar drawer, live WHA sweep, market pulse, commodity card, dated analytic cards. EN full; FR for labels and the main analytic cards, other cards fall back to EN. -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" data-theme="dark">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Canada Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
+    --watermark-opacity: 0.5;
+    --watermark-size: 500px;
+    --loading-overlay-bg: rgba(248,250,252,0.98);
+    --loading-spinner-bg: rgba(14,165,233,0.2);
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
+    --watermark-opacity: 1;
+    --watermark-size: 800px;
+    --loading-overlay-bg: rgba(6,13,26,0.98);
+    --loading-spinner-bg: rgba(56,189,248,0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+.watermark {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--watermark-size); height: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    pointer-events: none; z-index: 0;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: 135%; background-repeat: no-repeat; background-position: center;
+    border-radius: 50%; transition: all 0.4s ease;
+}
+
+/* ── CONTAINER + LAYOUT ── */
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+/* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+/* Gold Standard ambient layers: grid 40 + scanlines 2 (canon item 3) */
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px); }
+
+.menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+    background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+    color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+.sidebar-backdrop.show { display: block; }
+@media (max-width: 1199px) {
+    .menu-toggle { display: block; }
+    .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+        overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+        background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+        z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+    .nav-sidebar.open { transform: translateX(0); }
+}
+
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    padding: 22px 30px;
+    margin-bottom: 22px;
+    border-radius: 0 0 12px 12px;
+    color: var(--header-text);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; gap: 24px;
+}
+.header-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.header-logo {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    object-fit: cover;
+}
+.back-link {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    transition: all 0.3s;
+}
+.back-link:hover { background: rgba(56,189,248,0.08); }
+.header-content { flex: 1; }
+header h1 {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--header-text);
+    margin-bottom: 4px;
+}
+.subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+.header-controls { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-label { font-size: 11px; color: var(--text-muted); }
+.theme-toggle-switch {
+    width: 44px; height: 22px; border-radius: 22px;
+    background: var(--card-border); position: relative; cursor: pointer;
+    transition: background 0.3s;
+}
+[data-theme="dark"] .theme-toggle-switch { background: var(--accent); }
+.theme-toggle-slider {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; position: absolute; top: 2px; left: 2px;
+    transition: left 0.3s;
+}
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; align-self: flex-start; }
+.nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+.nav-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 8px;
+    background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.18);
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 12px; font-weight: 600;
+    transition: all 0.25s;
+}
+.nav-btn-label { flex: 1; }
+.nav-btn-status { font-size: 10px; color: var(--text-muted); margin-left: 8px; }
+.nav-btn:hover { transform: translateY(-1px); border-color: var(--accent); color: var(--text-primary); }
+.nav-btn.active-nav { background: linear-gradient(135deg, rgba(0,180,255,0.15), rgba(0,120,200,0.10)); border-color: rgba(0,200,255,0.5); color: var(--text-primary); }
+.nav-btn.active-nav:hover { box-shadow: 0 0 18px rgba(0,180,255,0.25); }
+.nav-btn.current-page { background: linear-gradient(135deg, rgba(0,200,255,0.20), rgba(0,150,200,0.15)); border-color: rgba(0,220,255,0.7); color: var(--text-primary); box-shadow: 0 0 16px rgba(0,200,255,0.22); }
+.nav-btn.inactive-nav { opacity: 0.4; cursor: default; border-color: rgba(100,100,100,0.2); background: transparent; }
+.nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(21,128,61,0.05)); }
+.nav-btn.rhetoric-btn:hover { border-color: rgba(34,197,94,0.8); box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+.nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+.nav-btn.rhetoric-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(21,128,61,0.12)); }
+.nav-btn.military-btn { border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(91,33,182,0.05)); }
+.nav-btn.military-btn:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 18px rgba(139,92,246,0.2); }
+.nav-btn.military-btn .nav-btn-status { color: #a78bfa; }
+.nav-btn.commodity-btn { border-color: rgba(250,204,21,0.4); background: linear-gradient(135deg, rgba(250,204,21,0.08), rgba(202,138,4,0.05)); }
+.nav-btn.commodity-btn:hover { border-color: rgba(250,204,21,0.8); box-shadow: 0 0 18px rgba(250,204,21,0.2); }
+.nav-btn.commodity-btn .nav-btn-status { color: #fde047; }
+.nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.05)); }
+.nav-btn.tracker-btn:hover { border-color: rgba(245,158,11,0.8); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
+.nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+.nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--loading-overlay-bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s; backdrop-filter: blur(8px);
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner {
+    width: 70px; height: 70px;
+    border: 4px solid var(--loading-spinner-bg);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-status {
+    text-align: center; color: var(--text-primary);
+    max-width: 460px; padding: 22px 28px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; box-shadow: var(--card-glow);
+}
+.loading-title {
+    font-size: 1rem; font-weight: 700; letter-spacing: 1.5px;
+    margin-bottom: 14px; color: var(--accent);
+    text-transform: uppercase;
+}
+.loading-progress { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* ── TRAVEL ADVISORY BANNERS ── */
+.advisory-row { margin-bottom: 12px; }
+
+/* ── RHETORIC PLACEHOLDER (no tracker yet — flag-only) ── */
+.rhetoric-placeholder {
+    background: linear-gradient(135deg, rgba(100,116,139,0.10), rgba(71,85,105,0.05));
+    border: 1px dashed rgba(100,116,139,0.35);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* ── GENERIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+.subsection-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* ── STABILITY SCORE PLACEHOLDER ── */
+.stability-score-big {
+    font-size: 3rem; font-weight: 700; line-height: 1;
+    color: var(--accent);
+}
+.stability-score-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px;
+}
+.stability-label {
+    font-size: 0.8rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;
+    color: white;
+}
+.stability-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 0.8rem;
+}
+.stability-meta-item {
+    padding: 8px 10px;
+    background: var(--article-bg);
+    border-radius: 6px;
+}
+.stability-meta-label {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.stability-meta-value { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
+
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.knowledge-library h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+}
+.library-icon { font-size: 1.2rem; }
+.open-source-disclaimer {
+    font-size: 0.78rem; color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 14px;
+}
+.knowledge-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+}
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.knowledge-card:hover { border-color: var(--accent); box-shadow: var(--card-glow); }
+.knowledge-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+}
+.knowledge-card.collapsed .knowledge-header { border-bottom: none; }
+.knowledge-header-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
+}
+.category-icon { font-size: 1.2rem; }
+.collapse-icon {
+    color: var(--text-muted); font-size: 0.7rem;
+    transition: transform 0.3s;
+}
+.knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+.knowledge-content { padding: 14px 16px; font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); }
+.knowledge-card.collapsed .knowledge-content { display: none; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content strong { color: var(--text-primary); }
+.knowledge-content ul { padding-left: 22px; margin-bottom: 10px; }
+.knowledge-content ul li { margin-bottom: 6px; }
+.report-links-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+.report-link {
+    padding: 5px 10px;
+    background: rgba(56,189,248,0.10);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 5px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.72rem; font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: rgba(56,189,248,0.18); transform: translateY(-1px); }
+
+/* ── ARTICLES SECTION (tabbed) ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.article-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+}
+.article-tab {
+    padding: 6px 14px;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.article-tab:hover { border-color: var(--accent); color: var(--accent); }
+.article-tab.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.article-tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    background: rgba(56,189,248,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.articles-list { list-style: none; padding: 0; max-height: 600px; overflow-y: auto; }
+.articles-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85rem; line-height: 1.5;
+}
+.articles-list li:last-child { border-bottom: none; }
+.articles-list a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.articles-list a:hover { color: var(--accent); }
+.articles-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+.article-source-pill {
+    display: inline-block;
+    padding: 1px 7px; border-radius: 3px;
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    margin-right: 6px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ── FOOTER ── */
+footer {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+@media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+/* v1.1.0: phones -- header controls wrap instead of pushing the page sideways */
+@media (max-width: 600px) {
+    html, body { overflow-x: hidden; }
+    .header-controls { align-items: flex-start; max-width: 100%; }
+    .header-controls .language-switcher { flex-wrap: wrap; }
+    header { flex-wrap: wrap; padding: 18px 16px 18px 60px; }
+}
+/* v1.1.0: the sticky sidebar rule above was overriding the mobile drawer,
+   so the hidden menu still took 200px and squeezed the page into a strip */
+@media (max-width: 1199px) {
+    .page-with-sidebar > .nav-sidebar { position: fixed; top: 0; height: 100vh; }
+}
+footer .footer-disclaimer {
+    padding: 12px 14px;
+    background: var(--article-bg); border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+}
+footer .footer-support { text-align: center; padding: 10px; font-size: 0.85rem; }
+footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+footer .footer-copyright {
+    text-align: center; font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+}
+
+/* ── LEVEL COLORS ── */
+.level-0 { background: #6b7280; color: white; }
+.level-1 { background: #3b82f6; color: white; }
+.level-2 { background: #f59e0b; color: white; }
+.level-3 { background: #f97316; color: white; }
+.level-4 { background: #ef4444; color: white; }
+.level-5 { background: #dc2626; color: white; }
+
+/* ── LOADING DOTS ── */
+.loading-dot { display: inline-block; animation: pulse 1.4s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+   ═══════════════════════════════════════════════════════════ */
+.language-switcher {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.lang-btn {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.lang-btn:hover {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.45);
+}
+.lang-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+[data-theme="light"] .lang-btn { background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.30); color: var(--text-primary); }
+[data-theme="light"] .lang-btn:hover { background: rgba(14,165,233,0.18); }
+[data-theme="light"] .lang-btn.active { background: var(--accent); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+   ═══════════════════════════════════════════════════════════ */
+.commodity-card {
+    background: var(--container-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .commodity-card {
+    box-shadow: 0 0 6px rgba(56,189,248,0.15);
+}
+.commodity-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--card-border);
+}
+.commodity-prose {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 10px 0 16px 0;
+    padding: 12px 14px;
+    background: rgba(2,6,23,0.5);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+}
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+
+.commodity-convergence-alert {
+    display: none;
+    margin: 10px 0 14px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+}
+.commodity-convergence-alert.active { display: block; }
+.cca-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f59e0b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.cca-detail {
+    font-size: 11px;
+    color: #fbbf24;
+    line-height: 1.5;
+}
+
+.commodity-alert-banner {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-size: 12px;
+    display: none;
+}
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+.commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.commodity-pill {
+    background: rgba(2,6,23,0.5);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+}
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 22px; line-height: 1; }
+.commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+.commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.commodity-pill-alert {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-pill-role-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.25);
+}
+.commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+.commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+.commodity-pill-price .price-up   { color: #22c55e; }
+.commodity-pill-price .price-down { color: #ef4444; }
+.commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+.commodity-top-signals {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(2,6,23,0.5);
+    border-radius: 6px;
+    border-left: 3px solid var(--text-muted);
+    font-size: 11px;
+}
+[data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+.commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+.commodity-top-signals a { color: var(--text-secondary); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+.commodity-top-signals a:hover { color: #38bdf8; }
+.commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+.strategic-linkage {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(56,189,248,0.05);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+/* ── RHETORIC TRACKER BANNER (canonical green pointer) ── */
+.rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+.rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+.rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+.rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+/* ── Country stability page shell (from Argentina v1.0.1, Nov 4 2026) ── */
+.ar-body { font-size: 0.86rem; line-height: 1.62; color: var(--text-primary); }
+.ar-body p { margin: 0 0 10px; }
+.ar-sub { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; margin: -4px 0 12px; }
+.ar-muted { color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+.ar-live-line { margin-top: 8px; padding: 8px 12px; border-radius: 6px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.25); font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+.ar-live-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 10px; }
+.ar-stat { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; }
+.ar-stat-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.ar-stat-value { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.ar-coverage { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.ar-pulse-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.ar-tile { border: 1px solid var(--card-border); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 10px 12px; }
+.ar-tile.tier-warning { border-left-color: #f59e0b; } .ar-tile.tier-stress { border-left-color: #ef4444; } .ar-tile.tier-rally { border-left-color: #22c55e; }
+.ar-tile-name { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+.ar-tile-value { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 2px 0; }
+.ar-tile-chg { font-size: 0.78rem; color: var(--text-secondary); }
+.ar-tile-tier { font-size: 0.72rem; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
+.ar-tile-note { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
+.ar-pulse-read { margin-top: 10px; font-size: 0.82rem; line-height: 1.55; color: var(--text-primary); }
+.ar-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.ar-patron { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; }
+.ar-patron-head { font-weight: 800; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-primary); }
+.ar-sowhat { margin-top: 6px; padding: 10px 12px; border-radius: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); font-size: 0.84rem; line-height: 1.55; color: var(--text-primary); }
+.ar-watch { margin-top: 10px; }
+.ar-watch-title { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.ar-watch ul { margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); }
+.ar-pending { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #94a3b8; border: 1px dashed currentColor; border-radius: 4px; padding: 3px 8px; margin-bottom: 10px; }
+.adv-btn { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+@media (max-width: 760px) {
+    .ar-live-grid { grid-template-columns: 1fr 1fr; }
+    .ar-pulse-grid, .ar-two-col { grid-template-columns: 1fr; }
+    .advisory-row { flex-wrap: wrap; }
+}
+.ar-tba-live a, .ar-watch a { color: var(--accent, #38bdf8); text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="resources/asifah-standard-shell.css">
+<script src="resources/asifah-standard-shell.js" defer></script>
+</head>
+<body>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-status">
+        <div class="loading-title" data-i18n="loading_title">Loading Canada Stability Data</div>
+        <div class="loading-progress"><span data-i18n="loading_progress">Connecting to backend... This may take 20-40 seconds on cold cache.</span></div>
+    </div>
+</div>
+
+<div class="container">
+
+<header>
+    <div class="header-logo-wrap">
+        <a href="wha.html" class="back-link" data-i18n="back_to_wha">← W. Hemisphere</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1 data-i18n="page_title">🇨🇦 CANADA STABILITY INDEX</h1>
+        <div class="subtitle" data-i18n="page_subtitle">Trade War with the US · National Unity (Alberta, Quebec) · Arctic Gateway · Oil &amp; Critical Minerals</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="language-switcher"><button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button><button class="lang-btn" onclick="switchLanguage('fr', this)">FR</button></div>
+        <div class="theme-toggle">
+            <span class="theme-toggle-label" data-i18n="theme_label">Theme</span>
+            <div class="theme-toggle-switch" onclick="toggleTheme()"><div class="theme-toggle-slider"></div></div>
+        </div>
+    </div>
+</header>
+
+<div class="page-with-sidebar">
+
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_asia_pacific">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_europe">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_me">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_wha">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_global_trackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_commodities">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_gpi">🌐 Global Pressure</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_market_watch">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_military">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_rhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_me">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_asia">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_europe">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_wha">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_country">Canada</div>
+    <a href="canada-stability.html" class="nav-btn current-page"><span class="nav-btn-label" data-i18n="nav_country_stability">🇨🇦 Canada Stability</span><span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span></a>
+</nav>
+
+<div class="main-content">
+
+<!-- ── WORLDWIDE CAUTION ── -->
+<div class="advisory-row" style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%); border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);">
+    <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+</div>
+
+<!-- ── ARGENTINA TRAVEL ADVISORY (dynamic) ── -->
+<div class="advisory-row" id="arTravelAdvisory" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #22c55e; border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="font-size: 24px; flex-shrink: 0;">🇨🇦</div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+            <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Canada Travel Advisory</span>
+            <span id="arTravelLevel" style="background: #6b7280; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LOADING…</span>
+        </div>
+        <div id="arTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n="travel_text">Live level from the State Department feed.</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/canada-travel-advisory.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="travel_button">VIEW ADVISORY →</a>
+</div>
+
+<!-- ── SITUATION (dated) ── -->
+<div class="metric-card ar-situation" id="arSituationCard">
+    <div class="section-title" data-i18n="sit_title">🧭 Situation — as of November 4, 2026</div>
+    <div class="ar-body" data-i18n-html="sit_body"><p><strong>Mark Carney</strong> (Liberal) has been prime minister since March 2025. Canada is in an open trade war with its closest ally: after talks broke down in August 2026, US tariffs on a broad range of Canadian goods took effect on <strong>August 22</strong> — the first to hit USMCA-compliant goods — and Washington announced a <strong>50% tariff on cars, trucks, parts and steel from January 1, 2027</strong>. Canada answered with counter-tariffs on C$27.6bn of US goods from September 8. At the July USMCA review the US declined to renew the agreement as it stands.</p><p><strong>Unity files:</strong> Alberta voted about 75% to stay in Canada in a non-binding referendum on <strong>October 19, 2026</strong> (researchers flagged Russian- and US-linked online accounts amplifying separation calls). In Quebec, the sovereigntist <strong>Parti Québécois</strong> won a minority government on <strong>October 5</strong> (59 of 127 seats) and has promised a sovereignty referendum — possibly after 2029.</p><p><strong>The So What:</strong> Canada's stability risk is economic and constitutional, not violent. About three-quarters of its exports go to the US, so the trade war hits Ontario's auto belt and Alberta's oil directly — and economic pain is what feeds both unity files. The country has rallied around the flag for now; the test is whether that holds through the January auto tariff.</p></div>
+    <div class="ar-live-line" id="arLiveLine" style="display:none;"></div>
+</div>
+
+<!-- ── LIVE NEWS READ (generic WHA scan) ── -->
+<div class="metric-card" id="arLiveCard" style="border-left: 4px solid #38bdf8;">
+    <div class="section-title" data-i18n="live_title">📡 Live News Read</div>
+    <div class="ar-sub" data-i18n="live_sub">What the WHA scanner sees this cycle. This is the regional sweep, not a full rhetoric tracker.</div>
+    <div class="ar-live-grid">
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_level">Scanner read</div><div class="ar-stat-value" id="arLiveLevel">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_articles">Articles</div><div class="ar-stat-value" id="arLiveArticles">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_sources">Separate outlets</div><div class="ar-stat-value" id="arLiveSources">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_military">Military posture</div><div class="ar-stat-value" id="arLiveMil">—</div></div>
+    </div>
+    <div class="ar-coverage" id="arCoverage"></div>
+</div>
+
+<!-- ── FINANCIAL PULSE ── -->
+<div class="metric-card" id="arPulseCard" style="border-left: 4px solid #a78bfa;">
+    <div class="section-title" data-i18n="pulse_title">💹 Canada Financial Pulse</div>
+    <div class="ar-sub" data-i18n="pulse_sub">Toronto shares (TSX), the Canadian dollar and WTI oil — Canada is the biggest foreign supplier of US crude. A rising USD/CAD number means a weaker loonie.</div>
+    <div class="ar-pulse-grid" id="arPulseGrid"><div class="ar-muted" data-i18n="pulse_loading">Loading market data…</div></div>
+    <div class="ar-pulse-read" id="arPulseRead"></div>
+</div>
+
+<div class="metric-card" id="caWatchCard" style="border-left: 4px solid #ef4444;">
+    <div class="section-title" data-i18n="trade_watch_title">🚚 The Next Turns of the Trade War</div>
+    <div class="ar-watch"><div class="ar-watch-title" data-i18n="watch_title">Watch</div><ul data-i18n-html="trade_watch"><li>January 1, 2027: the 50% US tariff on cars, trucks, parts and steel — Ontario's auto belt</li><li>Any return to talks, or a USMCA "interim arrangement"</li><li>New US import bans or Canadian counter-measures (energy, critical minerals)</li><li>"51st state" or annexation language from Washington — it moves Canadian opinion and unity politics</li></ul></div>
+</div>
+
+<div class="metric-card" id="caArcticCard" style="border-left: 4px solid #22d3ee;">
+    <div class="section-title" data-i18n="arc_title">🧊 Arctic Gateway &amp; Critical Minerals</div>
+    <div class="ar-body" data-i18n-html="arc_body"><p><strong>The gateway:</strong> the <strong>Northwest Passage</strong> runs through Canada's Arctic islands. Ottawa says it is Canadian internal waters; Washington and others say it is an international strait. As the ice retreats it becomes a shipping route between the Atlantic and Pacific, and whoever controls access controls the route.</p><p><strong>Who is pressing:</strong> the <strong>ally and the adversaries at once</strong>. The US disputes the passage and is pressing on Greenland next door. Russia dominates the Arctic militarily, and Chinese research and coast-guard vessels have operated in the region, including joint Russia-China patrols near Alaska. Canada answered with expanded Arctic military operations in 2026, NORAD modernisation, and new polar icebreakers built with the US and Finland.</p><p><strong>Critical minerals:</strong> the North holds nickel, rare earths and other critical minerals that both Washington and Beijing want; Canada wants them processed at home and sold to allies.</p></div>
+    <div class="ar-sowhat" data-i18n-html="arc_sowhat"><strong>So What:</strong> Canada's Arctic is contested from both sides. A US that treats Canada as a pressure target and a Russia-China pairing that treats the Arctic as open water are two different threats to the same sovereignty. This pairs with the <a href="greenland.html" style="color:var(--accent);">Greenland</a> page — the two halves of the North American Arctic gateway.</div>
+    <div class="ar-watch"><div class="ar-watch-title" data-i18n="watch_title">Watch</div><ul data-i18n-html="arc_watch"><li>Northwest Passage transits — and whether a foreign government sends a ship through without asking</li><li>Chinese or Russian vessels or aircraft near Canada's Arctic and Alaska</li><li>NORAD modernisation and icebreaker milestones</li><li>US moves on Greenland — the same gateway, one island east</li></ul></div>
+</div>
+
+<!-- ── COMMODITY EXPOSURE ── -->
+<div class="commodity-card" id="commodityCard">
+    <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+    <div class="commodity-prose" id="commodityProse"><span data-i18n="commodity_prose_loading">Loading commodity exposure profile…</span></div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"><div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;" data-i18n="commodity_loading">⏳ Loading commodity exposure tiles…</div></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;"><div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div><div id="commodityTopSignalsList"></div></div>
+    <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Canada is the <strong>largest foreign supplier of US crude oil</strong> and a top producer of potash, uranium, nickel, aluminium and lumber. Oil and gas flow south by pipeline with few other outlets, which is why the trade war hurts Alberta most — and why new pipelines to the coasts are now a unity question as much as an energy one.</div>
+</div>
+
+<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
+    <div class="section-title" data-i18n="rh_title">📡 Canada Rhetoric &amp; Pressure Tracker</div>
+    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">PLANNED</div>
+    <div class="ar-sub" data-i18n="rh_sub">Planned actors: the Carney government · Alberta · Quebec / PQ · US-Canada trade · Arctic / NORAD · China-Canada. Feeds the WHA summary and the GPI when built.</div>
+</div>
+
+<div class="map-section">
+    <h2 data-i18n="map_title">🗺️ Canada — Strategic Overview</h2>
+    <div class="map-subtitle" data-i18n="map_subtitle">Ottawa, the Ontario auto belt, Alberta's oil sands, Quebec, and the Northwest Passage through the Arctic archipelago.</div>
+    <div style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden;">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-142%2C41%2C-52%2C75&layer=mapnik&marker=45.4215%2C-75.6972" width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;" title="Map"></iframe>
+    </div>
+</div>
+
+<div class="knowledge-library">
+    <h2><span class="library-icon">📚</span><span data-i18n="kl_title">Knowledge Library</span></h2>
+    <p class="open-source-disclaimer" data-i18n="kl_disclaimer">Background compiled from open-source reporting. Dated facts are re-verified on a 45-day cycle (next ~Dec 19, 2026).</p>
+    <div class="knowledge-categories">
+        <div class="knowledge-card collapsed" id="card-trade"><div class="knowledge-header" onclick="toggleKnowledgeCard('trade')"><div class="knowledge-header-title"><span class="category-icon">🚚</span><span data-i18n="kl_trade_title">The Trade War, step by step</span></div><span class="collapse-icon">▼</span></div><div class="knowledge-content" data-i18n-html="kl_trade_body"><p><strong>2025:</strong> US "fentanyl" and steel/aluminium tariffs; Canada retaliates; the US Supreme Court later strikes down the IEEPA tariffs (February 2026).</p><p><strong>2026:</strong> the USMCA review (July) ends without renewal; talks collapse in August; broad US tariffs from August 22 — the first to hit USMCA goods; Canadian counter-tariffs on C$27.6bn from September 8; US bans on some Canadian imports (alcohol, dairy, motorcycles) in September; a 50% auto/steel tariff announced for January 1, 2027.</p></div></div>
+        <div class="knowledge-card collapsed" id="card-unity"><div class="knowledge-header" onclick="toggleKnowledgeCard('unity')"><div class="knowledge-header-title"><span class="category-icon">🍁</span><span data-i18n="kl_unity_title">Alberta, Quebec and National Unity</span></div><span class="collapse-icon">▼</span></div><div class="knowledge-content" data-i18n-html="kl_unity_body"><p><strong>Alberta:</strong> the October 19, 2026 referendum asked whether to begin a binding process toward independence; about three-quarters said no. Premier Danielle Smith says she will not hold another vote while in office, but separatist groups say they will continue, and the autonomy agenda (pipelines, provincial powers) remains.</p><p><strong>Quebec:</strong> Paul St-Pierre Plamondon's Parti Québécois governs with a minority from October 2026 and has promised a third sovereignty referendum (after 1980 and 1995, when "No" won by 50.6%).</p></div></div>
+        <div class="knowledge-card collapsed" id="card-arctic"><div class="knowledge-header" onclick="toggleKnowledgeCard('arctic')"><div class="knowledge-header-title"><span class="category-icon">🧊</span><span data-i18n="kl_arctic_title">Arctic Sovereignty</span></div><span class="collapse-icon">▼</span></div><div class="knowledge-content" data-i18n-html="kl_arctic_body"><p>Canada's claim rests on the Arctic archipelago as historic internal waters. The 1988 Arctic Cooperation Agreement with the US sidestepped the dispute ("agree to disagree"). NORAD — the joint US-Canada air-defence command — is being modernised for cruise-missile and Arctic threats.</p></div></div>
+    </div>
+</div>
+
+<!-- ── RECENT ARTICLES ── -->
+<div class="articles-section">
+    <div class="section-title" data-i18n="articles_title">📰 Recent Canada Articles (WHA scan)</div>
+    <ul class="articles-list" id="articlesList">
+        <li style="text-align: center; color: var(--text-muted); padding: 30px;"><span data-i18n="articles_loading">Loading articles...</span></li>
+    </ul>
+</div>
+
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — CANADA</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS · NewsAPI · Brave · Yahoo Finance (market tiles)</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+</footer>
+
+</div> <!-- /main-content -->
+</div> <!-- /page-with-sidebar -->
+</div> <!-- /container -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CANADA STABILITY — Frontend Logic v1.0.0 (Nov 4 2026)
+// Live sources (all on the WHA backend):
+//   /api/wha/travel-advisories    State Dept level
+//   /api/wha/threat/canada     regional sweep (articles, read, coverage)
+//   /api/wha/market/canada     TSX / USD-CAD / WTI
+//   /api/wha/commodity/canada  commodity exposure (proxied from ME)
+//   /api/military-posture/canada  (ME has no Canada actors yet -> honest "not sensed")
+// EN full; FR for labels and the main analytic cards, other cards fall back to EN.
+// ════════════════════════════════════════════════════════════
+const WHA_BACKEND = 'https://asifah-wha-backend.onrender.com';
+
+const TRANSLATIONS = {
+ "en": {},
+ "fr": {
+  "back_to_wha": "← Hémisphère occidental",
+  "page_title": "🇨🇦 INDICE DE STABILITÉ DU CANADA",
+  "page_subtitle": "Guerre commerciale avec les États-Unis · Unité nationale (Alberta, Québec) · Porte de l'Arctique · Pétrole et minéraux critiques",
+  "theme_label": "Thème",
+  "loading_title": "Chargement des données du Canada",
+  "loading_progress": "Connexion au serveur... Cela peut prendre 20 à 40 secondes.",
+  "nav_dashboards": "Tableaux de bord",
+  "nav_global_trackers": "Suivis mondiaux",
+  "nav_rhetoric": "Rhétorique régionale",
+  "nav_country": "Canada",
+  "nav_country_stability": "🇨🇦 Stabilité du Canada",
+  "nav_here": "◉ Vous êtes ici",
+  "ww_caution_label": "⚠️ Département d'État américain — Mise en garde mondiale",
+  "ww_caution_button": "VOIR →",
+  "travel_button": "VOIR →",
+  "travel_label": "Département d'État américain — Avis aux voyageurs (Canada)",
+  "sit_title": "🧭 Situation — au 4 novembre 2026",
+  "sit_body": "<p><strong>Mark Carney</strong> (libéral) est premier ministre depuis mars 2025. Le Canada est en guerre commerciale ouverte avec son plus proche allié : après l'échec des négociations en août 2026, des droits de douane américains sur un large éventail de produits canadiens sont entrés en vigueur le <strong>22 août</strong> — les premiers à toucher des biens conformes à l'ACEUM — et Washington a annoncé des <strong>droits de 50 % sur les voitures, camions, pièces et l'acier à partir du 1er janvier 2027</strong>. Le Canada a répliqué par des contre-tarifs sur 27,6 G$ de produits américains dès le 8 septembre. Lors de la révision de juillet, les États-Unis ont refusé de renouveler l'ACEUM tel quel.</p><p><strong>Unité :</strong> l'Alberta a voté à environ 75 % pour rester au Canada lors d'un référendum consultatif le <strong>19 octobre 2026</strong>. Au Québec, le <strong>Parti Québécois</strong> a formé un gouvernement minoritaire le <strong>5 octobre</strong> (59 sièges sur 127) et promet un référendum sur la souveraineté — peut-être après 2029.</p><p><strong>Et alors :</strong> le risque pour le Canada est économique et constitutionnel, pas violent. Environ trois quarts des exportations vont aux États-Unis ; la douleur économique nourrit les deux dossiers d'unité. Le test : le ralliement tiendra-t-il face aux droits sur l'automobile en janvier?</p>",
+  "live_title": "📡 Lecture en direct",
+  "live_sub": "Ce que voit le balayage régional ce cycle-ci. Ce n'est pas un suivi rhétorique complet.",
+  "live_level": "Lecture",
+  "live_articles": "Articles",
+  "live_sources": "Médias distincts",
+  "live_military": "Posture militaire",
+  "pulse_title": "💹 Pouls financier du Canada",
+  "pulse_sub": "TSX (Toronto), le dollar canadien et le pétrole WTI. Si USD/CAD monte, le huard faiblit.",
+  "pulse_loading": "Chargement des marchés…",
+  "arc_title": "🧊 Porte de l'Arctique et minéraux critiques",
+  "arc_sowhat": "<strong>Et alors :</strong> l'Arctique canadien est contesté des deux côtés — par un allié qui traite le Canada comme une cible de pression, et par un duo Russie-Chine qui voit l'Arctique comme des eaux libres.",
+  "watch_title": "À surveiller",
+  "commodity_title": "🛢️ Exposition aux matières premières",
+  "rh_title": "📡 Suivi de la rhétorique et des pressions — Canada",
+  "rh_pending": "PRÉVU",
+  "map_title": "🗺️ Canada — Vue stratégique",
+  "kl_title": "Bibliothèque",
+  "articles_title": "📰 Articles récents sur le Canada",
+  "articles_loading": "Chargement des articles...",
+  "footer_disclaimer": "Indicateurs de convergence, pas des prédictions. Pas pour usage opérationnel."
+ }
+};
+
+// ── language ────────────────────────────────────────────────
+let currentLang = 'en';
+const EN_DEFAULTS = {};
+function captureDefaults() {
+    document.querySelectorAll('[data-i18n]').forEach(function (e) { EN_DEFAULTS['t:' + e.getAttribute('data-i18n')] = e.textContent; });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (e) { EN_DEFAULTS['h:' + e.getAttribute('data-i18n-html')] = e.innerHTML; });
+}
+function applyTranslations() {
+    // Missing keys fall back to the English in the HTML -- never to the
+    // previous language (switching ES -> PT used to leave Spanish behind).
+    const t = TRANSLATIONS[currentLang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function (e) {
+        const k = e.getAttribute('data-i18n');
+        e.textContent = (t[k] !== undefined) ? t[k] : EN_DEFAULTS['t:' + k];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (e) {
+        const k = e.getAttribute('data-i18n-html');
+        e.innerHTML = (t[k] !== undefined) ? t[k] : EN_DEFAULTS['h:' + k];
+    });
+    document.documentElement.setAttribute('lang', currentLang);
+    if (window._arThreat) renderLive(window._arThreat);
+    if (window._arPulse) renderPulse(window._arPulse);
+    if (window._tbaCountry) loadTba(window._tbaCountry);
+}
+function switchLanguage(lang, button) {
+    currentLang = lang;
+    try { localStorage.setItem('asifah-canada-lang', lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.remove('active'); });
+    if (button) button.classList.add('active');
+    applyTranslations();
+}
+try { const s = localStorage.getItem('asifah-canada-lang'); if (s && TRANSLATIONS[s]) currentLang = s; } catch (e) {}
+
+// ── theme ───────────────────────────────────────────────────
+function initTheme() { try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asifah-theme') || 'dark'); } catch (e) {} }
+function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch (e) {}
+}
+initTheme();
+
+// ── helpers ─────────────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+}
+function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso); if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    const m = Math.round((Date.now() - d) / 60000);
+    if (m < 60) return m + 'm ago'; if (m < 1440) return Math.round(m / 60) + 'h ago';
+    return Math.round(m / 1440) + 'd ago';
+}
+function L(en, other) { return currentLang === 'fr' ? other : en; }
+function toggleKnowledgeCard(id) { const c = el('card-' + id); if (c) c.classList.toggle('collapsed'); }
+function hideLoadingOverlay() { const o = el('loadingOverlay'); if (o) { o.classList.add('hidden'); setTimeout(function () { o.style.display = 'none'; }, 600); } }
+async function getJSON(path) {
+    const r = await fetch(WHA_BACKEND + path);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+}
+
+// ── travel advisory ─────────────────────────────────────────
+async function loadTravelAdvisory() {
+    try {
+        const data = await getJSON('/api/wha/travel-advisories');
+        const ad = data && data.advisories && data.advisories.canada;
+        if (!ad) { el('arTravelLevel').textContent = L('NOT READ', 'SIN DATO'); return; }
+        const lvl = ad.level || 1, col = ({1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'})[lvl] || '#6b7280';
+        el('arTravelLevel').textContent = 'LEVEL ' + lvl; el('arTravelLevel').style.background = col;
+        el('arTravelAdvisory').style.borderColor = col;
+        const txt = [ad.level_label, ad.short_summary, ad.change_description].filter(Boolean).join(' — ');
+        if (txt) el('arTravelText').textContent = txt;
+    } catch (e) { el('arTravelLevel').textContent = L('NOT READ', 'SIN DATO'); }
+}
+
+// ── live read (regional sweep) ──────────────────────────────
+function renderLive(d) {
+    const sb = d.scoring_breakdown || {};
+    const n = d.articles_scanned || 0, src = sb.unique_sources || 0;
+    el('arLiveLevel').textContent = d.level_label || d.level || '—';
+    el('arLiveArticles').textContent = n;
+    el('arLiveSources').textContent = src;
+    let cov;
+    if (!n) cov = L('No Canada articles reached the scanner this cycle — unread, not calm.',
+                    'Aucun article sur le Canada n’a atteint le balayage ce cycle-ci — non lu, pas calme.');
+    else if (src < 3 || n < 30) cov = L('Thin coverage: ' + n + ' articles from ' + src + ' outlet' + (src === 1 ? '' : 's') + '. Treat this read as a sample, not a picture — quiet may be unread rather than calm.',
+                    'Cobertura escasa: ' + n + ' artículos de ' + src + ' medio(s). Tómese como muestra, no como panorama — el silencio puede ser falta de lectura y no calma.');
+    else cov = L(n + ' articles from ' + src + ' separate outlets this cycle.', n + ' artículos de ' + src + ' medios distintos en este ciclo.');
+    el('arCoverage').textContent = cov;
+    const line = el('arLiveLine');
+    if (line) {
+        line.style.display = 'block';
+        line.textContent = L('Live: the regional scanner reads Canada as "' + (d.level_label || d.level || '—') + '" this cycle (' + n + ' articles, ' + src + ' outlet' + (src === 1 ? '' : 's') + ').',
+                             'En direct : le balayage régional lit le Canada comme « ' + (d.level_label || d.level || '—') + ' » ce cycle-ci (' + n + ' articles, ' + src + ' média(s)).');
+    }
+    if (d.last_updated) el('lastUpdated').textContent = L('Last scan: ', 'Dernier balayage : ') + formatDate(d.last_updated);
+}
+async function loadLive() {
+    try {
+        const d = await getJSON('/api/wha/threat/canada');
+        window._arThreat = d; renderLive(d);
+        renderArticles(d.top_signals || []);
+    } catch (e) {
+        el('arCoverage').textContent = L('Regional scanner unavailable this load.', 'Balayage régional indisponible.');
+        renderArticles(null);
+    }
+}
+function renderArticles(list) {
+    const ul = el('articlesList'); if (!ul) return;
+    if (!list || !list.length) {
+        ul.innerHTML = '<li style="color:var(--text-muted);font-style:italic;padding:20px;text-align:center;">' +
+            escapeHtml(L('No articles yet — the cache may be warming up.', 'Pas encore d’articles — le cache se réchauffe peut-être.')) + '</li>';
+        return;
+    }
+    ul.innerHTML = list.slice(0, 40).map(function (a) {
+        return '<li><a href="' + escapeHtml(a.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(a.title || 'Untitled') + '</a>' +
+            '<div class="articles-meta"><span class="article-source-pill">' + escapeHtml((a.feed_type || 'src').toUpperCase()) + '</span>' +
+            escapeHtml(a.source || '') + (a.published ? ' · ' + escapeHtml(formatDate(a.published)) : '') + '</div></li>';
+    }).join('');
+}
+
+// ── military posture ────────────────────────────────────────
+async function loadMilitary() {
+    try {
+        const d = await getJSON('/api/military-posture/canada');
+        const hasSignals = (d.top_signals || []).length > 0 || (d.military_bonus || 0) > 0;
+        el('arLiveMil').textContent = hasSignals ? String(d.alert_label || d.alert_level || 'Normal')
+                                                 : L('Not sensed yet', 'Pas encore capté');
+        el('arLiveMil').title = hasSignals ? '' : L('The military tracker has no Canada actors yet: no reading, not "calm".',
+                                                    'Le suivi militaire n’a pas encore d’acteurs canadiens : pas de lecture, pas « calme ».');
+    } catch (e) { el('arLiveMil').textContent = L('Not sensed yet', 'Pas encore capté'); }
+}
+
+// ── financial pulse ─────────────────────────────────────────
+const TIER_TXT = {
+    stable:  ['steady', 'stable'], warning: ['under some pressure', 'sous une certaine pression'],
+    stress:  ['under stress', 'sous tension'], rally: ['strong move up', 'forte hausse'],
+};
+function renderPulse(d) {
+    const fp = d && d.financial_pulse; const grid = el('arPulseGrid');
+    if (!fp || !fp.tiles || !Object.keys(fp.tiles).length) {
+        grid.innerHTML = '<div class="ar-muted">' + escapeHtml(L('Market data unavailable this load — a fetch failure, not a quiet market.',
+            'Données de marché indisponibles — un échec de lecture, pas un marché calme.')) + '</div>';
+        el('arPulseRead').textContent = ''; return;
+    }
+    const order = fp.tile_order || Object.keys(fp.tiles);
+    grid.innerHTML = order.map(function (k) {
+        const t = fp.tiles[k]; if (!t) return '';
+        const ch = Number(t.change_pct_24h || 0), c30 = t.change_pct_30d;
+        const tier = t.tier || 'stable';
+        return '<div class="ar-tile tier-' + escapeHtml(tier) + '">' +
+            '<div class="ar-tile-name">' + escapeHtml(t.name) + '</div>' +
+            '<div class="ar-tile-value">' + Number(t.value).toLocaleString(undefined, {maximumFractionDigits: 2}) + '</div>' +
+            '<div class="ar-tile-chg">' + (ch >= 0 ? '+' : '') + ch.toFixed(2) + '% ' + escapeHtml(L('today', 'auj.')) +
+            (typeof c30 === 'number' ? ' · ' + (c30 >= 0 ? '+' : '') + c30.toFixed(1) + '% 30d' : '') + '</div>' +
+            '<div class="ar-tile-tier">' + escapeHtml((TIER_TXT[tier] || TIER_TXT.stable)[currentLang === 'fr' ? 1 : 0]) + '</div>' +
+            '<div class="ar-tile-note">' + escapeHtml(t.note || '') + '</div></div>';
+    }).join('');
+    const cad = fp.tiles.USD_CAD, tsx = fp.tiles.TSX, wti = fp.tiles.WTI;
+    let read = '';
+    if (cad && (cad.tier === 'stress' || cad.tier === 'warning'))
+        read = L('The loonie is moving more than usual against the US dollar — tariff news or oil is pushing it.', 'Le huard bouge plus que d’habitude face au dollar américain — tarifs ou pétrole le poussent.');
+    else if (cad) read = L('The loonie is steady against the US dollar.', 'Le huard est stable face au dollar américain.');
+    if (wti && typeof wti.change_pct_30d === 'number' && cad && typeof cad.change_pct_30d === 'number') {
+        const both = wti.change_pct_30d < -5 && cad.change_pct_30d > 1;
+        if (both) read += ' ' + L('Over 30 days oil is down and the loonie weaker together — the classic Alberta squeeze.', 'Sur 30 jours, pétrole en baisse et huard plus faible ensemble — l’étau albertain classique.');
+    }
+    if (tsx && typeof tsx.change_pct_30d === 'number')
+        read += ' ' + L('Toronto shares are ' + (tsx.change_pct_30d >= 0 ? 'up' : 'down') + ' ' + Math.abs(tsx.change_pct_30d).toFixed(1) + '% over 30 days.',
+                        'La Bourse de Toronto est en ' + (tsx.change_pct_30d >= 0 ? 'hausse' : 'baisse') + ' de ' + Math.abs(tsx.change_pct_30d).toFixed(1) + ' % sur 30 jours.');
+    if (d.missing && d.missing.length) read += ' ' + L('Not read this cycle: ' + d.missing.join(', ') + '.', 'Non lu ce cycle-ci : ' + d.missing.join(', ') + '.');
+    el('arPulseRead').textContent = read.trim();
+}
+async function loadPulse() {
+    try { const d = await getJSON('/api/wha/market/canada'); window._arPulse = d; renderPulse(d); }
+    catch (e) { renderPulse(null); }
+}
+
+// ── commodity card (Gold Standard v2.0 renderer) ────────────
+async function loadCommodity() {
+    let data = null;
+    try { data = await getJSON('/api/wha/commodity/canada'); } catch (e) {}
+    const grid = el('commodityGrid');
+    if (!data || !(data.commodity_summaries || []).length) {
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">' +
+            escapeHtml(L('Commodity data unavailable — not read, not quiet.', 'Données sur les matières premières indisponibles — non lu, pas calme.')) + '</div>';
+        return;
+    }
+    if (data.prose) el('commodityProse').textContent = data.prose;
+    const banner = el('commodityAlertBanner'), al = (data.alert_level || 'normal').toLowerCase();
+    if (banner && al !== 'normal') {
+        banner.className = 'commodity-alert-banner show alert-' + al;
+        banner.innerHTML = '<strong>' + escapeHtml(al.toUpperCase()) + '</strong> ' + escapeHtml(L('Commodity news pressure (how much is being written, not prices)', 'Pression médiatique sur les matières premières (volume d’articles, pas les prix)')) +
+            '<span class="ab-meta">' + (data.profile_count || 0) + ' ' + escapeHtml(L('commodities tracked', 'matières premières')) + '</span>';
+    }
+    grid.innerHTML = data.commodity_summaries.map(function (t) {
+        const a = (t.global_alert_level || 'normal').toLowerCase();
+        return '<div class="commodity-pill"><div class="commodity-pill-header"><span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+            '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+            (t.rank ? '<span class="commodity-pill-rank">#' + escapeHtml(t.rank) + '</span>' : '') + '</div>' +
+            '<div class="commodity-pill-row"><span class="commodity-pill-alert commodity-alert-' + escapeHtml(a) + '">' + escapeHtml(a) + '</span>' +
+            (t.role ? '<span class="commodity-pill-role-badge">' + escapeHtml(String(t.role).toUpperCase()) + '</span>' : '') + '</div>' +
+            (t.note ? '<div class="commodity-pill-note">' + escapeHtml(t.note) + '</div>' : '') + '</div>';
+    }).join('');
+    const sigs = data.top_signals || [], wrap = el('commodityTopSignals');
+    if (sigs.length && al !== 'normal') {
+        wrap.style.display = 'block';
+        el('commodityTopSignalsList').innerHTML = sigs.slice(0, 5).map(function (s) {
+            return '<a href="' + escapeHtml(s.article_url || s.url || '#') + '" target="_blank" rel="noopener">▸ ' +
+                escapeHtml(s.article_title || s.title || 'Signal') + ' <span class="ts-source">' + escapeHtml(s.source || '') + '</span></a>';
+        }).join('');
+    }
+}
+
+// ── Tri-Border / Hizballah (shared module, hizballah_latam.py) ──
+const TBA_LANE = {
+    corroborated: ['confirmed by 2+ outlets', 'confirmado por 2+ medios'],
+    single_source: ['one outlet, not yet corroborated', 'un medio, sin corroborar'],
+    rumint: ['rumour / hedged only', 'solo rumor o lenguaje condicional'],
+    background: ['background / commentary only', 'solo contexto o comentario'],
+    none: ['nothing reported', 'nada reportado'],
+};
+async function loadTba(country) {
+    const box = el('arTbaLive'); if (!box) return;
+    let r = null;
+    try { r = await getJSON('/api/wha/hizballah-latam/' + country); } catch (e) {}
+    if (!r || r.success === false) return;      // module not deployed yet: keep the "not reporting" badge
+    const lvl = r.level || 0, col = ['#64748b', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'][Math.min(4, lvl)];
+    const pend = el('arTbaPending');
+    if (pend) { pend.textContent = L('LIVE — shared Hizballah Latin America module', 'EN VIVO — módulo compartido de Hezbolá en América Latina'); pend.style.color = col; }
+    const ev = (r.events || []).map(function (e) {
+        return '<li>' + escapeHtml(e.what) + ' — <em>' + escapeHtml((TBA_LANE[e.lane] || [e.lane, e.lane])[currentLang === 'fr' ? 1 : 0]) + '</em>' +
+            ((e.outlets || []).length ? ' (' + escapeHtml(e.outlets.join(', ')) + ')' : '') + '</li>';
+    }).join('');
+    const items = (r.items || []).slice(0, 3).map(function (a) {
+        return '<li><a href="' + escapeHtml(a.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(a.title) + '</a> <span style="opacity:.7">— ' + escapeHtml(a.outlet || '') + '</span></li>';
+    }).join('');
+    box.innerHTML = '<div class="ar-sowhat" style="border-color:' + col + ';background:transparent;"><strong>L' + lvl + '</strong> · ' + escapeHtml(r.sentence || '') + '</div>' +
+        (ev ? '<div class="ar-watch"><div class="ar-watch-title">' + escapeHtml(L('Events this cycle', 'Eventos en este ciclo')) + '</div><ul>' + ev + '</ul></div>' : '') +
+        (items ? '<div class="ar-watch"><div class="ar-watch-title">' + escapeHtml(L('Latest items', 'Últimas notas')) + '</div><ul>' + items + '</ul></div>' : '');
+    box.style.display = 'block';
+}
+
+// ── main ────────────────────────────────────────────────────
+async function loadData() {
+    captureDefaults();
+    applyTranslations();
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.toggle('active', b.textContent.toLowerCase() === currentLang); });
+    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadPulse(), loadCommodity(), loadMilitary(), Promise.resolve()]);
+    hideLoadingOverlay();
+}
+document.addEventListener('DOMContentLoaded', loadData);
+
+// ── canonical mobile drawer ─────────────────────────────────
+function toggleSidebar() {
+    const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (!sb) return;
+    const open = sb.classList.toggle('open'); if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    const sb = el('navSidebar'), bd = el('sidebarBackdrop');
+    if (sb) sb.classList.remove('open'); if (bd) bd.classList.remove('show'); document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    const sb = el('navSidebar'); if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
+</body>
+</html>
