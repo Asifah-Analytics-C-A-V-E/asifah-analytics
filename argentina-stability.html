@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics — Argentina Stability Index v1.0.0 — Nov 4, 2026 -->
+<!-- Gold Standard shell (cloned from peru-stability 1.1.0): sidebar drawer, live WHA sweep, market pulse, commodity card, dated analytic cards. EN/ES full, PT labels. -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" data-theme="dark">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Argentina Stability Index | Asifah Analytics v1.0.0</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   ARCTIC SCHEME (canonical across all Asifah pages)
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --bg-color:       #f8fafc;
+    --container-bg:   #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #e2e8f0;
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #64748b;
+    --article-bg:     #f1f5f9;
+    --article-hover:  #e2e8f0;
+    --header-gradient-start: #f1f5f9;
+    --header-gradient-end:   #cbd5e1;
+    --header-text:    #0f172a;
+    --accent:         #0ea5e9;
+    --accent-glow:    rgba(14,165,233,0.15);
+    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
+    --card-hover-glow: 0 8px 20px rgba(0,0,0,0.15);
+    --watermark-opacity: 0.5;
+    --watermark-size: 500px;
+    --loading-overlay-bg: rgba(248,250,252,0.98);
+    --loading-spinner-bg: rgba(14,165,233,0.2);
+}
+[data-theme="dark"] {
+    --bg-color:       #060d1a;
+    --container-bg:   #0d1b2e;
+    --card-bg:        #0d1b2e;
+    --card-border:    #1e3a5f;
+    --text-primary:   #e2f0fb;
+    --text-secondary: #93c5fd;
+    --text-muted:     #4a7090;
+    --article-bg:     #0a1525;
+    --article-hover:  #112038;
+    --header-gradient-start: #060d1a;
+    --header-gradient-end:   #1e3a5f;
+    --header-text:    #e2f0fb;
+    --accent:         #38bdf8;
+    --accent-glow:    rgba(56,189,248,0.2);
+    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --card-hover-glow: 0 0 22px rgba(56,189,248,0.28), 0 8px 25px rgba(0,0,0,0.5);
+    --watermark-opacity: 1;
+    --watermark-size: 800px;
+    --loading-overlay-bg: rgba(6,13,26,0.98);
+    --loading-spinner-bg: rgba(56,189,248,0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+.watermark {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--watermark-size); height: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    pointer-events: none; z-index: 0;
+    background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+    background-size: 135%; background-repeat: no-repeat; background-position: center;
+    border-radius: 50%; transition: all 0.4s ease;
+}
+
+/* ── CONTAINER + LAYOUT ── */
+.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.main-content { flex: 1; min-width: 0; }
+/* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+/* Gold Standard ambient layers: grid 40 + scanlines 2 (canon item 3) */
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px); }
+
+.menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+    background: var(--card-bg, #0d1b2e); border: 1px solid var(--card-border, #1e3a5f);
+    color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+.sidebar-backdrop.show { display: block; }
+@media (max-width: 1199px) {
+    .menu-toggle { display: block; }
+    .nav-sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 264px;
+        overflow-y: auto; padding: 56px 14px 24px; margin: 0;
+        background: var(--card-bg, #0d1b2e); border-right: 1px solid var(--card-border, #1e3a5f);
+        z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+    .nav-sidebar.open { transform: translateX(0); }
+}
+
+/* ── HEADER ── */
+header {
+    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+    padding: 22px 30px;
+    margin-bottom: 22px;
+    border-radius: 0 0 12px 12px;
+    color: var(--header-text);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; gap: 24px;
+}
+.header-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.header-logo {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    object-fit: cover;
+}
+.back-link {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    transition: all 0.3s;
+}
+.back-link:hover { background: rgba(56,189,248,0.08); }
+.header-content { flex: 1; }
+header h1 {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--header-text);
+    margin-bottom: 4px;
+}
+.subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+.header-controls { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; }
+.theme-toggle-label { font-size: 11px; color: var(--text-muted); }
+.theme-toggle-switch {
+    width: 44px; height: 22px; border-radius: 22px;
+    background: var(--card-border); position: relative; cursor: pointer;
+    transition: background 0.3s;
+}
+[data-theme="dark"] .theme-toggle-switch { background: var(--accent); }
+.theme-toggle-slider {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; position: absolute; top: 2px; left: 2px;
+    transition: left 0.3s;
+}
+[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+
+/* ── NAV SIDEBAR (canonical Gold Standard) ── */
+.nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; align-self: flex-start; }
+.nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
+.nav-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 8px;
+    background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.18);
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 12px; font-weight: 600;
+    transition: all 0.25s;
+}
+.nav-btn-label { flex: 1; }
+.nav-btn-status { font-size: 10px; color: var(--text-muted); margin-left: 8px; }
+.nav-btn:hover { transform: translateY(-1px); border-color: var(--accent); color: var(--text-primary); }
+.nav-btn.active-nav { background: linear-gradient(135deg, rgba(0,180,255,0.15), rgba(0,120,200,0.10)); border-color: rgba(0,200,255,0.5); color: var(--text-primary); }
+.nav-btn.active-nav:hover { box-shadow: 0 0 18px rgba(0,180,255,0.25); }
+.nav-btn.current-page { background: linear-gradient(135deg, rgba(0,200,255,0.20), rgba(0,150,200,0.15)); border-color: rgba(0,220,255,0.7); color: var(--text-primary); box-shadow: 0 0 16px rgba(0,200,255,0.22); }
+.nav-btn.inactive-nav { opacity: 0.4; cursor: default; border-color: rgba(100,100,100,0.2); background: transparent; }
+.nav-btn.rhetoric-btn { border-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(21,128,61,0.05)); }
+.nav-btn.rhetoric-btn:hover { border-color: rgba(34,197,94,0.8); box-shadow: 0 0 18px rgba(34,197,94,0.2); }
+.nav-btn.rhetoric-btn .nav-btn-status { color: #4ade80; }
+.nav-btn.rhetoric-btn.current-page { background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(21,128,61,0.12)); }
+.nav-btn.military-btn { border-color: rgba(139,92,246,0.4); background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(91,33,182,0.05)); }
+.nav-btn.military-btn:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 18px rgba(139,92,246,0.2); }
+.nav-btn.military-btn .nav-btn-status { color: #a78bfa; }
+.nav-btn.commodity-btn { border-color: rgba(250,204,21,0.4); background: linear-gradient(135deg, rgba(250,204,21,0.08), rgba(202,138,4,0.05)); }
+.nav-btn.commodity-btn:hover { border-color: rgba(250,204,21,0.8); box-shadow: 0 0 18px rgba(250,204,21,0.2); }
+.nav-btn.commodity-btn .nav-btn-status { color: #fde047; }
+.nav-btn.tracker-btn { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.05)); }
+.nav-btn.tracker-btn:hover { border-color: rgba(245,158,11,0.8); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
+.nav-btn.tracker-btn .nav-btn-status { color: #f59e0b; }
+.nav-divider { height: 1px; background: rgba(56,189,248,0.15); margin: 4px 0; }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--loading-overlay-bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s; backdrop-filter: blur(8px);
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner {
+    width: 70px; height: 70px;
+    border: 4px solid var(--loading-spinner-bg);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-status {
+    text-align: center; color: var(--text-primary);
+    max-width: 460px; padding: 22px 28px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; box-shadow: var(--card-glow);
+}
+.loading-title {
+    font-size: 1rem; font-weight: 700; letter-spacing: 1.5px;
+    margin-bottom: 14px; color: var(--accent);
+    text-transform: uppercase;
+}
+.loading-progress { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* ── TRAVEL ADVISORY BANNERS ── */
+.advisory-row { margin-bottom: 12px; }
+
+/* ── RHETORIC PLACEHOLDER (no tracker yet — flag-only) ── */
+.rhetoric-placeholder {
+    background: linear-gradient(135deg, rgba(100,116,139,0.10), rgba(71,85,105,0.05));
+    border: 1px dashed rgba(100,116,139,0.35);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+}
+
+/* ── GENERIC CARDS ── */
+.metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.section-title {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+.subsection-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* ── STABILITY SCORE PLACEHOLDER ── */
+.stability-score-big {
+    font-size: 3rem; font-weight: 700; line-height: 1;
+    color: var(--accent);
+}
+.stability-score-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px;
+}
+.stability-label {
+    font-size: 0.8rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;
+    color: white;
+}
+.stability-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 0.8rem;
+}
+.stability-meta-item {
+    padding: 8px 10px;
+    background: var(--article-bg);
+    border-radius: 6px;
+}
+.stability-meta-label {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.stability-meta-value { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+
+/* ── MAP SECTION ── */
+.map-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.map-section h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
+
+/* ── KNOWLEDGE LIBRARY ── */
+.knowledge-library {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.knowledge-library h2 {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+}
+.library-icon { font-size: 1.2rem; }
+.open-source-disclaimer {
+    font-size: 0.78rem; color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 14px;
+}
+.knowledge-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+}
+.knowledge-card {
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.knowledge-card:hover { border-color: var(--accent); box-shadow: var(--card-glow); }
+.knowledge-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+}
+.knowledge-card.collapsed .knowledge-header { border-bottom: none; }
+.knowledge-header-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
+}
+.category-icon { font-size: 1.2rem; }
+.collapse-icon {
+    color: var(--text-muted); font-size: 0.7rem;
+    transition: transform 0.3s;
+}
+.knowledge-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+.knowledge-content { padding: 14px 16px; font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); }
+.knowledge-card.collapsed .knowledge-content { display: none; }
+.knowledge-content p { margin-bottom: 10px; }
+.knowledge-content strong { color: var(--text-primary); }
+.knowledge-content ul { padding-left: 22px; margin-bottom: 10px; }
+.knowledge-content ul li { margin-bottom: 6px; }
+.report-links-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+.report-link {
+    padding: 5px 10px;
+    background: rgba(56,189,248,0.10);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 5px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.72rem; font-weight: 600;
+    transition: all 0.2s;
+}
+.report-link:hover { background: rgba(56,189,248,0.18); transform: translateY(-1px); }
+
+/* ── ARTICLES SECTION (tabbed) ── */
+.articles-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--card-glow);
+}
+.article-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+}
+.article-tab {
+    padding: 6px 14px;
+    background: var(--article-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.article-tab:hover { border-color: var(--accent); color: var(--accent); }
+.article-tab.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.article-tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    background: rgba(56,189,248,0.2);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.articles-list { list-style: none; padding: 0; max-height: 600px; overflow-y: auto; }
+.articles-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85rem; line-height: 1.5;
+}
+.articles-list li:last-child { border-bottom: none; }
+.articles-list a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+.articles-list a:hover { color: var(--accent); }
+.articles-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+.article-source-pill {
+    display: inline-block;
+    padding: 1px 7px; border-radius: 3px;
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    margin-right: 6px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ── FOOTER ── */
+footer {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
+@media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+/* v1.1.0: phones -- header controls wrap instead of pushing the page sideways */
+@media (max-width: 600px) {
+    html, body { overflow-x: hidden; }
+    .header-controls { align-items: flex-start; max-width: 100%; }
+    .header-controls .language-switcher { flex-wrap: wrap; }
+    header { flex-wrap: wrap; padding: 18px 16px 18px 60px; }
+}
+/* v1.1.0: the sticky sidebar rule above was overriding the mobile drawer,
+   so the hidden menu still took 200px and squeezed the page into a strip */
+@media (max-width: 1199px) {
+    .page-with-sidebar > .nav-sidebar { position: fixed; top: 0; height: 100vh; }
+}
+footer .footer-disclaimer {
+    padding: 12px 14px;
+    background: var(--article-bg); border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+}
+footer .footer-support { text-align: center; padding: 10px; font-size: 0.85rem; }
+footer .footer-support a { color: var(--accent); text-decoration: none; font-weight: 700; }
+footer .footer-copyright {
+    text-align: center; font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+}
+
+/* ── LEVEL COLORS ── */
+.level-0 { background: #6b7280; color: white; }
+.level-1 { background: #3b82f6; color: white; }
+.level-2 { background: #f59e0b; color: white; }
+.level-3 { background: #f97316; color: white; }
+.level-4 { background: #ef4444; color: white; }
+.level-5 { background: #dc2626; color: white; }
+
+/* ── LOADING DOTS ── */
+.loading-dot { display: inline-block; animation: pulse 1.4s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+   ═══════════════════════════════════════════════════════════ */
+.language-switcher {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.lang-btn {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.lang-btn:hover {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.45);
+}
+.lang-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+[data-theme="light"] .lang-btn { background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.30); color: var(--text-primary); }
+[data-theme="light"] .lang-btn:hover { background: rgba(14,165,233,0.18); }
+[data-theme="light"] .lang-btn.active { background: var(--accent); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   COMMODITY EXPOSURE CARD — Gold Standard v2.0 (May 7, 2026)
+   ═══════════════════════════════════════════════════════════ */
+.commodity-card {
+    background: var(--container-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .commodity-card {
+    box-shadow: 0 0 6px rgba(56,189,248,0.15);
+}
+.commodity-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--card-border);
+}
+.commodity-prose {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 10px 0 16px 0;
+    padding: 12px 14px;
+    background: rgba(2,6,23,0.5);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+}
+[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+
+.commodity-convergence-alert {
+    display: none;
+    margin: 10px 0 14px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(239,68,68,0.18) 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+}
+.commodity-convergence-alert.active { display: block; }
+.cca-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f59e0b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.cca-detail {
+    font-size: 11px;
+    color: #fbbf24;
+    line-height: 1.5;
+}
+
+.commodity-alert-banner {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-size: 12px;
+    display: none;
+}
+.commodity-alert-banner.show { display: block; }
+.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
+.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
+.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
+.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; }
+.commodity-alert-banner strong { letter-spacing: 1.5px; }
+.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
+
+.commodity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+.commodity-pill {
+    background: rgba(2,6,23,0.5);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+[data-theme="light"] .commodity-pill { background: #f8fbfe; }
+.commodity-pill:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 12px rgba(56,189,248,0.15);
+}
+.commodity-pill-header { display: flex; align-items: center; gap: 10px; }
+.commodity-pill-icon { font-size: 22px; line-height: 1; }
+.commodity-pill-name { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
+.commodity-pill-rank { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.commodity-pill-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.commodity-pill-alert {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
+.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+.commodity-pill-role-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(56,189,248,0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.25);
+}
+.commodity-pill-signal-count { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+.commodity-pill-price { font-size: 12px; color: var(--text-primary); font-weight: 600; font-family: 'Courier New', monospace; }
+.commodity-pill-price .price-up   { color: #22c55e; }
+.commodity-pill-price .price-down { color: #ef4444; }
+.commodity-pill-note { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-top: 4px; }
+.commodity-top-signals {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(2,6,23,0.5);
+    border-radius: 6px;
+    border-left: 3px solid var(--text-muted);
+    font-size: 11px;
+}
+[data-theme="light"] .commodity-top-signals { background: #f8fbfe; }
+.commodity-top-signals .ts-title { color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-size: 10px; }
+.commodity-top-signals a { color: var(--text-secondary); text-decoration: none; display: block; padding: 3px 0; line-height: 1.45; }
+.commodity-top-signals a:hover { color: #38bdf8; }
+.commodity-top-signals .ts-source { color: var(--text-muted); font-size: 10px; }
+.strategic-linkage {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(56,189,248,0.05);
+    border-left: 3px solid #38bdf8;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.strategic-linkage strong { color: #38bdf8; font-weight: 700; }
+/* ── RHETORIC TRACKER BANNER (canonical green pointer) ── */
+.rhetoric-banner-canonical { display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,#052e16,#14532d); border:2px solid #22c55e; border-radius:10px; padding:14px 20px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); flex-wrap:wrap; }
+.rhet-banner-badge { background:#6b7280; color:white; font-size:10px; font-weight:800; padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap; text-transform:uppercase; font-family:'Courier New',monospace; }
+.rhet-banner-link { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+.rhet-banner-link:hover { background:rgba(255,255,255,0.25); }
+/* ── Argentina page (v1.0.0 Nov 4 2026) ── */
+.ar-body { font-size: 0.86rem; line-height: 1.62; color: var(--text-primary); }
+.ar-body p { margin: 0 0 10px; }
+.ar-sub { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; margin: -4px 0 12px; }
+.ar-muted { color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+.ar-live-line { margin-top: 8px; padding: 8px 12px; border-radius: 6px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.25); font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+.ar-live-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 10px; }
+.ar-stat { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; }
+.ar-stat-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.ar-stat-value { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.ar-coverage { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.ar-pulse-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.ar-tile { border: 1px solid var(--card-border); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 10px 12px; }
+.ar-tile.tier-warning { border-left-color: #f59e0b; } .ar-tile.tier-stress { border-left-color: #ef4444; } .ar-tile.tier-rally { border-left-color: #22c55e; }
+.ar-tile-name { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+.ar-tile-value { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 2px 0; }
+.ar-tile-chg { font-size: 0.78rem; color: var(--text-secondary); }
+.ar-tile-tier { font-size: 0.72rem; font-weight: 700; margin-top: 4px; color: var(--text-primary); }
+.ar-tile-note { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
+.ar-pulse-read { margin-top: 10px; font-size: 0.82rem; line-height: 1.55; color: var(--text-primary); }
+.ar-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.ar-patron { border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; }
+.ar-patron-head { font-weight: 800; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-primary); }
+.ar-sowhat { margin-top: 6px; padding: 10px 12px; border-radius: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); font-size: 0.84rem; line-height: 1.55; color: var(--text-primary); }
+.ar-watch { margin-top: 10px; }
+.ar-watch-title { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.ar-watch ul { margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); }
+.ar-pending { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #94a3b8; border: 1px dashed currentColor; border-radius: 4px; padding: 3px 8px; margin-bottom: 10px; }
+.adv-btn { flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap; }
+@media (max-width: 760px) {
+    .ar-live-grid { grid-template-columns: 1fr 1fr; }
+    .ar-pulse-grid, .ar-two-col { grid-template-columns: 1fr; }
+    .advisory-row { flex-wrap: wrap; }
+}
+</style>
+<link rel="stylesheet" href="resources/asifah-standard-shell.css">
+<script src="resources/asifah-standard-shell.js" defer></script>
+</head>
+<body>
+<div class="watermark"></div>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-status">
+        <div class="loading-title" data-i18n="loading_title">Loading Argentina Stability Data</div>
+        <div class="loading-progress"><span data-i18n="loading_progress">Connecting to backend... This may take 20-40 seconds on cold cache.</span></div>
+    </div>
+</div>
+
+<div class="container">
+
+<header>
+    <div class="header-logo-wrap">
+        <a href="wha.html" class="back-link" data-i18n="back_to_wha">← W. Hemisphere</a>
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
+             alt="Asifah Analytics Logo" class="header-logo"/>
+    </div>
+    <div class="header-content">
+        <h1 data-i18n="page_title">🇦🇷 ARGENTINA STABILITY INDEX</h1>
+        <div class="subtitle" data-i18n="page_subtitle">Milei's Economic Experiment · Between Two Patrons (US &amp; China) · Falklands / Malvinas · Lithium, Shale &amp; Soy · Tri-Border Area</div>
+        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    </div>
+    <div class="header-controls">
+        <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('en', this)">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('es', this)">ES</button>
+            <button class="lang-btn" onclick="switchLanguage('pt', this)">PT</button>
+        </div>
+        <div class="theme-toggle">
+            <span class="theme-toggle-label" data-i18n="theme_label">Theme</span>
+            <div class="theme-toggle-switch" onclick="toggleTheme()"><div class="theme-toggle-slider"></div></div>
+        </div>
+    </div>
+</header>
+
+<div class="page-with-sidebar">
+
+<nav class="nav-sidebar" id="navSidebar">
+    <div class="nav-sidebar-label" data-i18n="nav_dashboards">Dashboards</div>
+    <a href="africa.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_africa">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_asia_pacific">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_europe">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_me">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label" data-i18n="nav_wha">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_global_trackers">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_commodities">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_gpi">🌐 Global Pressure</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_market_watch">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn tracker-btn"><span class="nav-btn-label" data-i18n="nav_military">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_rhetoric">Regional Rhetoric</div>
+    <a href="rhetoric-index.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_me">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_asia">🌏 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_europe">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label" data-i18n="nav_rhetoric_wha">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-divider"></div>
+    <div class="nav-sidebar-label" data-i18n="nav_argentina">Argentina</div>
+    <a href="argentina-stability.html" class="nav-btn current-page"><span class="nav-btn-label" data-i18n="nav_ar_stability">🇦🇷 Argentina Stability</span><span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span></a>
+</nav>
+
+<div class="main-content">
+
+<!-- ── WORLDWIDE CAUTION ── -->
+<div class="advisory-row" style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%); border: 2px solid #ef4444; border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);">
+    <div style="font-size: 24px; flex-shrink: 0;">🚨</div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 12px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;" data-i18n="ww_caution_label">⚠️ U.S. State Department — Worldwide Caution</div>
+        <div style="font-size: 12px; color: #fde8e8; line-height: 1.4;" data-i18n="ww_caution_text">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow guidance from the nearest U.S. embassy or consulate.</div>
+    </div>
+    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="ww_caution_button">VIEW CAUTION →</a>
+</div>
+
+<!-- ── ARGENTINA TRAVEL ADVISORY (dynamic) ── -->
+<div class="advisory-row" id="arTravelAdvisory" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #22c55e; border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="font-size: 24px; flex-shrink: 0;">🇦🇷</div>
+    <div style="flex: 1; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+            <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Argentina Travel Advisory</span>
+            <span id="arTravelLevel" style="background: #6b7280; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LOADING…</span>
+        </div>
+        <div id="arTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n="travel_text">Live level from the State Department feed. Argentina is normally Level 1 (normal precautions).</div>
+    </div>
+    <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/argentina-travel-advisory.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="travel_button">VIEW ADVISORY →</a>
+</div>
+
+<!-- ── SITUATION (dated) ── -->
+<div class="metric-card ar-situation" id="arSituationCard">
+    <div class="section-title" data-i18n="sit_title">🧭 Situation — as of November 4, 2026</div>
+    <div class="ar-body" data-i18n-html="sit_body">
+        <p><strong>Javier Milei</strong> has been president since December 2023. His shock programme took monthly inflation from about 25% to around 2%; annual inflation was still about <strong>34%</strong> in July 2026 and edging back up. His party won about 41% in the October 2025 midterms, but approval has slipped to the high 30s, and he faces re-election in <strong>October 2027</strong>.</p>
+        <p><strong>The So What:</strong> Argentina is the clearest case in the hemisphere of a country living <em>between two patrons</em> — a US Treasury swap line backs the peso, a renewed Chinese swap line backs the reserves — while picking a fight with Britain over the Falklands that Washington has stopped promising to settle. Three things decide whether this stays a political story or becomes a stability story: whether inflation keeps falling, whether either patron's money comes with conditions Milei can't meet, and whether the Falklands dispute moves from words to ships, sanctions or oil rigs.</p>
+    </div>
+    <div class="ar-live-line" id="arLiveLine" style="display:none;"></div>
+</div>
+
+<!-- ── LIVE NEWS READ (generic WHA scan) ── -->
+<div class="metric-card" id="arLiveCard" style="border-left: 4px solid #38bdf8;">
+    <div class="section-title" data-i18n="live_title">📡 Live News Read</div>
+    <div class="ar-sub" data-i18n="live_sub">What the WHA scanner sees for Argentina this cycle. This is the regional sweep, not a full rhetoric tracker — a dedicated Argentina tracker comes next.</div>
+    <div class="ar-live-grid">
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_level">Scanner read</div><div class="ar-stat-value" id="arLiveLevel">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_articles">Articles</div><div class="ar-stat-value" id="arLiveArticles">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_sources">Separate outlets</div><div class="ar-stat-value" id="arLiveSources">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label" data-i18n="live_military">Military posture</div><div class="ar-stat-value" id="arLiveMil">—</div></div>
+    </div>
+    <div class="ar-coverage" id="arCoverage"></div>
+</div>
+
+<!-- ── FINANCIAL PULSE ── -->
+<div class="metric-card" id="arPulseCard" style="border-left: 4px solid #a78bfa;">
+    <div class="section-title" data-i18n="pulse_title">💹 Argentina Financial Pulse</div>
+    <div class="ar-sub" data-i18n="pulse_sub">Merval (Buenos Aires shares, in pesos), the peso, and soybeans — Argentina's biggest export. A rising USD/ARS number means a weaker peso.</div>
+    <div class="ar-pulse-grid" id="arPulseGrid"><div class="ar-muted" data-i18n="pulse_loading">Loading market data…</div></div>
+    <div class="ar-pulse-read" id="arPulseRead"></div>
+</div>
+
+<!-- ── TWO PATRONS ── -->
+<div class="metric-card" id="arPatronsCard" style="border-left: 4px solid #f59e0b;">
+    <div class="section-title" data-i18n="pat_title">⚖️ Between Two Patrons — the US and China</div>
+    <div class="ar-two-col">
+        <div class="ar-patron">
+            <div class="ar-patron-head">🇺🇸 <span data-i18n="pat_us_head">Washington</span></div>
+            <div class="ar-body" data-i18n-html="pat_us_body"><p>A <strong>$20bn US Treasury swap line</strong> (October 2025) steadied the peso before the midterms — the first time the US Treasury has backstopped an emerging-market currency at this scale since Mexico in 1995. Milei is the administration's closest ally in South America.</p></div>
+        </div>
+        <div class="ar-patron">
+            <div class="ar-patron-head">🇨🇳 <span data-i18n="pat_cn_head">Beijing</span></div>
+            <div class="ar-body" data-i18n-html="pat_cn_body"><p>The central bank renewed its <strong>$19bn (130bn-yuan) swap with China for five more years</strong> in August 2026, despite US pressure to end it. China buys most of Argentina's soybeans, runs a <strong>deep-space station in Neuquén</strong> on a 50-year lease (operated by an agency linked to the Chinese military), and is a major investor in lithium.</p></div>
+        </div>
+    </div>
+    <div class="ar-sowhat" data-i18n-html="pat_sowhat"><strong>So What:</strong> Milei talks like Washington's ally and banks like a hedger. The question for the reader is not "which side is Argentina on" but "which patron's money comes with strings first" — and what Buenos Aires does when the US asks it to choose (end the yuan swap, review the Neuquén station, steer lithium away from Chinese buyers).</div>
+    <div class="ar-watch"><div class="ar-watch-title" data-i18n="watch_title">Watch</div><ul data-i18n-html="pat_watch">
+        <li>Any US condition tied to the swap line (the yuan swap, Neuquén, Chinese 5G or ports)</li>
+        <li>Drawdowns on either swap line — a sign reserves are under strain</li>
+        <li>Chinese lithium and soybean deals, and any change at the Neuquén station</li>
+    </ul></div>
+</div>
+
+<!-- ── FALKLANDS / MALVINAS ── -->
+<div class="metric-card" id="arFalklandsCard" style="border-left: 4px solid #ef4444;">
+    <div class="section-title" data-i18n="fk_title">🇫🇰 Falklands / Malvinas — the dispute is live again</div>
+    <div class="ar-body" data-i18n-html="fk_body">
+        <p><strong>What changed (Aug 31 – Sep 3, 2026):</strong> President Trump said he "always reviews every position" on the islands and would not say the US would back Britain in a future conflict, complaining that the UK was "not there to help" in the Iran war. Milei answered with decrees sanctioning firms working on the <strong>Sea Lion</strong> oil field north of the islands, money for a naval base in Tierra del Fuego, and a warning that further oil work threatens Argentine security. London called its commitment "unshakeable", citing the 2013 referendum (99.8% to stay British).</p>
+        <p><strong>What's at stake economically:</strong> fishing licences — mostly for squid — pay for most of the islands' budget, and the squid stock swims between Argentine and Falklands waters. Sea Lion holds about 1.7bn barrels (first oil planned for 2028): trivial for world prices, but it is the leverage. Oilfield-service majors SLB, Halliburton and Baker Hughes have said they won't work on it.</p>
+    </div>
+    <div class="ar-sowhat" data-i18n-html="fk_sowhat"><strong>So What:</strong> nobody serious expects an invasion — Britain's garrison and jets at Mount Pleasant outclass what Argentina can field. The real change is the <strong>American guarantee</strong>: Washington signalled its backing now depends on whether allies showed up for its last war. Read it as a test of US alliance reliability that Warsaw, Tokyo and Taipei are watching — and as Milei's best domestic card before 2027.</div>
+    <div class="ar-watch"><div class="ar-watch-title" data-i18n="watch_title">Watch</div><ul data-i18n-html="fk_watch">
+        <li>Any change to the US State Department's "neutral" wording on sovereignty</li>
+        <li>The Sea Lion timetable — drilling start, contractors pulling out</li>
+        <li>Argentine sanctions actually enforced (named firms, ships, suppliers)</li>
+        <li>Incidents at sea or in the air; UK reinforcement of Mount Pleasant</li>
+    </ul></div>
+</div>
+
+<!-- ── ANTARCTIC GATEWAY & CRITICAL MINERALS (v1.0.0, Rachel/Nov 4) ── -->
+<div class="metric-card" id="arAntarcticCard" style="border-left: 4px solid #22d3ee;">
+    <div class="section-title" data-i18n="ant_title">🧊 Antarctic Gateway &amp; Critical Minerals</div>
+    <div class="ar-body" data-i18n-html="ant_body">
+        <p><strong>The gateway:</strong> Ushuaia is the closest port to Antarctica, across the Drake Passage — and with Chile's Punta Arenas, one of the two southern doors to the continent. Whoever runs the ports, airfields, fuel and supply lines at the bottom of South America shapes who can operate in Antarctica. Milei has invited the US in (a joint naval facility at Ushuaia was announced in 2024) after a Tierra del Fuego plan for a Chinese-built port drew Washington's alarm; his September 2026 pledge of new naval money for Tierra del Fuego sits on top of that.</p>
+        <p><strong>The long game:</strong> mining in Antarctica is banned by the 1991 Madrid Protocol, which can be reviewed from 2048. The claims of Argentina, Britain and Chile overlap on the Antarctic Peninsula — and the Falklands and South Georgia anchor Britain's claim. Bases, ports and logistics built now decide who sits at the table then.</p>
+        <p><strong>Critical minerals now:</strong> Argentina is the world's fourth-largest lithium producer and rising fast, and big copper projects in San Juan (Vicuña, Los Azules) could make it a major copper producer in the 2030s under the RIGI investment regime. Washington wants that output in US supply chains; Chinese firms are already invested in the lithium north.</p>
+    </div>
+    <div class="ar-sowhat" data-i18n-html="ant_sowhat"><strong>So What:</strong> the Falklands row is not only about 3,500 islanders. It is about the South Atlantic, the door to Antarctica and the minerals of the 2030s and 2040s — and which of Washington, Beijing and London Argentina lets in. A US-built facility in Ushuaia, Chinese money in lithium and a British garrison in the Falklands are three pieces of the same board.</div>
+    <div class="ar-watch"><div class="ar-watch-title" data-i18n="watch_title">Watch</div><ul data-i18n-html="ant_watch">
+        <li>Construction or US basing at Ushuaia; any Chinese port, logistics or fishing-support deal in Tierra del Fuego</li>
+        <li>Lithium and copper contracts — who buys the output (US partners or Chinese firms)</li>
+        <li>Antarctic Treaty meetings and any talk of revisiting the mining ban</li>
+    </ul></div>
+</div>
+
+<!-- ── TRI-BORDER AREA (module pending) ── -->
+<div class="metric-card" id="arTbaCard" style="border-left: 4px solid #64748b;">
+    <div class="section-title" data-i18n="tba_title">🕸️ Tri-Border Area &amp; Hizballah Finance</div>
+    <div class="ar-pending" data-i18n="tba_pending">NOT REPORTING YET — the shared Hizballah Latin America module (next build) will feed this card. Until then, background only.</div>
+    <div class="ar-body" data-i18n-html="tba_body">
+        <p>Where Argentina, Brazil and Paraguay meet (Puerto Iguazú – Foz do Iguaçu – Ciudad del Este) is the hemisphere's best-known Hizballah finance and smuggling hub. Argentina suffered the <strong>1992 Israeli embassy</strong> and <strong>1994 AMIA</strong> bombings (85 killed), which its courts attribute to Iran and Hizballah. Argentina listed Hizballah as a terrorist organisation in 2019; a 2025 law allows the accused Iranian officials to be tried in absentia.</p>
+        <p><em>Honesty rule for this card:</em> the local effect is mostly crime and money (smuggling, laundering, the Brazilian PCC gang). The headline So What is money flowing to Lebanon — not a local bombing risk, unless corroborated reporting says otherwise.</p>
+    </div>
+</div>
+
+<!-- ── COMMODITY EXPOSURE ── -->
+<div class="commodity-card" id="commodityCard">
+    <div class="commodity-card-title" data-i18n="commodity_title">🛢️ Commodity Exposure &amp; Strategic Pressure</div>
+    <div class="commodity-prose" id="commodityProse"><span data-i18n="commodity_prose_loading">Loading commodity exposure profile…</span></div>
+    <div class="commodity-alert-banner" id="commodityAlertBanner"></div>
+    <div class="commodity-grid" id="commodityGrid"><div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;" data-i18n="commodity_loading">⏳ Loading commodity exposure tiles…</div></div>
+    <div class="commodity-top-signals" id="commodityTopSignals" style="display:none;">
+        <div class="ts-title" data-i18n="ts_title">📰 Top signals (last 24h)</div>
+        <div id="commodityTopSignalsList"></div>
+    </div>
+    <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Argentina is the world's largest exporter of <strong>soybean meal and oil</strong> (top-three in beans) — China and animal-feed buyers worldwide feel an Argentine drought or export tax. It is a top-five <strong>lithium</strong> producer with output rising fast under the RIGI investment regime, and <strong>Vaca Muerta</strong> shale has turned Argentina into an oil and gas exporter. A good harvest or a Vaca Muerta record means dollars for the central bank; a drought (as in 2023) means a currency crisis.</div>
+</div>
+
+<!-- ── RHETORIC TRACKER (coming next) ── -->
+<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
+    <div class="section-title" data-i18n="rh_title">📡 Argentina Rhetoric &amp; Pressure Tracker</div>
+    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">COMING NEXT</div>
+    <div class="ar-sub" data-i18n="rh_sub">Planned actors: Milei government · Congress &amp; unions · the economy team &amp; IMF · US-Argentina · China-Argentina · UK / Falklands · Tri-Border Area. It will add evidence-graded signals, a plain "top indicator", and spokes to the US, China and UK wheels — and is what feeds Argentina into the WHA regional summary and the Global Pressure Index.</div>
+</div>
+
+<!-- ── MAP ── -->
+<div class="map-section">
+    <h2 data-i18n="map_title">🗺️ Argentina — Strategic Overview</h2>
+    <div class="map-subtitle" data-i18n="map_subtitle">Buenos Aires, Vaca Muerta (Neuquén), the lithium triangle (Jujuy, Salta, Catamarca), the Tri-Border Area (Puerto Iguazú), and the South Atlantic / Falklands.</div>
+    <div style="width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden;">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-75%2C-56%2C-52%2C-21&layer=mapnik&marker=-34.6037%2C-58.3816" width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;" title="Map of Argentina"></iframe>
+    </div>
+</div>
+
+<!-- ── KNOWLEDGE LIBRARY ── -->
+<div class="knowledge-library">
+    <h2><span class="library-icon">📚</span><span data-i18n="kl_title">Knowledge Library</span></h2>
+    <p class="open-source-disclaimer" data-i18n="kl_disclaimer">Background compiled from open-source reporting. Dated facts are re-verified on a 45-day cycle (next ~Dec 19, 2026).</p>
+    <div class="knowledge-categories">
+        <div class="knowledge-card collapsed" id="card-economy">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('economy')"><div class="knowledge-header-title"><span class="category-icon">💵</span><span data-i18n="kl_econ_title">Milei's Economy</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content" data-i18n-html="kl_econ_body">
+                <p><strong>The programme:</strong> deep spending cuts, a balanced budget, deregulation and a managed peso (a crawling band). Monthly inflation fell from about 25% (Dec 2023) to around 2%; annual inflation was about 34% in July 2026. Country risk hit an eight-year low near 400 points in July 2026 before drifting back above 500. Fitch and S&amp;P upgraded Argentina to B- in mid-2026.</p>
+                <p><strong>Pressure points:</strong> real wages, pensions and university funding (the source of most large protests), reserves, and the IMF programme. Argentina is the IMF's largest debtor.</p>
+                <div class="report-links-grid"><a href="https://www.bcra.gob.ar/" target="_blank" class="report-link">📑 BCRA (central bank)</a><a href="https://www.indec.gob.ar/" target="_blank" class="report-link">📑 INDEC (statistics)</a><a href="https://www.imf.org/en/Countries/ARG" target="_blank" class="report-link">📑 IMF — Argentina</a></div>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-politics">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('politics')"><div class="knowledge-header-title"><span class="category-icon">🏛️</span><span data-i18n="kl_pol_title">Politics &amp; the 2027 Election</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content" data-i18n-html="kl_pol_body">
+                <p><strong>Javier Milei</strong> (La Libertad Avanza) took office in December 2023 as an outsider libertarian. His party won about 41% in the October 2025 midterms, strengthening his hand in Congress, but he still governs through deals with provincial governors. Approval was around 37% in August 2026.</p>
+                <p><strong>The opposition</strong> is the Peronist movement and its union base (CGT), which call general strikes against labour and pension reforms. The next presidential election is <strong>October 2027</strong>.</p>
+                <div class="report-links-grid"><a href="https://www.casarosada.gob.ar/" target="_blank" class="report-link">📑 Casa Rosada</a><a href="https://www.batimes.com.ar/" target="_blank" class="report-link">📑 Buenos Aires Times</a><a href="https://www.americasquarterly.org/" target="_blank" class="report-link">📑 Americas Quarterly</a></div>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-china">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('china')"><div class="knowledge-header-title"><span class="category-icon">🐉</span><span data-i18n="kl_cn_title">China in Argentina</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content" data-i18n-html="kl_cn_body">
+                <p><strong>Espacio Lejano (Neuquén):</strong> a Chinese deep-space ground station on a 50-year lease since 2015, run by an agency under China's military. Argentina's inspection rights are limited; Washington calls it a dual-use risk.</p>
+                <p><strong>Money and trade:</strong> the $19bn yuan swap (renewed to 2031), soybean purchases, lithium projects in the north, and Chinese fishing fleets that work the edge of Argentina's waters — the "Mile 201" problem.</p>
+            </div>
+        </div>
+        <div class="knowledge-card collapsed" id="card-falklands">
+            <div class="knowledge-header" onclick="toggleKnowledgeCard('falklands')"><div class="knowledge-header-title"><span class="category-icon">⚓</span><span data-i18n="kl_fk_title">Falklands, South Atlantic &amp; Antarctica</span></div><span class="collapse-icon">▼</span></div>
+            <div class="knowledge-content" data-i18n-html="kl_fk_body">
+                <p><strong>1982:</strong> Argentina invaded; Britain retook the islands in 74 days (649 Argentine and 255 British dead). US intelligence and supplies helped Britain — which is why Washington's 2026 wobble matters.</p>
+                <p><strong>Today:</strong> about 3,500 islanders; a British garrison at Mount Pleasant with Typhoon jets; an economy built on squid licences, with the Sea Lion oil field planned for 2028. The Falklands and South Georgia anchor Britain's Antarctic claim, which overlaps Argentina's and Chile's.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── RECENT ARTICLES ── -->
+<div class="articles-section">
+    <div class="section-title" data-i18n="articles_title">📰 Recent Argentina Articles (WHA scan)</div>
+    <ul class="articles-list" id="articlesList">
+        <li style="text-align: center; color: var(--text-muted); padding: 30px;"><span data-i18n="articles_loading">Loading articles...</span></li>
+    </ul>
+</div>
+
+<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
+    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — ARGENTINA</div>
+    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
+    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS · NewsAPI · Brave · Yahoo Finance (market tiles)</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;">☕ Buy Me a Coffee</a>
+        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;">✉️ Contact Asifah</a>
+    </div>
+    <div style="color:#64748b;font-size:11px;margin-bottom:12px;" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+</footer>
+
+</div> <!-- /main-content -->
+</div> <!-- /page-with-sidebar -->
+</div> <!-- /container -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// ARGENTINA STABILITY — Frontend Logic v1.0.0 (Nov 4 2026)
+// Live sources (all on the WHA backend):
+//   /api/wha/travel-advisories    State Dept level
+//   /api/wha/threat/argentina     regional sweep (articles, read, coverage)
+//   /api/wha/market/argentina     Merval / USD-ARS / soybeans
+//   /api/wha/commodity/argentina  commodity exposure (proxied from ME)
+//   /api/military-posture/argentina  (ME has no Argentina actors yet -> honest "not sensed")
+// EN / ES full; PT falls back to EN for the long analytic cards.
+// ════════════════════════════════════════════════════════════
+const WHA_BACKEND = 'https://asifah-wha-backend.onrender.com';
+
+const TRANSLATIONS = {
+  en: {},   // English is the HTML itself
+  es: {
+    back_to_wha: '← Hemisferio Occidental',
+    page_title: '🇦🇷 ÍNDICE DE ESTABILIDAD DE ARGENTINA',
+    page_subtitle: 'El experimento económico de Milei · Entre dos patrones (EE.UU. y China) · Malvinas · Litio, shale y soja · Triple Frontera',
+    theme_label: 'Tema', loading_title: 'Cargando datos de Argentina',
+    loading_progress: 'Conectando con el backend... Puede tardar 20-40 segundos.',
+    nav_dashboards: 'Tableros', nav_global_trackers: 'Rastreadores globales', nav_rhetoric: 'Retórica regional',
+    nav_argentina: 'Argentina', nav_ar_stability: '🇦🇷 Estabilidad de Argentina', nav_here: '◉ Estás aquí',
+    ww_caution_label: '⚠️ Departamento de Estado de EE.UU. — Precaución mundial',
+    ww_caution_text: 'Tras el inicio de las operaciones de combate de EE.UU. en Irán, los estadounidenses en todo el mundo, especialmente en Medio Oriente, deben seguir las indicaciones de la embajada o consulado más cercano.',
+    ww_caution_button: 'VER AVISO →', travel_button: 'VER AVISO →',
+    travel_label: 'Departamento de Estado de EE.UU. — Aviso de viaje para Argentina',
+    travel_text: 'Nivel en vivo del Departamento de Estado. Argentina suele estar en Nivel 1 (precauciones normales).',
+    sit_title: '🧭 Situación — al 4 de noviembre de 2026',
+    sit_body: '<p><strong>Javier Milei</strong> es presidente desde diciembre de 2023. Su programa de shock bajó la inflación mensual de cerca del 25% a alrededor del 2%; la inflación anual seguía en torno al <strong>34%</strong> en julio de 2026 y volvía a subir levemente. Su partido obtuvo cerca del 41% en las legislativas de octubre de 2025, pero su aprobación cayó a menos del 40% y enfrenta la reelección en <strong>octubre de 2027</strong>.</p><p><strong>Y qué:</strong> Argentina es el caso más claro del hemisferio de un país que vive <em>entre dos patrones</em> — una línea de swap del Tesoro de EE.UU. respalda al peso, un swap chino renovado respalda las reservas — mientras abre una pelea con el Reino Unido por Malvinas que Washington ya no promete resolver. Tres cosas deciden si esto sigue siendo una historia política o se vuelve una historia de estabilidad: si la inflación sigue bajando, si el dinero de algún patrón llega con condiciones que Milei no puede cumplir, y si la disputa por Malvinas pasa de las palabras a barcos, sanciones o plataformas petroleras.</p>',
+    live_title: '📡 Lectura en vivo', live_sub: 'Lo que ve el barrido regional para Argentina en este ciclo. No es un rastreador de retórica completo — el rastreador dedicado de Argentina viene a continuación.',
+    live_level: 'Lectura del escáner', live_articles: 'Artículos', live_sources: 'Medios distintos', live_military: 'Postura militar',
+    pulse_title: '💹 Pulso financiero de Argentina',
+    pulse_sub: 'Merval (acciones porteñas, en pesos), el peso y la soja — la mayor exportación argentina. Si USD/ARS sube, el peso se debilita.',
+    pulse_loading: 'Cargando datos de mercado…',
+    pat_title: '⚖️ Entre dos patrones — EE.UU. y China', pat_us_head: 'Washington', pat_cn_head: 'Pekín',
+    pat_us_body: '<p>Una <strong>línea de swap de US$20.000 millones del Tesoro de EE.UU.</strong> (octubre de 2025) estabilizó el peso antes de las legislativas. Milei es el aliado más cercano de la administración en Sudamérica.</p>',
+    pat_cn_body: '<p>El Banco Central renovó su <strong>swap de US$19.000 millones (130.000 millones de yuanes) con China por cinco años más</strong> en agosto de 2026, pese a la presión de EE.UU. China compra la mayor parte de la soja argentina, opera una <strong>estación de espacio lejano en Neuquén</strong> con un arrendamiento de 50 años (a cargo de una agencia vinculada al ejército chino) y es un gran inversor en litio.</p>',
+    pat_sowhat: '<strong>Y qué:</strong> Milei habla como aliado de Washington y se financia como alguien que se cubre. La pregunta no es "de qué lado está Argentina" sino "qué patrón pone condiciones primero" — y qué hace Buenos Aires cuando EE.UU. le pida elegir (terminar el swap en yuanes, revisar la estación de Neuquén, alejar el litio de compradores chinos).',
+    watch_title: 'Vigilar',
+    pat_watch: '<li>Cualquier condición de EE.UU. ligada al swap (yuanes, Neuquén, 5G o puertos chinos)</li><li>Uso de cualquiera de los swaps — señal de presión sobre las reservas</li><li>Acuerdos chinos de litio y soja, y cualquier cambio en la estación de Neuquén</li>',
+    fk_title: '🇫🇰 Malvinas / Falklands — la disputa volvió',
+    fk_body: '<p><strong>Qué cambió (31 de agosto – 3 de septiembre de 2026):</strong> el presidente Trump dijo que "siempre revisa todas las posiciones" sobre las islas y no quiso decir si EE.UU. respaldaría al Reino Unido en un conflicto futuro, quejándose de que Londres "no estuvo para ayudar" en la guerra con Irán. Milei respondió con decretos que sancionan a las empresas del yacimiento <strong>Sea Lion</strong>, fondos para una base naval en Tierra del Fuego y una advertencia de que más trabajo petrolero amenaza la seguridad argentina. Londres calificó su compromiso de "inquebrantable", citando el referéndum de 2013 (99,8% por seguir siendo británicos).</p><p><strong>Qué está en juego:</strong> las licencias de pesca — sobre todo de calamar — financian la mayor parte del presupuesto isleño, y el calamar se mueve entre aguas argentinas y malvinenses. Sea Lion tiene unos 1.700 millones de barriles (primer petróleo previsto para 2028): irrelevante para el precio mundial, pero es la palanca. SLB, Halliburton y Baker Hughes dijeron que no trabajarán allí.</p>',
+    fk_sowhat: '<strong>Y qué:</strong> nadie serio espera una invasión — la guarnición británica en Mount Pleasant supera lo que Argentina puede desplegar. El cambio real es la <strong>garantía estadounidense</strong>: Washington indicó que su respaldo depende de si los aliados acompañaron su última guerra. Es una prueba de la confiabilidad de las alianzas de EE.UU. que miran Varsovia, Tokio y Taipéi — y la mejor carta interna de Milei antes de 2027.',
+    fk_watch: '<li>Cualquier cambio en la redacción "neutral" del Departamento de Estado sobre la soberanía</li><li>El calendario de Sea Lion — inicio de perforación, contratistas que se retiran</li><li>Sanciones argentinas aplicadas de verdad (empresas, buques, proveedores nombrados)</li><li>Incidentes en el mar o el aire; refuerzo británico de Mount Pleasant</li>',
+    ant_title: '🧊 Puerta antártica y minerales críticos',
+    ant_body: '<p><strong>La puerta:</strong> Ushuaia es el puerto más cercano a la Antártida, cruzando el Pasaje de Drake — y, con Punta Arenas en Chile, una de las dos puertas australes al continente. Quien controla puertos, aeródromos, combustible y abastecimiento en el extremo sur de Sudamérica define quién puede operar en la Antártida. Milei invitó a EE.UU. (en 2024 se anunció una instalación naval conjunta en Ushuaia) después de que un plan fueguino para un puerto construido por China alarmara a Washington; su promesa de septiembre de 2026 de nuevos fondos navales para Tierra del Fuego se suma a eso.</p><p><strong>El juego largo:</strong> la minería en la Antártida está prohibida por el Protocolo de Madrid de 1991, que puede revisarse a partir de 2048. Los reclamos de Argentina, el Reino Unido y Chile se superponen en la Península Antártica — y Malvinas y Georgias del Sur sostienen el reclamo británico. Las bases, puertos y logística que se construyan hoy deciden quién se sienta a la mesa entonces.</p><p><strong>Minerales críticos hoy:</strong> Argentina es el cuarto productor mundial de litio y crece rápido, y grandes proyectos de cobre en San Juan (Vicuña, Los Azules) podrían convertirla en un gran productor en la década de 2030 bajo el RIGI. Washington quiere esa producción en sus cadenas de suministro; empresas chinas ya invirtieron en el litio del norte.</p>',
+    ant_sowhat: '<strong>Y qué:</strong> la disputa por Malvinas no es solo por 3.500 isleños. Es por el Atlántico Sur, la puerta a la Antártida y los minerales de las décadas de 2030 y 2040 — y a quién deja entrar Argentina entre Washington, Pekín y Londres. Una instalación construida por EE.UU. en Ushuaia, dinero chino en el litio y una guarnición británica en Malvinas son tres piezas del mismo tablero.',
+    ant_watch: '<li>Obras o presencia estadounidense en Ushuaia; cualquier acuerdo chino de puerto, logística o apoyo pesquero en Tierra del Fuego</li><li>Contratos de litio y cobre — quién compra la producción (socios de EE.UU. o empresas chinas)</li><li>Reuniones del Tratado Antártico y cualquier propuesta de revisar la prohibición minera</li>',
+    tba_title: '🕸️ Triple Frontera y financiamiento de Hezbolá',
+    tba_pending: 'SIN DATOS AÚN — el módulo compartido de Hezbolá en América Latina (próxima construcción) alimentará esta tarjeta. Por ahora, solo contexto.',
+    tba_body: '<p>Donde se unen Argentina, Brasil y Paraguay (Puerto Iguazú – Foz do Iguaçu – Ciudad del Este) está el centro de financiamiento y contrabando de Hezbolá más conocido del hemisferio. Argentina sufrió los atentados contra la <strong>Embajada de Israel (1992)</strong> y la <strong>AMIA (1994)</strong>, con 85 muertos, que su justicia atribuye a Irán y Hezbolá. Argentina declaró a Hezbolá organización terrorista en 2019; una ley de 2025 permite juzgar en ausencia a los funcionarios iraníes acusados.</p><p><em>Regla de honestidad:</em> el efecto local es sobre todo delito y dinero (contrabando, lavado, la banda brasileña PCC). El "y qué" principal es el dinero que fluye hacia el Líbano — no un riesgo de atentado local, salvo que informes corroborados digan lo contrario.</p>',
+    commodity_title: '🛢️ Exposición a materias primas y presión estratégica',
+    strategic_linkage: '<strong>🎯 Qué significa:</strong> Argentina es el mayor exportador mundial de <strong>harina y aceite de soja</strong> — China y los compradores de alimento animal sienten una sequía o una retención argentina. Es uno de los cinco mayores productores de <strong>litio</strong>, con producción en rápido aumento bajo el RIGI, y <strong>Vaca Muerta</strong> convirtió a Argentina en exportador de petróleo y gas. Una buena cosecha o un récord en Vaca Muerta son dólares para el Banco Central; una sequía (como en 2023) es una crisis cambiaria.',
+    rh_title: '📡 Rastreador de retórica y presión de Argentina', rh_pending: 'PRÓXIMAMENTE',
+    rh_sub: 'Actores previstos: gobierno de Milei · Congreso y sindicatos · equipo económico y FMI · EE.UU.-Argentina · China-Argentina · Reino Unido / Malvinas · Triple Frontera. Sumará señales con evidencia, un "indicador principal" claro y radios hacia las ruedas de EE.UU., China y el Reino Unido — y es lo que lleva a Argentina al resumen regional y al Índice de Presión Global.',
+    map_title: '🗺️ Argentina — Panorama estratégico',
+    map_subtitle: 'Buenos Aires, Vaca Muerta (Neuquén), el triángulo del litio (Jujuy, Salta, Catamarca), la Triple Frontera (Puerto Iguazú) y el Atlántico Sur / Malvinas.',
+    kl_title: 'Biblioteca de conocimiento',
+    kl_disclaimer: 'Contexto compilado de fuentes abiertas. Los datos fechados se reverifican cada 45 días (próxima revisión ~19 de diciembre de 2026).',
+    kl_econ_title: 'La economía de Milei', kl_pol_title: 'Política y la elección de 2027',
+    kl_cn_title: 'China en Argentina', kl_fk_title: 'Malvinas, Atlántico Sur y Antártida',
+    articles_title: '📰 Artículos recientes sobre Argentina (barrido WHA)', articles_loading: 'Cargando artículos...',
+    footer_disclaimer: 'Indicadores de convergencia, no predicciones. Asifah informa qué señales de fuentes abiertas están presentes — no pronostica resultados. No apto para uso operativo.',
+  },
+  pt: {
+    back_to_wha: '← Hemisfério Ocidental',
+    page_title: '🇦🇷 ÍNDICE DE ESTABILIDADE DA ARGENTINA',
+    page_subtitle: 'O experimento econômico de Milei · Entre dois patronos (EUA e China) · Malvinas · Lítio, xisto e soja · Tríplice Fronteira',
+    theme_label: 'Tema', loading_title: 'Carregando dados da Argentina',
+    nav_dashboards: 'Painéis', nav_global_trackers: 'Rastreadores globais', nav_rhetoric: 'Retórica regional',
+    nav_argentina: 'Argentina', nav_ar_stability: '🇦🇷 Estabilidade da Argentina', nav_here: '◉ Você está aqui',
+    sit_title: '🧭 Situação — em 4 de novembro de 2026',
+    live_title: '📡 Leitura ao vivo', live_level: 'Leitura do scanner', live_articles: 'Artigos', live_sources: 'Veículos distintos', live_military: 'Postura militar',
+    pulse_title: '💹 Pulso financeiro da Argentina', pat_title: '⚖️ Entre dois patronos — EUA e China', pat_cn_head: 'Pequim',
+    fk_title: '🇫🇰 Malvinas / Falklands — a disputa voltou', ant_title: '🧊 Porta antártica e minerais críticos', tba_title: '🕸️ Tríplice Fronteira e financiamento do Hezbollah',
+    commodity_title: '🛢️ Exposição a commodities e pressão estratégica', watch_title: 'Observar',
+    rh_title: '📡 Rastreador de retórica e pressão da Argentina', rh_pending: 'EM BREVE',
+    map_title: '🗺️ Argentina — Panorama estratégico', kl_title: 'Biblioteca de conhecimento',
+    articles_title: '📰 Artigos recentes sobre a Argentina', pt_note: 'As análises longas aparecem em inglês.',
+  },
+};
+
+// ── language ────────────────────────────────────────────────
+let currentLang = 'en';
+const EN_DEFAULTS = {};
+function captureDefaults() {
+    document.querySelectorAll('[data-i18n]').forEach(function (e) { EN_DEFAULTS['t:' + e.getAttribute('data-i18n')] = e.textContent; });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (e) { EN_DEFAULTS['h:' + e.getAttribute('data-i18n-html')] = e.innerHTML; });
+}
+function applyTranslations() {
+    // Missing keys fall back to the English in the HTML -- never to the
+    // previous language (switching ES -> PT used to leave Spanish behind).
+    const t = TRANSLATIONS[currentLang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function (e) {
+        const k = e.getAttribute('data-i18n');
+        e.textContent = (t[k] !== undefined) ? t[k] : EN_DEFAULTS['t:' + k];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (e) {
+        const k = e.getAttribute('data-i18n-html');
+        e.innerHTML = (t[k] !== undefined) ? t[k] : EN_DEFAULTS['h:' + k];
+    });
+    document.documentElement.setAttribute('lang', currentLang);
+    if (window._arThreat) renderLive(window._arThreat);
+    if (window._arPulse) renderPulse(window._arPulse);
+}
+function switchLanguage(lang, button) {
+    currentLang = lang;
+    try { localStorage.setItem('asifah-argentina-lang', lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.remove('active'); });
+    if (button) button.classList.add('active');
+    applyTranslations();
+}
+try { const s = localStorage.getItem('asifah-argentina-lang'); if (s && TRANSLATIONS[s]) currentLang = s; } catch (e) {}
+
+// ── theme ───────────────────────────────────────────────────
+function initTheme() { try { document.documentElement.setAttribute('data-theme', localStorage.getItem('asifah-theme') || 'dark'); } catch (e) {} }
+function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('asifah-theme', next); } catch (e) {}
+}
+initTheme();
+
+// ── helpers ─────────────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+}
+function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso); if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    const m = Math.round((Date.now() - d) / 60000);
+    if (m < 60) return m + 'm ago'; if (m < 1440) return Math.round(m / 60) + 'h ago';
+    return Math.round(m / 1440) + 'd ago';
+}
+function L(en, es) { return currentLang === 'es' ? es : en; }
+function toggleKnowledgeCard(id) { const c = el('card-' + id); if (c) c.classList.toggle('collapsed'); }
+function hideLoadingOverlay() { const o = el('loadingOverlay'); if (o) { o.classList.add('hidden'); setTimeout(function () { o.style.display = 'none'; }, 600); } }
+async function getJSON(path) {
+    const r = await fetch(WHA_BACKEND + path);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+}
+
+// ── travel advisory ─────────────────────────────────────────
+async function loadTravelAdvisory() {
+    try {
+        const data = await getJSON('/api/wha/travel-advisories');
+        const ad = data && data.advisories && data.advisories.argentina;
+        if (!ad) { el('arTravelLevel').textContent = L('NOT READ', 'SIN DATO'); return; }
+        const lvl = ad.level || 1, col = ({1:'#22c55e', 2:'#f59e0b', 3:'#f97316', 4:'#ef4444'})[lvl] || '#6b7280';
+        el('arTravelLevel').textContent = 'LEVEL ' + lvl; el('arTravelLevel').style.background = col;
+        el('arTravelAdvisory').style.borderColor = col;
+        const txt = [ad.level_label, ad.short_summary, ad.change_description].filter(Boolean).join(' — ');
+        if (txt) el('arTravelText').textContent = txt;
+    } catch (e) { el('arTravelLevel').textContent = L('NOT READ', 'SIN DATO'); }
+}
+
+// ── live read (regional sweep) ──────────────────────────────
+function renderLive(d) {
+    const sb = d.scoring_breakdown || {};
+    const n = d.articles_scanned || 0, src = sb.unique_sources || 0;
+    el('arLiveLevel').textContent = d.level_label || d.level || '—';
+    el('arLiveArticles').textContent = n;
+    el('arLiveSources').textContent = src;
+    let cov;
+    if (!n) cov = L('No Argentina articles reached the scanner this cycle — unread, not calm.',
+                    'Ningún artículo sobre Argentina llegó al escáner en este ciclo — sin lectura, no calma.');
+    else if (src < 3 || n < 30) cov = L('Thin coverage: ' + n + ' articles from ' + src + ' outlet' + (src === 1 ? '' : 's') + '. Treat this read as a sample, not a picture — quiet may be unread rather than calm.',
+                    'Cobertura escasa: ' + n + ' artículos de ' + src + ' medio(s). Tómese como muestra, no como panorama — el silencio puede ser falta de lectura y no calma.');
+    else cov = L(n + ' articles from ' + src + ' separate outlets this cycle.', n + ' artículos de ' + src + ' medios distintos en este ciclo.');
+    el('arCoverage').textContent = cov;
+    const line = el('arLiveLine');
+    if (line) {
+        line.style.display = 'block';
+        line.textContent = L('Live: the regional scanner reads Argentina as "' + (d.level_label || d.level || '—') + '" this cycle (' + n + ' articles, ' + src + ' outlet' + (src === 1 ? '' : 's') + ').',
+                             'En vivo: el escáner regional lee a Argentina como "' + (d.level_label || d.level || '—') + '" en este ciclo (' + n + ' artículos, ' + src + ' medio(s)).');
+    }
+    if (d.last_updated) el('lastUpdated').textContent = L('Last scan: ', 'Último barrido: ') + formatDate(d.last_updated);
+}
+async function loadLive() {
+    try {
+        const d = await getJSON('/api/wha/threat/argentina');
+        window._arThreat = d; renderLive(d);
+        renderArticles(d.top_signals || []);
+    } catch (e) {
+        el('arCoverage').textContent = L('Regional scanner unavailable this load.', 'Escáner regional no disponible.');
+        renderArticles(null);
+    }
+}
+function renderArticles(list) {
+    const ul = el('articlesList'); if (!ul) return;
+    if (!list || !list.length) {
+        ul.innerHTML = '<li style="color:var(--text-muted);font-style:italic;padding:20px;text-align:center;">' +
+            escapeHtml(L('No articles yet — the cache may be warming up.', 'Aún no hay artículos — la caché puede estar calentándose.')) + '</li>';
+        return;
+    }
+    ul.innerHTML = list.slice(0, 40).map(function (a) {
+        return '<li><a href="' + escapeHtml(a.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(a.title || 'Untitled') + '</a>' +
+            '<div class="articles-meta"><span class="article-source-pill">' + escapeHtml((a.feed_type || 'src').toUpperCase()) + '</span>' +
+            escapeHtml(a.source || '') + (a.published ? ' · ' + escapeHtml(formatDate(a.published)) : '') + '</div></li>';
+    }).join('');
+}
+
+// ── military posture ────────────────────────────────────────
+async function loadMilitary() {
+    try {
+        const d = await getJSON('/api/military-posture/argentina');
+        const hasSignals = (d.top_signals || []).length > 0 || (d.military_bonus || 0) > 0;
+        el('arLiveMil').textContent = hasSignals ? String(d.alert_label || d.alert_level || 'Normal')
+                                                 : L('Not sensed yet', 'Aún sin sensor');
+        el('arLiveMil').title = hasSignals ? '' : L('The military tracker has no Argentina actors yet: no reading, not "calm".',
+                                                    'El rastreador militar aún no tiene actores argentinos: sin lectura, no "calma".');
+    } catch (e) { el('arLiveMil').textContent = L('Not sensed yet', 'Aún sin sensor'); }
+}
+
+// ── financial pulse ─────────────────────────────────────────
+const TIER_TXT = {
+    stable:  ['steady', 'estable'], warning: ['under some pressure', 'bajo cierta presión'],
+    stress:  ['under stress', 'bajo estrés'], rally: ['strong move up', 'fuerte alza'],
+};
+function renderPulse(d) {
+    const fp = d && d.financial_pulse; const grid = el('arPulseGrid');
+    if (!fp || !fp.tiles || !Object.keys(fp.tiles).length) {
+        grid.innerHTML = '<div class="ar-muted">' + escapeHtml(L('Market data unavailable this load — a fetch failure, not a quiet market.',
+            'Datos de mercado no disponibles — falla de lectura, no un mercado tranquilo.')) + '</div>';
+        el('arPulseRead').textContent = ''; return;
+    }
+    const order = fp.tile_order || Object.keys(fp.tiles);
+    grid.innerHTML = order.map(function (k) {
+        const t = fp.tiles[k]; if (!t) return '';
+        const ch = Number(t.change_pct_24h || 0), c30 = t.change_pct_30d;
+        const tier = t.tier || 'stable';
+        return '<div class="ar-tile tier-' + escapeHtml(tier) + '">' +
+            '<div class="ar-tile-name">' + escapeHtml(t.name) + '</div>' +
+            '<div class="ar-tile-value">' + Number(t.value).toLocaleString(undefined, {maximumFractionDigits: 2}) + '</div>' +
+            '<div class="ar-tile-chg">' + (ch >= 0 ? '+' : '') + ch.toFixed(2) + '% ' + escapeHtml(L('today', 'hoy')) +
+            (typeof c30 === 'number' ? ' · ' + (c30 >= 0 ? '+' : '') + c30.toFixed(1) + '% 30d' : '') + '</div>' +
+            '<div class="ar-tile-tier">' + escapeHtml((TIER_TXT[tier] || TIER_TXT.stable)[currentLang === 'es' ? 1 : 0]) + '</div>' +
+            '<div class="ar-tile-note">' + escapeHtml(t.note || '') + '</div></div>';
+    }).join('');
+    const ars = fp.tiles.USD_ARS, merv = fp.tiles.MERVAL;
+    let read = '';
+    if (ars && (ars.tier === 'stress' || ars.tier === 'warning'))
+        read = L('The peso moved through its normal daily crawl — watch for a run on the dollar.', 'El peso se movió más allá de su deslizamiento normal — atención a una corrida hacia el dólar.');
+    else if (ars) read = L('The peso is inside its managed crawl.', 'El peso está dentro de su deslizamiento administrado.');
+    if (merv && typeof merv.change_pct_30d === 'number' && ars && typeof ars.change_pct_30d === 'number') {
+        const real = merv.change_pct_30d - ars.change_pct_30d;
+        read += ' ' + L('Over 30 days the Merval is ' + (real >= 0 ? 'up' : 'down') + ' about ' + Math.abs(real).toFixed(1) + '% after the peso\'s move — a rough dollar-terms read.',
+                        'En 30 días el Merval ' + (real >= 0 ? 'sube' : 'baja') + ' cerca de ' + Math.abs(real).toFixed(1) + '% descontando el peso — una lectura aproximada en dólares.');
+    }
+    if (d.missing && d.missing.length) read += ' ' + L('Not read this cycle: ' + d.missing.join(', ') + '.', 'Sin lectura en este ciclo: ' + d.missing.join(', ') + '.');
+    el('arPulseRead').textContent = read.trim();
+}
+async function loadPulse() {
+    try { const d = await getJSON('/api/wha/market/argentina'); window._arPulse = d; renderPulse(d); }
+    catch (e) { renderPulse(null); }
+}
+
+// ── commodity card (Gold Standard v2.0 renderer) ────────────
+async function loadCommodity() {
+    let data = null;
+    try { data = await getJSON('/api/wha/commodity/argentina'); } catch (e) {}
+    const grid = el('commodityGrid');
+    if (!data || !(data.commodity_summaries || []).length) {
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">' +
+            escapeHtml(L('Commodity data unavailable — not read, not quiet.', 'Datos de materias primas no disponibles — sin lectura, no calma.')) + '</div>';
+        return;
+    }
+    if (data.prose) el('commodityProse').textContent = data.prose;
+    const banner = el('commodityAlertBanner'), al = (data.alert_level || 'normal').toLowerCase();
+    if (banner && al !== 'normal') {
+        banner.className = 'commodity-alert-banner show alert-' + al;
+        banner.innerHTML = '<strong>' + escapeHtml(al.toUpperCase()) + '</strong> ' + escapeHtml(L('Commodity news pressure (how much is being written, not prices)', 'Presión informativa sobre materias primas (cuánto se escribe, no precios)')) +
+            '<span class="ab-meta">' + (data.profile_count || 0) + ' ' + escapeHtml(L('commodities tracked', 'materias primas')) + '</span>';
+    }
+    grid.innerHTML = data.commodity_summaries.map(function (t) {
+        const a = (t.global_alert_level || 'normal').toLowerCase();
+        return '<div class="commodity-pill"><div class="commodity-pill-header"><span class="commodity-pill-icon">' + (t.icon || '🛢️') + '</span>' +
+            '<div class="commodity-pill-name">' + escapeHtml(t.name || t.commodity) + '</div>' +
+            (t.rank ? '<span class="commodity-pill-rank">#' + escapeHtml(t.rank) + '</span>' : '') + '</div>' +
+            '<div class="commodity-pill-row"><span class="commodity-pill-alert commodity-alert-' + escapeHtml(a) + '">' + escapeHtml(a) + '</span>' +
+            (t.role ? '<span class="commodity-pill-role-badge">' + escapeHtml(String(t.role).toUpperCase()) + '</span>' : '') + '</div>' +
+            (t.note ? '<div class="commodity-pill-note">' + escapeHtml(t.note) + '</div>' : '') + '</div>';
+    }).join('');
+    const sigs = data.top_signals || [], wrap = el('commodityTopSignals');
+    if (sigs.length && al !== 'normal') {
+        wrap.style.display = 'block';
+        el('commodityTopSignalsList').innerHTML = sigs.slice(0, 5).map(function (s) {
+            return '<a href="' + escapeHtml(s.article_url || s.url || '#') + '" target="_blank" rel="noopener">▸ ' +
+                escapeHtml(s.article_title || s.title || 'Signal') + ' <span class="ts-source">' + escapeHtml(s.source || '') + '</span></a>';
+        }).join('');
+    }
+}
+
+// ── main ────────────────────────────────────────────────────
+async function loadData() {
+    captureDefaults();
+    applyTranslations();
+    document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.toggle('active', b.textContent.toLowerCase() === currentLang); });
+    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadPulse(), loadCommodity(), loadMilitary()]);
+    hideLoadingOverlay();
+}
+document.addEventListener('DOMContentLoaded', loadData);
+
+// ── canonical mobile drawer ─────────────────────────────────
+function toggleSidebar() {
+    const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (!sb) return;
+    const open = sb.classList.toggle('open'); if (bd) bd.classList.toggle('show', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar() {
+    const sb = el('navSidebar'), bd = el('sidebarBackdrop');
+    if (sb) sb.classList.remove('open'); if (bd) bd.classList.remove('show'); document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSidebar(); });
+document.addEventListener('DOMContentLoaded', function () {
+    const sb = el('navSidebar'); if (sb) sb.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+});
+</script>
+</body>
+</html>
