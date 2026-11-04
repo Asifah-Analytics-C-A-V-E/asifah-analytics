@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Peru Rhetoric Tracker v1.0.0 — May 9, 2026 -->
+<!-- Asifah Analytics — Peru Rhetoric Tracker page v1.1.0 — Nov 4, 2026 (v1.0.0 May 9, 2026): top indicator, int levels, 'What it means' -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- Arctic palette · 8 actors · 4-vector composite · en/es/pt full i18n -->
 <html lang="en" dir="ltr">
@@ -1408,7 +1408,10 @@ function renderExecSummary() {
         card.innerHTML = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
         return;
     }
-    card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
+    // v1.1.0: the one plain sentence first
+    const ti = scanData.top_indicator
+        ? `<p style="font-weight:700;color:var(--text-primary);margin-bottom:10px;">${escapeHtml(scanData.top_indicator)}</p>` : '';
+    card.innerHTML = ti + `<p>${escapeHtml(summary)}</p>`;
 }
 
 // renderElectionWatch RETIRED Jul 2026 (runoff concluded -- Fujimori declared winner)
@@ -1423,8 +1426,13 @@ function renderTopSignals() {
 
     let html = '';
     signals.forEach(sig => {
-        const level = sig.level || 'low';
+        // v1.1.0 tracker: level is an int 0-4 with level_name for the CSS class
+        const level = (typeof sig.level === 'number')
+            ? (sig.level_name || ['low','normal','elevated','high','surge'][Math.min(4, sig.level)])
+            : (sig.level || 'low');
         const type = sig.type || 'actor_signal';
+        const meaningHtml = (sig.meaning && !(sig.long_text || '').includes(sig.meaning.slice(0, 40)))
+            ? `<div class="signal-long" style="margin-top:6px;"><strong>What it means:</strong> ${escapeHtml(sig.meaning)}</div>` : '';
         const typeLabel = t['type_' + type] || type;
         let sourcesHtml = '';
         if (sig.sources && sig.sources.length) {
@@ -1450,6 +1458,7 @@ function renderTopSignals() {
                 </div>
                 <div class="signal-short">${escapeHtml(sig.short_text || '')}</div>
                 <div class="signal-long">${escapeHtml(sig.long_text || '')}</div>
+                ${meaningHtml}
                 ${sourcesHtml}
             </div>`;
     });

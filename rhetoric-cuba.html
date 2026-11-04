@@ -938,7 +938,7 @@ const T = {
         footerSupportText:      'If you find Asifah Analytics useful and want to support ongoing development, you can',
         footerBuyCoffee:        'buy me a coffee',
         footerDisclaimerTitle:  '⚠️ DISCLAIMER:',
-        footerDisclaimerText:   'This tracker is an analytical tool for educational and research purposes only. Pressure scores are based on open-source news aggregation and keyword analysis. Measures pressure buildup toward instability, conflict, or political rupture. This tool does not represent official U.S. government assessments or policy positions. Users should consult official intelligence sources for operational decision-making.',
+        footerDisclaimerText:   'This tracker is an analytical tool for educational and research purposes only. Pressure scores are based on open-source news aggregation and keyword analysis. Measures pressure buildup toward instability, conflict, or political rupture.',
         footerPrivacyPolicy:    'Privacy Policy',
         footerContact:          'Contact',
         footerCopyright:        '© 2025 RCGG. All Rights Reserved. Proprietary and Confidential.',
@@ -1034,7 +1034,7 @@ const T = {
         footerSupportText:      'Si encuentras útil Asifah Analytics y deseas apoyar el desarrollo continuo, puedes',
         footerBuyCoffee:        'invitarme un café',
         footerDisclaimerTitle:  '⚠️ DESCARGO DE RESPONSABILIDAD:',
-        footerDisclaimerText:   'Este rastreador es una herramienta analítica con fines educativos y de investigación únicamente. Las puntuaciones de presión se basan en agregación de noticias de fuente abierta y análisis de palabras clave. Mide la acumulación de presión hacia la inestabilidad, el conflicto o la ruptura política. Esta herramienta no representa evaluaciones oficiales del gobierno de EE.UU. ni posiciones de política. Los usuarios deben consultar fuentes oficiales de inteligencia para la toma de decisiones operativas.',
+        footerDisclaimerText:   'Este rastreador es una herramienta analítica con fines educativos y de investigación únicamente. Las puntuaciones de presión se basan en agregación de noticias de fuente abierta y análisis de palabras clave. Mide la acumulación de presión hacia la inestabilidad, el conflicto o la ruptura política.',
         footerPrivacyPolicy:    'Política de Privacidad',
         footerContact:          'Contacto',
         footerCopyright:        '© 2025 RCGG. Todos los derechos reservados. Propietario y Confidencial.',
@@ -1130,7 +1130,7 @@ const T = {
         footerSupportText:      'Se você acha o Asifah Analytics útil e deseja apoiar o desenvolvimento contínuo, pode',
         footerBuyCoffee:        'me pagar um café',
         footerDisclaimerTitle:  '⚠️ AVISO LEGAL:',
-        footerDisclaimerText:   'Este rastreador é uma ferramenta analítica para fins educacionais e de pesquisa apenas. As pontuações de pressão são baseadas em agregação de notícias de fonte aberta e análise de palavras-chave. Mede o acúmulo de pressão em direção à instabilidade, conflito ou ruptura política. Esta ferramenta não representa avaliações oficiais do governo dos EUA nem posições políticas. Os usuários devem consultar fontes oficiais de inteligência para tomada de decisões operacionais.',
+        footerDisclaimerText:   'Este rastreador é uma ferramenta analítica para fins educacionais e de pesquisa apenas. As pontuações de pressão são baseadas em agregação de notícias de fonte aberta e análise de palavras-chave. Mede o acúmulo de pressão em direção à instabilidade, conflito ou ruptura política.',
         footerPrivacyPolicy:    'Política de Privacidade',
         footerContact:          'Contato',
         footerCopyright:        '© 2025 RCGG. Todos os direitos reservados. Proprietário e Confidencial.',
@@ -1199,7 +1199,8 @@ function renderBanner(data) {
     const scenario = (data.so_what && data.so_what.scenario) || '';
     document.getElementById('theatreLevelDisplay').textContent = scenario || `L${level} — ${lv.label}`;
     document.getElementById('theatreLevelDisplay').style.color = (data.so_what && data.so_what.scenario_color) || lv.color;
-    document.getElementById('theatreLevelDesc').textContent = lv.desc;
+    // v1.4.0: the tracker's own plain sentence beats the generic level description
+    document.getElementById('theatreLevelDesc').textContent = data.top_indicator || lv.desc;
 
     const scanned = data.scanned_at ? new Date(data.scanned_at).toLocaleString() : '--';
     document.getElementById('scanTime').textContent = scanned;
@@ -1298,6 +1299,10 @@ function renderSoWhat(data) {
 // ════════════════════════════════════════════════════════
 // RENDER: RED LINES CARD
 // ════════════════════════════════════════════════════════
+function escapeHtmlRL(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function renderRedLines(data) {
     const rls = data.red_lines || [];
     const card = document.getElementById('redLinesCard');
@@ -1332,8 +1337,8 @@ function renderRedLines(data) {
                     <span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">${catLabel}</span>
                     ${r.severity ? `<span style="font-size:0.55rem;color:var(--text-muted);font-family:'Courier New',monospace;">SEV ${r.severity}/3</span>` : ''}
                 </div>
-                <div class="red-line-trigger">${r.trigger || r.detail || ''}</div>
-                ${r.source ? `<div class="red-line-source">${r.source}</div>` : ''}
+                <div class="red-line-trigger">${escapeHtmlRL(r.evidence || r.trigger || r.detail || '')}</div>
+                ${r.plain || r.source ? `<div class="red-line-source">${escapeHtmlRL(r.plain || r.source)}</div>` : ''}
             </div>`;
         itemsEl.appendChild(item);
     });

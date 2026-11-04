@@ -460,6 +460,18 @@ footer {
 footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
 @media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+/* v1.1.0: phones -- header controls wrap instead of pushing the page sideways */
+@media (max-width: 600px) {
+    html, body { overflow-x: hidden; }
+    .header-controls { align-items: flex-start; max-width: 100%; }
+    .header-controls .language-switcher { flex-wrap: wrap; }
+    header { flex-wrap: wrap; padding: 18px 16px 18px 60px; }
+}
+/* v1.1.0: the sticky sidebar rule above was overriding the mobile drawer,
+   so the hidden menu still took 200px and squeezed the page into a strip */
+@media (max-width: 1199px) {
+    .page-with-sidebar > .nav-sidebar { position: fixed; top: 0; height: 100vh; }
+}
 footer .footer-disclaimer {
     padding: 12px 14px;
     background: var(--article-bg); border-left: 3px solid #ef4444;
@@ -846,7 +858,7 @@ footer .footer-copyright {
             <span style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;" data-i18n="travel_label">U.S. State Department — Peru Travel Advisory</span>
             <span id="peruTravelLevel" style="background: #f59e0b; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;" data-i18n="travel_level">LOADING…</span>
         </div>
-        <div id="peruTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n="travel_text"><strong style='color: #f59e0b;'>Exercise Increased Caution.</strong> Crime, civil unrest, and the risk of kidnapping. Some areas have increased risk: the Colombia-Peru border (Loreto Region) and the VRAEM zone are <strong>Level 4: Do Not Travel</strong>. Cusco and Machu Picchu remain accessible.</div>
+        <div id="peruTravelText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;" data-i18n-html="travel_text"><strong style='color: #f59e0b;'>Exercise Increased Caution.</strong> Crime, civil unrest, and the risk of kidnapping. Some areas have increased risk: the Colombia-Peru border (Loreto Region) and the VRAEM zone are <strong>Level 4: Do Not Travel</strong>. Cusco and Machu Picchu remain accessible.</div>
     </div>
     <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/peru-travel-advisory.html" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;" data-i18n="travel_button">VIEW ADVISORY →</a>
 </div>
@@ -1077,13 +1089,10 @@ footer .footer-copyright {
 
 <!-- ── MAP SECTION ── -->
 <div class="card" id="govTransitionCard" style="margin-bottom:24px;">
-    <div class="subsection-title" data-i18n="gov_card_title">🏛️ Government — Post-Election Transition</div>
+    <div class="subsection-title" data-i18n="gov_card_title">🏛️ Government — President Fujimori</div>
     <div style="font-size:0.85rem;color:var(--text-primary);line-height:1.6;" data-i18n-html="gov_card_text">
-        <strong>Keiko Fujimori (Fuerza Popular)</strong> was declared the winner of the June 2026 presidential runoff — her first victory after three prior runoff defeats (2011, 2016, 2021). The result did not produce major post-electoral upheaval; transition from the outgoing Boluarte administration is underway.
-        <br><br>
-        <em style="color:var(--text-muted);">Watch posture: leftist-opposition mobilization (Juntos por el Perú and allied movements) and mining-region community response (Las Bambas, Cuajone corridors) remain the primary domestic pressure vectors — tracked live on the rhetoric card above. Election-runoff watch retired July 2026.</em>
+        <strong>Keiko Fujimori (Fuerza Popular)</strong> has been president since July 28, 2026 (as of November 4, 2026) -- Peru's ninth president in about ten years, after Dina Boluarte's removal by Congress in October 2025 and the interim presidencies of José Jerí and José Balcázar. Her agenda: a faster permit track for big mining projects (Tía María, Zafranal, Los Chancas), tax incentives for reinvestment, and a crackdown on illegal mining.<br><br><em style="color:var(--text-muted);">Watch: leftist-opposition mobilization, mining-region community response (Las Bambas, Cuajone and the southern corridor), and Congress -- which has removed presidents repeatedly. Tracked live on the rhetoric card above.</em>
     </div>
-</div>
 
 <div class="map-section">
     <h2 data-i18n="map_title">🗺️ Peru — Strategic Overview</h2>
@@ -1149,11 +1158,13 @@ footer .footer-copyright {
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="knowledge-content" data-i18n-html="kl_politics_body">
-                <p><strong>Peru has had six presidents in the past decade</strong> — one of the most acute presidential-instability profiles in the Western Hemisphere. The structural cause: a fragmented unicameral Congress with low impeachment thresholds, paired with weak political parties and personality-driven politics.</p>
+                <p><strong>Peru has had nine presidents in about ten years</strong> — one of the most acute presidential-instability profiles in the Western Hemisphere. The structural cause: a fragmented unicameral Congress with low impeachment thresholds, paired with weak political parties and personality-driven politics.</p>
                 <p><strong>Recent Sequence:</strong></p>
                 <ul>
                     <li><strong>Pedro Castillo (2021-2022):</strong> Rural teacher / left coalition; impeached December 2022 after attempting to dissolve Congress unconstitutionally; arrested.</li>
-                    <li><strong>Dina Boluarte (2022-present):</strong> Castillo's VP; became Peru's first female president. Sustained low approval ratings (single digits at times) amid 2022-2023 protests, Rolex investigations, and ongoing congressional pressure.</li>
+                    <li><strong>Dina Boluarte (2022-2025):</strong> Castillo's VP; Peru's first female president. Single-digit approval at times amid the 2022-2023 protests and the Rolex investigations; removed by Congress in October 2025.</li>
+                    <li><strong>José Jerí, then José Balcázar (2025-2026):</strong> interim presidents chosen by Congress; Jerí was himself removed in February 2026.</li>
+                    <li><strong>Keiko Fujimori (July 2026-):</strong> won the June 2026 runoff on her fourth attempt; promises to speed up mining approvals.</li>
                     <li><strong>2022-2023 Protests:</strong> Following Castillo impeachment, mass protests in Andean south and Lima killed 60+; allegations of disproportionate force by security forces. Mining-region disruption acute.</li>
                     <li><strong>Congress vs Executive:</strong> Even-numbered impeachment attempts have become routine; "permanent moral incapacity" clause (Article 113) routinely invoked.</li>
                 </ul>
@@ -1277,8 +1288,8 @@ const ME_BACKEND  = 'https://asifah-backend.onrender.com';
 // ════════════════════════════════════════════════════════════
 const TRANSLATIONS = {
     en: {
-        gov_card_title: '🏛️ Government — Post-Election Transition',
-        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> was declared the winner of the June 2026 presidential runoff — her first victory after three prior runoff defeats (2011, 2016, 2021). The result did not produce major post-electoral upheaval; transition from the outgoing Boluarte administration is underway.<br><br><em style="color:var(--text-muted);">Watch posture: leftist-opposition mobilization (Juntos por el Perú and allied movements) and mining-region community response (Las Bambas, Cuajone corridors) remain the primary domestic pressure vectors — tracked live on the rhetoric card above. Election-runoff watch retired July 2026.</em>',
+        gov_card_title: '🏛️ Government — President Fujimori',
+        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> has been president since July 28, 2026 (as of November 4, 2026) -- Peru\'s ninth president in about ten years, after Dina Boluarte\'s removal by Congress in October 2025 and the interim presidencies of José Jerí and José Balcázar. Her agenda: a faster permit track for big mining projects (Tía María, Zafranal, Los Chancas), tax incentives for reinvestment, and a crackdown on illegal mining.<br><br><em style="color:var(--text-muted);">Watch: leftist-opposition mobilization, mining-region community response (Las Bambas, Cuajone and the southern corridor), and Congress -- which has removed presidents repeatedly. Tracked live on the rhetoric card above.</em>',
         // Header
         back_to_wha:            '← W. Hemisphere',
         page_title:             '🇵🇪 PERU STABILITY INDEX',
@@ -1383,8 +1394,8 @@ const TRANSLATIONS = {
     },
 
     es: {
-        gov_card_title: '🏛️ Gobierno — Transición Postelectoral',
-        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> fue declarada ganadora de la segunda vuelta presidencial de junio de 2026 — su primera victoria tras tres derrotas previas en segunda vuelta (2011, 2016, 2021). El resultado no produjo una convulsión postelectoral mayor; la transición desde la administración saliente de Boluarte está en curso.<br><br><em style="color:var(--text-muted);">Postura de vigilancia: la movilización de la oposición de izquierda (Juntos por el Perú y movimientos aliados) y la respuesta comunitaria en regiones mineras (corredores de Las Bambas y Cuajone) siguen siendo los principales vectores de presión interna — seguidos en vivo en la tarjeta de retórica superior. Vigilancia electoral retirada en julio de 2026.</em>',
+        gov_card_title: '🏛️ Gobierno — Presidenta Fujimori',
+        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> es presidenta desde el 28 de julio de 2026 (al 4 de noviembre de 2026): la novena presidencia del Perú en unos diez años, tras la vacancia de Dina Boluarte en octubre de 2025 y los interinatos de José Jerí y José Balcázar. Su agenda: una vía rápida de permisos para grandes proyectos mineros (Tía María, Zafranal, Los Chancas), incentivos tributarios a la reinversión y mano dura contra la minería ilegal.<br><br><em style="color:var(--text-muted);">A vigilar: movilización de la oposición de izquierda, respuesta de las comunidades mineras (Las Bambas, Cuajone y el corredor sur) y el Congreso, que ha destituido presidentes repetidamente.</em>',
         // Header
         back_to_wha:            '← Hem. Occidental',
         page_title:             '🇵🇪 ÍNDICE DE ESTABILIDAD DE PERÚ',
@@ -1489,8 +1500,8 @@ const TRANSLATIONS = {
     },
 
     pt: {
-        gov_card_title: '🏛️ Governo — Transição Pós-Eleitoral',
-        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> foi declarada vencedora do segundo turno presidencial de junho de 2026 — sua primeira vitória após três derrotas anteriores em segundo turno (2011, 2016, 2021). O resultado não produziu grande convulsão pós-eleitoral; a transição da administração Boluarte está em curso.<br><br><em style="color:var(--text-muted);">Postura de vigilância: a mobilização da oposição de esquerda (Juntos por el Perú e movimentos aliados) e a resposta comunitária nas regiões de mineração (corredores de Las Bambas e Cuajone) continuam sendo os principais vetores de pressão interna — acompanhados ao vivo no cartão de retórica acima. Vigilância eleitoral retirada em julho de 2026.</em>',
+        gov_card_title: '🏛️ Governo — Presidente Fujimori',
+        gov_card_text: '<strong>Keiko Fujimori (Fuerza Popular)</strong> é presidente desde 28 de julho de 2026 (em 4 de novembro de 2026): a nona presidência do Peru em cerca de dez anos, após a destituição de Dina Boluarte em outubro de 2025 e os mandatos interinos de José Jerí e José Balcázar. Sua agenda: via rápida de licenças para grandes projetos de mineração (Tía María, Zafranal, Los Chancas), incentivos fiscais ao reinvestimento e repressão à mineração ilegal.<br><br><em style="color:var(--text-muted);">A observar: mobilização da oposição de esquerda, resposta das comunidades mineradoras (Las Bambas, Cuajone e o corredor sul) e o Congresso, que destituiu presidentes repetidamente.</em>',
         // Header
         back_to_wha:            '← Hem. Ocidental',
         page_title:             '🇵🇪 ÍNDICE DE ESTABILIDADE DO PERU',
@@ -1943,7 +1954,7 @@ async function loadPeruRhetoric() {
             const _bs = document.getElementById('rhetoricBannerScore');
             if (_bs) _bs.textContent = 'Score: ' + (data.composite_score || 0).toFixed(1);
             const _bh = document.getElementById('rhetoricBannerHeadline');
-            if (_bh) _bh.textContent = (data.executive_summary || '').slice(0, 170) || 'Peru Rhetoric Tracker — Live';
+            if (_bh) _bh.textContent = (data.top_indicator || data.executive_summary || '').slice(0, 220) || 'Peru Rhetoric Tracker — Live';
         }
 
         // Composite gauge
@@ -1980,7 +1991,7 @@ async function loadPeruRhetoric() {
         // Executive summary
         const summaryEl = document.getElementById('peruRhetoricSummary');
         if (summaryEl) {
-            summaryEl.textContent = data.executive_summary || '';
+            summaryEl.textContent = [data.top_indicator, data.executive_summary].filter(Boolean).join(' ');
             summaryEl.style.color = 'var(--text-primary)';
         }
 
@@ -1992,7 +2003,10 @@ async function loadPeruRhetoric() {
                 signalsEl.innerHTML = '<div style="font-size:11px; color:var(--text-muted); font-style:italic;">No active signals this scan.</div>';
             } else {
                 signalsEl.innerHTML = signals.map(function (sig) {
-                    const lvl = sig.level || 'low';
+                    // v1.1.0 tracker: level is an int 0-4; level_name carries the word
+                    const lvl = (typeof sig.level === 'number')
+                        ? (sig.level_name || ['low','normal','elevated','high','surge'][Math.min(4, sig.level)])
+                        : (sig.level || 'low');
                     const type = (sig.type || 'actor_signal').replace(/_/g, ' ');
                     return '<div class="peru-rh-signal lvl-' + lvl + '">' +
                         '<span class="peru-rh-signal-type">' + escapeHtml(type) + '</span>' +
