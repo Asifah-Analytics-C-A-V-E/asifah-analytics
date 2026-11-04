@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Asifah Analytics - United Kingdom Stability Index v1.0.0 - Nov 4, 2026 (Europe backend: uk_city_pulse) -->
-<!-- Gold Standard shell (from argentina-stability 1.0.1): sidebar drawer, Europe sweep, City pulse (uk_city_pulse.py), rhetoric summary, commodity card, polar card, dated analytic cards. EN full, FR labels. v1.1.0 Nov 4 night: rhetoric tracker live. -->
+<!-- Gold Standard shell (from argentina-stability 1.0.1): sidebar drawer, Europe sweep, City pulse (uk_city_pulse.py), rhetoric summary, commodity card, polar card, dated analytic cards. EN full, FR labels. v1.1.1 Nov 4 night: green rhetoric banner under the advisories; v1.1.0 rhetoric tracker live. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
 <head>
@@ -868,6 +868,20 @@ footer .footer-copyright {
     <a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/united-kingdom-travel-advisory.html" target="_blank" rel="noopener" class="adv-btn" data-i18n="travel_button">VIEW ADVISORY →</a>
 </div>
 
+<!-- ── RHETORIC TRACKER BANNER (canonical green pointer, v1.1.1) ── -->
+<div class="rhetoric-banner-canonical" id="rhetoricBanner">
+    <div style="font-size:24px;flex-shrink:0;">📡</div>
+    <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:bold;color:#86efac;text-transform:uppercase;letter-spacing:1.5px;" data-i18n="rh_banner_label">UK Rhetoric Tracker — Live</span>
+            <span class="rhet-banner-badge" id="rhetoricBannerPill">LOADING</span>
+            <span class="rhet-banner-badge" id="rhetoricBannerScore" style="background:rgba(34,197,94,0.25);color:#86efac;">--</span>
+        </div>
+        <div style="font-size:12px;color:#d1fae5;line-height:1.4;" id="rhetoricBannerHeadline">Loading the UK pressure read…</div>
+    </div>
+    <a href="rhetoric-uk.html" class="rhet-banner-link" data-i18n="rh_banner_open">Open Tracker →</a>
+</div>
+
 <!-- ── SITUATION (dated) ── -->
 <div class="metric-card" id="ukSituationCard">
     <div class="section-title" data-i18n="sit_title">🧭 Situation — as of November 4, 2026</div>
@@ -1079,6 +1093,7 @@ const TRANSLATIONS = {
     commodity_title: '🛢️ Exposition aux matières premières et pression stratégique',
     rh_title: '📡 Suivi de la rhétorique et des pressions — Royaume-Uni', rh_pending: 'PROCHAINEMENT',
     map_title: '🗺️ Royaume-Uni — Vue stratégique', kl_title: 'Bibliothèque',
+    rh_banner_label: 'Suivi de la rhétorique — Royaume-Uni — en direct', rh_banner_open: 'Ouvrir le suivi →',
     articles_title: '📰 Articles récents sur le Royaume-Uni (balayage Europe)', articles_loading: 'Chargement des articles…',
   },
 };
@@ -1338,15 +1353,27 @@ async function loadCommodity() {
 }
 
 // ── rhetoric tracker summary ────────────────────────────────
+function rhetoricBanner(d) {
+    // Canonical green pointer under the advisories (same pattern as Peru, Cyprus...)
+    const pill = el('rhetoricBannerPill'), sc = el('rhetoricBannerScore'), hd = el('rhetoricBannerHeadline');
+    if (!d) { pill.textContent = 'UNREAD'; sc.textContent = '--'; hd.textContent = 'Tracker unread this load — unread, not calm.'; return; }
+    if (d.pending || !d.theatre_label) { pill.textContent = 'FIRST SCAN'; hd.textContent = 'First scan in progress — check back in a few minutes.'; return; }
+    const lvl = String(d.composite_level || 'low').toLowerCase();
+    const col = { low: '#38bdf8', normal: '#38bdf8', elevated: '#f59e0b', high: '#ef4444', surge: '#dc2626' }[lvl] || '#38bdf8';
+    pill.textContent = 'L' + (d.theatre_level || 0) + ' · ' + d.theatre_label; pill.style.background = col;
+    sc.textContent = (d.red_lines_breached || 0) + ' red line' + ((d.red_lines_breached === 1) ? '' : 's') + ' crossed';
+    hd.textContent = em(d.top_indicator || d.executive_summary || '').slice(0, 240) || 'UK Rhetoric Tracker — Live';
+}
 async function loadRhetoric() {
     try {
         const d = await getJSON(EUROPE_BACKEND, '/api/rhetoric/uk');
+        rhetoricBanner(d);
         if (!d || d.pending || d.success === false) { el('ukRhLevel').textContent = 'First scan pending'; return; }
         el('ukRhLevel').textContent = 'L' + (d.theatre_level || 0) + ' · ' + (d.theatre_label || '');
         el('ukRhRed').textContent = (d.red_lines_breached || 0) + ' of ' + (d.red_lines || []).length;
         el('ukRhArts').textContent = d.total_articles_scanned || 0;
         if (d.top_indicator) { el('ukRhTop').style.display = 'block'; el('ukRhTop').textContent = em(d.top_indicator); }
-    } catch (e) { el('ukRhLevel').textContent = 'Unread'; }
+    } catch (e) { el('ukRhLevel').textContent = 'Unread'; rhetoricBanner(null); }
 }
 
 // ── main ────────────────────────────────────────────────────
