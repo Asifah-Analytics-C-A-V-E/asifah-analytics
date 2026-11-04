@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics — United Kingdom Rhetoric Tracker page v1.0.0 — Nov 4, 2026 (night) -->
+<!-- Built from rhetoric-canada.html (shared-engine page). Europe backend; UK wheel card; City pulse link; Antarctic polar card. -->
+<!-- Shared-engine page: reads /api/rhetoric/uk (europe_rhetoric_engine). Vectors, actors and red lines render from the payload, so a new country needs only translations. -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" dir="ltr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>United Kingdom Rhetoric Tracker | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* ARCTIC PALETTE — canonical for rhetoric trackers */
+            --bg-primary: #060d1a;
+            --bg-card: #0d1b2e;
+            --bg-signal: #0a1626;
+            --bg-elevated: #112338;
+            --border-color: #1e3a5f;
+            --border-strong: #2a5288;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #5d7ea3;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #a78bfa;
+
+            /* Levels */
+            --level-low-bg: rgba(16,185,129,0.10);
+            --level-low-border: #10b981;
+            --level-normal-bg: rgba(56,189,248,0.10);
+            --level-normal-border: #38bdf8;
+            --level-elevated-bg: rgba(245,158,11,0.10);
+            --level-elevated-border: #f59e0b;
+            --level-high-bg: rgba(249,115,22,0.10);
+            --level-high-border: #f97316;
+            --level-surge-bg: rgba(239,68,68,0.12);
+            --level-surge-border: #ef4444;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px rgba(56,189,248,0.15);
+
+            --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+            --loading-bg: rgba(6,13,26,0.95);
+            --header-gradient: linear-gradient(135deg, #0d1b2e 0%, #112338 50%, #1e3a5f 100%);
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.55;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 700px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+            filter: var(--watermark-filter);
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--loading-bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner {
+            width: 48px; height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--header-gradient);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-width: 1800px;          /* match .main-layout column width */
+            margin: 0 auto;
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .header-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .header-logo { height: 50px; width: auto; }
+        .header-right-controls { display: flex; gap: 12px; align-items: center; }
+        .home-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .home-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .header-row-2 { text-align: center; margin-bottom: 10px; }
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-top: 6px;
+        }
+        .header-row-3 {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .lang-toggle {
+            display: flex;
+            gap: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .lang-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .lang-btn:hover { background: rgba(56,189,248,0.10); }
+        .lang-btn.active { background: rgba(56,189,248,0.20); color: var(--accent-cyan); }
+        .toggle-container { display: flex; align-items: center; gap: 8px; }
+        .toggle-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1.5px; }
+        .toggle-switch {
+            width: 40px; height: 22px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 1px; left: 1px;
+            width: 18px; height: 18px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        body[data-theme="light"] .toggle-switch::after { transform: translateX(18px); }
+        .refresh-btn {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .refresh-btn:hover {
+            background: rgba(56,189,248,0.1);
+            box-shadow: var(--shadow-glow);
+        }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Layout */
+        .main-layout {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 24px;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar — gold-standard pattern */
+        .sidebar {
+            position: sticky;
+            top: 130px;
+            align-self: start;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+        .sidebar-section { margin-bottom: 14px; }
+        .sidebar-link {
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            background: var(--bg-signal);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-link:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateX(2px);
+        }
+        .sidebar-link.crosscut {
+            border-left-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(16,185,129,0.05);
+        }
+        .sidebar-link.rhetoric { border-left-color: var(--accent-orange); }
+        .sidebar-link.rhetoric:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .sidebar-link.active {
+            background: rgba(249,115,22,0.15);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+        .sidebar-divider { height: 1px; background: var(--border-color); margin: 10px 0; }
+
+        /* Content */
+        .content { min-width: 0; }
+        .updated-bar {
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            padding: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+
+        /* Composite gauge strip */
+        .composite-strip {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .gauge-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .gauge-card.composite { border-top: 3px solid var(--accent-cyan); }
+        .gauge-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .gauge-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1.1;
+        }
+        .gauge-value.composite { font-size: 1.7rem; }
+        .gauge-sub {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .level-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            border: 1px solid;
+        }
+        .level-pill.level-low { background: var(--level-low-bg); border-color: var(--level-low-border); color: var(--level-low-border); }
+        .level-pill.level-normal { background: var(--level-normal-bg); border-color: var(--level-normal-border); color: var(--level-normal-border); }
+        .level-pill.level-elevated { background: var(--level-elevated-bg); border-color: var(--level-elevated-border); color: var(--level-elevated-border); }
+        .level-pill.level-high { background: var(--level-high-bg); border-color: var(--level-high-border); color: var(--level-high-border); }
+        .level-pill.level-surge { background: var(--level-surge-bg); border-color: var(--level-surge-border); color: var(--level-surge-border); }
+
+        /* Section header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 22px 0 12px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .section-icon { font-size: 1.3rem; }
+        .section-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 8px;
+            font-style: italic;
+        }
+
+        /* Executive summary card */
+        .exec-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .exec-summary p {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* So What card */
+        .so-what {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-orange);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .so-what-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .so-what-item {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+        .so-what-bullet {
+            flex-shrink: 0;
+            font-size: 1rem;
+            color: var(--accent-orange);
+            line-height: 1.4;
+        }
+        /* Alignment-drift factor block (BRI inroad read) */
+        .drift-block {
+            background: var(--bg-signal);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-orange);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+        .drift-band-row { margin-bottom: 10px; }
+        .drift-band-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+        .drift-sowhat {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        .drift-li-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+        .drift-li-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+        .drift-li-list li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            padding: 4px 0 4px 18px;
+            position: relative;
+        }
+        .drift-li-list li::before {
+            content: '\25B8';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+        .drift-disclaimer {
+            font-size: 0.75rem;
+            line-height: 1.45;
+            color: var(--text-muted);
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin: 0;
+        }
+
+        /* Top signals */
+        .top-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .top-signals-grid { grid-template-columns: 1fr; } }
+        .signal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .signal-card:hover { border-color: var(--accent-cyan); transform: translateY(-1px); }
+        .signal-card.level-surge { border-left-color: var(--level-surge-border); }
+        .signal-card.level-high { border-left-color: var(--level-high-border); }
+        .signal-card.level-elevated { border-left-color: var(--level-elevated-border); }
+        .signal-card.level-normal { border-left-color: var(--level-normal-border); }
+        .signal-card.level-low { border-left-color: var(--level-low-border); }
+        .signal-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+        .signal-type-pill {
+            font-size: 0.55rem;
+            padding: 2px 8px;
+            border-radius: 3px;
+            background: rgba(56,189,248,0.10);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56,189,248,0.30);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .signal-type-pill.t-tripwire { background: rgba(239,68,68,0.10); color: #fca5a5; border-color: rgba(239,68,68,0.30); }
+        .signal-type-pill.t-convergence { background: rgba(167,139,250,0.10); color: #c4b5fd; border-color: rgba(167,139,250,0.30); }
+        .signal-type-pill.t-commodity_coupling { background: rgba(245,158,11,0.10); color: #fcd34d; border-color: rgba(245,158,11,0.30); }
+        .signal-type-pill.t-crosstheater { background: rgba(16,185,129,0.10); color: #6ee7b7; border-color: rgba(16,185,129,0.30); }
+        .signal-short {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .signal-long {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+        .signal-sources {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .signal-source-row {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .signal-source-row a { color: var(--text-secondary); text-decoration: none; }
+        .signal-source-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+
+        /* Actor cards */
+        .actor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .actor-grid { grid-template-columns: 1fr; } }
+        .actor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+        .actor-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .actor-card.level-surge { border-top-color: var(--level-surge-border); }
+        .actor-card.level-high { border-top-color: var(--level-high-border); }
+        .actor-card.level-elevated { border-top-color: var(--level-elevated-border); }
+        .actor-card.level-normal { border-top-color: var(--level-normal-border); }
+        .actor-card.level-low { border-top-color: var(--level-low-border); }
+        .actor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .actor-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .actor-icon { font-size: 1.4rem; line-height: 1; }
+        .actor-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .actor-role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-style: italic;
+        }
+        .actor-stats {
+            display: flex;
+            gap: 14px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+        .actor-stats span { color: var(--text-muted); }
+        .actor-stats strong { color: var(--text-primary); font-weight: 700; }
+        .actor-articles-toggle {
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            user-select: none;
+            margin-top: 6px;
+        }
+        .actor-articles-toggle:hover { text-decoration: underline; }
+        .actor-articles {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+        .actor-articles.visible { display: block; }
+        .actor-article-row {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(30,58,95,0.4);
+            line-height: 1.45;
+        }
+        .actor-article-row:last-child { border-bottom: none; }
+        .actor-article-row a { color: var(--text-secondary); text-decoration: none; }
+        .actor-article-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+        .article-source-tag {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
+        /* Vector breakdown card */
+        .vector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 600px) { .vector-grid { grid-template-columns: 1fr; } }
+        .vector-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .vector-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .vector-actors {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Commodity coupling card */
+        .commodity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .commodity-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .commodity-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .commodity-card-detail {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Empty / pending */
+        .pending-banner {
+            background: rgba(245,158,11,0.10);
+            border: 1px solid var(--level-elevated-border);
+            color: var(--accent-yellow);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Light theme overrides */
+        body[data-theme="light"] {
+            --bg-primary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-signal: #f0f5fa;
+            --bg-elevated: #e8eef5;
+            --border-color: #d1dce6;
+            --border-strong: #a8b8cc;
+            --text-primary: #1e3a5f;
+            --text-secondary: #2c5282;
+            --text-muted: #5d7ea3;
+            --watermark-filter: saturate(2) brightness(1.1) hue-rotate(190deg);
+            --shadow-sm: 0 1px 3px rgba(30,58,95,0.08);
+            --shadow-md: 0 4px 12px rgba(30,58,95,0.12);
+            --shadow-glow: 0 0 12px rgba(56,189,248,0.2);
+            --header-gradient: linear-gradient(135deg, #ffffff 0%, #f0f5fa 50%, #e8eef5 100%);
+            --loading-bg: rgba(240,244,247,0.95);
+        }
+
+        /* Mobile */
+        @media (max-width: 1080px) {
+            .composite-strip { grid-template-columns: 1fr 1fr; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; max-height: none; }
+        }
+        @media (max-width: 600px) {
+            .composite-strip { grid-template-columns: 1fr; }
+        }
+
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--bg-card, #0d1b2e); border: 1px solid var(--border-color, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100vh; max-height: 100vh;
+                width: 264px; overflow-y: auto; margin: 0; padding: 56px 14px 24px;
+                background: var(--bg-card, #0d1b2e); border-right: 1px solid var(--border-color, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .sidebar.open { transform: translateX(0); }
+        }
+    
+        /* ── Shared-engine page additions (Nov 4 2026) ── */
+        .composite-strip.dyn { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        .lines-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        @media (max-width: 900px) { .lines-grid { grid-template-columns: 1fr; } }
+        .line-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 16px; }
+        .line-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px dashed var(--border-color); }
+        .line-row:last-child { border-bottom: none; }
+        .line-status { flex-shrink: 0; font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; padding: 3px 7px; border-radius: 4px; min-width: 92px; text-align: center; }
+        .st-BREACHED { background: #dc2626; color: #fff; }
+        .st-APPROACHING { background: #f97316; color: #1a0f05; }
+        .st-RUMOUR { background: transparent; color: #f59e0b; border: 1px dashed #f59e0b; }
+        .st-WATCHING { background: rgba(148,163,184,0.15); color: var(--text-muted); border: 1px solid var(--border-color); }
+        .st-ACTIVE { background: #16a34a; color: #fff; }
+        .st-REPORTED { background: rgba(22,163,74,0.18); color: #4ade80; border: 1px solid #16a34a; }
+        .line-label { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+        .line-why { color: var(--text-secondary); font-size: 0.78rem; line-height: 1.45; margin-top: 3px; }
+        .line-src { font-size: 0.72rem; margin-top: 4px; }
+        .line-src a { color: var(--accent-cyan); }
+        .so-what-item.standing { opacity: 0.92; font-style: italic; }
+        .coverage-note { font-size: 0.72rem; color: var(--text-muted); text-align: center; margin: -6px 0 16px; line-height: 1.5; }
+        .page-with-sidebar > .nav-sidebar { position: fixed; }
+        /* ── UK wheel (Nov 4 2026) ── */
+        .uk-wheel-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+        .uk-wheel-wrap { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 18px; align-items: start; }
+        @media (max-width: 900px) { .uk-wheel-wrap { grid-template-columns: 1fr; } }
+        .uk-wheel-svg { width: 100%; height: auto; }
+        .uk-wheel-svg text { font-family: inherit; }
+        .uk-node-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+        .uk-node { border: 1px solid var(--border-color); border-left: 3px solid #64748b; border-radius: 8px; padding: 8px 10px; font-size: 0.78rem; line-height: 1.45; color: var(--text-secondary); }
+        .uk-node b { color: var(--text-primary); }
+        .uk-node a { color: var(--accent-cyan); }
+        .uk-node .st { font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; margin-left: 6px; }
+        .uk-wheel-note { font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
+        .uk-city-link { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid #a78bfa; border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); display: none; }
+        .uk-city-link b { color: var(--text-primary); }
+        .uk-city-link a { color: var(--accent-cyan); }
+        @media (max-width: 600px) { .header { overflow-x: hidden; } .header-row-3 { flex-wrap: wrap; gap: 8px; } }
+    
+/* ── Footer extra for the shared shell (Nov 4 2026) ──
+   The shell (resources/asifah-standard-shell.js) REWRITES <footer>: it keeps only a
+   <section data-asifah-footer-extra> and adds the standard title, pills, socials and
+   links. So the page-specific block lives in that section, and the <footer> carries
+   no inline width/size styles (those survived the rewrite and made it a 900px strip). */
+.asf-extra .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; text-align: left; }
+.asf-extra h4 { color: var(--text-primary, #e2f0fb); font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
+.asf-extra p { margin: 0; color: var(--text-secondary, #93c5fd); font-size: 14px; line-height: 1.6; }
+.asf-extra .asf-f-head { text-align: center; font-weight: 800; font-size: 16px; letter-spacing: 1.5px; color: var(--text-primary, #e2f0fb); margin-bottom: 14px; }
+@media (max-width: 900px) { .asf-extra .asf-f-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="resources/asifah-standard-shell.css">
+<script src="resources/asifah-standard-shell.js" defer></script>
+<script src="resources/polar-gateways.js" defer></script>
+</head>
+<body data-theme="dark">
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+<div class="watermark"></div>
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">SCANNING UK RHETORIC...</div>
+</div>
+
+<header class="header">
+    <div class="header-row-1">
+        <a href="index.html"><img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo"></a>
+        <div class="header-right-controls">
+            <a href="uk-stability.html" class="home-btn" data-i18n="back_to_stability">← UK STABILITY</a>
+            <a href="index.html" class="home-btn" data-i18n="home">🏠 HOME</a>
+        </div>
+    </div>
+    <div class="header-row-2">
+        <div class="header-title" data-i18n="page_title">🇬🇧 UNITED KINGDOM RHETORIC &amp; PRESSURE TRACKER</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">Treasury &amp; gilts · Both flanks · Scotland, Wales &amp; Northern Ireland · The overseas edge · Washington · Russia inside Britain · Ukraine · AUKUS — 12 actors, evidence-graded</div>
+    </div>
+    <div class="header-row-3">
+        <div class="lang-toggle"><button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button><button class="lang-btn" data-lang="fr" onclick="setLang('fr')">FR</button></div>
+        <div class="toggle-container">
+            <span class="toggle-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+            <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+        </div>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" data-i18n="refresh">⟳ REFRESH</button>
+    </div>
+</header>
+
+<div class="main-layout">
+    <aside class="sidebar" id="navSidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
+            <a href="middle-east.html" class="sidebar-link">🌍 Middle East</a>
+            <a href="asia.html" class="sidebar-link">🌏 Asia-Pacific</a>
+            <a href="europe.html" class="sidebar-link">🌍 Europe</a>
+            <a href="africa.html" class="sidebar-link">🌍 Africa</a>
+            <a href="wha.html" class="sidebar-link">🌎 Western Hemisphere</a>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
+            <a href="commodities.html" class="sidebar-link crosscut">🌾 Commodities Tracker</a>
+            <a href="military.html" class="sidebar-link crosscut">🪖 Military Tracker</a>
+            <a href="gpi.html" class="sidebar-link crosscut">🌐 Global Pressure Index</a>
+            <a href="market-watch.html" class="sidebar-link crosscut">📈 Market Watch</a>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_rhetoric">RHETORIC LANDINGS</div>
+            <a href="rhetoric-index.html" class="sidebar-link rhetoric">💬 Middle East Rhetoric</a>
+            <a href="rhetoric-asia.html" class="sidebar-link rhetoric">💬 Asia Rhetoric</a>
+            <a href="rhetoric-europe.html" class="sidebar-link rhetoric">💬 Europe Rhetoric</a>
+            <a href="rhetoric-wha.html" class="sidebar-link rhetoric">💬 Western Hemisphere Rhetoric</a>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section" data-asifah-nav-extra="United Kingdom Pages">
+            <div class="sidebar-header" data-i18n="sb_country">UNITED KINGDOM PAGES</div>
+            <a href="rhetoric-uk.html" class="sidebar-link rhetoric active">💬 UK Rhetoric</a>
+            <a href="uk-stability.html" class="sidebar-link">📊 UK Stability &amp; the City</a>
+            <a href="cyprus-stability.html" class="sidebar-link">🇨🇾 Cyprus (the bases)</a>
+            <a href="argentina-stability.html" class="sidebar-link">🇦🇷 Argentina (the Falklands)</a>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="updated-bar" id="updatedBar" data-i18n="initializing">Initializing...</div>
+        <div class="coverage-note" id="coverageNote"></div>
+        <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">⏳ First scan in progress — this normally takes 3–5 minutes after a fresh deploy.</div>
+
+        <div class="composite-strip dyn" id="compositeStrip"><div class="gauge-card composite"><div class="gauge-label" data-i18n="composite_label">Composite</div><div class="gauge-value composite">—</div></div></div>
+
+        <div class="section-header"><span class="section-icon">📰</span><span class="section-title" data-i18n="sec_exec">Bottom Line</span></div>
+        <div class="exec-summary" id="execSummary"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
+        <div class="section-header"><span class="section-icon">🎯</span><span class="section-title" data-i18n="sec_so_what">So What</span><span class="section-desc" data-i18n="sec_so_what_desc">What it means, and the question behind the headlines</span></div>
+        <div class="so-what" id="soWhatCard"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
+        <!-- UK WHEEL (Nov 4 2026): hub = the UK; tracked nodes read live from their own trackers,
+             union/territory nodes are this tracker's actors, untracked nodes are shown so the gap is visible -->
+        <div class="section-header"><span class="section-icon">🛞</span><span class="section-title" data-i18n="sec_wheel">The UK Wheel</span><span class="section-desc" data-i18n="sec_wheel_desc">Who and what pulls on Britain — read live where Asifah has a sensor, and said out loud where it does not</span></div>
+        <div class="uk-wheel-card" id="ukWheel"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+        <div class="uk-city-link" id="ukCityLink"></div>
+<!-- Polar gateway card: resources/polar-gateways.js (Britain is the third Antarctic Peninsula claimant) -->
+<div data-polar-gateway="antarctic"></div>
+        <div class="section-header"><span class="section-icon">🚦</span><span class="section-title" data-i18n="sec_lines">Red Lines &amp; Cooperation Signals</span><span class="section-desc" data-i18n="sec_lines_desc">Crossed only when 2+ separate outlets report it as fact</span></div>
+        <div class="lines-grid">
+            <div class="line-card"><div class="vector-name" data-i18n="red_lines">RED LINES</div><div id="redLines"></div></div>
+            <div class="line-card"><div class="vector-name" data-i18n="green_lines">COOPERATION / OFF-RAMPS</div><div id="greenLines"></div></div>
+        </div>
+
+        <div class="section-header"><span class="section-icon">⚡</span><span class="section-title" data-i18n="sec_signals">Top Signals</span><span class="section-desc" data-i18n="sec_signals_desc">Evidence-graded: confirmed, single outlet, or busier than usual</span></div>
+        <div class="top-signals-grid" id="topSignalsGrid"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+
+        <div class="section-header"><span class="section-icon">🧭</span><span class="section-title" data-i18n="sec_vectors">Vectors</span><span class="section-desc" data-i18n="sec_vectors_desc">How the actors group</span></div>
+        <div class="vector-grid" id="vectorGrid"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+
+        <div class="section-header"><span class="section-icon">🎭</span><span class="section-title" data-i18n="sec_actors">Actors</span><span class="section-desc" data-i18n="sec_actors_desc">Who is talking, and how much</span></div>
+        <div class="actor-grid" id="actorGrid"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+    </main>
+</div>
+
+<footer class="asifah-footer">
+    <section class="asf-extra" data-asifah-footer-extra>
+        <div class="asf-f-head">ASIFAH ANALYTICS — UNITED KINGDOM</div>
+        <div class="asf-f-grid">
+            <div><h4>About this page</h4><p>Backend: asifa-europe-backend.onrender.com · Scans refresh ~every 12 hours · the City pulse every 6 hours</p></div>
+            <div><h4>Data Sources</h4><p>BBC, The Guardian, Sky News, UK Defence Journal, Nation.Cymru and MercoPress by RSS; Google News (en-GB) by name; GDELT; NewsAPI and Brave as budgeted fallbacks. Wheel nodes read the Argentina, Cyprus, Ukraine, US and Russia trackers.</p></div>
+            <div><h4>Methodology</h4><p>12 actors in 8 vectors, both political flanks read by the same rules. Volume alone tops out at "elevated"; an event counts only when 2+ separate outlets report it as fact; one outlet = approaching; rumour and hedged wording never lift the level. L5 comes only from kinetic ladders.</p></div>
+        </div>
+    </section>
+    <!-- Fallback if the shared shell does not load; the shell replaces everything below. -->
+    <div style="text-align:center;margin-top:16px;"><a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a> · <a href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a> · <a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
+</footer>
+
+<script>
+const API_BASE = 'https://asifa-europe-backend.onrender.com';
+const ENDPOINT = API_BASE + '/api/rhetoric/uk';
+const T = {
+ "en": {
+  "home": "🏠 HOME",
+  "theme_toggle": "DARK / LIGHT",
+  "refresh": "⟳ REFRESH",
+  "loading": "Loading...",
+  "initializing": "Initializing...",
+  "load_error": "Could not load data — please retry (the backend may be waking up).",
+  "composite_label": "Theatre level",
+  "sec_exec": "Bottom Line",
+  "sec_so_what": "So What",
+  "sec_so_what_desc": "What it means, and the question behind the headlines",
+  "sec_lines": "Red Lines & Cooperation Signals",
+  "sec_lines_desc": "Crossed only when 2+ separate outlets report it as fact",
+  "red_lines": "RED LINES",
+  "green_lines": "COOPERATION / OFF-RAMPS",
+  "sec_signals": "Top Signals",
+  "sec_signals_desc": "Evidence-graded: confirmed, single outlet, or busier than usual",
+  "sec_vectors": "Vectors",
+  "sec_vectors_desc": "How the actors group",
+  "sec_actors": "Actors",
+  "sec_actors_desc": "Who is talking, and how much",
+  "leading_indicators": "Leading indicators",
+  "level_low": "Low",
+  "level_normal": "Normal",
+  "level_elevated": "Elevated",
+  "level_high": "High",
+  "level_surge": "Surge",
+  "label_0": "Monitoring",
+  "label_1": "Rhetoric",
+  "label_2": "Warning",
+  "label_3": "Direct Threat",
+  "label_4": "Imminent Crisis",
+  "st_BREACHED": "CROSSED",
+  "st_APPROACHING": "ONE OUTLET",
+  "st_RUMOUR": "RUMOUR",
+  "st_WATCHING": "WATCHING",
+  "st_ACTIVE": "ACTIVE",
+  "st_REPORTED": "ONE OUTLET",
+  "type_tripwire": "Event",
+  "type_theatre_read": "Overall read",
+  "type_convergence": "Convergence",
+  "type_actor_signal": "Busier than usual",
+  "type_commodity_coupling": "Markets",
+  "type_crosstheater": "Cross-theatre",
+  "type_off_ramp": "Cooperation",
+  "grade_corroborated": "confirmed",
+  "grade_single_source": "one outlet",
+  "grade_rumint": "rumour",
+  "what_it_means": "What it means",
+  "no_signals": "No signals this cycle — unread is not calm.",
+  "actor_items": "Items",
+  "actor_outlets": "Outlets",
+  "actor_baseline": "Usual",
+  "actor_show_articles": "Show top articles",
+  "actor_hide_articles": "Hide articles",
+  "actor_no_articles": "No articles this scan — unread, not calm.",
+  "updated_prefix": "LAST SCAN",
+  "updated_cached": "CACHED",
+  "updated_live": "LIVE",
+  "cov_articles": "articles about the country",
+  "cov_stale": "stale dropped",
+  "cov_off": "about other countries filtered out",
+  "cov_thin": "thin coverage: quiet may be unread rather than calm",
+  "pending_banner": "⏳ First scan in progress — this normally takes 3–5 minutes after a fresh deploy.",
+  "prose_en_note": "",
+  "disclaimer": "Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.",
+  "sb_regional": "REGIONAL LANDINGS",
+  "sb_crosscut": "CROSS-CUTTING TOOLS",
+  "sb_rhetoric": "RHETORIC LANDINGS",
+  "page_title": "🇬🇧 UNITED KINGDOM RHETORIC & PRESSURE TRACKER",
+  "back_to_stability": "← UK STABILITY",
+  "page_subtitle": "Treasury & gilts · Both flanks · Scotland, Wales & Northern Ireland · The overseas edge · Washington · Russia inside Britain · Ukraine · AUKUS — 12 actors, evidence-graded",
+  "sb_country": "UNITED KINGDOM PAGES",
+  "vec_government": "Government & Treasury",
+  "vec_opposition": "Opposition (both flanks)",
+  "vec_union": "The Union",
+  "vec_overseas": "The Overseas Edge",
+  "vec_us_relationship": "The US Relationship",
+  "vec_russia_hybrid": "Russia inside Britain",
+  "vec_europe_security": "Ukraine & Europe",
+  "vec_indo_pacific": "AUKUS & Indo-Pacific",
+  "sec_wheel": "The UK Wheel",
+  "sec_wheel_desc": "Who and what pulls on Britain — read live where Asifah has a sensor, and said out loud where it does not"
+ },
+ "fr": {
+  "home": "🏠 ACCUEIL",
+  "theme_toggle": "SOMBRE / CLAIR",
+  "refresh": "⟳ ACTUALISER",
+  "loading": "Chargement...",
+  "initializing": "Initialisation...",
+  "load_error": "Impossible de charger les données — réessayez (le serveur se réveille peut-être).",
+  "composite_label": "Niveau du théâtre",
+  "sec_exec": "L'essentiel",
+  "sec_so_what": "Et alors",
+  "sec_so_what_desc": "Ce que cela signifie, et la question derrière les manchettes",
+  "sec_lines": "Lignes rouges et signaux de coopération",
+  "sec_lines_desc": "Franchie seulement si 2+ médias distincts la rapportent comme un fait",
+  "red_lines": "LIGNES ROUGES",
+  "green_lines": "COOPÉRATION / SORTIES",
+  "sec_signals": "Signaux principaux",
+  "sec_signals_desc": "Gradués selon la preuve : confirmé, un média, ou plus de couverture que d'habitude",
+  "sec_vectors": "Vecteurs",
+  "sec_vectors_desc": "Comment les acteurs se regroupent",
+  "sec_actors": "Acteurs",
+  "sec_actors_desc": "Qui parle, et combien",
+  "leading_indicators": "Indicateurs avancés",
+  "level_low": "Faible",
+  "level_normal": "Normal",
+  "level_elevated": "Élevé",
+  "level_high": "Haut",
+  "level_surge": "Critique",
+  "label_0": "Surveillance",
+  "label_1": "Rhétorique",
+  "label_2": "Avertissement",
+  "label_3": "Menace directe",
+  "label_4": "Crise imminente",
+  "st_BREACHED": "FRANCHIE",
+  "st_APPROACHING": "UN MÉDIA",
+  "st_RUMOUR": "RUMEUR",
+  "st_WATCHING": "SURVEILLÉE",
+  "st_ACTIVE": "ACTIVE",
+  "st_REPORTED": "UN MÉDIA",
+  "type_tripwire": "Événement",
+  "type_theatre_read": "Lecture globale",
+  "type_convergence": "Convergence",
+  "type_actor_signal": "Plus de couverture",
+  "type_commodity_coupling": "Marchés",
+  "type_crosstheater": "Multi-théâtre",
+  "type_off_ramp": "Coopération",
+  "grade_corroborated": "confirmé",
+  "grade_single_source": "un média",
+  "grade_rumint": "rumeur",
+  "what_it_means": "Ce que cela signifie",
+  "no_signals": "Aucun signal ce cycle-ci — non lu n'est pas calme.",
+  "actor_items": "Articles",
+  "actor_outlets": "Médias",
+  "actor_baseline": "Habituel",
+  "actor_show_articles": "Voir les articles",
+  "actor_hide_articles": "Masquer",
+  "actor_no_articles": "Aucun article ce balayage — non lu, pas calme.",
+  "updated_prefix": "DERNIER BALAYAGE",
+  "updated_cached": "EN CACHE",
+  "updated_live": "EN DIRECT",
+  "cov_articles": "articles sur le pays",
+  "cov_stale": "anciens écartés",
+  "cov_off": "sur d'autres pays filtrés",
+  "cov_thin": "couverture mince : le calme peut être un manque de lecture",
+  "pending_banner": "⏳ Premier balayage en cours — environ 3 à 5 minutes après un déploiement.",
+  "prose_en_note": "Les analyses générées (l'essentiel, signaux, « et alors ») s'affichent en anglais.",
+  "disclaimer": "Indicateurs de convergence, pas des prédictions. Asifah rapporte quels signaux de sources ouvertes sont présents — sans prévoir les résultats. Pas pour usage opérationnel.",
+  "sb_regional": "PAGES RÉGIONALES",
+  "sb_crosscut": "OUTILS TRANSVERSAUX",
+  "sb_rhetoric": "PAGES DE RHÉTORIQUE",
+  "page_title": "🇬🇧 SUIVI DE LA RHÉTORIQUE ET DES PRESSIONS — ROYAUME-UNI",
+  "back_to_stability": "← STABILITÉ DU ROYAUME-UNI",
+  "page_subtitle": "Trésor et gilts · Les deux flancs · Écosse, pays de Galles et Irlande du Nord · Les marges outre-mer · Washington · La Russie au Royaume-Uni · Ukraine · AUKUS — 12 acteurs, gradué selon la preuve",
+  "sb_country": "PAGES DU ROYAUME-UNI",
+  "vec_government": "Gouvernement et Trésor",
+  "vec_opposition": "Opposition (deux flancs)",
+  "vec_union": "L'Union",
+  "vec_overseas": "Les marges outre-mer",
+  "vec_us_relationship": "La relation américaine",
+  "vec_russia_hybrid": "La Russie au Royaume-Uni",
+  "vec_europe_security": "Ukraine et Europe",
+  "vec_indo_pacific": "AUKUS et Indo-Pacifique",
+  "sec_wheel": "La roue britannique",
+  "sec_wheel_desc": "Qui et quoi tire sur la Grande-Bretagne — lu en direct quand Asifah a un capteur, et dit clairement quand non"
+ }
+};
+const LS_KEY = 'asifah_uk_rh_lang';
+let currentLang = 'en';
+try { const s = localStorage.getItem(LS_KEY); if (s && T[s]) currentLang = s; } catch (e) {}
+let scanData = null;
+
+function tr(key) { const t = T[currentLang] || {}; return (t[key] !== undefined) ? t[key] : (T.en[key] !== undefined ? T.en[key] : key); }
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) { if (s == null) return ''; return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'); }
+const em = s => (s || '').replace(/--/g, '—');
+const LVL = ['low', 'normal', 'elevated', 'high', 'surge'];
+function lvlName(x) { return (typeof x === 'number') ? LVL[Math.max(0, Math.min(4, x))] : (x || 'low'); }
+function pill(level) { const l = lvlName(level); return '<span class="level-pill level-' + l + '">' + escapeHtml(tr('level_' + l)) + '</span>'; }
+
+const DEFAULTS = {};
+function captureDefaults() { document.querySelectorAll('[data-i18n]').forEach(e => { DEFAULTS[e.getAttribute('data-i18n')] = e.textContent; }); }
+function applyI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(e => {
+        const k = e.getAttribute('data-i18n'); const t = T[currentLang] || {};
+        e.textContent = (t[k] !== undefined) ? t[k] : (T.en[k] !== undefined ? T.en[k] : DEFAULTS[k]);
+    });
+}
+function setLang(lang) {
+    if (!T[lang]) return; currentLang = lang;
+    try { localStorage.setItem(LS_KEY, lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    applyI18n(); if (scanData) renderEverything();
+}
+function toggleTheme() {
+    const b = document.body; const next = (b.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+    b.setAttribute('data-theme', next); try { localStorage.setItem('asifah_theme', next); } catch (e) {}
+}
+(function () { try { if (localStorage.getItem('asifah_theme') === 'light') document.body.setAttribute('data-theme', 'light'); } catch (e) {} })();
+
+async function loadAll(force) {
+    const btn = el('refreshBtn'); btn.disabled = true; btn.textContent = '⟳ ' + tr('loading');
+    try {
+        const r = await fetch(force ? ENDPOINT + '?refresh=true' : ENDPOINT);
+        const d = await r.json();
+        if (d && d.success) { scanData = d; renderEverything(); }
+        else el('updatedBar').textContent = '⚠️ ' + tr('load_error');
+    } catch (e) { el('updatedBar').textContent = '⚠️ ' + tr('load_error'); }
+    finally { btn.disabled = false; btn.textContent = tr('refresh'); el('loadingOverlay').classList.add('hidden'); }
+}
+function refreshData() { loadAll(true); }
+
+function renderEverything() {
+    renderUpdated(); renderComposite(); renderExec(); renderSoWhat(); renderLines();
+    renderSignals(); renderVectors(); renderActors();
+    try { renderWheel(); } catch (e) { console.warn('uk wheel', e); }
+    try { renderCityLink(); } catch (e) { console.warn('city link', e); }
+    el('pendingBanner').style.display = (scanData.pending || !scanData.total_articles_scanned) ? 'block' : 'none';
+}
+function renderUpdated() {
+    const d = scanData; if (!d.last_updated) { el('updatedBar').textContent = tr('initializing'); return; }
+    const dt = new Date(d.last_updated);
+    const f = dt.toLocaleString(currentLang === 'en' ? 'en-US' : currentLang, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+    el('updatedBar').textContent = tr('updated_prefix') + ' ' + f + ' UTC · ' + (d.cached ? tr('updated_cached') : tr('updated_live'));
+    const er = d.evidence_rules || {}; const sc = d.source_counts || {};
+    const n = d.total_articles_scanned || 0;
+    let cov = n + ' ' + tr('cov_articles') + ' · ' + (er.stale_dropped || 0) + ' ' + tr('cov_stale') + ' · ' + (er.not_about_country || 0) + ' ' + tr('cov_off');
+    if (n < 30) cov += ' — ' + tr('cov_thin');
+    el('coverageNote').textContent = cov;
+}
+function renderComposite() {
+    const d = scanData; const vs = d.vector_scores || {}; const vl = d.vector_levels || {};
+    let h = '<div class="gauge-card composite"><div class="gauge-label">' + escapeHtml(tr('composite_label')) + '</div>' +
+            '<div class="gauge-value composite">L' + (d.theatre_level || 0) + '</div>' + pill(d.composite_level) +
+            '<div class="gauge-label" style="margin-top:6px;">' + escapeHtml(tr('label_' + (d.theatre_level || 0))) + '</div></div>';
+    (d.vectors_meta || []).forEach(v => {
+        h += '<div class="gauge-card"><div class="gauge-label">' + escapeHtml(tr('vec_' + v.id) || v.name) + '</div>' +
+             '<div class="gauge-value">' + (vs[v.id] || 0).toFixed(1) + '</div>' + pill(vl[v.id]) + '</div>';
+    });
+    el('compositeStrip').innerHTML = h;
+}
+function renderExec() {
+    const d = scanData;
+    el('execSummary').innerHTML = (d.top_indicator ? '<p style="font-weight:700;color:var(--text-primary);margin-bottom:10px;">' + escapeHtml(em(d.top_indicator)) + '</p>' : '') +
+        '<p>' + escapeHtml(em(d.executive_summary || '')) + '</p>' +
+        (currentLang !== 'en' ? '<p class="coverage-note" style="text-align:left;margin:8px 0 0;">' + escapeHtml(tr('prose_en_note')) + '</p>' : '');
+}
+function renderSoWhat() {
+    const d = scanData; const drift = d.alignment_drift; let h = '';
+    if (drift && drift.band) {
+        const bc = drift.color || '#f59e0b';
+        h += '<div class="drift-block" style="border-left-color:' + escapeHtml(bc) + ';"><div class="drift-band-row"><span class="drift-band-badge" style="background:' + escapeHtml(bc) + '22;color:' + escapeHtml(bc) + ';border:1px solid ' + escapeHtml(bc) + ';">' + escapeHtml(tr('drift_label')) + ': ' + escapeHtml(drift.band) + '</span></div>' +
+             '<p class="drift-sowhat">' + escapeHtml(em(drift.so_what_factor)) + '</p>';
+        if ((drift.leading_indicators || []).length) h += '<div class="drift-li-header">' + escapeHtml(tr('leading_indicators')) + '</div><ul class="drift-li-list">' + drift.leading_indicators.map(x => '<li>' + escapeHtml(em(x)) + '</li>').join('') + '</ul>';
+        h += '<p class="drift-disclaimer">' + escapeHtml(em(drift.disclaimer || '')) + '</p></div>';
+    }
+    const b = (d.so_what || []).filter(x => !(x.bullet || '').startsWith('China and the US:'));
+    if (b.length) h += '<ul class="so-what-list">' + b.map(x => '<li class="so-what-item' + (x.standing ? ' standing' : '') + '"><span class="so-what-bullet">' + (x.standing ? '?' : '▸') + '</span><span>' + escapeHtml(em(x.bullet)) + '</span></li>').join('') + '</ul>';
+    el('soWhatCard').innerHTML = h || '<p class="empty-state">' + escapeHtml(tr('loading')) + '</p>';
+}
+function lineRows(lines) {
+    if (!lines || !lines.length) return '<div class="line-why">—</div>';
+    return lines.map(l => {
+        const src = (l.items || []).filter(i => i.url).slice(0, 2).map(i => '<a href="' + escapeHtml(i.url) + '" target="_blank" rel="noopener">' + escapeHtml(i.source || 'source') + '</a>').join(' · ');
+        return '<div class="line-row"><span class="line-status st-' + escapeHtml(l.status) + '">' + escapeHtml(tr('st_' + l.status)) + '</span><div><div class="line-label">' + escapeHtml(l.label) + '</div><div class="line-why">' + escapeHtml(em(l.why)) + '</div>' + (src ? '<div class="line-src">' + src + '</div>' : '') + '</div></div>';
+    }).join('');
+}
+function renderLines() { el('redLines').innerHTML = lineRows(scanData.red_lines); el('greenLines').innerHTML = lineRows(scanData.green_lines); }
+function renderSignals() {
+    const sigs = scanData.top_signals || [];
+    if (!sigs.length) { el('topSignalsGrid').innerHTML = '<div class="empty-state">' + escapeHtml(tr('no_signals')) + '</div>'; return; }
+    el('topSignalsGrid').innerHTML = sigs.map(s => {
+        const l = lvlName(s.level); const type = s.type || 'actor_signal';
+        const mean = (s.meaning && !(s.long_text || '').includes(s.meaning.slice(0, 40))) ? '<div class="signal-long" style="margin-top:6px;"><strong>' + escapeHtml(tr('what_it_means')) + ':</strong> ' + escapeHtml(em(s.meaning)) + '</div>' : '';
+        const src = (s.sources || []).map(x => '<div class="signal-source-row">' + (x.url ? '<a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">' : '') + escapeHtml(x.title || '') + (x.url ? '</a>' : '') + '<span style="color:var(--text-muted)"> — ' + escapeHtml(x.source || '') + '</span></div>').join('');
+        return '<div class="signal-card level-' + l + '"><div class="signal-meta-row"><span class="signal-type-pill t-' + escapeHtml(type) + '">' + escapeHtml(tr('type_' + type)) + '</span>' + pill(l) + '</div>' +
+               '<div class="signal-short">' + escapeHtml(em(s.short_text)) + '</div><div class="signal-long">' + escapeHtml(em(s.long_text)) + '</div>' + mean + (src ? '<div class="signal-sources">' + src + '</div>' : '') + '</div>';
+    }).join('');
+}
+function renderVectors() {
+    const d = scanData; const vs = d.vector_scores || {}; const vl = d.vector_levels || {}; const A = d.actor_summaries || {};
+    el('vectorGrid').innerHTML = (d.vectors_meta || []).map(v => '<div class="vector-card"><div class="vector-name">' + escapeHtml(tr('vec_' + v.id) || v.name) + '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:1.4rem;font-weight:700;color:var(--accent-cyan);">' + (vs[v.id] || 0).toFixed(1) + '</span>' + pill(vl[v.id]) + '</div>' +
+        '<div class="vector-actors">' + escapeHtml(v.actors.map(a => (A[a] && A[a].name) || a).join(', ')) + '</div></div>').join('');
+}
+function renderActors() {
+    const d = scanData; const A = d.actor_summaries || {};
+    el('actorGrid').innerHTML = (d.actor_order || Object.keys(A)).map(id => {
+        const a = A[id]; if (!a) return '';
+        const arts = (a.top_articles || []).map(x => '<div class="actor-article-row">' + (x.url ? '<a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">' : '') + escapeHtml(x.title || '') + (x.url ? '</a>' : '') + ' <span class="article-source-tag">[' + escapeHtml(x.outlet || x.source || '') + ']</span></div>').join('') ||
+                     '<div class="actor-article-row"><em style="color:var(--text-muted)">' + escapeHtml(tr('actor_no_articles')) + '</em></div>';
+        const tws = (a.tripwires || []).map(t => escapeHtml((t.id || '').replaceAll('_', ' ')) + ' (' + escapeHtml(tr('grade_' + t.grade)) + ')').join(' · ');
+        return '<div class="actor-card level-' + escapeHtml(a.level) + '"><div class="actor-header"><div class="actor-title"><span class="actor-icon">' + escapeHtml(a.icon || '📊') + '</span><span class="actor-name">' + escapeHtml(a.name) + '</span></div>' + pill(a.level) + '</div>' +
+               '<div class="actor-role">' + escapeHtml(a.role) + '</div>' +
+               '<div class="actor-stats"><div><span>' + escapeHtml(tr('actor_items')) + ':</span> <strong>' + (a.article_count || 0) + '</strong></div><div><span>' + escapeHtml(tr('actor_outlets')) + ':</span> <strong>' + (a.outlet_count || 0) + '</strong></div><div><span>' + escapeHtml(tr('actor_baseline')) + ':</span> <strong>' + (a.baseline || 0) + '/wk</strong></div></div>' +
+               (tws ? '<div class="actor-role" style="margin-top:6px;">⚑ ' + tws + '</div>' : '') +
+               '<div class="actor-articles-toggle" onclick="toggleArticles(\'' + id + '\', this)">' + escapeHtml(tr('actor_show_articles')) + '</div><div class="actor-articles" id="articles-' + id + '">' + arts + '</div></div>';
+    }).join('');
+}
+
+// ── UK wheel (Nov 4 2026) ───────────────────────────────────
+const WCOL = ['#64748b', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'];
+const LV_I = { low: 0, normal: 1, elevated: 2, high: 3, surge: 4 };
+function nodeView(n, A) {
+    if (n.kind === 'internal') {
+        const a = A[n.actor] || {}; const l = LV_I[a.level] || 0;
+        return { level: l, col: WCOL[l], state: 'L' + l + ' · ' + (a.level || 'low'), text: (a.article_count || 0) + ((a.article_count === 1) ? ' item' : ' items') + ' this cycle · ' + (a.role || ''), dash: false };
+    }
+    if (n.kind === 'untracked') {
+        let txt = n.why || '';
+        if (n.actor && A[n.actor]) txt += ' UK side read: ' + (A[n.actor].level || 'low') + '.';
+        return { level: null, col: '#475569', state: 'NO SENSOR', text: txt, dash: true };
+    }
+    if (n.state === 'not_reporting' || n.level == null) return { level: null, col: '#6b7280', state: 'NOT REPORTING', text: n.text || '', dash: true };
+    const l = Math.max(0, Math.min(4, n.level));
+    return { level: l, col: WCOL[l], state: 'L' + l + (n.state === 'lit' ? ' · LIT' : ''), text: (n.why ? n.why + ' ' : '') + (n.text || ''), dash: false };
+}
+function renderWheel() {
+    const box = el('ukWheel'); const w = (scanData.extras || {}).uk_wheel; const A = scanData.actor_summaries || {};
+    if (!w || !(w.nodes || []).length) { box.innerHTML = '<div class="empty-state">' + escapeHtml(tr('no_signals')) + '</div>'; return; }
+    const N = w.nodes, R = 150, C = 200; let svg = '<svg class="uk-wheel-svg" viewBox="-95 -5 590 410" role="img" aria-label="UK wheel">';
+    const pos = N.map((n, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N.length; return [C + R * Math.cos(a), C + R * Math.sin(a), a]; });
+    N.forEach((n, i) => { const v = nodeView(n, A); const [x, y] = pos[i];
+        svg += '<line x1="' + C + '" y1="' + C + '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="' + v.col + '" stroke-width="' + (v.level >= 2 ? 3 : 1.5) + '"' + (v.dash ? ' stroke-dasharray="4 4"' : '') + ' opacity="0.85"/>'; });
+    svg += '<circle cx="' + C + '" cy="' + C + '" r="30" fill="#0d1b2e" stroke="#38bdf8" stroke-width="2"/><text x="' + C + '" y="' + (C + 6) + '" text-anchor="middle" font-size="18">🇬🇧</text>' +
+           '<text x="' + C + '" y="' + (C + 22) + '" text-anchor="middle" font-size="8" fill="#93c5fd" font-weight="700">L' + (scanData.theatre_level || 0) + '</text>';
+    N.forEach((n, i) => { const v = nodeView(n, A); const [x, y, a] = pos[i];
+        svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="9" fill="' + (v.dash ? 'transparent' : v.col) + '" stroke="' + v.col + '" stroke-width="2"' + (v.dash ? ' stroke-dasharray="3 2"' : '') + '/>';
+        const lx = C + (R + 22) * Math.cos(a), ly = C + (R + 22) * Math.sin(a); const anchor = Math.cos(a) > 0.3 ? 'start' : (Math.cos(a) < -0.3 ? 'end' : 'middle');
+        svg += '<text x="' + lx.toFixed(1) + '" y="' + (ly + 3).toFixed(1) + '" text-anchor="' + anchor + '" font-size="9.5" fill="currentColor" style="fill:var(--text-secondary)">' + escapeHtml(n.name.split(' (')[0].replace('Caribbean Commonwealth', 'Caribbean')) + '</text>'; });
+    svg += '</svg>';
+    const list = N.map(n => { const v = nodeView(n, A);
+        return '<div class="uk-node" style="border-left-color:' + v.col + ';"><b>' + escapeHtml(n.name) + '</b><span class="st" style="color:' + v.col + ';">' + escapeHtml(v.state) + '</span>' +
+               (n.page ? ' · <a href="' + escapeHtml(n.page) + '">open tracker</a>' : '') + '<br>' + escapeHtml(em(v.text)) + '</div>'; }).join('');
+    box.innerHTML = '<div class="uk-wheel-wrap"><div>' + svg + '</div><div class="uk-node-list">' + list + '</div></div>' +
+        '<div class="uk-wheel-note">' + escapeHtml(em(w.note || '')) + ' Solid = read this cycle · dashed = no sensor or not reporting (unread, not calm). The UK also appears on the US, Russia and Iran wheels.</div>';
+}
+function renderCityLink() {
+    const c = (scanData.extras || {}).city || {}; const box = el('ukCityLink');
+    if (!c.scanned_at) { box.style.display = 'block'; box.innerHTML = '<b>Money:</b> the City pulse did not report this cycle — unread, not calm. <a href="uk-stability.html">UK stability page →</a>'; return; }
+    const cr = c.credibility || {};
+    box.style.display = 'block';
+    box.innerHTML = '<b>Money — the gilt market as referee:</b> ' + escapeHtml(em(cr.text || c.top_indicator || '')) +
+        ' <a href="uk-stability.html">Full City read (markets, Lloyd\'s, the LME, foreign money) →</a>';
+}
+function toggleArticles(id, t) { const d = el('articles-' + id); if (!d) return; const v = d.classList.toggle('visible'); t.textContent = v ? tr('actor_hide_articles') : tr('actor_show_articles'); }
+
+function toggleSidebar() { const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (!sb) return; const o = sb.classList.toggle('open'); if (bd) bd.classList.toggle('show', o); document.body.style.overflow = o ? 'hidden' : ''; }
+function closeSidebar() { const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (sb) sb.classList.remove('open'); if (bd) bd.classList.remove('show'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('#navSidebar a').forEach(a => a.addEventListener('click', closeSidebar));
+
+captureDefaults();
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+applyI18n();
+loadAll(false);
+</script>
+</body>
+</html>

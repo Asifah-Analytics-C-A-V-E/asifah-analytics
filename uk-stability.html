@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Asifah Analytics - United Kingdom Stability Index v1.0.0 - Nov 4, 2026 (Europe backend: uk_city_pulse) -->
-<!-- Gold Standard shell (from argentina-stability 1.0.1): sidebar drawer, Europe sweep, City pulse (uk_city_pulse.py), commodity card, polar card, dated analytic cards. EN full, FR labels. -->
+<!-- Gold Standard shell (from argentina-stability 1.0.1): sidebar drawer, Europe sweep, City pulse (uk_city_pulse.py), rhetoric summary, commodity card, polar card, dated analytic cards. EN full, FR labels. v1.1.0 Nov 4 night: rhetoric tracker live. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
 <head>
@@ -833,6 +833,7 @@ footer .footer-copyright {
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="nav_uk">United Kingdom</div>
     <a href="uk-stability.html" class="nav-btn current-page"><span class="nav-btn-label" data-i18n="nav_uk_stability">🇬🇧 UK Stability</span><span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span></a>
+    <a href="rhetoric-uk.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">💬 UK Rhetoric</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <div class="main-content">
@@ -950,11 +951,17 @@ footer .footer-copyright {
     <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Britain produces little; it <strong>prices and insures</strong>. The London Metal Exchange sets world prices for copper, aluminium, nickel and zinc (and since 2024 refuses new Russian metal); London is the biggest gold market and the Bank of England vaults hold gold for central banks around the world; Brent crude trades in London; Lloyd's writes much of the world's war-risk shipping cover. At home, Britain is exposed to <strong>gas</strong> — it heats most homes and sets the electricity price.</div>
 </div>
 
-<!-- ── RHETORIC TRACKER (coming next) ── -->
-<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
+<!-- ── RHETORIC TRACKER (live Nov 4 2026 night) ── -->
+<div class="metric-card" style="border-left: 4px solid #4ade80;">
     <div class="section-title" data-i18n="rh_title">📡 UK Rhetoric &amp; Pressure Tracker</div>
-    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">COMING NEXT</div>
-    <div class="ar-sub" data-i18n="rh_sub">Planned actors: the Burnham government · Reform UK and the opposition · the City &amp; fiscal stress · the overseas territories · Scotland &amp; Northern Ireland · the US relationship · Ukraine · AUKUS. With a mini spoke-and-wheel (Falklands, Gibraltar, Chagos, Cyprus bases, Northern Ireland, the US, Scotland, Ukraine, AUKUS, and the Caribbean Commonwealth). It is what will feed the UK into the Europe regional summary and the Global Pressure Index as a full country.</div>
+    <div class="ar-sub" data-i18n="rh_sub">12 actors in 8 vectors — the Treasury, both political flanks, Scotland, Wales and Northern Ireland, the overseas edge (Falklands, Gibraltar, Chagos, the Cyprus bases), Washington, Russia inside Britain, Ukraine and AUKUS — with red lines, the So What, and the UK wheel.</div>
+    <div class="ar-live-grid" style="grid-template-columns: repeat(3, minmax(0,1fr));">
+        <div class="ar-stat"><div class="ar-stat-label">Theatre level</div><div class="ar-stat-value" id="ukRhLevel">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label">Red lines crossed</div><div class="ar-stat-value" id="ukRhRed">—</div></div>
+        <div class="ar-stat"><div class="ar-stat-label">Articles this scan</div><div class="ar-stat-value" id="ukRhArts">—</div></div>
+    </div>
+    <div class="uk-read" id="ukRhTop" style="display:none;"></div>
+    <a href="rhetoric-uk.html" class="adv-btn" style="display:inline-block;margin-top:10px;background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;">Open the UK rhetoric tracker →</a>
 </div>
 
 <!-- ── MAP ── -->
@@ -1040,6 +1047,7 @@ footer .footer-copyright {
 //   Europe  /api/europe/uk/city-pulse          markets + City lenses + fiscal actor (uk_city_pulse.py)
 //   Europe  /api/europe/commodity/uk           commodity exposure (proxied from ME)
 //   ME      /api/military-posture/uk           UK actor (military tracker v3.18)
+//   Europe  /api/rhetoric/uk                   rhetoric tracker summary (v1.1.0)
 //   WHA     /api/wha/polar-gateways/antarctic  via resources/polar-gateways.js
 // EN full; FR labels (long analytic cards stay in English).
 // ════════════════════════════════════════════════════════════
@@ -1329,12 +1337,24 @@ async function loadCommodity() {
     }
 }
 
+// ── rhetoric tracker summary ────────────────────────────────
+async function loadRhetoric() {
+    try {
+        const d = await getJSON(EUROPE_BACKEND, '/api/rhetoric/uk');
+        if (!d || d.pending || d.success === false) { el('ukRhLevel').textContent = 'First scan pending'; return; }
+        el('ukRhLevel').textContent = 'L' + (d.theatre_level || 0) + ' · ' + (d.theatre_label || '');
+        el('ukRhRed').textContent = (d.red_lines_breached || 0) + ' of ' + (d.red_lines || []).length;
+        el('ukRhArts').textContent = d.total_articles_scanned || 0;
+        if (d.top_indicator) { el('ukRhTop').style.display = 'block'; el('ukRhTop').textContent = em(d.top_indicator); }
+    } catch (e) { el('ukRhLevel').textContent = 'Unread'; }
+}
+
 // ── main ────────────────────────────────────────────────────
 async function loadData() {
     captureDefaults();
     applyTranslations();
     document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.toggle('active', b.textContent.toLowerCase() === currentLang); });
-    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadCity(), loadCommodity(), loadMilitary()]);
+    await Promise.allSettled([loadTravelAdvisory(), loadLive(), loadCity(), loadCommodity(), loadMilitary(), loadRhetoric()]);
     hideLoadingOverlay();
 }
 document.addEventListener('DOMContentLoaded', loadData);
