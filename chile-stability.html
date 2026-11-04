@@ -439,6 +439,20 @@ footer {
 footer h4 { color: var(--text-primary); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 footer .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 16px; }
 @media (max-width: 768px) { footer .footer-grid { grid-template-columns: 1fr; } }
+/* v1.2.0 (Nov 4 2026): phones. The stacked column kept align-items:flex-start,
+   so main content sized to its widest child (420px on a 390px screen) and the
+   sticky sidebar stayed in the flow. Stretch the column; wrap the header. */
+@media (max-width: 1024px) {
+    .page-with-sidebar { align-items: stretch; }
+    .page-with-sidebar > .nav-sidebar { position: static; width: 100%; }
+}
+@media (max-width: 600px) {
+    html, body { overflow-x: hidden; }
+    header { flex-wrap: wrap; }
+    .header-controls { align-items: flex-start; max-width: 100%; }
+    .header-controls .language-switcher { flex-wrap: wrap; }
+    .advisory-row > * { min-width: 0; }
+}
 footer .footer-disclaimer {
     padding: 12px 14px;
     background: var(--article-bg); border-left: 3px solid #ef4444;
@@ -700,7 +714,7 @@ footer .footer-copyright {
     </div>
     <div class="header-content">
         <h1 data-i18n="page_title">🇨🇱 CHILE STABILITY INDEX</h1>
-        <div class="subtitle" data-i18n="page_subtitle">Multi-Factor Analysis: Copper &amp; Lithium Supply Chain · Boric Government &amp; Constitutional Process · Antarctic &amp; Pacific Posture · US-Chile Relations</div>
+        <div class="subtitle" data-i18n="page_subtitle">Multi-Factor Analysis: Copper &amp; Lithium Supply Chain · Kast Government &amp; Congress · Antarctic &amp; Pacific Posture · US-Chile Relations</div>
         <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
     </div>
     <div class="header-controls">
@@ -989,7 +1003,7 @@ footer .footer-copyright {
     <div class="commodity-convergence-alert" id="commodityConvergenceAlertLithium" style="background: linear-gradient(135deg, rgba(56,189,248,0.18) 0%, rgba(14,165,233,0.18) 100%); border-color: #38bdf8;">
         <div class="cca-title" data-i18n="cca_lithium_title" style="color: #38bdf8;">🔋 Lithium × Global EV Transition</div>
         <div class="cca-detail" data-i18n="cca_lithium_detail" style="color: #7dd3fc;">
-            Salar de Atacama is the highest-grade lithium brine deposit globally. Boric administration's 2023 National Lithium Strategy moved sector toward state-private partnerships (Codelco-SQM joint venture). Domestic political volatility = global EV battery cost-curve volatility.
+            Salar de Atacama is the highest-grade lithium brine deposit globally. The 2023 National Lithium Strategy created the Codelco-SQM joint venture (NovaAndino Litio): Codelco takes majority control of SQM's Atacama lithium from 2031 to 2060, and the Kast government (since March 2026) has kept the deal. Domestic political volatility = global EV battery cost-curve volatility.
         </div>
     </div>
 
@@ -1007,7 +1021,7 @@ footer .footer-copyright {
     </div>
 
     <div class="strategic-linkage" data-i18n-html="strategic_linkage">
-        <strong>🎯 Strategic Linkage:</strong> Chile is the structural anchor of the global energy-transition supply chain — #1 copper producer (~24% global, ~5.3M tonnes/yr) and #2 lithium producer (~23% global). The Salar de Atacama is the highest-grade lithium brine deposit on Earth. Chile's domestic politics (Boric administration, mining royalty reform, 2023 National Lithium Strategy) translate directly into global EV and grid-electrification pricing. Watch Codelco production guidance, SQM/Albemarle quarterly outputs, Antofagasta region labor disputes, and any nationalization rhetoric. Also track Antarctic claims and the Magallanes Strait posture.
+        <strong>🎯 Strategic Linkage:</strong> Chile is the structural anchor of the global energy-transition supply chain — #1 copper producer (~24% global, ~5.3M tonnes/yr) and #2 lithium producer (~23% global). The Salar de Atacama is the highest-grade lithium brine deposit on Earth. Chile's domestic politics (the Kast government's mining fast-track, the 2023 royalty reform, the Codelco-SQM lithium venture) translate directly into global EV and grid-electrification pricing. Watch Codelco production guidance, SQM/Albemarle quarterly outputs, Antofagasta region labor disputes, and any nationalization rhetoric. Also track Antarctic claims and the Magallanes Strait posture.
     </div>
 </div>
 
@@ -1019,7 +1033,7 @@ footer .footer-copyright {
         <span id="stabilityLevelLabel" class="stability-label level-0">Pending</span>
     </div>
     <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.55;" data-i18n-html="stability_card_text">
-        Multi-factor stability assessment combining mining-sector posture (copper/lithium), Boric government cohesion, Indigenous (Mapuche) tensions in Araucanía, and Antarctic/Pacific dimension.
+        Multi-factor stability assessment combining mining-sector posture (copper/lithium), Kast government cohesion, Indigenous (Mapuche) tensions in Araucanía, and Antarctic/Pacific dimension.
         <br><br>
         <em style="color:var(--text-muted);">Detailed stability scoring backend (chile_stability.py) is in development. Until then, draw stability inferences from the commodity card above and the Knowledge Library below. When the rhetoric tracker ships, this card will populate with a theatre score (inbound + outbound max levels).</em>
     </div>
@@ -1088,7 +1102,8 @@ footer .footer-copyright {
                     <li><strong>Antofagasta plc:</strong> Luksic family-controlled major; Los Pelambres + Centinela operations</li>
                     <li><strong>Anglo American Sur:</strong> Joint Anglo/Codelco/Mitsubishi venture; Los Bronces deposit</li>
                 </ul>
-                <p><strong>2023 National Lithium Strategy:</strong> Boric administration moved lithium toward state-private partnership model. Codelco-SQM joint venture announced 2024. Mining royalty reform passed 2023 raised effective rates on copper producers.</p>
+                <p><strong>Lithium control (as of Nov 4 2026):</strong> The Boric government's 2023 National Lithium Strategy produced the Codelco-SQM joint venture (NovaAndino Litio): Codelco takes majority control of SQM's Atacama lithium from 2031 to 2060. The Kast government has kept it. A 2023 royalty reform raised effective rates on large copper producers.</p>
+                <p><strong>Codelco (as of Nov 4 2026):</strong> about 1.33 million tonnes of copper in 2025, well below its 1.7 million peak, with roughly $24bn of debt. The Kast government folded the Mining ministry into Economy (minister Daniel Mas).</p>
                 <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
                 <div class="report-links-grid">
                     <a href="https://www.codelco.com/" target="_blank" class="report-link">📑 Codelco</a>
@@ -1098,24 +1113,25 @@ footer .footer-copyright {
             </div>
         </div>
 
-        <!-- Boric Government & Constitutional Process -->
+        <!-- Kast Government & Congress -->
         <div class="knowledge-card collapsed" id="card-politics">
             <div class="knowledge-header" onclick="toggleKnowledgeCard('politics')">
                 <div class="knowledge-header-title">
                     <span class="category-icon">🏛️</span>
-                    <span data-i18n="kl_politics_title">Boric Government &amp; Constitutional Process</span>
+                    <span data-i18n="kl_politics_title">Kast Government &amp; Congress</span>
                 </div>
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="knowledge-content" data-i18n-html="kl_politics_body">
-                <p><strong>Gabriel Boric Font</strong> (Apruebo Dignidad / Convergencia Social) was elected December 2021 as Chile's youngest president, taking office March 2022 amid a historic constitutional reform process.</p>
-                <p><strong>Key Developments:</strong></p>
+                <p><strong>José Antonio Kast</strong> (Republican Party, right) has been president since <strong>March 11 2026</strong>. He beat Jeannette Jara in the December 14 2025 runoff with about 58% -- the biggest rightward shift in Chile in decades. <em>(As of Nov 4 2026; re-verify ~Dec 19.)</em></p>
+                <p><strong>Key facts:</strong></p>
                 <ul>
-                    <li><strong>2022 Plebiscite:</strong> Voters rejected the first proposed new constitution (62% No), continuing the 1980 Pinochet-era constitution</li>
-                    <li><strong>2023 Plebiscite:</strong> Voters also rejected the second, more conservative draft constitution (56% No) — Chile remains under the 1980 framework</li>
-                    <li><strong>Approval Trajectory:</strong> Boric approval cycled through low-30s during 2022-2024; recovered partially with security policy pivot</li>
-                    <li><strong>Mapuche Conflict:</strong> Araucanía and Biobío regions face ongoing Mapuche-state tensions; CAM (Coordinadora Arauco-Malleco) attacks on logging trucks/equipment</li>
-                    <li><strong>Migration Politics:</strong> Venezuelan migration through Northern Chile (Colchane border) triggered hardline policy response</li>
+                    <li><strong>No majority in Congress:</strong> reforms (spending cuts, faster mining permits, security powers) need coalition deals.</li>
+                    <li><strong>Approval:</strong> fell from the high 50s after inauguration to about 35-40% by August 2026 (CEP, Criteria, Cadem), mostly over prices and wages.</li>
+                    <li><strong>Security and migration:</strong> a "Border Shield" plan puts troops and police on the northern border with detention powers; crime is the government's core promise.</li>
+                    <li><strong>Mapuche conflict:</strong> Araucanía and parts of Biobío have been under a state of exception since October 2021, renewed every 30 days. CAM (Coordinadora Arauco-Malleco) attacks on forestry trucks continue. Renewals are routine; a new or wider declaration is the signal.</li>
+                    <li><strong>Foreign policy:</strong> closer to Washington on security and critical minerals; China is still the largest customer for copper and lithium.</li>
+                    <li><strong>Constitution:</strong> voters rejected two draft constitutions (2022 and 2023), so Chile still runs on the amended 1980 text.</li>
                 </ul>
                 <div class="open-source-disclaimer">* Based on open-source intelligence, academic research, and publicly available government reports</div>
                 <div class="report-links-grid">
@@ -1264,7 +1280,7 @@ const TRANSLATIONS = {
         // Header
         back_to_wha:            '← W. Hemisphere',
         page_title:             '🇨🇱 CHILE STABILITY INDEX',
-        page_subtitle:          'Multi-Factor Analysis: Copper & Lithium Supply Chain · Boric Government & Constitutional Process · Antarctic & Pacific Posture · US-Chile Relations',
+        page_subtitle:          'Multi-Factor Analysis: Copper & Lithium Supply Chain · Kast Government & Congress · Antarctic & Pacific Posture · US-Chile Relations',
         theme_label:            'Theme',
         loading_title:          'Loading Chile Stability Data',
         loading_progress:       'Connecting to backend... This may take 20-40 seconds on cold cache.',
@@ -1302,7 +1318,7 @@ const TRANSLATIONS = {
 
         // Rhetoric placeholder + stability card
         rhetoric_placeholder_title:    '📡 Chile Rhetoric & Coercion Tracker',
-        rhetoric_placeholder_subtitle: 'Coming soon: Boric Cabinet · Cancillería · Mining Sector · US-Chile · China-Chile · Antarctic Posture',
+        rhetoric_placeholder_subtitle: 'Kast Cabinet · Cancillería · Mining Sector · US-Chile · China-Chile · Antarctic Posture',
         rhetoric_in_dev:               '🔧 In Development',
         // ── Live Chile rhetoric card (v1.0.0 May 9 2026) ──
         chile_rhetoric_title:          '📡 Chile Rhetoric & Pressure Tracker',
@@ -1315,7 +1331,7 @@ const TRANSLATIONS = {
         chile_rh_vec_us:               'US Align.',
         chile_rh_vec_china:            'China Align.',
         stability_card_title:          '🇨🇱 Chile Stability Index',
-        stability_card_text:           'Multi-factor stability assessment combining mining-sector posture (copper/lithium), Boric government cohesion, Indigenous (Mapuche) tensions in Araucanía, and Antarctic/Pacific dimension.<br><br><em style="color:var(--text-muted);">Detailed stability scoring backend (chile_stability.py) is in development. Until then, draw stability inferences from the commodity card above and the Knowledge Library below. When the rhetoric tracker ships, this card will populate with a theatre score (inbound + outbound max levels).</em>',
+        stability_card_text:           'Multi-factor stability assessment combining mining-sector posture (copper/lithium), Kast government cohesion, Indigenous (Mapuche) tensions in Araucanía, and Antarctic/Pacific dimension.<br><br><em style="color:var(--text-muted);">Detailed stability scoring backend (chile_stability.py) is in development. Until then, draw stability inferences from the commodity card above and the Knowledge Library below. When the rhetoric tracker ships, this card will populate with a theatre score (inbound + outbound max levels).</em>',
         meta_mil_posture:       'Military Posture',
         meta_rhetoric:          'Rhetoric Tier',
         meta_commodity:         'Commodity Pressure',
@@ -1328,9 +1344,9 @@ const TRANSLATIONS = {
         cca_copper_title:       '⚡ Copper × China Demand Convergence',
         cca_copper_detail:      "China consumes ~50% of global copper. Chilean production tempo (Codelco, Escondida, Antofagasta) is the single largest variable in global copper price discovery. China demand shifts (industrial slowdown OR EV/grid acceleration) translate to mining-region revenue volatility, royalty politics, and FDI signals.",
         cca_lithium_title:      '🔋 Lithium × Global EV Transition',
-        cca_lithium_detail:     "Salar de Atacama is the highest-grade lithium brine deposit globally. Boric administration's 2023 National Lithium Strategy moved sector toward state-private partnerships (Codelco-SQM joint venture). Domestic political volatility = global EV battery cost-curve volatility.",
+        cca_lithium_detail:     "Salar de Atacama is the highest-grade lithium brine deposit globally. The 2023 National Lithium Strategy created the Codelco-SQM joint venture (NovaAndino Litio): Codelco takes majority control of SQM's Atacama lithium from 2031 to 2060, and the Kast government (since March 2026) has kept the deal. Domestic political volatility = global EV battery cost-curve volatility.",
         ts_title:               '📰 Top signals (last 24h)',
-        strategic_linkage:      "<strong>🎯 Strategic Linkage:</strong> Chile is the structural anchor of the global energy-transition supply chain — #1 copper producer (~24% global, ~5.3M tonnes/yr) and #2 lithium producer (~23% global). The Salar de Atacama is the highest-grade lithium brine deposit on Earth. Chile's domestic politics (Boric administration, mining royalty reform, 2023 National Lithium Strategy) translate directly into global EV and grid-electrification pricing. Watch Codelco production guidance, SQM/Albemarle quarterly outputs, Antofagasta region labor disputes, and any nationalization rhetoric. Also track Antarctic claims and the Magallanes Strait posture.",
+        strategic_linkage:      "<strong>🎯 Strategic Linkage:</strong> Chile is the structural anchor of the global energy-transition supply chain — #1 copper producer (~24% global, ~5.3M tonnes/yr) and #2 lithium producer (~23% global). The Salar de Atacama is the highest-grade lithium brine deposit on Earth. Chile's domestic politics (the Kast government's mining fast-track, the 2023 royalty reform, the Codelco-SQM lithium venture) translate directly into global EV and grid-electrification pricing. Watch Codelco production guidance, SQM/Albemarle quarterly outputs, Antofagasta region labor disputes, and any nationalization rhetoric. Also track Antarctic claims and the Magallanes Strait posture.",
 
         // Map
         map_title:              '🗺️ Chile — Strategic Overview',
@@ -1340,7 +1356,7 @@ const TRANSLATIONS = {
         kl_title:               'Knowledge Library',
         kl_disclaimer:          'Background information compiled from open-source research and analysis. One-pager documents for each category are under development.',
         kl_mining_title:        'Copper, Lithium & Strategic Minerals',
-        kl_politics_title:      'Boric Government & Constitutional Process',
+        kl_politics_title:      'Kast Government & Congress',
         kl_antarctic_title:     'Antarctic Claims & Pacific Posture',
         kl_us_title:            'US-Chile Relations & Trade',
 
@@ -1368,7 +1384,7 @@ const TRANSLATIONS = {
         // Header
         back_to_wha:            '← Hem. Occidental',
         page_title:             '🇨🇱 ÍNDICE DE ESTABILIDAD DE CHILE',
-        page_subtitle:          'Análisis multifactorial: Cadena de suministro cobre y litio · Gobierno Boric y proceso constitucional · Postura antártica y pacífica · Relaciones EE.UU.-Chile',
+        page_subtitle:          'Análisis multifactorial: Cadena de suministro cobre y litio · Gobierno Kast y Congreso · Postura antártica y pacífica · Relaciones EE.UU.-Chile',
         theme_label:            'Tema',
         loading_title:          'Cargando datos de estabilidad de Chile',
         loading_progress:       'Conectando con el backend... Puede tardar 20-40 segundos en caché frío.',
@@ -1406,7 +1422,7 @@ const TRANSLATIONS = {
 
         // Rhetoric placeholder + stability card
         rhetoric_placeholder_title:    '📡 Rastreador de Retórica y Coerción de Chile',
-        rhetoric_placeholder_subtitle: 'Próximamente: Gabinete de Boric · Cancillería · Sector Minero · EE.UU.-Chile · China-Chile · Postura Antártica',
+        rhetoric_placeholder_subtitle: 'Gabinete de Kast · Cancillería · Sector Minero · EE.UU.-Chile · China-Chile · Postura Antártica',
         rhetoric_in_dev:               '🔧 En Desarrollo',
         // ── Live Chile rhetoric card ──
         chile_rhetoric_title:          '📡 Rastreador de Retórica y Presión de Chile',
@@ -1419,7 +1435,7 @@ const TRANSLATIONS = {
         chile_rh_vec_us:               'EE.UU.',
         chile_rh_vec_china:            'China',
         stability_card_title:          '🇨🇱 Índice de Estabilidad de Chile',
-        stability_card_text:           'Evaluación multifactorial de estabilidad que combina la postura del sector minero (cobre/litio), la cohesión del gobierno de Boric, las tensiones indígenas (Mapuche) en La Araucanía y la dimensión antártica/pacífica.<br><br><em style="color:var(--text-muted);">El backend detallado de puntuación de estabilidad (chile_stability.py) está en desarrollo. Hasta entonces, infiera la estabilidad a partir de la tarjeta de materias primas y la Biblioteca de Conocimiento. Cuando se publique el rastreador de retórica, esta tarjeta se llenará con una puntuación de teatro (niveles máximos entrantes + salientes).</em>',
+        stability_card_text:           'Evaluación multifactorial de estabilidad que combina la postura del sector minero (cobre/litio), la cohesión del gobierno de Kast, las tensiones indígenas (Mapuche) en La Araucanía y la dimensión antártica/pacífica.<br><br><em style="color:var(--text-muted);">El backend detallado de puntuación de estabilidad (chile_stability.py) está en desarrollo. Hasta entonces, infiera la estabilidad a partir de la tarjeta de materias primas y la Biblioteca de Conocimiento. Cuando se publique el rastreador de retórica, esta tarjeta se llenará con una puntuación de teatro (niveles máximos entrantes + salientes).</em>',
         meta_mil_posture:       'Postura Militar',
         meta_rhetoric:          'Nivel de Retórica',
         meta_commodity:         'Presión de Materias Primas',
@@ -1432,9 +1448,9 @@ const TRANSLATIONS = {
         cca_copper_title:       '⚡ Convergencia Cobre × Demanda de China',
         cca_copper_detail:      'China consume ~50% del cobre global. El ritmo de producción chileno (Codelco, Escondida, Antofagasta) es la mayor variable única en el descubrimiento del precio mundial del cobre. Los cambios en la demanda china (desaceleración industrial O aceleración de VE/red eléctrica) se traducen en volatilidad de ingresos de la región minera, política de regalías y señales de IED.',
         cca_lithium_title:      '🔋 Litio × Transición Global a VE',
-        cca_lithium_detail:     'El Salar de Atacama es el depósito de salmuera de litio de mayor ley a nivel mundial. La Estrategia Nacional del Litio 2023 de la administración Boric movió el sector hacia asociaciones público-privadas (empresa conjunta Codelco-SQM). Volatilidad política doméstica = volatilidad en la curva de costos de baterías de VE globales.',
+        cca_lithium_detail:     'El Salar de Atacama es el depósito de salmuera de litio de mayor ley a nivel mundial. La Estrategia Nacional del Litio 2023 creó la empresa conjunta Codelco-SQM (NovaAndino Litio): Codelco toma el control mayoritario del litio de SQM en Atacama de 2031 a 2060, y el gobierno de Kast (desde marzo de 2026) ha mantenido el acuerdo. Volatilidad política doméstica = volatilidad en la curva de costos de baterías de VE globales.',
         ts_title:               '📰 Señales destacadas (últimas 24h)',
-        strategic_linkage:      '<strong>🎯 Vínculo Estratégico:</strong> Chile es el ancla estructural de la cadena de suministro de la transición energética global — productor #1 de cobre (~24% global, ~5,3 millones de toneladas/año) y productor #2 de litio (~23% global). El Salar de Atacama es el depósito de salmuera de litio de mayor ley en la Tierra. La política interna de Chile (administración Boric, reforma de regalías mineras, Estrategia Nacional del Litio 2023) se traduce directamente en precios globales de VE y electrificación de la red. Vigile las guías de producción de Codelco, los resultados trimestrales de SQM/Albemarle, las disputas laborales en la región de Antofagasta y cualquier retórica de nacionalización. También rastree los reclamos antárticos y la postura del Estrecho de Magallanes.',
+        strategic_linkage:      '<strong>🎯 Vínculo Estratégico:</strong> Chile es el ancla estructural de la cadena de suministro de la transición energética global — productor #1 de cobre (~24% global, ~5,3 millones de toneladas/año) y productor #2 de litio (~23% global). El Salar de Atacama es el depósito de salmuera de litio de mayor ley en la Tierra. La política interna de Chile (la agilización minera del gobierno de Kast, la reforma de regalías de 2023, la empresa conjunta de litio Codelco-SQM) se traduce directamente en precios globales de VE y electrificación de la red. Vigile las guías de producción de Codelco, los resultados trimestrales de SQM/Albemarle, las disputas laborales en la región de Antofagasta y cualquier retórica de nacionalización. También rastree los reclamos antárticos y la postura del Estrecho de Magallanes.',
 
         // Map
         map_title:              '🗺️ Chile — Visión Estratégica',
@@ -1444,7 +1460,7 @@ const TRANSLATIONS = {
         kl_title:               'Biblioteca de Conocimiento',
         kl_disclaimer:          'Información de fondo compilada a partir de investigación y análisis de fuente abierta. Documentos de una página para cada categoría están en desarrollo.',
         kl_mining_title:        'Cobre, Litio y Minerales Estratégicos',
-        kl_politics_title:      'Gobierno Boric y Proceso Constitucional',
+        kl_politics_title:      'Gobierno Kast y Congreso',
         kl_antarctic_title:     'Reclamos Antárticos y Postura Pacífica',
         kl_us_title:            'Relaciones EE.UU.-Chile y Comercio',
 
@@ -1472,7 +1488,7 @@ const TRANSLATIONS = {
         // Header
         back_to_wha:            '← Hem. Ocidental',
         page_title:             '🇨🇱 ÍNDICE DE ESTABILIDADE DO CHILE',
-        page_subtitle:          'Análise multifatorial: Cadeia de suprimento de cobre e lítio · Governo Boric e processo constitucional · Postura antártica e pacífica · Relações EUA-Chile',
+        page_subtitle:          'Análise multifatorial: Cadeia de suprimento de cobre e lítio · Governo Kast e Congresso · Postura antártica e pacífica · Relações EUA-Chile',
         theme_label:            'Tema',
         loading_title:          'Carregando dados de estabilidade do Chile',
         loading_progress:       'Conectando ao backend... Pode levar 20-40 segundos no cache frio.',
@@ -1510,7 +1526,7 @@ const TRANSLATIONS = {
 
         // Rhetoric placeholder + stability card
         rhetoric_placeholder_title:    '📡 Rastreador de Retórica e Coerção do Chile',
-        rhetoric_placeholder_subtitle: 'Em breve: Gabinete Boric · Cancillería · Setor Minerador · EUA-Chile · China-Chile · Postura Antártica',
+        rhetoric_placeholder_subtitle: 'Gabinete Kast · Cancillería · Setor Minerador · EUA-Chile · China-Chile · Postura Antártica',
         rhetoric_in_dev:               '🔧 Em Desenvolvimento',
         // ── Live Chile rhetoric card ──
         chile_rhetoric_title:          '📡 Rastreador de Retórica e Pressão do Chile',
@@ -1523,7 +1539,7 @@ const TRANSLATIONS = {
         chile_rh_vec_us:               'EUA',
         chile_rh_vec_china:            'China',
         stability_card_title:          '🇨🇱 Índice de Estabilidade do Chile',
-        stability_card_text:           'Avaliação multifatorial de estabilidade combinando postura do setor minerador (cobre/lítio), coesão do governo Boric, tensões indígenas (Mapuche) na Araucanía e dimensão antártica/pacífica.<br><br><em style="color:var(--text-muted);">O backend detalhado de pontuação de estabilidade (chile_stability.py) está em desenvolvimento. Até lá, infira estabilidade a partir do cartão de commodities acima e da Biblioteca de Conhecimento abaixo. Quando o rastreador de retórica for lançado, este cartão será preenchido com uma pontuação de teatro (níveis máximos de entrada + saída).</em>',
+        stability_card_text:           'Avaliação multifatorial de estabilidade combinando postura do setor minerador (cobre/lítio), coesão do governo Kast, tensões indígenas (Mapuche) na Araucanía e dimensão antártica/pacífica.<br><br><em style="color:var(--text-muted);">O backend detalhado de pontuação de estabilidade (chile_stability.py) está em desenvolvimento. Até lá, infira estabilidade a partir do cartão de commodities acima e da Biblioteca de Conhecimento abaixo. Quando o rastreador de retórica for lançado, este cartão será preenchido com uma pontuação de teatro (níveis máximos de entrada + saída).</em>',
         meta_mil_posture:       'Postura Militar',
         meta_rhetoric:          'Nível de Retórica',
         meta_commodity:         'Pressão de Commodities',
@@ -1536,9 +1552,9 @@ const TRANSLATIONS = {
         cca_copper_title:       '⚡ Convergência Cobre × Demanda da China',
         cca_copper_detail:      'A China consome ~50% do cobre global. O ritmo de produção chileno (Codelco, Escondida, Antofagasta) é a maior variável única na descoberta de preço global do cobre. Mudanças na demanda chinesa (desaceleração industrial OU aceleração de VE/rede elétrica) se traduzem em volatilidade de receita da região mineradora, política de royalties e sinais de IED.',
         cca_lithium_title:      '🔋 Lítio × Transição Global de VE',
-        cca_lithium_detail:     'O Salar de Atacama é o depósito de salmoura de lítio de maior teor do mundo. A Estratégia Nacional do Lítio 2023 da administração Boric moveu o setor para parcerias público-privadas (joint venture Codelco-SQM). Volatilidade política doméstica = volatilidade da curva de custos de bateria de VE globais.',
+        cca_lithium_detail:     'O Salar de Atacama é o depósito de salmoura de lítio de maior teor do mundo. A Estratégia Nacional do Lítio 2023 criou a joint venture Codelco-SQM (NovaAndino Litio): a Codelco assume o controle majoritário do lítio da SQM no Atacama de 2031 a 2060, e o governo Kast (desde março de 2026) manteve o acordo. Volatilidade política doméstica = volatilidade da curva de custos de bateria de VE globais.',
         ts_title:               '📰 Principais sinais (últimas 24h)',
-        strategic_linkage:      '<strong>🎯 Vínculo Estratégico:</strong> O Chile é a âncora estrutural da cadeia de suprimento da transição energética global — produtor #1 de cobre (~24% global, ~5,3 milhões de toneladas/ano) e produtor #2 de lítio (~23% global). O Salar de Atacama é o depósito de salmoura de lítio de maior teor do mundo. A política interna do Chile (administração Boric, reforma de royalties de mineração, Estratégia Nacional do Lítio 2023) se traduz diretamente em preços globais de VE e eletrificação da rede. Observe as orientações de produção da Codelco, os resultados trimestrais da SQM/Albemarle, as disputas trabalhistas na região de Antofagasta e qualquer retórica de nacionalização. Também rastreie reivindicações antárticas e a postura do Estreito de Magalhães.',
+        strategic_linkage:      '<strong>🎯 Vínculo Estratégico:</strong> O Chile é a âncora estrutural da cadeia de suprimento da transição energética global — produtor #1 de cobre (~24% global, ~5,3 milhões de toneladas/ano) e produtor #2 de lítio (~23% global). O Salar de Atacama é o depósito de salmoura de lítio de maior teor do mundo. A política interna do Chile (a aceleração da mineração do governo Kast, a reforma de royalties de 2023, a joint venture de lítio Codelco-SQM) se traduz diretamente em preços globais de VE e eletrificação da rede. Observe as orientações de produção da Codelco, os resultados trimestrais da SQM/Albemarle, as disputas trabalhistas na região de Antofagasta e qualquer retórica de nacionalização. Também rastreie reivindicações antárticas e a postura do Estreito de Magalhães.',
 
         // Map
         map_title:              '🗺️ Chile — Visão Estratégica',
@@ -1548,7 +1564,7 @@ const TRANSLATIONS = {
         kl_title:               'Biblioteca de Conhecimento',
         kl_disclaimer:          'Informações de fundo compiladas de pesquisas e análises de código aberto. Documentos de uma página para cada categoria estão em desenvolvimento.',
         kl_mining_title:        'Cobre, Lítio e Minerais Estratégicos',
-        kl_politics_title:      'Governo Boric e Processo Constitucional',
+        kl_politics_title:      'Governo Kast e Congresso',
         kl_antarctic_title:     'Reivindicações Antárticas e Postura Pacífica',
         kl_us_title:            'Relações EUA-Chile e Comércio',
 
@@ -1921,7 +1937,7 @@ async function loadChileRhetoric() {
             const _bs = document.getElementById('rhetoricBannerScore');
             if (_bs) _bs.textContent = 'Score: ' + (data.composite_score || 0).toFixed(1);
             const _bh = document.getElementById('rhetoricBannerHeadline');
-            if (_bh) _bh.textContent = (data.executive_summary || '').slice(0, 170) || 'Chile Rhetoric Tracker — Live';
+            if (_bh) _bh.textContent = (data.top_indicator || data.executive_summary || '').slice(0, 220) || 'Chile Rhetoric Tracker — Live';
         }
 
         // Composite gauge
@@ -1951,7 +1967,7 @@ async function loadChileRhetoric() {
         // Executive summary
         const summaryEl = document.getElementById('chileRhetoricSummary');
         if (summaryEl) {
-            summaryEl.textContent = data.executive_summary || '';
+            summaryEl.textContent = data.top_indicator || data.executive_summary || '';
             summaryEl.style.color = 'var(--text-primary)';
         }
 
@@ -1963,7 +1979,9 @@ async function loadChileRhetoric() {
                 signalsEl.innerHTML = '<div style="font-size:11px; color:var(--text-muted); font-style:italic;">No active signals this scan.</div>';
             } else {
                 signalsEl.innerHTML = signals.map(function (sig) {
-                    const lvl = sig.level || 'low';
+                    const lvl = (typeof sig.level === 'number')
+                        ? (sig.level_name || ['low','normal','elevated','high','surge'][Math.min(4, sig.level)])
+                        : (sig.level || 'low');
                     const type = (sig.type || 'actor_signal').replace(/_/g, ' ');
                     return '<div class="chile-rh-signal lvl-' + lvl + '">' +
                         '<span class="chile-rh-signal-type">' + escapeHtmlChile(type) + '</span>' +

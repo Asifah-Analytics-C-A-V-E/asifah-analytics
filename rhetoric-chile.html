@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Chile Rhetoric Tracker v1.0.0 — May 9, 2026 -->
+<!-- Asifah Analytics — Chile Rhetoric Tracker page v1.2.0 — Nov 4, 2026 (v1.0.0 May 9, 2026): top indicator, int levels, 'What it means' -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- Arctic palette · 7 actors · 4-vector composite · en/es/pt full i18n -->
 <html lang="en" dir="ltr">
@@ -1050,6 +1050,8 @@ const T = {
 
         // Signal types
         type_tripwire: 'Tripwire',
+        type_theatre_read: 'Overall read',
+        type_alignment_drift: 'China vs US',
         type_convergence: 'Convergence',
         type_actor_signal: 'Actor Signal',
         type_commodity_coupling: 'Commodity Coupling',
@@ -1142,6 +1144,8 @@ const T = {
         actor_no_articles: 'Sin artículos en este escaneo.',
 
         type_tripwire: 'Disparador',
+        type_theatre_read: 'Lectura general',
+        type_alignment_drift: 'China vs EE.UU.',
         type_convergence: 'Convergencia',
         type_actor_signal: 'Señal de Actor',
         type_commodity_coupling: 'Acoplamiento Commodity',
@@ -1232,6 +1236,8 @@ const T = {
         actor_no_articles: 'Sem artigos nesta verificação.',
 
         type_tripwire: 'Gatilho',
+        type_theatre_read: 'Leitura geral',
+        type_alignment_drift: 'China vs EUA',
         type_convergence: 'Convergência',
         type_actor_signal: 'Sinal de Ator',
         type_commodity_coupling: 'Acoplamento Commodity',
@@ -1401,7 +1407,10 @@ function renderExecSummary() {
         card.innerHTML = `<p class="empty-state">${escapeHtml(t.loading)}</p>`;
         return;
     }
-    card.innerHTML = `<p>${escapeHtml(summary)}</p>`;
+    // v1.2.0: the one plain sentence first
+    const ti = scanData.top_indicator
+        ? `<p style="font-weight:700;color:var(--text-primary);margin-bottom:10px;">${escapeHtml(scanData.top_indicator)}</p>` : '';
+    card.innerHTML = ti + `<p>${escapeHtml(summary)}</p>`;
 }
 
 function renderTopSignals() {
@@ -1415,8 +1424,13 @@ function renderTopSignals() {
 
     let html = '';
     signals.forEach(sig => {
-        const level = sig.level || 'low';
+        // v1.2.0 tracker: level is an int 0-4 with level_name for the CSS class
+        const level = (typeof sig.level === 'number')
+            ? (sig.level_name || ['low','normal','elevated','high','surge'][Math.min(4, sig.level)])
+            : (sig.level || 'low');
         const type = sig.type || 'actor_signal';
+        const meaningHtml = (sig.meaning && !(sig.long_text || '').includes(sig.meaning.slice(0, 40)))
+            ? `<div class="signal-long" style="margin-top:6px;"><strong>What it means:</strong> ${escapeHtml(sig.meaning)}</div>` : '';
         const typeLabel = t['type_' + type] || type;
         let sourcesHtml = '';
         if (sig.sources && sig.sources.length) {
@@ -1442,6 +1456,7 @@ function renderTopSignals() {
                 </div>
                 <div class="signal-short">${escapeHtml(sig.short_text || '')}</div>
                 <div class="signal-long">${escapeHtml(sig.long_text || '')}</div>
+                ${meaningHtml}
                 ${sourcesHtml}
             </div>`;
     });

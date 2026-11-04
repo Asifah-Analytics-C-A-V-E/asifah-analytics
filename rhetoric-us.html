@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.4.1 (Nov 1 2026; v1.0.0 May 10 2026) -->
+<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.5.0 (Nov 4 2026 late: US wheel card; v1.4.2 Nov 4; v1.4.1 Nov 1; v1.0.0 May 10 2026) -->
+<!-- v1.4.2: watermark to platform canon (0.18 dark / 0.07 light, 500px); branch cards no longer stretch
+     and carry a plain word; 'ACTIVE — ACTIVE' de-duplicated; page theme button removed (the shell owns
+     the one toggle); flag image instead of a flag emoji (Windows shows 'US'); RSS 'partial' coverage. -->
 <!-- v1.4.0: Election & Governance Window card (tracker v1.4.0 'governance' block, GPI governance
      axis contract), two-sided civil-society mobilisation, source-coverage line, role-labelled
      Congress actors, Fed chair label, 'v1.1 Coming Soon' placeholder panel removed. -->
@@ -64,8 +67,8 @@
             --header-gradient: linear-gradient(135deg, #0d1b2e 0%, #112338 50%, #1e3a5f 100%);
 
             /* Watermark gold standard (May 11 2026 — from military.html) */
-            --watermark-opacity: 1;
-            --watermark-size: 800px;
+            --watermark-opacity: 0.18;
+            --watermark-size: 500px;
             --grid-color: rgba(0,212,255,0.04);
             --scanline-opacity: 0.03;
             --glow-opacity: 1;
@@ -86,7 +89,7 @@
             --header-gradient: linear-gradient(135deg, #ffffff 0%, #eef4fb 50%, #cbd5e1 100%);
 
             /* Watermark gold standard (light theme) */
-            --watermark-opacity: 0.5;
+            --watermark-opacity: 0.07;
             --watermark-size: 500px;
             --grid-color: transparent;
             --scanline-opacity: 0;
@@ -370,7 +373,10 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
+            align-items: start;   /* v1.4.2: cards sit at their own height, not the composite card's */
+            align-content: start;
         }
+        .vector-read { font-size: 0.8rem; font-weight: 600; margin-top: 8px; color: var(--text-secondary); }
         .vector-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -1217,7 +1223,7 @@
         <div class="header-title-block">
             <a href="us-stability.html" class="back-link" data-i18n="hdr_back" style="align-self:flex-start; display:inline-flex; align-items:center; gap:6px; padding:6px 14px; margin-bottom:8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:var(--accent-cyan); text-decoration:none; font-size:0.82rem; font-weight:600; transition:all 0.2s ease;">← Back to U.S. Stability</a>
             <div class="header-title-row">
-                <span class="header-flag-icons">🇺🇸 💬</span>
+                <span class="header-flag-icons"><img src="https://flagcdn.com/w40/us.png" alt="" title="United States" style="height:0.9em;width:auto;vertical-align:-0.05em;border-radius:2px;"> 💬</span>
                 <span data-i18n="hdr_title">U.S. Rhetoric Tracker</span>
             </div>
             <div class="header-subtitle" data-i18n="hdr_subtitle">
@@ -1231,7 +1237,6 @@
             <button class="header-btn lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
             <button class="header-btn lang-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
             <button class="header-btn lang-btn" data-lang="pt" onclick="setLanguage('pt')">PT</button>
-            <button class="header-btn theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 <span data-i18n="hdr_dark">Dark</span></button>
             <button class="header-btn refresh-btn" onclick="refreshData()" id="refreshBtn">↻ <span data-i18n="hdr_refresh">Refresh</span></button>
         </div>
     </div>
@@ -1303,21 +1308,25 @@
                 <div class="vector-card exec">
                     <div class="vector-label" data-i18n="vec_executive">Executive Branch</div>
                     <div class="vector-score" id="vecExecScore">—</div>
+                    <div class="vector-read" id="vecExecScoreRead"></div>
                     <div class="vector-context" id="vecExecContext" data-i18n="vec_executive_ctx">WH + cabinet rhetoric</div>
                 </div>
                 <div class="vector-card legi">
                     <div class="vector-label" data-i18n="vec_legislative">Legislative Branch</div>
                     <div class="vector-score" id="vecLegiScore">—</div>
+                    <div class="vector-read" id="vecLegiScoreRead"></div>
                     <div class="vector-context" id="vecLegiContext" data-i18n="vec_legislative_ctx">House + Senate divergence</div>
                 </div>
                 <div class="vector-card inst">
                     <div class="vector-label" data-i18n="vec_institutional">Institutional</div>
                     <div class="vector-score" id="vecInstScore">—</div>
+                    <div class="vector-read" id="vecInstScoreRead"></div>
                     <div class="vector-context" id="vecInstContext" data-i18n="vec_institutional_ctx">Courts + DHS + Fed + States</div>
                 </div>
                 <div class="vector-card cross">
                     <div class="vector-label" data-i18n="vec_fracture">Domestic Fracture</div>
                     <div class="vector-score" id="vecFractureScore">—</div>
+                    <div class="vector-read" id="vecFractureScoreRead"></div>
                     <div class="vector-context" data-i18n="vec_fracture_ctx">Cross-spectrum divergence</div>
                 </div>
             </div>
@@ -1362,6 +1371,13 @@
             <div class="section-title">🏛️ <span data-i18n="gov_title">Election &amp; Governance Window</span></div>
             <div class="section-subtitle" data-i18n="gov_subtitle">Institutional events in the counting, certification and transition window: certification refusals, recounts, concessions, threats to election officials, federal presence at polling sites. Corroborated above L2. Not a forecast of any race and not a judgement on any party.</div>
             <div id="governanceBody"><div style="color:var(--text-muted);" data-i18n="gov_loading">Loading governance window…</div></div>
+        </div>
+
+        <!-- v1.5.0: US WHEEL -- how much of the US hub's rim is reporting -->
+        <div class="section-card" id="usWheelCard" style="display:none;border-left:4px solid #3b82f6;">
+            <div class="section-title">🛞 <span>US Wheel — who is reporting</span></div>
+            <div class="section-subtitle">Countries whose trackers report how Washington's pressure or partnership is landing there. "Not reporting" means no tracker is emitting for that country yet -- a coverage gap, not calm.</div>
+            <div id="usWheelBody"></div>
         </div>
 
         <div id="actorLayersContainer">
@@ -1927,7 +1943,7 @@ function toggleTheme() {
     currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
     document.body.dataset.theme = currentTheme;
     const btn = document.getElementById('themeBtn');
-    btn.innerHTML = currentTheme === 'dark'
+    if (btn) btn.innerHTML = currentTheme === 'dark'
         ? '🌙 <span data-i18n="hdr_dark">' + t('hdr_dark') + '</span>'
         : '☀️ <span data-i18n="hdr_light">' + t('hdr_light') + '</span>';
 }
@@ -2002,6 +2018,7 @@ function renderAll(data) {
     renderSoWhat(data);
     renderTopSignals(data);
     renderGovernance(data);
+    try { renderUsWheel(data); } catch (e) { console.warn('us wheel render', e); }
     renderCoverage(data);
     renderActors(data);
     renderBalance(data);
@@ -2022,7 +2039,9 @@ function renderComposite(data) {
     scoreEl.className = 'composite-score ' + tierToClass(tier);
 
     document.getElementById('compositeBandIcon').textContent = icon;
-    document.getElementById('compositeBandText').textContent = (tier + ' — ' + band).toUpperCase();
+    // v1.4.2: tier and band are often the same word ("ACTIVE — ACTIVE"); say it once.
+    document.getElementById('compositeBandText').textContent =
+        (String(tier).toUpperCase() === String(band).toUpperCase() ? tier : (tier + ' — ' + band)).toUpperCase();
     document.getElementById('compositeDescription').textContent = desc;
 
     const completed = data.scan_completed_at ? new Date(data.scan_completed_at).toLocaleString() : 'unknown';
@@ -2042,6 +2061,13 @@ function renderVectors(data) {
     document.getElementById('vecLegiScore').textContent = Math.round(legi);
     document.getElementById('vecInstScore').textContent = Math.round(inst);
     document.getElementById('vecFractureScore').textContent = Math.round(data.domestic_fracture_score || 0);
+    // v1.4.2: one plain word per card, so a number never stands alone.
+    const word = v => v < 26 ? 'Quiet' : v < 38 ? 'Normal' : v < 51 ? 'Elevated' : v < 66 ? 'High' : 'Very high';
+    [['vecExecScore', exec], ['vecLegiScore', legi], ['vecInstScore', inst],
+     ['vecFractureScore', data.domestic_fracture_score || 0]].forEach(([id, v]) => {
+        const el = document.getElementById(id + 'Read');
+        if (el) el.textContent = word(v);
+    });
 }
 
 function avgScore(actorList) {
@@ -2089,6 +2115,26 @@ function renderTopSignals(data) {
 
 // v1.4.0: Election & Governance Window. Absence-honest: an older payload or an
 // unsensed lane says so instead of rendering calm.
+function renderUsWheel(data) {
+    const card = document.getElementById('usWheelCard');
+    const w = data.us_wheel;
+    if (!card || !w) return;
+    const body = document.getElementById('usWheelBody');
+    if (!w.readable) {
+        body.innerHTML = `<div style="color:var(--text-muted);">${escapeHtml(w.headline || 'Not readable this cycle.')}</div>`;
+        card.style.display = 'block';
+        return;
+    }
+    const chip = (sp, col) => `<span title="${escapeAttr(sp.top_signal || sp.reason || '')}" style="display:inline-block;margin:3px 4px 3px 0;padding:3px 9px;border-radius:999px;font-size:0.75rem;border:1px solid ${col};color:${col};">${escapeHtml(sp.display || sp.country)}${sp.state === 'lit' ? ' · L' + (sp.level || 0) : ''}</span>`;
+    const lit = (w.lit || []).map(sp => `<div style="margin:6px 0;font-size:0.85rem;line-height:1.5;"><strong>${escapeHtml(sp.display)}</strong> <span style="color:#f59e0b;font-weight:700;">L${sp.level || 0}</span> — ${escapeHtml(sp.top_signal || '')}</div>`).join('');
+    body.innerHTML =
+        `<div style="font-weight:700;margin:6px 0 10px;color:var(--text-primary);">${escapeHtml(w.headline)}</div>` +
+        (lit ? `<div style="margin-bottom:10px;">${lit}</div>` : '') +
+        ((w.dark || []).length ? `<div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:8px;">Reporting, quiet</div><div>${w.dark.map(sp => chip(sp, '#38bdf8')).join('')}</div>` : '') +
+        ((w.not_reporting || []).length ? `<div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:8px;">Not reporting (no tracker yet, or stale)</div><div>${w.not_reporting.map(sp => chip(sp, '#64748b')).join('')}</div>` : '');
+    card.style.display = 'block';
+}
+
 function renderGovernance(data) {
     const body = document.getElementById('governanceBody');
     if (!body) return;
@@ -2191,7 +2237,10 @@ function renderCoverage(data) {
     const el = document.getElementById('coverageLine');
     if (!el) return;
     const sh = data.source_health || {};
-    const bad = Object.entries(sh).filter(([k, r]) => r && r.status && r.status !== 'ok' && r.status !== 'not_attempted');
+    // v1.4.2: 'partial' (some feeds failed, articles still arrived) is not 'not delivering'.
+    const skip = ['ok', 'not_attempted', 'partial', 'not_configured'];
+    const bad = Object.entries(sh).filter(([k, r]) => r && r.status && skip.indexOf(r.status) === -1);
+    const partial = Object.entries(sh).filter(([k, r]) => r && r.status === 'partial');
     let txt = '';
     if (data.sensed === false) txt += '<span class="warn">⚠ ' + escapeHtml(t('cov_not_sensed')) + '</span> ';
     if (bad.length) {
@@ -2199,6 +2248,10 @@ function renderCoverage(data) {
                bad.map(([k, r]) => escapeHtml(k) + ' (' + escapeHtml(r.status.replace(/_/g, ' ')) + ')').join(' · ');
     } else if (Object.keys(sh).length) {
         txt += escapeHtml(t('cov_ok'));
+    }
+    if (partial.length) {
+        txt += ' · ' + partial.map(([k, r]) => escapeHtml(k) + ' (some feeds failed, ' +
+               (r.articles || 0) + ' articles delivered)').join(' · ');
     }
     el.innerHTML = txt;
 }
