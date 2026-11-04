@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Venezuela Rhetoric & Pressure Tracker v1.0.0 — May 2026 -->
+<!-- Asifah Analytics — Venezuela Rhetoric & Pressure Tracker v1.1.0 — Nov 2026 (v1.0.0 May 2026) -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- Built on Cuba structural pattern + Chile Gold Standard polish (May 17 2026 retrofit) -->
 <!-- VZ-specific: 16 actors / 6 vectors / band-vocabulary architecture / commodity coupling-aware -->
@@ -651,6 +651,24 @@
         letter-spacing: 1px;
     }
     .redline-item.armed .redline-status { color: #ef4444; }
+    /* v1.1.0 evidence statuses */
+    .redline-item.breached { border-left-color: #ef4444; background: rgba(239,68,68,0.07); }
+    .redline-item.breached .redline-status { color: #ef4444; }
+    .redline-item.approaching { border-left-color: #f59e0b; background: rgba(245,158,11,0.06); }
+    .redline-item.approaching .redline-status { color: #f59e0b; }
+    .redline-item.watching { border-left-color: #64748b; }
+    .redline-plain { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+    .redline-src { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+    /* v1.1.0 top indicator */
+    .top-indicator-card { border-left: 4px solid var(--accent); }
+    .top-indicator-label { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .top-indicator-text { font-size: 16px; line-height: 1.55; color: var(--text-primary); font-weight: 600; }
+    .transition-row { margin-top: 12px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .transition-row strong { color: var(--text-primary); }
+    .milestone-list { margin: 6px 0 0 18px; font-size: 12px; color: var(--text-secondary); }
+    .hub-reading { font-size: 11px; color: var(--text-secondary); margin-top: 6px; line-height: 1.45; }
+    .hub-card.unread { border-style: dashed; }
+    .hz-line { margin-top: 12px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
 
     /* Vector pillars */
     .vector-grid {
@@ -1007,6 +1025,13 @@
             <a href="commodities.html" data-i18n="commodity_strip_link">View commodity dashboard →</a>
         </div>
 
+        <!-- TOP INDICATOR (v1.1.0) -- the one sentence to leave with -->
+        <section class="card top-indicator-card" id="topIndicatorCard" style="display:none;">
+            <div class="top-indicator-label" data-i18n="top_indicator_label">Top indicator</div>
+            <div class="top-indicator-text" id="topIndicatorText">—</div>
+            <div class="transition-row" id="transitionRow" style="display:none;"></div>
+        </section>
+
         <!-- EXECUTIVE SUMMARY -->
         <section class="card" id="execSummaryCard">
             <div class="card-title" data-i18n="exec_summary_title">📋 Executive Summary</div>
@@ -1040,6 +1065,7 @@
                 <p id="coalitionReading" style="font-weight:600; color:var(--accent); margin-bottom:4px;">—</p>
                 <div class="hub-grid" id="hubGrid"></div>
                 <p id="earthquakeStrain" style="display:none; margin-top:14px; color:#dc2626; font-size:13px; font-weight:600;"></p>
+                <p class="hz-line" id="hizballahLine" style="display:none;"></p>
                 <div class="coalition-disclaimer" data-i18n="coalition_disclaimer">This is a CONVERGENCE indicator of external-sponsor presence, NOT a probability of action. Each hub is independently sourced; the reader completes the inference.</div>
             </div>
         </section>
@@ -1072,7 +1098,7 @@
         <!-- RED LINES -->
         <section class="card" id="redLinesCard">
             <div class="card-title" data-i18n="red_lines_title">🚨 Red Lines — Active Watch</div>
-            <div class="card-subtitle" data-i18n="red_lines_subtitle">11 high-impact tripwires monitored continuously. ARMED = condition met / breach detected.</div>
+            <div class="card-subtitle" data-i18n="red_lines_subtitle">High-impact tripwires, graded by evidence. BREACHED = 2+ separate outlets. APPROACHING = one outlet, not yet corroborated. WATCHING = rumour or hedged wording only.</div>
             <div class="redline-grid" id="redLinesGrid">
                 <!-- Populated by JS -->
             </div>
@@ -1158,14 +1184,14 @@
         <a href="index.html" style="color:#38bdf8; text-decoration:none;" data-i18n="ftr_home">Home</a>
     </div>
     <div style="text-align:center; margin-top:15px; font-size:11px; color:var(--text-muted,#4a7090);">
-        © 2025-2026 RCGG. All Rights Reserved. Asifah Venezuela Rhetoric Tracker v1.0.0 — Proprietary and Confidential.
+        © 2025-2026 RCGG. All Rights Reserved. Asifah Venezuela Rhetoric Tracker v1.1.0 — Proprietary and Confidential.
     </div>
 </footer>
 
 <script>
 // =============================================
 // VENEZUELA RHETORIC TRACKER — frontend engine
-// v1.0.0 — May 2026
+// v1.1.0 — Nov 2026 (top indicator, evidence-graded red lines, hub readings)
 // =============================================
 
 const API_BASE = 'https://asifah-wha-backend.onrender.com';
@@ -1251,7 +1277,15 @@ const T = {
         l5_economic: 'Economic',
         l5_diplomatic: 'Diplomatic',
         red_lines_title: '🚨 RED LINES — ACTIVE WATCH',
-        red_lines_subtitle: '11 high-impact tripwires monitored continuously. ARMED = condition met / breach detected.',
+        red_lines_subtitle: 'High-impact tripwires, graded by evidence. BREACHED = 2+ separate outlets. APPROACHING = one outlet, not yet corroborated. WATCHING = rumour or hedged wording only.',
+        top_indicator_label: 'Top indicator',
+        transition_label: 'Transition',
+        milestones_label: 'Confirmed steps (2+ outlets)',
+        rl_breached: 'BREACHED',
+        rl_approaching: 'APPROACHING',
+        rl_watching: 'WATCHING',
+        rl_outlets: 'Outlets',
+        hz_label: 'Hizballah watch',
         vectors_title: '📊 SIX-VECTOR COMPOSITE',
         vectors_subtitle: 'Vector-level analytical scores driving the composite. Hover for analytical definitions.',
         actors_title: '🎭 ACTOR LAYERS',
@@ -1381,7 +1415,15 @@ const T = {
         l5_economic: 'Económico',
         l5_diplomatic: 'Diplomático',
         red_lines_title: '🚨 LÍNEAS ROJAS — VIGILANCIA ACTIVA',
-        red_lines_subtitle: '11 disparadores de alto impacto monitoreados continuamente. ACTIVADA = condición cumplida / brecha detectada.',
+        red_lines_subtitle: 'Disparadores de alto impacto, calificados por evidencia. TRASPASADA = 2+ medios distintos. EN APROXIMACIÓN = un medio, sin corroborar. EN OBSERVACIÓN = solo rumor o lenguaje condicional.',
+        top_indicator_label: 'Indicador principal',
+        transition_label: 'Transición',
+        milestones_label: 'Pasos confirmados (2+ medios)',
+        rl_breached: 'TRASPASADA',
+        rl_approaching: 'EN APROXIMACIÓN',
+        rl_watching: 'EN OBSERVACIÓN',
+        rl_outlets: 'Medios',
+        hz_label: 'Vigilancia Hizbulá',
         vectors_title: '📊 COMPUESTO DE SEIS VECTORES',
         vectors_subtitle: 'Puntuaciones analíticas a nivel vector que impulsan el compuesto. Pase el cursor sobre cada uno para ver las definiciones analíticas.',
         actors_title: '🎭 CAPAS DE ACTORES',
@@ -1506,7 +1548,15 @@ const T = {
         l5_economic: 'Econômico',
         l5_diplomatic: 'Diplomático',
         red_lines_title: '🚨 LINHAS VERMELHAS — VIGILÂNCIA ATIVA',
-        red_lines_subtitle: '11 gatilhos de alto impacto monitorados continuamente. ARMADO = condição atendida / violação detectada.',
+        red_lines_subtitle: 'Gatilhos de alto impacto, classificados por evidência. ULTRAPASSADA = 2+ veículos distintos. EM APROXIMAÇÃO = um veículo, sem corroboração. EM OBSERVAÇÃO = só rumor ou linguagem condicional.',
+        top_indicator_label: 'Indicador principal',
+        transition_label: 'Transição',
+        milestones_label: 'Passos confirmados (2+ veículos)',
+        rl_breached: 'ULTRAPASSADA',
+        rl_approaching: 'EM APROXIMAÇÃO',
+        rl_watching: 'EM OBSERVAÇÃO',
+        rl_outlets: 'Veículos',
+        hz_label: 'Vigilância Hezbollah',
         vectors_title: '📊 COMPOSTO DE SEIS VETORES',
         vectors_subtitle: 'Pontuações analíticas em nível de vetor que impulsionam o composto. Passe o mouse para ver as definições analíticas.',
         actors_title: '🎭 CAMADAS DE ATORES',
@@ -1707,6 +1757,9 @@ function renderData(d) {
     // COMMODITY STRIP — surfaces only when alert >= elevated
     renderCommodityStrip(d);
 
+    // TOP INDICATOR (v1.1.0)
+    renderTopIndicator(d, t);
+
     // EXECUTIVE SUMMARY
     if (d.executive_summary) {
         document.getElementById('execHeadline').textContent = d.executive_summary.headline || '—';
@@ -1715,7 +1768,8 @@ function renderData(d) {
 
     // SO-WHAT
     if (d.so_what) {
-        document.getElementById('soWhatScenario').textContent = d.so_what.scenario || '—';
+        document.getElementById('soWhatScenario').textContent =
+            (d.so_what.scenario || '—').replace(/_/g, ' ').replace(/\bl5\b/i, 'crisis').replace(/^./, c => c.toUpperCase());
         document.getElementById('soWhatFactor').textContent = d.so_what.factor || '—';
         document.getElementById('soWhatDescription').textContent = d.so_what.description || '—';
         const watchUl = document.getElementById('soWhatWatchFor');
@@ -1734,7 +1788,7 @@ function renderData(d) {
     renderCoalition(d, t);
 
     // RED LINES
-    renderRedLines(d.red_lines || [], t);
+    renderRedLines((d.red_lines || []).concat(d.red_lines_watch || []), t);
 
     // VECTORS
     renderVectors(d.vectors || {}, d.vector_descriptions || {}, t);
@@ -1784,7 +1838,7 @@ function renderCoalition(d, t) {
         const hub = hp[h] || {};
         const lvl = hub.level || 0;
         const div = document.createElement('div');
-        div.className = 'hub-card' + (lvl >= 2 ? ' elevated' : '');
+        div.className = 'hub-card' + (lvl >= 2 ? ' elevated' : '') + (hub.coverage === 'unread' ? ' unread' : '');
         const trajRaw = hub.trajectory || 'steady';
         const trajLabel = t['traj_' + trajRaw] || trajRaw;
         let html = `<div class="hub-name">${nameMap[h] || h}</div>`;
@@ -1795,8 +1849,23 @@ function renderCoalition(d, t) {
             html += `<div class="hub-relief">${t.hub_relief || '⚠ relief-as-access'}</div>`;
         }
         div.innerHTML = html;
+        if (hub.reading) {
+            const rd = document.createElement('div');
+            rd.className = 'hub-reading';
+            rd.textContent = hub.reading;
+            div.appendChild(rd);
+        }
         grid.appendChild(div);
     });
+
+    const hz = d.hizballah_node || null;
+    const hzEl = document.getElementById('hizballahLine');
+    if (hz && hz.sentence) {
+        hzEl.style.display = '';
+        hzEl.textContent = `🕵️ ${t.hz_label || 'Hizballah watch'}: ${hz.sentence}`;
+    } else {
+        hzEl.style.display = 'none';
+    }
 
     const eq = d.earthquake_political_level || 0;
     const eqEl = document.getElementById('earthquakeStrain');
@@ -1860,6 +1929,7 @@ function renderL5Gate(gate, t) {
 }
 
 function renderRedLines(redLines, t) {
+    // v1.1.0: each red line carries an evidence status.
     const grid = document.getElementById('redLinesGrid');
     grid.innerHTML = '';
     if (!redLines || redLines.length === 0) {
@@ -1869,25 +1939,77 @@ function renderRedLines(redLines, t) {
         grid.appendChild(p);
         return;
     }
+    const label = {
+        breached:    '⚠ ' + (t.rl_breached || 'BREACHED'),
+        approaching: '◐ ' + (t.rl_approaching || 'APPROACHING'),
+        watching:    '○ ' + (t.rl_watching || 'WATCHING'),
+    };
     redLines.forEach(rl => {
+        const status = rl.status || 'breached';   // pre-v1.1 payloads listed breaches only
         const div = document.createElement('div');
-        div.className = 'redline-item armed';
+        div.className = 'redline-item ' + status;
         const name = document.createElement('div');
         name.className = 'redline-name';
-        name.textContent = rl.name || rl.id || '—';
-        const status = document.createElement('div');
-        status.className = 'redline-status';
-        status.textContent = `⚠ ${t.armed}`;
+        name.textContent = rl.name || rl.rl_id || '—';
+        const st = document.createElement('div');
+        st.className = 'redline-status';
+        st.textContent = label[status] || status;
         div.appendChild(name);
-        div.appendChild(status);
-        if (rl.description) {
+        div.appendChild(st);
+        const meaning = rl.plain || rl.description || rl.long_text;
+        if (meaning) {
             const desc = document.createElement('div');
-            desc.style.cssText = 'font-size:11px; color:var(--text-muted); margin-top:4px;';
-            desc.textContent = rl.description;
+            desc.className = 'redline-plain';
+            desc.textContent = meaning;
             div.appendChild(desc);
+        }
+        const outs = (rl.outlets || []).concat(rl.rumint_outlets || []);
+        if (outs.length) {
+            const src = document.createElement('div');
+            src.className = 'redline-src';
+            src.textContent = (t.rl_outlets || 'Outlets') + ': ' + outs.join(', ');
+            div.appendChild(src);
         }
         grid.appendChild(div);
     });
+}
+
+function renderTopIndicator(d, t) {
+    const card = document.getElementById('topIndicatorCard');
+    if (!card) return;
+    const txt = d.top_indicator || d.bluf || '';
+    if (!txt) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    document.getElementById('topIndicatorText').textContent = txt;
+    const row = document.getElementById('transitionRow');
+    const tr = d.transition || null;
+    row.innerHTML = '';
+    if (tr && tr.stage_text) {
+        row.style.display = '';
+        const line = document.createElement('div');
+        const b = document.createElement('strong');
+        b.textContent = '🗳️ ' + (t.transition_label || 'Transition') + ': ';
+        line.appendChild(b);
+        line.appendChild(document.createTextNode(tr.stage_text));
+        row.appendChild(line);
+        const ms = d.milestones || [];
+        if (ms.length) {
+            const lab = document.createElement('div');
+            lab.style.marginTop = '6px';
+            lab.textContent = (t.milestones_label || 'Confirmed steps (2+ outlets)') + ':';
+            row.appendChild(lab);
+            const ul = document.createElement('ul');
+            ul.className = 'milestone-list';
+            ms.forEach(m => {
+                const li = document.createElement('li');
+                li.textContent = (m.article || m.phrase || '') + (m.outlet ? ' — ' + m.outlet : '');
+                ul.appendChild(li);
+            });
+            row.appendChild(ul);
+        }
+    } else {
+        row.style.display = 'none';
+    }
 }
 
 function renderVectors(vectors, descriptions, t) {
