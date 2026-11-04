@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Argentina Stability Index v1.0.1 — Nov 4, 2026: Tri-Border card reads the live Hizballah LatAm module -->
+<!-- Asifah Analytics — Argentina Stability Index v1.0.2 — Nov 4, 2026 (eve): live rhetoric-tracker card; canonical wide footer | v1.0.1: Tri-Border card reads the live Hizballah LatAm module -->
 <!-- Gold Standard shell (cloned from peru-stability 1.1.0): sidebar drawer, live WHA sweep, market pulse, commodity card, dated analytic cards. EN/ES full, PT labels. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
@@ -735,6 +735,27 @@ footer .footer-copyright {
     .advisory-row { flex-wrap: wrap; }
 }
 .ar-tba-live a, .ar-watch a { color: var(--accent, #38bdf8); text-decoration: underline; }
+
+/* ── Canonical wide footer (military.html pattern, Nov 4 2026) ── */
+footer.asf-footer { max-width: 1800px; margin: 30px auto; padding: 30px 28px 24px; background: #0d1b2e;
+    border: 1px solid #1e3a5f; border-radius: 12px; color: #93c5fd; font-size: 14px; line-height: 1.6;
+    position: relative; z-index: 1; box-sizing: border-box; width: calc(100% - 32px); }
+footer.asf-footer .asf-f-title { text-align: center; font-weight: 800; font-size: 17px; color: #e2f0fb; letter-spacing: 1.5px; margin-bottom: 4px; }
+footer.asf-footer .asf-f-sub { text-align: center; color: #93c5fd; font-size: 13px; margin-bottom: 20px; }
+footer.asf-footer .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-bottom: 18px; text-align: left; }
+footer.asf-footer h4 { color: #e2f0fb; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
+footer.asf-footer p { margin: 0; color: #93c5fd; font-size: 13.5px; }
+footer.asf-footer .asf-f-disc { border-top: 1px solid #1e3a5f; padding-top: 14px; color: #64748b; font-size: 12.5px; text-align: center; }
+footer.asf-footer .asf-f-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0 14px; }
+footer.asf-footer .asf-f-cta a { padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; transition: transform .15s, box-shadow .15s; }
+footer.asf-footer .asf-f-cta a:hover { transform: translateY(-2px); }
+footer.asf-footer .asf-coffee { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #1f1f1f; box-shadow: 0 3px 10px rgba(245,158,11,0.3); }
+footer.asf-footer .asf-contact { background: linear-gradient(135deg,#1e3a5f,#38bdf8); color: #fff; box-shadow: 0 3px 10px rgba(56,189,248,0.3); }
+footer.asf-footer .asf-f-links { text-align: center; font-size: 13px; }
+footer.asf-footer .asf-f-links a { color: #93c5fd; }
+@media (max-width: 900px) { footer.asf-footer .asf-f-grid { grid-template-columns: 1fr; } }
+/* On pages with a sidebar the footer is moved into the content column (script below), so it lines up with the cards. */
+.main-content > footer.asf-footer { width: 100%; max-width: none; margin: 30px 0; }
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -937,12 +958,34 @@ footer .footer-copyright {
     <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Argentina is the world's largest exporter of <strong>soybean meal and oil</strong> (top-three in beans) — China and animal-feed buyers worldwide feel an Argentine drought or export tax. It is a top-five <strong>lithium</strong> producer with output rising fast under the RIGI investment regime, and <strong>Vaca Muerta</strong> shale has turned Argentina into an oil and gas exporter. A good harvest or a Vaca Muerta record means dollars for the central bank; a drought (as in 2023) means a currency crisis.</div>
 </div>
 
-<!-- ── RHETORIC TRACKER (coming next) ── -->
-<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
-    <div class="section-title" data-i18n="rh_title">📡 Argentina Rhetoric &amp; Pressure Tracker</div>
-    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">COMING NEXT</div>
-    <div class="ar-sub" data-i18n="rh_sub">Planned actors: Milei government · Congress &amp; unions · the economy team &amp; IMF · US-Argentina · China-Argentina · UK / Falklands · Tri-Border Area. It will add evidence-graded signals, a plain "top indicator", and spokes to the US, China and UK wheels — and is what feeds Argentina into the WHA regional summary and the Global Pressure Index.</div>
+<!-- ── RHETORIC TRACKER (live, Nov 4 2026) ── -->
+<div class="metric-card" id="rhLiveCard" style="border-left: 4px solid #4ade80;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="section-title" style="margin-bottom:0;" data-i18n="rh_live_title">📡 🇦🇷 Argentina Rhetoric &amp; Pressure Tracker</div>
+        <span id="rhLivePill" style="font-size:11px; font-weight:800; letter-spacing:1px; padding:4px 10px; border-radius:4px; background:#374151; color:#fff;">LOADING…</span>
+    </div>
+    <div id="rhLiveRead" style="font-size:13.5px; line-height:1.55; margin:10px 0 6px; color:var(--text-primary, #e2f0fb);">Reading the tracker…</div>
+    <div id="rhLiveMeta" style="font-size:12px; color:var(--text-muted, #64748b);"></div>
+    <a href="rhetoric-argentina.html" style="display:inline-block; margin-top:12px; padding:8px 16px; border:1px solid #4ade80; color:#4ade80; border-radius:6px; text-decoration:none; font-weight:800; font-size:12px; letter-spacing:1px;" data-i18n="rh_live_open">OPEN THE RHETORIC TRACKER →</a>
 </div>
+<script>
+(function () {
+    var LBL = ['Monitoring', 'Rhetoric', 'Warning', 'Direct Threat', 'Imminent Crisis'];
+    var COL = ['#38bdf8', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'];
+    function set(id, t) { var e = document.getElementById(id); if (e) e.textContent = t; }
+    fetch('https://asifah-wha-backend.onrender.com/api/rhetoric/argentina').then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.success || d.pending) { set('rhLivePill', 'FIRST SCAN PENDING'); set('rhLiveRead', 'The tracker is running its first scan — check back in a few minutes.'); return; }
+        var lv = Math.max(0, Math.min(4, parseInt(d.theatre_level || 0, 10)));
+        var pill = document.getElementById('rhLivePill');
+        if (pill) { pill.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]); pill.style.background = COL[lv]; pill.style.color = lv >= 2 ? '#1a0f05' : '#04111f'; }
+        set('rhLiveRead', (d.top_indicator || '').replace(/--/g, '\u2014'));
+        var crossed = (d.red_lines || []).filter(function (r) { return r.status === 'BREACHED'; }).length;
+        var watching = (d.red_lines || []).length;
+        set('rhLiveMeta', (d.total_articles_scanned || 0) + ' articles · red lines crossed: ' + crossed + ' of ' + watching + ' watched · evidence-graded (2+ outlets to confirm)');
+        var meta = document.getElementById('metaRhetoric'); if (meta) meta.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]);
+    }).catch(function () { set('rhLivePill', 'UNREAD'); set('rhLiveRead', 'Tracker unavailable this load — unread, not calm.'); });
+})();
+</script>
 
 <!-- ── MAP ── -->
 <div class="map-section">
@@ -999,17 +1042,19 @@ footer .footer-copyright {
     </ul>
 </div>
 
-<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
-    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — ARGENTINA</div>
-    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours</div>
-    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS · NewsAPI · Brave · Yahoo Finance (market tiles)</div>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
-        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;">☕ Buy Me a Coffee</a>
-        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;">✉️ Contact Asifah</a>
+<footer class="asf-footer">
+    <div class="asf-f-title">ASIFAH ANALYTICS — ARGENTINA</div>
+    <div class="asf-f-sub">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6–12 hours</div>
+    <div class="asf-f-grid">
+        <div><h4 data-i18n="footer_about">About</h4><p data-i18n="footer_about_text">Asifah Analytics tracks convergence, not prediction: which open-source signals are present, how strong the evidence is, and what they mean.</p></div>
+        <div><h4 data-i18n="footer_sources">Data Sources</h4><p>GDELT, RSS and Google News (Spanish and English), NewsAPI, Brave fallback; Yahoo Finance market tiles (Merval, USD/ARS, soybeans); the Commodities Tracker; the shared Hizballah Latin America module; US State Department travel advisories.</p></div>
+        <div><h4 data-i18n="footer_method">Methodology</h4><p>Information, not analysis: the live news read, financial pulse, commodity exposure and Knowledge Library are dated and re-verified on a 45-day cycle. Evidence-graded analysis (red lines, So What) lives on the Argentina rhetoric tracker.</p></div>
     </div>
-    <div style="color:#64748b;font-size:11px;margin-bottom:12px;" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
-    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+    <div class="asf-f-disc" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div class="asf-f-cta"><a class="asf-coffee" href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a><a class="asf-contact" href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a></div>
+    <div class="asf-f-links"><a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
 </footer>
+<script>(function(){var f=document.querySelector("footer.asf-footer"),m=document.querySelector(".page-with-sidebar .main-content");if(f&&m)m.appendChild(f);})();</script>
 
 </div> <!-- /main-content -->
 </div> <!-- /page-with-sidebar -->
@@ -1069,8 +1114,7 @@ const TRANSLATIONS = {
     tba_body: '<p>Donde se unen Argentina, Brasil y Paraguay (Puerto Iguazú – Foz do Iguaçu – Ciudad del Este) está el centro de financiamiento y contrabando de Hezbolá más conocido del hemisferio. Argentina sufrió los atentados contra la <strong>Embajada de Israel (1992)</strong> y la <strong>AMIA (1994)</strong>, con 85 muertos, que su justicia atribuye a Irán y Hezbolá. Argentina declaró a Hezbolá organización terrorista en 2019; una ley de 2025 permite juzgar en ausencia a los funcionarios iraníes acusados.</p><p><em>Regla de honestidad:</em> el efecto local es sobre todo delito y dinero (contrabando, lavado, la banda brasileña PCC). El "y qué" principal es el dinero que fluye hacia el Líbano — no un riesgo de atentado local, salvo que informes corroborados digan lo contrario.</p>',
     commodity_title: '🛢️ Exposición a materias primas y presión estratégica',
     strategic_linkage: '<strong>🎯 Qué significa:</strong> Argentina es el mayor exportador mundial de <strong>harina y aceite de soja</strong> — China y los compradores de alimento animal sienten una sequía o una retención argentina. Es uno de los cinco mayores productores de <strong>litio</strong>, con producción en rápido aumento bajo el RIGI, y <strong>Vaca Muerta</strong> convirtió a Argentina en exportador de petróleo y gas. Una buena cosecha o un récord en Vaca Muerta son dólares para el Banco Central; una sequía (como en 2023) es una crisis cambiaria.',
-    rh_title: '📡 Rastreador de retórica y presión de Argentina', rh_pending: 'PRÓXIMAMENTE',
-    rh_sub: 'Actores previstos: gobierno de Milei · Congreso y sindicatos · equipo económico y FMI · EE.UU.-Argentina · China-Argentina · Reino Unido / Malvinas · Triple Frontera. Sumará señales con evidencia, un "indicador principal" claro y radios hacia las ruedas de EE.UU., China y el Reino Unido — y es lo que lleva a Argentina al resumen regional y al Índice de Presión Global.',
+    rh_live_title: '📡 🇦🇷 Rastreador de retórica y presión — Argentina', rh_live_open: 'ABRIR EL RASTREADOR →', rh_live_loading: 'Leyendo el rastreador…',
     map_title: '🗺️ Argentina — Panorama estratégico',
     map_subtitle: 'Buenos Aires, Vaca Muerta (Neuquén), el triángulo del litio (Jujuy, Salta, Catamarca), la Triple Frontera (Puerto Iguazú) y el Atlántico Sur / Malvinas.',
     kl_title: 'Biblioteca de conocimiento',
@@ -1092,7 +1136,7 @@ const TRANSLATIONS = {
     pulse_title: '💹 Pulso financeiro da Argentina', pat_title: '⚖️ Entre dois patronos — EUA e China', pat_cn_head: 'Pequim',
     fk_title: '🇫🇰 Malvinas / Falklands — a disputa voltou', ant_title: '🧊 Porta antártica e minerais críticos', tba_title: '🕸️ Tríplice Fronteira e financiamento do Hezbollah',
     commodity_title: '🛢️ Exposição a commodities e pressão estratégica', watch_title: 'Observar',
-    rh_title: '📡 Rastreador de retórica e pressão da Argentina', rh_pending: 'EM BREVE',
+    rh_live_title: '📡 🇦🇷 Rastreador de retórica e pressão — Argentina', rh_live_open: 'ABRIR O RASTREADOR →',
     map_title: '🗺️ Argentina — Panorama estratégico', kl_title: 'Biblioteca de conhecimento',
     articles_title: '📰 Artigos recentes sobre a Argentina', pt_note: 'As análises longas aparecem em inglês.',
   },

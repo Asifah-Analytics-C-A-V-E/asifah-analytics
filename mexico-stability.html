@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <!-- Asifah Analytics — Mexico Stability Index v2.1.0 — Nov 4, 2026 (v2.0.0 June 2026): dated Situation + US pressure triad, knowledge library refreshed, i18n fixes, plain pulse read -->
+<!-- v2.2.0 Nov 4 2026 (eve): live rhetoric-tracker card replaces the placeholder; canonical wide footer. -->
 <!-- Gold Standard: Arctic scheme + military-canon watermark + sidebar/drawer + rhetoric placeholder + commodity card + Financial Pulse (IPC/MXN/WTI) + Leaflet map + EN/ES/PT -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
@@ -835,6 +836,27 @@ footer .footer-copyright {
     .advisory-row > * { min-width: 0; }
     .nyse-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ── Canonical wide footer (military.html pattern, Nov 4 2026) ── */
+footer.asf-footer { max-width: 1800px; margin: 30px auto; padding: 30px 28px 24px; background: #0d1b2e;
+    border: 1px solid #1e3a5f; border-radius: 12px; color: #93c5fd; font-size: 14px; line-height: 1.6;
+    position: relative; z-index: 1; box-sizing: border-box; width: calc(100% - 32px); }
+footer.asf-footer .asf-f-title { text-align: center; font-weight: 800; font-size: 17px; color: #e2f0fb; letter-spacing: 1.5px; margin-bottom: 4px; }
+footer.asf-footer .asf-f-sub { text-align: center; color: #93c5fd; font-size: 13px; margin-bottom: 20px; }
+footer.asf-footer .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-bottom: 18px; text-align: left; }
+footer.asf-footer h4 { color: #e2f0fb; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
+footer.asf-footer p { margin: 0; color: #93c5fd; font-size: 13.5px; }
+footer.asf-footer .asf-f-disc { border-top: 1px solid #1e3a5f; padding-top: 14px; color: #64748b; font-size: 12.5px; text-align: center; }
+footer.asf-footer .asf-f-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0 14px; }
+footer.asf-footer .asf-f-cta a { padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; transition: transform .15s, box-shadow .15s; }
+footer.asf-footer .asf-f-cta a:hover { transform: translateY(-2px); }
+footer.asf-footer .asf-coffee { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #1f1f1f; box-shadow: 0 3px 10px rgba(245,158,11,0.3); }
+footer.asf-footer .asf-contact { background: linear-gradient(135deg,#1e3a5f,#38bdf8); color: #fff; box-shadow: 0 3px 10px rgba(56,189,248,0.3); }
+footer.asf-footer .asf-f-links { text-align: center; font-size: 13px; }
+footer.asf-footer .asf-f-links a { color: #93c5fd; }
+@media (max-width: 900px) { footer.asf-footer .asf-f-grid { grid-template-columns: 1fr; } }
+/* On pages with a sidebar the footer is moved into the content column (script below), so it lines up with the cards. */
+.main-content > footer.asf-footer { width: 100%; max-width: none; margin: 30px 0; }
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -1016,19 +1038,34 @@ footer .footer-copyright {
     <div class="mx-watch"><div class="mx-watch-title" data-i18n="mx_watch_title">Watch</div><ul data-i18n-html="mx_watch"><li>Any US strike, drone or special-forces operation inside Mexico — the sovereignty red line</li><li>New terrorist designations, or US charges and sanctions against Mexican officials (the Sinaloa governor was charged in April 2026)</li><li>A USMCA interim deal — or new Section 232/301 tariffs</li><li>The peso moving more than 2% in a day (Financial Pulse below)</li></ul></div>
 </div>
 
-<!-- ── MEXICO RHETORIC TRACKER PLACEHOLDER (tracker queued — WHA roadmap) ── -->
-<div class="metric-card" id="mexicoRhetoricPlaceholder" style="border-left: 4px solid #4ade80;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-        <div>
-            <div class="section-title" style="margin-bottom:4px;" data-i18n="rhetoric_ph_title">📡 🇲🇽 Mexico Rhetoric &amp; Pressure Tracker</div>
-            <div style="font-size:11px; color:var(--text-secondary);" data-i18n="rhetoric_ph_subtitle">Coming soon: Sheinbaum Government · SEDENA / Guardia Nacional · Cartel Communications · US Border Track · FTO Designation Pressure</div>
-        </div>
-        <span style="font-size:12px; padding:6px 14px; background:rgba(74,222,128,0.10); border:1px solid rgba(74,222,128,0.30); color:#4ade80; border-radius:6px; font-weight:700; letter-spacing:0.5px;" data-i18n="rhetoric_in_dev">🔧 In Development</span>
+<!-- ── RHETORIC TRACKER (live, Nov 4 2026) ── -->
+<div class="metric-card" id="rhLiveCard" style="border-left: 4px solid #4ade80;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="section-title" style="margin-bottom:0;" data-i18n="rh_live_title">📡 🇲🇽 Mexico Rhetoric &amp; Pressure Tracker</div>
+        <span id="rhLivePill" style="font-size:11px; font-weight:800; letter-spacing:1px; padding:4px 10px; border-radius:4px; background:#374151; color:#fff;">LOADING…</span>
     </div>
-    <div style="font-size:12.5px; line-height:1.55; color:var(--text-secondary); padding:10px 14px; background:rgba(74,222,128,0.05); border:1px solid rgba(74,222,128,0.15); border-radius:6px;" data-i18n="rhetoric_ph_text">
-        The dedicated Mexico rhetoric tracker is queued on the WHA build roadmap. Until it ships, read Mexico's pressure load through the commodity exposure and financial pulse cards below — both are live sensors. When the tracker is live, this card will populate with a composite gauge, vector scores, and top signals.
-    </div>
+    <div id="rhLiveRead" style="font-size:13.5px; line-height:1.55; margin:10px 0 6px; color:var(--text-primary, #e2f0fb);">Reading the tracker…</div>
+    <div id="rhLiveMeta" style="font-size:12px; color:var(--text-muted, #64748b);"></div>
+    <a href="rhetoric-mexico.html" style="display:inline-block; margin-top:12px; padding:8px 16px; border:1px solid #4ade80; color:#4ade80; border-radius:6px; text-decoration:none; font-weight:800; font-size:12px; letter-spacing:1px;" data-i18n="rh_live_open">OPEN THE RHETORIC TRACKER →</a>
 </div>
+<script>
+(function () {
+    var LBL = ['Monitoring', 'Rhetoric', 'Warning', 'Direct Threat', 'Imminent Crisis'];
+    var COL = ['#38bdf8', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'];
+    function set(id, t) { var e = document.getElementById(id); if (e) e.textContent = t; }
+    fetch('https://asifah-wha-backend.onrender.com/api/rhetoric/mexico').then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.success || d.pending) { set('rhLivePill', 'FIRST SCAN PENDING'); set('rhLiveRead', 'The tracker is running its first scan — check back in a few minutes.'); return; }
+        var lv = Math.max(0, Math.min(4, parseInt(d.theatre_level || 0, 10)));
+        var pill = document.getElementById('rhLivePill');
+        if (pill) { pill.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]); pill.style.background = COL[lv]; pill.style.color = lv >= 2 ? '#1a0f05' : '#04111f'; }
+        set('rhLiveRead', (d.top_indicator || '').replace(/--/g, '\u2014'));
+        var crossed = (d.red_lines || []).filter(function (r) { return r.status === 'BREACHED'; }).length;
+        var watching = (d.red_lines || []).length;
+        set('rhLiveMeta', (d.total_articles_scanned || 0) + ' articles · red lines crossed: ' + crossed + ' of ' + watching + ' watched · evidence-graded (2+ outlets to confirm)');
+        var meta = document.getElementById('metaRhetoric'); if (meta) meta.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]);
+    }).catch(function () { set('rhLivePill', 'UNREAD'); set('rhLiveRead', 'Tracker unavailable this load — unread, not calm.'); });
+})();
+</script>
 
 <!-- ── COMMODITY EXPOSURE CARD — Gold Standard v2.0 ── -->
 <div class="commodity-card" id="commodityCard">
@@ -1099,7 +1136,7 @@ footer .footer-copyright {
     <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.55;" data-i18n-html="stability_card_text">
         Multi-factor stability assessment combining cartel-conflict posture, state capacity, U.S. border dynamics, commodity exposure (oil/corn), and financial pulse (IPC · USD/MXN · WTI).
         <br><br>
-        <em style="color:var(--text-muted);">The financial pulse backend (mexico_stability.py) is live above. Full composite stability scoring is in development. Until then, draw stability inferences from the commodity, financial pulse, and Knowledge Library cards. When the rhetoric tracker ships, this card will populate with a theatre score.</em>
+        <em style="color:var(--text-muted);">The financial pulse backend (mexico_stability.py) is live above. Full composite stability scoring is in development. Until then, draw stability inferences from the commodity, financial pulse, and Knowledge Library cards. The rhetoric tracker is live: its level shows in “Rhetoric Tier” below.</em>
     </div>
     <div class="stability-meta-grid">
         <div class="stability-meta-item">
@@ -1298,17 +1335,19 @@ footer .footer-copyright {
 <!-- ════════════════════════════════════════════════════════════
      FOOTER
      ════════════════════════════════════════════════════════════ -->
-<footer style="background:#0d1b2e;border:1px solid #1e3a5f;border-radius:12px;padding:30px;margin:30px auto;max-width:900px;font-size:13px;color:#93c5fd;text-align:center;">
-    <div style="font-weight:800;font-size:15px;color:#e2f0fb;letter-spacing:1px;margin-bottom:8px;">ASIFAH ANALYTICS — MEXICO</div>
-    <div style="margin-bottom:6px;">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 6 hours · Financial pulse every 12 hours</div>
-    <div style="margin-bottom:16px;color:#64748b;">Open-source signals: GDELT · RSS (El Universal, Milenio, Reforma, La Jornada, Animal Político, Proceso, Reuters) · NewsAPI · Brave · Yahoo Finance (IPC · MXN · WTI)</div>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
-        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="background:#f59e0b;color:#1a1206;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">☕ Buy Me a Coffee</a>
-        <a href="mailto:asifahanalytics@gmail.com" style="background:rgba(56,189,248,0.12);border:1px solid #38bdf8;color:#38bdf8;font-weight:800;padding:9px 18px;border-radius:8px;text-decoration:none;transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">✉️ Contact Asifah</a>
+<footer class="asf-footer">
+    <div class="asf-f-title">ASIFAH ANALYTICS — MEXICO</div>
+    <div class="asf-f-sub">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 12 hours</div>
+    <div class="asf-f-grid">
+        <div><h4 data-i18n="footer_about">About</h4><p data-i18n="footer_about_text">Asifah Analytics tracks convergence, not prediction: which open-source signals are present, how strong the evidence is, and what they mean.</p></div>
+        <div><h4 data-i18n="footer_sources">Data Sources</h4><p>GDELT, RSS and Google News (Spanish and English), NewsAPI, Brave fallback; Yahoo Finance market tiles (IPC, USD/MXN, WTI); the Commodities Tracker; US State Department travel advisories.</p></div>
+        <div><h4 data-i18n="footer_method">Methodology</h4><p>Information, not analysis: financial pulse, commodity exposure and Knowledge Library are dated and re-verified on a 45-day cycle. Evidence-graded analysis (red lines, So What) lives on the Mexico rhetoric tracker.</p></div>
     </div>
-    <div style="color:#64748b;font-size:11px;margin-bottom:12px;">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
-    <div style="font-size:12px;"><a href="mission.html" style="color:#93c5fd;">Mission Statement</a> · <a href="privacy.html" style="color:#93c5fd;">Privacy Policy</a> · <a href="index.html" style="color:#93c5fd;">Home</a></div>
+    <div class="asf-f-disc" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div class="asf-f-cta"><a class="asf-coffee" href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a><a class="asf-contact" href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a></div>
+    <div class="asf-f-links"><a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
 </footer>
+<script>(function(){var f=document.querySelector("footer.asf-footer"),m=document.querySelector(".page-with-sidebar .main-content");if(f&&m)m.appendChild(f);})();</script>
 
 </div> <!-- /main-content -->
 </div> <!-- /page-with-sidebar -->
@@ -1383,7 +1422,7 @@ const TRANSLATIONS = {
         pulse_loading: "Loading financial pulse…",
         pulse_prose: "Three live signals tracking Mexico's financial stability. <strong>S&amp;P/BMV IPC</strong> is the Bolsa Mexicana equity benchmark — domestic institutional confidence. <strong>USD/MXN</strong> shows peso FX stress (rising = weaker peso — <strong>INVERTED polarity</strong>), the fastest-moving readout of tariff rhetoric and capital-flow pressure. <strong>WTI (CL=F)</strong> is the Pemex state-oil-revenue proxy — Mexican export crude prices off WTI-linked formulas. Updated every 12 hours.",
         stability_card_title: "🇲🇽 Mexico Stability Index",
-        stability_card_text: "Multi-factor stability assessment combining cartel-conflict posture, state capacity, U.S. border dynamics, commodity exposure (oil/corn), and financial pulse (IPC · USD/MXN · WTI).<br><br><em style=\"color:var(--text-muted);\">The financial pulse backend (mexico_stability.py) is live above. Full composite stability scoring is in development. Until then, draw stability inferences from the commodity, financial pulse, and Knowledge Library cards. When the rhetoric tracker ships, this card will populate with a theatre score.</em>",
+        stability_card_text: "Multi-factor stability assessment combining cartel-conflict posture, state capacity, U.S. border dynamics, commodity exposure (oil/corn), and financial pulse (IPC · USD/MXN · WTI).<br><br><em style=\"color:var(--text-muted);\">The financial pulse backend (mexico_stability.py) is live above. Full composite stability scoring is in development. Until then, draw stability inferences from the commodity, financial pulse, and Knowledge Library cards. The rhetoric tracker is live: its level shows in “Rhetoric Tier” below.</em>",
         meta_mil_posture: "Military Posture",
         meta_rhetoric: "Rhetoric Tier",
         meta_commodity: "Commodity Pressure",
@@ -1463,6 +1502,7 @@ const TRANSLATIONS = {
         travel_text: "<strong style='color: #f97316;'>Reconsidere viajar (el aviso varía por estado).</strong> La violencia — homicidio, secuestro, robo de vehículos y asalto — está extendida. Seis estados, incluidos Colima, Guerrero, Michoacán, Sinaloa, Tamaulipas y Zacatecas, están en <strong>Nivel 4: No viajar</strong>. El gobierno de EE.UU. tiene capacidad limitada para brindar servicios de emergencia en muchas zonas.",
         travel_button: "VER AVISO →",
         rhetoric_ph_title: "📡 🇲🇽 Rastreador de Retórica y Presión de México",
+        rh_live_title: "📡 🇲🇽 Rastreador de retórica y presión — México", rh_live_open: "ABRIR EL RASTREADOR →", rh_live_loading: "Leyendo el rastreador…",
         rhetoric_ph_subtitle: "Próximamente: Gobierno de Sheinbaum · SEDENA / Guardia Nacional · Comunicaciones de cárteles · Frontera con EE.UU. · Presión por designación FTO",
         rhetoric_in_dev: "🔧 En desarrollo",
         rhetoric_ph_text: "El rastreador de retórica dedicado a México está en la hoja de ruta del backend WHA. Hasta entonces, lea la presión de México a través de las tarjetas de exposición a materias primas y pulso financiero — ambas son sensores en vivo. Cuando el rastreador esté activo, esta tarjeta mostrará un indicador compuesto, puntajes por vector y señales principales.",

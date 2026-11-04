@@ -1,4 +1,5 @@
 <!-- Asifah Analytics — Western Hemisphere Rhetoric Monitor v1.0.0 — April 2026 -->
+<!-- Nov 4 2026 (eve): Mexico + Argentina rhetoric trackers added (nav, tracker list, BLUF page map); Governance axis pill. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -563,6 +564,12 @@
     <a href="rhetoric-chile.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇨🇱 Chile Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <a href="chile-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Chile Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <div class="nav-divider"></div>
+    <a href="rhetoric-mexico.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇲🇽 Mexico Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="mexico-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Mexico Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-divider"></div>
+    <a href="rhetoric-argentina.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇦🇷 Argentina Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <a href="argentina-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Argentina Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
+    <div class="nav-divider"></div>
     <a href="rhetoric-venezuela.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🇻🇪 Venezuela Rhetoric Tracker</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <a href="venezuela-stability.html" class="nav-btn active-nav"><span class="nav-btn-label">📊 Venezuela Stability</span><span class="nav-btn-status" data-i18n="navLive">● Live</span></a>
     <div class="nav-divider"></div>
@@ -741,6 +748,24 @@
             vectors:    ['Domestic Stability', 'Resource-Sector Politics', 'US Alignment', 'China Alignment'],
             summaryUrl: WHA_BACKEND + '/api/rhetoric/chile',
             url:        'https://www.asifahanalytics.com/rhetoric-chile.html',
+        },
+        {
+            id:         'mexico',
+            name:       'Mexico Rhetoric & Pressure Tracker',
+            flag:       '🇲🇽',
+            actors:     'Presidency (Sheinbaum) · Security Cabinet · Cartels · US-Mexico Security · US-Mexico Trade · Migration & Border · China-Mexico',
+            vectors:    ['Governance', 'Cartel Violence', 'US Pressure', 'Border & Migration', 'China Channel'],
+            summaryUrl: WHA_BACKEND + '/api/rhetoric/mexico',
+            url:        'https://www.asifahanalytics.com/rhetoric-mexico.html',
+        },
+        {
+            id:         'argentina',
+            name:       'Argentina Rhetoric & Pressure Tracker',
+            flag:       '🇦🇷',
+            actors:     'Presidency (Milei) · Congress & the Street · Economy/IMF · US-Argentina · China-Argentina · UK/Falklands · Iran, Hizballah & the Tri-Border',
+            vectors:    ['Governance', 'Economy & Peso', 'US Alignment', 'China Alignment', 'South Atlantic', 'Security'],
+            summaryUrl: WHA_BACKEND + '/api/rhetoric/argentina',
+            url:        'https://www.asifahanalytics.com/rhetoric-argentina.html',
         },
         {
             id:         'venezuela',
@@ -1120,9 +1145,9 @@
         const gpiSignals = (window._gpiSignalsForRegion || []);
 
         // Approach B helpers (Jun 13 2026)
-        const _WHA_RHET_PAGE = { cuba:'rhetoric-cuba.html', peru:'rhetoric-peru.html', chile:'rhetoric-chile.html', venezuela:'rhetoric-venezuela.html', us:'rhetoric-us.html' };
-        const _WHA_LOC_NAME = { cuba:'Cuba', peru:'Peru', chile:'Chile', venezuela:'Venezuela', us:'United States', mexico:'Mexico', colombia:'Colombia', brazil:'Brazil', haiti:'Haiti', panama:'Panama', regional:'Western Hemisphere' };
-        const _WHA_AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
+        const _WHA_RHET_PAGE = { cuba:'rhetoric-cuba.html', peru:'rhetoric-peru.html', chile:'rhetoric-chile.html', venezuela:'rhetoric-venezuela.html', us:'rhetoric-us.html', mexico:'rhetoric-mexico.html', argentina:'rhetoric-argentina.html' };
+        const _WHA_LOC_NAME = { cuba:'Cuba', peru:'Peru', chile:'Chile', venezuela:'Venezuela', us:'United States', mexico:'Mexico', argentina:'Argentina', colombia:'Colombia', brazil:'Brazil', haiti:'Haiti', panama:'Panama', regional:'Western Hemisphere' };
+        const _WHA_AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian', governance:'Governance' };
         function _whaEsc(s){ if(s==null)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function _whaEscMd(s){ return _whaEsc(s).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>'); }
         function _whaLvlChip(sig){ let lv=sig.level,txt,bg; if(typeof lv==='number'){txt='L'+lv;bg=['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'][Math.max(0,Math.min(5,lv))];}else{const t=String(lv||'').toLowerCase();txt=(t||'L0').toUpperCase();bg=t==='surge'?'#dc2626':t==='high'?'#ef4444':t==='elevated'?'#f97316':'#6b7280';} return '<span class="sigrow-chip" style="background:'+bg+';">'+txt+'</span>'; }

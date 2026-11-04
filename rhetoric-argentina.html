@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<!-- Asifah Analytics — Argentina Rhetoric Tracker page v1.0.0 — Nov 4, 2026 -->
+<!-- Shared-engine page: reads /api/rhetoric/argentina (wha_rhetoric_engine). Vectors, actors and red lines render from the payload, so a new country needs only translations. -->
+<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
+<html lang="en" dir="ltr">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z9114D1Z5C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Argentina Rhetoric Tracker | Asifah Analytics</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* ARCTIC PALETTE — canonical for rhetoric trackers */
+            --bg-primary: #060d1a;
+            --bg-card: #0d1b2e;
+            --bg-signal: #0a1626;
+            --bg-elevated: #112338;
+            --border-color: #1e3a5f;
+            --border-strong: #2a5288;
+            --text-primary: #e2f0fb;
+            --text-secondary: #93c5fd;
+            --text-muted: #5d7ea3;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #a78bfa;
+
+            /* Levels */
+            --level-low-bg: rgba(16,185,129,0.10);
+            --level-low-border: #10b981;
+            --level-normal-bg: rgba(56,189,248,0.10);
+            --level-normal-border: #38bdf8;
+            --level-elevated-bg: rgba(245,158,11,0.10);
+            --level-elevated-border: #f59e0b;
+            --level-high-bg: rgba(249,115,22,0.10);
+            --level-high-border: #f97316;
+            --level-surge-bg: rgba(239,68,68,0.12);
+            --level-surge-border: #ef4444;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px rgba(56,189,248,0.15);
+
+            --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+            --loading-bg: rgba(6,13,26,0.95);
+            --header-gradient: linear-gradient(135deg, #0d1b2e 0%, #112338 50%, #1e3a5f 100%);
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.55;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 700px;
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+            filter: var(--watermark-filter);
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--loading-bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner {
+            width: 48px; height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--header-gradient);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-width: 1800px;          /* match .main-layout column width */
+            margin: 0 auto;
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .header-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .header-logo { height: 50px; width: auto; }
+        .header-right-controls { display: flex; gap: 12px; align-items: center; }
+        .home-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .home-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .header-row-2 { text-align: center; margin-bottom: 10px; }
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-top: 6px;
+        }
+        .header-row-3 {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .lang-toggle {
+            display: flex;
+            gap: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .lang-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .lang-btn:hover { background: rgba(56,189,248,0.10); }
+        .lang-btn.active { background: rgba(56,189,248,0.20); color: var(--accent-cyan); }
+        .toggle-container { display: flex; align-items: center; gap: 8px; }
+        .toggle-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1.5px; }
+        .toggle-switch {
+            width: 40px; height: 22px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 1px; left: 1px;
+            width: 18px; height: 18px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        body[data-theme="light"] .toggle-switch::after { transform: translateX(18px); }
+        .refresh-btn {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .refresh-btn:hover {
+            background: rgba(56,189,248,0.1);
+            box-shadow: var(--shadow-glow);
+        }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Layout */
+        .main-layout {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 24px;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar — gold-standard pattern */
+        .sidebar {
+            position: sticky;
+            top: 130px;
+            align-self: start;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+        .sidebar-section { margin-bottom: 14px; }
+        .sidebar-link {
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            background: var(--bg-signal);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-link:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateX(2px);
+        }
+        .sidebar-link.crosscut {
+            border-left-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(16,185,129,0.05);
+        }
+        .sidebar-link.rhetoric { border-left-color: var(--accent-orange); }
+        .sidebar-link.rhetoric:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .sidebar-link.active {
+            background: rgba(249,115,22,0.15);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+        .sidebar-divider { height: 1px; background: var(--border-color); margin: 10px 0; }
+
+        /* Content */
+        .content { min-width: 0; }
+        .updated-bar {
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            padding: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+
+        /* Composite gauge strip */
+        .composite-strip {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .gauge-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .gauge-card.composite { border-top: 3px solid var(--accent-cyan); }
+        .gauge-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .gauge-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1.1;
+        }
+        .gauge-value.composite { font-size: 1.7rem; }
+        .gauge-sub {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .level-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            border: 1px solid;
+        }
+        .level-pill.level-low { background: var(--level-low-bg); border-color: var(--level-low-border); color: var(--level-low-border); }
+        .level-pill.level-normal { background: var(--level-normal-bg); border-color: var(--level-normal-border); color: var(--level-normal-border); }
+        .level-pill.level-elevated { background: var(--level-elevated-bg); border-color: var(--level-elevated-border); color: var(--level-elevated-border); }
+        .level-pill.level-high { background: var(--level-high-bg); border-color: var(--level-high-border); color: var(--level-high-border); }
+        .level-pill.level-surge { background: var(--level-surge-bg); border-color: var(--level-surge-border); color: var(--level-surge-border); }
+
+        /* Section header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 22px 0 12px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .section-icon { font-size: 1.3rem; }
+        .section-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 8px;
+            font-style: italic;
+        }
+
+        /* Executive summary card */
+        .exec-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .exec-summary p {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* So What card */
+        .so-what {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-orange);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+        .so-what-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .so-what-item {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+        .so-what-bullet {
+            flex-shrink: 0;
+            font-size: 1rem;
+            color: var(--accent-orange);
+            line-height: 1.4;
+        }
+        /* Alignment-drift factor block (BRI inroad read) */
+        .drift-block {
+            background: var(--bg-signal);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-orange);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+        .drift-band-row { margin-bottom: 10px; }
+        .drift-band-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+        .drift-sowhat {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        .drift-li-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+        .drift-li-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+        .drift-li-list li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            padding: 4px 0 4px 18px;
+            position: relative;
+        }
+        .drift-li-list li::before {
+            content: '\25B8';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+        .drift-disclaimer {
+            font-size: 0.75rem;
+            line-height: 1.45;
+            color: var(--text-muted);
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin: 0;
+        }
+
+        /* Top signals */
+        .top-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .top-signals-grid { grid-template-columns: 1fr; } }
+        .signal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .signal-card:hover { border-color: var(--accent-cyan); transform: translateY(-1px); }
+        .signal-card.level-surge { border-left-color: var(--level-surge-border); }
+        .signal-card.level-high { border-left-color: var(--level-high-border); }
+        .signal-card.level-elevated { border-left-color: var(--level-elevated-border); }
+        .signal-card.level-normal { border-left-color: var(--level-normal-border); }
+        .signal-card.level-low { border-left-color: var(--level-low-border); }
+        .signal-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+        .signal-type-pill {
+            font-size: 0.55rem;
+            padding: 2px 8px;
+            border-radius: 3px;
+            background: rgba(56,189,248,0.10);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56,189,248,0.30);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .signal-type-pill.t-tripwire { background: rgba(239,68,68,0.10); color: #fca5a5; border-color: rgba(239,68,68,0.30); }
+        .signal-type-pill.t-convergence { background: rgba(167,139,250,0.10); color: #c4b5fd; border-color: rgba(167,139,250,0.30); }
+        .signal-type-pill.t-commodity_coupling { background: rgba(245,158,11,0.10); color: #fcd34d; border-color: rgba(245,158,11,0.30); }
+        .signal-type-pill.t-crosstheater { background: rgba(16,185,129,0.10); color: #6ee7b7; border-color: rgba(16,185,129,0.30); }
+        .signal-short {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .signal-long {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+        .signal-sources {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .signal-source-row {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .signal-source-row a { color: var(--text-secondary); text-decoration: none; }
+        .signal-source-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+
+        /* Actor cards */
+        .actor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 1080px) { .actor-grid { grid-template-columns: 1fr; } }
+        .actor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+        .actor-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .actor-card.level-surge { border-top-color: var(--level-surge-border); }
+        .actor-card.level-high { border-top-color: var(--level-high-border); }
+        .actor-card.level-elevated { border-top-color: var(--level-elevated-border); }
+        .actor-card.level-normal { border-top-color: var(--level-normal-border); }
+        .actor-card.level-low { border-top-color: var(--level-low-border); }
+        .actor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .actor-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .actor-icon { font-size: 1.4rem; line-height: 1; }
+        .actor-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .actor-role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-style: italic;
+        }
+        .actor-stats {
+            display: flex;
+            gap: 14px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+        .actor-stats span { color: var(--text-muted); }
+        .actor-stats strong { color: var(--text-primary); font-weight: 700; }
+        .actor-articles-toggle {
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            user-select: none;
+            margin-top: 6px;
+        }
+        .actor-articles-toggle:hover { text-decoration: underline; }
+        .actor-articles {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+        .actor-articles.visible { display: block; }
+        .actor-article-row {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(30,58,95,0.4);
+            line-height: 1.45;
+        }
+        .actor-article-row:last-child { border-bottom: none; }
+        .actor-article-row a { color: var(--text-secondary); text-decoration: none; }
+        .actor-article-row a:hover { color: var(--accent-cyan); text-decoration: underline; }
+        .article-source-tag {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
+        /* Vector breakdown card */
+        .vector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 600px) { .vector-grid { grid-template-columns: 1fr; } }
+        .vector-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .vector-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .vector-actors {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Commodity coupling card */
+        .commodity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .commodity-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .commodity-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .commodity-card-detail {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Empty / pending */
+        .pending-banner {
+            background: rgba(245,158,11,0.10);
+            border: 1px solid var(--level-elevated-border);
+            color: var(--accent-yellow);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Light theme overrides */
+        body[data-theme="light"] {
+            --bg-primary: #f0f4f7;
+            --bg-card: #ffffff;
+            --bg-signal: #f0f5fa;
+            --bg-elevated: #e8eef5;
+            --border-color: #d1dce6;
+            --border-strong: #a8b8cc;
+            --text-primary: #1e3a5f;
+            --text-secondary: #2c5282;
+            --text-muted: #5d7ea3;
+            --watermark-filter: saturate(2) brightness(1.1) hue-rotate(190deg);
+            --shadow-sm: 0 1px 3px rgba(30,58,95,0.08);
+            --shadow-md: 0 4px 12px rgba(30,58,95,0.12);
+            --shadow-glow: 0 0 12px rgba(56,189,248,0.2);
+            --header-gradient: linear-gradient(135deg, #ffffff 0%, #f0f5fa 50%, #e8eef5 100%);
+            --loading-bg: rgba(240,244,247,0.95);
+        }
+
+        /* Mobile */
+        @media (max-width: 1080px) {
+            .composite-strip { grid-template-columns: 1fr 1fr; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; max-height: none; }
+        }
+        @media (max-width: 600px) {
+            .composite-strip { grid-template-columns: 1fr; }
+        }
+
+        /* ── Canonical mobile drawer (Gold Standard, Jun 2026) ── */
+        .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 1001;
+            background: var(--bg-card, #0d1b2e); border: 1px solid var(--border-color, #1e3a5f);
+            color: #38bdf8; font-size: 20px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; }
+        .sidebar-backdrop.show { display: block; }
+        @media (max-width: 1199px) {
+            .menu-toggle { display: block; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100vh; max-height: 100vh;
+                width: 264px; overflow-y: auto; margin: 0; padding: 56px 14px 24px;
+                background: var(--bg-card, #0d1b2e); border-right: 1px solid var(--border-color, #1e3a5f);
+                z-index: 1000; transform: translateX(-105%); transition: transform 0.25s ease; }
+            .sidebar.open { transform: translateX(0); }
+        }
+    
+        /* ── Shared-engine page additions (Nov 4 2026) ── */
+        .composite-strip.dyn { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        .lines-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        @media (max-width: 900px) { .lines-grid { grid-template-columns: 1fr; } }
+        .line-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 16px; }
+        .line-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px dashed var(--border-color); }
+        .line-row:last-child { border-bottom: none; }
+        .line-status { flex-shrink: 0; font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; padding: 3px 7px; border-radius: 4px; min-width: 92px; text-align: center; }
+        .st-BREACHED { background: #dc2626; color: #fff; }
+        .st-APPROACHING { background: #f97316; color: #1a0f05; }
+        .st-RUMOUR { background: transparent; color: #f59e0b; border: 1px dashed #f59e0b; }
+        .st-WATCHING { background: rgba(148,163,184,0.15); color: var(--text-muted); border: 1px solid var(--border-color); }
+        .st-ACTIVE { background: #16a34a; color: #fff; }
+        .st-REPORTED { background: rgba(22,163,74,0.18); color: #4ade80; border: 1px solid #16a34a; }
+        .line-label { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+        .line-why { color: var(--text-secondary); font-size: 0.78rem; line-height: 1.45; margin-top: 3px; }
+        .line-src { font-size: 0.72rem; margin-top: 4px; }
+        .line-src a { color: var(--accent-cyan); }
+        .so-what-item.standing { opacity: 0.92; font-style: italic; }
+        .coverage-note { font-size: 0.72rem; color: var(--text-muted); text-align: center; margin: -6px 0 16px; line-height: 1.5; }
+        .page-with-sidebar > .nav-sidebar { position: fixed; }
+        @media (max-width: 600px) { .header { overflow-x: hidden; } .header-row-3 { flex-wrap: wrap; gap: 8px; } }
+    
+/* ── Canonical wide footer (military.html pattern, Nov 4 2026) ── */
+footer.asf-footer { max-width: 1800px; margin: 30px auto; padding: 30px 28px 24px; background: #0d1b2e;
+    border: 1px solid #1e3a5f; border-radius: 12px; color: #93c5fd; font-size: 14px; line-height: 1.6;
+    position: relative; z-index: 1; box-sizing: border-box; width: calc(100% - 32px); }
+footer.asf-footer .asf-f-title { text-align: center; font-weight: 800; font-size: 17px; color: #e2f0fb; letter-spacing: 1.5px; margin-bottom: 4px; }
+footer.asf-footer .asf-f-sub { text-align: center; color: #93c5fd; font-size: 13px; margin-bottom: 20px; }
+footer.asf-footer .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-bottom: 18px; text-align: left; }
+footer.asf-footer h4 { color: #e2f0fb; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
+footer.asf-footer p { margin: 0; color: #93c5fd; font-size: 13.5px; }
+footer.asf-footer .asf-f-disc { border-top: 1px solid #1e3a5f; padding-top: 14px; color: #64748b; font-size: 12.5px; text-align: center; }
+footer.asf-footer .asf-f-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0 14px; }
+footer.asf-footer .asf-f-cta a { padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; transition: transform .15s, box-shadow .15s; }
+footer.asf-footer .asf-f-cta a:hover { transform: translateY(-2px); }
+footer.asf-footer .asf-coffee { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #1f1f1f; box-shadow: 0 3px 10px rgba(245,158,11,0.3); }
+footer.asf-footer .asf-contact { background: linear-gradient(135deg,#1e3a5f,#38bdf8); color: #fff; box-shadow: 0 3px 10px rgba(56,189,248,0.3); }
+footer.asf-footer .asf-f-links { text-align: center; font-size: 13px; }
+footer.asf-footer .asf-f-links a { color: #93c5fd; }
+@media (max-width: 900px) { footer.asf-footer .asf-f-grid { grid-template-columns: 1fr; } }
+/* On pages with a sidebar the footer is moved into the content column (script below), so it lines up with the cards. */
+.main-content > footer.asf-footer { width: 100%; max-width: none; margin: 30px 0; }
+</style>
+</head>
+<body data-theme="dark">
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+<div class="watermark"></div>
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">SCANNING ARGENTINA RHETORIC...</div>
+</div>
+
+<header class="header">
+    <div class="header-row-1">
+        <a href="index.html"><img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo"></a>
+        <div class="header-right-controls">
+            <a href="argentina-stability.html" class="home-btn" data-i18n="back_to_stability">← ARGENTINA STABILITY</a>
+            <a href="index.html" class="home-btn" data-i18n="home">🏠 HOME</a>
+        </div>
+    </div>
+    <div class="header-row-2">
+        <div class="header-title" data-i18n="page_title">🇦🇷 ARGENTINA RHETORIC &amp; PRESSURE TRACKER</div>
+        <div class="header-subtitle" data-i18n="page_subtitle">Milei & the peso · US vs China · Falklands & the South Atlantic · Iran, Hizballah & the Tri-Border — 7 actors, evidence-graded</div>
+    </div>
+    <div class="header-row-3">
+        <div class="lang-toggle"><button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button><button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button></div>
+        <div class="toggle-container">
+            <span class="toggle-label" data-i18n="theme_toggle">DARK / LIGHT</span>
+            <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+        </div>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshData()" data-i18n="refresh">⟳ REFRESH</button>
+    </div>
+</header>
+
+<div class="main-layout">
+    <aside class="sidebar" id="navSidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
+            <a href="middle-east.html" class="sidebar-link">🌍 Middle East</a>
+            <a href="asia.html" class="sidebar-link">🌏 Asia-Pacific</a>
+            <a href="europe.html" class="sidebar-link">🌍 Europe</a>
+            <a href="africa.html" class="sidebar-link">🌍 Africa</a>
+            <a href="wha.html" class="sidebar-link">🌎 Western Hemisphere</a>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
+            <a href="commodities.html" class="sidebar-link crosscut">🌾 Commodities Tracker</a>
+            <a href="military.html" class="sidebar-link crosscut">🪖 Military Tracker</a>
+            <a href="gpi.html" class="sidebar-link crosscut">🌐 Global Pressure Index</a>
+            <a href="market-watch.html" class="sidebar-link crosscut">📈 Market Watch</a>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_rhetoric">RHETORIC LANDINGS</div>
+            <a href="rhetoric-index.html" class="sidebar-link rhetoric">💬 Middle East Rhetoric</a>
+            <a href="rhetoric-asia.html" class="sidebar-link rhetoric">💬 Asia Rhetoric</a>
+            <a href="rhetoric-europe.html" class="sidebar-link rhetoric">💬 Europe Rhetoric</a>
+            <a href="rhetoric-wha.html" class="sidebar-link rhetoric">💬 Western Hemisphere Rhetoric</a>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-header" data-i18n="sb_country">ARGENTINA PAGES</div>
+            <a href="rhetoric-argentina.html" class="sidebar-link rhetoric active">💬 Argentina Rhetoric</a>
+            <a href="argentina-stability.html" class="sidebar-link">📊 Argentina Stability</a>
+            <a href="paraguay-stability.html" class="sidebar-link">🇵🇾 Paraguay (Tri-Border)</a>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="updated-bar" id="updatedBar" data-i18n="initializing">Initializing...</div>
+        <div class="coverage-note" id="coverageNote"></div>
+        <div class="pending-banner" id="pendingBanner" style="display: none;" data-i18n="pending_banner">⏳ First scan in progress — this normally takes 3–5 minutes after a fresh deploy.</div>
+
+        <div class="composite-strip dyn" id="compositeStrip"><div class="gauge-card composite"><div class="gauge-label" data-i18n="composite_label">Composite</div><div class="gauge-value composite">—</div></div></div>
+
+        <div class="section-header"><span class="section-icon">📰</span><span class="section-title" data-i18n="sec_exec">Bottom Line</span></div>
+        <div class="exec-summary" id="execSummary"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
+        <div class="section-header"><span class="section-icon">🎯</span><span class="section-title" data-i18n="sec_so_what">So What</span><span class="section-desc" data-i18n="sec_so_what_desc">What it means, and the question behind the headlines</span></div>
+        <div class="so-what" id="soWhatCard"><p class="empty-state" data-i18n="loading">Loading...</p></div>
+
+        <div class="section-header"><span class="section-icon">🚦</span><span class="section-title" data-i18n="sec_lines">Red Lines &amp; Cooperation Signals</span><span class="section-desc" data-i18n="sec_lines_desc">Crossed only when 2+ separate outlets report it as fact</span></div>
+        <div class="lines-grid">
+            <div class="line-card"><div class="vector-name" data-i18n="red_lines">RED LINES</div><div id="redLines"></div></div>
+            <div class="line-card"><div class="vector-name" data-i18n="green_lines">COOPERATION / OFF-RAMPS</div><div id="greenLines"></div></div>
+        </div>
+
+        <div class="section-header"><span class="section-icon">⚡</span><span class="section-title" data-i18n="sec_signals">Top Signals</span><span class="section-desc" data-i18n="sec_signals_desc">Evidence-graded: confirmed, single outlet, or busier than usual</span></div>
+        <div class="top-signals-grid" id="topSignalsGrid"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+
+        <div class="section-header"><span class="section-icon">🧭</span><span class="section-title" data-i18n="sec_vectors">Vectors</span><span class="section-desc" data-i18n="sec_vectors_desc">How the actors group</span></div>
+        <div class="vector-grid" id="vectorGrid"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+
+        <div class="section-header"><span class="section-icon">🎭</span><span class="section-title" data-i18n="sec_actors">Actors</span><span class="section-desc" data-i18n="sec_actors_desc">Who is talking, and how much</span></div>
+        <div class="actor-grid" id="actorGrid"><div class="empty-state" data-i18n="loading">Loading...</div></div>
+    </main>
+</div>
+
+<footer class="asf-footer">
+    <div class="asf-f-title">ASIFAH ANALYTICS — ARGENTINA</div>
+    <div class="asf-f-sub">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 12 hours</div>
+    <div class="asf-f-grid">
+        <div><h4 data-i18n="footer_about">About</h4><p data-i18n="footer_about_text">Asifah Analytics tracks convergence, not prediction: which open-source signals are present, how strong the evidence is, and what they mean.</p></div>
+        <div><h4 data-i18n="footer_sources">Data Sources</h4><p>La Nación, Infobae, Buenos Aires Times, MercoPress (RSS); Google News in Spanish and English; GDELT; NewsAPI; the shared Hizballah Latin America module.</p></div>
+        <div><h4 data-i18n="footer_method">Methodology</h4><p>7 actors in 6 vectors. Volume alone tops out at "elevated"; an event counts only when 2+ separate outlets report it as fact; one outlet = approaching; rumour and hedged wording never lift the level. L5 is reserved for kinetic ladders.</p></div>
+    </div>
+    <div class="asf-f-disc" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
+    <div class="asf-f-cta"><a class="asf-coffee" href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a><a class="asf-contact" href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a></div>
+    <div class="asf-f-links"><a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
+</footer>
+<script>(function(){var f=document.querySelector("footer.asf-footer"),m=document.querySelector(".page-with-sidebar .main-content");if(f&&m)m.appendChild(f);})();</script>
+
+<script>
+const API_BASE = 'https://asifah-wha-backend.onrender.com';
+const ENDPOINT = API_BASE + '/api/rhetoric/argentina';
+const T = {
+ "en": {
+  "home": "🏠 HOME",
+  "theme_toggle": "DARK / LIGHT",
+  "refresh": "⟳ REFRESH",
+  "loading": "Loading...",
+  "initializing": "Initializing...",
+  "load_error": "Could not load data — please retry (the backend may be waking up).",
+  "composite_label": "Theatre level",
+  "sec_exec": "Bottom Line",
+  "sec_so_what": "So What",
+  "sec_so_what_desc": "What it means, and the question behind the headlines",
+  "sec_lines": "Red Lines & Cooperation Signals",
+  "sec_lines_desc": "Crossed only when 2+ separate outlets report it as fact",
+  "red_lines": "RED LINES",
+  "green_lines": "COOPERATION / OFF-RAMPS",
+  "sec_signals": "Top Signals",
+  "sec_signals_desc": "Evidence-graded: confirmed, single outlet, or busier than usual",
+  "sec_vectors": "Vectors",
+  "sec_vectors_desc": "How the actors group",
+  "sec_actors": "Actors",
+  "sec_actors_desc": "Who is talking, and how much",
+  "drift_label": "China vs US",
+  "leading_indicators": "Leading indicators",
+  "level_low": "Low",
+  "level_normal": "Normal",
+  "level_elevated": "Elevated",
+  "level_high": "High",
+  "level_surge": "Surge",
+  "label_0": "Monitoring",
+  "label_1": "Rhetoric",
+  "label_2": "Warning",
+  "label_3": "Direct Threat",
+  "label_4": "Imminent Crisis",
+  "st_BREACHED": "CROSSED",
+  "st_APPROACHING": "ONE OUTLET",
+  "st_RUMOUR": "RUMOUR",
+  "st_WATCHING": "WATCHING",
+  "st_ACTIVE": "ACTIVE",
+  "st_REPORTED": "ONE OUTLET",
+  "type_tripwire": "Event",
+  "type_theatre_read": "Overall read",
+  "type_alignment_drift": "China vs US",
+  "type_convergence": "Convergence",
+  "type_actor_signal": "Busier than usual",
+  "type_commodity_coupling": "Markets",
+  "type_crosstheater": "Cross-theatre",
+  "type_off_ramp": "Cooperation",
+  "grade_corroborated": "confirmed",
+  "grade_single_source": "one outlet",
+  "grade_rumint": "rumour",
+  "what_it_means": "What it means",
+  "no_signals": "No signals this cycle — unread is not calm.",
+  "actor_items": "Items",
+  "actor_outlets": "Outlets",
+  "actor_baseline": "Usual",
+  "actor_show_articles": "Show top articles",
+  "actor_hide_articles": "Hide articles",
+  "actor_no_articles": "No articles this scan — unread, not calm.",
+  "updated_prefix": "LAST SCAN",
+  "updated_cached": "CACHED",
+  "updated_live": "LIVE",
+  "cov_articles": "articles about the country",
+  "cov_stale": "stale dropped",
+  "cov_off": "about other countries filtered out",
+  "cov_thin": "thin coverage: quiet may be unread rather than calm",
+  "pending_banner": "⏳ First scan in progress — this normally takes 3–5 minutes after a fresh deploy.",
+  "prose_en_note": "",
+  "disclaimer": "Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.",
+  "sb_regional": "REGIONAL LANDINGS",
+  "sb_crosscut": "CROSS-CUTTING TOOLS",
+  "sb_rhetoric": "RHETORIC LANDINGS",
+  "page_title": "🇦🇷 ARGENTINA RHETORIC & PRESSURE TRACKER",
+  "back_to_stability": "← ARGENTINA STABILITY",
+  "page_subtitle": "Milei & the peso · US vs China · Falklands & the South Atlantic · Iran, Hizballah & the Tri-Border — 7 actors, evidence-graded",
+  "sb_country": "ARGENTINA PAGES",
+  "vec_governance": "Governance & the Street",
+  "vec_economy": "Economy & the Peso",
+  "vec_us_alignment": "US Alignment",
+  "vec_china_alignment": "China Alignment",
+  "vec_south_atlantic": "South Atlantic",
+  "vec_security": "Iran & Hizballah"
+ },
+ "es": {
+  "home": "🏠 INICIO",
+  "theme_toggle": "OSCURO / CLARO",
+  "refresh": "⟳ ACTUALIZAR",
+  "loading": "Cargando...",
+  "initializing": "Inicializando...",
+  "load_error": "No se pudieron cargar los datos — reintente (el servidor puede estar despertando).",
+  "composite_label": "Nivel del teatro",
+  "sec_exec": "Lo esencial",
+  "sec_so_what": "Y qué",
+  "sec_so_what_desc": "Qué significa, y la pregunta detrás de los titulares",
+  "sec_lines": "Líneas rojas y señales de cooperación",
+  "sec_lines_desc": "Se cruzan solo cuando 2+ medios distintos lo informan como hecho",
+  "red_lines": "LÍNEAS ROJAS",
+  "green_lines": "COOPERACIÓN / SALIDAS",
+  "sec_signals": "Señales principales",
+  "sec_signals_desc": "Graduadas por evidencia: confirmado, un medio, o más cobertura de lo normal",
+  "sec_vectors": "Vectores",
+  "sec_vectors_desc": "Cómo se agrupan los actores",
+  "sec_actors": "Actores",
+  "sec_actors_desc": "Quién habla, y cuánto",
+  "drift_label": "China vs EE.UU.",
+  "leading_indicators": "Indicadores adelantados",
+  "level_low": "Bajo",
+  "level_normal": "Normal",
+  "level_elevated": "Elevado",
+  "level_high": "Alto",
+  "level_surge": "Crítico",
+  "label_0": "Monitoreo",
+  "label_1": "Retórica",
+  "label_2": "Advertencia",
+  "label_3": "Amenaza directa",
+  "label_4": "Crisis inminente",
+  "st_BREACHED": "CRUZADA",
+  "st_APPROACHING": "UN MEDIO",
+  "st_RUMOUR": "RUMOR",
+  "st_WATCHING": "VIGILANDO",
+  "st_ACTIVE": "ACTIVA",
+  "st_REPORTED": "UN MEDIO",
+  "type_tripwire": "Evento",
+  "type_theatre_read": "Lectura general",
+  "type_alignment_drift": "China vs EE.UU.",
+  "type_convergence": "Convergencia",
+  "type_actor_signal": "Más cobertura",
+  "type_commodity_coupling": "Mercados",
+  "type_crosstheater": "Multi-teatro",
+  "type_off_ramp": "Cooperación",
+  "grade_corroborated": "confirmado",
+  "grade_single_source": "un medio",
+  "grade_rumint": "rumor",
+  "what_it_means": "Qué significa",
+  "no_signals": "Sin señales en este ciclo — sin lectura no es calma.",
+  "actor_items": "Notas",
+  "actor_outlets": "Medios",
+  "actor_baseline": "Normal",
+  "actor_show_articles": "Ver artículos",
+  "actor_hide_articles": "Ocultar artículos",
+  "actor_no_articles": "Sin artículos en este barrido — sin lectura, no calma.",
+  "updated_prefix": "ÚLTIMO BARRIDO",
+  "updated_cached": "EN CACHÉ",
+  "updated_live": "EN VIVO",
+  "cov_articles": "artículos sobre el país",
+  "cov_stale": "viejos descartados",
+  "cov_off": "sobre otros países filtrados",
+  "cov_thin": "cobertura escasa: la calma puede ser falta de lectura",
+  "pending_banner": "⏳ Primer barrido en curso — suele tardar 3 a 5 minutos tras un despliegue.",
+  "prose_en_note": "Los análisis generados (lo esencial, señales, \"y qué\") aparecen en inglés.",
+  "disclaimer": "Indicadores de convergencia, no predicciones. Asifah informa qué señales de fuentes abiertas están presentes — no pronostica resultados. No apto para uso operativo.",
+  "sb_regional": "PÁGINAS REGIONALES",
+  "sb_crosscut": "HERRAMIENTAS TRANSVERSALES",
+  "sb_rhetoric": "PÁGINAS DE RETÓRICA",
+  "page_title": "🇦🇷 RASTREADOR DE RETÓRICA Y PRESIÓN — ARGENTINA",
+  "back_to_stability": "← ESTABILIDAD ARGENTINA",
+  "page_subtitle": "Milei y el peso · EE.UU. vs China · Malvinas y el Atlántico Sur · Irán, Hezbolá y la Triple Frontera — 7 actores, graduado por evidencia",
+  "sb_country": "PÁGINAS DE ARGENTINA",
+  "vec_governance": "Gobierno y la calle",
+  "vec_economy": "Economía y el peso",
+  "vec_us_alignment": "Alineamiento EE.UU.",
+  "vec_china_alignment": "Alineamiento China",
+  "vec_south_atlantic": "Atlántico Sur",
+  "vec_security": "Irán y Hezbolá"
+ }
+};
+const LS_KEY = 'asifah_argentina_rh_lang';
+let currentLang = 'en';
+try { const s = localStorage.getItem(LS_KEY); if (s && T[s]) currentLang = s; } catch (e) {}
+let scanData = null;
+
+function tr(key) { const t = T[currentLang] || {}; return (t[key] !== undefined) ? t[key] : (T.en[key] !== undefined ? T.en[key] : key); }
+function el(id) { return document.getElementById(id); }
+function escapeHtml(s) { if (s == null) return ''; return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'); }
+const em = s => (s || '').replace(/--/g, '—');
+const LVL = ['low', 'normal', 'elevated', 'high', 'surge'];
+function lvlName(x) { return (typeof x === 'number') ? LVL[Math.max(0, Math.min(4, x))] : (x || 'low'); }
+function pill(level) { const l = lvlName(level); return '<span class="level-pill level-' + l + '">' + escapeHtml(tr('level_' + l)) + '</span>'; }
+
+const DEFAULTS = {};
+function captureDefaults() { document.querySelectorAll('[data-i18n]').forEach(e => { DEFAULTS[e.getAttribute('data-i18n')] = e.textContent; }); }
+function applyI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(e => {
+        const k = e.getAttribute('data-i18n'); const t = T[currentLang] || {};
+        e.textContent = (t[k] !== undefined) ? t[k] : (T.en[k] !== undefined ? T.en[k] : DEFAULTS[k]);
+    });
+}
+function setLang(lang) {
+    if (!T[lang]) return; currentLang = lang;
+    try { localStorage.setItem(LS_KEY, lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    applyI18n(); if (scanData) renderEverything();
+}
+function toggleTheme() {
+    const b = document.body; const next = (b.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+    b.setAttribute('data-theme', next); try { localStorage.setItem('asifah_theme', next); } catch (e) {}
+}
+(function () { try { if (localStorage.getItem('asifah_theme') === 'light') document.body.setAttribute('data-theme', 'light'); } catch (e) {} })();
+
+async function loadAll(force) {
+    const btn = el('refreshBtn'); btn.disabled = true; btn.textContent = '⟳ ' + tr('loading');
+    try {
+        const r = await fetch(force ? ENDPOINT + '?refresh=true' : ENDPOINT);
+        const d = await r.json();
+        if (d && d.success) { scanData = d; renderEverything(); }
+        else el('updatedBar').textContent = '⚠️ ' + tr('load_error');
+    } catch (e) { el('updatedBar').textContent = '⚠️ ' + tr('load_error'); }
+    finally { btn.disabled = false; btn.textContent = tr('refresh'); el('loadingOverlay').classList.add('hidden'); }
+}
+function refreshData() { loadAll(true); }
+
+function renderEverything() {
+    renderUpdated(); renderComposite(); renderExec(); renderSoWhat(); renderLines();
+    renderSignals(); renderVectors(); renderActors();
+    el('pendingBanner').style.display = (scanData.pending || !scanData.total_articles_scanned) ? 'block' : 'none';
+}
+function renderUpdated() {
+    const d = scanData; if (!d.last_updated) { el('updatedBar').textContent = tr('initializing'); return; }
+    const dt = new Date(d.last_updated);
+    const f = dt.toLocaleString(currentLang === 'en' ? 'en-US' : currentLang, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+    el('updatedBar').textContent = tr('updated_prefix') + ' ' + f + ' UTC · ' + (d.cached ? tr('updated_cached') : tr('updated_live'));
+    const er = d.evidence_rules || {}; const sc = d.source_counts || {};
+    const n = d.total_articles_scanned || 0;
+    let cov = n + ' ' + tr('cov_articles') + ' · ' + (er.stale_dropped || 0) + ' ' + tr('cov_stale') + ' · ' + (er.not_about_country || 0) + ' ' + tr('cov_off');
+    if (n < 30) cov += ' — ' + tr('cov_thin');
+    el('coverageNote').textContent = cov;
+}
+function renderComposite() {
+    const d = scanData; const vs = d.vector_scores || {}; const vl = d.vector_levels || {};
+    let h = '<div class="gauge-card composite"><div class="gauge-label">' + escapeHtml(tr('composite_label')) + '</div>' +
+            '<div class="gauge-value composite">L' + (d.theatre_level || 0) + '</div>' + pill(d.composite_level) +
+            '<div class="gauge-label" style="margin-top:6px;">' + escapeHtml(tr('label_' + (d.theatre_level || 0))) + '</div></div>';
+    (d.vectors_meta || []).forEach(v => {
+        h += '<div class="gauge-card"><div class="gauge-label">' + escapeHtml(tr('vec_' + v.id) || v.name) + '</div>' +
+             '<div class="gauge-value">' + (vs[v.id] || 0).toFixed(1) + '</div>' + pill(vl[v.id]) + '</div>';
+    });
+    el('compositeStrip').innerHTML = h;
+}
+function renderExec() {
+    const d = scanData;
+    el('execSummary').innerHTML = (d.top_indicator ? '<p style="font-weight:700;color:var(--text-primary);margin-bottom:10px;">' + escapeHtml(em(d.top_indicator)) + '</p>' : '') +
+        '<p>' + escapeHtml(em(d.executive_summary || '')) + '</p>' +
+        (currentLang !== 'en' ? '<p class="coverage-note" style="text-align:left;margin:8px 0 0;">' + escapeHtml(tr('prose_en_note')) + '</p>' : '');
+}
+function renderSoWhat() {
+    const d = scanData; const drift = d.alignment_drift; let h = '';
+    if (drift && drift.band) {
+        const bc = drift.color || '#f59e0b';
+        h += '<div class="drift-block" style="border-left-color:' + escapeHtml(bc) + ';"><div class="drift-band-row"><span class="drift-band-badge" style="background:' + escapeHtml(bc) + '22;color:' + escapeHtml(bc) + ';border:1px solid ' + escapeHtml(bc) + ';">' + escapeHtml(tr('drift_label')) + ': ' + escapeHtml(drift.band) + '</span></div>' +
+             '<p class="drift-sowhat">' + escapeHtml(em(drift.so_what_factor)) + '</p>';
+        if ((drift.leading_indicators || []).length) h += '<div class="drift-li-header">' + escapeHtml(tr('leading_indicators')) + '</div><ul class="drift-li-list">' + drift.leading_indicators.map(x => '<li>' + escapeHtml(em(x)) + '</li>').join('') + '</ul>';
+        h += '<p class="drift-disclaimer">' + escapeHtml(em(drift.disclaimer || '')) + '</p></div>';
+    }
+    const b = (d.so_what || []).filter(x => !(x.bullet || '').startsWith('China and the US:'));
+    if (b.length) h += '<ul class="so-what-list">' + b.map(x => '<li class="so-what-item' + (x.standing ? ' standing' : '') + '"><span class="so-what-bullet">' + (x.standing ? '?' : '▸') + '</span><span>' + escapeHtml(em(x.bullet)) + '</span></li>').join('') + '</ul>';
+    el('soWhatCard').innerHTML = h || '<p class="empty-state">' + escapeHtml(tr('loading')) + '</p>';
+}
+function lineRows(lines) {
+    if (!lines || !lines.length) return '<div class="line-why">—</div>';
+    return lines.map(l => {
+        const src = (l.items || []).filter(i => i.url).slice(0, 2).map(i => '<a href="' + escapeHtml(i.url) + '" target="_blank" rel="noopener">' + escapeHtml(i.source || 'source') + '</a>').join(' · ');
+        return '<div class="line-row"><span class="line-status st-' + escapeHtml(l.status) + '">' + escapeHtml(tr('st_' + l.status)) + '</span><div><div class="line-label">' + escapeHtml(l.label) + '</div><div class="line-why">' + escapeHtml(em(l.why)) + '</div>' + (src ? '<div class="line-src">' + src + '</div>' : '') + '</div></div>';
+    }).join('');
+}
+function renderLines() { el('redLines').innerHTML = lineRows(scanData.red_lines); el('greenLines').innerHTML = lineRows(scanData.green_lines); }
+function renderSignals() {
+    const sigs = scanData.top_signals || [];
+    if (!sigs.length) { el('topSignalsGrid').innerHTML = '<div class="empty-state">' + escapeHtml(tr('no_signals')) + '</div>'; return; }
+    el('topSignalsGrid').innerHTML = sigs.map(s => {
+        const l = lvlName(s.level); const type = s.type || 'actor_signal';
+        const mean = (s.meaning && !(s.long_text || '').includes(s.meaning.slice(0, 40))) ? '<div class="signal-long" style="margin-top:6px;"><strong>' + escapeHtml(tr('what_it_means')) + ':</strong> ' + escapeHtml(em(s.meaning)) + '</div>' : '';
+        const src = (s.sources || []).map(x => '<div class="signal-source-row">' + (x.url ? '<a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">' : '') + escapeHtml(x.title || '') + (x.url ? '</a>' : '') + '<span style="color:var(--text-muted)"> — ' + escapeHtml(x.source || '') + '</span></div>').join('');
+        return '<div class="signal-card level-' + l + '"><div class="signal-meta-row"><span class="signal-type-pill t-' + escapeHtml(type) + '">' + escapeHtml(tr('type_' + type)) + '</span>' + pill(l) + '</div>' +
+               '<div class="signal-short">' + escapeHtml(em(s.short_text)) + '</div><div class="signal-long">' + escapeHtml(em(s.long_text)) + '</div>' + mean + (src ? '<div class="signal-sources">' + src + '</div>' : '') + '</div>';
+    }).join('');
+}
+function renderVectors() {
+    const d = scanData; const vs = d.vector_scores || {}; const vl = d.vector_levels || {}; const A = d.actor_summaries || {};
+    el('vectorGrid').innerHTML = (d.vectors_meta || []).map(v => '<div class="vector-card"><div class="vector-name">' + escapeHtml(tr('vec_' + v.id) || v.name) + '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:1.4rem;font-weight:700;color:var(--accent-cyan);">' + (vs[v.id] || 0).toFixed(1) + '</span>' + pill(vl[v.id]) + '</div>' +
+        '<div class="vector-actors">' + escapeHtml(v.actors.map(a => (A[a] && A[a].name) || a).join(', ')) + '</div></div>').join('');
+}
+function renderActors() {
+    const d = scanData; const A = d.actor_summaries || {};
+    el('actorGrid').innerHTML = (d.actor_order || Object.keys(A)).map(id => {
+        const a = A[id]; if (!a) return '';
+        const arts = (a.top_articles || []).map(x => '<div class="actor-article-row">' + (x.url ? '<a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">' : '') + escapeHtml(x.title || '') + (x.url ? '</a>' : '') + ' <span class="article-source-tag">[' + escapeHtml(x.outlet || x.source || '') + ']</span></div>').join('') ||
+                     '<div class="actor-article-row"><em style="color:var(--text-muted)">' + escapeHtml(tr('actor_no_articles')) + '</em></div>';
+        const tws = (a.tripwires || []).map(t => escapeHtml((t.id || '').replaceAll('_', ' ')) + ' (' + escapeHtml(tr('grade_' + t.grade)) + ')').join(' · ');
+        return '<div class="actor-card level-' + escapeHtml(a.level) + '"><div class="actor-header"><div class="actor-title"><span class="actor-icon">' + escapeHtml(a.icon || '📊') + '</span><span class="actor-name">' + escapeHtml(a.name) + '</span></div>' + pill(a.level) + '</div>' +
+               '<div class="actor-role">' + escapeHtml(a.role) + '</div>' +
+               '<div class="actor-stats"><div><span>' + escapeHtml(tr('actor_items')) + ':</span> <strong>' + (a.article_count || 0) + '</strong></div><div><span>' + escapeHtml(tr('actor_outlets')) + ':</span> <strong>' + (a.outlet_count || 0) + '</strong></div><div><span>' + escapeHtml(tr('actor_baseline')) + ':</span> <strong>' + (a.baseline || 0) + '/wk</strong></div></div>' +
+               (tws ? '<div class="actor-role" style="margin-top:6px;">⚑ ' + tws + '</div>' : '') +
+               '<div class="actor-articles-toggle" onclick="toggleArticles(\'' + id + '\', this)">' + escapeHtml(tr('actor_show_articles')) + '</div><div class="actor-articles" id="articles-' + id + '">' + arts + '</div></div>';
+    }).join('');
+}
+function toggleArticles(id, t) { const d = el('articles-' + id); if (!d) return; const v = d.classList.toggle('visible'); t.textContent = v ? tr('actor_hide_articles') : tr('actor_show_articles'); }
+
+function toggleSidebar() { const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (!sb) return; const o = sb.classList.toggle('open'); if (bd) bd.classList.toggle('show', o); document.body.style.overflow = o ? 'hidden' : ''; }
+function closeSidebar() { const sb = el('navSidebar'), bd = el('sidebarBackdrop'); if (sb) sb.classList.remove('open'); if (bd) bd.classList.remove('show'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('#navSidebar a').forEach(a => a.addEventListener('click', closeSidebar));
+
+captureDefaults();
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+applyI18n();
+loadAll(false);
+</script>
+</body>
+</html>
