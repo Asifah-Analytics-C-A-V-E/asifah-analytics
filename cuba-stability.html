@@ -734,6 +734,7 @@ footer {
         <div id="cubaContextCard" style="display:block;background:var(--card-bg, #0d1b2e);border:1px solid rgba(56,189,248,0.35);border-left:4px solid #38bdf8;border-radius:12px;padding:16px 20px;margin-bottom:18px;">
             <div style="font-size:0.85rem;line-height:1.6;color:var(--text-primary);" data-i18n-html="cubaContext2026"><strong>Situation (as of November 4, 2026):</strong> Since January 2026 the United States has blocked oil shipments to Cuba (Executive Order 14380, tariffs on any country that supplies it), after Venezuelan oil stopped with Maduro’s capture. The grid now covers roughly a third of peak demand; many areas go 20 hours or more a day without power, which also cuts water pumping, hospitals and food storage. Washington says regime change is its goal and has indicted Raúl Castro, but talks were confirmed in March and Cuba began releasing more than 2,000 prisoners in April. Russia has sent some oil and China rice and aid; Mexico stopped its shipments in January.</div>
             <div id="cubaTopIndicator" style="display:none;margin-top:10px;font-size:0.9rem;font-weight:700;color:var(--text-primary);"></div>
+            <div id="cubaVzPattern" style="display:none;margin-top:10px;font-size:0.84rem;line-height:1.55;color:var(--text-secondary);border-top:1px dashed rgba(148,163,184,0.3);padding-top:8px;"></div>
         </div>
         <!-- ════════════════════════════════════════════════════════════ QUICK STABILITY GLANCE (consolidated 2x2 grid — full details on rhetoric tracker) ════════════════════════════════════════════════════════════ -->
         <div class="quick-glance-card">
@@ -2073,6 +2074,12 @@ function renderArticles(rhetoric) {
 function renderAll(data) {
     var _ti = document.getElementById('cubaTopIndicator');
     if (_ti && data.top_indicator) { _ti.textContent = data.top_indicator; _ti.style.display = 'block'; }
+    var _vz = document.getElementById('cubaVzPattern'), _vp = data.venezuela_pattern;
+    if (_vz && _vp && _vp.read) {
+        _vz.innerHTML = '<strong>\uD83E\uDDED Is Cuba next?</strong> ' + escHtml(_vp.read) +
+            ' <a href="rhetoric-cuba.html#vzpCard" style="color:var(--accent,#38bdf8);">Full checklist \u2192</a>';
+        _vz.style.display = 'block';
+    }
     renderStabilityHeadline(data);
     renderRhetoricLink(data);
     renderCivilianPressure(data);

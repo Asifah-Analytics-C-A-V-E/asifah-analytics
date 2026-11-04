@@ -546,6 +546,28 @@
         text-align: center;
         opacity: 0.75;
     }
+    /* v1.5.0: "Is Cuba next?" -- Venezuela-pattern checklist */
+    .vzp-card { border-radius: 12px; padding: 22px; margin-bottom: 16px;
+        border: 2px solid rgba(245,158,11,0.35);
+        background: linear-gradient(135deg, rgba(245,158,11,0.05) 0%, rgba(220,38,38,0.03) 100%); }
+    .vzp-read { font-size: 0.95rem; line-height: 1.6; color: var(--text-primary); margin: 8px 0 14px; font-weight: 600; }
+    .vzp-phase { font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
+        font-family: 'Courier New', monospace; margin: 14px 0 6px; }
+    .vzp-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+    .vzp-step { border: 1px solid rgba(148,163,184,0.25); border-left: 4px solid #64748b; border-radius: 8px;
+        padding: 9px 11px; font-size: 0.8rem; line-height: 1.45; color: var(--text-secondary); }
+    .vzp-step b { color: var(--text-primary); }
+    .vzp-step .vzp-status { display: inline-block; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px;
+        text-transform: uppercase; margin-left: 4px; }
+    .vzp-step.s-standing { border-left-color: #f59e0b; }
+    .vzp-step.s-confirmed { border-left-color: #dc2626; }
+    .vzp-step.s-reported_once { border-left-color: #f97316; }
+    .vzp-step.s-rumour { border-left-color: #a78bfa; }
+    .vzp-step .vzp-prec { display: block; margin-top: 4px; font-size: 0.72rem; color: var(--text-muted); font-style: italic; }
+    .vzp-purpose { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+    .vzp-purpose div { font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); }
+    .vzp-purpose b { color: var(--text-primary); display: block; margin-bottom: 2px; }
+    .vzp-note { font-size: 0.74rem; color: var(--text-muted); font-style: italic; margin-top: 12px; line-height: 1.5; }
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -682,6 +704,24 @@
     <div class="interp-section-title" style="margin-top:14px;" data-i18n="watchLabel">WATCH FOR</div>
     <div id="soWhatWatchList"></div>
     <div class="interp-confidence-note" id="soWhatNote"></div>
+</div>
+
+<!-- v1.5.0: IS CUBA NEXT? (Venezuela-pattern checklist) -->
+<div class="vzp-card" id="vzpCard" style="display:none;">
+    <div class="interp-scenario-header">
+        <span class="interp-scenario-icon">🧭</span>
+        <div>
+            <div class="interp-scenario-label">Is Cuba next? · Steps that preceded the Jan 2026 Maduro raid</div>
+            <div class="interp-scenario-value" id="vzpHeadline">--</div>
+        </div>
+    </div>
+    <div class="vzp-read" id="vzpRead"></div>
+    <div id="vzpSteps"></div>
+    <div class="vzp-phase">Why Washington cares -- and what it is not</div>
+    <div class="vzp-purpose" id="vzpPurpose"></div>
+    <div class="vzp-phase">If it happened</div>
+    <div class="vzp-purpose" id="vzpIf"></div>
+    <div class="vzp-note" id="vzpNote"></div>
 </div>
 
 <!-- RED LINES CARD -->
@@ -1318,6 +1358,7 @@ function renderRedLines(data) {
         'us_escalation':    '🦅 U.S. ESCALATION',
         'regime_fracture':  '✊ REGIME FRACTURE',
         'adversary_access': '🤝 ADVERSARY ACCESS',
+        'coalition_threat': '🚀 OUTSIDE POWERS ARMING CUBA',
     };
 
     const itemsEl = document.getElementById('redLineItems');
@@ -1518,11 +1559,44 @@ function renderRumint(data) {
     pill.style.display = 'inline-block';
 }
 
+function renderVzPattern(data) {
+    const card = document.getElementById('vzpCard');
+    const vp = data.venezuela_pattern;
+    if (!card) return;
+    if (!vp || !vp.steps) { card.style.display = 'none'; return; }
+    const esc = escapeHtmlRL;
+    const fc = (vp.final_confirmed || []).length;
+    document.getElementById('vzpHeadline').textContent =
+        `${vp.in_place} of ${vp.total} steps in place · ` +
+        (fc ? `${fc} final-stage step${fc > 1 ? 's' : ''} confirmed` : 'no final-stage step confirmed');
+    document.getElementById('vzpHeadline').style.color = vp.level >= 4 ? '#dc2626' : vp.level >= 3 ? '#f97316' : '#f59e0b';
+    document.getElementById('vzpRead').textContent = vp.read || '';
+    const phases = [['pressure', 'Pressure'], ['preparation', 'Preparation'], ['final', "Final steps (Venezuela's last ~7 weeks) -- live news only"]];
+    document.getElementById('vzpSteps').innerHTML = phases.map(([ph, title]) => {
+        const items = vp.steps.filter(s => s.phase === ph).map(s => {
+            const ev = s.evidence ? `<br>${esc(s.evidence)}${s.as_of ? ` <span style="opacity:.7">(as of ${esc(s.as_of)})</span>` : ''}` :
+                ((s.items || []).length ? `<br>${esc(s.items[0].title)} <span style="opacity:.7">-- ${esc(s.items[0].outlet)}</span>` : '');
+            return `<div class="vzp-step s-${esc(s.status)}"><b>${esc(s.label)}</b>` +
+                   `<span class="vzp-status">· ${esc(s.status_text)}</span>${ev}` +
+                   `<span class="vzp-prec">Venezuela: ${esc(s.precedent)}</span></div>`;
+        }).join('');
+        return `<div class="vzp-phase">${title}</div><div class="vzp-steps">${items}</div>`;
+    }).join('');
+    document.getElementById('vzpPurpose').innerHTML = (vp.purpose || []).map(p =>
+        `<div><b>${esc(p.label)}</b>${esc(p.text)}</div>`).join('');
+    const iih = vp.if_it_happens || {};
+    document.getElementById('vzpIf').innerHTML = [['Inside Cuba', iih.local], ['The region', iih.regional], ['The world', iih.global]]
+        .filter(x => x[1]).map(x => `<div><b>${x[0]}</b>${esc(x[1])}</div>`).join('');
+    document.getElementById('vzpNote').textContent = vp.not_implied || '';
+    card.style.display = 'block';
+}
+
 function renderAll(data) {
     window._lastCubaData = data;
     renderBanner(data);
     renderRumint(data);
     renderSoWhat(data);
+    try { renderVzPattern(data); } catch (e) { console.warn('vz pattern render', e); }
     renderRedLines(data);
     renderCrossTheater(data);
     renderButterfly(data);
