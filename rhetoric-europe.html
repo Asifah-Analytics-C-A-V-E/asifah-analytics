@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Europe Rhetoric Monitor v1.3.1 — June 2026 -->
+<!-- Asifah Analytics — Europe Rhetoric Monitor v1.3.2 — Nov 4 2026: UK tracker card; signal rows name and link every tracker; BLUF fallback for trackers without a /summary route now actually runs (was unreachable). v1.3.1 June 2026 -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -984,6 +984,17 @@ function renderConvergencePanel(panel) {
             url:        'https://www.asifahanalytics.com/rhetoric-turkey.html',
         },
         {
+            id:         'uk',
+            name:       'United Kingdom Pressure Tracker',
+            flag:       '🇬🇧',
+            actors:     'Government & Treasury · Opposition (both flanks) · Scotland · Wales · Northern Ireland · Falklands & Gibraltar · Chagos · Cyprus Bases · US · Russia Hybrid · Ukraine · AUKUS',
+            vectors:    ['Treasury & Gilts', 'The Union', 'Overseas Edge', 'US Relationship', 'Russia Inside', 'Ukraine & Europe'],
+            // Nov 4 2026: shared-engine tracker (europe_rhetoric_engine) -- no /summary route; the
+            // main endpoint is cache-first and carries every field this banner reads.
+            summaryUrl: EUROPE_BACKEND + '/api/rhetoric/uk',
+            url:        'https://www.asifahanalytics.com/rhetoric-uk.html',
+        },
+        {
             id:         'ukraine',
             name:       'Ukraine Pressure Tracker',
             flag:       '🇺🇦',
@@ -1130,7 +1141,10 @@ const _EU_RHET_PAGE = {
 };
 const _EU_LOC_NAME = { russia:'Russia', belarus:'Belarus', greenland:'Greenland',
     hungary:'Hungary', turkey:'Turkey', ukraine:'Ukraine', poland:'Poland',
-    baltics:'Baltics', regional:'Europe' };
+    baltics:'Baltics', regional:'Europe',
+    // Nov 4 2026
+    uk:'United Kingdom', cyprus:'Cyprus', greece:'Greece', moldova:'Moldova', armenia:'Armenia',
+    azerbaijan:'Azerbaijan', kazakhstan:'Kazakhstan' };
 const _EU_AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Diplomatic', humanitarian:'Humanitarian' };
 function _euEsc(s){ if(s==null)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _euLvlChip(sig){
@@ -1159,7 +1173,8 @@ function _euRenderSignalRow(sig){
     div.style.borderLeftColor=color;
     const theatre=(sig.theatre||'').toLowerCase();
     const locName=_euLocName(theatre);
-    const href=_EU_RHET_PAGE[theatre]||null;
+    // Nov 4 2026: every country tracker page is rhetoric-<id>.html; only 'regional' has none.
+    const href=_EU_RHET_PAGE[theatre]||((theatre && theatre!=='regional') ? 'rhetoric-'+theatre.replace(/_/g,'-')+'.html' : null);
     const chip=_euLvlChip(sig);
     const body=_euSplitBody(sig, locName);
     const pills=_euAxisPills(sig);
@@ -1278,6 +1293,17 @@ async function updateBluf(_resolvedUnused) {
             return { tracker, data };
         } catch (e) {
             console.warn(`[${tracker.id}] fetch error:`, e);
+            // Nov 4 2026: the BLUF fallback used to sit AFTER the return below and never
+            // ran -- a tracker with no /summary route read "Unavailable" although the
+            // regional BLUF had its level. Fallback first, error state only without it.
+            if (fallbackData) {
+                const fbEl = renderTrackerBanner(tracker, fallbackData);
+                fbEl.id = `banner-${tracker.id}`;
+                fbEl.setAttribute('data-sort', tracker.id);
+                const prev = document.getElementById(`banner-${tracker.id}`);
+                if (prev) prev.replaceWith(fbEl);
+                return { tracker, data: fallbackData };
+            }
             // Show error state on the banner instead of leaving it spinning
             const errEl = renderTrackerBanner(tracker, null);
             errEl.id = `banner-${tracker.id}`;
@@ -1346,7 +1372,7 @@ async function updateBluf(_resolvedUnused) {
             .replace(/\b\w/g, c => c.toUpperCase());
         return {
             id:         id,
-            name:       (s.display ? String(s.display).replace(/\b\w/g,
+            name:       (s.display ? String(s.display).toLowerCase().replace(/\b\w/g,
                             c => c.toUpperCase()) : pretty) + ' Rhetoric Tracker',
             flag:       s.flag || '\uD83D\uDCE1',
             actors:     '',                     // prose is optional enrichment
