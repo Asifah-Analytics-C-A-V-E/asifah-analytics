@@ -837,26 +837,16 @@ footer .footer-copyright {
     .nyse-grid { grid-template-columns: 1fr !important; }
 }
 
-/* ── Canonical wide footer (military.html pattern, Nov 4 2026) ── */
-footer.asf-footer { max-width: 1800px; margin: 30px auto; padding: 30px 28px 24px; background: #0d1b2e;
-    border: 1px solid #1e3a5f; border-radius: 12px; color: #93c5fd; font-size: 14px; line-height: 1.6;
-    position: relative; z-index: 1; box-sizing: border-box; width: calc(100% - 32px); }
-footer.asf-footer .asf-f-title { text-align: center; font-weight: 800; font-size: 17px; color: #e2f0fb; letter-spacing: 1.5px; margin-bottom: 4px; }
-footer.asf-footer .asf-f-sub { text-align: center; color: #93c5fd; font-size: 13px; margin-bottom: 20px; }
-footer.asf-footer .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-bottom: 18px; text-align: left; }
-footer.asf-footer h4 { color: #e2f0fb; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
-footer.asf-footer p { margin: 0; color: #93c5fd; font-size: 13.5px; }
-footer.asf-footer .asf-f-disc { border-top: 1px solid #1e3a5f; padding-top: 14px; color: #64748b; font-size: 12.5px; text-align: center; }
-footer.asf-footer .asf-f-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 20px 0 14px; }
-footer.asf-footer .asf-f-cta a { padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; transition: transform .15s, box-shadow .15s; }
-footer.asf-footer .asf-f-cta a:hover { transform: translateY(-2px); }
-footer.asf-footer .asf-coffee { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #1f1f1f; box-shadow: 0 3px 10px rgba(245,158,11,0.3); }
-footer.asf-footer .asf-contact { background: linear-gradient(135deg,#1e3a5f,#38bdf8); color: #fff; box-shadow: 0 3px 10px rgba(56,189,248,0.3); }
-footer.asf-footer .asf-f-links { text-align: center; font-size: 13px; }
-footer.asf-footer .asf-f-links a { color: #93c5fd; }
-@media (max-width: 900px) { footer.asf-footer .asf-f-grid { grid-template-columns: 1fr; } }
-/* On pages with a sidebar the footer is moved into the content column (script below), so it lines up with the cards. */
-.main-content > footer.asf-footer { width: 100%; max-width: none; margin: 30px 0; }
+/* ── Footer extra for the shared shell (Nov 4 2026) ──
+   The shell (resources/asifah-standard-shell.js) REWRITES <footer>: it keeps only a
+   <section data-asifah-footer-extra> and adds the standard title, pills, socials and
+   links. So the page-specific block lives in that section, and the <footer> carries
+   no inline width/size styles (those survived the rewrite and made it a 900px strip). */
+.asf-extra .asf-f-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; text-align: left; }
+.asf-extra h4 { color: var(--text-primary, #e2f0fb); font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px; }
+.asf-extra p { margin: 0; color: var(--text-secondary, #93c5fd); font-size: 14px; line-height: 1.6; }
+.asf-extra .asf-f-head { text-align: center; font-weight: 800; font-size: 16px; letter-spacing: 1.5px; color: var(--text-primary, #e2f0fb); margin-bottom: 14px; }
+@media (max-width: 900px) { .asf-extra .asf-f-grid { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -975,6 +965,7 @@ footer.asf-footer .asf-f-links a { color: #93c5fd; }
         <span class="nav-btn-label" data-i18n="nav_mexico_stability">🇲🇽 Mexico Stability</span>
         <span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span>
     </a>
+    <a href="rhetoric-mexico.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">💬 Mexico Rhetoric</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <!-- ════════════════════════════════════════════════════════════
@@ -1335,19 +1326,18 @@ footer.asf-footer .asf-f-links a { color: #93c5fd; }
 <!-- ════════════════════════════════════════════════════════════
      FOOTER
      ════════════════════════════════════════════════════════════ -->
-<footer class="asf-footer">
-    <div class="asf-f-title">ASIFAH ANALYTICS — MEXICO</div>
-    <div class="asf-f-sub">Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 12 hours</div>
-    <div class="asf-f-grid">
-        <div><h4 data-i18n="footer_about">About</h4><p data-i18n="footer_about_text">Asifah Analytics tracks convergence, not prediction: which open-source signals are present, how strong the evidence is, and what they mean.</p></div>
-        <div><h4 data-i18n="footer_sources">Data Sources</h4><p>GDELT, RSS and Google News (Spanish and English), NewsAPI, Brave fallback; Yahoo Finance market tiles (IPC, USD/MXN, WTI); the Commodities Tracker; US State Department travel advisories.</p></div>
-        <div><h4 data-i18n="footer_method">Methodology</h4><p>Information, not analysis: financial pulse, commodity exposure and Knowledge Library are dated and re-verified on a 45-day cycle. Evidence-graded analysis (red lines, So What) lives on the Mexico rhetoric tracker.</p></div>
-    </div>
-    <div class="asf-f-disc" data-i18n="footer_disclaimer">Convergence indicators, not predictions. Asifah reports which open-source signals are present — it does not forecast outcomes. Not for operational use.</div>
-    <div class="asf-f-cta"><a class="asf-coffee" href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a><a class="asf-contact" href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a></div>
-    <div class="asf-f-links"><a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
+<footer class="asifah-footer">
+    <section class="asf-extra" data-asifah-footer-extra>
+        <div class="asf-f-head">ASIFAH ANALYTICS — MEXICO</div>
+        <div class="asf-f-grid">
+            <div><h4>About this page</h4><p>Backend: asifah-wha-backend.onrender.com · Scans refresh ~every 12 hours</p></div>
+            <div><h4>Data Sources</h4><p>GDELT, RSS and Google News (Spanish and English), NewsAPI, Brave fallback; Yahoo Finance market tiles (IPC, USD/MXN, WTI); the Commodities Tracker; US State Department travel advisories.</p></div>
+            <div><h4>Methodology</h4><p>Information, not analysis: financial pulse, commodity exposure and Knowledge Library are dated and re-verified on a 45-day cycle. Evidence-graded analysis (red lines, So What) lives on the Mexico rhetoric tracker.</p></div>
+        </div>
+    </section>
+    <!-- Fallback if the shared shell does not load; the shell replaces everything below. -->
+    <div style="text-align:center;margin-top:16px;"><a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener">☕ Buy Me a Coffee</a> · <a href="mailto:asifahanalytics@gmail.com">✉️ Contact Asifah</a> · <a href="mission.html">Mission Statement</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></div>
 </footer>
-<script>(function(){var f=document.querySelector("footer.asf-footer"),m=document.querySelector(".page-with-sidebar .main-content");if(f&&m)m.appendChild(f);})();</script>
 
 </div> <!-- /main-content -->
 </div> <!-- /page-with-sidebar -->

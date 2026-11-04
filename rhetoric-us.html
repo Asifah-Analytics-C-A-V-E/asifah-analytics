@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.5.0 (Nov 4 2026 late: US wheel card; v1.4.2 Nov 4; v1.4.1 Nov 1; v1.0.0 May 10 2026) -->
+<!-- Asifah Analytics — U.S. Rhetoric Tracker — page v1.6.0 (Nov 4 2026 eve: shell review -- canonical nav, header, footer; dead drawer/theme code removed; v1.5.0 Nov 4 2026 late: US wheel card; v1.4.2 Nov 4; v1.4.1 Nov 1; v1.0.0 May 10 2026) -->
 <!-- v1.4.2: watermark to platform canon (0.18 dark / 0.07 light, 500px); branch cards no longer stretch
      and carry a plain word; 'ACTIVE — ACTIVE' de-duplicated; page theme button removed (the shell owns
      the one toggle); flag image instead of a flag emoji (Windows shows 'US'); RSS 'partial' coverage. -->
@@ -11,14 +11,20 @@
 <!-- Calibration: volatility/coherence-based; US generally upper edge of stable -->
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9114D1Z5C');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>U.S. Rhetoric Tracker — Asifah Analytics</title>
     <meta name="description" content="Multi-actor U.S. rhetoric monitoring across 10 actors and 3 branches, plus the election and governance window. Apolitical infrastructure tracking volatility, divergence, and cross-spectrum fracture.">
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -112,7 +118,7 @@
             transform: translate(-50%, -50%);
             width: var(--watermark-size);
             height: var(--watermark-size);
-            background-image: url('https://raw.githubusercontent.com/SassAndSweet/asifah-analytics/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
+            background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
             background-size: 135%;
             background-repeat: no-repeat;
             background-position: center;
@@ -1117,56 +1123,33 @@
             .composite-strip { grid-template-columns: 1fr; }
             .composite-vectors { grid-template-columns: repeat(2, 1fr); }
         }
-        /* ── MOBILE HAMBURGER (gold standard from india-stability.html) ── */
-        .mobile-menu-btn {
-            display: none;
-            background: rgba(56,189,248,0.10); border: 1px solid var(--border-color);
-            border-radius: 6px; padding: 6px 10px; cursor: pointer;
-            font-size: 18px; line-height: 1; color: var(--text-primary);
-            font-family: inherit;
-        }
-        .mobile-menu-btn:hover { border-color: var(--accent-cyan); background: rgba(56,189,248,0.20); }
 
-        /* Mobile drawer (sidebar substitute) + backdrop */
-        .mobile-drawer-backdrop {
-            display: none;
-            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-            z-index: 9998; backdrop-filter: blur(2px);
-        }
-        .mobile-drawer-backdrop.open { display: block; }
-        .mobile-drawer {
-            display: none;
-            position: fixed; top: 0; left: 0; bottom: 0;
-            width: 84%; max-width: 320px;
-            background: var(--bg-card); border-right: 2px solid var(--accent-cyan);
-            z-index: 9999; padding: 18px 16px;
-            overflow-y: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            box-shadow: 4px 0 24px rgba(0,0,0,0.5);
-        }
-        .mobile-drawer.open { display: block; transform: translateX(0); }
-        .mobile-drawer-close {
-            position: absolute; top: 10px; right: 10px;
-            background: transparent; border: 1px solid var(--border-color);
-            border-radius: 6px; width: 32px; height: 32px;
-            cursor: pointer; color: var(--text-primary); font-size: 16px;
-            line-height: 1; font-family: inherit;
-        }
-        .mobile-drawer-close:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-        .mobile-drawer-title {
-            font-size: 14px; font-weight: 700; color: var(--accent-cyan);
-            text-transform: uppercase; letter-spacing: 1.5px;
-            margin: 0 0 14px 4px; padding-right: 40px;
-        }
         @media (max-width: 768px) {
             .main-layout { grid-template-columns: 1fr; }
             .sidebar { display: none; }
-            .mobile-menu-btn { display: inline-flex; align-items: center; gap: 6px; }
             .composite-vectors { grid-template-columns: 1fr; }
             .actor-grid { grid-template-columns: 1fr; }
             .balance-grid { grid-template-columns: 1fr; }
         }
+
+        /* ── v1.6.0 shell review (Nov 4 2026) ── */
+        .header { position: relative; }
+        .header-logo { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(56,189,248,0.45); object-fit: cover; }
+        .home-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 14px; margin-bottom:8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:var(--accent-cyan); text-decoration:none; font-size:0.82rem; font-weight:600; }
+        .header .asifah-theme-button { position: absolute; right: 28px; bottom: 14px; }
+        .main-layout { gap: 20px; padding: 22px 20px 0; }
+        .main-layout > .nav-sidebar { margin-top: 0; }
+        .content { padding: 0 8px 22px 0; }
+        .asifah-footer .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; font-size: 0.86rem; color: var(--text-secondary); }
+        .asifah-footer .footer-grid h4 { color: var(--text-primary); margin-bottom: 6px; }
+        @media (max-width: 1199px) { .main-layout { grid-template-columns: 1fr; } }
+        /* the 4 branch cards overflowed ~56px under the level guide at 1400px (pre-existing) */
+        @media (max-width: 1500px) and (min-width: 1301px) { .composite-vectors { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1300px) { .composite-strip { grid-template-columns: 1fr; } }
+        /* phones: room for the shell's fixed menu button; title above the controls */
+        @media (max-width: 1199px) { .header { padding-top: 66px; } }
+        @media (max-width: 700px) { .header-grid { grid-template-columns: 1fr; } .header-title-row { font-size: 1.4rem; } }
+        @media (max-width: 800px) { .asifah-footer .footer-grid { grid-template-columns: 1fr; } .header .asifah-theme-button { position: static; margin-top: 10px; } }
     </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -1175,40 +1158,6 @@
 
 <div class="watermark"></div>
 
-<!-- Mobile drawer backdrop + drawer (gold standard, hidden on desktop) -->
-<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
-<aside class="mobile-drawer" id="mobileDrawer" aria-label="Navigation menu">
-    <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu">✕</button>
-    <div class="mobile-drawer-title" data-i18n="mobile_drawer_title">Navigation</div>
-    <div class="sidebar-section">
-        <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
-        <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
-        <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
-        <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
-        <a href="wha.html" class="sidebar-link" data-i18n="sb_wha">🌎 Western Hemisphere</a>
-    </div>
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-section">
-        <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
-        <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
-        <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
-        <a href="gpi.html" class="sidebar-link gpi" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
-    </div>
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-section">
-        <div class="sidebar-header" data-i18n="sb_rhetoric">REGIONAL RHETORIC</div>
-        <a href="rhetoric-index.html" class="sidebar-link rhetoric" data-i18n="sb_rh_me">💬 Middle East Rhetoric</a>
-        <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
-        <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
-        <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
-    </div>
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-section">
-        <div class="sidebar-header" data-i18n="sb_us_pages">UNITED STATES</div>
-        <a href="rhetoric-us.html" class="sidebar-link rhetoric active" data-i18n="sb_us_rhetoric">💬 U.S. Rhetoric</a>
-        <a href="us-stability.html" class="sidebar-link" data-i18n="sb_us_stability">📊 U.S. Stability</a>
-    </div>
-</aside>
 
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-content">
@@ -1221,7 +1170,11 @@
 <header class="header">
     <div class="header-grid">
         <div class="header-title-block">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" alt="Asifah Analytics" class="header-logo">
+            <a href="index.html" class="home-btn">🏠 Home</a>
             <a href="us-stability.html" class="back-link" data-i18n="hdr_back" style="align-self:flex-start; display:inline-flex; align-items:center; gap:6px; padding:6px 14px; margin-bottom:8px; border-radius:8px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:var(--accent-cyan); text-decoration:none; font-size:0.82rem; font-weight:600; transition:all 0.2s ease;">← Back to U.S. Stability</a>
+            </div>
             <div class="header-title-row">
                 <span class="header-flag-icons"><img src="https://flagcdn.com/w40/us.png" alt="" title="United States" style="height:0.9em;width:auto;vertical-align:-0.05em;border-radius:2px;"> 💬</span>
                 <span data-i18n="hdr_title">U.S. Rhetoric Tracker</span>
@@ -1231,9 +1184,6 @@
             </div>
         </div>
         <div class="header-controls">
-            <button class="mobile-menu-btn" onclick="openMobileDrawer()" aria-label="Open navigation menu">
-                <span style="font-size:20px;">☰</span><span style="font-size:11px;font-weight:700;letter-spacing:0.5px;" data-i18n="mobile_menu">Menu</span>
-            </button>
             <button class="header-btn lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
             <button class="header-btn lang-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
             <button class="header-btn lang-btn" data-lang="pt" onclick="setLanguage('pt')">PT</button>
@@ -1245,43 +1195,15 @@
 <!-- MAIN LAYOUT -->
 <div class="main-layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_regional">REGIONAL LANDINGS</div>
-            <a href="middle-east.html" class="sidebar-link" data-i18n="sb_me">🌍 Middle East</a>
-            <a href="asia.html" class="sidebar-link" data-i18n="sb_asia">🌏 Asia-Pacific</a>
-            <a href="europe.html" class="sidebar-link" data-i18n="sb_europe">🌍 Europe</a>
-            <a href="wha.html" class="sidebar-link" data-i18n="sb_wha">🌎 Western Hemisphere</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_crosscut">CROSS-CUTTING TOOLS</div>
-            <a href="commodities.html" class="sidebar-link crosscut" data-i18n="sb_commodities">🌾 Commodities Tracker</a>
-            <a href="military.html" class="sidebar-link crosscut" data-i18n="sb_military">🪖 Military Tracker</a>
-            <a href="gpi.html" class="sidebar-link gpi" data-i18n="sb_gpi">🌐 Global Pressure Index</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_rhetoric">REGIONAL RHETORIC</div>
-            <a href="rhetoric-index.html" class="sidebar-link rhetoric" data-i18n="sb_rh_me">💬 Middle East Rhetoric</a>
-            <a href="rhetoric-asia.html" class="sidebar-link rhetoric" data-i18n="sb_rh_asia">💬 Asia Rhetoric</a>
-            <a href="rhetoric-europe.html" class="sidebar-link rhetoric" data-i18n="sb_rh_europe">💬 Europe Rhetoric</a>
-            <a href="rhetoric-wha.html" class="sidebar-link rhetoric" data-i18n="sb_rh_wha">💬 Western Hemisphere Rhetoric</a>
-        </div>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-header" data-i18n="sb_us_pages">UNITED STATES</div>
-            <a href="rhetoric-us.html" class="sidebar-link rhetoric active" data-i18n="sb_us_rhetoric">💬 U.S. Rhetoric</a>
-            <a href="us-stability.html" class="sidebar-link" data-i18n="sb_us_stability">📊 U.S. Stability</a>
-        </div>
-    </aside>
+    <!-- SIDEBAR (v1.6.0: canonical nav-sidebar -- the shell writes the standard nav and keeps the United States pair below) -->
+    <nav class="nav-sidebar" id="navSidebar">
+        <div class="nav-sidebar-label">Dashboards</div>
+        <a href="wha.html" class="nav-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-sidebar-label">United States</div>
+        <a href="rhetoric-us.html" class="nav-btn rhetoric-btn current-page"><span class="nav-btn-label">💬 U.S. Rhetoric</span><span class="nav-btn-status">◉ You are here</span></a>
+        <a href="us-stability.html" class="nav-btn"><span class="nav-btn-label">📊 U.S. Stability</span><span class="nav-btn-status">● Live</span></a>
+    </nav>
 
     <!-- CONTENT -->
     <main class="content">
@@ -1505,8 +1427,8 @@
 </div>
 
 <!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-grid">
+<footer class="asifah-footer">
+    <section class="footer-grid" data-asifah-footer-extra>
         <div>
             <h4 data-i18n="ftr_about">About this tracker</h4>
             <p data-i18n="ftr_about_text">
@@ -1519,7 +1441,7 @@
                 RSS feeds (NYT, NPR, Politico, Axios, ProPublica, PBS, Atlantic, WaPo, Washington Examiner, National Review, Lawfare, SCOTUSblog, BBC, Guardian) · GDELT · NewsAPI (shared fallback gateway) · Brave Search · Bluesky (76 verified accounts) · Telegram · Reddit (25 cross-spectrum subs) · Cross-theater fingerprints from all 23 other trackers · CISA alerts · Election-administration and two-sided civil-society mobilization feeds (v1.4.0).
             </p>
         </div>
-    </div>
+    </section>
 </footer>
 
 <script>
@@ -1939,14 +1861,6 @@ function t(key) {
 // ════════════════════════════════════════════════════════════════════
 // THEME
 // ════════════════════════════════════════════════════════════════════
-function toggleTheme() {
-    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.body.dataset.theme = currentTheme;
-    const btn = document.getElementById('themeBtn');
-    if (btn) btn.innerHTML = currentTheme === 'dark'
-        ? '🌙 <span data-i18n="hdr_dark">' + t('hdr_dark') + '</span>'
-        : '☀️ <span data-i18n="hdr_light">' + t('hdr_light') + '</span>';
-}
 
 // ════════════════════════════════════════════════════════════════════
 // TIER MAPPING
@@ -2657,29 +2571,7 @@ async function fetchJawboningCard() {
     }
 }
 
-function escapeHtml(s) {
-    if (s === null || s === undefined) return '';
-    return String(s)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
 
-// ════════════════════════════════════════════════════════════════════
-// MOBILE DRAWER (gold standard from india-stability.html)
-// ════════════════════════════════════════════════════════════════════
-function openMobileDrawer() {
-    document.getElementById('mobileDrawer')?.classList.add('open');
-    document.getElementById('mobileDrawerBackdrop')?.classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-function closeMobileDrawer() {
-    document.getElementById('mobileDrawer')?.classList.remove('open');
-    document.getElementById('mobileDrawerBackdrop')?.classList.remove('open');
-    document.body.style.overflow = '';
-}
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeMobileDrawer();
-});
 
 // ════════════════════════════════════════════════════════════════════
 // INIT
