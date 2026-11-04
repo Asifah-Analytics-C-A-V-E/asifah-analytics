@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Canada Stability Index v1.0.1 — Nov 4, 2026 (eve): canonical wide footer -->
+<!-- Asifah Analytics — Canada Stability Index v1.0.1 — Nov 4, 2026 (eve): canonical wide footer; live rhetoric-tracker card -->
 <!-- Gold Standard shell (cloned from peru-stability 1.1.0): sidebar drawer, live WHA sweep, market pulse, commodity card, dated analytic cards. EN full; FR for labels and the main analytic cards, other cards fall back to EN. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
@@ -809,6 +809,7 @@ footer .footer-copyright {
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="nav_country">Canada</div>
     <a href="canada-stability.html" class="nav-btn current-page"><span class="nav-btn-label" data-i18n="nav_country_stability">🇨🇦 Canada Stability</span><span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span></a>
+    <a href="rhetoric-canada.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">💬 Canada Rhetoric</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <div class="main-content">
@@ -886,11 +887,35 @@ footer .footer-copyright {
     <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Canada is the <strong>largest foreign supplier of US crude oil</strong> and a top producer of potash, uranium, nickel, aluminium and lumber. Oil and gas flow south by pipeline with few other outlets, which is why the trade war hurts Alberta most — and why new pipelines to the coasts are now a unity question as much as an energy one.</div>
 </div>
 
-<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
-    <div class="section-title" data-i18n="rh_title">📡 Canada Rhetoric &amp; Pressure Tracker</div>
-    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">PLANNED</div>
-    <div class="ar-sub" data-i18n="rh_sub">Planned actors: the Carney government · Alberta · Quebec / PQ · US-Canada trade · Arctic / NORAD · China-Canada. Feeds the WHA summary and the GPI when built.</div>
+<!-- ── RHETORIC TRACKER (live, Nov 4 2026) ── -->
+<div class="metric-card" id="rhLiveCard" style="border-left: 4px solid #4ade80;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="section-title" style="margin-bottom:0;" data-i18n="rh_live_title">📡 🇨🇦 Canada Rhetoric &amp; Pressure Tracker</div>
+        <span id="rhLivePill" style="font-size:11px; font-weight:800; letter-spacing:1px; padding:4px 10px; border-radius:4px; background:#374151; color:#fff;">LOADING…</span>
+    </div>
+    <div id="rhLiveRead" style="font-size:13.5px; line-height:1.55; margin:10px 0 6px; color:var(--text-primary, #e2f0fb);">Reading the tracker…</div>
+    <div id="rhLiveMeta" style="font-size:12px; color:var(--text-muted, #64748b);"></div>
+    <a href="rhetoric-canada.html" style="display:inline-block; margin-top:12px; padding:8px 16px; border:1px solid #4ade80; color:#4ade80; border-radius:6px; text-decoration:none; font-weight:800; font-size:12px; letter-spacing:1px;" data-i18n="rh_live_open">OPEN THE RHETORIC TRACKER →</a>
 </div>
+<script>
+(function () {
+    var LBL = ['Monitoring', 'Rhetoric', 'Warning', 'Direct Threat', 'Imminent Crisis'];
+    var COL = ['#38bdf8', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'];
+    function set(id, t) { var e = document.getElementById(id); if (e) e.textContent = t; }
+    fetch('https://asifah-wha-backend.onrender.com/api/rhetoric/canada').then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.success || d.pending) { set('rhLivePill', 'FIRST SCAN PENDING'); set('rhLiveRead', 'The tracker is running its first scan — check back in a few minutes.'); return; }
+        var lv = Math.max(0, Math.min(4, parseInt(d.theatre_level || 0, 10)));
+        var pill = document.getElementById('rhLivePill');
+        if (pill) { pill.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]); pill.style.background = COL[lv]; pill.style.color = lv >= 2 ? '#1a0f05' : '#04111f'; }
+        set('rhLiveRead', (d.top_indicator || '').replace(/--/g, '\u2014'));
+        var crossed = (d.red_lines || []).filter(function (r) { return r.status === 'BREACHED'; }).length;
+        var watching = (d.red_lines || []).length;
+        set('rhLiveMeta', (d.total_articles_scanned || 0) + ' articles · red lines crossed: ' + crossed + ' of ' + watching + ' watched · evidence-graded (2+ outlets to confirm)');
+        var meta = document.getElementById('metaRhetoric'); if (meta) meta.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]);
+    }).catch(function () { set('rhLivePill', 'UNREAD'); set('rhLiveRead', 'Tracker unavailable this load — unread, not calm.'); });
+})();
+</script>
+
 
 <div class="map-section">
     <h2 data-i18n="map_title">🗺️ Canada — Strategic Overview</h2>
@@ -982,8 +1007,8 @@ const TRANSLATIONS = {
   "arc_sowhat": "<strong>Et alors :</strong> l'Arctique canadien est contesté des deux côtés — par un allié qui traite le Canada comme une cible de pression, et par un duo Russie-Chine qui voit l'Arctique comme des eaux libres.",
   "watch_title": "À surveiller",
   "commodity_title": "🛢️ Exposition aux matières premières",
-  "rh_title": "📡 Suivi de la rhétorique et des pressions — Canada",
-  "rh_pending": "PRÉVU",
+  "rh_live_title": "📡 🇨🇦 Suivi de la rhétorique et des pressions — Canada",
+  "rh_live_open": "OUVRIR LE SUIVI →",
   "map_title": "🗺️ Canada — Vue stratégique",
   "kl_title": "Bibliothèque",
   "articles_title": "📰 Articles récents sur le Canada",

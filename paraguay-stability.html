@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics — Paraguay Stability Index v1.0.1 — Nov 4, 2026 (eve): canonical wide footer -->
+<!-- Asifah Analytics — Paraguay Stability Index v1.0.1 — Nov 4, 2026 (eve): canonical wide footer; live rhetoric-tracker card -->
 <!-- Gold Standard shell (cloned from peru-stability 1.1.0): sidebar drawer, live WHA sweep, market pulse, commodity card, dated analytic cards. EN/ES full. -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
@@ -809,6 +809,7 @@ footer .footer-copyright {
     <div class="nav-divider"></div>
     <div class="nav-sidebar-label" data-i18n="nav_country">Paraguay</div>
     <a href="paraguay-stability.html" class="nav-btn current-page"><span class="nav-btn-label" data-i18n="nav_country_stability">🇵🇾 Paraguay Stability</span><span class="nav-btn-status" data-i18n="nav_here">◉ You are here</span></a>
+    <a href="rhetoric-paraguay.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">💬 Paraguay Rhetoric</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
 <div class="main-content">
@@ -885,11 +886,35 @@ footer .footer-copyright {
     <div class="strategic-linkage" data-i18n-html="strategic_linkage"><strong>🎯 What it means:</strong> Paraguay is one of the world's largest exporters of soybeans and beef, and exports electricity to Brazil and Argentina. A drought or a low Paraná River (which strands the barges that carry exports to the sea) hits exports and dollars hard.</div>
 </div>
 
-<div class="metric-card" style="border-left: 4px solid #4ade80; opacity: 0.92;">
-    <div class="section-title" data-i18n="rh_title">📡 Paraguay Rhetoric &amp; Pressure Tracker</div>
-    <div class="ar-pending" style="color:#4ade80;" data-i18n="rh_pending">PLANNED</div>
-    <div class="ar-sub" data-i18n="rh_sub">Planned actors: the Peña government · the Cartes faction · Tri-Border Area · Taiwan-Paraguay · Brazil / Itaipú · US-Paraguay.</div>
+<!-- ── RHETORIC TRACKER (live, Nov 4 2026) ── -->
+<div class="metric-card" id="rhLiveCard" style="border-left: 4px solid #4ade80;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div class="section-title" style="margin-bottom:0;" data-i18n="rh_live_title">📡 🇵🇾 Paraguay Rhetoric &amp; Pressure Tracker</div>
+        <span id="rhLivePill" style="font-size:11px; font-weight:800; letter-spacing:1px; padding:4px 10px; border-radius:4px; background:#374151; color:#fff;">LOADING…</span>
+    </div>
+    <div id="rhLiveRead" style="font-size:13.5px; line-height:1.55; margin:10px 0 6px; color:var(--text-primary, #e2f0fb);">Reading the tracker…</div>
+    <div id="rhLiveMeta" style="font-size:12px; color:var(--text-muted, #64748b);"></div>
+    <a href="rhetoric-paraguay.html" style="display:inline-block; margin-top:12px; padding:8px 16px; border:1px solid #4ade80; color:#4ade80; border-radius:6px; text-decoration:none; font-weight:800; font-size:12px; letter-spacing:1px;" data-i18n="rh_live_open">OPEN THE RHETORIC TRACKER →</a>
 </div>
+<script>
+(function () {
+    var LBL = ['Monitoring', 'Rhetoric', 'Warning', 'Direct Threat', 'Imminent Crisis'];
+    var COL = ['#38bdf8', '#38bdf8', '#f59e0b', '#f97316', '#ef4444'];
+    function set(id, t) { var e = document.getElementById(id); if (e) e.textContent = t; }
+    fetch('https://asifah-wha-backend.onrender.com/api/rhetoric/paraguay').then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.success || d.pending) { set('rhLivePill', 'FIRST SCAN PENDING'); set('rhLiveRead', 'The tracker is running its first scan — check back in a few minutes.'); return; }
+        var lv = Math.max(0, Math.min(4, parseInt(d.theatre_level || 0, 10)));
+        var pill = document.getElementById('rhLivePill');
+        if (pill) { pill.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]); pill.style.background = COL[lv]; pill.style.color = lv >= 2 ? '#1a0f05' : '#04111f'; }
+        set('rhLiveRead', (d.top_indicator || '').replace(/--/g, '\u2014'));
+        var crossed = (d.red_lines || []).filter(function (r) { return r.status === 'BREACHED'; }).length;
+        var watching = (d.red_lines || []).length;
+        set('rhLiveMeta', (d.total_articles_scanned || 0) + ' articles · red lines crossed: ' + crossed + ' of ' + watching + ' watched · evidence-graded (2+ outlets to confirm)');
+        var meta = document.getElementById('metaRhetoric'); if (meta) meta.textContent = 'L' + lv + ' — ' + (d.theatre_label || LBL[lv]);
+    }).catch(function () { set('rhLivePill', 'UNREAD'); set('rhLiveRead', 'Tracker unavailable this load — unread, not calm.'); });
+})();
+</script>
+
 
 <div class="map-section">
     <h2 data-i18n="map_title">🗺️ Paraguay — Strategic Overview</h2>
@@ -985,8 +1010,8 @@ const TRANSLATIONS = {
   "watch_title": "Vigilar",
   "commodity_title": "🛢️ Exposición a materias primas y presión estratégica",
   "strategic_linkage": "<strong>🎯 Qué significa:</strong> Paraguay es uno de los mayores exportadores mundiales de soja y carne, y exporta electricidad a Brasil y Argentina. Una sequía o un río Paraná bajo (que frena las barcazas) golpea las exportaciones y los dólares.",
-  "rh_title": "📡 Rastreador de retórica y presión de Paraguay",
-  "rh_pending": "PREVISTO",
+  "rh_live_title": "📡 🇵🇾 Rastreador de retórica y presión — Paraguay",
+  "rh_live_open": "ABRIR EL RASTREADOR →",
   "rh_sub": "Actores previstos: gobierno de Peña · facción de Cartes · Triple Frontera · Taiwán-Paraguay · Brasil/Itaipú · EE.UU.-Paraguay.",
   "map_title": "🗺️ Paraguay — Panorama estratégico",
   "kl_title": "Biblioteca de conocimiento",
