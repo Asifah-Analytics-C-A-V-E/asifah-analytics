@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <!-- Google tag (gtag.js) -->
+<!-- Nov 4 2026 (eve): United Kingdom card added (id "uk"); stability link goes live when uk-stability.html ships; "Rhetoric · soon" pill until rhetoric-uk.html exists. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -510,6 +511,8 @@
         [data-theme="dark"] #greenland-card h3 { border-bottom-color: #38bdf8; }
         #ukraine-card h3 { border-bottom-color: #f59e0b; }
         [data-theme="dark"] #ukraine-card h3 { border-bottom-color: #fbbf24; color: #fbbf24; }
+        #uk-card h3 { border-bottom-color: #1d4ed8; }
+        [data-theme="dark"] #uk-card h3 { border-bottom-color: #60a5fa; color: #60a5fa; }
         #russia-card h3 { border-bottom-color: #dc2626; }
         [data-theme="dark"] #russia-card h3 { border-bottom-color: #f87171; color: #f87171; }
         #cyprus-card h3 { border-bottom-color: #f59e0b; }
@@ -2190,6 +2193,83 @@
                 </div>
             </div>
 
+            <!-- UNITED KINGDOM (Nov 4 2026) -- stability + rhetoric pages in build; the Rhetoric pill appears by itself when rhetoric-uk.html exists -->
+            <div class="target-card collapsed" id="uk-card" data-target="uk" data-rhetoric-soon="1">
+                <div class="card-collapsed-view">
+                    <div class="collapsed-header">
+                        <div class="collapsed-title">🇬🇧 <span data-i18n="targetUK">UNITED KINGDOM</span></div>
+                        <button class="collapse-toggle-btn" onclick="event.stopPropagation(); toggleCard('uk-card');" data-i18n="expandBtn">Expand ▼</button>
+                    </div>
+                    <div class="collapsed-metric">
+                        <div class="collapsed-metric-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="collapsed-metric-value">
+                            <div class="collapsed-percentage" id="ukCollapsedScore">--</div>
+                            <div class="collapsed-bar"><div class="collapsed-bar-fill" id="ukCollapsedBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <div class="collapsed-timestamp" id="ukCollapsedTimestamp">Loading...</div>
+                    <a class="collapsed-travel-advisory hidden" id="ukCollapsedTA" href="#" target="_blank" onclick="event.stopPropagation();"></a>
+                    <div class="expand-instructions" data-i18n="expandInstructions">Click "Expand" to update data and view full analysis</div>
+                </div>
+                <div class="card-expanded-view">
+                    <h3>🇬🇧 <span data-i18n="targetUK">UNITED KINGDOM</span></h3>
+                    <button class="collapse-toggle-btn" onclick="toggleCard('uk-card')" style="margin-bottom:15px;width:100%;" data-i18n="collapseBtn">Collapse ▲</button>
+                    <a href="uk-stability.html" class="country-stability-btn">
+                        🇬🇧 United Kingdom Stability Index
+                        <span class="btn-subtitle">The City of London &amp; dirty money, fiscal stress, the South Atlantic &amp; overseas territories, AUKUS · pages in build</span>
+                    </a>
+                    <div class="card-scan-controls">
+                        <div class="card-time-window">
+                            <label><input type="radio" name="uk-timeWindow" value="1"> <span data-i18n="hours24">24h</span></label>
+                            <label><input type="radio" name="uk-timeWindow" value="2"> <span data-i18n="hours48">48h</span></label>
+                            <label><input type="radio" name="uk-timeWindow" value="7" checked> <span data-i18n="days7">7 Days</span></label>
+                            <label><input type="radio" name="uk-timeWindow" value="30"> <span data-i18n="days30">30 Days</span></label>
+                        </div>
+                        <button class="card-scan-button" onclick="scanSingleTarget('uk')"><span data-i18n="scanButton">Scan OSINT — Update Forecast</span></button>
+                        <div class="loading" id="uk-loading"><div class="loading-spinner"></div><span data-i18n="loadingText">Scanning open sources...</span></div>
+                    </div>
+                    <div class="probability-display">
+                        <div class="probability-label" data-i18n="conflictProbability">Conflict Probability</div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="gauge-background" cx="100" cy="100" r="85"></circle>
+                                <circle class="gauge-progress medium" id="uk-gauge" cx="100" cy="100" r="85" stroke-dasharray="0 534"></circle>
+                            </svg>
+                            <div class="gauge-text medium" id="uk-prob">--</div>
+                        </div>
+                    </div>
+                    <div class="intel-sources" id="uk-intel-sources">
+                        <span class="intel-sources-label">Signals:</span>
+                        <span class="intel-pill inactive">🌐 GDELT</span>
+                        <span class="intel-pill inactive">📰 RSS</span>
+                        <span class="intel-pill inactive">🦋 Bluesky</span>
+                        <span class="intel-pill inactive">✈️ Telegram</span>
+                        <span class="intel-pill inactive">💬 Reddit</span>
+                    </div>
+                    <div class="weather-section" id="uk-weather">
+                        <div class="weather-title">🌤️ 7-Day Forecast — London</div>
+                        <div class="weather-forecast" id="uk-weather-forecast"><div class="weather-loading">Loading weather data...</div></div>
+                    </div>
+                    <div class="timeline-display">
+                        <div class="timeline-label" data-i18n="projectedTimeline">Projected Timeline</div>
+                        <div class="timeline-value" id="uk-timeline" data-i18n="awaitingScan">Awaiting scan...</div>
+                        <div class="timeline-bar" id="uk-bar">
+                            <div class="timeline-segment">0-30d</div><div class="timeline-segment">31-90d</div>
+                            <div class="timeline-segment">91-180d</div><div class="timeline-segment">180+d</div>
+                        </div>
+                    </div>
+                    <div class="travel-advisory-container" id="uk-travel-advisory"><div class="ta-loading">🏛️ Loading State Dept travel advisory...</div></div>
+                    <div class="mil-posture-awaiting" id="uk-mil-posture">
+                        🎖️ <span>Military Posture — <em>Scan OSINT to load</em></span>
+                        <a href="military.html" class="mil-page-btn" style="margin-left:auto;">MIL TRACKER →</a>
+                    </div>
+                    <div class="headlines-section" id="uk-headlines">
+                        <h4 data-i18n="recentHeadlines">Recent Headlines:</h4>
+                        <p style="color:#7f8c8d; font-style:italic;" data-i18n="clickToScan">Click scan to load latest intelligence</p>
+                    </div>
+                </div>
+            </div>
+
         </div><!-- end targets-grid -->
         </div><!-- end page-with-sidebar -->
 
@@ -2268,7 +2348,7 @@
        ================================================ */
 
     const API_BASE = 'https://asifa-europe-backend.onrender.com';
-    const TARGETS = ['albania', 'armenia', 'azerbaijan', 'belarus', 'belgium', 'cyprus', 'greece', 'greenland', 'hungary', 'kazakhstan', 'moldova', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine'];
+    const TARGETS = ['albania', 'armenia', 'azerbaijan', 'belarus', 'belgium', 'cyprus', 'greece', 'greenland', 'hungary', 'kazakhstan', 'moldova', 'poland', 'russia', 'turkey', 'turkmenistan', 'ukraine', 'uk'];
     const CIRCUMFERENCE = 2 * Math.PI * 85; // ~534
 
     // ===== LOADING OVERLAY =====
@@ -2355,7 +2435,7 @@
             targetGreece: "GREECE", targetCyprus: "CYPRUS", targetGreenland: "GREENLAND",
             targetHungary: "HUNGARY",
             targetPoland: "POLAND", targetRussia: "RUSSIA",
-            targetTurkey: "TURKEY", targetUkraine: "UKRAINE",
+            targetTurkey: "TURKEY", targetUkraine: "UKRAINE", targetUK: "UNITED KINGDOM",
             notamTitle: "Airspace Watch — Europe",
             notamScanning: "SCANNING...",
             flightTitle: "Flight Watch — Europe",
@@ -2379,7 +2459,7 @@
             targetGreece: "ГРЕЦИЯ", targetCyprus: "КИПР", targetGreenland: "ГРЕНЛАНДИЯ",
             targetHungary: "ВЕНГРИЯ",
             targetPoland: "ПОЛЬША", targetRussia: "РОССИЯ",
-            targetTurkey: "ТУРЦИЯ", targetUkraine: "УКРАИНА",
+            targetTurkey: "ТУРЦИЯ", targetUkraine: "УКРАИНА", targetUK: "ВЕЛИКОБРИТАНИЯ",
             notamTitle: "Наблюдение за воздушным пространством — Европа", notamScanning: "СКАНИРОВАНИЕ...",
             flightTitle: "Наблюдение за рейсами — Европа", flightScanning: "СКАНИРОВАНИЕ...",
             rlRequests: "Запросов использовано", rlRemaining: "Осталось",
@@ -2401,7 +2481,7 @@
             targetGreece: "GRÈCE", targetCyprus: "CHYPRE", targetGreenland: "GROENLAND",
             targetHungary: "HONGRIE",
             targetPoland: "POLOGNE", targetRussia: "RUSSIE",
-            targetTurkey: "TURQUIE", targetUkraine: "UKRAINE",
+            targetTurkey: "TURQUIE", targetUkraine: "UKRAINE", targetUK: "ROYAUME-UNI",
             notamTitle: "Veille de l’espace aérien — Europe", notamScanning: "ANALYSE...",
             flightTitle: "Veille des vols — Europe", flightScanning: "ANALYSE...",
             rlRequests: "Requêtes utilisées", rlRemaining: "Restant",
@@ -2423,7 +2503,7 @@
             targetGreece: "GRIECHENLAND", targetCyprus: "ZYPERN", targetGreenland: "GRÖNLAND",
             targetHungary: "UNGARN",
             targetPoland: "POLEN", targetRussia: "RUSSLAND",
-            targetTurkey: "TÜRKEI", targetUkraine: "UKRAINE",
+            targetTurkey: "TÜRKEI", targetUkraine: "UKRAINE", targetUK: "VEREINIGTES KÖNIGREICH",
             notamTitle: "Luftraumbeobachtung — Europa", notamScanning: "SCANNEN...",
             flightTitle: "Flugbeobachtung — Europa", flightScanning: "SCANNEN...",
             rlRequests: "Anfragen verwendet", rlRemaining: "Verbleibend",
@@ -2892,7 +2972,8 @@ async function loadCachedScoresFallback() {
         'russia':       { name: 'Moscow', lat: 55.75, lon: 37.62 },
         'turkey':       { name: 'Ankara', lat: 39.93, lon: 32.86 },
         'turkmenistan': { name: 'Ashgabat', lat: 37.96, lon: 58.38 },
-        'ukraine':      { name: 'Kyiv', lat: 50.45, lon: 30.52 }
+        'ukraine':      { name: 'Kyiv', lat: 50.45, lon: 30.52 },
+        'uk':           { name: 'London', lat: 51.51, lon: -0.13 }
     };
 
     function getWeatherEmoji(code) {
@@ -3290,7 +3371,15 @@ async function loadCachedScoresFallback() {
       btn.replaceWith(wrap);
       var rh='rhetoric-'+(RHET[id]||id)+'.html';
       exists(rh).then(function(ok){
-        if(!ok)return;
+        if(!ok){
+          // Nov 4 2026: a card can announce a tracker that is in build (data-rhetoric-soon)
+          if(card.hasAttribute('data-rhetoric-soon')){
+            var s=document.createElement('span');s.textContent='📡 Rhetoric · soon';
+            s.style.cssText='font-size:12px;font-weight:700;padding:6px 12px;border-radius:16px;border:1.5px dashed rgba(21,128,61,.45);opacity:.6;white-space:nowrap';
+            var r0=wrap.querySelector('.card-link-row');r0.insertBefore(s,r0.querySelector('a.mil'));
+          }
+          return;
+        }
         var a=document.createElement('a');a.className='rhet';a.href=rh;a.textContent='📡 Rhetoric';
         var row=wrap.querySelector('.card-link-row');row.insertBefore(a,row.querySelector('a.mil'));
       });
