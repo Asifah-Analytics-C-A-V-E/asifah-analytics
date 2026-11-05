@@ -14,6 +14,13 @@
  *        global / economy notes one click further down.
  * No internal state words reach the reader.
  *
+ * v1.2.0 (Nov 5 2026) -- Rachel: "a wall of text -- a reader would go glassy
+ * eyed and move on." The page now opens with the headline, the So What and an
+ * AT-A-GLANCE grid: one small tile per reading (coloured dot, name, a plain
+ * status word, one short line). Click a tile for the full paragraph and "why
+ * it matters at each level". The fuller read stays one click away. Nothing was
+ * removed -- only folded. Same endpoint, same text.
+ *
  * Before the AI writes (or if it cannot), the backend's fallback read -- built
  * from Asifah's own reference notes -- fills the same layout, labelled.
  *
@@ -60,7 +67,21 @@
         '.tv-alt span{' + SERIF + 'color:var(--text-primary);overflow-wrap:anywhere}',
         '.tv-note{font-size:11.5px;line-height:1.5;color:var(--text-muted);margin-top:4px;overflow-wrap:anywhere}',
         '.tv-label{margin-top:14px;font-size:11px;color:var(--text-muted);font-style:italic}',
-        '@media (max-width:600px){.tv-card{padding:14px 13px}.tv-alt{grid-template-columns:1fr}.tv-headline{font-size:1.1rem}}'
+        '.tv-glance-k{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin:14px 0 6px}',
+        '.tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}',
+        '.tv-tile{border:1px solid var(--card-border,var(--border-color,#2a3a4e));border-radius:8px;padding:8px 10px;min-width:0}',
+        '.tv-tile>summary{list-style:none;cursor:pointer;color:var(--text-primary)!important;font-size:inherit!important;font-weight:400!important;letter-spacing:0!important;padding:0!important}',
+        '.tv-tile>summary::before{content:none!important}',
+        '.tv-tile[open]{grid-column:1/-1}',
+        '.tv-tile-h{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:0.86rem;font-weight:700;line-height:1.3}',
+        '.tv-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}',
+        '.tv-tag{font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:1px 7px;border-radius:999px;border:1px solid currentColor;opacity:0.9}',
+        '.tv-one{' + SERIF + 'font-size:0.88rem;line-height:1.45;color:var(--text-secondary,var(--text-primary));margin-top:4px;overflow-wrap:anywhere}',
+        '.tv-more{font-size:11px;color:#38bdf8;margin-top:4px}',
+        '.tv-tile[open] .tv-more{display:none}',
+        '.tv-tile[open] .tv-one{display:none}',
+        '.tv-tile .tv-para{margin-top:6px}',
+        '@media (max-width:600px){.tv-card{padding:14px 13px}.tv-alt{grid-template-columns:1fr}.tv-headline{font-size:1.1rem}.tv-grid{grid-template-columns:1fr}}'
     ].join('');
 
     function esc(t) {
@@ -102,6 +123,47 @@
         return h + '</div>';
     }
 
+    // Plain status words and a colour per reading. Unknown states get a grey
+    // dot and no word -- never a guessed one.
+    var TONE = [
+        [/disrupt|closed|firing|active|alarm|surge|breach|evacuat|drawdown|shock|high/, '#ef4444', 'Disrupted'],
+        [/contest|elevat|warn|watch_up|stress|flinch|diverg|mixed/, '#f59e0b', 'Under watch'],
+        [/monitor|standing|long|steady/, '#38bdf8', 'Being watched'],
+        [/open|normal|calm|agree|quiet|low/, '#22c55e', 'Normal']
+    ];
+    var WORD = {disrupted: 'Disrupted', contested: 'Under watch', monitored: 'Being watched', open: 'Open',
+                firing: 'Active now', standing_watch: 'Long-running', active: 'Active now'};
+    function tone(state) {
+        var s = String(state || '').toLowerCase();
+        for (var i = 0; i < TONE.length; i++) {
+            if (TONE[i][0].test(s)) return {c: TONE[i][1], w: WORD[s] || ''};
+        }
+        return {c: '#64748b', w: WORD[s] || ''};
+    }
+    function rank(ex) {
+        var c = tone(ex.state).c;
+        return (ex.is_new ? 0 : 10) + ['#ef4444', '#f59e0b', '#38bdf8', '#22c55e', '#64748b'].indexOf(c);
+    }
+    function firstSentence(t) {
+        t = String(t || '').trim();
+        var m = t.match(/^(.{40,}?[.!?])(\s|$)/);
+        var one = m ? m[1] : t;
+        return one.length > 150 ? one.slice(0, 147).replace(/\s+\S*$/, '') + '…' : one;
+    }
+    function tile(ex, ai) {
+        var a = ai || {};
+        var text = a.what_it_means || ex.sentence || ex.plain || '';
+        if (!text) return '';
+        var t = tone(ex.state);
+        var name = String(ex.name || '').split(' /')[0];
+        return '<details class="tv-tile"><summary>' +
+            '<div class="tv-tile-h"><span class="tv-dot" style="background:' + t.c + '"></span>' + esc(name) +
+            (t.w ? ' <span class="tv-tag" style="color:' + t.c + '">' + esc(t.w) + '</span>' : '') +
+            (ex.is_new ? '<span class="tv-new">new</span>' : '') + '</div>' +
+            '<div class="tv-one">' + esc(firstSentence(text)) + '</div>' +
+            '<div class="tv-more">More ▸</div></summary>' + para(ex, ai) + '</details>';
+    }
+
     function render(rec) {
         var anchor = ANCHOR && document.getElementById(ANCHOR);
         if (!anchor || document.getElementById('tvCard')) return;
@@ -118,17 +180,23 @@
         var h = '<div class="tv-kicker">Plain-language read</div>';
         if (v.headline) h += '<div class="tv-headline">' + esc(v.headline) + '</div>';
         if (v.so_what) h += '<div class="tv-sowhat">' + esc(v.so_what) + '</div>';
+        if (exps.length) {
+            var sorted = exps.slice().sort(function (x, y) { return rank(x) - rank(y); });
+            var shown = sorted.slice(0, 6), rest = sorted.slice(6);
+            h += '<div class="tv-glance-k">At a glance · click any box for the detail</div>' +
+                 '<div class="tv-grid">' + shown.map(function (ex) { return tile(ex, aiItems[ex.id]); }).join('') + '</div>';
+            if (rest.length) {
+                h += '<details><summary>' + rest.length + ' more reading' + (rest.length > 1 ? 's' : '') + '</summary>' +
+                     '<div class="tv-grid">' + rest.map(function (ex) { return tile(ex, aiItems[ex.id]); }).join('') + '</div></details>';
+            }
+        }
         var watch = (v.watch || []).filter(Boolean);
         if (v.read || watch.length) {
-            h += '<details><summary>The fuller read</summary>' +
+            h += '<details><summary>The fuller read' + (watch.length ? ' and what to watch' : '') + '</summary>' +
                  (v.read ? '<div class="tv-read">' + esc(v.read) + '</div>' : '') +
                  (watch.length ? '<div class="tv-sub">What to watch</div><ul class="tv-list">' +
                      watch.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' : '') +
                  '</details>';
-        }
-        if (exps.length) {
-            h += '<details open><summary>What you are seeing on this page</summary>' +
-                 exps.map(function (ex) { return para(ex, aiItems[ex.id]); }).join('') + '</details>';
         }
         h += '<div class="tv-label">' + (ai
                 ? esc(rec.label || 'Plain-language read, AI-drafted from Asifah signals') + when(rec.generated_at)
