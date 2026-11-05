@@ -1006,6 +1006,9 @@
             color: var(--text-secondary);
             margin-top: 3px;
         }
+        .balance-legs { margin: 10px 0 4px; font-size: 0.78rem; line-height: 1.55; color: var(--text-secondary); }
+        .balance-leg b { color: var(--text-primary); margin-right: 4px; }
+        .balance-lopsided { margin-top: 6px; padding: 6px 10px; border-left: 3px solid #a855f7; background: rgba(168,85,247,0.07); border-radius: 4px; }
         .balance-disclaimer {
             font-size: 0.82rem;
             color: var(--text-muted);
@@ -1360,6 +1363,7 @@
                     <div class="balance-pct" id="balanceRightPct">—</div>
                 </div>
             </div>
+            <div class="balance-legs" id="balanceLegs"></div>
             <div class="balance-disclaimer" data-i18n="bal_disclaimer">
                 Source mix from r/politics, r/Conservative, r/moderatepolitics, r/NeutralPolitics, plus cross-spectrum journalists on Bluesky. We don't claim perfect balance — only transparency about who we're listening to.
             </div>
@@ -1547,7 +1551,7 @@ const I18N = {
         bal_left: 'Left-of-Center',
         bal_center: 'Center / Moderated',
         bal_right: 'Right-of-Center',
-        bal_disclaimer: "Source mix from r/politics (left), r/Conservative + r/JoeRogan + r/TuckerCarlson + r/BenShapiro (right), r/moderatepolitics + r/NeutralPolitics + r/NeutralNews (center), r/EzraKleinShow + r/PivotPodcast (center-left), plus cross-spectrum journalists on Bluesky. We don't claim perfect balance — only transparency about who we're listening to. Hover over each count to see which subreddits contributed.",
+        bal_disclaimer: "Counted from 28 newsletters, opinion outlets, institutes and YouTube channels across the spectrum (8 lean left, 9 lean right, 8 centre, 3 nonpartisan), plus Reddit once API access is approved. Lean labels are approximate, from public media-bias ratings. We don't claim perfect balance — only transparency about who we're listening to. Commentary is context; it never changes a score.",
 
         // Targets + cross-theater
         targ_title: 'U.S. Rhetoric Targets',
@@ -1672,7 +1676,7 @@ const I18N = {
         bal_left: 'Centro-Izquierda',
         bal_center: 'Centro / Moderado',
         bal_right: 'Centro-Derecha',
-        bal_disclaimer: "Mezcla de fuentes: r/politics (izquierda), r/Conservative + r/JoeRogan + r/TuckerCarlson + r/BenShapiro (derecha), r/moderatepolitics + r/NeutralPolitics + r/NeutralNews (centro), r/EzraKleinShow + r/PivotPodcast (centro-izquierda), más periodistas transversales en Bluesky. No afirmamos un balance perfecto — solo transparencia sobre a quién escuchamos. Pasa el cursor sobre cada conteo para ver qué subreddits contribuyeron.",
+        bal_disclaimer: "Contado a partir de 28 boletines, medios de opinión, institutos y canales de YouTube de todo el espectro (8 de izquierda, 9 de derecha, 8 de centro, 3 no partidistas), más Reddit cuando se apruebe el acceso a su API. Las etiquetas de orientación son aproximadas. No afirmamos un balance perfecto — solo transparencia sobre a quién escuchamos. Los comentarios son contexto; nunca cambian una puntuación.",
 
         // Targets + cross-theater
         targ_title: 'Objetivos Retóricos de EE.UU.',
@@ -1796,7 +1800,7 @@ const I18N = {
         bal_left: 'Centro-Esquerda',
         bal_center: 'Centro / Moderado',
         bal_right: 'Centro-Direita',
-        bal_disclaimer: "Mistura de fontes: r/politics (esquerda), r/Conservative + r/JoeRogan + r/TuckerCarlson + r/BenShapiro (direita), r/moderatepolitics + r/NeutralPolitics + r/NeutralNews (centro), r/EzraKleinShow + r/PivotPodcast (centro-esquerda), mais jornalistas transversais no Bluesky. Não afirmamos balanço perfeito — apenas transparência sobre quem ouvimos. Passe o cursor sobre cada contagem para ver quais subreddits contribuíram.",
+        bal_disclaimer: "Contado a partir de 28 newsletters, veículos de opinião, institutos e canais do YouTube de todo o espectro (8 de esquerda, 9 de direita, 8 de centro, 3 apartidários), mais o Reddit quando o acesso à API for aprovado. Os rótulos de orientação são aproximados. Não afirmamos balanço perfeito — apenas transparência sobre quem ouvimos. Comentários são contexto; nunca mudam uma pontuação.",
 
         // Targets + cross-theater
         targ_title: 'Alvos Retóricos dos EUA',
@@ -2292,81 +2296,55 @@ function buildActorCard(key, a, layer) {
 }
 
 function renderBalance(data) {
-    // ── Cross-spectrum balance (v1.3 — May 16, 2026) ──
-    // Reads source_counts.reddit_lean_3 (UI-friendly 3-bucket counts) and
-    // source_counts.reddit_breakdown (per-subreddit counts for tooltips).
-    // 5-bucket detail is in source_counts.reddit_lean_5 for future v1.2 expansion.
-    const sc = data.source_counts || {};
-    const lean3 = sc.reddit_lean_3 || {};
-    const breakdown = sc.reddit_breakdown || {};
+    // ── Cross-spectrum balance (v1.4 — Nov 5, 2026) ──
+    // Three legs, each counted honestly:
+    //   1. Newsletters, opinion outlets and institutes  } ME backend commentary lane
+    //   2. YouTube channels (titles, keyless feed)      } /api/commentary/balance
+    //   3. Reddit -- read from this tracker's own scan; "unread" while Reddit
+    //      API access is pending (datacenter IPs are blocked anonymously).
+    // A leg that is down is SAID, never shown as zero.
+    const COMMENTARY_BALANCE = 'https://asifah-backend.onrender.com/api/commentary/balance';
+    const lean3 = ((data && data.source_counts) || {}).reddit_lean_3 || {};
+    const reddit = { left: lean3.left || 0, center: lean3.center || 0, right: lean3.right || 0 };
+    const redditTotal = reddit.left + reddit.center + reddit.right;
 
-    const left   = lean3.left || 0;
-    const center = lean3.center || 0;
-    const right  = lean3.right || 0;
-    const apolitical = lean3.apolitical || 0;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const legsEl = document.getElementById('balanceLegs');
 
-    const politicalTotal = left + center + right;
-
-    // Build hover tooltips listing which subreddits feed each bucket.
-    // Mapping is duplicated from backend SUBREDDIT_LEAN_5BUCKET for tooltip
-    // generation only — backend is source of truth for actual counts.
-    const LEAN_3_BUCKET_FRONTEND = {
-        // LEFT bucket (left + center_left)
-        'politics': 'left', 'EzraKleinShow': 'left', 'PivotPodcast': 'left',
-        // CENTER bucket
-        'moderatepolitics': 'center', 'NeutralPolitics': 'center',
-        'NeutralNews': 'center', 'news': 'center', 'worldnews': 'center',
-        'protest': 'center', 'PublicFreakout': 'center',
-        'scotus': 'center', 'law': 'center',
-        // RIGHT bucket (right + far_right)
-        'Conservative': 'right', 'JoeRogan': 'right',
-        'TuckerCarlson': 'right', 'BenShapiro': 'right',
-    };
-    const subsByBucket = { left: [], center: [], right: [] };
-    Object.entries(breakdown).forEach(([sub, count]) => {
-        const bucket = LEAN_3_BUCKET_FRONTEND[sub];
-        if (bucket) subsByBucket[bucket].push(`r/${sub}: ${count}`);
-    });
-    const tooltipLeft   = subsByBucket.left.join(' · ')   || 'No data this scan';
-    const tooltipCenter = subsByBucket.center.join(' · ') || 'No data this scan';
-    const tooltipRight  = subsByBucket.right.join(' · ')  || 'No data this scan';
-
-    // Set counts + percentages + tooltips
-    const leftEl   = document.getElementById('balanceLeftCount');
-    const centerEl = document.getElementById('balanceCenterCount');
-    const rightEl  = document.getElementById('balanceRightCount');
-
-    leftEl.textContent   = politicalTotal > 0 ? left   : '—';
-    centerEl.textContent = politicalTotal > 0 ? center : '—';
-    rightEl.textContent  = politicalTotal > 0 ? right  : '—';
-
-    leftEl.title   = tooltipLeft;
-    centerEl.title = tooltipCenter;
-    rightEl.title  = tooltipRight;
-
-    // Percentage strings under each column
-    if (politicalTotal > 0) {
-        document.getElementById('balanceLeftPct').textContent =
-            `${Math.round((left / politicalTotal) * 100)}% of political voices`;
-        document.getElementById('balanceCenterPct').textContent =
-            `${Math.round((center / politicalTotal) * 100)}% of political voices`;
-        document.getElementById('balanceRightPct').textContent =
-            `${Math.round((right / politicalTotal) * 100)}% of political voices`;
-    } else {
-        document.getElementById('balanceLeftPct').textContent = '—';
-        document.getElementById('balanceCenterPct').textContent = '—';
-        document.getElementById('balanceRightPct').textContent = '—';
+    function fill(b) {
+        const bal = (b && b.available && b.balance) || null;
+        const w = bal ? (bal.legs.newsletters_outlets_institutes || {}) : null;
+        const v = bal ? (bal.legs.video || {}) : null;
+        const sum = { left: 0, center: 0, right: 0 };
+        [w && w.counts, v && v.counts, redditTotal ? reddit : null].forEach(c => {
+            if (!c) return;
+            sum.left += c.left || 0; sum.center += c.center || 0; sum.right += c.right || 0;
+        });
+        const total = sum.left + sum.center + sum.right;
+        ['Left', 'Center', 'Right'].forEach(k => {
+            const n = sum[k.toLowerCase()];
+            set('balance' + k + 'Count', total ? n : '—');
+            set('balance' + k + 'Pct', total ? `${Math.round(n / total * 100)}% of pieces this week` : '—');
+        });
+        if (!legsEl) return;
+        const leg = (name, l, extra) => l
+            ? `<div class="balance-leg"><b>${name}</b> ${l.sources_ok}/${l.sources_total} sources reporting · L ${l.counts.left} · C ${l.counts.center} · R ${l.counts.right}${extra || ''}</div>`
+            : `<div class="balance-leg"><b>${name}</b> unread this load — unread, not zero</div>`;
+        let h = leg('Newsletters, outlets &amp; institutes', w,
+                    w && w.counts && w.counts.nonpartisan ? ` · nonpartisan ${w.counts.nonpartisan}` : '');
+        h += leg('YouTube', v);
+        h += redditTotal
+            ? `<div class="balance-leg"><b>Reddit</b> L ${reddit.left} · C ${reddit.center} · R ${reddit.right}</div>`
+            : `<div class="balance-leg"><b>Reddit</b> unread — API access pending; not counted as zero</div>`;
+        const us = bal && (bal.by_country || []).find(t => t.country === 'usa');
+        if (us && us.lopsided && us.sentence) h += `<div class="balance-leg balance-lopsided">${us.sentence}</div>`;
+        legsEl.innerHTML = h;
     }
-
-    // Apolitical footnote: append to the existing balance-disclaimer
-    const sourceNote = document.querySelector('.balance-disclaimer');
-    if (sourceNote && apolitical > 0) {
-        const baseText = sourceNote.getAttribute('data-base-text')
-                      || sourceNote.textContent;
-        sourceNote.setAttribute('data-base-text', baseText);
-        sourceNote.textContent = `${baseText} Plus ${apolitical} apolitical signals (weather, military, economics, cyber, OSINT) tracked separately.`;
-    }
+    fetch(COMMENTARY_BALANCE).then(r => r.json()).then(fill).catch(() => fill(null));
 }
+// The commentary legs do not depend on this tracker's own scan: draw them
+// at page load too, so a slow or failed US scan does not blank the card.
+document.addEventListener('DOMContentLoaded', () => { try { renderBalance(null); } catch (e) {} });
 
 function renderTargets(data) {
     const grid = document.getElementById('targetsGrid');
