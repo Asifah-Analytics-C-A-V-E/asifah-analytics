@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Europe Rhetoric Monitor v1.3.2 — Nov 4 2026: UK tracker card; signal rows name and link every tracker; BLUF fallback for trackers without a /summary route now actually runs (was unreachable). v1.3.1 June 2026 -->
+<!-- Asifah Analytics — Europe Rhetoric Monitor v1.3.3 — Nov 5 2026: banners sort by display name (United Kingdom after Ukraine). v1.3.2 Nov 4 2026: UK tracker card; signal rows name and link every tracker; BLUF fallback for trackers without a /summary route now actually runs (was unreachable). v1.3.1 June 2026 -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -1287,7 +1287,7 @@ async function updateBluf(_resolvedUnused) {
             const data = await fetchWithTimeout(tracker.summaryUrl);
             const newEl = renderTrackerBanner(tracker, data);
             newEl.id = `banner-${tracker.id}`;
-            newEl.setAttribute('data-sort', tracker.id);
+            newEl.setAttribute('data-sort', sortKey(tracker));
             const old = document.getElementById(`banner-${tracker.id}`);
             if (old) old.replaceWith(newEl);
             return { tracker, data };
@@ -1299,7 +1299,7 @@ async function updateBluf(_resolvedUnused) {
             if (fallbackData) {
                 const fbEl = renderTrackerBanner(tracker, fallbackData);
                 fbEl.id = `banner-${tracker.id}`;
-                fbEl.setAttribute('data-sort', tracker.id);
+                fbEl.setAttribute('data-sort', sortKey(tracker));
                 const prev = document.getElementById(`banner-${tracker.id}`);
                 if (prev) prev.replaceWith(fbEl);
                 return { tracker, data: fallbackData };
@@ -1307,6 +1307,7 @@ async function updateBluf(_resolvedUnused) {
             // Show error state on the banner instead of leaving it spinning
             const errEl = renderTrackerBanner(tracker, null);
             errEl.id = `banner-${tracker.id}`;
+            errEl.setAttribute('data-sort', sortKey(tracker));
             // Add a subtle error indicator
             const badge = errEl.querySelector('.level-badge');
             if (badge) {
@@ -1322,7 +1323,7 @@ async function updateBluf(_resolvedUnused) {
             if (fallbackData) {
                 const fbEl = renderTrackerBanner(tracker, fallbackData);
                 fbEl.id = `banner-${tracker.id}`;
-                fbEl.setAttribute('data-sort', tracker.id);
+                fbEl.setAttribute('data-sort', sortKey(tracker));
                 const prev = document.getElementById(`banner-${tracker.id}`);
                 if (prev) prev.replaceWith(fbEl);
                 return { tracker, data: fallbackData };
@@ -1356,6 +1357,10 @@ async function updateBluf(_resolvedUnused) {
     // BLUF resolves, because discovered trackers arrive in a second pass and
     // would otherwise pile up at the bottom out of order. appendChild MOVES an
     // existing node, so this reorders without re-rendering anything.
+    // Nov 5 2026: sort by the DISPLAY name, not the id -- id 'uk' sorted ahead of
+    // 'ukraine', so United Kingdom showed above Ukraine.
+    function sortKey(t) { return String((t && (t.name || t.id)) || '').toLowerCase(); }
+
     function sortTrackerBanners(list) {
         var nodes = Array.prototype.slice.call(list.children);
         nodes.sort(function (a, b) {
@@ -1396,7 +1401,7 @@ async function updateBluf(_resolvedUnused) {
         active.forEach(tracker => {
             const el = renderTrackerBanner(tracker, null);
             el.id = `banner-${tracker.id}`;
-            el.setAttribute('data-sort', tracker.id);
+            el.setAttribute('data-sort', sortKey(tracker));
             list.appendChild(el);
             rendered.add(tracker.id);
         });
@@ -1421,7 +1426,7 @@ async function updateBluf(_resolvedUnused) {
                 // /summary endpoint of its own.
                 const el = renderTrackerBanner(t, blufDataToTrackerData(summary[id]));
                 el.id = `banner-${t.id}`;
-                el.setAttribute('data-sort', t.id);
+                el.setAttribute('data-sort', sortKey(t));
                 list.appendChild(el);
                 rendered.add(id);
                 active.push(t);

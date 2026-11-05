@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Asifah Analytics — Global Pressure Index v2.0.0 — April 2026 -->
+<!-- Asifah Analytics — Global Pressure Index v2.0.0 — April 2026 · Nov 5 2026: freshness line under the plain-language read (gpi_voice 1.3.0) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9114D1Z5C"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -2598,6 +2598,17 @@ const VOICE_VIEW = { all: 'all_vectors', kinetic: 'kinetic', economic: 'economic
                      diplomatic: 'diplomatic', humanitarian: 'humanitarian',
                      governance: 'governance' };
 
+// Nov 5 2026 -- is the plain-language read the read for TODAY's signals?
+// gpi_voice.py 1.3.0 reports it; the page says it out loud instead of leaving
+// a days-old headline looking current.
+function _freshnessLine(voice) {
+    const f = voice && voice.freshness;
+    if (!f || !f.plain) return '';
+    const col = f.state === 'stale' ? '#f97316' : (f.state === 'unchanged_long' ? '#f59e0b' : '#64748b');
+    const icon = f.state === 'stale' ? '\u26a0\ufe0f ' : (f.state === 'unchanged_long' ? '\u23f8\ufe0f ' : '\u2713 ');
+    return `<div class="axis-plain-label" style="color:${col};font-style:normal;margin-top:4px;">${icon}${escapeHtmlGpi(f.plain)}</div>`;
+}
+
 function _proseBlock(axisName, d) {
     const analyst = `<div class="axis-bluf-prose">${_formatBlufParagraphs(d.blufProse || '')}</div>`;
     const voice = _gpiState.voice || null;
@@ -2622,6 +2633,7 @@ function _proseBlock(axisName, d) {
                 <ul class="axis-plain-watch">${watch.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
             </details>
             <div class="axis-plain-label">${esc(voice.label || 'Plain-language read, AI-drafted from Asifah signals')}${when}</div>
+            ${_freshnessLine(voice)}
         </div>
         <details class="axis-analyst" onclick="event.stopPropagation()">
             <summary>Analyst detail &mdash; every signal behind this read</summary>
