@@ -1551,7 +1551,7 @@ const I18N = {
         bal_left: 'Left-of-Center',
         bal_center: 'Center / Moderated',
         bal_right: 'Right-of-Center',
-        bal_disclaimer: "Counted from 28 newsletters, opinion outlets, institutes and YouTube channels across the spectrum (8 lean left, 9 lean right, 8 centre, 3 nonpartisan), plus Reddit once API access is approved. Lean labels are approximate, from public media-bias ratings. We don't claim perfect balance — only transparency about who we're listening to. Commentary is context; it never changes a score.",
+        bal_disclaimer: "Counted from 57 newsletters, opinion outlets, institutes, YouTube channels and podcasts across the spectrum (17 lean left, 16 lean right, 18 centre, 6 nonpartisan). Podcasts are read by episode title and show notes, never the audio, plus Reddit once API access is approved. Lean labels are approximate, from public media-bias ratings. We don't claim perfect balance — only transparency about who we're listening to. Commentary is context; it never changes a score.",
 
         // Targets + cross-theater
         targ_title: 'U.S. Rhetoric Targets',
@@ -1676,7 +1676,7 @@ const I18N = {
         bal_left: 'Centro-Izquierda',
         bal_center: 'Centro / Moderado',
         bal_right: 'Centro-Derecha',
-        bal_disclaimer: "Contado a partir de 28 boletines, medios de opinión, institutos y canales de YouTube de todo el espectro (8 de izquierda, 9 de derecha, 8 de centro, 3 no partidistas), más Reddit cuando se apruebe el acceso a su API. Las etiquetas de orientación son aproximadas. No afirmamos un balance perfecto — solo transparencia sobre a quién escuchamos. Los comentarios son contexto; nunca cambian una puntuación.",
+        bal_disclaimer: "Contado a partir de 57 boletines, medios de opinión, institutos, canales de YouTube y pódcasts de todo el espectro (17 de izquierda, 16 de derecha, 18 de centro, 6 no partidistas). Los pódcasts se leen por título y notas del episodio, nunca el audio, más Reddit cuando se apruebe el acceso a su API. Las etiquetas de orientación son aproximadas. No afirmamos un balance perfecto — solo transparencia sobre a quién escuchamos. Los comentarios son contexto; nunca cambian una puntuación.",
 
         // Targets + cross-theater
         targ_title: 'Objetivos Retóricos de EE.UU.',
@@ -1800,7 +1800,7 @@ const I18N = {
         bal_left: 'Centro-Esquerda',
         bal_center: 'Centro / Moderado',
         bal_right: 'Centro-Direita',
-        bal_disclaimer: "Contado a partir de 28 newsletters, veículos de opinião, institutos e canais do YouTube de todo o espectro (8 de esquerda, 9 de direita, 8 de centro, 3 apartidários), mais o Reddit quando o acesso à API for aprovado. Os rótulos de orientação são aproximados. Não afirmamos balanço perfeito — apenas transparência sobre quem ouvimos. Comentários são contexto; nunca mudam uma pontuação.",
+        bal_disclaimer: "Contado a partir de 57 newsletters, veículos de opinião, institutos, canais do YouTube e podcasts de todo o espectro (17 de esquerda, 16 de direita, 18 de centro, 6 apartidários). Os podcasts são lidos pelo título e notas do episódio, nunca o áudio, mais o Reddit quando o acesso à API for aprovado. Os rótulos de orientação são aproximados. Não afirmamos balanço perfeito — apenas transparência sobre quem ouvimos. Comentários são contexto; nunca mudam uma pontuação.",
 
         // Targets + cross-theater
         targ_title: 'Alvos Retóricos dos EUA',
@@ -2300,6 +2300,7 @@ function renderBalance(data) {
     // Three legs, each counted honestly:
     //   1. Newsletters, opinion outlets and institutes  } ME backend commentary lane
     //   2. YouTube channels (titles, keyless feed)      } /api/commentary/balance
+    //   2b. Podcasts (episode titles + show notes)       }   (v1.5, B17)
     //   3. Reddit -- read from this tracker's own scan; "unread" while Reddit
     //      API access is pending (datacenter IPs are blocked anonymously).
     // A leg that is down is SAID, never shown as zero.
@@ -2315,8 +2316,9 @@ function renderBalance(data) {
         const bal = (b && b.available && b.balance) || null;
         const w = bal ? (bal.legs.newsletters_outlets_institutes || {}) : null;
         const v = bal ? (bal.legs.video || {}) : null;
+        const p = bal ? (bal.legs.podcasts || null) : null;
         const sum = { left: 0, center: 0, right: 0 };
-        [w && w.counts, v && v.counts, redditTotal ? reddit : null].forEach(c => {
+        [w && w.counts, v && v.counts, p && p.counts, redditTotal ? reddit : null].forEach(c => {
             if (!c) return;
             sum.left += c.left || 0; sum.center += c.center || 0; sum.right += c.right || 0;
         });
@@ -2333,6 +2335,7 @@ function renderBalance(data) {
         let h = leg('Newsletters, outlets &amp; institutes', w,
                     w && w.counts && w.counts.nonpartisan ? ` · nonpartisan ${w.counts.nonpartisan}` : '');
         h += leg('YouTube', v);
+        h += leg('Podcasts', p);
         h += redditTotal
             ? `<div class="balance-leg"><b>Reddit</b> L ${reddit.left} · C ${reddit.center} · R ${reddit.right}</div>`
             : `<div class="balance-leg"><b>Reddit</b> unread — API access pending; not counted as zero</div>`;
