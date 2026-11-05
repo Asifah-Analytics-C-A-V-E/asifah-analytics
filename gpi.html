@@ -1623,7 +1623,17 @@ function _buildCardData(axisName) {
 }
 
 // ── Slice 1 helpers (Jun 13 2026) ──────────────────────────────────────
+// Nov 5 2026: a peace track carries its theatre's level from the backend, but it is
+// not pressure -- show it as an off-ramp, never as a red L4.
+const _DEESC_CATS = new Set(['green_line_active','diplomatic_track_active','diplomatic_offramp',
+                             'green_line','offramp','de_escalation']);
+function _isDeesc(s) {
+    return !!s && (s.direction === 'de-escalation' || _DEESC_CATS.has(String(s.category || '')));
+}
 function _gpiLevelChip(s) {
+    if (_isDeesc(s)) {
+        return `<span class="sig-level-chip" style="background:#10b981;" title="De-escalation: talks or an off-ramp moving. Not counted as pressure.">OFF-RAMP</span>`;
+    }
     const lv = s.level;
     let txt, bg;
     if (typeof lv === 'number') {
@@ -1736,13 +1746,29 @@ function _gpiAxisPillEnd(s) {
     const clean = axes.map(a => String(a).toLowerCase())
         .filter(a => _AXIS_TAG_LABEL[a] && !seen[a] && (seen[a] = true));
     if (!clean.length) return '';
+    // Nov 5 2026: hybrid signals ride the kinetic axis but are not shooting --
+    // say what kind (cyber / sabotage / jamming) right next to the axis pill.
+    const MODE = { cyber:'\u{1F4BB} Cyber \u00b7 not kinetic', sabotage:'\u2693 Sabotage \u00b7 not kinetic',
+                   jamming:'\u{1F4E1} Jamming \u00b7 not kinetic', unknown:'Hybrid \u00b7 not kinetic' };
+    const modePill = (s.mode && MODE[s.mode])
+        ? `<span class="sig-axis-tag-end" style="background:rgba(249,115,22,0.12);color:#fb923c;border-color:#fb923c66;" title="Hybrid: below the threshold of armed attack">${MODE[s.mode]}</span>`
+        : '';
+    const offPill = _isDeesc(s)
+        ? `<span class="sig-axis-tag-end" style="background:rgba(16,185,129,0.12);color:#34d399;border-color:#34d39966;">De-escalation</span>`
+        : '';
     return clean.map(ax =>
         `<span class="sig-axis-tag-end" style="background:${_AXIS_PILL_BG[ax]};color:${_AXIS_PILL_FG[ax]};border-color:${_AXIS_PILL_FG[ax]}66;">${_AXIS_TAG_LABEL[ax]}</span>`
-    ).join('');
+    ).join('') + modePill + offPill;
 }
 
+// Nov 5 2026: names that are never Title Case ("us" -> "Us" was showing on the page)
+const _FIXED_NAMES = { us:'USA', usa:'USA', 'united states':'USA', united_states:'USA', uk:'UK',
+                       'united kingdom':'UK', united_kingdom:'UK', uae:'UAE', drc:'DRC', dprk:'DPRK',
+                       car:'CAR', png:'PNG' };
 function _titleCase(str) {
-    return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1));
+    const fixed = _FIXED_NAMES[String(str || '').toLowerCase().trim()];
+    if (fixed) return fixed;
+    return str.replace(/\w\S*/g, w => _FIXED_NAMES[w.toLowerCase()] || (w.charAt(0).toUpperCase() + w.slice(1)));
 }
 
 // Resolve a signal's display location + optional source link (Slice 2).
@@ -1762,7 +1788,7 @@ function _resolveLocation(s) {
     //     whichever backend carried it, so DR Congo's Ebola row read "Middle
     //     East & North Africa". A country is named as itself.
     if (theatre && !_REGION_DISPLAY[theatre] && !/^global/.test(theatre) && theatre !== 'unknown') {
-        const ACRO = { drc:'DR Congo', png:'PNG', uae:'UAE', uk:'UK', us:'US', usa:'USA',
+        const ACRO = { drc:'DR Congo', png:'PNG', uae:'UAE', uk:'UK', us:'USA', usa:'USA',
                        car:'Central African Republic', cote_divoire:"C\u00f4te d'Ivoire" };
         return { label: ACRO[theatre] || _titleCase(theatre.replace(/_/g,' ')),
                  href: _trackerPageFor(s) || null };
@@ -1869,7 +1895,8 @@ function _groupSignalsByTheatre(signals, exposureIndex) {
             const ia = _AXIS_PILL_ORDER.indexOf(a), ib = _AXIS_PILL_ORDER.indexOf(b);
             return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
         });
-        const peak = Math.max(...sigs.map(sg => typeof sg.level === 'number' ? sg.level : 0));
+        const peak = Math.max(0, ...sigs.filter(sg => !_isDeesc(sg))
+                                       .map(sg => typeof sg.level === 'number' ? sg.level : 0));
         groups.push({ theatre: th, sigs, axes, peak });
     }
     // v3.3: EXPOSURE-ONLY groups -- a country with zero resident signals but
@@ -1987,7 +2014,7 @@ function _groupSynthesisFor(theatre, group) {
 
 function _renderGroupBanner(group, axisColor, exposureIndex) {
     const th = group.theatre;
-    const display = th.charAt(0).toUpperCase() + th.slice(1);
+    const display = _titleCase(th.replace(/_/g, ' '));
     if (group.exposureOnly) {
         const pg = _THEATRE_PAGE[th] || _THEATRE_PAGE[th.replace(/ /g, '_')];
         const nm = pg ? `<a class="sig-location-link" style="color:${axisColor};font-weight:800;" href="${pg}">${escapeHtmlGpi(display)}</a>`
@@ -2038,7 +2065,7 @@ function _renderGroupBanner(group, axisColor, exposureIndex) {
 // The theatre's OWN country is suppressed -- "IRAN: kinetic tempo" tagged with
 // an Iran pill is noise. Pills are for what the headline does NOT already say.
 const _COUNTRY_PILL_LABEL = {
-    us: 'United States', dprk: 'North Korea', south_korea: 'South Korea',
+    us: 'USA', usa: 'USA', uk: 'UK', united_kingdom: 'UK', dprk: 'North Korea', south_korea: 'South Korea',
     saudi_arabia: 'Saudi Arabia', burkina_faso: 'Burkina Faso',
     south_sudan: 'South Sudan', south_africa: 'South Africa',
     car: 'CAR', uae: 'UAE', drc: 'DRC',
