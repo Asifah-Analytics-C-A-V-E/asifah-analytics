@@ -10,7 +10,7 @@
      - English everywhere: language switchers are retired (the browser translates);
        source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
        own language and script (dir=auto, translate=no). */
-  var SHELL_VERSION = '2.0.4';   // Nov 6 2026: phone width fix for stability pages | 2.0.3: Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
+  var SHELL_VERSION = '2.0.5';   // Nov 6 2026: phones open long pages with their deep sections folded | 2.0.4: Nov 6 2026: phone width fix for stability pages | 2.0.3: Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
   var THEME_MIGRATION_KEY = 'asifah-theme-v2';
   var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
   var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +
@@ -794,14 +794,112 @@
     }
   }
 
+  // ── v2.0.5 (Nov 6 2026) Phones: long pages open with deep sections folded ──
+  // The GPI, Market Watch, Commodities, Military and the regional rhetoric hubs
+  // were an endless scroll on a phone. On phones only, everything AFTER the
+  // page's bottom line starts folded to its title bar (tap to open). Desktop
+  // is unchanged. Two shapes:
+  //   box  -- a card whose title sits inside it ([card, title, keep-visible])
+  //   run  -- a heading followed by sibling content until the next heading
+  var PHONE_FOLDS = [
+    { page: /(^|\/)gpi\.html$/, box: [
+        ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'],
+        ['.regional-cards-section', '.regional-cards-title'],
+        ['#narrativesSection', '.narratives-title'] ] },
+    { page: /(^|\/)market-watch\.html$/, box: [
+        ['#fragilityCard', '.fragility-title'],
+        ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'],
+        ['#repricingCard', '.fragility-title'],
+        ['#globalStripBlock', '.region-heading'],
+        ['.library-card', '.fragility-title'] ] },
+    { page: /(^|\/)commodities\.html$/, run: '.section-header', box: [
+        ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'] ] },
+    { page: /(^|\/)military\.html$/, run: '.section-header', box: [
+        ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'] ] },
+    { page: /(^|\/)rhetoric-(africa|asia|europe|wha|index|me|middle-east)\.html$/, run: '.section-title', box: [
+        ['#cvgCard', '.cvg-head, .cvg-title'],
+        ['#silenceCard', ':scope > *:first-child'],
+        ['#trajCard', ':scope > *:first-child'],
+        ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'] ] }
+  ];
+  function childOf(container, el) {
+    while (el && el.parentElement !== container) el = el.parentElement;
+    return el;
+  }
+  function pfMark(head, closed) {
+    head.classList.add('asf-pf-head');
+    var tag = head.querySelector(':scope > .asf-pf-tag');
+    if (!tag) { tag = document.createElement('span'); tag.className = 'asf-pf-tag'; head.appendChild(tag); }
+    tag.textContent = closed ? 'Open \u25BE' : 'Close \u25B4';
+  }
+  function foldBox(box, headSel, keepSel) {
+    if (!box || !box.children.length) return;
+    var head = null;
+    try { head = box.querySelector(headSel); } catch (e) { head = null; }
+    head = head && childOf(box, head);
+    if (!head) return;
+    var first = !box.hasAttribute('data-asf-pf');
+    if (first) { box.setAttribute('data-asf-pf', 'box'); box.classList.add('asf-pf', 'asf-pf-closed'); }
+    Array.prototype.forEach.call(box.querySelectorAll('.asf-pf-keep'), function (k) { k.classList.remove('asf-pf-keep'); });
+    if (keepSel) {
+      var keep = box.querySelector(keepSel);
+      keep = keep && childOf(box, keep);
+      if (keep && keep !== head) keep.classList.add('asf-pf-keep');
+    }
+    pfMark(head, box.classList.contains('asf-pf-closed'));
+    if (first) {
+      box.addEventListener('click', function (e) {
+        var h = e.target.closest && e.target.closest('.asf-pf-head');
+        if (!h || h.parentElement !== box) return;
+        if (e.target.closest('a, button:not(.asf-pf-head), input, select, summary')) return;
+        var closed = box.classList.toggle('asf-pf-closed');
+        pfMark(h, closed);
+      });
+    }
+  }
+  function foldRuns(sel) {
+    var heads = document.querySelectorAll(sel);
+    Array.prototype.forEach.call(heads, function (h) {
+      if (h.hasAttribute('data-asf-pf') || h.closest('.asf-pf')) return;
+      var body = [], n = h.nextElementSibling;
+      while (n && !n.matches(sel) && !/^(SCRIPT|STYLE|FOOTER)$/.test(n.tagName)) { body.push(n); n = n.nextElementSibling; }
+      if (!body.length) return;
+      h.setAttribute('data-asf-pf', 'run');
+      h.classList.add('asf-pf-closed');
+      body.forEach(function (b) { b.classList.add('asf-pf-body'); });
+      pfMark(h, true);
+      h.addEventListener('click', function (e) {
+        if (e.target.closest('a, input, select')) return;
+        var closed = h.classList.toggle('asf-pf-closed');
+        body.forEach(function (b) { b.classList.toggle('asf-pf-open', !closed); });
+        pfMark(h, closed);
+      });
+    });
+  }
+  function foldPhoneSections() {
+    if (!window.matchMedia || !window.matchMedia(PHONE_MQ).matches) return;
+    var path = location.pathname || '';
+    PHONE_FOLDS.forEach(function (rule) {
+      if (!rule.page.test(path)) return;
+      (rule.box || []).forEach(function (b) {
+        Array.prototype.forEach.call(document.querySelectorAll(b[0]), function (el) {
+          if (el.closest('.asf-pf-body')) return;
+          foldBox(el, b[1], b[2]);
+        });
+      });
+      if (rule.run) foldRuns(rule.run);
+    });
+  }
+
   function watchSourceScripts() {
     markSourceScripts(document.body);
     foldCautionBanners();
+    foldPhoneSections();
     if (!window.MutationObserver) return;
     var pending = null;
     new MutationObserver(function () {
       if (pending) return;
-      pending = setTimeout(function () { pending = null; markSourceScripts(document.body); foldCautionBanners(); }, 500);
+      pending = setTimeout(function () { pending = null; markSourceScripts(document.body); foldCautionBanners(); foldPhoneSections(); }, 500);
     }).observe(document.body, { childList: true, subtree: true });
   }
 
