@@ -949,7 +949,16 @@ a.sig-location-link:hover { opacity: 0.8; }
 
 /* ── Nov 6 2026: PHONE layout. The bottom line comes first; the deep sections fold
    (the shell folds Traders' odds / Regional theaters / Narratives to a title bar). ── */
-.gpi-phone-more { display: none; }
+.axis-signals-drawer { margin-top: 16px; border-top: 1px solid var(--card-border); padding-top: 12px; }
+.axis-signals-drawer > summary { cursor: pointer; list-style: none; font-size: 0.8rem; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--accent-cyan, #38bdf8); }
+.axis-signals-drawer > summary::before { content: '\25B8  '; }
+.axis-signals-drawer[open] > summary::before { content: '\25BE  '; }
+.axis-signals-drawer.gw-filtering .sig-row:not(.gw-hit) { opacity: 0.32; }
+.sig-row.gw-hit { outline: 2px solid var(--accent-cyan, #38bdf8); outline-offset: 2px; }
+.gw-filter-note { margin: 8px 0; font-size: 0.78rem; color: var(--text-secondary); }
+.gw-filter-note button { margin-left: 8px; background: none; border: 1px solid var(--card-border); color: var(--accent-cyan, #38bdf8);
+    border-radius: 999px; padding: 2px 10px; cursor: pointer; font: inherit; }
 @media (max-width: 700px) {
   #gpiMain { display: flex; flex-direction: column; }
   #gpiMain > .gpi-banner { order: 1; }
@@ -962,15 +971,7 @@ a.sig-location-link:hover { opacity: 0.8; }
   #gpiMain > #gpiWorldMap, #gpiMain > #cvgWrap { flex: 0 0 auto; }
   #gpiTabs .asf-tabbar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   #gpiTabs .asf-tab { padding: 8px 10px; font-size: 0.68rem; white-space: nowrap; flex: 0 0 auto; }
-  .gpi-phone-more {
-    display: block; width: 100%; margin: 14px 0 4px; padding: 10px 12px; cursor: pointer;
-    background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.35); border-radius: 8px;
-    color: #38bdf8; font: 700 0.8rem 'Times New Roman', serif; letter-spacing: 0.5px; text-align: left;
-  }
-  .axis-hero:not(.more-open) .pressure-axis-description,
-  .axis-hero:not(.more-open) .axis-signals-label,
-  .axis-hero:not(.more-open) .pressure-axis-signals,
-  .axis-hero:not(.more-open) .bluf-legend { display: none !important; }
+  .axis-hero .pressure-axis-description { display: none; }
 }
 </style>
 
@@ -2127,13 +2128,45 @@ function _gpiCountryLabel(c) {
     return String(c || '').replace(/_/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
 }
 
+// ── Nov 6 2026: countries NAMED in a signal's own text ─────────────────────
+// The backend tags countries, but rows like Global Commodities ("most exposed:
+// Taiwan, South Korea, Japan") reached the page with no pills. This reads the
+// row's own words (same term list as the GPI backend, plus chokepoints) so the
+// pills and the world map always agree with what the text says.
+const _GPI_CTRY_TERMS = {"venezuelan": "venezuela","iranian": "iran","israeli": "israel","russian": "russia","chinese": "china","ukrainian": "ukraine","syrian": "syria","iraqi": "iraq","lebanese": "lebanon","saudi": "saudi_arabia","turkish": "turkey","indian": "india","pakistani": "pakistan","japanese": "japan","taiwanese": "taiwan","emirati": "uae","qatari": "qatar","egyptian": "egypt","sudanese": "sudan","cuban": "cuba","mexican": "mexico","brazilian": "brazil","argentine": "argentina","argentinian": "argentina","peruvian": "peru","chilean": "chile","colombian": "colombia","haitian": "haiti","somali": "somalia","nigerian": "nigeria","ethiopian": "ethiopia","kenyan": "kenya","yemeni": "yemen","libyan": "libya","jordanian": "jordan","kuwaiti": "kuwait","omani": "oman","bahraini": "bahrain","afghan": "afghanistan","filipino": "philippines","vietnamese": "vietnam","polish": "poland","hungarian": "hungary","greek": "greece","belarusian": "belarus","moldovan": "moldova","armenian": "armenia","azerbaijani": "azerbaijan","kazakh": "kazakhstan","canadian": "canada","paraguayan": "paraguay","south korean": "south_korea","north korean": "dprk","malian": "mali","nigerien": "niger","rwandan": "rwanda","ugandan": "uganda","tanzanian": "tanzania","mozambican": "mozambique","chadian": "chad","burkinabe": "burkina_faso","congolese": "drc","algerian": "algeria","moroccan": "morocco","tunisian": "tunisia","british": "united_kingdom","palestinian": "gaza","cypriot": "cyprus","greenlandic": "greenland","danish": "denmark","afghanistan": "afghanistan", "albania": "albania", "algeria": "algeria", "angola": "angola", "argentina": "argentina", "armenia": "armenia", "australia": "australia", "azerbaijan": "azerbaijan", "bahrain": "bahrain", "bangladesh": "bangladesh", "belarus": "belarus", "belgium": "belgium", "bolivia": "bolivia", "botswana": "botswana", "brazil": "brazil", "britain": "united_kingdom", "bulgaria": "bulgaria", "burkina faso": "burkina_faso", "cambodia": "cambodia", "cameroon": "cameroon", "canada": "canada", "central african republic": "central_african_republic", "chad": "chad", "chile": "chile", "china": "china", "colombia": "colombia", "congo": "congo", "costa rica": "costa_rica", "cuba": "cuba", "cyprus": "cyprus", "denmark": "denmark", "djibouti": "djibouti", "dominican republic": "dominican_republic", "dprk": "dprk", "drc": "drc", "ecuador": "ecuador", "egypt": "egypt", "el salvador": "el_salvador", "equatorial guinea": "equatorial_guinea", "eritrea": "eritrea", "estonia": "estonia", "ethiopia": "ethiopia", "finland": "finland", "france": "france", "gabon": "gabon", "gaza": "gaza", "georgia": "georgia", "germany": "germany", "ghana": "ghana", "greece": "greece", "greenland": "greenland", "guatemala": "guatemala", "guinea": "guinea", "haiti": "haiti", "honduras": "honduras", "hungary": "hungary", "india": "india", "indonesia": "indonesia", "iran": "iran", "iraq": "iraq", "israel": "israel", "italy": "italy", "ivory coast": "ivory_coast", "jamaica": "jamaica", "japan": "japan", "jordan": "jordan", "kazakhstan": "kazakhstan", "kenya": "kenya", "kosovo": "kosovo", "kuwait": "kuwait", "kyrgyzstan": "kyrgyzstan", "laos": "laos", "latvia": "latvia", "lebanon": "lebanon", "liberia": "liberia", "libya": "libya", "lithuania": "lithuania", "madagascar": "madagascar", "malaysia": "malaysia", "mali": "mali", "mauritania": "mauritania", "mexico": "mexico", "moldova": "moldova", "mongolia": "mongolia", "morocco": "morocco", "mozambique": "mozambique", "myanmar": "myanmar", "namibia": "namibia", "nepal": "nepal", "netherlands": "netherlands", "new zealand": "new_zealand", "nicaragua": "nicaragua", "niger": "niger", "nigeria": "nigeria", "north korea": "dprk", "norway": "norway", "oman": "oman", "pakistan": "pakistan", "panama": "panama", "paraguay": "paraguay", "peru": "peru", "philippines": "philippines", "poland": "poland", "qatar": "qatar", "romania": "romania", "russia": "russia", "rwanda": "rwanda", "saudi arabia": "saudi_arabia", "senegal": "senegal", "serbia": "serbia", "sierra leone": "sierra_leone", "singapore": "singapore", "somalia": "somalia", "south africa": "south_africa", "south korea": "south_korea", "south sudan": "south_sudan", "spain": "spain", "sri lanka": "sri_lanka", "sudan": "sudan", "sweden": "sweden", "syria": "syria", "taiwan": "taiwan", "tajikistan": "tajikistan", "tanzania": "tanzania", "thailand": "thailand", "tunisia": "tunisia", "turkey": "turkey", "turkiye": "turkey", "turkmenistan": "turkmenistan", "türkiye": "turkey", "uae": "uae", "uganda": "uganda", "uk": "united_kingdom", "ukraine": "ukraine", "united kingdom": "united_kingdom", "united states": "us", "uruguay": "uruguay", "usa": "us", "uzbekistan": "uzbekistan", "venezuela": "venezuela", "vietnam": "vietnam", "western sahara": "western_sahara", "yemen": "yemen", "zambia": "zambia", "zimbabwe": "zimbabwe"};
+const _GPI_GEO_TERMS = {"hormuz": ["iran", "oman", "uae"], "strait of hormuz": ["iran", "oman", "uae"], "bab el-mandeb": ["yemen", "djibouti"], "bab al-mandab": ["yemen", "djibouti"], "red sea": ["yemen", "egypt", "saudi_arabia"], "suez": ["egypt"], "taiwan strait": ["taiwan", "china"], "kerch": ["russia", "ukraine"], "black sea": ["russia", "ukraine", "turkey"], "bosphorus": ["turkey"], "dardanelles": ["turkey"], "malacca": ["malaysia", "indonesia", "singapore"], "panama canal": ["panama"], "senkaku": ["japan", "china"], "donbas": ["ukraine"], "crimea": ["ukraine", "russia"], "sahel": ["mali", "niger", "burkina_faso"], "liptako-gourma": ["mali", "niger", "burkina_faso"], "gaza strip": ["gaza", "israel"], "west bank": ["israel"], "golan": ["syria", "israel"], "kashmir": ["india", "pakistan"], "korean peninsula": ["dprk", "south_korea"], "falklands": ["argentina", "united_kingdom"], "malvinas": ["argentina", "united_kingdom"], "northwest passage": ["canada"], "northern sea route": ["russia"], "strait of magellan": ["chile"], "drake passage": ["chile", "argentina"], "tri-border area": ["paraguay", "argentina", "brazil"], "ciudad del este": ["paraguay"]};
+const _GPI_TERM_RE = new RegExp('\\b(' + Object.keys(_GPI_CTRY_TERMS).concat(Object.keys(_GPI_GEO_TERMS))
+    .sort((a, b) => b.length - a.length).map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'gi');
+function _gpiTextCountries(s) {
+    // demonyms count ("Venezuelan oil projects"); a few phrases are not countries at all
+    const text = [s && s.short_text, s && s.long_text, s && s.headline, s && s.detail].filter(Boolean).join(' ')
+        .replace(/\b(indian ocean|turkish straits|persian gulf|arabian sea|guinea-bissau|papua new guinea)\b/gi, ' ');
+    const out = new Set();
+    let m;
+    _GPI_TERM_RE.lastIndex = 0;
+    while ((m = _GPI_TERM_RE.exec(text))) {
+        const t = m[1].toLowerCase();
+        if (_GPI_CTRY_TERMS[t]) out.add(_GPI_CTRY_TERMS[t]);
+        (_GPI_GEO_TERMS[t] || []).forEach(c => out.add(c));
+    }
+    return Array.from(out);
+}
+function _gpiAllCountries(s) {
+    const seen = new Set();
+    ((s && s.countries) || []).concat(_gpiTextCountries(s)).forEach(c => {
+        if (c) seen.add(String(c).toLowerCase().replace(/\s+/g, '_'));
+    });
+    return Array.from(seen);
+}
+window._gpiAllCountries = _gpiAllCountries;
+
 function _gpiCountryPills(s, loc) {
-    const list = (s && s.countries) || [];
+    const list = _gpiAllCountries(s);
     if (!list.length) return '';
     // Drop the country the row already names -- a pill repeating the headline
     // adds width and no information.
     const ownTheatre = String((s && s.theatre) || '').toLowerCase();
-    const shown = list.filter(c => c && c !== ownTheatre).slice(0, 6);
+    const shown = list.filter(c => c && c !== ownTheatre).slice(0, 8);
     if (!shown.length) return '';
     return '<span class="sig-country-pills">' + shown.map(c => {
         const label = escapeHtmlGpi(_gpiCountryLabel(c));
@@ -2226,7 +2259,8 @@ function _renderSignalRow(s, axisColor) {
         : `<span class="sig-location" style="color:${color};">${safeLoc}:</span>`;
     const sourceTag = loc.href ? '' : '<span class="sig-source-tag">GPI Signal</span>';
 
-    return `<div class="sig-row" style="border-left-color:${color};">
+    const _ctry = [String(s.theatre || '').toLowerCase()].concat(_gpiAllCountries(s)).filter(Boolean).join(' ');
+    return `<div class="sig-row" data-ctry="${escapeHtmlGpi(_ctry)}" style="border-left-color:${color};">
         <span class="sig-row-icon">${icon}</span>
         <div class="sig-row-body">
             <div class="sig-row-head">
@@ -2334,10 +2368,12 @@ function _renderHeroCard(axisName) {
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         ${_proseBlock(axisName, d)}
-        <button type="button" class="gpi-phone-more" onclick="event.stopPropagation(); var c=this.closest('.axis-hero'); var o=c.classList.toggle('more-open'); this.textContent = o ? 'Hide the signals behind this read \u25B4' : 'Show the signals behind this read \u25BE';">Show the signals behind this read \u25BE</button>
-        ${_signalsLabel(d)}
-        <div class="pressure-axis-signals">${signalsHtml}</div>
-        <div class="bluf-legend">${_renderLevelLegend()}</div>
+        <details class="axis-signals-drawer" onclick="event.stopPropagation()">
+            <summary>Live signals behind this read (${(d.signals || []).length}) &mdash; with the countries each one names</summary>
+            ${_signalsLabel(d)}
+            <div class="pressure-axis-signals">${signalsHtml}</div>
+            <div class="bluf-legend">${_renderLevelLegend()}</div>
+        </details>
         ${regionsLine}
         ${timestampHtml}
     `;
