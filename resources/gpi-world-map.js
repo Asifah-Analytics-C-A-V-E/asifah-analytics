@@ -1,4 +1,4 @@
-/* Asifah Analytics -- GPI world map  v1.0.0  (Nov 6 2026)
+/* Asifah Analytics -- GPI world map  v1.1.0  (Nov 6 2026)
  *
  * One map under the GPI's Bottom Line, shaded by the highest level each
  * country carries in the global read. It follows the lens buttons: click
@@ -9,6 +9,9 @@
  *   coloured  = a signal reached the global read (L0-L6)
  *   slate     = we track it, nothing reached the global read this cycle
  *   dark      = not tracked (unread, not calm)
+ *
+ *   striped  = NAMED in a signal's text (exposed / linked), not the signal's own subject
+ *   (v1.1.0: Global Commodities rows name exposed importers -- they light up striped)
  *
  * Data: gpi.html calls AsifahGpiMap.render(apiData) after /api/gpi loads and
  * AsifahGpiMap.setAxis(axis) on every lens click. Levels come from
@@ -98,35 +101,54 @@
   // country id -> {level, axes:{}, n, names:[]}
   function levelsFor(data, axis) {
     var out = {};
-    function bump(id, lvl, ax, text) {
+    function rec(id) { return out[id] || (out[id] = { level: -1, named: -1, axes: {}, n: 0, nn: 0, from: [] }); }
+    function bump(id, lvl, ax) {
       if (lvl == null || isNaN(lvl)) return;
-      var r = out[id] || (out[id] = { level: -1, axes: {}, n: 0, notes: [] });
+      var r = rec(id);
       if (lvl > r.level) r.level = lvl;
       if (ax) r.axes[ax] = Math.max(r.axes[ax] || 0, lvl);
       r.n += 1;
-      if (text && r.notes.length < 3) r.notes.push(text);
     }
-    var raw = data._all_signals_raw || [];
-    if (!raw.length && data.pressure_axes && data.pressure_axes.axes) {
+    function name(id, lvl, from) {
+      if (lvl == null || isNaN(lvl)) return;
+      var r = rec(id);
+      if (lvl > r.named) r.named = lvl;
+      r.nn += 1;
+      if (from && r.from.indexOf(from) < 0 && r.from.length < 3) r.from.push(from);
+    }
+    // every signal we can see: the raw pool plus each axis' top signals (these carry the long text)
+    var raw = (data._all_signals_raw || []).slice();
+    if (data.pressure_axes && data.pressure_axes.axes) {
       Object.keys(data.pressure_axes.axes).forEach(function (a) {
         (data.pressure_axes.axes[a].top_signals || []).forEach(function (s) {
-          raw.push({ theatre: s.theatre, level: s.level, pressure_type: s.pressure_type || a,
-                     countries: s.countries, short_text: s.short_text });
+          var c = {}; for (var k in s) c[k] = s[k];
+          c.pressure_type = s.pressure_type || a;
+          raw.push(c);
         });
       });
     }
+    var allC = window._gpiAllCountries || function (s) { return s.countries || []; };
     raw.forEach(function (s) {
       var ax = s.pressure_type || s.axis || '';
       if (axis !== 'all' && ax !== axis) return;
-      var keys = (s.countries && s.countries.length) ? s.countries : [s.theatre];
-      keys.forEach(function (k) {
-        idsFor(k).forEach(function (id) { bump(id, +s.level, ax, s.short_text); });
+      var lvl = +s.level;
+      var about = {};
+      var own = idsFor(s.theatre);
+      own.forEach(function (id) { about[id] = 1; bump(id, lvl, ax); });
+      var from = String(s.theatre || '').replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); }) + ' L' + lvl;
+      var tagged = s.countries || [];
+      allC(s).forEach(function (k) {
+        idsFor(k).forEach(function (id) {
+          if (about[id]) return;
+          if (!own.length && tagged.length === 1 && tagged[0] === k) bump(id, lvl, ax);   // its only tagged country IS its subject
+          else name(id, lvl, from);
+        });
       });
     });
     if (axis === 'all') {
       (data.country_rollup || []).forEach(function (c) {
         idsFor(c.country).forEach(function (id) {
-          var r = out[id] || (out[id] = { level: -1, axes: {}, n: 0, notes: [] });
+          var r = rec(id);
           if (c.max_level > r.level) r.level = c.max_level;
           (c.axes || []).forEach(function (a) { if (!(a in r.axes)) r.axes[a] = null; });
           r.n = Math.max(r.n, c.signal_count || 0);
@@ -146,16 +168,21 @@
     var W = 960, H = 470;
     var proj = d3.geoNaturalEarth1().fitExtent([[6, 6], [W - 6, H - 6]], { type: 'FeatureCollection', features: feats });
     var path = d3.geoPath(proj);
-    var shapes = '', dots = '', lit = 0;
+    var shapes = '', dots = '', lit = 0, named = 0;
+    var defs = '<defs>' + [0, 1, 2, 3, 4, 5, 6].map(function (k) {
+      return '<pattern id="gwStripe' + k + '" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+        '<rect width="5" height="5" fill="#3b4a60"/><rect width="2.4" height="5" fill="' + LEVEL[k][1] + '"/></pattern>';
+    }).join('') + '</defs>';
     feats.forEach(function (f) {
       var id = +f.id, r = lv[id], d = path(f);
       if (!d) return;
       var cls, fill = '';
       if (r && r.level >= 0) { cls = 'ctry gw-lit'; fill = (LEVEL[Math.min(6, r.level)] || LEVEL[0])[1]; lit++; }
+      else if (r && r.named >= 0) { cls = 'ctry gw-named'; fill = 'url(#gwStripe' + Math.min(6, r.named) + ')'; named++; }
       else if (tracked[id]) { cls = 'ctry gw-quiet'; }
       else { cls = 'ctx'; }
       shapes += '<path class="' + cls + '" data-id="' + id + '" d="' + d + '"' + (fill ? ' fill="' + fill + '"' : '') + '/>';
-      if (fill && path.area(f) < 60) {      // Israel, Lebanon, Qatar... too small to see: add a dot
+      if (fill && cls.indexOf('gw-lit') >= 0 && path.area(f) < 60) {      // Israel, Lebanon, Qatar... too small to see: add a dot
         var c = path.centroid(f);
         dots += '<circle class="ctry gw-lit gw-dot" data-id="' + id + '" cx="' + c[0] + '" cy="' + c[1] + '" r="5.5" fill="' + fill + '"/>';
       }
@@ -163,16 +190,18 @@
     var legend = [0, 1, 2, 3, 4, 5, 6].map(function (k) {
       return '<span><i style="background:' + LEVEL[k][1] + '"></i>L' + k + ' ' + LEVEL[k][0] + '</span>';
     }).join('') +
+      '<span><i style="background:repeating-linear-gradient(45deg,#f97316 0 2px,#3b4a60 2px 5px)"></i>Named in a signal (exposed or linked)</span>' +
       '<span><i style="background:#3b4a60;border:1px solid #7b8ba3"></i>Tracked, nothing reached the global read</span>' +
       '<span><i style="background:rgba(127,127,127,0.18)"></i>Not tracked (unread, not calm)</span>';
     var lens = AXIS_LABEL[state.axis] || state.axis;
     var sub = lit
       ? lit + ' ' + (lit === 1 ? 'country carries' : 'countries carry') + ' ' + (state.axis === 'all' ? 'pressure' : lens.toLowerCase() + ' pressure') + ' in this read'
       : 'No country carries ' + lens.toLowerCase() + ' pressure in this read';
+    if (named) sub += ' \u00B7 ' + named + ' more named';
     el.innerHTML =
       '<div class="asf-map-head"><div class="asf-map-title">🌍 Where the pressure is · <span class="gw-lens">' + esc(lens) + '</span></div>' +
       '<div class="asf-map-sub">' + esc(sub) + ' · follows the lens buttons · click a country for its full picture</div></div>' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="World map of pressure levels, ' + esc(lens) + '">' + shapes + dots + '</svg>' +
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="World map of pressure levels, ' + esc(lens) + '">' + defs + shapes + dots + '</svg>' +
       '<div class="asf-map-legend">' + legend + '</div><div class="asf-map-tip"></div>';
     var tip = el.querySelector('.asf-map-tip');
     var names = {};
@@ -191,8 +220,11 @@
               return esc(AXIS_LABEL[a] || a) + (r.axes[a] != null ? ' L' + r.axes[a] : '');
             }).join(', ') : '') +
             (r.n ? '<br>' + r.n + ' signal' + (r.n === 1 ? '' : 's') : '');
+        } else if (r && r.named >= 0) {
+          body = 'Named in ' + r.nn + ' signal' + (r.nn === 1 ? '' : 's') + ' (exposed or linked), not their subject' +
+            (r.from.length ? '<br>From: ' + r.from.map(esc).join(', ') : '');
         } else {
-          body = 'Tracked — no ' + (state.axis === 'all' ? '' : esc(lens.toLowerCase()) + ' ') + 'signal reached the global read this cycle';
+          body = 'Tracked \u2014 no ' + (state.axis === 'all' ? '' : esc(lens.toLowerCase()) + ' ') + 'signal reached the global read this cycle';
         }
         tip.innerHTML = '<b>' + esc(nm) + '</b>' + body;
         tip.style.left = Math.min(e.clientX - b.left + 14, b.width - 230) + 'px';
@@ -200,10 +232,45 @@
         tip.style.display = 'block';
       });
       p.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
-      p.addEventListener('click', function () {
-        if (window.AsifahGpiTabs) window.AsifahGpiTabs.open('country');
-      });
+      p.addEventListener('click', function () { focusRead(id, tracked[id] || names[id]); });
     });
+  }
+
+  // v1.1.0: a click on the map opens the read's signal drawer and highlights the
+  // signals that touch that country. Nothing in this lens? The By-country tab.
+  function focusRead(id, label) {
+    var hero = document.querySelector('.axis-hero');
+    var drawer = hero && hero.querySelector('.axis-signals-drawer');
+    var rows = drawer ? drawer.querySelectorAll('.sig-row[data-ctry]') : [];
+    var hits = [];
+    Array.prototype.forEach.call(rows, function (row) {
+      var keys = (row.getAttribute('data-ctry') || '').split(/\s+/);
+      var hit = keys.some(function (k) { return idsFor(k).indexOf(id) >= 0; });
+      row.classList.toggle('gw-hit', hit);
+      if (hit) hits.push(row);
+    });
+    if (!hits.length) {
+      if (drawer) drawer.classList.remove('gw-filtering');
+      if (window.AsifahGpiTabs) window.AsifahGpiTabs.open('country');
+      return;
+    }
+    drawer.open = true;
+    drawer.classList.add('gw-filtering');
+    var note = drawer.querySelector('.gw-filter-note');
+    if (!note) {
+      note = document.createElement('div'); note.className = 'gw-filter-note';
+      var sum = drawer.querySelector('summary');
+      drawer.insertBefore(note, sum.nextSibling);
+    }
+    note.innerHTML = 'Highlighting ' + hits.length + ' signal' + (hits.length === 1 ? '' : 's') + ' that touch <b>' + esc(label) +
+      '</b><button type="button">Show all</button>';
+    note.querySelector('button').onclick = function (e) {
+      e.stopPropagation();
+      drawer.classList.remove('gw-filtering');
+      Array.prototype.forEach.call(rows, function (r) { r.classList.remove('gw-hit'); });
+      note.parentNode.removeChild(note);
+    };
+    hits[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function css() {
@@ -214,6 +281,7 @@
       '#gpiWorldMap{position:relative;margin:22px 0 4px}' +
       '#gpiWorldMap .gw-quiet{fill:#3b4a60;stroke:#7b8ba3;stroke-width:0.6}' +
       '#gpiWorldMap .gw-dot{stroke:#fff;stroke-width:1.2}' +
+      '#gpiWorldMap .gw-named{stroke:#94a3b8;stroke-width:0.6}' +
       '#gpiWorldMap .gw-lit{stroke:rgba(255,255,255,0.8);stroke-width:0.6}' +
       '#gpiWorldMap .gw-lens{color:var(--asifah-shell-accent,#38bdf8)}' +
       '[data-theme="light"] #gpiWorldMap .gw-quiet{fill:#cbd5e1;stroke:#94a3b8}';
