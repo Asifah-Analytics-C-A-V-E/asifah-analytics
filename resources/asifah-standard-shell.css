@@ -869,7 +869,30 @@ body.asifah-standardized .language-switcher, body.asifah-standardized .lang-btn 
   header.asf-hdr, .header.asf-hdr { min-height: 0 !important; padding: 14px 14px !important; }
 }
 
+@media (max-width: 760px) {
+  /* v2.0.2: a long back label ("← Middle East Dashboard") ran under the Dark/Light pill */
+  .asf-hdr-left { overflow: hidden; min-width: 0 !important; max-width: 100%; box-sizing: border-box; }
+  .asf-hdr .asf-hdr-back { flex: 0 1 auto; min-width: 0 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 52px) !important; }
+  .asf-hdr .asf-hdr-logo { flex: 0 0 auto; }
+}
 @media (max-width: 480px) {
   .asf-theme-opt { padding: 5px 8px; font-size: 0; }          /* icons only on small phones */
   .asf-theme-opt > span { font-size: 0.95rem; }
+}
+
+
+/* ── v2.0.2 (Nov 6 2026) Worldwide Caution banner folds to one line on phones ── */
+.asf-wwc-bar { display: none; }
+@media (max-width: 700px) {
+  .asf-wwc { flex-direction: column !important; flex-wrap: wrap !important; align-items: stretch !important; }
+  .asf-wwc * { max-width: 100%; }
+  .asf-wwc-bar {
+    display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
+    background: transparent; border: 0; color: #fff; font: inherit; font-size: 0.9rem;
+    text-align: left; padding: 2px 0; cursor: pointer; letter-spacing: 0.3px;
+  }
+  .asf-wwc-go { font-weight: 800; font-size: 0.78rem; white-space: nowrap; text-transform: uppercase; letter-spacing: 1px; }
+  .asf-wwc.asf-wwc-folded { padding-top: 10px !important; padding-bottom: 10px !important; min-height: 0 !important; }
+  .asf-wwc.asf-wwc-folded > :not(.asf-wwc-bar) { display: none !important; }
+  .asf-wwc:not(.asf-wwc-folded) > .asf-wwc-bar { margin-bottom: 10px; }
 }

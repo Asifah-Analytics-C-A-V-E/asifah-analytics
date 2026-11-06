@@ -10,7 +10,7 @@
      - English everywhere: language switchers are retired (the browser translates);
        source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
        own language and script (dir=auto, translate=no). */
-  var SHELL_VERSION = '2.0.1';
+  var SHELL_VERSION = '2.0.2';   // Nov 6 2026: travel-warning banners fold to one line on phones
   var THEME_MIGRATION_KEY = 'asifah-theme-v2';
   var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
   var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +
@@ -731,13 +731,56 @@
       el.classList.add('notranslate');
     }
   }
+  // ── v2.0.2 (Nov 6 2026) Travel-warning banners fold on phones ──────────
+  // The Worldwide Caution banner filled the whole first phone screen. On
+  // narrow screens it now lands as ONE line ("⚠️ Worldwide Caution · U.S.
+  // State Dept · Read ▾"); a tap opens the full text. Desktop is unchanged and
+  // the banner is never removed -- it is public guidance, kept on purpose.
+  // Banners are found by their text (each page built its own markup), and
+  // pages that inject the banner later are caught by the observer below.
+  var PHONE_MQ = '(max-width: 700px)';
+  function foldCautionBanners() {
+    if (!window.matchMedia || !window.matchMedia(PHONE_MQ).matches) return;
+    var all = document.body.getElementsByTagName('*');
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i];
+      if (el.children.length > 2 || /^(SCRIPT|STYLE|BUTTON)$/.test(el.tagName)) continue;
+      var t = el.textContent || '';
+      if (t.length > 90 || !/worldwide\s+caution/i.test(t)) continue;
+      // climb to the banner box: the largest ancestor that is still just the banner
+      var box = el, up = el.parentElement;
+      while (up && up !== document.body && (up.textContent || '').length < 1400 &&
+             !up.querySelector('.target-card, .asf-map, .nav-sidebar, header')) {
+        box = up; up = up.parentElement;
+      }
+      if (box === el || box.hasAttribute('data-asf-wwc')) continue;
+      box.setAttribute('data-asf-wwc', '1');
+      box.classList.add('asf-wwc', 'asf-wwc-folded');
+      var bar = document.createElement('button');
+      bar.type = 'button';
+      bar.className = 'asf-wwc-bar';
+      bar.setAttribute('aria-expanded', 'false');
+      bar.innerHTML = '<span>\u26A0\uFE0F <b>Worldwide Caution</b> \u00B7 U.S. State Dept</span><span class="asf-wwc-go">Read \u25BE</span>';
+      bar.addEventListener('click', (function (b, x) {
+        return function (e) {
+          e.preventDefault(); e.stopPropagation();
+          var open = x.classList.toggle('asf-wwc-folded') === false;
+          b.setAttribute('aria-expanded', open ? 'true' : 'false');
+          b.querySelector('.asf-wwc-go').textContent = open ? 'Close \u25B4' : 'Read \u25BE';
+        };
+      })(bar, box));
+      box.insertBefore(bar, box.firstChild);
+    }
+  }
+
   function watchSourceScripts() {
     markSourceScripts(document.body);
+    foldCautionBanners();
     if (!window.MutationObserver) return;
     var pending = null;
     new MutationObserver(function () {
       if (pending) return;
-      pending = setTimeout(function () { pending = null; markSourceScripts(document.body); }, 500);
+      pending = setTimeout(function () { pending = null; markSourceScripts(document.body); foldCautionBanners(); }, 500);
     }).observe(document.body, { childList: true, subtree: true });
   }
 
