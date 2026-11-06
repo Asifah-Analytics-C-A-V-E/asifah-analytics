@@ -7,7 +7,8 @@
  * Reads ONE endpoint on the ME backend: /api/attention/<country>
  * (attention_layer.py), which puts side by side:
  *   - traders' odds (Polymarket / Kalshi)
- *   - commentary this week, by lean (newsletters, outlets, institutes, YouTube)
+ *   - commentary this week, by lean (newsletters, outlets, institutes, YouTube, podcasts)
+ *   - public attention: Wikipedia readers vs their usual (v1.1.0, Nov 6 2026)
  *   - Asifah's own level
  * and flags where they disagree. Doctrine: what people are SAYING and
  * BETTING is context, never part of the score. Unread is said, never shown
@@ -58,6 +59,10 @@
       '.asf-bts-empty{font-size:0.78rem;opacity:0.7;font-style:italic}' +
       '.asf-bts details{margin-top:10px}.asf-bts details summary{cursor:pointer;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;opacity:0.75}' +
       '.asf-bts-how{font-size:0.76rem;line-height:1.55;opacity:0.85;margin:6px 0 0;padding-left:18px}' +
+      '.asf-bts-pub{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(127,127,127,0.3)}' +
+      '.asf-bts-spark{display:flex;align-items:flex-end;gap:1px;height:26px;margin:4px 0}' +
+      '.asf-bts-spark i{flex:1;background:rgba(56,189,248,0.55);min-height:1px;border-radius:1px}' +
+      '.asf-bts-spark i.r{background:#a855f7}' +
       '@media(max-width:760px){.asf-bts-cols{grid-template-columns:1fr}}';
     document.head.appendChild(st);
   }
@@ -110,14 +115,36 @@
       var l = LEAN[LEAN_OF[p.lean] || 'center'];
       return '<div class="asf-bts-piece"><i class="asf-bts-dot" style="background:' + l[1] + '" title="' + esc(p.lean || '') + '"></i>' +
         '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>' +
-        '<div class="s">' + esc(p.source) + (p.kind === 'video' ? ' · video' : '') + '</div></div>';
+        '<div class="s">' + esc(p.source) + (p.kind === 'video' ? ' · video' : p.kind === 'podcast' ? ' · podcast' : '') + '</div></div>';
     }).join('');
+  }
+
+  // v1.1.0: the public layer -- Wikipedia readers against their usual
+  var PUB = { spike: ['well above usual', '#a855f7'], elevated: ['above usual', '#f59e0b'],
+              normal: ['about usual', '#64748b'], quiet: ['below usual', '#38bdf8'] };
+  function publicRow(d) {
+    var p = d.public;
+    var h = '<div class="asf-bts-pub"><h5 style="margin:0 0 4px;font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;opacity:0.7">📖 Public attention (Wikipedia)</h5>';
+    if (!d.available.wiki) return h + '<div class="asf-bts-empty">Wikipedia readership unread this load — unread, not quiet.</div></div>';
+    if (!p || !PUB[p.state]) return h + '<div class="asf-bts-empty">Too few Wikipedia readers to read a change for ' + esc(d.country_name) + '.</div></div>';
+    var lead = (p.articles || []).filter(function (a) { return a.title === p.lead_article; })[0];
+    var spark = '';
+    if (lead && lead.series && lead.series.length) {
+      var mx = Math.max.apply(null, lead.series.concat([1]));
+      spark = '<div class="asf-bts-spark" title="Daily readers, last 30 days (purple = last 3 days)">' + lead.series.map(function (v, i) {
+        return '<i class="' + (i >= lead.series.length - 3 ? 'r' : '') + '" style="height:' + Math.max(4, Math.round(100 * v / mx)) + '%"></i>';
+      }).join('') + '</div>';
+    }
+    return h + '<div class="asf-bts-att"><b style="color:' + PUB[p.state][1] + '">' + PUB[p.state][0] + '</b>' +
+      (p.ratio ? ' · about ' + p.ratio + '× usual' : '') + ' · "' + esc(p.lead_article) + '" · ~' +
+      (p.recent_daily || 0).toLocaleString() + ' readers a day</div>' + spark +
+      '<div class="asf-bts-tag">' + esc(p.sentence || '') + '</div></div>';
   }
 
   function render(el, d) {
     var name = (d && d.country_name) || el.getAttribute('data-asifah-beside');
     var head = '<div class="asf-bts-head"><div><div class="asf-bts-title">⚖️ Beside the score</div>' +
-      '<div class="asf-bts-sub">What people are saying and betting about ' + esc(name) + ' — context, never part of the score.</div></div>' +
+      '<div class="asf-bts-sub">What people are saying, betting and reading about ' + esc(name) + ' — context, never part of the score.</div></div>' +
       (d && d.asifah_level != null ? '<div class="asf-bts-lvl">Asifah level: L' + d.asifah_level + '</div>' : '') + '</div>';
     if (!d) { el.innerHTML = head + '<div class="asf-bts-flag">Attention layer unread this load — unread, not calm.</div>'; return; }
     var flags = (d.flags || []).map(function (f) {
@@ -127,10 +154,12 @@
     if (!flags) flags = '<div class="asf-bts-flag">Traders and commentators are not pulling away from Asifah\'s reading this week.</div>';
     el.innerHTML = head + flags +
       '<div class="asf-bts-cols"><div class="asf-bts-col">' + marketsCol(d) + '</div><div class="asf-bts-col">' + commentaryCol(d) + '</div></div>' +
+      publicRow(d) +
       '<details><summary>How to read this panel</summary><ul class="asf-bts-how">' +
       '<li>Traders\' odds are bets on public prediction markets. Commentary is what newsletters, opinion outlets, institutes and YouTube channels across the political spectrum published this week. Neither is evidence, and neither changes an Asifah level.</li>' +
-      '<li><b>Conversation ahead of the score</b>: commentary is spiking and/or traders moved toward pressure while Asifah\'s sensors read quiet. Worth watching, not yet evidence.</li>' +
-      '<li><b>Score ahead of the conversation</b>: Asifah reads serious pressure while commentators are quieter than usual and traders have not moved.</li>' +
+      '<li><b>Public attention</b> counts people reading about the country on Wikipedia (bots excluded), against the 24 days before last week. It shows the world noticing, not what is happening.</li>' +
+      '<li><b>Conversation ahead of the score</b>: commentary or Wikipedia readership is spiking and/or traders moved toward pressure while Asifah\'s sensors read quiet. Worth watching, not yet evidence.</li>' +
+      '<li><b>Score ahead of the conversation</b>: Asifah reads serious pressure while commentators or the public are quieter than usual and traders have not moved: a crisis the world is not watching.</li>' +
       '<li><b>One side doing the talking</b>: one side of the spectrum published at least three times as much on this country. A signal about who is talking, not about what is true.</li>' +
       '<li>Lean labels are approximate, from public media-bias ratings; they exist so the balance is visible.</li></ul></details>';
   }
