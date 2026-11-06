@@ -10,7 +10,7 @@
      - English everywhere: language switchers are retired (the browser translates);
        source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
        own language and script (dir=auto, translate=no). */
-  var SHELL_VERSION = '2.0.5';   // Nov 6 2026: phones open long pages with their deep sections folded | 2.0.4: Nov 6 2026: phone width fix for stability pages | 2.0.3: Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
+  var SHELL_VERSION = '2.0.6';   // Nov 6 2026: GPI uses tabs, not phone folds | 2.0.5: Nov 6 2026: phones open long pages with their deep sections folded | 2.0.4: Nov 6 2026: phone width fix for stability pages | 2.0.3: Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
   var THEME_MIGRATION_KEY = 'asifah-theme-v2';
   var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
   var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +
@@ -802,10 +802,7 @@
   //   box  -- a card whose title sits inside it ([card, title, keep-visible])
   //   run  -- a heading followed by sibling content until the next heading
   var PHONE_FOLDS = [
-    { page: /(^|\/)gpi\.html$/, box: [
-        ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'],
-        ['.regional-cards-section', '.regional-cards-title'],
-        ['#narrativesSection', '.narratives-title'] ] },
+    // (GPI: no folds since 2.0.6 -- its deep dives are tabs now, on every screen)
     { page: /(^|\/)market-watch\.html$/, box: [
         ['#fragilityCard', '.fragility-title'],
         ['[data-asifah-markets]', '.asf-mkt-head, .asf-mkt-title', '.asf-mkt-sowhat'],
