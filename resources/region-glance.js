@@ -48,7 +48,85 @@
         [634, 'qatar', 'qatar-card', 'Qatar'], [682, 'saudi_arabia', 'saudi_arabia-card', 'Saudi Arabia'],
         [760, 'syria', 'syria-card', 'Syria'], [788, 'tunisia', 'tunisia-card', 'Tunisia'],
         [784, 'uae', 'uae-card', 'UAE'], [887, 'yemen', 'houthis-card', 'Yemen']
-      ]
+      ],
+      airspace: ['.bottom-content-wrapper'],
+      order: true
+    },
+    // Nov 6 2026: the other four regions. box = [[west, south], [east, north]]
+    // in degrees: the map frame (Russia, Greenland and the US would otherwise
+    // shrink everything else). labelAt = where a label sits, in degrees, when
+    // the country's centre is outside the frame.
+    europe: {
+      bluf: 'https://asifa-europe-backend.onrender.com/api/rhetoric/europe/bluf',
+      label: 'Europe & Eurasia',
+      box: [[-30, 33], [72, 73]],
+      labelAt: { russia: [48, 61], greenland: [-27, 70.5], kazakhstan: [66, 48] },
+      nudge: { belgium: [-46, 14], albania: [-40, 14], moldova: [-34, 30], cyprus: [0, 16],
+               armenia: [10, 30], azerbaijan: [-4, -24] },
+      countries: [
+        [8, 'albania', 'albania-card', 'Albania'], [51, 'armenia', 'armenia-card', 'Armenia'],
+        [31, 'azerbaijan', 'azerbaijan-card', 'Azerbaijan'], [112, 'belarus', 'belarus-card', 'Belarus'],
+        [56, 'belgium', 'belgium-card', 'Belgium'], [196, 'cyprus', 'cyprus-card', 'Cyprus'],
+        [300, 'greece', 'greece-card', 'Greece'], [304, 'greenland', 'greenland-card', 'Greenland'],
+        [348, 'hungary', 'hungary-card', 'Hungary'], [398, 'kazakhstan', 'kazakhstan-card', 'Kazakhstan'],
+        [498, 'moldova', 'moldova-card', 'Moldova'], [616, 'poland', 'poland-card', 'Poland'],
+        [643, 'russia', 'russia-card', 'Russia'], [792, 'turkey', 'turkey-card', 'Türkiye'],
+        [795, 'turkmenistan', 'turkmenistan-card', 'Turkmenistan'], [804, 'ukraine', 'ukraine-card', 'Ukraine'],
+        [826, 'uk', 'uk-card', 'UK']
+      ],
+      airspace: ['#notamWidget', '#flightWidget']
+    },
+    asia: {
+      bluf: 'https://asifah-asia-backend.onrender.com/api/rhetoric/asia/bluf',
+      label: 'Asia & Pacific',
+      box: [[58, 2], [148, 52]],
+      nudge: { taiwan: [40, 6], south_korea: [34, 12], north_korea: [-30, -16] },
+      countries: [
+        [4, 'afghanistan', 'afghanistan-card', 'Afghanistan'], [156, 'china', 'china-card', 'China'],
+        [356, 'india', 'india-card', 'India'], [392, 'japan', 'japan-card', 'Japan'],
+        [408, 'dprk', 'north_korea-card', 'North Korea'], [586, 'pakistan', 'pakistan-card', 'Pakistan'],
+        [608, 'philippines', 'philippines-card', 'Philippines'], [410, 'south_korea', 'south_korea-card', 'South Korea'],
+        [158, 'taiwan', 'taiwan-card', 'Taiwan'], [704, 'vietnam', 'vietnam-card', 'Vietnam']
+      ],
+      airspace: ['#notamWidget', '#flightWidget']
+    },
+    africa: {
+      bluf: 'https://asifah-africa-backend.onrender.com/api/rhetoric/africa/bluf',
+      label: 'Africa',
+      box: [[-19, -36], [53, 37]],
+      labelAt: { drc: [21, -5] },
+      nudge: { rwanda: [-60, -26] },
+      countries: [
+        [854, 'burkina_faso', 'burkina_faso-card', 'Burkina Faso'], [140, 'car', 'car-card', 'CAR'],
+        [148, 'chad', 'chad-card', 'Chad'], [180, 'drc', 'drc-card', 'DR Congo'],
+        [226, 'equatorial_guinea', 'equatorial_guinea-card', 'Eq. Guinea'], [231, 'ethiopia', 'ethiopia-card', 'Ethiopia'],
+        [324, 'guinea', 'guinea-card', 'Guinea'], [404, 'kenya', 'kenya-card', 'Kenya'],
+        [450, 'madagascar', 'madagascar-card', 'Madagascar'], [466, 'mali', 'mali-card', 'Mali'],
+        [508, 'mozambique', 'mozambique-card', 'Mozambique'], [562, 'niger', 'niger-card', 'Niger'],
+        [566, 'nigeria', 'nigeria-card', 'Nigeria'], [646, 'rwanda', 'rwanda-card', 'Rwanda'],
+        [706, 'somalia', 'somalia-card', 'Somalia'], [710, 'south_africa', 'south_africa-card', 'South Africa'],
+        [728, 'south_sudan', 'south_sudan-card', 'South Sudan'], [729, 'sudan', 'sudan-card', 'Sudan'],
+        [834, 'tanzania', 'tanzania-card', 'Tanzania'], [800, 'uganda', 'uganda-card', 'Uganda']
+      ],
+      airspace: ['#notamWidget', '.flight-section']
+    },
+    wha: {
+      bluf: 'https://asifah-wha-backend.onrender.com/api/rhetoric/wha/bluf',
+      label: 'Western Hemisphere',
+      projection: 'naturalEarth', h: 760,
+      box: [[-168, -56], [-34, 72]],
+      labelAt: { us: [-99, 39], canada: [-102, 58] },
+      nudge: { cuba: [10, -14], haiti: [34, 6], panama: [-36, 10] },
+      countries: [
+        [32, 'argentina', 'argentina-card', 'Argentina'], [76, 'brazil', 'brazil-card', 'Brazil'],
+        [124, 'canada', 'canada-card', 'Canada'], [152, 'chile', 'chile-card', 'Chile'],
+        [170, 'colombia', 'colombia-card', 'Colombia'], [192, 'cuba', 'cuba-card', 'Cuba'],
+        [332, 'haiti', 'haiti-card', 'Haiti'], [484, 'mexico', 'mexico-card', 'Mexico'],
+        [591, 'panama', 'panama-card', 'Panama'], [600, 'paraguay', 'paraguay-card', 'Paraguay'],
+        [604, 'peru', 'peru-card', 'Peru'], [840, 'us', 'us-card', 'USA'],
+        [862, 'venezuela', 'venezuela-card', 'Venezuela']
+      ],
+      airspace: ['.notam-section', '.flight-section']
     }
   };
 
@@ -196,14 +274,18 @@
       var read = longRead(c[1], bluf);
       box.innerHTML = '<div class="asf-sowhat-k">So what</div>' + (l == null
         ? '<div class="asf-sowhat-t">No pressure tracker covers ' + esc(c[3]) + ' yet, so there is no level to explain: unread, not calm. ' +
-          'The strike-window score below still comes from the news scan.</div>'
-        : '<div class="asf-sowhat-t"><b style="color:' + (LEVEL[l] || LEVEL[0])[1] + '">L' + l + ' · ' + esc((LEVEL[l] || LEVEL[0])[0]) + '.</b> ' +
+          'The Pressure Index below still comes from the news scan.</div>'
+        : '<div class="asf-sowhat-t"><b style="background:' + (LEVEL[l] || LEVEL[0])[1] + ';color:#fff;padding:1px 7px;border-radius:4px;white-space:nowrap">L' + l + ' · ' + esc((LEVEL[l] || LEVEL[0])[0]) + '</b> ' +
           esc(read || oneLiner(c[1], bluf, rec) || 'No single signal stands out this cycle.') + '</div>');
       // after the expanded view's own header row (the Collapse button), else first
-      var head = view.querySelector('.collapse-toggle-btn');
-      var anchor = head ? (head.parentNode === view ? head : head.parentNode) : null;
-      if (anchor && anchor.parentNode === view) view.insertBefore(box, anchor.nextSibling);
+      // after the Collapse button when it sits at the top (ME, Europe, Asia),
+      // otherwise after the card's own title (Africa, WHA keep Collapse at the bottom)
+      var kids = Array.prototype.slice.call(view.children, 0, 3);
+      var head = kids.filter(function (k) { return k.classList && k.classList.contains('collapse-toggle-btn'); })[0] ||
+                 kids.filter(function (k) { return /^H[1-4]$/.test(k.tagName); })[0];
+      if (head) view.insertBefore(box, head.nextSibling);
       else view.insertBefore(box, view.firstChild);
+      if (!cfg.order) return;
       // reorder the rest
       var after = box;
       CARD_ORDER.forEach(function (cls) {
@@ -225,6 +307,7 @@
     setTimeout(function () { card.classList.remove('asf-flash'); }, 1800);
     if (card.classList.contains('collapsed')) {
       if (typeof window.toggleCard === 'function') window.toggleCard(cardId);
+      else if (typeof window.expandCard === 'function') window.expandCard(cardId.replace(/-card$/, ''), null);
       else card.classList.remove('collapsed');
     }
   }
@@ -237,8 +320,13 @@
     var byId = {};
     cfg.countries.forEach(function (c) { byId[c[0]] = c; });
     var mine = all.filter(function (f) { return byId[+f.id]; });
-    var W = 960, H = 470;
-    var proj = d3.geoMercator().fitExtent([[10, 10], [W - 10, H - 10]], { type: 'FeatureCollection', features: mine });
+    var W = 960, H = cfg.h || 470;
+    var frame = cfg.box
+      ? { type: 'MultiPoint', coordinates: [cfg.box[0], cfg.box[1], [cfg.box[0][0], cfg.box[1][1]], [cfg.box[1][0], cfg.box[0][1]],
+          [(cfg.box[0][0] + cfg.box[1][0]) / 2, cfg.box[0][1]], [(cfg.box[0][0] + cfg.box[1][0]) / 2, cfg.box[1][1]]] }
+      : { type: 'FeatureCollection', features: mine };
+    var proj = (cfg.projection === 'naturalEarth' ? d3.geoNaturalEarth1() : d3.geoMercator())
+      .fitExtent([[10, 10], [W - 10, H - 10]], frame);
     var path = d3.geoPath(proj);
     var defs = '<defs><pattern id="asfHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
       '<rect width="6" height="6" fill="rgba(127,127,127,0.18)"/><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(148,163,184,0.75)" stroke-width="2"/></pattern></defs>';
@@ -250,6 +338,8 @@
       var c = byId[+f.id], rec = ts[c[1]], l = lvlOf(rec);
       var fill = l == null ? 'url(#asfHatch)' : (LEVEL[l] || LEVEL[0])[1];
       var d = path(f), ctr = path.centroid(f), area = path.area(f);
+      var at = (cfg.labelAt || {})[c[1]];
+      if (at) ctr = proj(at);
       shapes += '<path class="ctry" data-k="' + c[1] + '" d="' + d + '" fill="' + fill + '"/>';
       if (area < 140) {               // too small to click (Bahrain, Qatar, Lebanon): add a dot
         dots += '<circle class="dot ctry" data-k="' + c[1] + '" cx="' + ctr[0] + '" cy="' + ctr[1] + '" r="7" fill="' + fill + '"/>';
@@ -289,11 +379,21 @@
   }
 
   // ── Tabs ──────────────────────────────────────────────────────────────────
-  function buildTabs(host) {
+  function buildTabs(host, cfg) {
+    var air = null;
+    var airEls = ((cfg && cfg.airspace) || ['.bottom-content-wrapper']).map(function (q) {
+      return document.querySelector(q);
+    }).filter(Boolean);
+    if (airEls.length === 1) air = airEls[0];
+    else if (airEls.length > 1) {
+      air = document.createElement('div');
+      air.className = 'asf-airspace-pane';
+      airEls.forEach(function (e) { air.appendChild(e); });   // MOVE: their scripts keep filling them
+    }
     var panes = [
       ['Actor Matrix', document.getElementById('actorMatrixPanel')],
       ['Traders\' odds', document.querySelector('[data-asifah-markets^="region:"]')],
-      ['Airspace & flights', document.querySelector('.bottom-content-wrapper')]
+      ['Airspace & flights', air]
     ].filter(function (p) { return p[1]; });
     if (!panes.length) return;
     host.classList.add('asf-tabs');
@@ -322,11 +422,11 @@
 
   function init() {
     css();
-    var tabHost = document.querySelector('[data-asifah-region-tabs]');
-    if (tabHost) buildTabs(tabHost);
     var mapEl = document.querySelector('[data-asifah-region-map]');
     var key = mapEl ? mapEl.getAttribute('data-asifah-region-map') : document.body.getAttribute('data-asifah-region');
     var cfg = REGIONS[key];
+    var tabHost = document.querySelector('[data-asifah-region-tabs]');
+    if (tabHost) buildTabs(tabHost, cfg);
     if (!cfg) return;
     if (mapEl) {
       mapEl.classList.add('asf-map');
