@@ -3,6 +3,19 @@
 
   var LOGO_URL = 'https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png';
   var THEME_KEY = 'asifah-theme';
+  /* HEADER CANON v2 (Nov 6 2026, Rachel):
+     - every header: logo + Back (left) | page title, white Times New Roman, centred,
+       subtitle under it | Dark/Light pill (right). Mirrors itself in right-to-left.
+     - one header gradient, the same on the footer; DARK by default for new visitors.
+     - English everywhere: language switchers are retired (the browser translates);
+       source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
+       own language and script (dir=auto, translate=no). */
+  var SHELL_VERSION = '2.0.0';
+  var THEME_MIGRATION_KEY = 'asifah-theme-v2';
+  var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
+  var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +
+    '.lang-toggle, .language-toggle, .lang-buttons, .language-buttons, .lang-switch, .language-selector, ' +
+    '.lang-selector, #langSwitcher, #languageSwitcher';
 
   var REGION_DASHBOARDS = [
     ['africa.html', '&#127757; Africa'],
@@ -85,6 +98,13 @@
     return /-stability\.html$/.test(file) || ['russia.html', 'ukraine.html', 'israel.html', 'jordan.html', 'greenland.html', 'poland.html'].indexOf(file) >= 0;
   }
 
+  var REGION_NAMES = { 'middle-east.html': 'Middle East', 'europe.html': 'Europe', 'asia.html': 'Asia-Pacific',
+                       'africa.html': 'Africa', 'wha.html': 'Western Hemisphere' };
+  // v2: a header whose h1 is only the brand gets the page's own name instead
+  var PAGE_TITLES = { 'middle-east.html': 'Middle East & North Africa', 'europe.html': 'Europe',
+                      'asia.html': 'Asia-Pacific', 'africa.html': 'Africa', 'wha.html': 'Western Hemisphere',
+                      'index.html': 'Asifah Analytics' };
+
   function backTarget(file) {
     if (isRhetoricPage(file)) {
       var slug = countrySlug(file);
@@ -96,14 +116,14 @@
         greenland: 'greenland.html',
         poland: 'poland.html'
       };
-      return [special[slug] || (slug + '-stability.html'), 'Back to ' + labelForFile(file)];
+      return [special[slug] || (slug + '-stability.html'), labelForFile(file) + ' Stability'];
     }
     if (isStabilityPage(file)) {
       var target = REGION_BY_COUNTRY[countrySlug(file)] || 'index.html';
-      var label = target === 'index.html' ? 'Back to Home' : 'Back to Regional Dashboard';
+      var label = target === 'index.html' ? 'Home' : (REGION_NAMES[target] || 'Regional') + ' Dashboard';
       return [target, label];
     }
-    return ['index.html', 'Back to Home'];
+    return ['index.html', 'Home'];
   }
 
   function navLink(item, kind, file) {
@@ -544,11 +564,19 @@
            }).join('');
   }
 
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private window */ } }
+
   function ensureTheme() {
-    var saved = localStorage.getItem(THEME_KEY);
-    if (!saved) {
-      saved = document.documentElement.getAttribute('data-theme') || 'dark';
+    // v2: dark is the default. A visitor's own earlier choice is kept, but a
+    // "light" that a PAGE wrote on its own (18 pages opened light) is not a
+    // choice -- the one-time migration resets everyone to dark once.
+    if (!lsGet(THEME_MIGRATION_KEY)) {
+      lsSet(THEME_KEY, 'dark');
+      LEGACY_THEME_KEYS.forEach(function (k) { lsSet(k, 'dark'); });
+      lsSet(THEME_MIGRATION_KEY, '1');
     }
+    var saved = lsGet(THEME_KEY) || 'dark';
     saved = saved === 'light' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', saved);
     document.body.setAttribute('data-theme', saved);
@@ -557,9 +585,15 @@
   function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     document.body.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_KEY, theme);
+    lsSet(THEME_KEY, theme);
+    LEGACY_THEME_KEYS.forEach(function (k) { lsSet(k, theme); });   // page scripts read these
+    document.body.classList.toggle('dark-mode', theme === 'dark');
+    document.body.classList.toggle('light-mode', theme === 'light');
     var btn = document.querySelector('.asifah-theme-button');
-    if (btn) btn.setAttribute('aria-label', 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode');
+    if (btn) {
+      btn.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
+      btn.setAttribute('aria-label', 'Theme: ' + theme + '. Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode');
+    }
   }
 
   function toggleTheme() {
@@ -567,47 +601,144 @@
     setTheme(current === 'dark' ? 'light' : 'dark');
   }
 
+  function hide(el) { if (el) el.classList.add('asifah-legacy-control-hidden'); }
+
+  function retireLanguages() {
+    // v2: English everywhere. Switchers are hidden (not deleted, so no page
+    // script breaks looking for them) and a saved non-English choice is reset.
+    Array.prototype.slice.call(document.querySelectorAll(LANG_SELECTOR)).forEach(function (el) {
+      if (!el.closest('.asifah-footer')) hide(el);
+    });
+    var langSaved = lsGet('asifah_lang') || lsGet('asifah-lang') || lsGet('lang');
+    if (langSaved && langSaved !== 'en') {
+      ['asifah_lang', 'asifah-lang', 'lang'].forEach(function (k) { lsSet(k, 'en'); });
+      ['setLang', 'setLanguage', 'switchLanguage', 'applyLanguage'].some(function (fn) {
+        if (typeof window[fn] === 'function') {
+          try { window[fn]('en'); return true; } catch (e) { return false; }
+        }
+        return false;
+      });
+    }
+    document.documentElement.setAttribute('lang', 'en');
+    document.documentElement.setAttribute('dir', 'ltr');
+  }
+
+  function themePill() {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'asifah-theme-button asf-theme-pill';
+    b.setAttribute('role', 'switch');
+    b.innerHTML = '<span class="asf-theme-opt asf-dark-opt"><span aria-hidden="true">🌙</span> Dark</span>' +
+                  '<span class="asf-theme-opt asf-light-opt"><span aria-hidden="true">☀️</span> Light</span>';
+    b.addEventListener('click', toggleTheme);
+    return b;
+  }
+
+  function isEmptyBox(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el.classList.contains('asifah-legacy-control-hidden')) return false;
+    var live = function (x) { return !x.closest('.asifah-legacy-control-hidden'); };
+    var txt = Array.prototype.slice.call(el.querySelectorAll('*')).filter(live).some(function (x) {
+      return Array.prototype.some.call(x.childNodes, function (c) { return c.nodeType === 3 && c.nodeValue.trim(); });
+    }) || Array.prototype.some.call(el.childNodes, function (c) { return c.nodeType === 3 && c.nodeValue.trim(); });
+    if (txt) return false;
+    return !Array.prototype.slice.call(el.querySelectorAll('img, svg, canvas, input, select, iframe, video, button')).some(live);
+  }
+
   function ensureHeader() {
     var file = currentFile();
     var header = document.querySelector('header, .header');
-    if (!header) return;
-    header.classList.add('asifah-standard-header');
-    Array.prototype.slice.call(header.querySelectorAll('.theme-row, .theme-toggle, .toggle-switch, .toggle-container, .toggle-label')).forEach(function (el) {
-      if (!el.classList.contains('asifah-theme-button') && !el.closest('.asifah-theme-button')) {
-        el.classList.add('asifah-legacy-control-hidden');
-      }
+    if (!header || header.querySelector('.asf-hdr-grid')) return;
+    header.classList.add('asifah-standard-header', 'asf-hdr');
+
+    // Legacy theme controls and mobile menus (as before)
+    // Legacy theme controls ANYWHERE on the page (some sat above or beside the header)
+    Array.prototype.slice.call(document.querySelectorAll('.theme-row, .theme-toggle, .toggle-switch, .toggle-container, .toggle-label, .theme-btn, #themeToggle, .theme-switch, .theme-control, .theme-label, .theme-toggle-wrap, .theme-switcher')).forEach(function (el) {
+      if (!el.classList.contains('asifah-theme-button') && !el.closest('.asifah-theme-button')) hide(el);
     });
     Array.prototype.slice.call(header.querySelectorAll('.mobile-menu-btn, .menu-toggle, .mobile-hamburger')).forEach(function (el) {
-      if (!el.classList.contains('asifah-mobile-menu-btn')) {
-        el.classList.add('asifah-legacy-control-hidden');
-      }
+      if (!el.classList.contains('asifah-mobile-menu-btn')) hide(el);
+    });
+    Array.prototype.slice.call(header.querySelectorAll('.asifah-theme-button')).forEach(function (el) {
+      el.parentNode.removeChild(el);                         // v1 button: replaced by the pill
     });
 
-    if (!header.querySelector('.header-logo, .asifah-standard-logo')) {
-      var img = document.createElement('img');
-      img.src = LOGO_URL;
-      img.alt = 'Asifah Analytics';
-      img.className = 'asifah-standard-logo';
-      header.insertBefore(img, header.firstChild);
+    // Logo: the page's own, or ours. Ring and white padding are removed in CSS.
+    var logo = header.querySelector('.header-logo img, img.header-logo, .asifah-standard-logo, .logo-container img, .logo img, img');
+    if (!logo) {
+      logo = document.createElement('img');
+      logo.src = LOGO_URL;
     }
+    logo.alt = 'Asifah Analytics';
+    logo.classList.add('asifah-standard-logo', 'asf-hdr-logo');
 
-    if (!header.querySelector('.back-link, .home-btn, .asifah-standard-back')) {
-      var back = backTarget(file);
-      var link = document.createElement('a');
-      link.href = back[0];
-      link.className = 'asifah-standard-back';
-      link.textContent = back[1];
-      header.insertBefore(link, header.firstChild);
+    // Back: one rule for every page (rhetoric -> stability -> region -> home).
+    // A page can keep its own target with data-asifah-keep-href on the link.
+    var back = header.querySelector('.back-link, .home-btn, .asifah-standard-back, .back-btn, .back-button, a.home-link');
+    if (!back) {
+      back = document.createElement('a');
     }
+    if (!back.hasAttribute('data-asifah-keep-href')) {
+      var bt = backTarget(file);
+      back.setAttribute('href', bt[0]);
+      back.textContent = '← ' + bt[1];
+    }
+    back.classList.add('asifah-standard-back', 'asf-hdr-back');
 
-    if (!header.querySelector('.asifah-theme-button')) {
-      var button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'asifah-theme-button';
-      button.innerHTML = '<span>Theme</span><span class="asifah-theme-switch-track"><span class="asifah-theme-switch-knob"></span></span>';
-      button.addEventListener('click', toggleTheme);
-      header.appendChild(button);
+    var grid = document.createElement('div');
+    grid.className = 'asf-hdr-grid';
+    var left = document.createElement('div'); left.className = 'asf-hdr-left';
+    var center = document.createElement('div'); center.className = 'asf-hdr-center';
+    var right = document.createElement('div'); right.className = 'asf-hdr-right';
+    left.appendChild(logo);
+    left.appendChild(back);
+    while (header.firstChild) center.appendChild(header.firstChild);   // nodes MOVE: ids and listeners survive
+    Array.prototype.slice.call(center.querySelectorAll('*')).reverse().forEach(function (el) {
+      if (isEmptyBox(el) && el.parentNode === center) hide(el);
+    });
+    Array.prototype.slice.call(center.children).forEach(function (el) { if (isEmptyBox(el)) hide(el); });
+
+    // Title: the page's h1, else its first heading-like element, else its file name.
+    var title = center.querySelector('h1') || center.querySelector('.header-title, .page-title, .title, h2');
+    if (!title) {
+      title = document.createElement('h1');
+      title.textContent = labelForFile(file);
+      center.insertBefore(title, center.firstChild);
     }
+    if (/^\s*asifah analytics\s*$/i.test(title.textContent) && PAGE_TITLES[file] && file !== 'index.html') {
+      title.textContent = PAGE_TITLES[file];
+    }
+    title.classList.add('asf-hdr-title');
+    right.appendChild(themePill());
+    grid.appendChild(left); grid.appendChild(center); grid.appendChild(right);
+    header.appendChild(grid);
+  }
+
+  // Source headlines keep their own language and script: right-to-left text
+  // reads right-to-left, and the browser's translate leaves it alone.
+  var FOREIGN_RX = /[֐-ࣿיִ-﷿ﹰ-﻿Ѐ-ӿ぀-ヿ㐀-鿿가-힯]/;
+  function markSourceScripts(root) {
+    if (!root || !document.createTreeWalker) return;
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var n, el;
+    while ((n = w.nextNode())) {
+      el = n.parentElement;
+      if (!el || el.hasAttribute('data-asf-src') || !FOREIGN_RX.test(n.nodeValue)) continue;
+      if (/^(SCRIPT|STYLE|TEXTAREA)$/.test(el.tagName)) continue;
+      el.setAttribute('data-asf-src', '1');
+      if (!el.hasAttribute('dir')) el.setAttribute('dir', 'auto');
+      el.setAttribute('translate', 'no');
+      el.classList.add('notranslate');
+    }
+  }
+  function watchSourceScripts() {
+    markSourceScripts(document.body);
+    if (!window.MutationObserver) return;
+    var pending = null;
+    new MutationObserver(function () {
+      if (pending) return;
+      pending = setTimeout(function () { pending = null; markSourceScripts(document.body); }, 500);
+    }).observe(document.body, { childList: true, subtree: true });
   }
 
   function ensureSidebar() {
@@ -726,6 +857,7 @@
       '<a href="mailto:asifahanalytics@gmail.com" class="asifah-footer-pill contact">Contact Asifah</a>' +
       '</div>' +
       socialsHtml() +
+      '<div class="asifah-footer-translate">Reading in another language? Your browser can translate this page. Source headlines stay in their original language.</div>' +
       '<div class="asifah-footer-disclaimer">Asifah Analytics is an open-source OSINT platform. Scores are convergence indicators based on publicly observable signals, not operational guidance or predictions of action.</div>' +
       '<div class="asifah-footer-links">' +
       '<a href="mission.html">Mission Statement</a>' +
@@ -758,12 +890,15 @@
   function init() {
     document.body.classList.add('asifah-standardized');
     ensureTheme();
+    retireLanguages();
     ensureHeader();
     ensureSidebar();
     ensureMobileNav();
     ensureLadderRail();
     ensureFooter();
     setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+    watchSourceScripts();
+    document.documentElement.setAttribute('data-asifah-shell', SHELL_VERSION);
   }
 
   if (document.readyState === 'loading') {

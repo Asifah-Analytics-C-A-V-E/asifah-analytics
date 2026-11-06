@@ -724,3 +724,152 @@ html[dir="rtl"] body .page-with-sidebar {
   border-radius: 0 !important;
   text-align: left;
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   HEADER + FOOTER CANON v2 (Nov 6 2026)
+   One gradient (the GPI's) on every header AND footer, dark-navy to blue.
+   Layout: [logo / back]  [title, subtitle]  [Dark | Light]
+   The grid mirrors on its own under dir="rtl" (logo goes right, pill left).
+   !important is used deliberately: 145 pages each carry their own header CSS,
+   and the canon has to win over all of them.
+   ═════════════════════════════════════════════════════════════════════════ */
+:root {
+  --asf-chrome-start: #1e3a5f;
+  --asf-chrome-end:   #2f6fa8;
+  --asf-chrome-text:  #ffffff;
+  --asf-chrome-sub:   #d6e6f5;
+}
+[data-theme="dark"] {
+  --asf-chrome-start: #060d1a;
+  --asf-chrome-end:   #1e3a5f;
+  --asf-chrome-text:  #ffffff;
+  --asf-chrome-sub:   #bcd3ea;
+}
+
+header.asf-hdr, .header.asf-hdr {
+  background: linear-gradient(135deg, var(--asf-chrome-start) 0%, var(--asf-chrome-end) 100%) !important;
+  color: var(--asf-chrome-text) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border-radius: 14px !important;
+  padding: 18px 24px !important;
+  min-height: 150px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  text-align: center !important;
+  position: relative !important;
+}
+header.asf-hdr::before, header.asf-hdr::after, .header.asf-hdr::before, .header.asf-hdr::after { display: none !important; }
+
+.asf-hdr-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(0, 3fr) minmax(150px, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-height: 112px;
+}
+.asf-hdr-left  { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; justify-self: start; }
+.asf-hdr-right { display: flex; flex-direction: column; align-items: flex-end;  gap: 10px; justify-self: end; }
+.asf-hdr-center { text-align: center !important; min-width: 0; color: var(--asf-chrome-sub) !important; }
+.asf-hdr-center > * { margin-left: auto !important; margin-right: auto !important; }
+.asf-hdr-center p, .asf-hdr-center .subtitle, .asf-hdr-center .header-subtitle, .asf-hdr-center .tagline {
+  color: var(--asf-chrome-sub) !important;
+  -webkit-text-fill-color: var(--asf-chrome-sub) !important;
+}
+
+.asf-hdr .asf-hdr-title, .asf-hdr-center h1 {
+  font-family: 'Times New Roman', Times, serif !important;
+  color: var(--asf-chrome-text) !important;
+  -webkit-text-fill-color: var(--asf-chrome-text) !important;
+  background: none !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+  text-align: center !important;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem) !important;
+  font-weight: 700 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase;
+  line-height: 1.2 !important;
+  margin: 4px auto 6px !important;
+}
+
+/* Logo: no white ring, no padding box */
+.asf-hdr .asf-hdr-logo {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  object-fit: cover !important;
+  clip-path: circle(41% at 50% 50%);      /* crops the white ring baked into the logo file */
+  transform: scale(1.18);
+  position: static !important;
+  margin: 0 !important;
+}
+
+.asf-hdr .asf-hdr-back {
+  position: static !important;
+  color: #e0f2fe !important;
+  border-color: rgba(186, 230, 253, 0.45) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  white-space: nowrap;
+  margin: 0 !important;
+}
+
+/* Dark | Light pill */
+.asf-theme-pill {
+  display: inline-flex !important;
+  gap: 0 !important;
+  padding: 3px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(186, 230, 253, 0.45) !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: #e0f2fe !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.5px !important;
+  text-transform: none !important;
+  position: static !important;
+}
+.asf-theme-opt { padding: 5px 11px; border-radius: 999px; opacity: 0.7; white-space: nowrap; transition: all 0.2s ease; }
+[data-theme="dark"] .asf-dark-opt,
+html:not([data-theme="dark"]) .asf-light-opt { background: rgba(255, 255, 255, 0.92); color: #0b1d33; opacity: 1; font-weight: 700; }
+
+/* Retired language switchers (English everywhere) */
+body.asifah-standardized [data-lang], body.asifah-standardized .lang-switcher,
+body.asifah-standardized .language-switcher, body.asifah-standardized .lang-btn { display: none !important; }
+
+/* Source headlines in their own script */
+[data-asf-src] { unicode-bidi: plaintext; }
+
+/* Footer: same gradient as the header */
+.asifah-footer {
+  background: linear-gradient(135deg, var(--asf-chrome-start) 0%, var(--asf-chrome-end) 100%) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border-radius: 14px !important;
+  color: var(--asf-chrome-sub) !important;
+}
+.asifah-footer .asifah-footer-title { color: #ffffff !important; }
+.asifah-footer .asifah-footer-sources, .asifah-footer .asifah-footer-disclaimer,
+.asifah-footer .asifah-footer-translate, .asifah-footer .asifah-footer-extra { color: var(--asf-chrome-sub) !important; }
+.asifah-footer a:not(.asifah-footer-pill) { color: #bae6fd !important; }
+.asifah-footer-translate { font-size: 0.74rem; font-style: italic; margin: 10px auto 6px; max-width: 760px; }
+
+/* Phone: logo + back + pill on one row, title below */
+@media (max-width: 760px) {
+  .asf-hdr-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "left right" "center center"; min-height: 0; gap: 10px; }
+  .asf-hdr-left { grid-area: left; flex-direction: row; align-items: center; padding-left: 40px; min-width: 0; }  /* clears the fixed menu button */
+  .asf-hdr .asf-hdr-back { font-size: 0.62rem !important; padding: 5px 9px !important; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .asf-hdr .asf-hdr-title { letter-spacing: 1.5px !important; font-size: 1.25rem !important; }
+  .asf-hdr-center { overflow-wrap: anywhere; }
+  .asf-hdr-right { grid-area: right; }
+  .asf-hdr-center { grid-area: center; }
+  .asf-hdr .asf-hdr-logo { width: 44px !important; height: 44px !important; }
+  header.asf-hdr, .header.asf-hdr { min-height: 0 !important; padding: 14px 14px !important; }
+}
+
+@media (max-width: 480px) {
+  .asf-theme-opt { padding: 5px 8px; font-size: 0; }          /* icons only on small phones */
+  .asf-theme-opt > span { font-size: 0.95rem; }
+}
