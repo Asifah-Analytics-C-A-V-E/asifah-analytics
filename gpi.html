@@ -931,20 +931,37 @@ a.sig-location-link:hover { opacity: 0.8; }
             opacity: 0.34;
         }
 
+/* ── Nov 6 2026: narrative cards open on their title line ── */
+.narrative-card.narr-collapsed > :not(.narrative-card-header):not(.cluster-member-tag):not(.narrative-card-regions) { display: none !important; }
+.narrative-card .narrative-card-header { cursor: pointer; flex-wrap: wrap; }
+.narr-toggle { flex-basis: 100%; font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+               color: var(--accent-cyan, #38bdf8); margin-top: 6px; }
+.narrative-card.narr-collapsed .narrative-card-regions { margin-top: 6px; }
+.narrative-card.narr-collapsed:hover { transform: none; }
+/* tabs: the sections lose their own outer box chrome inside a pane */
+#gpiTabs { margin-top: 26px; }
+#gpiTabs .gpi-tabpane > #narrativesSection, #gpiTabs .gpi-tabpane > .regional-cards-section,
+#gpiTabs .gpi-tabpane > #countryRollupSection { margin-top: 0; }
+.gpi-tab-empty { display: none; padding: 18px; font-style: italic; color: var(--text-secondary); }
+.gpi-tabpane > #narrativesSection[style*="none"] ~ .gpi-tab-empty,
+.gpi-tabpane > #countryRollupSection[style*="none"] ~ .gpi-tab-empty { display: block; }
+#gpiMain [data-asifah-markets] { margin-top: 0; }
+
 /* ── Nov 6 2026: PHONE layout. The bottom line comes first; the deep sections fold
    (the shell folds Traders' odds / Regional theaters / Narratives to a title bar). ── */
 .gpi-phone-more { display: none; }
-#gpiMain [data-asifah-markets] { margin-top: 26px; }
 @media (max-width: 700px) {
   #gpiMain { display: flex; flex-direction: column; }
   #gpiMain > .gpi-banner { order: 1; }
   #gpiMain > .pressure-axes-section { order: 2; margin-top: 18px; }
   #gpiMain > .pressure-axes-tabbar { order: 3; margin-top: 18px; }
-  #gpiMain > [data-asifah-markets] { order: 4; margin-top: 22px; }
-  #gpiMain > .regional-cards-section { order: 5; margin-top: 22px; }
+  #gpiMain > #gpiWorldMap { order: 4; }
+  #gpiMain > #cvgWrap { order: 5; }
   #gpiMain > * { order: 6; }
   #gpiMain > .gpi-banner, #gpiMain > .pressure-axes-section, #gpiMain > .pressure-axes-tabbar,
-  #gpiMain > [data-asifah-markets], #gpiMain > .regional-cards-section { flex: 0 0 auto; }
+  #gpiMain > #gpiWorldMap, #gpiMain > #cvgWrap { flex: 0 0 auto; }
+  #gpiTabs .asf-tabbar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #gpiTabs .asf-tab { padding: 8px 10px; font-size: 0.68rem; white-space: nowrap; flex: 0 0 auto; }
   .gpi-phone-more {
     display: block; width: 100%; margin: 14px 0 4px; padding: 10px 12px; cursor: pointer;
     background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.35); border-radius: 8px;
@@ -1088,6 +1105,9 @@ a.sig-location-link:hover { opacity: 0.8; }
                 </div>
             </div>
 
+            <!-- Nov 6 2026: world map, shaded by level, follows the lens buttons (resources/gpi-world-map.js) -->
+            <div id="gpiWorldMap"></div>
+
             <!-- Traders' odds (Nov 5 2026): resources/prediction-markets.js reads /api/markets/page/gpi on the ME backend. Context beside the score, never part of it. -->
             <div data-asifah-markets="gpi"></div>
 
@@ -1171,6 +1191,10 @@ a.sig-location-link:hover { opacity: 0.8; }
                     <div class="narratives-grid" id="standingWatchGrid"></div>
                 </details>
             </div>
+
+            <!-- Nov 6 2026: the deep dives as tabs. Filled by buildGpiTabs() below, which MOVES
+                 the sections above into it so the scripts that fill them keep working. -->
+            <section class="asf-tabs" id="gpiTabs" aria-label="GPI deep dives"></section>
 
         </div>
     </div>
@@ -2607,6 +2631,25 @@ function _renderNarrativeCards(narratives, gridId) {
                 ? '<div class="standing-reason">Standing watch &middot; ' + escapeHtmlGpi(narr.standing_reason) + '</div>'
                 : '');
 
+        // Nov 6 2026: cards open on their title line (headline + priority + regions);
+        // "Why it matters" and the rest are one click away.
+        card.classList.add('narr-collapsed');
+        const _hdr = card.querySelector('.narrative-card-header');
+        if (_hdr) {
+            const _tog = document.createElement('span');
+            _tog.className = 'narr-toggle';
+            _tog.textContent = 'Why it matters \u25BE';
+            _hdr.appendChild(_tog);
+            _hdr.setAttribute('role', 'button');
+            _hdr.setAttribute('tabindex', '0');
+            const flip = (e) => {
+                if (e && e.target.closest && e.target.closest('a')) return;
+                const open = card.classList.toggle('narr-collapsed') === false;
+                _tog.textContent = open ? 'Close \u25B4' : 'Why it matters \u25BE';
+            };
+            _hdr.addEventListener('click', flip);
+            _hdr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(e); } });
+        }
         grid.appendChild(card);
     });
     return countText;
@@ -2646,6 +2689,7 @@ function setActiveAxis(axisName) {
         }
         tabsEl.appendChild(tabCard);
     });
+    if (window.AsifahGpiMap) window.AsifahGpiMap.setAxis(axisName);   // Nov 6 2026: the map follows the lens
 }
 
 // ── PLAIN-LANGUAGE VOICE (v3.19, Oct 30 2026) ──────────────────────────
@@ -2743,6 +2787,7 @@ async function loadGpi() {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         _gpiState.apiData = data;  // v3.0 -- stash for axis click handlers
+        if (data.success && window.AsifahGpiMap) window.AsifahGpiMap.render(data);   // Nov 6 2026
 
         if (!data.success) {
             // Null-guarded: #blufProse does not exist on this page (the axis
@@ -2936,5 +2981,53 @@ document.addEventListener('keydown', (e) => {
 
 </script>
 
+<script>
+// Nov 6 2026 -- GPI deep dives as tabs: Cross-theater narratives (default) |
+// Regional theaters | By country | Traders' odds. The sections are MOVED into
+// the panes, so the code that fills them is unchanged.
+(function () {
+    function buildGpiTabs() {
+        var host = document.getElementById('gpiTabs');
+        if (!host || host.getAttribute('data-built')) return;
+        host.setAttribute('data-built', '1');
+        var panes = [
+            ['narr', 'Cross-theater narratives', document.getElementById('narrativesSection'),
+             'No cross-theater narrative is active this cycle: the regions are moving separately.'],
+            ['regional', 'Regional theaters', document.querySelector('.regional-cards-section'), ''],
+            ['country', 'By country', document.getElementById('countryRollupSection'),
+             'The by-country view fills in when this cycle\'s signals load.'],
+            ['odds', 'Traders\' odds', document.querySelector('[data-asifah-markets="gpi"]'), '']
+        ].filter(function (p) { return p[2]; });
+        var bar = document.createElement('div');
+        bar.className = 'asf-tabbar'; bar.setAttribute('role', 'tablist');
+        host.appendChild(bar);
+        var map = {};
+        panes.forEach(function (p, i) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.className = 'asf-tab'; b.textContent = p[1];
+            b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+            var pane = document.createElement('div');
+            pane.className = 'asf-tabpane gpi-tabpane'; pane.setAttribute('role', 'tabpanel');
+            if (i) pane.hidden = true;
+            pane.appendChild(p[2]);
+            if (p[3]) { var em = document.createElement('div'); em.className = 'gpi-tab-empty'; em.textContent = p[3]; pane.appendChild(em); }
+            host.appendChild(pane);
+            if (p[0] === 'country' && p[2].tagName === 'DETAILS') p[2].open = true;   // in its own tab it is the content, not a drawer
+            var show = function () {
+                Array.prototype.forEach.call(bar.children, function (x) { x.setAttribute('aria-selected', 'false'); });
+                Array.prototype.forEach.call(host.querySelectorAll('.gpi-tabpane'), function (x) { x.hidden = true; });
+                b.setAttribute('aria-selected', 'true'); pane.hidden = false;
+            };
+            b.addEventListener('click', show);
+            map[p[0]] = function () { show(); host.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+            bar.appendChild(b);
+        });
+        window.AsifahGpiTabs = { open: function (k) { if (map[k]) map[k](); } };
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buildGpiTabs); else buildGpiTabs();
+})();
+</script>
+<script src="resources/region-glance.js" defer></script>
+<script src="resources/gpi-world-map.js" defer></script>
 </body>
 </html>
