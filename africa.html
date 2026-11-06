@@ -2262,8 +2262,27 @@ async function loadCountry(country){
     }
 }
 
+async function loadAllCountriesDashboard(){
+    try{
+        var resp=await fetch(AFRICA_API+'/api/africa/dashboard');
+        if(!resp.ok)throw new Error('HTTP '+resp.status);
+        var d=await resp.json();
+        COUNTRIES.forEach(function(c){ if(d.countries&&d.countries[c])applyCountryData(c,d.countries[c]); });
+    }catch(err){
+        console.warn('[Africa] dashboard failed, loading cards one by one:',err);
+        COUNTRIES.forEach(function(c){ loadCountry(c); });
+    }
+}
+
 function applyCountryData(country,data){
     if(!data)return;
+    if(data.awaiting_scan){
+        // No stored scan yet: unread, not calm. No made-up number, no colour.
+        var ap=document.getElementById(country+'-collapsed-pct'), ats=document.getElementById(country+'-collapsed-ts');
+        if(ap)ap.textContent='--';
+        if(ats)ats.textContent='Awaiting first background scan';
+        return;
+    }
     var pct=data.conflict_probability;
     var alert=data.alert_level||'medium';
     // Gauge
@@ -2706,8 +2725,8 @@ function loadAllMilPosture(){COUNTRIES.forEach(function(c){loadMilPosture(c);});
 // BOOT
 // ════════════════════════════════════════════════════════════════
 window.addEventListener('load', function(){
-    // Load all 14 country threat data
-    COUNTRIES.forEach(function(c){ loadCountry(c); });
+    // Nov 6 2026: every card's stored score in ONE call (falls back to per-card)
+    loadAllCountriesDashboard();
     // Load weather, travel advisories, NOTAMs, mil posture in parallel
     loadAllWeather();
     loadTravelAdvisories();

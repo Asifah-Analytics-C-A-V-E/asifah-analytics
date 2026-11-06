@@ -2058,6 +2058,14 @@ function collapseCard(country,event){
 // GAUGE
 // ========================================
 function updateGauge(country,pct){
+    if(pct===null||pct===undefined){
+        // Nov 6 2026: no stored scan yet -- unread, not calm. No number, no colour.
+        var cp=document.getElementById(country+'-collapsed-pct'), tx=document.getElementById(country+'-pct');
+        if(cp)cp.textContent='--'; if(tx)tx.textContent='--';
+        var ts0=document.getElementById(country+'-collapsed-ts');
+        if(ts0)ts0.textContent='Awaiting first background scan';
+        return;
+    }
     var circumference=2*Math.PI*81;
     var fill=(pct/100)*circumference;
     var gauge=document.getElementById(country+'-gauge');
@@ -2154,7 +2162,7 @@ async function loadAllCountries(){
         var data=await resp.json();
         if(!data.success)throw new Error('API error');
         data.countries.forEach(function(c){
-            updateGauge(c.country,c.conflict_probability||0);
+            updateGauge(c.country,c.conflict_probability);
             var ctx=document.getElementById(c.country+'-context');
             if(ctx&&c.level_label)ctx.textContent=c.level_label;
             var ts=document.getElementById(c.country+'-collapsed-ts');
@@ -2173,7 +2181,7 @@ async function loadCountry(country){
         var resp=await fetch(WHA_API+'/api/wha/stability/'+country);
         if(!resp.ok)return;
         var data=await resp.json();
-        updateGauge(country,data.conflict_probability||0);
+        updateGauge(country,data.conflict_probability);
         var ctx=document.getElementById(country+'-context');
         if(ctx&&data.context)ctx.textContent=data.context;
         var ts=document.getElementById(country+'-collapsed-ts');
@@ -2197,7 +2205,7 @@ async function scanCountry(country,event){
         var resp=await fetch(WHA_API+'/api/wha/threat/'+country+'?force=true&days='+days);
         if(!resp.ok)throw new Error('HTTP '+resp.status);
         var data=await resp.json();
-        updateGauge(country,data.conflict_probability||0);
+        updateGauge(country,data.conflict_probability);
         var ctx=document.getElementById(country+'-context');
         if(ctx&&data.context)ctx.textContent=data.context;
         var ts=document.getElementById(country+'-collapsed-ts');

@@ -2576,6 +2576,14 @@
         for (const target of TARGETS) {
             const data = countries[target];
             if (!data) continue;   // v1.2.1 fix — was `return` (silent loop break)
+            if (data.pending_scan || data.probability === null || data.probability === undefined) {
+                // Nov 6 2026: no stored scan yet -- unread, not calm (was 0% "as of now").
+                const s0 = document.getElementById(`${target}CollapsedScore`);
+                const t0 = document.getElementById(`${target}CollapsedTimestamp`);
+                if (s0) s0.textContent = '--';
+                if (t0) t0.textContent = 'Awaiting first background scan';
+                continue;
+            }
             try {
                 const prob = data.probability || 0;
                 const probRounded = Math.round(prob);
@@ -2593,7 +2601,7 @@
                 }
                 if (collapsedTimestamp) {
                     const ts = data.cached_at || data.timestamp || null;
-                    collapsedTimestamp.textContent = ts ? `As of ${new Date(ts).toLocaleString()}` : new Date().toLocaleString();
+                    collapsedTimestamp.textContent = ts ? `As of ${new Date(ts).toLocaleString()}` : '';
                 }
                 if (card) {
                     card.classList.remove('low-threat', 'medium-threat', 'high-threat');
@@ -2633,7 +2641,7 @@ async function loadCachedScoresFallback() {
             }
             if (collapsedTimestamp) {
                 const ts = data.cached_at || data.timestamp || null;
-                collapsedTimestamp.textContent = ts ? `As of ${new Date(ts).toLocaleString()}` : new Date().toLocaleString();
+                collapsedTimestamp.textContent = ts ? `As of ${new Date(ts).toLocaleString()}` : '';
             }
             if (card) {
                 card.classList.remove('low-threat', 'medium-threat', 'high-threat');
