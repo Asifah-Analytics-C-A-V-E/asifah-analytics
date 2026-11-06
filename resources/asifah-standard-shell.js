@@ -10,7 +10,7 @@
      - English everywhere: language switchers are retired (the browser translates);
        source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
        own language and script (dir=auto, translate=no). */
-  var SHELL_VERSION = '2.0.0';
+  var SHELL_VERSION = '2.0.1';
   var THEME_MIGRATION_KEY = 'asifah-theme-v2';
   var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
   var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +
@@ -225,7 +225,7 @@
       gloss: 'Direct and mutual — both sides engaged.' },
     { level: 4, label: 'Coercion',        color: '#ef4444',
       gloss: 'Pressure applied to extract a concession.' },
-    { level: 5, label: 'Active Conflict', color: '#dc2626',
+    { level: 5, label: 'Active Conflict', color: '#991b1b',   // Nov 6 2026: darker, so L4 and L5 no longer blur
       gloss: 'Open hostilities underway.' },
     // L6 added Oct 6 2026. The axis tables below have always gone to 6 ('red
     // line breached'), and the GPI's level coercion can return 6 -- so a page
@@ -233,7 +233,7 @@
     // capped at 5, which meant an L6 chip silently displayed as L5 'Active
     // Conflict': the platform's most serious reading rendering as its
     // second-most. A ladder that cannot show its own top rung is not a ladder.
-    { level: 6, label: 'Red Line Breached', color: '#991b1b',
+    { level: 6, label: 'Red Line Breached', color: '#3b0764',   // Nov 6 2026: near-black purple
       gloss: 'A stated red line has been crossed.' }
   ];
 

@@ -54,8 +54,8 @@
 
   var LEVEL = {
     0: ['Monitoring', '#6b7280'], 1: ['Rhetoric', '#3b82f6'], 2: ['Warning', '#f59e0b'],
-    3: ['Confrontation', '#f97316'], 4: ['Coercion', '#ef4444'], 5: ['Active Conflict', '#dc2626'],
-    6: ['Red Line Breached', '#991b1b']
+    3: ['Confrontation', '#f97316'], 4: ['Coercion', '#ef4444'], 5: ['Active Conflict', '#991b1b'],
+    6: ['Red Line Breached', '#3b0764']   // Nov 6 2026: L5 crimson, L6 near-black purple (L4/L5 no longer blur)
   };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -96,6 +96,9 @@
       '.asf-face-chip.none{background:transparent;color:inherit;opacity:0.65;border:1px dashed currentColor}' +
       '.asf-face-line{font-size:0.8rem;line-height:1.45;opacity:0.92;font-style:italic}' +
       '@media(max-width:600px){.asf-map .lbl,.asf-map line{display:none}.asf-map-legend{font-size:0.66rem;gap:8px}}' +
+      '.asf-sowhat{margin:4px 0 14px;padding:12px 14px;border-radius:8px;border-left:4px solid #38bdf8;background:rgba(56,189,248,0.08)}' +
+      '.asf-sowhat-k{font-size:0.66rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.75;margin-bottom:4px}' +
+      '.asf-sowhat-t{font-size:0.9rem;line-height:1.55}' +
       '.asf-flash{box-shadow:0 0 0 3px #38bdf8 !important;transition:box-shadow .3s}' +
       '.asf-tabs{grid-column:1/-1;margin:24px 0}' +
       '.asf-tabbar{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--asifah-shell-border,rgba(127,127,127,0.3));margin-bottom:14px}' +
@@ -139,11 +142,61 @@
         face.innerHTML = '<span class="asf-face-chip none">No pressure tracker yet</span>';
       } else {
         var meta = LEVEL[l] || LEVEL[0], line = oneLiner(c[1], bluf, rec);
-        face.innerHTML = '<span class="asf-face-chip" style="background:' + (rec.color || meta[1]) + '">L' + l + ' · ' +
+        face.innerHTML = '<span class="asf-face-chip" style="background:' + meta[1] + '">L' + l + ' · ' +
           esc(rec.label || meta[0]) + '</span>' + (line ? '<span class="asf-face-line">' + esc(line) + '</span>' : '');
       }
       var anchor = view.querySelector('.collapsed-header') || view.firstElementChild;
       if (anchor && anchor.nextSibling) view.insertBefore(face, anchor.nextSibling); else view.appendChild(face);
+    });
+  }
+
+  // ── Inside an opened card: So What first, then the threat picture, then
+  //    advisory and headlines, then sources, weather and the scan button. ──
+  var CARD_ORDER = ['probability-display', 'travel-advisory-container', 'timeline-display',
+                    'threat-matrix-section', 'mil-posture-awaiting', 'mil-posture', 'headlines-section',
+                    'intel-sources', 'weather-section', 'card-scan-controls'];
+
+  function longRead(theatre, bluf) {
+    var sigs = (bluf && (bluf.top_signals || bluf.signals)) || [];
+    for (var i = 0; i < sigs.length; i++) {
+      if ((sigs[i].theatre || '') === theatre && (sigs[i].long_text || sigs[i].short_text)) {
+        return (sigs[i].long_text || sigs[i].short_text).replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '');
+      }
+    }
+    return '';
+  }
+
+  function cardInside(cfg, bluf) {
+    var ts = (bluf && bluf.theatre_summary) || {};
+    cfg.countries.forEach(function (c) {
+      var card = document.getElementById(c[2]);
+      var view = card && card.querySelector('.card-expanded-view');
+      if (!view) return;
+      var old = view.querySelector('.asf-sowhat');
+      if (old) old.parentNode.removeChild(old);
+      var rec = ts[c[1]], l = lvlOf(rec), box = document.createElement('div');
+      box.className = 'asf-sowhat';
+      var read = longRead(c[1], bluf);
+      box.innerHTML = '<div class="asf-sowhat-k">So what</div>' + (l == null
+        ? '<div class="asf-sowhat-t">No pressure tracker covers ' + esc(c[3]) + ' yet, so there is no level to explain: unread, not calm. ' +
+          'The strike-window score below still comes from the news scan.</div>'
+        : '<div class="asf-sowhat-t"><b style="color:' + (LEVEL[l] || LEVEL[0])[1] + '">L' + l + ' · ' + esc((LEVEL[l] || LEVEL[0])[0]) + '.</b> ' +
+          esc(read || oneLiner(c[1], bluf, rec) || 'No single signal stands out this cycle.') + '</div>');
+      // after the expanded view's own header row (the Collapse button), else first
+      var head = view.querySelector('.collapse-toggle-btn');
+      var anchor = head ? (head.parentNode === view ? head : head.parentNode) : null;
+      if (anchor && anchor.parentNode === view) view.insertBefore(box, anchor.nextSibling);
+      else view.insertBefore(box, view.firstChild);
+      // reorder the rest
+      var after = box;
+      CARD_ORDER.forEach(function (cls) {
+        Array.prototype.slice.call(view.children).forEach(function (el) {
+          if (el.classList && el.classList.contains(cls)) {
+            view.insertBefore(el, after.nextSibling);
+            after = el;
+          }
+        });
+      });
     });
   }
 
@@ -178,7 +231,7 @@
     var shapes = '', labels = '', dots = '';
     mine.forEach(function (f) {
       var c = byId[+f.id], rec = ts[c[1]], l = lvlOf(rec);
-      var fill = l == null ? 'url(#asfHatch)' : ((rec && rec.color) || (LEVEL[l] || LEVEL[0])[1]);
+      var fill = l == null ? 'url(#asfHatch)' : (LEVEL[l] || LEVEL[0])[1];
       var d = path(f), ctr = path.centroid(f), area = path.area(f);
       shapes += '<path class="ctry" data-k="' + c[1] + '" d="' + d + '" fill="' + fill + '"/>';
       if (area < 140) {               // too small to click (Bahrain, Qatar, Lebanon): add a dot
@@ -263,7 +316,7 @@
       mapEl.innerHTML = '<div class="asf-map-title">🗺️ Where the pressure is</div><div class="asf-map-sub">Loading map…</div>';
     }
     var blufP = fetch(cfg.bluf).then(function (r) { return r.json(); }).catch(function () { return null; });
-    blufP.then(function (b) { if (b) cardFaces(cfg, b); });
+    blufP.then(function (b) { if (b) { cardFaces(cfg, b); cardInside(cfg, b); } });
     if (!mapEl) return;
     Promise.all([blufP, LIBS.reduce(function (p, s) { return p.then(function () { return window.d3 && s.indexOf('/d3@') > 0 ? null : loadScript(s); }); }, Promise.resolve())
       .then(function () { return fetch(WORLD).then(function (r) { return r.json(); }); })])
