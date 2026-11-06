@@ -1,4 +1,4 @@
-/* Asifah Analytics -- GPI world map  v1.1.0  (Nov 6 2026)
+/* Asifah Analytics -- GPI world map  v1.2.0  (Nov 6 2026)
  *
  * One map under the GPI's Bottom Line, shaded by the highest level each
  * country carries in the global read. It follows the lens buttons: click
@@ -101,6 +101,19 @@
   // country id -> {level, axes:{}, n, names:[]}
   function levelsFor(data, axis) {
     var out = {};
+    // v1.2.0: the novelty gate. While the GPI holds a sustained war at L4, an L5
+    // reading on a theatre with no NEW front shows as L4 (sustained) here too.
+    var gate = data.level_gate || {}, l6 = !!(data.l6 && data.l6.active), fresh = {};
+    var sustained = {};
+    (gate.fresh || []).forEach(function (e) { fresh[norm(e.theatre)] = 1; });
+    (gate.sustained || []).forEach(function (e) { sustained[norm(e.theatre)] = 1; });
+    // Only a KINETIC L5 is a conflict front. A humanitarian or economic L5 is a
+    // different finding and is never held down by the war's novelty gate.
+    function capL(lvl, key, ax) {
+      if (lvl !== 5 || !gate.applied || l6 || fresh[norm(key)]) return lvl;
+      if (ax === 'kinetic' || (ax == null && sustained[norm(key)])) return 4;
+      return lvl;
+    }
     function rec(id) { return out[id] || (out[id] = { level: -1, named: -1, axes: {}, n: 0, nn: 0, from: [] }); }
     function bump(id, lvl, ax) {
       if (lvl == null || isNaN(lvl)) return;
@@ -131,10 +144,10 @@
     raw.forEach(function (s) {
       var ax = s.pressure_type || s.axis || '';
       if (axis !== 'all' && ax !== axis) return;
-      var lvl = +s.level;
+      var lvl0 = +s.level, lvl = capL(lvl0, s.theatre, ax);
       var about = {};
       var own = idsFor(s.theatre);
-      own.forEach(function (id) { about[id] = 1; bump(id, lvl, ax); });
+      own.forEach(function (id) { about[id] = 1; bump(id, lvl, ax); if (lvl0 !== lvl) rec(id).sust = true; });
       var from = String(s.theatre || '').replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); }) + ' L' + lvl;
       var tagged = s.countries || [];
       allC(s).forEach(function (k) {
@@ -149,7 +162,9 @@
       (data.country_rollup || []).forEach(function (c) {
         idsFor(c.country).forEach(function (id) {
           var r = rec(id);
-          if (c.max_level > r.level) r.level = c.max_level;
+          var ml = capL(+c.max_level, c.country, null);
+          if (ml !== +c.max_level) r.sust = true;
+          if (ml > r.level) r.level = ml;
           (c.axes || []).forEach(function (a) { if (!(a in r.axes)) r.axes[a] = null; });
           r.n = Math.max(r.n, c.signal_count || 0);
         });
@@ -215,7 +230,7 @@
         if (r && r.level >= 0) {
           var m = LEVEL[Math.min(6, r.level)];
           var axes = Object.keys(r.axes).filter(Boolean);
-          body = 'L' + r.level + ' · ' + m[0] +
+          body = 'L' + r.level + ' \u00B7 ' + (r.sust ? 'Sustained conflict (L5 reading, no new front in 14 days)' : m[0]) +
             (axes.length ? '<br>Axes: ' + axes.map(function (a) {
               return esc(AXIS_LABEL[a] || a) + (r.axes[a] != null ? ' L' + r.axes[a] : '');
             }).join(', ') : '') +
