@@ -47,7 +47,8 @@
       '.asf-mkt-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:0.68rem;opacity:0.85}' +
       '.asf-mkt-chip{font-size:0.62rem;font-weight:800;letter-spacing:0.8px;padding:2px 7px;border-radius:999px;color:#fff;cursor:help}' +
       '.asf-mkt-thin{font-size:0.62rem;font-weight:700;letter-spacing:0.8px;padding:2px 7px;border-radius:999px;border:1px dashed rgba(127,127,127,0.6);cursor:help}' +
-      '.asf-mkt a{color:var(--accent,var(--accent-cyan,#38bdf8));text-decoration:none}.asf-mkt a:hover{text-decoration:underline}' +
+      '.asf-mkt a,.asf-mkt-gauge a{color:#38bdf8;font-weight:700;text-decoration:none}.asf-mkt a:hover,.asf-mkt-gauge a:hover{text-decoration:underline}' +
+      'html.light-mode .asf-mkt a,html.light-mode .asf-mkt-gauge a,body.light-mode .asf-mkt a,body.light-mode .asf-mkt-gauge a,[data-theme=light] .asf-mkt a,[data-theme=light] .asf-mkt-gauge a{color:#0369a1}' +
       '.asf-mkt-note{font-size:0.7rem;opacity:0.7;font-style:italic}' +
       '.asf-mkt details{margin-top:10px}.asf-mkt details summary{cursor:pointer;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;opacity:0.75}' +
       '.asf-mkt-how{font-size:0.78rem;line-height:1.55;opacity:0.85;margin-top:6px}.asf-mkt-how li{margin-bottom:3px}' +

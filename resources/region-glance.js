@@ -94,7 +94,8 @@
       '.asf-face{margin:8px 0 2px;display:flex;flex-direction:column;gap:5px}' +
       '.asf-face-chip{align-self:flex-start;font-size:0.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;padding:3px 8px;border-radius:4px}' +
       '.asf-face-chip.none{background:transparent;color:inherit;opacity:0.65;border:1px dashed currentColor}' +
-      '.asf-face-line{font-size:0.8rem;line-height:1.45;opacity:0.92;font-style:italic}' +
+      '.asf-face-line{font-size:0.8rem;line-height:1.45;opacity:0.92;font-style:italic;white-space:normal;overflow-wrap:anywhere}' +
+      '.asf-face-more{font-size:0.74rem;font-weight:800;letter-spacing:0.3px;opacity:0.95;cursor:pointer}' +
       '@media(max-width:600px){.asf-map .lbl,.asf-map line{display:none}.asf-map-legend{font-size:0.66rem;gap:8px}}' +
       '.asf-sowhat{margin:4px 0 14px;padding:12px 14px;border-radius:8px;border-left:4px solid #38bdf8;background:rgba(56,189,248,0.08)}' +
       '.asf-sowhat-k{font-size:0.66rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.75;margin-bottom:4px}' +
@@ -127,6 +128,17 @@
     return (rec && rec.tracker_label && rec.tracker_label !== rec.label) ? rec.tracker_label : '';
   }
 
+  // Card-face line: the backend's short_text is cut mid-word, so use the first
+  // sentence of the long read, trimmed at a word boundary (~150 chars).
+  function faceLine(theatre, bluf, rec) {
+    var t = longRead(theatre, bluf) || oneLiner(theatre, bluf, rec) || '';
+    t = t.replace(/^[A-Z][A-Z \-']+:\s*/, '').replace(/\s+/g, ' ').trim();
+    var m = t.match(/^.{20,}?[.!?](\s|$)/);
+    if (m) t = m[0].trim();
+    if (t.length > 150) t = t.slice(0, 150).replace(/\s+\S*$/, '') + '\u2026';
+    return t;
+  }
+
   // ── Card faces ────────────────────────────────────────────────────────────
   function cardFaces(cfg, bluf) {
     var ts = (bluf && bluf.theatre_summary) || {};
@@ -141,10 +153,15 @@
       if (l == null) {
         face.innerHTML = '<span class="asf-face-chip none">No pressure tracker yet</span>';
       } else {
-        var meta = LEVEL[l] || LEVEL[0], line = oneLiner(c[1], bluf, rec);
+        var meta = LEVEL[l] || LEVEL[0], line = faceLine(c[1], bluf, rec);
         face.innerHTML = '<span class="asf-face-chip" style="background:' + meta[1] + '">L' + l + ' · ' +
-          esc(rec.label || meta[0]) + '</span>' + (line ? '<span class="asf-face-line">' + esc(line) + '</span>' : '');
+          esc(rec.label || meta[0]) + '</span>' + (line ? '<span class="asf-face-line">' + esc(line) + '</span>' : '') +
+          '<span class="asf-face-more">Expand card for more \u25BE</span>';
       }
+      var more = face.querySelector('.asf-face-more');
+      if (more) more.addEventListener('click', (function (id) {
+        return function (e) { e.stopPropagation(); openCard(id); };
+      })(c[2]));
       var anchor = view.querySelector('.collapsed-header') || view.firstElementChild;
       if (anchor && anchor.nextSibling) view.insertBefore(face, anchor.nextSibling); else view.appendChild(face);
     });
@@ -242,7 +259,7 @@
       if (nd) labels += '<line x1="' + ctr[0] + '" y1="' + ctr[1] + '" x2="' + lx + '" y2="' + (ly - 3) +
         '" stroke="#94a3b8" stroke-opacity="0.9" stroke-width="1"/>';
       labels += '<text class="lbl" x="' + lx + '" y="' + ly + '" text-anchor="middle">' +
-        esc(c[3]) + (l == null ? '' : ' L' + l) + '</text>';
+        esc(c[3]) + '</text>';
     });
     var legend = [0, 1, 2, 3, 4, 5].map(function (k) {
       return '<span><i style="background:' + LEVEL[k][1] + '"></i>L' + k + ' ' + LEVEL[k][0] + '</span>';
