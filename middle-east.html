@@ -8711,7 +8711,8 @@ async function loadCollapsedData() {
             const data = countries[bundleKey];
             if (data) {
                 const ts = data.last_updated || data.timestamp || null;
-                updateCollapsedView(cardId, data.probability || 0, ts);
+                // Nov 6 2026: a card with no cached scan says so -- never a fake 0%
+                updateCollapsedView(cardId, data.awaiting_scan ? null : (data.probability || 0), ts);
             }
         }
 
@@ -8749,7 +8750,7 @@ async function loadCollapsedDataFallback() {
             const r = await fetch(url);
             if (r.ok) {
                 const data = await r.json();
-                updateCollapsedView(id, data.probability || 0, data.last_updated || data.timestamp);
+                updateCollapsedView(id, data.awaiting_scan ? null : (data.probability || 0), data.last_updated || data.timestamp);
             }
         } catch (e) { console.warn(`${id} fallback fetch failed:`, e); }
     }));
@@ -8761,6 +8762,14 @@ async function loadCollapsedDataFallback() {
             const barElement = document.getElementById(`${target}CollapsedBar`);
             const timestampElement = document.getElementById(`${target}CollapsedTimestamp`);
             
+            if (score === null || score === undefined) {
+                // No cached scan yet: unread, not calm.
+                if (scoreElement) scoreElement.textContent = '--';
+                if (barElement) barElement.style.width = '0%';
+                if (timestampElement) timestampElement.textContent = 'Awaiting first background scan';
+                return;
+            }
+
             if (scoreElement) {
                 scoreElement.textContent = `${score}%`;
             }
