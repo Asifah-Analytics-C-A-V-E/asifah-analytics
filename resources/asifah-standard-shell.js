@@ -10,7 +10,7 @@
      - English everywhere: language switchers are retired (the browser translates);
        source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
        own language and script (dir=auto, translate=no). */
-  var SHELL_VERSION = '2.0.2';   // Nov 6 2026: travel-warning banners fold to one line on phones
+  var SHELL_VERSION = '2.0.3';   // Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
   var THEME_MIGRATION_KEY = 'asifah-theme-v2';
   var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
   var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +
@@ -739,6 +739,26 @@
   // Banners are found by their text (each page built its own markup), and
   // pages that inject the banner later are caught by the observer below.
   var PHONE_MQ = '(max-width: 700px)';
+  // v2.0.3: country advisories fold too (U.S. "Travel Advisory", UK FCDO).
+  // Rhetoric-tracker banners do not match and stay open.
+  var WARN_TITLE_RX = /worldwide\s+caution|travel\s+advisory|foreign,?\s+commonwealth|\bFCDO\b|travel\s+advice/i;
+  function esc(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function bannerLabel(title, box) {
+    var all = (box.textContent || '');
+    var lvl = all.match(/level\s*([1-4])\b/i);
+    var who = /foreign,?\s+commonwealth|fcdo|travel\s+advice/i.test(title) ? 'UK FCDO' : 'U.S. State Dept';
+    var what;
+    if (/worldwide\s+caution/i.test(title)) what = 'Worldwide Caution';
+    else {
+      var m = title.match(/[\u2014\-:]\s*([^\u2014\-:]*?(travel advisory|travel advice))/i);
+      what = (m ? m[1] : 'Travel advisory').replace(/\s+/g, ' ').trim();
+      // headings are often ALL CAPS: Title-case the country, keep "travel advisory" plain
+      what = what.toLowerCase().replace(/(^|[\s(\-])([^\s(\-])/g, function (m0, sp, ch) { return sp + ch.toUpperCase(); })
+                 .replace(/Travel (Advisory|Advice)/, function (m0, w) { return 'travel ' + w.toLowerCase(); });
+    }
+    return '\u26A0\uFE0F <b>' + esc(what) + '</b>' + (lvl && !/worldwide/i.test(title) ? ' \u00B7 Level ' + lvl[1] : '') + ' \u00B7 ' + who;
+  }
+
   function foldCautionBanners() {
     if (!window.matchMedia || !window.matchMedia(PHONE_MQ).matches) return;
     var all = document.body.getElementsByTagName('*');
@@ -746,7 +766,8 @@
       var el = all[i];
       if (el.children.length > 2 || /^(SCRIPT|STYLE|BUTTON)$/.test(el.tagName)) continue;
       var t = el.textContent || '';
-      if (t.length > 90 || !/worldwide\s+caution/i.test(t)) continue;
+      if (t.length > 110 || !WARN_TITLE_RX.test(t)) continue;
+      if (el.closest && el.closest('.target-card, .asf-tabs, .asifah-footer, header')) continue;   // card widgets stay as they are
       // climb to the banner box: the largest ancestor that is still just the banner
       var box = el, up = el.parentElement;
       while (up && up !== document.body && (up.textContent || '').length < 1400 &&
@@ -760,7 +781,7 @@
       bar.type = 'button';
       bar.className = 'asf-wwc-bar';
       bar.setAttribute('aria-expanded', 'false');
-      bar.innerHTML = '<span>\u26A0\uFE0F <b>Worldwide Caution</b> \u00B7 U.S. State Dept</span><span class="asf-wwc-go">Read \u25BE</span>';
+      bar.innerHTML = '<span>' + bannerLabel(t, box) + '</span><span class="asf-wwc-go">Read \u25BE</span>';
       bar.addEventListener('click', (function (b, x) {
         return function (e) {
           e.preventDefault(); e.stopPropagation();
@@ -930,8 +951,35 @@
     }
   }
 
+  // ── v2.0.3 (Nov 6 2026) One canonical logo watermark ────────────────────
+  // Pages had grown five watermark recipes (a .watermark div, the logo in
+  // body::before, body::after or the body background), some hue-rotated to
+  // orange, some showing the logo's white square backing, all different
+  // sizes. Now: the shell hides whichever one a page has and draws ONE:
+  // cyan, circle-cropped (no white edge), same size and strength everywhere.
+  // Regional pages keep their bespoke *_on_fire artwork and get no logo.
+  var LOGO_URL = 'https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png';
+  function ensureWatermark() {
+    var b = document.body;
+    if (!window.getComputedStyle || b.hasAttribute('data-asifah-no-watermark')) return;
+    var bodyBg = getComputedStyle(b).backgroundImage || '';
+    if (/on_fire/i.test(bodyBg)) return;                       // regional artwork pages
+    if (/LOGO\.png/i.test(bodyBg)) b.classList.add('asf-wm-off-body');
+    if (/LOGO\.png/i.test(getComputedStyle(b, '::before').backgroundImage || '')) b.classList.add('asf-wm-off-before');
+    if (/LOGO\.png/i.test(getComputedStyle(b, '::after').backgroundImage || '')) b.classList.add('asf-wm-off-after');
+    b.classList.add('asf-wm');
+    if (!document.querySelector('.asf-wm-logo')) {
+      var wm = document.createElement('div');
+      wm.className = 'asf-wm-logo';
+      wm.setAttribute('aria-hidden', 'true');
+      wm.style.backgroundImage = "url('" + LOGO_URL + "')";
+      b.insertBefore(wm, b.firstChild);
+    }
+  }
+
   function init() {
     document.body.classList.add('asifah-standardized');
+    ensureWatermark();
     ensureTheme();
     retireLanguages();
     ensureHeader();

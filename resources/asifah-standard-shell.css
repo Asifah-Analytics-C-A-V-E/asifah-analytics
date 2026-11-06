@@ -896,3 +896,20 @@ body.asifah-standardized .language-switcher, body.asifah-standardized .lang-btn 
   .asf-wwc.asf-wwc-folded > :not(.asf-wwc-bar) { display: none !important; }
   .asf-wwc:not(.asf-wwc-folded) > .asf-wwc-bar { margin-bottom: 10px; }
 }
+
+
+/* ── v2.0.3 (Nov 6 2026) One canonical logo watermark (see ensureWatermark) ── */
+body.asf-wm .watermark { display: none !important; }
+body.asf-wm.asf-wm-off-body { background-image: none !important; }
+body.asf-wm.asf-wm-off-before::before { background-image: none !important; }
+body.asf-wm.asf-wm-off-after::after { background-image: none !important; }
+body.asf-wm.asifah-shell-watermark-active::before { background-image: none !important; }
+.asf-wm-logo {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 72vmin; height: 72vmin; min-width: 420px; min-height: 420px; max-width: 860px; max-height: 860px;
+  background-size: 135%;            /* zoomed past the edge + round clip = no white square backing */
+  background-position: center; background-repeat: no-repeat;
+  border-radius: 50%; filter: none;  /* the true cyan logo -- no hue-rotated orange copies */
+  opacity: 0.10; z-index: -1; pointer-events: none; user-select: none;
+}
+[data-theme="dark"] .asf-wm-logo { opacity: 0.22; }
