@@ -10,7 +10,7 @@
      - English everywhere: language switchers are retired (the browser translates);
        source headlines in Arabic, Hebrew, Persian, Russian, Chinese ... stay in their
        own language and script (dir=auto, translate=no). */
-  var SHELL_VERSION = '2.0.3';   // Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
+  var SHELL_VERSION = '2.0.4';   // Nov 6 2026: phone width fix for stability pages | 2.0.3: Nov 6 2026: travel-warning banners (worldwide + country) fold on phones; one canonical logo watermark
   var THEME_MIGRATION_KEY = 'asifah-theme-v2';
   var LEGACY_THEME_KEYS = ['asifah_theme', 'theme', 'wha-theme'];
   var LANG_SELECTOR = '[data-lang], .lang-btn, .language-btn, .lang-switcher, .language-switcher, ' +

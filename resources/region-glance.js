@@ -247,9 +247,27 @@
 
   // ── Inside an opened card: So What first, then the threat picture, then
   //    advisory and headlines, then sources, weather and the scan button. ──
-  var CARD_ORDER = ['probability-display', 'travel-advisory-container', 'timeline-display',
-                    'threat-matrix-section', 'mil-posture-awaiting', 'mil-posture', 'headlines-section',
-                    'intel-sources', 'weather-section', 'card-scan-controls'];
+  // Nov 6 2026: ONE card order on all five regional pages (the ME order Rachel
+  // approved). Each region built its cards differently, so each slot is a test
+  // on the element rather than one class name.
+  function hasC(el, c) { return el.classList && el.classList.contains(c); }
+  function idEnds(el, sfx) { return !!(el.id && el.id.slice(-sfx.length) === sfx); }
+  var CARD_ORDER = [
+    function (el) { return hasC(el, 'probability-display'); },                                    // gauge
+    function (el) { return hasC(el, 'travel-advisory-container') || idEnds(el, '-travel-advisory'); },
+    function (el) { return hasC(el, 'context-box'); },                                             // background (Africa, WHA)
+    function (el) { return hasC(el, 'timeline-display'); },
+    function (el) { return hasC(el, 'threat-matrix-section'); },
+    function (el) { return hasC(el, 'mil-posture-awaiting') || hasC(el, 'mil-posture') || idEnds(el, '-mil-posture'); },
+    function (el) { return hasC(el, 'headlines-section') || idEnds(el, '-headlines'); },
+    function (el) { return hasC(el, 'intel-sources'); },
+    function (el) { return hasC(el, 'weather-section') || idEnds(el, '-weather'); },
+    function (el) { return hasC(el, 'card-scan-controls'); },
+    function (el) {                                                                                // Stability / Rhetoric / Military links
+      return hasC(el, 'card-link-row') || hasC(el, 'stability-live') || hasC(el, 'rhetoric-live') ||
+        (el.tagName === 'DIV' && !el.className && !!el.querySelector('a[href*="-stability"], .country-stability-btn'));
+    }
+  ];
 
   function longRead(theatre, bluf) {
     var sigs = (bluf && (bluf.top_signals || bluf.signals)) || [];
@@ -285,18 +303,29 @@
                  kids.filter(function (k) { return /^H[1-4]$/.test(k.tagName); })[0];
       if (head) view.insertBefore(box, head.nextSibling);
       else view.insertBefore(box, view.firstChild);
-      if (!cfg.order) return;
-      // reorder the rest
+      reorderCard(view, box);
+    });
+  }
+
+  // Collapse at the top, then the CARD_ORDER slots. Runs even when the regional
+  // read fails to load (then without a So What box).
+  function reorderCard(view, box) {
+      var col = Array.prototype.slice.call(view.children).filter(function (k) { return hasC(k, 'collapse-toggle-btn'); })[0];
+      if (!box) {
+        var h = Array.prototype.slice.call(view.children, 0, 3).filter(function (k) { return /^H[1-4]$/.test(k.tagName); })[0];
+        if (col && h) view.insertBefore(col, h.nextSibling);
+        box = col || h;
+        if (!box) return;
+      } else if (col && col.nextSibling !== box) { view.insertBefore(col, box); }
       var after = box;
-      CARD_ORDER.forEach(function (cls) {
+      CARD_ORDER.forEach(function (test) {
         Array.prototype.slice.call(view.children).forEach(function (el) {
-          if (el.classList && el.classList.contains(cls)) {
+          if (el !== box && test(el)) {
             view.insertBefore(el, after.nextSibling);
             after = el;
           }
         });
       });
-    });
   }
 
   function openCard(cardId) {
@@ -433,7 +462,13 @@
       mapEl.innerHTML = '<div class="asf-map-title">🗺️ Where the pressure is</div><div class="asf-map-sub">Loading map…</div>';
     }
     var blufP = fetch(cfg.bluf).then(function (r) { return r.json(); }).catch(function () { return null; });
-    blufP.then(function (b) { if (b) { cardFaces(cfg, b); cardInside(cfg, b); } });
+    blufP.then(function (b) {
+      if (b) { cardFaces(cfg, b); cardInside(cfg, b); return; }
+      cfg.countries.forEach(function (c) {
+        var v = document.getElementById(c[2]); v = v && v.querySelector('.card-expanded-view');
+        if (v) reorderCard(v, null);
+      });
+    });
     if (!mapEl) return;
     Promise.all([blufP, LIBS.reduce(function (p, s) { return p.then(function () { return window.d3 && s.indexOf('/d3@') > 0 ? null : loadScript(s); }); }, Promise.resolve())
       .then(function () { return fetch(WORLD).then(function (r) { return r.json(); }); })])
