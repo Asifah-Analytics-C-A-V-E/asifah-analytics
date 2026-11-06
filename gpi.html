@@ -930,6 +930,31 @@ a.sig-location-link:hover { opacity: 0.8; }
             border-radius: 50%;
             opacity: 0.34;
         }
+
+/* ── Nov 6 2026: PHONE layout. The bottom line comes first; the deep sections fold
+   (the shell folds Traders' odds / Regional theaters / Narratives to a title bar). ── */
+.gpi-phone-more { display: none; }
+#gpiMain [data-asifah-markets] { margin-top: 26px; }
+@media (max-width: 700px) {
+  #gpiMain { display: flex; flex-direction: column; }
+  #gpiMain > .gpi-banner { order: 1; }
+  #gpiMain > .pressure-axes-section { order: 2; margin-top: 18px; }
+  #gpiMain > .pressure-axes-tabbar { order: 3; margin-top: 18px; }
+  #gpiMain > [data-asifah-markets] { order: 4; margin-top: 22px; }
+  #gpiMain > .regional-cards-section { order: 5; margin-top: 22px; }
+  #gpiMain > * { order: 6; }
+  #gpiMain > .gpi-banner, #gpiMain > .pressure-axes-section, #gpiMain > .pressure-axes-tabbar,
+  #gpiMain > [data-asifah-markets], #gpiMain > .regional-cards-section { flex: 0 0 auto; }
+  .gpi-phone-more {
+    display: block; width: 100%; margin: 14px 0 4px; padding: 10px 12px; cursor: pointer;
+    background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.35); border-radius: 8px;
+    color: #38bdf8; font: 700 0.8rem 'Times New Roman', serif; letter-spacing: 0.5px; text-align: left;
+  }
+  .axis-hero:not(.more-open) .pressure-axis-description,
+  .axis-hero:not(.more-open) .axis-signals-label,
+  .axis-hero:not(.more-open) .pressure-axis-signals,
+  .axis-hero:not(.more-open) .bluf-legend { display: none !important; }
+}
 </style>
 
 <!-- ══════════════════════════════════════════════════════════════════
@@ -1030,7 +1055,7 @@ a.sig-location-link:hover { opacity: 0.8; }
             <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
         </nav>
 
-        <div style="flex:1; min-width:0;">
+        <div id="gpiMain" style="flex:1; min-width:0;">
 
             <div class="gpi-banner" id="gpiBanner">
                 <div class="gpi-banner-left">
@@ -1200,7 +1225,8 @@ a.sig-location-link:hover { opacity: 0.8; }
 var CVG_LEVELS = {
     0: {label:'Monitoring',    color:'#6b7280'}, 1: {label:'Rhetoric',      color:'#3b82f6'},
     2: {label:'Tension',       color:'#f59e0b'}, 3: {label:'Confrontation', color:'#f97316'},
-    4: {label:'Incident',      color:'#ef4444'}, 5: {label:'Active Conflict', color:'#7c3aed'}
+    4: {label:'Incident',      color:'#ef4444'}, 5: {label:'Active Conflict', color:'#991b1b'},
+    6: {label:'Red Line Breached', color:'#3b0764'}   // Nov 6 2026: site ladder palette (L5 was purple here)
 };
 
 function cvgEsc(s) {
@@ -2284,6 +2310,7 @@ function _renderHeroCard(axisName) {
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         ${_proseBlock(axisName, d)}
+        <button type="button" class="gpi-phone-more" onclick="event.stopPropagation(); var c=this.closest('.axis-hero'); var o=c.classList.toggle('more-open'); this.textContent = o ? 'Hide the signals behind this read \u25B4' : 'Show the signals behind this read \u25BE';">Show the signals behind this read \u25BE</button>
         ${_signalsLabel(d)}
         <div class="pressure-axis-signals">${signalsHtml}</div>
         <div class="bluf-legend">${_renderLevelLegend()}</div>
