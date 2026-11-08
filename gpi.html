@@ -959,12 +959,18 @@ a.sig-location-link:hover { opacity: 0.8; }
 .gw-filter-note { margin: 8px 0; font-size: 0.78rem; color: var(--text-secondary); }
 .gw-filter-note button { margin-left: 8px; background: none; border: 1px solid var(--card-border); color: var(--accent-cyan, #38bdf8);
     border-radius: 999px; padding: 2px 10px; cursor: pointer; font: inherit; }
+.gpi-vis-tabs { display: flex; gap: 6px; margin: 22px 0 8px; }
+.gpi-vis-tabs button { font: 700 0.78rem 'Times New Roman', serif; letter-spacing: 1px; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 8px 8px 0 0; cursor: pointer; background: transparent; color: inherit;
+    border: 1px solid var(--card-border, rgba(148,163,184,.3)); border-bottom: none; opacity: .7; }
+.gpi-vis-tabs button.on { opacity: 1; background: rgba(56,189,248,.14); border-color: var(--accent-cyan, #38bdf8); }
 @media (max-width: 700px) {
   #gpiMain { display: flex; flex-direction: column; }
   #gpiMain > .gpi-banner { order: 1; }
   #gpiMain > .pressure-axes-section { order: 2; margin-top: 18px; }
   #gpiMain > .pressure-axes-tabbar { order: 3; margin-top: 18px; }
-  #gpiMain > #gpiWorldMap { order: 4; }
+  #gpiMain > #gpiVisTabs, #gpiMain > #gpiWorldMap, #gpiMain > #gpiWheelGraph { order: 4; }
+  #gpiMain > #gpiVisTabs, #gpiMain > #gpiWheelGraph { flex: 0 0 auto; }
   #gpiMain > #cvgWrap { order: 5; }
   #gpiMain > * { order: 6; }
   #gpiMain > .gpi-banner, #gpiMain > .pressure-axes-section, #gpiMain > .pressure-axes-tabbar,
@@ -1107,7 +1113,13 @@ a.sig-location-link:hover { opacity: 0.8; }
             </div>
 
             <!-- Nov 6 2026: world map, shaded by level, follows the lens buttons (resources/gpi-world-map.js) -->
+            <!-- Nov 8 2026: one visual slot, two views. Pressure = the map; Spoke & Wheel = the hub network (resources/spoke-wheel-graph.js) -->
+            <div id="gpiVisTabs" class="gpi-vis-tabs" role="tablist">
+                <button type="button" role="tab" class="on" data-vis="map" aria-selected="true">🗺️ Pressure map</button>
+                <button type="button" role="tab" data-vis="wheel" aria-selected="false">☸️ Spoke &amp; Wheel</button>
+            </div>
             <div id="gpiWorldMap"></div>
+            <div id="gpiWheelGraph" hidden></div>
 
             <!-- Traders' odds (Nov 5 2026): resources/prediction-markets.js reads /api/markets/page/gpi on the ME backend. Context beside the score, never part of it. -->
             <div data-asifah-markets="gpi"></div>
@@ -2817,6 +2829,34 @@ async function loadVoice() {
     }
 }
 
+// Nov 8 2026: Pressure map | Spoke & Wheel tabs. The graph is built the first
+// time its tab opens (a hidden canvas has no size), then re-fed on each refresh.
+const _gpiVis = { data: null, wheelSeen: false };
+function _gpiVisData(data) {
+    _gpiVis.data = data;
+    if (_gpiVis.wheelSeen && window.AsifahWheelGraph) window.AsifahWheelGraph.render(data);
+}
+function _gpiVisOpen(which) {
+    const bar = document.getElementById('gpiVisTabs'); if (!bar) return;
+    bar.querySelectorAll('button').forEach(b => {
+        const on = b.dataset.vis === which;
+        b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    const map = document.getElementById('gpiWorldMap'), wg = document.getElementById('gpiWheelGraph');
+    if (map) map.hidden = which !== 'map';
+    if (wg) wg.hidden = which !== 'wheel';
+    if (which === 'wheel' && window.AsifahWheelGraph) {
+        if (!_gpiVis.wheelSeen && _gpiVis.data) { _gpiVis.wheelSeen = true; window.AsifahWheelGraph.render(_gpiVis.data); }
+        else window.AsifahWheelGraph.show();
+    }
+    try { localStorage.setItem('asf-gpi-vis', which); } catch (e) { /* private mode */ }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const bar = document.getElementById('gpiVisTabs'); if (!bar) return;
+    bar.querySelectorAll('button').forEach(b => b.addEventListener('click', () => _gpiVisOpen(b.dataset.vis)));
+});
+window.AsifahGpiVis = { open: _gpiVisOpen };
+
 async function loadGpi() {
     try {
         const resp = await fetch(ME_BACKEND + '/api/gpi');
@@ -2824,6 +2864,7 @@ async function loadGpi() {
         const data = await resp.json();
         _gpiState.apiData = data;  // v3.0 -- stash for axis click handlers
         if (data.success && window.AsifahGpiMap) window.AsifahGpiMap.render(data);   // Nov 6 2026
+        if (data.success) _gpiVisData(data);   // Nov 8 2026: Spoke & Wheel tab (renders on first open)
 
         if (!data.success) {
             // Null-guarded: #blufProse does not exist on this page (the axis
@@ -3065,5 +3106,6 @@ document.addEventListener('keydown', (e) => {
 </script>
 <script src="resources/region-glance.js" defer></script>
 <script src="resources/gpi-world-map.js" defer></script>
+<script src="resources/spoke-wheel-graph.js" defer></script>
 </body>
 </html>
