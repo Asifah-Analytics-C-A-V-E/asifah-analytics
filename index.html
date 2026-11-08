@@ -544,9 +544,17 @@
         (async function loadGpiLevel() {
             const ME_BACKEND = 'https://asifah-backend.onrender.com';
             try {
-                const resp = await fetch(ME_BACKEND + '/api/gpi/level');
-                if (!resp.ok) return;
-                const data = await resp.json();
+                // Nov 8 2026: the level and the plain-language read are fetched
+                // together. The read is the SAME headline the GPI page opens
+                // with (/api/gpi/voice, stored in Redis; reading it never calls
+                // Claude), so the door and the room always say the same thing.
+                const [lvlRes, voiceRes] = await Promise.allSettled([
+                    fetch(ME_BACKEND + '/api/gpi/level').then(r => r.ok ? r.json() : null),
+                    fetch(ME_BACKEND + '/api/gpi/voice').then(r => r.ok ? r.json() : null),
+                ]);
+                const data = lvlRes.status === 'fulfilled' ? lvlRes.value : null;
+                const voice = voiceRes.status === 'fulfilled' ? voiceRes.value : null;
+                if (!data) return;
 
                 const lvlEl = document.getElementById('gpiBtnLevel');
                 const stEl  = document.getElementById('gpiBtnStatus');
@@ -599,6 +607,9 @@
                     diplomatic:   ['#818cf8', 'diplomatic'],
                 };
 
+                const plain = voice && voice.available && voice.views && voice.views.all_vectors;
+                const plainLine = plain && (plain.headline || '').trim();
+
                 if (leadEl && isBreach && b.theatre) {
                     // Name the country, then the breach in plain words. No tag
                     // chip here -- the red L6 badge already carries the weight.
@@ -606,6 +617,11 @@
                         '<strong style="color:#f87171;">' + esc(b.theatre) + '</strong>'
                         + (b.detail ? ' <span style="opacity:0.75;">&mdash; '
                                       + esc(b.detail) + '</span>' : '');
+                    if (wrap) wrap.style.display = 'block';
+                } else if (leadEl && plainLine) {
+                    // ONE plain-language sentence: what is on top of the world
+                    // right now, in words a first-time visitor can use.
+                    leadEl.textContent = plainLine;
                     if (wrap) wrap.style.display = 'block';
                 } else if (leadEl && b.tag) {
                     const ax = AXIS[b.axis] || AXIS.kinetic;
@@ -627,7 +643,23 @@
                         + 'background:' + ax[0] + '1a;color:' + ax[0] + ';">' + ax[1] + '</span>';
                     if (wrap) wrap.style.display = 'block';
                 }
-                if (motionEl && data.motion && data.motion.text) {
+                if (motionEl && plainLine && !isBreach) {
+                    // How old the read is -- honest about staleness, never hidden.
+                    const f = voice.freshness || {};
+                    let h = f.hours_since_written;
+                    if (h == null && voice.generated_at) {
+                        h = (Date.now() - Date.parse(voice.generated_at)) / 3600000;
+                    }
+                    let age = '';
+                    if (h != null && isFinite(h)) {
+                        age = h < 1 ? 'updated within the hour'
+                            : h < 48 ? 'updated ' + Math.round(h) + 'h ago'
+                            : 'updated ' + Math.round(h / 24) + ' days ago';
+                    }
+                    motionEl.innerHTML = (age ? esc(age) + ' \u00B7 ' : '')
+                        + '<a href="gpi.html" style="color:inherit;text-decoration:underline;">open the full read \u2192</a>';
+                    if (wrap) wrap.style.display = 'block';
+                } else if (motionEl && data.motion && data.motion.text) {
                     // Motion is the reason to click: it implies someone is watching.
                     motionEl.textContent = data.motion.quiet
                         ? data.motion.text
