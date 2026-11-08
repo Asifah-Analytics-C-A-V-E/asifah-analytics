@@ -1,4 +1,9 @@
-/* Asifah Analytics -- Spoke & Wheel network graph  v1.0.0  (Nov 8 2026)
+/* Asifah Analytics -- Spoke & Wheel network graph  v1.1.0  (Nov 8 2026)
+ *
+ * v1.1.0: one region at a time. AsifahWheelGraph.render(gpi, {host, region:'africa'})
+ * keeps only that region's spokes and the hubs pulling on them (Africa has no
+ * resident hub, so every hub on its graph lives elsewhere -- which is the read).
+ * Counts on a regional graph are that region's counts.
  *
  * The GPI's "N hubs converged" line, drawn as the network it describes.
  * Hubs (China, USA, Russia, Iran, Turkiye, UAE, Israel...) are the big nodes;
@@ -76,6 +81,9 @@
   function build(payload) {
     var cp = payload && payload.convergence_panel;
     var wheels = (cp && cp.resident_wheels) || [];
+    if (S.region) wheels = wheels.filter(function (w) {
+      return (w.spokes || []).some(function (sp) { return sp.region === S.region; });
+    });
     S.gate = payload.level_gate || null;
     var nodes = [], edges = [], map = {};
     function node(id, kind) {
@@ -90,6 +98,7 @@
     wheels.forEach(function (w) {
       (w.spokes || []).forEach(function (sp) {
         if (!sp.country || sp.country === w.hub) return;
+        if (S.region && sp.region !== S.region) return;
         var n = node(sp.country, map[sp.country] && map[sp.country].kind === 'hub' ? 'hub' : 'spoke');
         if (sp.display && n.kind !== 'hub') n.name = sp.display;
         var raw = +sp.level || 0;
@@ -112,7 +121,10 @@
       }
     });
     nodes.forEach(function (n) {
-      if (n.kind === 'hub') n.r = 22 + Math.min(10, (n.wheel ? n.wheel.lit_count || 0 : 0));
+      n.litN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'lit'; }).length;
+      n.darkN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'dark'; }).length;
+      n.unrepN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'not_reporting'; }).length;
+      if (n.kind === 'hub') n.r = 22 + Math.min(10, n.litN);
       else n.r = 11 + Math.max(0, n.level) * 1.3;
       n.contested = n.kind !== 'hub' && n.litHubs >= 2;
     });
@@ -124,7 +136,7 @@
 
   // "newly lit since your last visit" -- this browser only, honest about it
   function markNew() {
-    var KEY = 'asf-swg-seen-v1', prev = null, now = Date.now();
+    var KEY = 'asf-swg-seen-v1' + (S.region ? '-' + S.region : ''), prev = null, now = Date.now();
     try { prev = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { prev = null; }
     var lit = S.edges.filter(function (e) { return e.state === 'lit'; }).map(function (e) { return e.id; });
     S.newly = {};
@@ -294,7 +306,7 @@
         x.fillText(n.icon || '◎', n.x, n.y + 1);
       }
       // labels stay a readable size on screen whatever the zoom
-      if (rel && (n.kind === 'hub' || ctxIds || n.level >= 3 || n.contested || S.view.k > 0.8)) {
+      if (rel && (n.kind === 'hub' || ctxIds || n.level >= 3 || n.contested || S.region || S.view.k > 0.8)) {
         var lab = n.name, fs = (n.kind === 'hub' ? 12.5 : 10.5) / z;
         x.font = '600 ' + fs + 'px "Times New Roman"'; x.textAlign = 'center'; x.textBaseline = 'top';
         var w = x.measureText(lab).width, ty = n.y + r + 3 / z;
@@ -367,7 +379,7 @@
     S.tip.style.left = Math.min(r.width - 240, ev.clientX - r.left + 14) + 'px';
     S.tip.style.top = Math.min(r.height - 60, ev.clientY - r.top + 14) + 'px';
     S.tip.innerHTML = '<b>' + esc(n.name) + '</b>' + (n.kind === 'hub'
-      ? ((n.wheel ? n.wheel.lit_count : 0) + ' spokes lit' + (n.converged ? ' · converged' : ''))
+      ? (n.litN + ' spokes lit' + (n.converged ? ' · converged' : ''))
       : (n.level >= 0 ? 'L' + n.level + ' · ' + LEVEL[Math.min(6, n.level)][0] + ' · ' + n.litHubs + ' hub' + (n.litHubs === 1 ? '' : 's') : 'quiet / unread')) +
       '<small>click for the record</small>';
   }
@@ -403,8 +415,24 @@
     var P = S.panel, n = S.selected;
     if (!n) {
       var cp = S.data.convergence_panel || {};
+      var lead = cp.global_headline || '';
+      if (S.region) {
+        var sp = S.nodes.filter(function (x) { return x.kind !== 'hub'; });
+        var litSp = sp.filter(function (x) { return x.litHubs > 0; });
+        var top = S.hubs.slice().sort(function (a, b) { return b.litN - a.litN; })[0];
+        // where each hub lives (a hub's wheel is read from its home region's backend)
+        var HOME = { china: 'asia_pacific', us: 'wha', russia: 'europe', iran: 'middle_east', turkey: 'europe',
+                     israel: 'middle_east', uae: 'middle_east', saudi_arabia: 'middle_east', india: 'asia_pacific' };
+        var resident = S.hubs.some(function (h) { return HOME[h.id] === S.region; });
+        lead = sp.length + ' countries here sit on ' + S.hubs.length + ' hubs\' wheels; ' + litSp.length + ' are lit this cycle' +
+          (top && top.litN ? ', most of them by ' + top.name + ' (' + top.litN + ')' : '') + '.' +
+          (litSp.filter(function (x) { return x.contested; }).length
+            ? ' ' + litSp.filter(function (x) { return x.contested; }).map(function (x) { return x.name; }).join(', ') + ' ' +
+              (litSp.filter(function (x) { return x.contested; }).length === 1 ? 'is' : 'are') + ' pulled by more than one hub at once.' : '') +
+          (resident ? '' : ' No hub lives in this region: every line here runs to a capital somewhere else.');
+      }
       P.innerHTML = '<div class="swg-p-kicker">How to read this</div>' +
-        '<p>' + esc(cp.global_headline || '') + '</p>' +
+        '<p>' + esc(lead) + '</p>' +
         '<p class="swg-p-note">Click a hub to see its wheel, or a country to see every hub pressing on it. ' +
         'Countries pulled between several hubs sit between them on purpose.</p>' +
         '<p class="swg-p-note">' + esc(cp.disclaimer || '') + '</p>';
@@ -419,8 +447,8 @@
       html = '<div class="swg-p-kicker">Hub · ' + (n.converged ? 'converged' : 'not converged') + '</div>' +
         '<h3>' + esc(n.icon || '') + ' ' + link(n.id, n.name + ' wheel') + '</h3>' +
         '<p>' + esc(w.headline || '') + '</p>' +
-        '<div class="swg-p-flags"><span>' + (w.lit_count || 0) + ' lit</span><span>' + (w.dark_count || 0) + ' quiet</span>' +
-        '<span>' + (w.unreported_count || 0) + ' not reporting</span>' + (b.span ? '<span>' + b.span + ' regions</span>' : '') + '</div>' +
+        '<div class="swg-p-flags"><span>' + n.litN + ' lit</span><span>' + n.darkN + ' quiet</span>' +
+        '<span>' + n.unrepN + ' not reporting</span>' + (b.span ? '<span>' + b.span + ' regions</span>' : '') + '</div>' +
         rows.map(row).join('') +
         (b.coverage_note ? '<p class="swg-p-note">' + esc(b.coverage_note) + '</p>' : '') +
         (b.peer_note ? '<p class="swg-p-note">' + esc(b.peer_note) + '</p>' : '');
@@ -429,7 +457,7 @@
       html = '<div class="swg-p-kicker">' + (n.contested ? 'Contested spoke · ' + n.litHubs + ' hubs lit' : 'Spoke') + '</div>' +
         '<h3>' + link(n.id, n.name) + '</h3>' +
         (lit.length ? lit.sort(function (a, c) { return c.level - a.level; }).map(row).join('') : '<p class="swg-p-note">No hub is lit on this country this cycle (quiet or not reporting -- unread is not calm).</p>');
-      if (cs && cs.mutual_classification) {
+      if (cs && cs.mutual_classification && Object.keys(cs.mutual_classification).length) {
         var mc = Object.keys(cs.mutual_classification).map(function (k) {
           var m = k.split('_reads_');
           return esc(nice(m[0])) + ' reads ' + esc(nice(m[1])) + ' as <b>' + esc(cls(cs.mutual_classification[k])) + '</b>';
@@ -453,10 +481,10 @@
   function renderChips() {
     var bar = S.host.querySelector('.swg-chips'); if (!bar) return;
     bar.innerHTML = '<button type="button" data-hub="" class="' + (!S.focusHub ? 'on' : '') + '">All hubs</button>' +
-      S.hubs.slice().sort(function (a, b) { return (b.wheel ? b.wheel.lit_count : 0) - (a.wheel ? a.wheel.lit_count : 0); })
+      S.hubs.slice().sort(function (a, b) { return b.litN - a.litN; })
         .map(function (h) {
           return '<button type="button" data-hub="' + esc(h.id) + '" class="' + (S.focusHub === h.id ? 'on' : '') + (h.converged ? ' cv' : '') + '">' +
-            esc(h.icon || '') + ' ' + esc(h.name) + ' <small>' + (h.wheel ? h.wheel.lit_count : 0) + '</small></button>';
+            esc(h.icon || '') + ' ' + esc(h.name) + ' <small>' + h.litN + '</small></button>';
         }).join('');
     Array.prototype.forEach.call(bar.querySelectorAll('button'), function (b) {
       b.onclick = function () {
@@ -510,11 +538,11 @@
     S.host.innerHTML =
       '<div class="swg">' +
       '<div class="swg-head"><div class="swg-title">☸️ Spoke &amp; Wheel · who is pressing where</div>' +
-      '<div class="swg-sub">' + esc(cp.subtitle || '') + (cp.converged_count ? ' · ' + cp.converged_count + ' hubs converged' : '') +
-      (cp.contested_count ? ' · ' + cp.contested_count + ' contested spokes' : '') + '</div></div>' +
+      '<div class="swg-sub">' + (S.region ? 'Spokes in this region and the hubs pulling on them' : esc(cp.subtitle || '') + (cp.converged_count ? ' · ' + cp.converged_count + ' hubs converged' : '')) +
+      (!S.region && cp.contested_count ? ' · ' + cp.contested_count + ' contested spokes' : '') + '</div></div>' +
       '<div class="swg-chips"></div>' +
       '<div class="swg-body"><div class="swg-stage"><canvas></canvas>' +
-      '<div class="swg-tools"><button type="button" data-a="quiet">Full rim: off</button><button type="button" data-a="fit">Fit</button>' +
+      '<div class="swg-tools"><button type="button" data-a="quiet">Full rim: ' + (S.showQuiet ? 'on' : 'off') + '</button><button type="button" data-a="fit">Fit</button>' +
       '<button type="button" data-a="in">+</button><button type="button" data-a="out">−</button></div>' +
       '<div class="swg-hint">' + (isPhone() ? 'tap a circle · drag to pan · pinch to zoom · scroll the page beside the graph'
         : 'drag nodes · drag background to pan · Ctrl/⌘ + scroll or +/− to zoom') + '</div>' +
@@ -546,9 +574,12 @@
   }
 
   window.AsifahWheelGraph = {
-    render: function (payload) {
+    render: function (payload, opts) {
+      opts = opts || {};
+      if (opts.host) S.host = opts.host;
       S.host = S.host || document.getElementById('gpiWheelGraph');
       if (!S.host || !payload || !payload.convergence_panel) return;
+      if (!S.built && opts.region) { S.region = opts.region; S.showQuiet = true; }   // a region is small: show the full rim
       S.data = payload;
       if (!S.built) { scaffold(); S.built = true; }
       build(payload);

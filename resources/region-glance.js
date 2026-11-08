@@ -1,5 +1,15 @@
 /*
- * Asifah Analytics -- REGION GLANCE  v1.1.0  (Nov 8 2026)
+ * Asifah Analytics -- REGION GLANCE  v1.2.0  (Nov 8 2026)
+ *
+ * v1.2.0 -- smaller, and it says where to look first:
+ *   * Monitored-and-quiet (L0) countries carry a cyan Asifah outline, so
+ *     "watched, nothing above normal" never looks like "not watched".
+ *     (Not green: green reads "all clear", and L0 is not a clearance.)
+ *   * The map is capped in height; on wide screens a "Where to look first"
+ *     list (top 5 by level, one line each) sits beside it.
+ *   * Phones: the map starts folded to one line ("3 countries at L4+ · tap").
+ *   * Pages with no country cards (the regional rhetoric pages): a click
+ *     opens that country's tracker page instead.
  *
  * v1.1.0 -- built for the whole world:
  *   * CARDS FIND THEMSELVES. Every .target-card on the page joins the map,
@@ -125,8 +135,8 @@
     wha: {
       bluf: 'https://asifah-wha-backend.onrender.com/api/rhetoric/wha/bluf',
       label: 'Western Hemisphere',
-      projection: 'naturalEarth', h: 760,
-      box: [[-168, -56], [-34, 72]],
+      projection: 'naturalEarth', h: 640,
+      box: [[-168, -56], [-34, 64]],                // v1.2.0: was to 72N -- a third of the map was empty Arctic
       labelAt: { us: [-99, 39], canada: [-102, 58] },
       nudge: { cuba: [10, -14], haiti: [34, 6], panama: [-36, 10] },
       countries: [
@@ -198,7 +208,25 @@
       '.asf-map-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}' +
       '.asf-map-title{font-weight:800;letter-spacing:1.5px;text-transform:uppercase;font-size:0.85rem}' +
       '.asf-map-sub{font-size:0.72rem;opacity:0.7}' +
-      '.asf-map svg{width:100%;height:auto;display:block;margin-top:8px}' +
+      '.asf-map svg{width:100%;height:auto;max-height:440px;display:block;margin-top:8px}' +
+      // v1.2.0 layout: map + "where to look first" side by side on wide screens
+      '.asf-map-toggle{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;cursor:default}' +
+      '.asf-map-phone{display:none}' +
+      '.asf-map-body{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:16px;align-items:start}' +
+      '.asf-top{margin-top:8px;display:flex;flex-direction:column;gap:7px}' +
+      '.asf-top-k{font-size:0.66rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:0.75}' +
+      '.asf-top-row{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:3px;padding:7px 9px;border-left:3px solid;border-radius:5px;background:rgba(127,127,127,0.08)}' +
+      '.asf-top-row:hover{background:rgba(56,189,248,0.12)}' +
+      '.asf-top-h{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:0.82rem}' +
+      '.asf-top-chip{color:#fff;font-size:0.62rem;font-weight:800;padding:1px 6px;border-radius:4px;white-space:nowrap}' +
+      '.asf-top-line{font-size:0.74rem;line-height:1.4;opacity:0.85}' +
+      '.asf-top-none,.asf-top-more{font-size:0.72rem;opacity:0.7;font-style:italic}' +
+      '.asf-map .asf-mon{stroke:#38bdf8;stroke-width:1.4}' +
+      '@media(max-width:900px){.asf-map-body{grid-template-columns:1fr}}' +
+      // v1.2.0 phones: folded to one line until tapped
+      '@media(max-width:700px){.asf-map-toggle{cursor:pointer}.asf-map-desk{display:none}.asf-map-phone{display:inline}' +
+      '.asf-map:not(.asf-open) .asf-map-body,.asf-map:not(.asf-open) .asf-map-legend,.asf-map:not(.asf-open) .asf-map-lost{display:none}' +
+      '.asf-map.asf-open .asf-caret{display:inline-block;transform:rotate(180deg)}}' +
       '.asf-map .ctx{fill:rgba(127,127,127,0.12);stroke:rgba(127,127,127,0.35);stroke-width:0.4}' +
       '.asf-map .ctry{stroke:rgba(255,255,255,0.75);stroke-width:0.7;cursor:pointer;transition:opacity .15s}' +
       '[data-theme="light"] .asf-map .ctry{stroke:#0b1d33}' +
@@ -372,9 +400,13 @@
       });
   }
 
-  function openCard(cardId) {
+  function openCard(cardId, key) {
     var card = document.getElementById(cardId);
-    if (!card) return;
+    if (!card) {                                   // rhetoric pages have no cards: go to the tracker
+      var pg = key && window.AsifahGeo && window.AsifahGeo.pageFor(key);
+      if (pg) window.location.href = pg;
+      return;
+    }
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     card.classList.add('asf-flash');
     setTimeout(function () { card.classList.remove('asf-flash'); }, 1800);
@@ -403,6 +435,15 @@
     var proj = (cfg.projection === 'naturalEarth' ? d3.geoNaturalEarth1() : d3.geoMercator())
       .fitExtent([[10, 10], [W - 10, H - 10]], frame);
     var path = d3.geoPath(proj);
+    // v1.2.0: crop the canvas to the frame, so a tall region (the Americas) is
+    // not padded out to a wide rectangle of ocean and somebody else's continent
+    var vb = [0, 0, W, H];
+    if (cfg.box) {
+      var bb = path.bounds(frame);
+      vb = [Math.max(0, bb[0][0] - 8), Math.max(0, bb[0][1] - 8), 0, 0];
+      vb[2] = Math.min(W, bb[1][0] + 8) - vb[0]; vb[3] = Math.min(H, bb[1][1] + 8) - vb[1];
+      W = vb[0] + vb[2]; H = vb[1] + vb[3];
+    }
     var defs = '<defs><pattern id="asfHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
       '<rect width="6" height="6" fill="rgba(127,127,127,0.18)"/><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(148,163,184,0.75)" stroke-width="2"/></pattern>' +
       [0, 1, 2, 3, 4, 5, 6].map(function (k) {
@@ -415,7 +456,7 @@
       var g = glob[+f.id], gl = g ? g.level : -1;      // subject of a global signal only; 'named in passing' stays on the GPI map
       if (gl < 0) return '<path class="ctx" d="' + d + '"/>';
       nGlob++;
-      return '<path class="ctry asf-glob" data-g="' + (+f.id) + '" d="' + d + '" fill="url(#asfGlob' + Math.min(6, gl) + ')"/>';
+      return '<path class="ctry asf-glob' + (gl === 0 ? ' asf-mon' : '') + '" data-g="' + (+f.id) + '" d="' + d + '" fill="url(#asfGlob' + Math.min(6, gl) + ')"/>';
     }).join('');
     var sigs = ((bluf && (bluf.top_signals || bluf.signals)) || []).concat(gpi && G ? G.gpiSignals(gpi, 'all') : []);
     var plv = G ? G.placeLevels(sigs, gpi) : {};
@@ -430,7 +471,8 @@
       var d = path(f), ctr = path.centroid(f), area = path.area(f);
       var at = (cfg.labelAt || {})[c[1]];
       if (at) ctr = proj(at);
-      shapes += '<path class="ctry" data-k="' + c[1] + '" d="' + d + '" fill="' + fill + '"/>';
+      var mon = l === 0 || (gc && gc.level === 0);   // watched, nothing above normal
+      shapes += '<path class="ctry' + (mon ? ' asf-mon' : '') + '" data-k="' + c[1] + '" d="' + d + '" fill="' + fill + '"/>';
       if (area < 140) {               // too small to click (Bahrain, Qatar, Lebanon): add a dot
         dots += '<circle class="dot ctry" data-k="' + c[1] + '" cx="' + ctr[0] + '" cy="' + ctr[1] + '" r="7" fill="' + fill + '"/>';
       }
@@ -442,18 +484,51 @@
         esc(c[3]) + '</text>';
     });
     var legend = [0, 1, 2, 3, 4, 5].map(function (k) {
-      return '<span><i style="background:' + LEVEL[k][1] + '"></i>L' + k + ' ' + LEVEL[k][0] + '</span>';
+      return k === 0 ? '<span><i style="background:' + LEVEL[0][1] + ';box-shadow:inset 0 0 0 2px #38bdf8"></i>L0 Monitoring (watched, quiet)</span>'
+        : '<span><i style="background:' + LEVEL[k][1] + '"></i>L' + k + ' ' + LEVEL[k][0] + '</span>';
     }).join('') + '<span><i style="background:repeating-linear-gradient(45deg,#94a3b8 0 2px,transparent 2px 5px)"></i>No pressure tracker yet (unread, not calm)</span>' +
       (nGlob ? '<span><i style="background:repeating-linear-gradient(-45deg,#f97316 0 3px,rgba(127,127,127,0.3) 3px 6px)"></i>No regional tracker: lit from the global read</span>' : '') +
       (G ? G.PIN_LEGEND : '');
     var when = bluf && bluf.generated_at ? new Date(bluf.generated_at).toLocaleString() : '';
-    el.innerHTML = '<div class="asf-map-head"><div class="asf-map-title">🗺️ Where the pressure is</div>' +
-      '<div class="asf-map-sub">Each country\'s pressure level · click a country to open its card' + (when ? ' · as of ' + esc(when) : '') + '</div></div>' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Map of pressure levels, ' + esc(cfg.label) + '">' + defs + ctx + shapes + dots + labels +
-      (G ? G.pinsSvg(proj, W, H, plv, mapKey) : '') + '</svg>' +
+    var keyed0 = {};
+    cfg.countries.forEach(function (c) { keyed0[c[1]] = c; });
+    // "Where to look first": the highest regional levels, one line each
+    var ranked = Object.keys(ts).map(function (k) { return [k, lvlOf(ts[k])]; })
+      .filter(function (r) { return r[1] != null && r[1] >= 1; })
+      .sort(function (a, b) { return b[1] - a[1]; });
+    var hot = ranked.filter(function (r) { return r[1] >= 4; }).length;
+    var nm = function (k) { return keyed0[k] ? keyed0[k][3] : k.replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); }); };
+    var top = ranked.slice(0, 5).map(function (r) {
+      var m = LEVEL[Math.min(6, r[1])] || LEVEL[0], line = faceLine(r[0], bluf, ts[r[0]]);
+      return '<button type="button" class="asf-top-row" data-k="' + esc(r[0]) + '" style="border-left-color:' + m[1] + '">' +
+        '<span class="asf-top-h"><b>' + esc(nm(r[0])) + '</b><span class="asf-top-chip" style="background:' + m[1] + '">L' + r[1] + ' ' + esc(m[0]) + '</span></span>' +
+        (line ? '<span class="asf-top-line">' + esc(line) + '</span>' : '') + '</button>';
+    }).join('');
+    var phone = (hot ? hot + ' ' + (hot === 1 ? 'country' : 'countries') + ' at L4 or above'
+      : ranked.length ? 'Highest: ' + nm(ranked[0][0]) + ' L' + ranked[0][1] : 'Nothing above L0 this cycle') + ' \u00B7 tap to open the map';
+    el.innerHTML = '<button type="button" class="asf-map-head asf-map-toggle" aria-expanded="false"><span class="asf-map-title">🗺️ Where the pressure is</span>' +
+      '<span class="asf-map-sub asf-map-desk">Each country\'s pressure level · click a country to open it' + (when ? ' · as of ' + esc(when) : '') + '</span>' +
+      '<span class="asf-map-sub asf-map-phone">' + esc(phone) + ' <b class="asf-caret">\u25BE</b></span></button>' +
+      '<div class="asf-map-body"><div class="asf-map-fig">' +
+      '<svg viewBox="' + vb.map(function (v) { return Math.round(v); }).join(' ') + '" style="max-width:' + Math.round(440 * vb[2] / vb[3]) + 'px;margin-left:auto;margin-right:auto" role="img" aria-label="Map of pressure levels, ' + esc(cfg.label) + '">' + defs + ctx + shapes + dots + labels +
+      (G ? G.pinsSvg(proj, W, H, plv, mapKey, vb[0], vb[1]) : '') + '</svg></div>' +
+      '<aside class="asf-top"><div class="asf-top-k">Where to look first</div>' +
+      (top || '<div class="asf-top-none">Nothing above L0 in the regional read this cycle. Quiet in what we read is not the same as calm.</div>') +
+      (nGlob ? '<div class="asf-top-more">+ ' + nGlob + ' more lit from the global read (striped)</div>' : '') + '</aside></div>' +
       '<div class="asf-map-legend">' + legend + '</div>' +
       (lost && lost.length ? '<div class="asf-map-lost">Not on the map yet (card title not matched to a country): ' + lost.map(esc).join(', ') + '</div>' : '') +
       '<div class="asf-map-tip"></div>';
+    var tg = el.querySelector('.asf-map-toggle');
+    tg.addEventListener('click', function () {
+      var open = !el.classList.contains('asf-open');
+      el.classList.toggle('asf-open', open); tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    Array.prototype.forEach.call(el.querySelectorAll('.asf-top-row'), function (b) {
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-k'), c = keyed0[k];
+        openCard(c ? c[2] : k + '-card', k);
+      });
+    });
     var tip = el.querySelector('.asf-map-tip');
     if (G) G.bindPins(el, tip, plv);
     Array.prototype.forEach.call(el.querySelectorAll('.asf-glob'), function (p) {
@@ -488,7 +563,7 @@
         tip.style.top = (ev.clientY - r.top + 14) + 'px';
       });
       p.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
-      p.addEventListener('click', function () { openCard(c[2]); });
+      p.addEventListener('click', function () { openCard(c[2], k); });
     });
   }
 
@@ -561,6 +636,8 @@
           .then(function () { return fetch(WORLD).then(function (r) { return r.json(); }); });
     // the global read: only for countries with no card, and for the pins
     var gpiP = window.AsifahGeo ? fetch(GPI_URL).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) : Promise.resolve(null);
+    window.AsifahRegionGlance.gpi = gpiP;          // the Spoke & Wheel tab reuses this read
+    window.AsifahRegionGlance.region = key;
     Promise.all([blufP, worldP, gpiP])
       .then(function (res) {
         if (!res[0]) {

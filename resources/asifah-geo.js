@@ -89,6 +89,20 @@
       atBy: { africa: [25, -70], wha: [-42, -64], gpi: [0, -66] } }
   ];
 
+  // Country pages that exist today -> a click goes somewhere real, never a dead link.
+  // (Add a key here when a new tracker page ships; nothing else needs it.)
+  var RHETORIC = ' afghanistan argentina armenia azerbaijan belarus burkina_faso canada chile china cuba cyprus dprk egypt greece greenland hungary india iran iraq israel japan kazakhstan lebanon libya mali mexico moldova oman pakistan paraguay peru philippines poland qatar russia saudi_arabia somalia sudan syria taiwan turkey uae uk ukraine us venezuela vietnam yemen ';
+  var STABILITY = ' albania algeria bahrain belgium brazil car chad colombia drc equatorial_guinea ethiopia guinea haiti jordan kenya kuwait madagascar morocco mozambique niger nigeria panama rwanda south_africa south_sudan tanzania tunisia turkmenistan uganda ';
+  var PAGE_ALIAS = { south_korea: 'south-korea-stability.html', north_korea: 'rhetoric-dprk.html', hezbollah: 'rhetoric-lebanon.html',
+                     houthis: 'rhetoric-yemen.html', lebanon: 'rhetoric-lebanon.html' };
+  function pageFor(key) {
+    var k = norm(key);
+    if (PAGE_ALIAS[k]) return PAGE_ALIAS[k];
+    if (RHETORIC.indexOf(' ' + k + ' ') >= 0) return 'rhetoric-' + k + '.html';
+    if (STABILITY.indexOf(' ' + k + ' ') >= 0) return k + '-stability.html';
+    return '';
+  }
+
   var world = { promise: null, data: null, nameToId: {}, idToName: {} };
 
   function norm(s) {
@@ -283,18 +297,19 @@
   // Pins: a diamond in the level colour, a soft pulse at L4 and above. A place
   // outside the frame is drawn on the edge (arrow pointing out) only on the
   // maps listed in its `edge`.
-  function pinsSvg(proj, W, H, lv, mapKey) {
+  function pinsSvg(proj, W, H, lv, mapKey, x0, y0) {
     var s = '';
+    x0 = x0 || 0; y0 = y0 || 0;            // top-left of a cropped viewBox
     Object.keys(lv).forEach(function (k) {
       var r = lv[k], p = r.place;
       if (r.level < 0) return;
       var at = (p.atBy && p.atBy[mapKey]) || p.at, xy = proj(at);
       if (!xy || isNaN(xy[0])) return;
-      var pad = 16, out = xy[0] < pad || xy[0] > W - pad || xy[1] < pad || xy[1] > H - pad, arrow = '';
+      var pad = 16, out = xy[0] < x0 + pad || xy[0] > W - pad || xy[1] < y0 + pad || xy[1] > H - pad, arrow = '';
       if (out) {
         if (!(p.edge && p.edge.indexOf(mapKey) >= 0)) return;
-        var cx = Math.max(pad, Math.min(W - pad, xy[0])), cy = Math.max(pad, Math.min(H - pad - 14, xy[1]));
-        arrow = xy[1] > H - pad ? ' ↓' : xy[1] < pad ? ' ↑' : xy[0] < pad ? ' ←' : ' →';
+        var cx = Math.max(x0 + pad, Math.min(W - pad - 70, xy[0])), cy = Math.max(y0 + pad, Math.min(H - pad - 6, xy[1]));
+        arrow = xy[1] > H - pad ? ' ↓' : xy[1] < y0 + pad ? ' ↑' : xy[0] < x0 + pad ? ' ←' : ' →';
         xy = [cx, cy];
       }
       var col = (LEVEL[Math.min(6, r.level)] || LEVEL[0])[1], x = xy[0], y = xy[1];
@@ -342,7 +357,7 @@
   window.AsifahGeo = {
     VERSION: '1.0.0', LEVEL: LEVEL, ALIAS: ALIAS, MULTI: MULTI, CTRY_TERMS: CTRY_TERMS, GEO_TERMS: GEO_TERMS,
     PLACES: PLACES, PIN_LEGEND: PIN_LEGEND,
-    norm: norm, loadWorld: loadWorld, idsFor: idsFor, nameOf: nameOf, world: function () { return world.data; },
+    norm: norm, loadWorld: loadWorld, pageFor: pageFor, idsFor: idsFor, nameOf: nameOf, world: function () { return world.data; },
     textCountries: textCountries, allCountries: allCountries, gpiSignals: gpiSignals,
     countryLevels: countryLevels, placeLevels: placeLevels, pinsSvg: pinsSvg, bindPins: bindPins, pinCss: pinCss
   };

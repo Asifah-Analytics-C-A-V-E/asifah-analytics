@@ -1,4 +1,4 @@
-/* Asifah Analytics -- GPI world map  v1.3.0  (Nov 8 2026)
+/* Asifah Analytics -- GPI world map  v1.3.1  (Nov 8 2026; v1.3.1 cyan outline = watched, quiet)
  *
  * v1.3.0: country names, levels and the novelty gate now come from
  * resources/asifah-geo.js (one list sitewide). Places that are not countries
@@ -73,7 +73,7 @@
       var id = +f.id, r = lv[id], d = path(f);
       if (!d) return;
       var cls, fill = '';
-      if (r && r.level >= 0) { cls = 'ctry gw-lit'; fill = (LEVEL[Math.min(6, r.level)] || LEVEL[0])[1]; lit++; }
+      if (r && r.level >= 0) { cls = 'ctry gw-lit' + (r.level === 0 ? ' gw-l0' : ''); fill = (LEVEL[Math.min(6, r.level)] || LEVEL[0])[1]; lit++; }
       else if (r && r.named >= 0) { cls = 'ctry gw-named'; fill = 'url(#gwStripe' + Math.min(6, r.named) + ')'; named++; }
       else if (tracked[id]) { cls = 'ctry gw-quiet'; }
       else { cls = 'ctx'; }
@@ -87,7 +87,7 @@
       return '<span><i style="background:' + LEVEL[k][1] + '"></i>L' + k + ' ' + LEVEL[k][0] + '</span>';
     }).join('') +
       '<span><i style="background:repeating-linear-gradient(45deg,#f97316 0 2px,#3b4a60 2px 5px)"></i>Named in a signal (exposed or linked)</span>' +
-      '<span><i style="background:#3b4a60;border:1px solid #7b8ba3"></i>Tracked, nothing reached the global read</span>' +
+      '<span><i style="background:#3b4a60;border:1px solid #38bdf8"></i>Watched, nothing reached the global read</span>' +
       '<span><i style="background:rgba(127,127,127,0.18)"></i>Not tracked (unread, not calm)</span>' + G.PIN_LEGEND;
     var lens = AXIS_LABEL[state.axis] || state.axis;
     var sub = lit
@@ -177,7 +177,8 @@
     st.id = 'gwCss';
     st.textContent =
       '#gpiWorldMap{position:relative;margin:22px 0 4px}' +
-      '#gpiWorldMap .gw-quiet{fill:#3b4a60;stroke:#7b8ba3;stroke-width:0.6}' +
+      '#gpiWorldMap .gw-quiet{fill:#3b4a60;stroke:#38bdf8;stroke-width:0.9}' +          // v1.3.1: watched, quiet = Asifah cyan outline
+      '#gpiWorldMap .gw-l0{stroke:#38bdf8;stroke-width:0.9}' +
       '#gpiWorldMap .gw-dot{stroke:#fff;stroke-width:1.2}' +
       '#gpiWorldMap .gw-named{stroke:#94a3b8;stroke-width:0.6}' +
       '#gpiWorldMap .gw-lit{stroke:rgba(255,255,255,0.8);stroke-width:0.6}' +
