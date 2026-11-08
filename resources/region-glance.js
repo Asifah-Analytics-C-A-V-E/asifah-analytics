@@ -1,5 +1,17 @@
 /*
- * Asifah Analytics -- REGION GLANCE  v1.0.0  (Nov 6 2026)
+ * Asifah Analytics -- REGION GLANCE  v1.1.0  (Nov 8 2026)
+ *
+ * v1.1.0 -- built for the whole world:
+ *   * CARDS FIND THEMSELVES. Every .target-card on the page joins the map,
+ *     matched by its key or its title (resources/asifah-geo.js knows every
+ *     country on the world map). The REGIONS lists below are now only the
+ *     fine-tuning (names, label nudges). A card the map cannot place is
+ *     listed under the map -- never a silent gap.
+ *   * COUNTRIES WITH NO CARD light up from the GLOBAL read (striped, labelled
+ *     "from the global read"). Countries that have a card keep their REGIONAL
+ *     level -- the two scores never sit on the same country.
+ *   * PLACES THAT ARE NOT COUNTRIES (Hormuz, Red Sea, Arctic, Antarctica...)
+ *     appear as pins in their level colour when a live signal names them.
  *
  * Three things every regional page gets from ONE read of its regional BLUF:
  *
@@ -130,6 +142,36 @@
     }
   };
 
+  // Cards named after a group, not a country -> the BLUF's theatre key
+  var CARD_THEATRE = { hezbollah: 'lebanon', houthis: 'yemen', north_korea: 'dprk' };
+  var GPI_URL = 'https://asifah-backend.onrender.com/api/gpi';
+
+  // v1.1.0: add every card on the page that the hand list does not already have.
+  // Returns entries in the same shape: [isoOrNull, theatre, cardId, name, discovered].
+  function discoverCards(cfg) {
+    var have = {};
+    cfg.countries.forEach(function (c) { have[c[2]] = 1; });
+    Array.prototype.forEach.call(document.querySelectorAll('.target-card[id$="-card"]'), function (card) {
+      if (have[card.id]) return;
+      var key = (card.getAttribute('data-target') || card.id.slice(0, -5)).toLowerCase();
+      var titleEl = card.querySelector('.collapsed-title') || card.querySelector('h2, h3');
+      var title = titleEl ? titleEl.textContent.replace(/[^\p{L}\s.'-]/gu, ' ').replace(/\s+/g, ' ').trim() : key;
+      if (title === title.toUpperCase()) title = title.toLowerCase().replace(/\b\p{L}/gu, function (m) { return m.toUpperCase(); });
+      cfg.countries.push([null, CARD_THEATRE[key] || key, card.id, title || key, true]);
+      have[card.id] = 1;
+    });
+  }
+  // Once the world map has loaded: give discovered cards their map id.
+  function placeCards(cfg) {
+    var G = window.AsifahGeo, lost = [];
+    cfg.countries.forEach(function (c) {
+      if (c[0] != null) return;
+      var ids = G ? (G.idsFor(c[1]).length ? G.idsFor(c[1]) : G.idsFor(c[3])) : [];
+      if (ids.length) c[0] = ids[0]; else lost.push(c[3]);
+    });
+    return lost;
+  }
+
   var LEVEL = {
     0: ['Monitoring', '#6b7280'], 1: ['Rhetoric', '#3b82f6'], 2: ['Warning', '#f59e0b'],
     3: ['Confrontation', '#f97316'], 4: ['Coercion', '#ef4444'], 5: ['Active Conflict', '#991b1b'],
@@ -184,7 +226,9 @@
       '.asf-tab{font-family:inherit;font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;' +
       'border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;background:none;color:inherit;opacity:0.65;cursor:pointer}' +
       '.asf-tab[aria-selected="true"]{opacity:1;border-color:var(--asifah-shell-border,rgba(127,127,127,0.3));background:var(--asifah-shell-card,rgba(127,127,127,0.06));color:var(--asifah-shell-accent,#38bdf8)}' +
-      '.asf-tabpane[hidden]{display:none !important}';
+      '.asf-tabpane[hidden]{display:none !important}' +
+      '.asf-map .asf-glob{stroke:rgba(148,163,184,0.7);stroke-width:0.5}' +
+      '.asf-map-lost{font-size:0.7rem;margin-top:6px;opacity:0.8;font-style:italic}';
     document.head.appendChild(st);
   }
 
@@ -342,12 +386,14 @@
   }
 
   // ── Map ───────────────────────────────────────────────────────────────────
-  function drawMap(el, cfg, bluf, world) {
-    var d3 = window.d3, topojson = window.topojson;
+  function drawMap(el, cfg, bluf, world, gpi, lost, mapKey) {
+    var d3 = window.d3, topojson = window.topojson, G = window.AsifahGeo;
     var ts = (bluf && bluf.theatre_summary) || {};
     var all = topojson.feature(world, world.objects.countries).features;
     var byId = {};
-    cfg.countries.forEach(function (c) { byId[c[0]] = c; });
+    cfg.countries.forEach(function (c) { if (c[0] != null) byId[c[0]] = c; });
+    // v1.1.0: no card, but the GLOBAL read has something on it
+    var glob = (gpi && G) ? G.countryLevels(gpi, 'all') : {};
     var mine = all.filter(function (f) { return byId[+f.id]; });
     var W = 960, H = cfg.h || 470;
     var frame = cfg.box
@@ -358,14 +404,29 @@
       .fitExtent([[10, 10], [W - 10, H - 10]], frame);
     var path = d3.geoPath(proj);
     var defs = '<defs><pattern id="asfHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
-      '<rect width="6" height="6" fill="rgba(127,127,127,0.18)"/><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(148,163,184,0.75)" stroke-width="2"/></pattern></defs>';
-    var ctx = all.filter(function (f) { return !byId[+f.id]; }).map(function (f) {
-      var d = path(f); return d ? '<path class="ctx" d="' + d + '"/>' : '';
+      '<rect width="6" height="6" fill="rgba(127,127,127,0.18)"/><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(148,163,184,0.75)" stroke-width="2"/></pattern>' +
+      [0, 1, 2, 3, 4, 5, 6].map(function (k) {
+        return '<pattern id="asfGlob' + k + '" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">' +
+          '<rect width="6" height="6" fill="rgba(127,127,127,0.22)"/><rect width="3" height="6" fill="' + LEVEL[k][1] + '"/></pattern>';
+      }).join('') + '</defs>';
+    var nGlob = 0;
+    var ctx = all.filter(function (f) { return !byId[+f.id] && +f.id !== 10; }).map(function (f) {
+      var d = path(f); if (!d) return '';
+      var g = glob[+f.id], gl = g ? g.level : -1;      // subject of a global signal only; 'named in passing' stays on the GPI map
+      if (gl < 0) return '<path class="ctx" d="' + d + '"/>';
+      nGlob++;
+      return '<path class="ctry asf-glob" data-g="' + (+f.id) + '" d="' + d + '" fill="url(#asfGlob' + Math.min(6, gl) + ')"/>';
     }).join('');
+    var sigs = ((bluf && (bluf.top_signals || bluf.signals)) || []).concat(gpi && G ? G.gpiSignals(gpi, 'all') : []);
+    var plv = G ? G.placeLevels(sigs, gpi) : {};
+    if (G) G.pinCss();
     var shapes = '', labels = '', dots = '';
     mine.forEach(function (f) {
       var c = byId[+f.id], rec = ts[c[1]], l = lvlOf(rec);
-      var fill = l == null ? 'url(#asfHatch)' : (LEVEL[l] || LEVEL[0])[1];
+      // a card with no tracker of its own borrows the GLOBAL read when it has one
+      // (no regional level to clash with); otherwise hatched, unread
+      var gc = l == null && glob[+f.id] && glob[+f.id].level >= 0 ? glob[+f.id] : null;
+      var fill = l == null ? (gc ? 'url(#asfGlob' + Math.min(6, gc.level) + ')' : 'url(#asfHatch)') : (LEVEL[l] || LEVEL[0])[1];
       var d = path(f), ctr = path.centroid(f), area = path.area(f);
       var at = (cfg.labelAt || {})[c[1]];
       if (at) ctr = proj(at);
@@ -382,20 +443,44 @@
     });
     var legend = [0, 1, 2, 3, 4, 5].map(function (k) {
       return '<span><i style="background:' + LEVEL[k][1] + '"></i>L' + k + ' ' + LEVEL[k][0] + '</span>';
-    }).join('') + '<span><i style="background:repeating-linear-gradient(45deg,#94a3b8 0 2px,transparent 2px 5px)"></i>No pressure tracker yet (unread, not calm)</span>';
+    }).join('') + '<span><i style="background:repeating-linear-gradient(45deg,#94a3b8 0 2px,transparent 2px 5px)"></i>No pressure tracker yet (unread, not calm)</span>' +
+      (nGlob ? '<span><i style="background:repeating-linear-gradient(-45deg,#f97316 0 3px,rgba(127,127,127,0.3) 3px 6px)"></i>No regional tracker: lit from the global read</span>' : '') +
+      (G ? G.PIN_LEGEND : '');
     var when = bluf && bluf.generated_at ? new Date(bluf.generated_at).toLocaleString() : '';
     el.innerHTML = '<div class="asf-map-head"><div class="asf-map-title">🗺️ Where the pressure is</div>' +
       '<div class="asf-map-sub">Each country\'s pressure level · click a country to open its card' + (when ? ' · as of ' + esc(when) : '') + '</div></div>' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Map of pressure levels, ' + esc(cfg.label) + '">' + defs + ctx + shapes + dots + labels + '</svg>' +
-      '<div class="asf-map-legend">' + legend + '</div><div class="asf-map-tip"></div>';
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Map of pressure levels, ' + esc(cfg.label) + '">' + defs + ctx + shapes + dots + labels +
+      (G ? G.pinsSvg(proj, W, H, plv, mapKey) : '') + '</svg>' +
+      '<div class="asf-map-legend">' + legend + '</div>' +
+      (lost && lost.length ? '<div class="asf-map-lost">Not on the map yet (card title not matched to a country): ' + lost.map(esc).join(', ') + '</div>' : '') +
+      '<div class="asf-map-tip"></div>';
     var tip = el.querySelector('.asf-map-tip');
+    if (G) G.bindPins(el, tip, plv);
+    Array.prototype.forEach.call(el.querySelectorAll('.asf-glob'), function (p) {
+      var id = +p.getAttribute('data-g'), g = glob[id], subj = g.level >= 0, l = subj ? g.level : g.named;
+      function show(ev) {
+        var r = el.getBoundingClientRect(), m = LEVEL[Math.min(6, l)] || LEVEL[0];
+        tip.innerHTML = '<b>' + esc(G.nameOf(id)) + '</b>No card here yet \u00B7 from the global read: L' + l + ' \u00B7 ' + esc(m[0]) +
+          (subj ? '' : ' (named in a signal, not its subject)') +
+          (g.texts.length ? '<br>' + g.texts.map(esc).join('<br>') : '') + '<br><i>Full picture: Global Pressure Index</i>';
+        tip.style.display = 'block';
+        tip.style.left = Math.min(ev.clientX - r.left + 14, r.width - 290) + 'px';
+        tip.style.top = (ev.clientY - r.top + 14) + 'px';
+      }
+      p.addEventListener('mousemove', show);
+      p.addEventListener('click', show);
+      p.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
+    });
     var keyed = {};
     cfg.countries.forEach(function (c) { keyed[c[1]] = c; });
-    Array.prototype.forEach.call(el.querySelectorAll('.ctry'), function (p) {
+    Array.prototype.forEach.call(el.querySelectorAll('.ctry[data-k]'), function (p) {
       var k = p.getAttribute('data-k'), c = keyed[k], rec = ts[k], l = lvlOf(rec);
       p.addEventListener('mousemove', function (ev) {
         var r = el.getBoundingClientRect();
-        var line = l == null ? 'No pressure tracker yet: unread, not calm. The card still carries its strike-window score.'
+        var gc = l == null && glob[c[0]] && glob[c[0]].level >= 0 ? glob[c[0]] : null;
+        var line = gc ? ('No regional tracker yet \u00B7 from the global read: L' + gc.level + ' \u00B7 ' + esc((LEVEL[Math.min(6, gc.level)] || LEVEL[0])[0]) +
+            (gc.texts.length ? '<br>' + gc.texts.map(esc).join('<br>') : ''))
+          : l == null ? 'No pressure tracker yet: unread, not calm. The card still carries its strike-window score.'
           : ('L' + l + ' · ' + (rec.label || '') + (oneLiner(k, bluf, rec) ? '<br>' + esc(oneLiner(k, bluf, rec)) : ''));
         tip.innerHTML = '<b>' + esc(c[3]) + '</b>' + line;
         tip.style.display = 'block';
@@ -457,6 +542,7 @@
     var tabHost = document.querySelector('[data-asifah-region-tabs]');
     if (tabHost) buildTabs(tabHost, cfg);
     if (!cfg) return;
+    discoverCards(cfg);
     if (mapEl) {
       mapEl.classList.add('asf-map');
       mapEl.innerHTML = '<div class="asf-map-title">🗺️ Where the pressure is</div><div class="asf-map-sub">Loading map…</div>';
@@ -470,14 +556,19 @@
       });
     });
     if (!mapEl) return;
-    Promise.all([blufP, LIBS.reduce(function (p, s) { return p.then(function () { return window.d3 && s.indexOf('/d3@') > 0 ? null : loadScript(s); }); }, Promise.resolve())
-      .then(function () { return fetch(WORLD).then(function (r) { return r.json(); }); })])
+    var worldP = window.AsifahGeo ? window.AsifahGeo.loadWorld()
+      : LIBS.reduce(function (p, s) { return p.then(function () { return window.d3 && s.indexOf('/d3@') > 0 ? null : loadScript(s); }); }, Promise.resolve())
+          .then(function () { return fetch(WORLD).then(function (r) { return r.json(); }); });
+    // the global read: only for countries with no card, and for the pins
+    var gpiP = window.AsifahGeo ? fetch(GPI_URL).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) : Promise.resolve(null);
+    Promise.all([blufP, worldP, gpiP])
       .then(function (res) {
         if (!res[0]) {
           mapEl.innerHTML = '<div class="asf-map-title">🗺️ Where the pressure is</div><div class="asf-map-sub">Regional read unavailable this load: unread, not calm.</div>';
           return;
         }
-        drawMap(mapEl, cfg, res[0], res[1]);
+        var lost = placeCards(cfg);
+        drawMap(mapEl, cfg, res[0], res[1], res[2] && res[2].success !== false ? res[2] : null, lost, key);
       })
       .catch(function () {
         mapEl.innerHTML = '<div class="asf-map-title">🗺️ Where the pressure is</div><div class="asf-map-sub">Map could not load this time; the country cards below carry the same levels.</div>';

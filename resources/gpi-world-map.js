@@ -1,4 +1,10 @@
-/* Asifah Analytics -- GPI world map  v1.2.0  (Nov 6 2026)
+/* Asifah Analytics -- GPI world map  v1.3.0  (Nov 8 2026)
+ *
+ * v1.3.0: country names, levels and the novelty gate now come from
+ * resources/asifah-geo.js (one list sitewide). Places that are not countries
+ * (Hormuz, the Red Sea, the Arctic, Antarctica...) appear as PINS in their
+ * level colour when a live signal names them.
+ *
  *
  * One map under the GPI's Bottom Line, shaded by the highest level each
  * country carries in the global read. It follows the lens buttons: click
@@ -23,71 +29,15 @@
 (function () {
   'use strict';
 
-  var LIBS = [
-    'https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js',
-    'https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js'
-  ];
-  var WORLD = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json';
-  var LEVEL = {
-    0: ['Monitoring', '#6b7280'], 1: ['Rhetoric', '#3b82f6'], 2: ['Warning', '#f59e0b'],
-    3: ['Confrontation', '#f97316'], 4: ['Coercion', '#ef4444'], 5: ['Active Conflict', '#991b1b'],
-    6: ['Red Line Breached', '#3b0764']
-  };
+  var G = window.AsifahGeo;
+  var LEVEL = G.LEVEL;
   var AXIS_LABEL = { all: 'All vectors', kinetic: 'Kinetic', economic: 'Economic', diplomatic: 'Diplomatic',
                      humanitarian: 'Humanitarian', governance: 'Governance' };
-  // Theatre / tracker keys that are not a world-atlas country name.
-  var ALIAS = {
-    us: 840, usa: 840, united_states: 840, uk: 826, britain: 826, drc: 180, dr_congo: 180, car: 140,
-    dprk: 408, north_korea: 408, south_korea: 410, rok: 410, uae: 784, gaza: 275, west_bank: 275,
-    palestine: 275, palestinian_territories: 275, south_sudan: 728, equatorial_guinea: 226,
-    turkiye: 792, hezbollah: 422, houthis: 887, ivory_coast: 384, cote_d_ivoire: 384, bosnia: 70,
-    czech_republic: 203, dominican_republic: 214, central_african_republic: 140, russia: 643,
-    iran: 364, syria: 760, vietnam: 704, laos: 418, moldova: 498, taiwan: 158, venezuela: 862,
-    bolivia: 68, tanzania: 834, macedonia: 807, north_macedonia: 807, eswatini: 748
-  };
-  var MULTI = { baltics: [233, 428, 440], gulf: [], sahel: [466, 854, 562] };
-
-  var state = { data: null, axis: 'all', world: null, el: null, nameToId: null, libs: null };
+  var state = { data: null, axis: 'all', world: null, el: null };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function norm(s) { return String(s || '').toLowerCase().replace(/[^a-z]+/g, '_').replace(/^_+|_+$/g, ''); }
-
-  function loadScript(src) {
-    return new Promise(function (ok, bad) {
-      var s = document.createElement('script');
-      s.src = src; s.async = true; s.onload = ok; s.onerror = bad;
-      document.head.appendChild(s);
-    });
-  }
-  function libs() {
-    if (state.libs) return state.libs;
-    state.libs = LIBS.reduce(function (p, src) {
-      return p.then(function () {
-        if (src.indexOf('/d3@') > 0 && window.d3) return null;
-        if (src.indexOf('topojson') > 0 && window.topojson) return null;
-        return loadScript(src);
-      });
-    }, Promise.resolve()).then(function () {
-      return fetch(WORLD).then(function (r) { return r.json(); });
-    }).then(function (w) {
-      state.world = w;
-      state.nameToId = {};
-      w.objects.countries.geometries.forEach(function (g) {
-        if (g.id) state.nameToId[norm(g.properties && g.properties.name)] = +g.id;
-      });
-      return w;
-    });
-    return state.libs;
-  }
-
-  function idsFor(key) {
-    var k = norm(key);
-    if (!k) return [];
-    if (MULTI[k]) return MULTI[k];
-    if (ALIAS[k]) return [ALIAS[k]];
-    if (state.nameToId[k]) return [state.nameToId[k]];
-    return [];
-  }
+  function libs() { return G.loadWorld().then(function (w) { state.world = w; return w; }); }
+  var idsFor = G.idsFor;
 
   function trackedIds() {
     var out = {};
@@ -97,81 +47,7 @@
     });
     return out;
   }
-
-  // country id -> {level, axes:{}, n, names:[]}
-  function levelsFor(data, axis) {
-    var out = {};
-    // v1.2.0: the novelty gate. While the GPI holds a sustained war at L4, an L5
-    // reading on a theatre with no NEW front shows as L4 (sustained) here too.
-    var gate = data.level_gate || {}, l6 = !!(data.l6 && data.l6.active), fresh = {};
-    var sustained = {};
-    (gate.fresh || []).forEach(function (e) { fresh[norm(e.theatre)] = 1; });
-    (gate.sustained || []).forEach(function (e) { sustained[norm(e.theatre)] = 1; });
-    // Only a KINETIC L5 is a conflict front. A humanitarian or economic L5 is a
-    // different finding and is never held down by the war's novelty gate.
-    function capL(lvl, key, ax) {
-      if (lvl !== 5 || !gate.applied || l6 || fresh[norm(key)]) return lvl;
-      if (ax === 'kinetic' || (ax == null && sustained[norm(key)])) return 4;
-      return lvl;
-    }
-    function rec(id) { return out[id] || (out[id] = { level: -1, named: -1, axes: {}, n: 0, nn: 0, from: [] }); }
-    function bump(id, lvl, ax) {
-      if (lvl == null || isNaN(lvl)) return;
-      var r = rec(id);
-      if (lvl > r.level) r.level = lvl;
-      if (ax) r.axes[ax] = Math.max(r.axes[ax] || 0, lvl);
-      r.n += 1;
-    }
-    function name(id, lvl, from) {
-      if (lvl == null || isNaN(lvl)) return;
-      var r = rec(id);
-      if (lvl > r.named) r.named = lvl;
-      r.nn += 1;
-      if (from && r.from.indexOf(from) < 0 && r.from.length < 3) r.from.push(from);
-    }
-    // every signal we can see: the raw pool plus each axis' top signals (these carry the long text)
-    var raw = (data._all_signals_raw || []).slice();
-    if (data.pressure_axes && data.pressure_axes.axes) {
-      Object.keys(data.pressure_axes.axes).forEach(function (a) {
-        (data.pressure_axes.axes[a].top_signals || []).forEach(function (s) {
-          var c = {}; for (var k in s) c[k] = s[k];
-          c.pressure_type = s.pressure_type || a;
-          raw.push(c);
-        });
-      });
-    }
-    var allC = window._gpiAllCountries || function (s) { return s.countries || []; };
-    raw.forEach(function (s) {
-      var ax = s.pressure_type || s.axis || '';
-      if (axis !== 'all' && ax !== axis) return;
-      var lvl0 = +s.level, lvl = capL(lvl0, s.theatre, ax);
-      var about = {};
-      var own = idsFor(s.theatre);
-      own.forEach(function (id) { about[id] = 1; bump(id, lvl, ax); if (lvl0 !== lvl) rec(id).sust = true; });
-      var from = String(s.theatre || '').replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); }) + ' L' + lvl;
-      var tagged = s.countries || [];
-      allC(s).forEach(function (k) {
-        idsFor(k).forEach(function (id) {
-          if (about[id]) return;
-          if (!own.length && tagged.length === 1 && tagged[0] === k) bump(id, lvl, ax);   // its only tagged country IS its subject
-          else name(id, lvl, from);
-        });
-      });
-    });
-    if (axis === 'all') {
-      (data.country_rollup || []).forEach(function (c) {
-        idsFor(c.country).forEach(function (id) {
-          var r = rec(id);
-          var ml = capL(+c.max_level, c.country, null);
-          if (ml !== +c.max_level) r.sust = true;
-          if (ml > r.level) r.level = ml;
-          (c.axes || []).forEach(function (a) { if (!(a in r.axes)) r.axes[a] = null; });
-          r.n = Math.max(r.n, c.signal_count || 0);
-        });
-      });
-    }
-    return out;
-  }
+  function levelsFor(data, axis) { return G.countryLevels(data, axis); }
 
   function draw() {
     var el = state.el, data = state.data;
@@ -179,9 +55,14 @@
     var d3 = window.d3, topojson = window.topojson;
     var lv = levelsFor(data, state.axis), tracked = trackedIds();
     var feats = topojson.feature(state.world, state.world.objects.countries).features
-      .filter(function (f) { return f.id !== '010'; });               // no Antarctica
-    var W = 960, H = 470;
-    var proj = d3.geoNaturalEarth1().fitExtent([[6, 6], [W - 6, H - 6]], { type: 'FeatureCollection', features: feats });
+      .filter(function (f) { return f.id !== '010'; });               // no Antarctica shape (it would eat a third of the map)
+    var W = 960, H = 490;
+    // v1.3.0: frame the inhabited world plus a strip at the bottom where an
+    // Antarctica pin can sit when something is happening there
+    var proj = d3.geoNaturalEarth1().fitExtent([[6, 6], [W - 6, H - 6]], { type: 'FeatureCollection',
+      features: feats.concat([{ type: 'Feature', geometry: { type: 'Point', coordinates: [0, -68] } }]) });
+    var plv = G.placeLevels(G.gpiSignals(data, state.axis), data);
+    G.pinCss();
     var path = d3.geoPath(proj);
     var shapes = '', dots = '', lit = 0, named = 0;
     var defs = '<defs>' + [0, 1, 2, 3, 4, 5, 6].map(function (k) {
@@ -207,7 +88,7 @@
     }).join('') +
       '<span><i style="background:repeating-linear-gradient(45deg,#f97316 0 2px,#3b4a60 2px 5px)"></i>Named in a signal (exposed or linked)</span>' +
       '<span><i style="background:#3b4a60;border:1px solid #7b8ba3"></i>Tracked, nothing reached the global read</span>' +
-      '<span><i style="background:rgba(127,127,127,0.18)"></i>Not tracked (unread, not calm)</span>';
+      '<span><i style="background:rgba(127,127,127,0.18)"></i>Not tracked (unread, not calm)</span>' + G.PIN_LEGEND;
     var lens = AXIS_LABEL[state.axis] || state.axis;
     var sub = lit
       ? lit + ' ' + (lit === 1 ? 'country carries' : 'countries carry') + ' ' + (state.axis === 'all' ? 'pressure' : lens.toLowerCase() + ' pressure') + ' in this read'
@@ -216,9 +97,11 @@
     el.innerHTML =
       '<div class="asf-map-head"><div class="asf-map-title">🌍 Where the pressure is · <span class="gw-lens">' + esc(lens) + '</span></div>' +
       '<div class="asf-map-sub">' + esc(sub) + ' · follows the lens buttons · click a country for its full picture</div></div>' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="World map of pressure levels, ' + esc(lens) + '">' + defs + shapes + dots + '</svg>' +
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="World map of pressure levels, ' + esc(lens) + '">' + defs + shapes + dots +
+        G.pinsSvg(proj, W, H, plv, 'gpi') + '</svg>' +
       '<div class="asf-map-legend">' + legend + '</div><div class="asf-map-tip"></div>';
     var tip = el.querySelector('.asf-map-tip');
+    G.bindPins(el, tip, plv);
     var names = {};
     feats.forEach(function (f) { names[+f.id] = (f.properties && f.properties.name) || ''; });
     Array.prototype.forEach.call(el.querySelectorAll('.ctry'), function (p) {
