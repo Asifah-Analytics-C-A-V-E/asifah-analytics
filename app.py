@@ -1,0 +1,8603 @@
+"""
+Asifah Analytics Backend (Middle East) -- version lives in ME_BACKEND_VERSION
+February 8, 2026 (v3.0.0)  |  September 21, 2026 (v3.2.0)  |  November 1, 2026 (v3.6.0)
+
+v3.9.0 (Nov 6 2026) -- every ME card is scanned in the background again.
+  The refresh thread only covered 7 of the 18 cards (iran, hezbollah, houthis,
+  syria, jordan, israel, iraq). The other 11 (the Gulf six, Egypt, and the
+  Maghreb four) were scanned ONLY when a visitor clicked Scan OSINT, so after
+  24h their cache expired and the card bar read 0% with "Loading..." forever.
+  Now: the 7 core cards refresh when older than 4h, the other 11 when older
+  than 12h (twice a day), through the same /api/threat/<target> scan a click
+  runs. Every attempt is recorded (Redis hash bgrefresh:status) and
+  /api/cache-status lists all 18 with age, last attempt and last error, so a
+  card that stops refreshing says why instead of quietly showing 0%.
+  Cost: NewsAPI/GDELT go through their budgeted gateways (no new spend).
+  ALSO: REDIS_URL was never set on Render, so the card cache lived in /tmp on
+  one instance only (the other instance and every redeploy saw 0%). The card
+  cache now uses Upstash REST (UPSTASH_REDIS_URL/TOKEN) like every other ME
+  module, and /api/dashboard reads all 19 cards with ONE MGET command.
+
+v3.8.0 (Nov 1 2026) -- Flight disruptions move to the shared flight_watch.py (same
+  file on all five backends). /flight-cancellations keeps its address and shape;
+  the rss_monitor flight scanner is no longer started. New: /api/flights and
+  /api/flights/health, declared end dates, a resumptions lane, no undated items.
+v3.7.0 (Nov 1 2026) -- Actor Matrix v3 registered (threat_matrix_v3.py); Israel OUTGOING
+  operations gain headline co-occurrence matching (actor + target + kinetic/intent verb).
+v3.6.0 (Nov 1 2026) -- audit cleanup (claude/ME_APP_AUDIT_2026-11-01.md):
+  - ~400 dead lines removed: a shadow copy of the airline scanner, a /api/notams
+    route that never answered (notam_monitor registers first), an unused
+    Instagram keyword table.
+  - Public ?refresh=true is now throttled: at most one live rescan per target per
+    15 minutes across both instances (Redis SET NX). Inside the window the
+    request gets the cache -- anyone on the internet can hit that URL.
+  - /api/threat-matrix/<target> is cached for 2 hours (was a live 6-source scan
+    on every click) and serves cache even when the daily rate limit is spent.
+  - Leader names in the keyword tables brought up to date (Qassem, Mojtaba
+    Khamenei, al-Sharaa; Biden-era phrases retired).
+
+v3.2.0 — Reddit moved to search.rss with an honest User-Agent (the spoofed
+Chrome UA was the cause of auth_failed), 30-min platform cooldown on 429,
+per-target outcome counts on /health. /health version now reads
+ME_BACKEND_VERSION instead of a stale '2.3.0-IRAQ'.
+
+All endpoints working:
+- /api/threat/<target> (hezbollah, iran, houthis, syria)
+- /api/syria-conflicts
+- /api/iran-strike-probability (with caching)
+- /api/hezbollah-activity (with caching)
+- /api/houthis-threat (with caching)
+
+- /api/syria-conflict (with caching)
+"""
+# ========================================
+# IMPORTS
+# ========================================
+# Standard library imports first
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import requests
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone, timedelta
+import os
+import time
+import re
+import math
+import json
+from pathlib import Path
+import threading
+from military_tracker import register_military_endpoints, get_military_posture
+from rhetoric_tracker import register_rhetoric_endpoints
+
+# ── IRAN STRIKE WINDOW DETECTOR (May 22 2026) ──
+# Detects operational-window convergence for potential US/Israel kinetic
+# action against Iran. Pulls from Telegram (Iran + Israel channels),
+# Bluesky ME, and cross-reads military_tracker fingerprints.
+try:
+    from iran_strike_window_detector import register_strike_window_endpoints
+    STRIKE_WINDOW_AVAILABLE = True
+    print("[ME Backend] ✅ Iran Strike Window detector loaded")
+except ImportError as e:
+    STRIKE_WINDOW_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ Strike Window detector not available: {e}")
+
+try:
+    from think_tank_feeds import register_think_tank_endpoints
+    THINK_TANK_AVAILABLE = True
+except ImportError as e:
+    THINK_TANK_AVAILABLE = False
+    print(f'[ME Backend] Think Tank module not available: {e}')
+
+# Cross-cutting Commodity Tracker (yfinance sparklines + multilingual GDELT + Brave fallback)
+try:
+    from commodity_tracker import register_commodity_endpoints
+    COMMODITY_TRACKER_AVAILABLE = True
+    print("[ME Backend] ✅ Commodity tracker module loaded")
+except ImportError as e:
+    COMMODITY_TRACKER_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ Commodity tracker not available: {e}")
+
+# Commodity x World Bank structural convergence (Tier-2 analyst overlay)
+# Reads worldbank:structural:latest + COUNTRY_COMMODITY_EXPOSURE; writes nothing.
+try:
+    from commodity_structural_convergence import register_commodity_convergence_endpoints
+    COMMODITY_CONVERGENCE_AVAILABLE = True
+    print("[ME Backend] ✅ Commodity structural-convergence module loaded")
+except ImportError as e:
+    COMMODITY_CONVERGENCE_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ Commodity structural-convergence not available: {e}")
+
+# Syria humanitarian data module (DTM API + ReliefWeb + OCHA)
+try:
+    from syria_humanitarian import register_syria_humanitarian_endpoints
+    SYRIA_HUMANITARIAN_AVAILABLE = True
+    print("[ME Backend] ✅ Syria humanitarian module loaded")
+except ImportError:
+    SYRIA_HUMANITARIAN_AVAILABLE = False
+    print("[ME Backend] ⚠️ Syria humanitarian module not available")
+
+# Libya humanitarian / displacement module (DTM API + ReliefWeb)
+try:
+    from libya_humanitarian import register_libya_humanitarian_endpoints
+    LIBYA_HUMANITARIAN_AVAILABLE = True
+    print("[ME Backend] ✅ Libya humanitarian module loaded")
+except ImportError:
+    LIBYA_HUMANITARIAN_AVAILABLE = False
+    print("[ME Backend] ⚠️ Libya humanitarian module not available")
+
+# UNHCR Refugee Data Finder module (open public API — refugee/asylum/IDP baseline)
+try:
+    from unhcr_feeds import register_unhcr_endpoints
+    UNHCR_AVAILABLE = True
+    print("[ME Backend] ✅ UNHCR module loaded")
+except ImportError:
+    UNHCR_AVAILABLE = False
+    print("[ME Backend] ⚠️ UNHCR module not available")
+
+# Libya Oil Pulse module (oil production-STATUS sensor — force majeure / blockades / output, NOT price)
+try:
+    from libya_oil_pulse import register_libya_oil_pulse_endpoints
+    LIBYA_OIL_PULSE_AVAILABLE = True
+    print("[ME Backend] ✅ Libya Oil Pulse module loaded")
+except ImportError:
+    LIBYA_OIL_PULSE_AVAILABLE = False
+    print("[ME Backend] ⚠️ Libya Oil Pulse module not available")
+# Yemen stability + Houthi rhetoric modules
+try:
+    from yemen_stability import register_yemen_routes
+    from rhetoric_tracker_yemen import register_houthi_rhetoric_routes
+    YEMEN_AVAILABLE = True
+    print("[ME Backend] ✅ Yemen stability + Houthi rhetoric modules loaded")
+except ImportError:
+    YEMEN_AVAILABLE = False
+    print("[ME Backend] ⚠️ Yemen modules not available")
+try:
+    from rhetoric_tracker_syria import register_syria_rhetoric_routes
+    SYRIA_RHETORIC_AVAILABLE = True
+    print("[ME Backend] ✅ Syria rhetoric module loaded")
+except ImportError:
+    SYRIA_RHETORIC_AVAILABLE = False
+    print("[ME Backend] ⚠️ Syria rhetoric module not available")
+try:
+    from rhetoric_tracker_iraq import register_iraq_rhetoric_routes
+    IRAQ_RHETORIC_AVAILABLE = True
+    print("[ME Backend] ✅ Iraq rhetoric module loaded")
+except ImportError:
+    IRAQ_RHETORIC_AVAILABLE = False
+    print("[ME Backend] ⚠️ Iraq rhetoric module not available")
+try:
+    from me_regional_bluf import register_me_bluf_routes
+    ME_BLUF_AVAILABLE = True
+    print("[ME Backend] ✅ ME Regional BLUF engine loaded")
+except ImportError:
+    ME_BLUF_AVAILABLE = False
+    print("[ME Backend] ⚠️ ME Regional BLUF engine not available")
+
+# ────────────────────────────────────────────────────────────
+# HUMANITARIAN CONVERGENCE DETECTOR (v2.3 -- May 17, 2026)
+# Aggregates humanitarian distress signals from countries WITHOUT
+# dedicated Asifah trackers (Egypt, Ethiopia, Myanmar, Jamaica,
+# Sri Lanka, etc.) into a 5th BLUF-shaped payload consumed by GPI.
+# Zero new API calls -- reads existing rhetoric tracker article caches.
+# ────────────────────────────────────────────────────────────
+try:
+    from humanitarian_convergence_detector import register_humanitarian_convergence_routes
+    HUMANITARIAN_CONVERGENCE_AVAILABLE = True
+    print("[ME Backend] ✅ Humanitarian Convergence Detector loaded")
+except ImportError:
+    HUMANITARIAN_CONVERGENCE_AVAILABLE = False
+    print("[ME Backend] ⚠️ Humanitarian Convergence Detector not available")
+
+# ────────────────────────────────────────────────────────────
+# HUMANITARIAN ARTICLE GATHERER (v1.0 -- May 19, 2026)
+# Writer module: fetches RSS (ReliefWeb, UN agencies, NGOs) + GDELT
+# humanitarian queries + Brave sub-region queries every 12 hours.
+# Writes deduplicated article pool to Redis (humanitarian:articles:latest).
+# The humanitarian_convergence_detector READS from this pool.
+# Writer/reader separation keeps detector fast (one Redis read) while
+# gatherer absorbs all HTTP fragility on its own 12h schedule.
+# ────────────────────────────────────────────────────────────
+try:
+    from humanitarian_article_gatherer import register_humanitarian_gatherer_routes
+    HUMANITARIAN_GATHERER_AVAILABLE = True
+    print("[ME Backend] ✅ Humanitarian Article Gatherer loaded")
+except ImportError:
+    HUMANITARIAN_GATHERER_AVAILABLE = False
+    print("[ME Backend] ⚠️ Humanitarian Article Gatherer not available")
+
+# ──── World Bank Structural-Stress Gatherer (WRITER) ────
+# Sweeps the World Bank Indicators API across all countries every 24h and
+# writes a per-country structural-stress profile to worldbank:structural:latest.
+# Sensor layer -- the convergence detector reads this and applies the
+# estimative interpretation.
+try:
+    from world_bank_gatherer import register_worldbank_gatherer_routes
+    WORLDBANK_GATHERER_AVAILABLE = True
+    print("[ME Backend] ✅ World Bank Structural-Stress Gatherer loaded")
+except ImportError:
+    WORLDBANK_GATHERER_AVAILABLE = False
+    print("[ME Backend] ⚠️ World Bank Gatherer not available")
+
+try:
+    from kinetic_activity_gatherer import register_kinetic_endpoints
+    KINETIC_GATHERER_AVAILABLE = True
+    print("[ME Backend] Kinetic Activity Gatherer loaded")
+except ImportError:
+    KINETIC_GATHERER_AVAILABLE = False
+    print("[ME Backend] Kinetic Activity Gatherer not available")
+
+try:
+    from diplomatic_convergence_gatherer import register_diplomatic_convergence_endpoints
+    DIPCONV_GATHERER_AVAILABLE = True
+    print("[ME Backend] Diplomatic Convergence Gatherer loaded")
+except ImportError:
+    DIPCONV_GATHERER_AVAILABLE = False
+    print("[ME Backend] Diplomatic Convergence Gatherer not available")
+
+try:
+    from food_price_pulse import register_food_price_pulse_endpoints
+    FOOD_PULSE_AVAILABLE = True
+    print("[ME Backend] Food Price Pulse loaded")
+except ImportError:
+    FOOD_PULSE_AVAILABLE = False
+    print("[ME Backend] Food Price Pulse not available")
+
+# ------------------------------------------------------------
+# CASCADE COMMODITY DETECTOR (v2.4 -- May 17, 2026)
+# Detects chokepoint -> intermediate -> downstream commodity cascades.
+# First chain: Hormuz -> Sulfur -> copper, nickel, potash, lithium, cobalt,
+# semiconductors. Signals tagged pressure_type='economic' so they flow into
+# the GPI economic axis. Zero new API calls -- reads existing rhetoric
+# tracker article caches. Source: Andy Home Reuters Apr 17, 2026.
+# ------------------------------------------------------------
+try:
+    from cascade_detector import register_cascade_detector_routes
+    CASCADE_DETECTOR_AVAILABLE = True
+    print("[ME Backend] ✅ Cascade Commodity Detector loaded")
+except ImportError:
+    CASCADE_DETECTOR_AVAILABLE = False
+    print("[ME Backend] ⚠️ Cascade Commodity Detector not available")
+
+# ────────────────────────────────────────────────────────────
+# GLOBAL PRESSURE INDEX — top of the analytical pyramid
+# Synthesizes ME + Asia + Europe + WHA regional BLUFs into a
+# single global level + cross-theater convergence narrative.
+# Hosted on ME backend (largest). Endpoints: /api/gpi, /api/gpi/level
+# ────────────────────────────────────────────────────────────
+try:
+    from global_pressure_index import register_gpi_routes
+    GPI_AVAILABLE = True
+    print("[ME Backend] ✅ Global Pressure Index engine loaded")
+except Exception as e:
+    GPI_AVAILABLE = False
+    import traceback as _gpi_tb
+    print(f"[ME Backend] ⚠️ GPI module not available: {e}")
+    _gpi_tb.print_exc()
+
+try:
+    from gpi_tagging_audit import register_gpi_audit_endpoints
+    GPI_AUDIT_AVAILABLE = True
+    print("[ME Backend] ✅ GPI tagging audit loaded")
+except Exception as e:
+    GPI_AUDIT_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ GPI tagging audit not available: {e}")
+
+# ────────────────────────────────────────────────────────────
+# GPI TIME-SERIES — Newsletter Slices 1 & 2 (Jul 23 2026)
+# Slice 1 banks one lean snapshot per UTC day (gpi:history:daily, 12-week cap,
+# no TTL). Slice 2 turns that archive into deltas and streaks. History can only
+# accumulate in wall-clock time -- it cannot be backfilled -- so the writer runs
+# from day one. Endpoints: /api/gpi/snapshot, /api/gpi/history,
+# /api/gpi/delta, /api/gpi/delta/summary
+# ────────────────────────────────────────────────────────────
+try:
+    from gpi_snapshot import register_gpi_snapshot_routes
+    GPI_SNAPSHOT_AVAILABLE = True
+    print("[ME Backend] ✅ GPI snapshot writer loaded")
+except Exception as e:
+    GPI_SNAPSHOT_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ gpi_snapshot not available: {e}")
+
+try:
+    from gpi_delta import register_gpi_delta_routes
+    GPI_DELTA_AVAILABLE = True
+    print("[ME Backend] ✅ GPI delta engine loaded")
+except Exception as e:
+    GPI_DELTA_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ gpi_delta not available: {e}")
+
+# ────────────────────────────────────────────────────────────
+# ECONOMIC ABSORPTION SIGNATURES — "So What" layer for leader
+# commodity interventions (Butterfly Build Phase 1). Static catalog
+# today; Phase 2 rhetoric trackers will populate dynamically.
+# Endpoints: /api/absorption-signature/<intervention_id>,
+#            /api/absorption-signatures
+# ────────────────────────────────────────────────────────────
+try:
+    from absorption_signatures import register_absorption_endpoints
+    ABSORPTION_AVAILABLE = True
+    print("[ME Backend] ✅ Absorption signatures module loaded")
+except Exception as e:
+    ABSORPTION_AVAILABLE = False
+    import traceback as _absorp_tb
+    print(f"[ME Backend] ⚠️ Absorption signatures module not available: {e}")
+    _absorp_tb.print_exc()
+
+# ────────────────────────────────────────────────────────────
+# JAWBONING PRIMITIVE — Path B architectural primitive (May 14-15, 2026)
+# Catalog of leader rhetorical jawboning signatures (13 entries at launch:
+# 11 Trump command + 2 Modi absorber). Detector applies catalog logic to
+# tracker actor_results and writes cross-theater Redis fingerprints with
+# 24h TTL. Cross-theater consumers (Iran, China, Cuba, Russia, Greenland
+# trackers + future CAVE) read fingerprints directly.
+# Endpoints: /api/jawboning/signatures, /api/jawboning/detect,
+#            /api/jawboning/active
+# Auth retrofit: deferred (see SECURITY TODO in jawboning_detector.py)
+# ────────────────────────────────────────────────────────────
+try:
+    from jawboning_signatures import register_jawboning_signatures_endpoints
+    from jawboning_detector import register_jawboning_detector_endpoints
+    JAWBONING_AVAILABLE = True
+    print("[ME Backend] ✅ Jawboning primitive (signatures + detector) modules loaded")
+except Exception as e:
+    JAWBONING_AVAILABLE = False
+    import traceback as _jawb_tb
+    print(f"[ME Backend] ⚠️ Jawboning primitive modules not available: {e}")
+    _jawb_tb.print_exc()
+
+# ────────────────────────────────────────────────────────────
+# BUTTERFLY READER — Cross-theater signal reader (May 16, 2026)
+# Layer 2 in the butterfly architecture. Reads ALL fingerprint patterns
+# (shared-dict / direct-key / atomic / snapshot) and applies per-consumer
+# predicates. Asia/Europe/WHA backends call /api/butterfly/read/<consumer>
+# via their respective butterfly_proxy_*.py modules. India's tracker can
+# also call read_butterfly_signals() directly (in-process on ME).
+# Endpoints: /api/butterfly/read/<consumer>, /health, /consumers
+# ────────────────────────────────────────────────────────────
+try:
+    from butterfly_reader import register_butterfly_endpoints
+    BUTTERFLY_READER_AVAILABLE = True
+    print("[ME Backend] ✅ Butterfly reader module loaded")
+except Exception as e:
+    BUTTERFLY_READER_AVAILABLE = False
+    import traceback as _butterfly_tb
+    print(f"[ME Backend] ⚠️ Butterfly reader module not available: {e}")
+    _butterfly_tb.print_exc()
+
+try:
+    from rhetoric_tracker_saudi_arabia import register_saudi_rhetoric_routes
+    print("[ME Backend] ✅ Saudi rhetoric (friction+detente) module loaded")
+except Exception as e:
+    register_saudi_rhetoric_routes = None
+    print(f"[ME Backend] ⚠️ Saudi rhetoric module not available: {e}")
+
+try:
+    from rhetoric_tracker_qatar import register_qatar_rhetoric_routes
+    print("[ME Backend] ✅ Qatar rhetoric (mediation class) module loaded")
+except Exception as e:
+    register_qatar_rhetoric_routes = None
+    print(f"[ME Backend] ⚠️ Qatar rhetoric module not available: {e}")
+
+try:
+    from rhetoric_tracker_uae import register_uae_rhetoric_routes
+    print("[ME Backend] ✅ UAE rhetoric (aligned hub) module loaded")
+except Exception as e:
+    register_uae_rhetoric_routes = None
+    print(f"[ME Backend] ⚠️ UAE rhetoric module not available: {e}")
+
+try:
+    from rhetoric_tracker_iran import register_iran_rhetoric_routes
+    print("[ME Backend] ✅ Iran rhetoric (command node) module loaded")
+except Exception as e:
+    register_iran_rhetoric_routes = None
+    print(f"[ME Backend] ⚠️ Iran rhetoric module not available: {e}")
+
+try:
+    from rhetoric_tracker_israel import register_israel_rhetoric_routes
+    print("[ME Backend] ✅ Israel rhetoric (dual dashboard) module loaded")
+except Exception as e:
+    register_israel_rhetoric_routes = None
+    print(f"[ME Backend] ⚠️ Israel rhetoric module not available: {e}")
+
+try:
+    from rhetoric_tracker_oman import register_oman_rhetoric_routes, start_background_refresh as start_oman_rhetoric_refresh
+    print("[ME Backend] ✅ Oman rhetoric (dual-axis stability anchor) module loaded")
+except Exception as e:
+    register_oman_rhetoric_routes = None
+    start_oman_rhetoric_refresh = None
+    print(f"[ME Backend] ⚠️ Oman rhetoric module not available: {e}")
+    
+try:
+    from iraq_humanitarian import register_iraq_humanitarian_endpoints
+    IRAQ_HUMANITARIAN_AVAILABLE = True
+    print("[ME Backend] ✅ Iraq humanitarian module loaded")
+except ImportError:
+    IRAQ_HUMANITARIAN_AVAILABLE = False
+    print("[ME Backend] ⚠️ Iraq humanitarian module not available")
+try:
+    from iraq_stability import register_iraq_stability_endpoints
+    IRAQ_STABILITY_AVAILABLE = True
+    print("[ME Backend] ✅ Iraq stability module loaded")
+except ImportError:
+    IRAQ_STABILITY_AVAILABLE = False
+    print("[ME Backend] ⚠️ Iraq stability module not available")
+
+# Convergence Endpoints — exposes /api/convergence/* (consumed by Asia/Europe/WHA proxies)
+# Registry of cross-theater convergence stacks (wheat_lebanon, hormuz_china_oil_dependency, etc.)
+try:
+    from convergence_endpoints import register_convergence_endpoints
+    CONVERGENCE_ENDPOINTS_AVAILABLE = True
+    print("[ME Backend] ✅ Convergence endpoints module loaded")
+except Exception as e:
+    CONVERGENCE_ENDPOINTS_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ Convergence endpoints not available: {e}")
+
+# Convergence Detector (multi-axis live) -- /api/cax/* (distinct from the convergence_endpoints registry)
+try:
+    from convergence_detector import register_convergence_detector_endpoints
+    CONVERGENCE_DETECTOR_AVAILABLE = True
+    print("[ME Backend] Convergence detector module loaded")
+except Exception as e:
+    CONVERGENCE_DETECTOR_AVAILABLE = False
+    print(f"[ME Backend] Convergence detector not available: {e}")
+
+# Corridor dependence (v1.0.0, Oct 4 2026) -- EDGE to NODE.
+# Europe's corridor_registry answers "is the route passable"; the convergence
+# detector asks, per country, "what is happening HERE". Nothing joined them,
+# because a corridor is an EDGE and the detector is NODE-shaped. This module
+# multiplies corridor state by each country's dependence share.
+# Pure analyst overlay: READS corridor:<id>:latest, writes nothing.
+# Dependence is a MULTIPLIER, never a signal -- a constant structural fact
+# must not emit every scan forever. See claude/CORRIDOR_SENSOR_SCOPING.md.
+try:
+    from corridor_dependence import register_corridor_dependence_endpoints
+    CORRIDOR_DEPENDENCE_AVAILABLE = True
+    print("[ME Backend] Corridor dependence module loaded")
+except Exception as e:
+    CORRIDOR_DEPENDENCE_AVAILABLE = False
+    print(f"[ME Backend] Corridor dependence not available: {e}")
+
+# Severity canon (v1.0.0 -- Oct 6 2026). One writer for every ladder the
+# platform uses. Serves /api/severity-canon so the page guide RENDERS from the
+# arithmetic instead of being typed next to it.
+try:
+    from severity_canon import register_severity_canon_endpoints
+    SEVERITY_CANON_AVAILABLE = True
+    print("[ME Backend] Severity canon loaded")
+except Exception as e:
+    SEVERITY_CANON_AVAILABLE = False
+    print(f"[ME Backend] Severity canon not available: {e}")
+
+# Tempo Baseline Engine (v1.0 -- Jul 12, 2026)
+# Generic actor/tape baseline engine. Lives HERE (primary backend) because the
+# algorithm is shared; the DATA is local and arrives via the shared Upstash Redis
+# bus, so no proxy is needed. Unblocks "Quiet Before Storm" platform-wide.
+# Adding a new target (DPRK, IRGC, Greenland) = one line in TEMPO_REGISTRY.
+try:
+    from tempo_baseline import register_tempo_endpoints, compute_all as tempo_compute_all
+    TEMPO_AVAILABLE = True
+    print("[ME Backend] ✅ Tempo baseline engine loaded")
+except Exception as e:
+    TEMPO_AVAILABLE = False
+    print(f"[ME Backend] ⚠️ Tempo baseline engine not available: {e}")
+
+# Local imports last
+from rss_monitor import (
+    fetch_all_rss,
+    fetch_israeli_rss,
+    enhance_article_with_leadership,
+)
+
+# ========================================
+# CACHING SYSTEM (Redis-backed)
+# ========================================
+
+import redis
+
+# Connect to Redis — falls back to file cache if Redis unavailable
+REDIS_URL = os.environ.get('REDIS_URL', os.environ.get('REDIS_TOKEN', None))
+redis_client = None
+
+if REDIS_URL:
+    try:
+        redis_client = redis.from_url(REDIS_URL, decode_responses=True, socket_timeout=5)
+        redis_client.ping()
+        print("[Cache] ✅ Redis connected successfully")
+    except Exception as e:
+        print(f"[Cache] ⚠️ Redis connection failed: {e}")
+        print("[Cache] Falling back to file-based cache")
+        redis_client = None
+else:
+    # v3.9.0 (Nov 6 2026): REDIS_URL was never set on Render, so every card
+    # score lived in /tmp on ONE instance. The other instance (and every
+    # redeploy) saw nothing: Iran read 0% on half the page loads, and the
+    # Actor Matrix (threat_matrix_v3 reads threat:<card> from Upstash) never
+    # saw a card score at all. Every other ME module talks to Upstash over
+    # REST with UPSTASH_REDIS_URL / UPSTASH_REDIS_TOKEN -- so the card cache
+    # now does too. No new env var, no new secret.
+    _UP_URL = os.environ.get('UPSTASH_REDIS_URL') or os.environ.get('UPSTASH_REDIS_REST_URL')
+    _UP_TOKEN = os.environ.get('UPSTASH_REDIS_TOKEN') or os.environ.get('UPSTASH_REDIS_REST_TOKEN')
+
+    class _UpstashRestClient:
+        """The handful of redis-py calls app.py makes, over Upstash REST."""
+        def __init__(self, url, token):
+            self._url = url.rstrip('/')
+            self._h = {'Authorization': f'Bearer {token}'}
+
+        def _cmd(self, *args):
+            import requests as _rq
+            r = _rq.post(self._url, headers=self._h,
+                         json=[str(a) for a in args], timeout=5)
+            data = r.json()
+            if isinstance(data, dict) and data.get('error'):
+                raise RuntimeError(f"Upstash: {data['error']}")
+            return data.get('result') if isinstance(data, dict) else None
+
+        def ping(self):
+            return self._cmd('PING') == 'PONG'
+
+        def get(self, key):
+            return self._cmd('GET', key)
+
+        def mget(self, keys):
+            return self._cmd('MGET', *keys) if keys else []
+
+        def setex(self, key, ttl, value):
+            return self._cmd('SET', key, value, 'EX', int(ttl)) == 'OK'
+
+        def set(self, key, value, nx=False, ex=None):
+            args = ['SET', key, value]
+            if ex:
+                args += ['EX', int(ex)]
+            if nx:
+                args.append('NX')
+            return self._cmd(*args) == 'OK'
+
+        def hset(self, name, key, value):
+            return self._cmd('HSET', name, key, value)
+
+        def hgetall(self, name):
+            flat = self._cmd('HGETALL', name) or []
+            return dict(zip(flat[0::2], flat[1::2]))
+
+    if _UP_URL and _UP_TOKEN:
+        try:
+            redis_client = _UpstashRestClient(_UP_URL, _UP_TOKEN)
+            redis_client.ping()
+            print("[Cache] ✅ Card cache on Upstash REST (shared by both instances)")
+        except Exception as e:
+            print(f"[Cache] ⚠️ Upstash REST failed: {e} -- falling back to file cache")
+            redis_client = None
+    else:
+        print("[Cache] ⚠️ No Redis/Upstash credentials -- using file fallback")
+
+# File-based fallback (for local dev or if Redis is down)
+CACHE_FILE = '/tmp/threat_cache.json'
+
+def _file_load_cache():
+    """Fallback: load cache from /tmp file"""
+    try:
+        if Path(CACHE_FILE).exists():
+            with open(CACHE_FILE, 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"[FileCache] Load error: {e}")
+    return {}
+
+def _file_save_cache(cache_data):
+    """Fallback: save cache to /tmp file"""
+    try:
+        with open(CACHE_FILE, 'w') as f:
+            json.dump(cache_data, f, indent=2)
+    except Exception as e:
+        print(f"[FileCache] Save error: {e}")
+
+
+def get_cached_result(target):
+    """Get cached result for a target - tries Redis first, then file fallback"""
+    # Try Redis
+    if redis_client:
+        try:
+            data = redis_client.get(f'threat:{target}')
+            if data:
+                result = json.loads(data)
+                print(f"[Redis] ✅ Cache hit for {target}")
+                return result
+            else:
+                print(f"[Redis] Cache miss for {target}")
+                return None
+        except Exception as e:
+            print(f"[Redis] Get error for {target}: {e}")
+    
+    # Fallback to file
+    cache = _file_load_cache()
+    result = cache.get(target)
+    if result:
+        print(f"[FileCache] Cache hit for {target}")
+    return result
+
+
+def update_cache(target, data, ttl_hours=24):
+    """Update cache for a specific target - writes to Redis AND file fallback"""
+    cache_entry = {
+        **data,
+        'cached_at': datetime.now(timezone.utc).isoformat(),
+        'cached': True
+    }
+    
+    # Write to Redis
+    if redis_client:
+        try:
+            redis_client.setex(
+                f'threat:{target}',
+                int(ttl_hours * 3600),  # TTL in seconds
+                json.dumps(cache_entry)
+            )
+            print(f"[Redis] ✅ Cached {target} (TTL: {ttl_hours}h)")
+        except Exception as e:
+            print(f"[Redis] Set error for {target}: {e}")
+    
+    # Also write to file as backup
+    try:
+        cache = _file_load_cache()
+        cache[target] = cache_entry
+        _file_save_cache(cache)
+    except Exception as e:
+        print(f"[FileCache] Backup write error: {e}")
+
+
+def is_cache_fresh(cached_data, max_age_hours=6):
+    """Check if cached data is still fresh (default: 6 hours)"""
+    if not cached_data:
+        return False
+    
+    try:
+        cached_at = datetime.fromisoformat(cached_data.get('cached_at', ''))
+        age = datetime.now(timezone.utc) - cached_at
+        is_fresh = age.total_seconds() < (max_age_hours * 3600)
+        
+        hours_old = age.total_seconds() / 3600
+        if is_fresh:
+            print(f"[Cache] Data is {hours_old:.1f}h old (fresh, limit: {max_age_hours}h)")
+        else:
+            print(f"[Cache] Data is {hours_old:.1f}h old (STALE, limit: {max_age_hours}h)")
+        
+        return is_fresh
+    except Exception as e:
+        print(f"[Cache] Freshness check error: {e}")
+        return False
+
+
+# v3.9.0 -- the background refresh covers ALL 18 cards.
+# Core cards refresh when older than 4h; the rest when older than 12h.
+BG_CORE_TARGETS = ['iran', 'hezbollah', 'houthis', 'syria', 'jordan', 'israel', 'iraq']
+BG_SECONDARY_TARGETS = ['saudi_arabia', 'uae', 'qatar', 'kuwait', 'bahrain', 'oman',
+                        'egypt', 'algeria', 'libya', 'morocco', 'tunisia']
+BG_CORE_MAX_AGE_H = 4
+BG_SECONDARY_MAX_AGE_H = 12
+_BG_STATUS_KEY = 'bgrefresh:status'
+
+
+def _bg_record(target, ok, note=''):
+    """Remember the last background attempt per card (one small Redis hash)."""
+    if not redis_client:
+        return
+    try:
+        redis_client.hset(_BG_STATUS_KEY, target, json.dumps({
+            'at': datetime.now(timezone.utc).isoformat(),
+            'ok': bool(ok),
+            'note': str(note)[:200],
+        }))
+    except Exception as e:
+        print(f"[Background Refresh] status write failed for {target}: {e}")
+
+
+def _bg_status_all():
+    if not redis_client:
+        return {}
+    try:
+        raw = redis_client.hgetall(_BG_STATUS_KEY) or {}
+        out = {}
+        for k, v in raw.items():
+            k = k.decode() if isinstance(k, bytes) else k
+            v = v.decode() if isinstance(v, bytes) else v
+            try:
+                out[k] = json.loads(v)
+            except Exception:
+                out[k] = {'raw': v}
+        return out
+    except Exception:
+        return {}
+
+
+def get_all_cache_status():
+    """Every ME card: is it cached, how old, and what the last background try said."""
+    bg = _bg_status_all()
+    status = {}
+    for target in BG_CORE_TARGETS + BG_SECONDARY_TARGETS:
+        max_age = BG_CORE_MAX_AGE_H if target in BG_CORE_TARGETS else BG_SECONDARY_MAX_AGE_H
+        cached = get_cached_result(target)
+        if cached:
+            try:
+                cached_at = datetime.fromisoformat(cached.get('cached_at', ''))
+                age_h = (datetime.now(timezone.utc) - cached_at).total_seconds() / 3600
+                status[target] = {
+                    'cached': True,
+                    'probability': cached.get('probability', 0),
+                    'age_hours': round(age_h, 1),
+                    'fresh': age_h < max_age + 1,
+                }
+            except Exception:
+                status[target] = {'cached': True, 'age_hours': 'unknown'}
+        else:
+            status[target] = {'cached': False}
+        status[target]['refresh_every_h'] = max_age
+        status[target]['last_background_try'] = bg.get(target)
+    return status
+
+
+# ========================================
+# BACKGROUND REFRESH THREAD
+# ========================================
+
+def _background_refresh_all_caches():
+    """
+    Background thread that refreshes all country card caches every 4 hours.
+    Runs the same scan logic each endpoint uses, so no user request ever
+    triggers a cold scan. Cache TTL is 24 hours in Redis, refresh every 4 hours,
+    meaning cache is always warm with a 20-hour buffer even if refresh fails once.
+    """
+    import time as _time
+
+    REFRESH_INTERVAL = 4 * 60 * 60  # 4 hours in seconds
+
+    TARGETS = BG_CORE_TARGETS + BG_SECONDARY_TARGETS   # v3.9.0: all 18 cards
+
+    # v3.3.0 (Sep 27 2026) -- ONE instance refreshes. Render runs two
+    # instances of this backend, each with its own copy of this thread, so
+    # every four hours BOTH were running the same seven full scans: double
+    # the GDELT calls, double the Telegram sweeps, double the Reddit
+    # requests racing each other into the same 429.
+    try:
+        from instance_lock import own_this_job as _own_job
+    except ImportError:
+        _own_job = None
+        print("[Background Refresh] instance_lock not installed -- "
+              "this thread runs on EVERY instance (duplicated work)")
+
+    # On startup, wait 30 seconds before first refresh to let the app boot
+    print("[Background Refresh] Waiting 30s for app to stabilize before first refresh...")
+    _time.sleep(30)
+
+    while True:
+        if _own_job and not _own_job('me_background_refresh'):
+            # Another instance owns the refresh. Re-check every 5 minutes so
+            # this one takes over within the lock TTL if the owner dies.
+            _time.sleep(300)
+            continue
+        print(f"\n[Background Refresh] Starting full cache refresh at {datetime.now(timezone.utc).isoformat()}")
+        start = _time.time()
+
+        for target in TARGETS:
+            try:
+                print(f"[Background Refresh] Checking {target}...")
+                cached = get_cached_result(target)
+                max_age = (BG_CORE_MAX_AGE_H if target in BG_CORE_TARGETS
+                           else BG_SECONDARY_MAX_AGE_H)
+
+                # Only refresh if cache is stale or missing
+                if cached and is_cache_fresh(cached, max_age_hours=max_age):
+                    age_h = (datetime.now(timezone.utc) - datetime.fromisoformat(cached['cached_at'])).total_seconds() / 3600
+                    print(f"[Background Refresh] {target} still fresh ({age_h:.1f}h old), skipping")
+                    continue
+
+                # Run the scan
+                print(f"[Background Refresh] Refreshing {target}...")
+                if target in BG_CORE_TARGETS:
+                    _refresh_target(target)
+                else:
+                    _refresh_via_threat_route(target)
+                after = get_cached_result(target)
+                if after and after.get('cached_at') and (not cached or after.get('cached_at') != cached.get('cached_at')):
+                    _bg_record(target, True, f"probability {after.get('probability', 0)}%")
+                else:
+                    _bg_record(target, False, 'scan ran but nothing new was cached')
+
+            except Exception as e:
+                print(f"[Background Refresh] ✗ {target} failed: {e}")
+                _bg_record(target, False, f"{type(e).__name__}: {e}")
+                import traceback
+                traceback.print_exc()
+
+            # Small delay between targets to avoid hammering APIs
+            _time.sleep(10)
+
+        elapsed = _time.time() - start
+        print(f"[Background Refresh] Complete in {elapsed:.1f}s. Sleeping {REFRESH_INTERVAL}s until next refresh.\n")
+        _time.sleep(REFRESH_INTERVAL)
+
+
+def _refresh_via_threat_route(target):
+    """v3.9.0 -- run the same scan a Scan OSINT click runs for this card
+    (/api/threat/<target>?refresh=true), without a visitor. The route caches
+    its own result. Inside the 15-min public-refresh window it serves cache,
+    which is fine: someone just scanned it."""
+    with app.test_request_context(f'/api/threat/{target}?days=7&refresh=true'):
+        resp = api_threat(target)
+    code = resp[1] if isinstance(resp, tuple) else getattr(resp, 'status_code', 200)
+    if code and int(code) >= 400:
+        raise RuntimeError(f"/api/threat/{target} returned HTTP {code}")
+
+
+def _refresh_target(target):
+    """
+    Run a fresh scan for a single target and update the Redis cache.
+    Replicates the scan logic from each endpoint without needing Flask request context.
+    """
+    days = 7
+
+    if target in ('iran', 'hezbollah', 'houthis', 'syria'):
+        # These 4 use the same pattern: fetch articles → score → cache
+        query = ' OR '.join(TARGET_KEYWORDS[target]['keywords'])
+
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+
+        articles_gdelt_fa = []
+        if target == 'iran':
+            articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+
+        articles_reddit = fetch_reddit_posts(
+            target,
+            TARGET_KEYWORDS[target]['reddit_keywords'],
+            days
+        )
+
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit)
+
+        # RSS feeds
+        try:
+            rss_articles = fetch_all_rss()
+            for article in all_articles + rss_articles:
+                article['leadership'] = enhance_article_with_leadership(article)
+            all_articles.extend(rss_articles)
+        except Exception as e:
+            print(f"[Background Refresh] RSS error for {target}: {e}")
+
+        # v3.3 — Ravid first-mover OSINT (target-specific English + Hebrew)
+        try:
+            ravid_articles = fetch_ravid_articles(target)
+            for article in ravid_articles:
+                article['leadership'] = enhance_article_with_leadership(article)
+            all_articles.extend(ravid_articles)
+        except Exception as e:
+            print(f"[Background Refresh] Ravid error for {target}: {e}")
+
+        scoring_result = calculate_threat_probability(all_articles, days, target)
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        breakdown = scoring_result['breakdown']
+
+        # Build recent_headlines
+        recent_headlines = []
+        seen_urls = set()
+        for contributor in scoring_result.get('top_contributors', [])[:10]:
+            for article in all_articles:
+                if (article.get('source', {}).get('name', '') == contributor.get('source', '')
+                        and article.get('url') not in seen_urls):
+                    seen_urls.add(article['url'])
+                    recent_headlines.append({
+                        'title': article.get('title', '')[:120],
+                        'url': article.get('url', ''),
+                        'source': contributor.get('source', 'Unknown'),
+                        'published': article.get('publishedAt', ''),
+                        'threat_type': 'General Intelligence',
+                        'weight': abs(contributor.get('contribution', 0)),
+                        'phrase': '',
+                        'why_included': f"Top scoring (severity: {contributor.get('severity', 1.0)}x)",
+                        'color': 'blue'
+                    })
+                    break
+        recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+        recent_headlines = recent_headlines[:15]
+
+        # Military posture
+        try:
+            military_posture = get_military_posture(target)
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+        except Exception:
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+
+        # Timeline
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+
+        # Confidence
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        if len(all_articles) >= 20 and unique_sources >= 8:
+            confidence = "High"
+        elif len(all_articles) >= 10 and unique_sources >= 5:
+            confidence = "Medium"
+        else:
+            confidence = "Low"
+
+        result = {
+            'success': True,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_articles_48h': breakdown.get('recent_articles_48h', 0),
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.1.0'
+        }
+
+        update_cache(target, result)
+        print(f"[Background Refresh] ✓ {target} cached (probability: {probability}%)")
+
+    elif target == 'jordan':
+        query = ' OR '.join(TARGET_KEYWORDS['jordan']['keywords'])
+
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+        articles_reddit = fetch_reddit_posts('jordan', TARGET_KEYWORDS['jordan']['reddit_keywords'], days)
+
+        try:
+            jordan_rss = fetch_jordan_news_rss()
+        except Exception:
+            jordan_rss = []
+
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit + jordan_rss)
+
+        scoring_result = calculate_threat_probability(all_articles, days, 'jordan')
+        probability = scoring_result['probability']
+
+        # Build recent_headlines for Jordan
+        recent_headlines = []
+        seen_urls = set()
+        for contributor in scoring_result.get('top_contributors', [])[:10]:
+            for article in all_articles:
+                if (article.get('source', {}).get('name', '') == contributor.get('source', '')
+                        and article.get('url') not in seen_urls):
+                    seen_urls.add(article['url'])
+                    recent_headlines.append({
+                        'title': article.get('title', '')[:120],
+                        'url': article.get('url', ''),
+                        'source': contributor.get('source', 'Unknown'),
+                        'published': article.get('publishedAt', ''),
+                        'threat_type': 'General Intelligence',
+                        'weight': abs(contributor.get('contribution', 0)),
+                        'phrase': '',
+                        'why_included': f"Top scoring (severity: {contributor.get('severity', 1.0)}x)",
+                        'color': 'blue'
+                    })
+                    break
+        recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+        recent_headlines = recent_headlines[:15]
+
+        try:
+            military_posture = get_military_posture('jordan')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+        except Exception:
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        confidence = "High" if len(all_articles) >= 20 and unique_sources >= 8 else "Medium" if len(all_articles) >= 10 else "Low"
+
+        result = {
+            'success': True,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': scoring_result['momentum'],
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.1.0-jordan'
+        }
+
+        update_cache('jordan', result)
+        print(f"[Background Refresh] ✓ jordan cached (probability: {probability}%)")
+
+    elif target == 'israel':
+        query = ' OR '.join(TARGET_KEYWORDS['israel']['keywords'][:10])
+
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+        articles_reddit = fetch_reddit_posts('israel', TARGET_KEYWORDS['israel']['reddit_keywords'], days)
+
+        try:
+            israel_rss = fetch_israel_news_rss()
+        except Exception:
+            israel_rss = []
+
+        # Google News RSS fallback for active war coverage
+        google_war_articles = []
+        war_queries = [
+            'Israel+Iran+war+missile+attack',
+            'Israel+ballistic+missile+intercept+iron+dome',
+            'Israel+home+front+command+siren+alert',
+            'Israel+airspace+closed+flights+cancelled',
+        ]
+        for wq in war_queries:
+            try:
+                feed_url = f"https://news.google.com/rss/search?q={wq}&hl=en&gl=US&ceid=US:en"
+                headers = {'User-Agent': ASIFAH_USER_AGENT}
+                resp = requests.get(feed_url, timeout=10, headers=headers)
+                if resp.status_code == 200:
+                    root = ET.fromstring(resp.content)
+                    for item in root.findall('.//item')[:10]:
+                        title_elem = item.find('title')
+                        link_elem = item.find('link')
+                        pubDate_elem = item.find('pubDate')
+                        if title_elem is not None and link_elem is not None:
+                            google_war_articles.append({
+                                'title': title_elem.text or '',
+                                'description': title_elem.text or '',
+                                'url': link_elem.text or '',
+                                'publishedAt': pubDate_elem.text if pubDate_elem is not None else datetime.now(timezone.utc).isoformat(),
+                                'source': {'name': 'Google News'},
+                                'content': title_elem.text or '',
+                                'language': 'en'
+                            })
+            except Exception as e:
+                print(f"[Israel] Google News RSS error: {e}")
+
+        print(f"[Israel] Google News war RSS: {len(google_war_articles)} articles")
+
+        # v3.3 — Ravid first-mover OSINT (English + Hebrew)
+        try:
+            ravid_articles = fetch_ravid_articles('israel')
+        except Exception as e:
+            print(f"[Israel] Ravid fetch error: {e}")
+            ravid_articles = []
+
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit + 
+                       israel_rss + google_war_articles + ravid_articles)
+
+        scoring_result = calculate_threat_probability(all_articles, days, 'israel')
+        probability = scoring_result['probability']
+
+        # Build recent_headlines for Israel
+        recent_headlines = []
+        seen_urls = set()
+        for contributor in scoring_result.get('top_contributors', [])[:10]:
+            for article in all_articles:
+                if (article.get('source', {}).get('name', '') == contributor.get('source', '')
+                        and article.get('url') not in seen_urls):
+                    seen_urls.add(article['url'])
+                    recent_headlines.append({
+                        'title': article.get('title', '')[:120],
+                        'url': article.get('url', ''),
+                        'source': contributor.get('source', 'Unknown'),
+                        'published': article.get('publishedAt', ''),
+                        'threat_type': 'General Intelligence',
+                        'weight': abs(contributor.get('contribution', 0)),
+                        'phrase': '',
+                        'why_included': f"Top scoring (severity: {contributor.get('severity', 1.0)}x)",
+                        'color': 'blue'
+                    })
+                    break
+        recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+        recent_headlines = recent_headlines[:15]
+
+        try:
+            military_posture = get_military_posture('israel')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+        except Exception:
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        confidence = "High" if len(all_articles) >= 20 and unique_sources >= 8 else "Medium" if len(all_articles) >= 10 else "Low"
+
+        result = {
+            'success': True,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': scoring_result['momentum'],
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.1.0-israel'
+        }
+
+        update_cache('israel', result)
+        print(f"[Background Refresh] ✓ israel cached (probability: {probability}%)")
+
+    elif target == 'iraq':
+        # Iraq background refresh
+        try:
+            newsapi_articles = fetch_newsapi_articles(
+                'Iraq AND (militia OR ISIS OR attack OR strike OR protest OR Erbil OR Baghdad OR PMF OR PKK)', days
+            )
+        except Exception:
+            newsapi_articles = []
+
+        gdelt_query = 'iraq OR baghdad OR erbil OR militia OR ISIS OR PMF'
+        try:
+            gdelt_en = fetch_gdelt_articles(gdelt_query, days, 'eng')
+        except Exception:
+            gdelt_en = []
+        try:
+            gdelt_ar = fetch_gdelt_articles(gdelt_query, days, 'ara')
+        except Exception:
+            gdelt_ar = []
+        try:
+            gdelt_he = fetch_gdelt_articles(gdelt_query, days, 'heb')
+        except Exception:
+            gdelt_he = []
+        try:
+            gdelt_fa = fetch_gdelt_articles(gdelt_query, days, 'fas')
+        except Exception:
+            gdelt_fa = []
+        try:
+            reddit_posts = fetch_reddit_posts('iraq', ['Iraq', 'Baghdad', 'Erbil', 'ISIS', 'militia', 'PMF', 'Kurdistan'], days)
+        except Exception:
+            reddit_posts = []
+
+        all_articles = newsapi_articles + gdelt_en + gdelt_ar + gdelt_he + gdelt_fa + reddit_posts
+
+        scoring_result = calculate_threat_probability(all_articles, days, 'iraq')
+        probability = scoring_result['probability']
+
+        # Build recent_headlines for Iraq
+        recent_headlines = []
+        seen_urls = set()
+        for contributor in scoring_result.get('top_contributors', [])[:10]:
+            for article in all_articles:
+                if (article.get('source', {}).get('name', '') == contributor.get('source', '')
+                        and article.get('url') not in seen_urls):
+                    seen_urls.add(article['url'])
+                    recent_headlines.append({
+                        'title': article.get('title', '')[:120],
+                        'url': article.get('url', ''),
+                        'source': contributor.get('source', 'Unknown'),
+                        'published': article.get('publishedAt', ''),
+                        'threat_type': 'General Intelligence',
+                        'weight': abs(contributor.get('contribution', 0)),
+                        'phrase': '',
+                        'why_included': f"Top scoring (severity: {contributor.get('severity', 1.0)}x)",
+                        'color': 'blue'
+                    })
+                    break
+        recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+        recent_headlines = recent_headlines[:15]
+
+        try:
+            military_posture = get_military_posture('iraq')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+        except Exception:
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        confidence = "High" if len(all_articles) >= 20 and unique_sources >= 8 else "Medium" if len(all_articles) >= 10 else "Low"
+
+        result = {
+            'success': True,
+            'target': 'iraq',
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': scoring_result['momentum'],
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.1.0-iraq'
+        }
+
+        update_cache('iraq', result)
+        print(f"[Background Refresh] ✓ iraq cached (probability: {probability}%)")
+
+
+def start_background_refresh():
+    """Start the background refresh thread (daemon so it dies with the app)."""
+    thread = threading.Thread(target=_background_refresh_all_caches, daemon=True)
+    thread.start()
+    print("[Background Refresh] Thread started — will refresh all caches every 4 hours")
+
+# ========================================
+# CACHE HELPERS FOR ENDPOINTS
+# ========================================
+
+def _empty_placeholder(target=None, extended=False):
+    """Build the 'no cached data' placeholder response."""
+    base = {
+        'success': True,
+        'probability': 0,
+        'timeline': 'Awaiting scan',
+        'confidence': 'None',
+        'momentum': 'stable',
+        'total_articles': 0,
+        'unique_sources': 0,
+        'recent_headlines': [],
+        'military_posture': {
+            'alert_level': 'normal',
+            'alert_label': 'Normal',
+            'alert_color': 'green',
+            'military_bonus': 0,
+            'show_banner': False,
+            'banner_text': '',
+            'top_signals': [],
+            'detail_url': '/military.html'
+        },
+        'awaiting_scan': True,
+        'last_updated': None,
+        'cached': False,
+        'message': 'No cached data — click Scan OSINT to populate'
+    }
+    if target:
+        base['target'] = target
+    if extended:
+        base.update({
+            'intensity': 0,
+            'stability': 100,
+            'casualties': {
+                'deaths': 0, 'injuries': 0, 'arrests': 0,
+                'verified_sources': [], 'details': [],
+                'articles_without_numbers': []
+            },
+            'threat_matrix': {
+                'incoming_threats': [],
+                'outgoing_threats': []
+            },
+            'articles_en': [],
+            'articles_ar': [],
+            'articles_he': [],
+            'articles_fa': [],
+            'articles_reddit': []
+        })
+    return base
+
+
+PUBLIC_REFRESH_GAP_SEC = 15 * 60
+
+
+def _public_refresh_allowed(key):
+    """v3.6.0: one live rescan per key per 15 min, shared across instances.
+    No Redis -> allow (fail-open, same as before this guard existed)."""
+    if not redis_client:
+        return True
+    try:
+        return bool(redis_client.set(f'refresh_gate:{key}', '1', nx=True, ex=PUBLIC_REFRESH_GAP_SEC))
+    except Exception:
+        return True
+
+
+def _check_cache_or_placeholder(label, cache_key, target=None, extended=False):
+    """
+    Standard cache-check logic. Call at the top of each endpoint.
+    Returns a Response if cache hit or placeholder, or None if a fresh scan should proceed.
+    """
+    refresh = request.args.get('refresh', 'false').lower() == 'true'
+    if refresh and not _public_refresh_allowed(cache_key):
+        print(f"[{label}] refresh=true inside the 15-min window -- serving cache")
+        refresh = False
+
+    if not refresh:
+        cached = get_cached_result(cache_key)
+        if cached:
+            if is_cache_fresh(cached, max_age_hours=6):
+                print(f"[{label}] Returning fresh cached data")
+                return jsonify(cached)
+            else:
+                print(f"[{label}] Returning stale cached data (background refresh will update)")
+                cached['stale_cache'] = True
+                return jsonify(cached)
+
+        print(f"[{label}] No cache available, returning empty placeholder")
+        return jsonify(_empty_placeholder(target=target, extended=extended))
+
+    print(f"[{label}] Performing fresh scan...")
+    return None
+    
+# ========================================
+# FLASK APP INITIALIZATION
+# ========================================
+app = Flask(__name__)
+CORS(app)
+try:
+    from telegram_signals import fetch_telegram_signals
+    TELEGRAM_AVAILABLE = True
+    print("[Main Backend] ✅ Telegram signals available")
+except ImportError:
+    TELEGRAM_AVAILABLE = False
+    print("[Main Backend] ⚠️ Telegram signals not available")
+
+try:
+    from bluesky_signals_me import fetch_bluesky_for_target
+    BLUESKY_AVAILABLE = True
+    print("[Main Backend] ✅ Bluesky ME signals available")
+except ImportError:
+    BLUESKY_AVAILABLE = False
+    print("[Main Backend] ⚠️ Bluesky ME signals not available")
+# Rhetoric Tracker — runs scan thread + serves endpoints
+try:
+    from rhetoric_tracker import register_rhetoric_endpoints
+    register_rhetoric_endpoints(app)
+    print("[App] ✅ Rhetoric tracker loaded (with scan thread)")
+except ImportError:
+    print("[App] ⚠️ Rhetoric tracker not found")
+
+# Libya Rhetoric Tracker — runs scan thread + serves endpoints (Jun 21 2026)
+try:
+    from rhetoric_tracker_libya import register_libya_rhetoric_endpoints
+    register_libya_rhetoric_endpoints(app)
+    print("[App] ✅ Libya rhetoric tracker loaded (with scan thread)")
+except Exception as e:
+    print(f"[App] ⚠️ Libya rhetoric tracker not found: {e}")
+
+# Egypt Rhetoric Tracker -- six fronts at the crossroads (Nov 1 2026)
+try:
+    from rhetoric_tracker_egypt import register_egypt_rhetoric_endpoints
+    register_egypt_rhetoric_endpoints(app)
+    print("[App] ✅ Egypt rhetoric tracker loaded (with scan thread)")
+except Exception as e:
+    print(f"[App] ⚠️ Egypt rhetoric tracker not found: {e}")
+
+register_military_endpoints(app)
+
+if THINK_TANK_AVAILABLE:
+    register_think_tank_endpoints(app)
+
+# Cross-cutting Commodity Tracker — register right after Military (canonical sidebar order)
+if COMMODITY_TRACKER_AVAILABLE:
+    register_commodity_endpoints(app)
+    print("[ME Backend] ✅ Commodity endpoints registered: /api/commodity-pressure, /api/commodity-prices")
+
+# Commodity x structural convergence — depends on the registry imported above
+if COMMODITY_CONVERGENCE_AVAILABLE:
+    register_commodity_convergence_endpoints(app)
+    print("[ME Backend] ✅ Commodity convergence registered: /api/commodity-structural-convergence")
+
+# Flight Disruptions -- shared Flight Watch (Nov 1 2026). Registers /api/flights,
+# /api/flights/health and keeps the page's /flight-cancellations address.
+# Leader-only scan every 6 h; requests only ever read the Redis cache.
+try:
+    from flight_watch import register_flight_endpoints
+    register_flight_endpoints(app, 'me', legacy_routes=['/flight-cancellations'], job_name='flight_scan')
+except Exception as e:
+    print(f"[App] ⚠️ Flight Watch failed to register: {e}")
+# Iran Stability Module (consolidated from iran_protests.py)
+from iran_protests import register_iran_routes
+register_iran_routes(app)
+# Iran Financial Pulse (v1.0.0 Jun 2026) -- TEDPIX / USD-IRR / Brent
+try:
+    from iran_financial_pulse import register_iran_financial_pulse_endpoints
+    register_iran_financial_pulse_endpoints(app)
+    print('[ME Backend] Iran financial pulse module loaded')
+except Exception as e:
+    print(f'[ME Backend] WARNING: Iran financial pulse unavailable ({e})')
+
+# Market Black Swan -- fragility convergence detector (v1.0.0 Jun 2026)
+try:
+    from market_blackswan_detector import register_market_blackswan_endpoints
+    register_market_blackswan_endpoints(app)
+    print('[ME Backend] Market Black Swan detector loaded')
+except Exception as e:
+    print(f'[ME Backend] WARNING: Market Black Swan unavailable ({e})')
+
+# Conflict Repricing -- market-belief layer reading the de-escalation off-ramp
+try:
+    from conflict_repricing_detector import register_conflict_repricing_endpoints
+    register_conflict_repricing_endpoints(app)
+    print('[ME Backend] Conflict Repricing detector loaded')
+except Exception as e:
+    print(f'[ME Backend] WARNING: Conflict Repricing unavailable ({e})')
+
+# Tracker voice (Nov 3 2026) -- plain-language read + "what this means" for
+# Military / Commodities / Market Watch. Reads caches only; ?force never calls Claude.
+try:
+    from tracker_voice import register_tracker_voice_endpoints
+    register_tracker_voice_endpoints(app)
+    print('[ME Backend] Tracker voice loaded')
+except Exception as e:
+    print(f'[ME Backend] WARNING: Tracker voice unavailable ({e})')
+from notam_monitor import register_notam_endpoints
+register_notam_endpoints(app)
+from israel_stability import register_israel_stability_endpoints
+from saudi_stability  import register_saudi_stability_endpoints  # v0.5.2 Jul 2026
+from qatar_stability  import register_qatar_stability_endpoints  # v1.0.0 Jul 2026
+from uae_stability    import register_uae_stability_endpoints    # v1.0.0 Jul 2026
+register_israel_stability_endpoints(app)
+register_saudi_stability_endpoints(app)   # v0.5.2 Jul 2026
+register_qatar_stability_endpoints(app)   # v1.0.0 Jul 2026
+register_uae_stability_endpoints(app)     # v1.0.0 Jul 2026
+# Egypt Stability (v1.0.0 Nov 2026) -- conditions: pound, bread, gas, Suez, borders, social
+try:
+    from egypt_stability import register_egypt_stability_endpoints
+    register_egypt_stability_endpoints(app)
+except Exception as e:
+    print(f"[ME Backend] WARNING: Egypt stability unavailable ({e})")
+# Mecca Pact Watch (v1.0.0 Nov 2026) -- shield or channel; members read from their own capitals
+try:
+    from mecca_pact_watch import register_mecca_pact_endpoints
+    register_mecca_pact_endpoints(app)
+except Exception as e:
+    print(f"[ME Backend] WARNING: Mecca Pact Watch unavailable ({e})")
+# Actor Matrix v3 (Nov 1 2026) -- reader of the rhetoric trackers; replaces the v2
+# "strike probability" matrix on the ME page. /api/threat-matrix/<target> (v2) stays
+# registered for Iraq/Israel/Jordan's bespoke cards until they move over.
+try:
+    from threat_matrix_v3 import register_threat_matrix_v3
+    register_threat_matrix_v3(app, redis_client)
+except Exception as e:
+    print(f"[ME Backend] WARNING: Actor Matrix v3 unavailable ({e})")
+# Syria Humanitarian Module (DTM API + ReliefWeb + OCHA)
+if SYRIA_HUMANITARIAN_AVAILABLE:
+    register_syria_humanitarian_endpoints(app)
+# Libya Humanitarian / Displacement Module (DTM API + ReliefWeb)
+if LIBYA_HUMANITARIAN_AVAILABLE:
+    register_libya_humanitarian_endpoints(app)
+# UNHCR Refugee Data Finder (scanner runs here — shared Redis; Africa backend reads later)
+if UNHCR_AVAILABLE:
+    register_unhcr_endpoints(app)
+# Libya Oil Pulse (oil production-status sensor — force majeure / blockades / output)
+if LIBYA_OIL_PULSE_AVAILABLE:
+    register_libya_oil_pulse_endpoints(app)
+# Yemen Stability + Houthi Rhetoric Modules
+if YEMEN_AVAILABLE:
+    register_yemen_routes(app)
+    register_houthi_rhetoric_routes(app)
+    register_syria_rhetoric_routes(app)
+if IRAQ_RHETORIC_AVAILABLE:
+    register_iraq_rhetoric_routes(app)
+if ME_BLUF_AVAILABLE:
+    register_me_bluf_routes(app)
+
+# Humanitarian Convergence Detector -- register BEFORE GPI so GPI sees
+# /api/humanitarian-convergence/bluf when it iterates REGIONAL_BLUF_ENDPOINTS.
+# Pass redis_client so the detector can read rhetoric:<country>:latest caches.
+if HUMANITARIAN_CONVERGENCE_AVAILABLE:
+    register_humanitarian_convergence_routes(app, redis_client=redis_client)
+    print("[ME Backend] ✅ Humanitarian Convergence routes registered: /api/humanitarian-convergence/bluf, /details, /health")
+
+# Cascade Commodity Detector -- register BEFORE GPI so GPI sees the new
+# /api/cascade-convergence/bluf endpoint when it iterates REGIONAL_BLUF_ENDPOINTS.
+# Same redis_client + same architectural pattern as humanitarian convergence.
+if CASCADE_DETECTOR_AVAILABLE:
+    register_cascade_detector_routes(app, redis_client=redis_client)
+    print("[ME Backend] ✅ Cascade Detector routes registered: /api/cascade-convergence/bluf, /details, /health")
+
+# Humanitarian Article Gatherer -- register the gatherer endpoints +
+# start the 12h background scheduler. Writes to humanitarian:articles:latest
+# which humanitarian_convergence_detector reads on each scan.
+# start_scheduler=True kicks off the daemon thread immediately.
+if HUMANITARIAN_GATHERER_AVAILABLE:
+    register_humanitarian_gatherer_routes(app, start_scheduler=True)
+    print("[ME Backend] ✅ Humanitarian Gatherer routes registered: /api/humanitarian-gatherer/scan, /health, /articles")
+
+# World Bank Structural-Stress Gatherer -- 24h daemon sweep of the World Bank
+# Indicators API. Writes worldbank:structural:latest for the convergence detector.
+if WORLDBANK_GATHERER_AVAILABLE:
+    register_worldbank_gatherer_routes(app, start_scheduler=True)
+    print("[ME Backend] ✅ World Bank Gatherer routes registered: /api/worldbank-gatherer/scan, /health")
+
+# Kinetic Activity Gatherer -- gap-filling CAMEO-coded conflict/cooperation
+# tracker for the uncovered world. Registered BEFORE GPI so the Slice-2 BLUF
+# (/api/kinetic-convergence/bluf) is visible when GPI iterates its endpoints.
+# start_scheduler=True starts the 12h daemon (cross-worker lock built in).
+if KINETIC_GATHERER_AVAILABLE:
+    register_kinetic_endpoints(app, start_scheduler=True)
+    print("[ME Backend] Kinetic Activity Gatherer routes registered: /api/kinetic-activity, /debug")
+
+# Diplomatic Convergence Gatherer -- convergent-official-travel detector
+# (diplomatic sibling of the kinetic gatherer; same GDELT CAMEO pipe, visit/
+# meet event classes, watch-pair gated, multilateral-calendar suppressed).
+# Registered BEFORE GPI so _narrative_diplomatic_convergence can read its
+# Redis key (diplomatic:convergence:latest). 12h daemon, cross-worker lock.
+if DIPCONV_GATHERER_AVAILABLE:
+    register_diplomatic_convergence_endpoints(app, start_scheduler=True)
+    print("[ME Backend] Diplomatic Convergence routes registered: /api/diplomatic-convergence, /debug")
+
+# Food Price Pulse -- coverage-first WFP staple price monitor (economic
+# sibling of the kinetic gatherer). Weekly scan, cross-worker lock built in.
+if FOOD_PULSE_AVAILABLE:
+    register_food_price_pulse_endpoints(app, start_scheduler=True)
+    print("[ME Backend] Food Price Pulse routes registered: /api/food-price-pulse, /recon, /debug")
+
+# Global Pressure Index -- register after all regional BLUFs/rhetoric so it can read them
+if GPI_AVAILABLE:
+    try:
+        register_gpi_routes(app)
+        print("[ME Backend] ✅ GPI routes registered: /api/gpi, /api/gpi/level, /api/gpi/debug")
+    except Exception as e:
+        # Matches the posture of the snapshot/delta registrations below. A
+        # registration failure should cost you the GPI routes, not the backend.
+        GPI_AVAILABLE = False
+        import traceback as _gpi_reg_tb
+        print(f"[ME Backend] ⚠️ GPI route registration FAILED: {type(e).__name__}: {e}")
+        _gpi_reg_tb.print_exc()
+
+# GPI tagging audit -- diagnostic only, reads build_gpi() in-process.
+# Must register AFTER the GPI itself for the same reason the snapshot does.
+if GPI_AUDIT_AVAILABLE:
+    register_gpi_audit_endpoints(app)
+
+# GPI time-series -- must register AFTER the GPI itself, since the snapshot
+# writer reads build_gpi() in-process (no HTTP self-call).
+if GPI_SNAPSHOT_AVAILABLE:
+    try:
+        register_gpi_snapshot_routes(app, start_scheduler=True)
+    except Exception as e:
+        print(f"[ME Backend] ⚠️ GPI snapshot registration failed: {e}")
+
+if GPI_DELTA_AVAILABLE:
+    try:
+        register_gpi_delta_routes(app)
+    except Exception as e:
+        print(f"[ME Backend] ⚠️ GPI delta registration failed: {e}")
+
+# Prediction markets (Nov 5 2026) -- traders' odds from Polymarket + Kalshi,
+# read every 2h, $0, no keys. CONTEXT ONLY: never raises or lowers a level.
+# Routes: /api/markets, /api/markets/page/<key>, /api/markets/debug, /api/markets/discover
+try:
+    from prediction_markets import register_prediction_markets_routes
+    register_prediction_markets_routes(app, start=True)
+except Exception as e:
+    print(f"[ME Backend] ⚠️ Prediction markets registration failed (non-fatal): {e}")
+
+# Attention layer (Nov 5 2026) -- traders' odds + commentary + Asifah's level,
+# side by side per country. Redis reads only, $0. Never scored.
+# Routes: /api/attention/<country>, /api/attention/summary
+try:
+    from attention_layer import register_attention_routes
+    register_attention_routes(app)
+except Exception as e:
+    print(f"[ME Backend] ⚠️ Attention layer registration failed (non-fatal): {e}")
+
+# Source census (Nov 5 2026) -- one link reads every backend's feed health.
+# Route: /api/census (cached 30 min; ?refresh=true at most every 10 min). $0.
+try:
+    from source_census import register_census_routes
+    register_census_routes(app)
+except Exception as e:
+    print(f"[ME Backend] ⚠️ Source census registration failed (non-fatal): {e}")
+
+# Memory probe (Nov 8 2026) -- the backend ran out of memory ~once a day.
+# Records each worker's size + thread names every 15 min: /api/memory. $0.
+try:
+    from memory_probe import register_memory_probe
+    register_memory_probe(app, backend='asifah-backend')
+except Exception as e:
+    print(f"[ME Backend] ⚠️ Memory probe registration failed (non-fatal): {e}")
+
+# Economic Absorption Signatures — register after commodity tracker so leader
+# interventions can be cross-referenced. Phase 2 rhetoric trackers will read
+# leader intervention fingerprints and write dynamic signatures back to Redis.
+if ABSORPTION_AVAILABLE:
+    register_absorption_endpoints(app)
+    print("[ME Backend] ✅ Absorption signatures registered: /api/absorption-signature/<id>, /api/absorption-signatures")
+
+# Jawboning primitive — register catalog + detector endpoints together.
+# Theater proxies (Asia, WHA, future Europe/CAVE) will POST to /api/jawboning/detect.
+# Cross-theater consumers (Iran/China/Cuba/Russia trackers) read fingerprints via
+# /api/jawboning/active or directly from Redis jawboning:{direction}:{country}:{target}.
+if JAWBONING_AVAILABLE:
+    register_jawboning_signatures_endpoints(app)
+    register_jawboning_detector_endpoints(app)
+    print("[ME Backend] ✅ Jawboning primitive registered: /api/jawboning/signatures, /detect, /active")
+
+# Butterfly Reader — register the cross-theater read endpoints.
+# Theater proxies (Asia, Europe, WHA) call /api/butterfly/read/<consumer>
+# to fetch their consumer-specific bundle. India can also call the function
+# directly in-process.
+if BUTTERFLY_READER_AVAILABLE:
+    register_butterfly_endpoints(app)
+    print("[ME Backend] ✅ Butterfly reader registered: /api/butterfly/read/<consumer>, /health, /consumers")
+
+if register_iran_rhetoric_routes:
+    register_iran_rhetoric_routes(app)
+
+if register_israel_rhetoric_routes:
+    register_israel_rhetoric_routes(app)
+
+if register_saudi_rhetoric_routes:
+    register_saudi_rhetoric_routes(app)
+if register_qatar_rhetoric_routes:
+    register_qatar_rhetoric_routes(app)
+if register_uae_rhetoric_routes:
+    register_uae_rhetoric_routes(app)
+
+# ── IRAN STRIKE WINDOW endpoints (May 22 2026) ──
+# Endpoints registered:
+#   GET  /api/iran-strike-window              — current detection state
+#   GET  /api/iran-strike-window?force=true   — force fresh scan
+#   GET  /api/iran-strike-window/history      — historical snapshots
+#   POST /api/iran-strike-window/log-event    — manually label event
+if STRIKE_WINDOW_AVAILABLE:
+    register_strike_window_endpoints(app)
+    print("[ME Backend] ✅ Strike Window endpoints registered: /api/iran-strike-window, /history, /log-event")
+
+if register_oman_rhetoric_routes:
+    register_oman_rhetoric_routes(app)
+if IRAQ_HUMANITARIAN_AVAILABLE:
+    register_iraq_humanitarian_endpoints(app)
+if IRAQ_STABILITY_AVAILABLE:
+    register_iraq_stability_endpoints(app)
+
+# Convergence registry endpoints — consumed by Asia/Europe/WHA convergence proxies
+if CONVERGENCE_ENDPOINTS_AVAILABLE:
+    register_convergence_endpoints(app)
+    print("[ME Backend] ✅ Convergence endpoints registered: /api/convergence/all, /<id>, /by-country/<c>, /by-region/<r>")
+
+# Convergence Detector (multi-axis live) -- read-probe in v0.1.0
+if CONVERGENCE_DETECTOR_AVAILABLE:
+    register_convergence_detector_endpoints(app)
+    print("[ME Backend] Convergence detector registered: /api/cax/probe")
+
+# Corridor dependence -- /api/corridor-dependence/*
+if CORRIDOR_DEPENDENCE_AVAILABLE:
+    register_corridor_dependence_endpoints(app)
+    print("[ME Backend] ✅ Corridor dependence registered: "
+          "/api/corridor-dependence, /<country_id>")
+
+# Severity canon -- /api/severity-canon/*
+if SEVERITY_CANON_AVAILABLE:
+    register_severity_canon_endpoints(app)
+    print("[ME Backend] ✅ Severity canon registered: "
+          "/api/severity-canon, /<ladder_id>")
+
+# Tempo Baseline Engine -- /api/tempo/*
+if TEMPO_AVAILABLE:
+    register_tempo_endpoints(app)
+    print("[ME Backend] ✅ Tempo baseline registered: /api/tempo/registry, "
+          "/api/tempo/<target>, /api/tempo/compute, /debug/tempo")
+
+
+# Tempo baseline daily recompute — cross-worker locked, same pattern as the
+# commodity/humanitarian/military loops.
+if TEMPO_AVAILABLE:
+    import threading as _tempo_threading
+    import time as _tempo_time
+
+    def _tempo_refresh_loop():
+        _tempo_time.sleep(300)   # let the boot settle
+        # Oct 18 2026 -- one instance runs this (instance_lock v1.1.0 leader;
+        # the other Render instance serves pages and stands by).
+        try:
+            from instance_lock import my_turn as _my_turn
+        except ImportError:
+            _my_turn = lambda job: True   # no lock module: run (fail-open)
+        while True:
+            if not _my_turn('tempo_refresh'):
+                continue
+            try:
+                results = tempo_compute_all()
+                ready = [t for t, r in results.items() if r.get('ready')]
+                print(f"[Tempo] Daily recompute: {len(ready)}/{len(results)} targets ready "
+                      f"-> {ready if ready else 'none yet (emitters still filling the tape)'}")
+            except Exception as e:
+                print(f"[Tempo] Refresh loop error: {str(e)[:120]}")
+            _tempo_time.sleep(6 * 3600)   # 4x daily
+
+    _tempo_threading.Thread(target=_tempo_refresh_loop, daemon=True).start()
+    print("[ME Backend] ✅ Tempo baseline refresh loop started (6h cycle)")
+
+
+# ──────────────────────────────────────────────────────────────
+# /debug/routes — diagnostic hygiene endpoint (Taiwan-bug lesson)
+# Lists all registered routes. Useful for verifying deploy correctness
+# without grepping logs. Costs nothing if nobody hits it.
+# ──────────────────────────────────────────────────────────────
+@app.route('/debug/routes', methods=['GET'])
+def debug_list_routes():
+    routes = []
+    for rule in app.url_map.iter_rules():
+        routes.append({
+            'endpoint': rule.endpoint,
+            'methods':  sorted([m for m in rule.methods if m not in ('HEAD', 'OPTIONS')]),
+            'path':     str(rule),
+        })
+    routes.sort(key=lambda r: r['path'])
+    _paths = {r['path'] for r in routes}
+
+    # v3.6.0 (Oct 4 2026) -- gpi_present used to be a SUBSTRING test:
+    #     any('/api/gpi' in r['path'] for r in routes)
+    # '/api/gpi/delta' contains '/api/gpi', and the delta, snapshot, history and
+    # audit routes all come from DIFFERENT modules that import fine on their own.
+    # So on Oct 4, with global_pressure_index.py failing to parse and /api/gpi
+    # returning 404 on every request, this endpoint reported gpi_present: true.
+    # The one diagnostic built to catch a missing route (the Taiwan-bug lesson)
+    # reported healthy for the entire outage.
+    # Exact paths now, each named individually, so a PARTIAL load is visible too.
+    _gpi_core = {
+        '/api/gpi':       '/api/gpi' in _paths,
+        '/api/gpi/level': '/api/gpi/level' in _paths,
+        '/api/gpi/debug': '/api/gpi/debug' in _paths,
+    }
+    return jsonify({
+        'total_routes': len(routes),
+        'gpi_present':  all(_gpi_core.values()),
+        'gpi_core':     _gpi_core,
+        # Did the MODULE import at boot? Separates "import failed" from
+        # "imported but registration threw" without reading the log.
+        'gpi_module_imported': GPI_AVAILABLE,
+        'bluf_present': any('/bluf' in r['path'] for r in routes),
+        'bluf_endpoints': sorted(p for p in _paths if '/bluf' in p),
+        'routes':       routes,
+    })
+
+# ========================================
+# CONFIGURATION
+# ========================================
+
+NEWSAPI_KEY = os.environ.get('NEWSAPI_KEY')
+# Nov 1 2026 (October list #2): key text removed from source. Both values were
+# hardcoded defaults visible in public repo history; neither constant is read
+# anywhere in this file. Keys now come ONLY from Render env vars -- an unset
+# var is None, never a fallback key.
+EODHD_API_KEY = os.environ.get('EODHD_API_KEY')
+ALPHA_VANTAGE_KEY = os.environ.get('ALPHA_VANTAGE_KEY')
+GDELT_BASE_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
+
+# Reddit User Agent
+# v3.2.0 (Sep 21 2026) — honest UA. The spoofed Chrome string that lived here
+# was the only disguise on the platform and the only UA Reddit refused.
+ME_BACKEND_VERSION = '3.9.1'   # Nov 8 2026: memory probe (/api/memory)
+
+# v3.3.0 -- cross-instance job ownership (Render runs 2 instances of this
+# backend; background threads must not run twice). Optional import so the
+# backend still boots if the file is missing.
+try:
+    from instance_lock import lock_status as _lock_status
+except ImportError:
+    _lock_status = None
+REDDIT_USER_AGENT = f"AsifahAnalytics-ME/{ME_BACKEND_VERSION} (OSINT monitoring tool)"
+
+# v3.5.0 (Oct 3 2026) -- ONE User-Agent for everything this backend fetches.
+# Reddit got an honest UA in v3.2.0 and the refusals stopped; eleven other
+# call sites kept a copy-pasted Chrome string. The same string in eleven
+# places is eleven places to forget, so it is one constant now, and the
+# version travels with it -- a 403 in a publisher's log is traceable to a
+# release rather than to "some bot".
+#
+# WATCH AFTER DEPLOY: ten of the eleven are RSS feeds and JSON APIs that do
+# not inspect the UA. scrape_acaps_syria() is the exception -- it scrapes an
+# HTML page built for humans, and is the one that could legitimately start
+# returning 403. feed_health will say so if it does. The fix then is a
+# documented per-site exception AT THAT CALL SITE, not reverting this
+# constant: one honest default with a named, dated exception beats eleven
+# silent disguises.
+ASIFAH_USER_AGENT = f"AsifahAnalytics-ME/{ME_BACKEND_VERSION} (OSINT monitoring tool; +https://asifahanalytics.com)"
+
+# Rate limiting
+RATE_LIMIT = 100
+RATE_LIMIT_WINDOW = 86400
+rate_limit_data = {
+    'requests': 0,
+    'reset_time': time.time() + RATE_LIMIT_WINDOW
+}
+
+# ========================================
+# U.S. STATE DEPT TRAVEL ADVISORIES
+# ========================================
+_travel_advisory_cache = {'data': None, 'fetched_at': None, 'ttl': 86400}  # 24hr cache
+TRAVEL_ADVISORY_API = "https://cadataapi.state.gov/api/TravelAdvisories"
+
+TRAVEL_ADVISORY_CODES = {
+    'hezbollah': ['LE'],   # Lebanon (FIPS)
+    'iran': ['IR'],
+    'iraq': ['IZ'],        # Iraq (FIPS — not IQ!)
+    'houthis': ['YM'],     # Yemen (FIPS)
+    'israel': ['IS', 'GZ', 'WE', 'IL'],  # Israel/West Bank/Gaza (FIPS + ISO — covers combined advisory)
+    'syria': ['SY'],
+    'jordan': ['JO'],
+    'algeria': ['AG'],     # Algeria (FIPS)
+    'libya': ['LY'],       # Libya (FIPS)
+    'morocco': ['MO'],     # Morocco (FIPS)
+    'tunisia': ['TS'],     # Tunisia (FIPS)
+    'bahrain': ['BA'],     # Bahrain (FIPS)
+    'kuwait': ['KU'],      # Kuwait (FIPS — not KW!)
+    'saudi_arabia': ['SA'],# Saudi Arabia (FIPS)
+    'uae': ['AE', 'TC'],   # UAE (FIPS AE + TC for Trucial States legacy code)
+    'oman': ['MU'],        # Oman (FIPS — not OM!)
+    'qatar': ['QA'],       # Qatar (FIPS)
+    'egypt': ['EG'],       # Egypt (FIPS)
+}
+
+TRAVEL_ADVISORY_LEVELS = {
+    1: {'label': 'Exercise Normal Precautions', 'short': 'Normal Precautions', 'color': '#10b981'},
+    2: {'label': 'Exercise Increased Caution', 'short': 'Increased Caution', 'color': '#f59e0b'},
+    3: {'label': 'Reconsider Travel', 'short': 'Reconsider Travel', 'color': '#f97316'},
+    4: {'label': 'Do Not Travel', 'short': 'Do Not Travel', 'color': '#ef4444'}
+}
+
+# ========================================
+# SOURCE WEIGHTS
+# ========================================
+SOURCE_WEIGHTS = {
+    'premium': {
+        'sources': [
+            'The New York Times', 'The Washington Post', 'Reuters', 
+            'Associated Press', 'AP News', 'BBC News', 'The Guardian',
+            'Financial Times', 'Wall Street Journal', 'The Economist'
+        ],
+        'weight': 1.0
+    },
+    'regional': {
+        'sources': [
+            'Iran Wire', 'Al Jazeera', 'Haaretz', 'Times of Israel',
+            'Al Arabiya', 'The Jerusalem Post', 'Middle East Eye',
+            'Syria Direct', 'SOHR'
+        ],
+        'weight': 0.8
+    },
+    'standard': {
+        'sources': [
+            'CNN', 'MSNBC', 'Fox News', 'NBC News', 'CBS News',
+            'ABC News', 'Bloomberg', 'CNBC'
+        ],
+        'weight': 0.6
+    },
+    'gdelt': {
+        'sources': ['GDELT'],
+        'weight': 0.4
+    },
+    'social': {
+        'sources': ['Reddit', 'r/'],
+        'weight': 0.3
+    }
+}
+
+# ========================================
+# KEYWORD SEVERITY
+# ========================================
+KEYWORD_SEVERITY = {
+    'active_war': {
+        'keywords': [
+            'ballistic missile', 'cruise missile', 'missile barrage',
+            'missile salvo', 'missile intercept', 'iron dome intercept',
+            'arrow intercept', 'davids sling intercept',
+            'home front command', 'pikud haoref', 'tzeva adom',
+            'red alert', 'sirens', 'bomb shelter', 'safe room',
+            'air defense activated', 'base attacked', 'base hit',
+            'embassy hit', 'embassy attacked', 'port struck',
+            'airspace closed', 'flights cancelled war',
+            'operation epic fury', 'combat operations',
+            'shoots down drone', 'shoots down missile',
+            'intercepts ballistic', 'intercepts missile',
+            'scrambles jets', 'jets scrambled',
+            'casualties confirmed', 'killed in attack',
+            'wounded in attack', 'shrapnel', 'debris fell',
+            'impact confirmed', 'direct hit',
+        ],
+        'multiplier': 3.0
+    },
+    'diplomatic_crisis': {
+        'keywords': [
+            'ordered departure', 'authorized departure',
+            'embassy evacuation', 'evacuate embassy',
+            'embassy closure', 'embassy closed',
+            'drawdown of personnel', 'drawdown of staff',
+            'suspend embassy operations',
+            'non-emergency personnel ordered',
+        ],
+        'multiplier': 3.5
+    },
+    'critical': {
+        'keywords': [
+            'nuclear strike', 'nuclear attack', 'nuclear threat',
+            'full-scale war', 'declaration of war', 'state of war',
+            'mobilization order', 'reserves called up', 'troops deployed'
+        ],
+        'multiplier': 2.5
+    },
+    'high': {
+        'keywords': [
+            'imminent strike', 'imminent attack', 'preparing to strike',
+            'military buildup', 'forces gathering', 'will strike',
+            'vowed to attack', 'threatened to strike'
+        ],
+        'multiplier': 2.0
+    },
+    'elevated': {
+        'keywords': [
+            'strike', 'attack', 'airstrike', 'bombing', 'missile',
+            'rocket', 'retaliate', 'retaliation', 'response'
+        ],
+        'multiplier': 1.5
+    },
+    'moderate': {
+        'keywords': [
+            'threatens', 'warned', 'tensions', 'escalation',
+            'conflict', 'crisis'
+        ],
+        'multiplier': 1.0
+    }
+}
+
+# ========================================
+# v2.9 TRAVEL ADVISORY FLOOR SYSTEM
+# ========================================
+DIPLOMATIC_SIGNAL_KEYWORDS = {
+    'embassy_closure': {
+        'phrases': [
+            'embassy closed', 'embassy closure', 'suspend embassy operations',
+            'suspended embassy operations', 'shuttered embassy', 'closing the embassy',
+        ],
+        'floor_schedule': [
+            (14, 92),
+            (28, 80),
+            (45, 65),
+        ],
+    },
+    'ordered_departure': {
+        'phrases': [
+            'ordered departure', 'authorized departure',
+            'drawdown of personnel', 'drawdown of staff',
+            'embassy evacuation', 'evacuate embassy', 'evacuating embassy',
+            'non-emergency personnel ordered to leave',
+            'departure of non-emergency',
+            'family members ordered to depart',
+        ],
+        'floor_schedule': [
+            (14, 85),
+            (28, 70),
+            (45, 55),
+        ],
+    },
+    'level_4_do_not_travel': {
+        'phrases': [
+            'level 4: do not travel',
+            'do not travel',
+        ],
+        'floor_schedule': [
+            (14, 70),
+            (28, 55),
+            (45, 40),
+        ],
+    },
+    'level_3_reconsider': {
+        'phrases': [
+            'level 3: reconsider travel',
+            'reconsider travel',
+        ],
+        'floor_schedule': [
+            (14, 45),
+            (28, 35),
+            (45, 30),
+        ],
+    },
+}
+
+# ========================================
+# DE-ESCALATION
+# ========================================
+DEESCALATION_KEYWORDS = [
+    'ceasefire', 'cease-fire', 'truce', 'peace talks', 'peace agreement',
+    'diplomatic solution', 'negotiations', 'de-escalation', 'de-escalate',
+    'tensions ease', 'tensions cool', 'tensions subside', 'calm',
+    'defused', 'avoided', 'no plans to', 'ruled out', 'backs down',
+    'restraint', 'diplomatic efforts', 'unlikely to strike'
+]
+
+# ========================================
+# TARGET-SPECIFIC BASELINES
+# ========================================
+TARGET_BASELINES = {
+    'hezbollah': {
+        'base_adjustment': +15,
+        'description': 'Active Israeli ground operations and airstrikes in Lebanon; ceasefire collapsed'
+    },
+    'iran': {
+        'base_adjustment': +20,
+        'description': 'Active US-Israel combat operations; Supreme Leader killed; regime severely degraded'
+    },
+    'iraq': {
+        'base_adjustment': +8,
+        'description': 'PMF militia activity, US base threats, Iraqi airspace used for Iran strikes'
+    },
+    'israel': {
+        'base_adjustment': +22,
+        'description': 'Active war with Iran — daily missile barrages, multi-front conflict, authorized departure'
+    },
+    'houthis': {
+        'base_adjustment': +5,
+        'description': 'Active Red Sea shipping attacks; Houthi missile strikes on Israel and Saudi Arabia'
+    },
+    'syria': {
+        'base_adjustment': +8,
+        'description': 'Post-Assad volatility, opportunistic strikes, refugee flows'
+    },
+    'jordan': {
+        'base_adjustment': +5,
+        'description': 'Intercepting Iranian missiles/drones; regional spillover; Tower 22 threat'
+    },
+    'algeria': {
+        'base_adjustment': +3,
+        'description': 'Western Sahara standoff and diplomatic rupture with Morocco; Sahel/JNIM spillover; major gas supplier to Europe'
+    },
+    'libya': {
+        'base_adjustment': +6,
+        'description': 'East-West institutional split (LNA/Haftar vs GNU/Tripoli); Russian/Wagner footprint; periodic militia clashes; migration corridor'
+    },
+    'morocco': {
+        'base_adjustment': +3,
+        'description': 'Western Sahara/Polisario dispute (MINURSO); rupture with Algeria; Abraham Accords member; generally stable state'
+    },
+    'tunisia': {
+        'base_adjustment': +3,
+        'description': 'Presidential consolidation under Saied; economic strain and migration pressure (Sfax); porous Libya border'
+    },
+    'bahrain': {
+        'base_adjustment': +10,
+        'description': 'US 5th Fleet HQ; within Iranian missile range; Gulf tensions elevated'
+    },
+    'kuwait': {
+        'base_adjustment': +12,
+        'description': 'US embassy closed; Camp Arifjan under Iranian missile threat; troops at risk'
+    },
+    'saudi_arabia': {
+        'base_adjustment': +10,
+        'description': 'Iranian and Houthi missile/drone threat; Aramco targeted; air defense activated'
+    },
+    'uae': {
+        'base_adjustment': +8,
+        'description': 'Al Dhafra base targeted; Iranian and Houthi threat; Fujairah port risk'
+    },
+    'oman': {
+        'base_adjustment': +5,
+        'description': 'Strait of Hormuz proximity; traditional mediator but at geographic risk'
+    },
+    'qatar': {
+        'base_adjustment': +10,
+        'description': 'Al Udeid CENTCOM forward HQ; within Iranian missile range'
+    },
+    'egypt': {
+        'base_adjustment': -5,
+        'description': 'Stable US ally; accepting evacuees; Suez disruption risk but not under direct attack'
+    },
+}
+
+REDDIT_SUBREDDITS = {
+    "algeria": [
+        "Algeria", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "libya": [
+        "Libya", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "morocco": [
+        "Morocco", "WesternSahara", "geopolitics",
+        "CredibleDefense", "anime_titties", "MiddleEastNews"
+    ],
+    "tunisia": [
+        "Tunisia", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "hezbollah": ["ForbiddenBromance", "Israel", "Lebanon"],
+    "iran": [
+        "Iran", "Israel", "geopolitics",
+        "iranpolitics", "CredibleDefense", "anime_titties"
+    ],
+    "iraq": ["Iraq", "Kurdistan", "geopolitics", "anime_titties"],
+    "houthis": [
+        "Yemen", "Israel", "geopolitics",
+        "CredibleDefense", "YemeniCrisis", "anime_titties"
+    ],
+    "syria": [
+        "syriancivilwar", "Syria", "geopolitics",
+        "CredibleDefense", "anime_titties"
+    ],
+    "jordan": [
+        "jordan", "geopolitics", "CredibleDefense",
+        "anime_titties", "Israel", "syriancivilwar"
+    ],
+    "israel": [
+        "Israel", "geopolitics", "CredibleDefense",
+        "anime_titties", "ForbiddenBromance", "IsraelPalestine",
+        "IronDome", "worldnews"
+    ],
+    "bahrain": [
+        "Bahrain", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "kuwait": [
+        "Kuwait", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "saudi_arabia": [
+        "SaudiArabia", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews", "worldnews"
+    ],
+    "uae": [
+        "UAE", "dubai", "geopolitics",
+        "CredibleDefense", "anime_titties", "MiddleEastNews"
+    ],
+    "oman": [
+        "Oman", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "qatar": [
+        "qatar", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews"
+    ],
+    "egypt": [
+        "Egypt", "geopolitics", "CredibleDefense",
+        "anime_titties", "MiddleEastNews", "worldnews"
+    ],
+}
+
+# ========================================
+# KEYWORDS & ESCALATION INDICATORS
+# ========================================
+ESCALATION_KEYWORDS = [
+    'strike', 'attack', 'bombing', 'airstrike', 'missile', 'rocket',
+    'military operation', 'offensive', 'retaliate', 'retaliation',
+    'response', 'counterattack', 'invasion', 'incursion',
+    'threatens', 'warned', 'vowed', 'promised to strike',
+    'will respond', 'severe response', 'consequences',
+    'mobilization', 'troops deployed', 'forces gathering',
+    'military buildup', 'reserves called up',
+    'killed', 'dead', 'casualties', 'wounded', 'injured',
+    'death toll', 'fatalities',
+    'flight cancellations', 'cancelled flights', 'suspend flights'
+]
+
+TARGET_KEYWORDS = {
+    'hezbollah': {
+        'keywords': [
+            'hezbollah', 'hizbollah', 'hizballah', 'lebanon', 'lebanese', 'naim qassem', 'qassem',
+            # v3.3 — diplomat amplifier keywords (Ravid-style wider net)
+            'michel issa', 'nada hamadeh', 'simon karam',
+            'tom barrack', 'massad boulos', 'boulos',
+            'mike huckabee', 'huckabee ambassador',
+            'barak ravid', 'axios lebanon',
+            'ברק רביד',  # Hebrew Ravid
+        ],
+        'reddit_keywords': ['Hezbollah', 'Lebanon', 'Israel', 'IDF', 'Lebanese', 'border', 'missile', 'strike']
+    },
+    'iran': {
+        'keywords': [
+            'iran', 'iranian', 'tehran', 'irgc', 'revolutionary guard', 'khamenei', 'mojtaba',
+            # v3.3 — diplomat amplifier keywords (Ravid-style wider net)
+            'tom barrack', 'massad boulos', 'boulos',
+            'ron dermer', 'dermer', 'yechiel leiter', 'leiter',
+            'barak ravid', 'axios iran',
+            'ברק רביד',  # Hebrew Ravid
+        ],
+        'reddit_keywords': ['Iran', 'Israel', 'IRGC', 'nuclear', 'Tehran', 'strike', 'sanctions']
+    },
+    'iraq': {
+        'keywords': [
+            'iraq', 'iraqi', 'baghdad', 'basra', 'erbil', 'kirkuk', 'kurdistan',
+            'PMF', 'popular mobilization forces', 'hashd al-shaabi',
+            'PKK', 'kurdistan workers party',
+            'ISIS', 'ISIL', "da'esh", 'daesh',
+            'al-sudani', 'peshmerga', 'militia',
+            'erbil consulate', 'erbil rocket', 'green zone',
+            'kataib hezbollah', 'asaib ahl al-haq'
+        ],
+        'reddit_keywords': [
+            'Iraq', 'Baghdad', 'Erbil', 'Kurdistan', 'ISIS', 'militia',
+            'PMF', 'PKK', 'Peshmerga', 'US troops', 'consulate',
+            'Daesh', 'Kirkuk', 'Green Zone', 'Kataib Hezbollah'
+        ]
+    },
+    'israel': {
+        'keywords': [
+            'israel', 'israeli', 'idf', 'tel aviv', 'jerusalem', 'netanyahu',
+            'iron dome', 'iron beam', 'israel defense forces', 'knesset',
+            'shin bet', 'mossad', 'israel military', 'israel strike',
+            'israel airstrike', 'israel operation', 'israel gaza',
+            'israel lebanon', 'israel hezbollah', 'israel iran',
+            'west bank raid', 'jenin raid', 'nablus', 'tulkarm',
+            'israel houthis', 'eilat', 'haifa', 'golan heights',
+            'ben gurion', 'negev', 'dimona', 'israel reserves',
+            'israel mobilization', 'gaza operation', 'rafah',
+            'hamas tunnel', 'hostage', 'hostages gaza',
+            'iran strikes israel', 'iran missile israel', 'iran attack israel',
+            'iranian ballistic missile israel', 'iranian cruise missile israel',
+            'iranian drone israel', 'iran retaliates israel',
+            'ballistic missile tel aviv', 'ballistic missile israel',
+            'missile barrage israel', 'missile salvo israel',
+            'iron dome intercept', 'iron dome overwhelmed',
+            'arrow intercept', 'arrow missile defense', 'davids sling',
+            'home front command', 'pikud haoref', 'tzeva adom', 'red alert',
+            'sirens israel', 'sirens tel aviv', 'sirens haifa',
+            'shelter israel', 'bomb shelter', 'safe room',
+            'israel under attack', 'israel war', 'israel iran war',
+            'operation epic fury', 'us israel strike iran',
+            'ben gurion closed', 'ben gurion airport closed',
+            'israel airspace closed', 'israel flights cancelled',
+            'casualties israel', 'killed israel', 'wounded israel',
+            'debris israel', 'shrapnel israel', 'impact israel',
+            'missile hits israel', 'missile impact tel aviv',
+            'israel emergency', 'israel state of emergency',
+            'israel wartime', 'israel war cabinet',
+            'idf northern command', 'idf southern command', 'idf central command',
+            'israel multi front', 'israel seven front war',
+            'hezbollah rockets israel', 'houthi missile israel',
+            'gaza rockets israel', 'syria rockets golan',
+            'authorized departure israel', 'evacuate israel',
+            'us embassy israel alert', 'us citizens leave israel',
+            'צה״ל', 'כיפת ברזל', 'תקיפה', 'חיזבאללה', 'חמאס',
+            'טילים', 'רקטות', 'כוננות', 'מילואים', 'פיגוע',
+            'עזה', 'לבנון', 'איראן', 'תימן', 'חות׳ים',
+            'יהודה ושומרון', 'ג׳נין', 'שכם', 'גדר הביטחון',
+            'פיקוד העורף', 'צבע אדום', 'מקלט', 'חדר ביטחון',
+            'טיל בליסטי', 'יירוט', 'חץ', 'שלט דוד',
+            'מלחמה', 'מצב חירום', 'פינוי', 'נפגעים',
+            'صواريخ على إسرائيل', 'هجوم إيراني على إسرائيل',
+            'القبة الحديدية', 'صافرات الإنذار', 'قصف تل أبيب',
+            'حرب إسرائيل إيران', 'عملية إيبك فيوري',
+            # v3.3 — diplomat amplifier keywords (Ravid-style wider net)
+            'ron dermer', 'dermer', 'yechiel leiter', 'leiter ambassador',
+            'mike huckabee', 'huckabee ambassador',
+            'tom barrack', 'massad boulos',
+            'barak ravid', 'axios israel',
+            'ברק רביד', 'רון דרמר', 'יחיאל לייטר',  # Hebrew names
+        ],
+        'reddit_keywords': [
+            'Israel', 'IDF', 'Netanyahu', 'Iron Dome', 'Gaza',
+            'Hezbollah', 'Hamas', 'West Bank', 'Jenin', 'Houthis',
+            'Tel Aviv', 'Jerusalem', 'Israeli military', 'strike',
+            'المقاومة', 'الكيان الصهيوني', 'صواريخ', 'حزب الله', 'حماس',
+            'القسام', 'طوفان الأقصى', 'جيش الاحتلال'
+        ]
+    },
+    'houthis': {
+        'keywords': ['houthi', 'houthis', 'yemen', 'yemeni', 'ansarallah', 'ansar allah', 'sanaa'],
+        'reddit_keywords': ['Houthi', 'Yemen', 'Red Sea', 'shipping', 'missile', 'drone', 'Ansar Allah']
+    },
+    'syria': {
+        'keywords': [
+            'syria', 'syrian', 'damascus', 'aleppo', 'idlib', 'homs',
+            'isis', 'isil', 'islamic state', 'daesh',
+            'al qaeda', 'al-qaeda', 'alqaeda', 'jabhat al-nusra', 'nusra',
+            'hts', 'hayat tahrir al-sham', 'tahrir al-sham',
+            'sdf', 'syrian democratic forces', 'kurdish forces', 'kurds', 'ypg', 'ypj',
+            'druze', 'druze community', 'golan', 'golan heights',
+            'assad regime', 'post-assad', 'syria transition',
+            'al-sharaa', 'sharaa'
+        ],
+        'reddit_keywords': [
+            'Syria', 'Damascus', 'ISIS', 'Al Qaeda', 'HTS', 'SDF',
+            'Kurds', 'Druze', 'Golan', 'Israel', 'Sharaa', 'civil war'
+        ]
+    },
+    'jordan': {
+        'keywords': [
+            'jordan', 'jordanian', 'amman', 'king abdullah', 'hashemite',
+            'jordan border', 'jordan airspace', 'jordan intercept',
+            'jordan military', 'jordan air defense', 'jordan drone',
+            'jordan syria border', 'rukban', 'captagon jordan',
+            'jordan protest', 'amman protest', 'jordan palestinian',
+            'tower 22', 'tanf jordan', 'jordan us base',
+            'jordan muslim brotherhood', 'east bank', 'jordan refugee',
+            'jordan economic', 'jordan imf', 'zarqa', 'irbid', 'mafraq'
+        ],
+        'reddit_keywords': [
+            'Jordan', 'Amman', 'Jordanian', 'King Abdullah', 'Hashemite',
+            'Tower 22', 'Captagon', 'Jordan border', 'Jordan airspace',
+            'Jordan protest', 'Palestinian', 'ISIS Jordan'
+        ]
+    },
+    'algeria': {
+        'keywords': [
+            'algeria', 'algerian', 'algiers', 'tebboune', 'anp algeria',
+            'chengriha', 'polisario', 'western sahara', 'tindouf', 'sahel',
+            'sonatrach', 'algeria gas', 'algeria morocco', 'algeria mali',
+            'algeria russia arms'
+        ],
+        'reddit_keywords': ['Algeria', 'Polisario', 'Western Sahara', 'Tebboune', 'Sahel', 'Morocco']
+    },
+    'libya': {
+        'keywords': [
+            'libya', 'libyan', 'tripoli', 'benghazi', 'haftar', 'lna',
+            'libyan national army', 'gnu', 'dbeibah', 'tobruk', 'misrata',
+            'sirte', 'wagner libya', 'libya oil', 'libya migration'
+        ],
+        'reddit_keywords': ['Libya', 'Haftar', 'Tripoli', 'GNU', 'LNA', 'Wagner']
+    },
+    'morocco': {
+        'keywords': [
+            'morocco', 'moroccan', 'rabat', 'mohammed vi', 'far morocco',
+            'western sahara', 'polisario', 'sahrawi', 'minurso', 'guerguerat',
+            'morocco algeria', 'abraham accords morocco', 'morocco israel',
+            'morocco drone'
+        ],
+        'reddit_keywords': ['Morocco', 'Western Sahara', 'Polisario', 'Sahrawi', 'Algeria', 'MINURSO']
+    },
+    'tunisia': {
+        'keywords': [
+            'tunisia', 'tunisian', 'tunis', 'kais saied', 'saied tunisia',
+            'ennahda', 'sfax', 'tunisia migration', 'ras jedir', 'chaambi',
+            'tunisia libya border', 'tunisia protests'
+        ],
+        'reddit_keywords': ['Tunisia', 'Kais Saied', 'Sfax', 'migration', 'Ennahda', 'Libya']
+    },
+    'bahrain': {
+        'keywords': [
+            'bahrain', 'bahraini', 'manama', 'fifth fleet', '5th fleet',
+            'navcent', 'nsa bahrain', 'juffair', 'sheikh isa',
+            'bahrain defense force', 'bahrain military',
+            'bahrain protest', 'bahrain unrest', 'bahrain iran',
+            'bahrain missile', 'bahrain attack', 'bahrain drone',
+            'bahrain intercept', 'bahrain air defense',
+            'bahrain shelter', 'bahrain war',
+            'us navy bahrain', 'combined maritime forces',
+            'ctf 150', 'ctf 152', 'ctf 153',
+            'البحرين', 'المنامة', 'الأسطول الخامس',
+            'قوة دفاع البحرين', 'القاعدة البحرية',
+        ],
+        'reddit_keywords': ['Bahrain', 'Fifth Fleet', 'NAVCENT', 'Manama', 'Persian Gulf', 'Iran Bahrain']
+    },
+    'kuwait': {
+        'keywords': [
+            'kuwait', 'kuwaiti', 'kuwait city', 'camp arifjan',
+            'ali al salem', 'kuwait military', 'kuwait embassy',
+            'us embassy kuwait', 'kuwait attack', 'kuwait missile',
+            'kuwait iran', 'kuwait troops', 'kuwait evacuation',
+            'kuwait closed', 'kuwait drone', 'kuwait defense',
+            'kuwait base', 'kuwait port', 'kuwait casualties',
+            'kuwait shelter', 'kuwait war',
+            'الكويت', 'معسكر عريفجان', 'قاعدة علي السالم',
+            'السفارة الأمريكية الكويت',
+        ],
+        'reddit_keywords': ['Kuwait', 'Camp Arifjan', 'US troops Kuwait', 'Iran Kuwait', 'Persian Gulf', 'US embassy Kuwait']
+    },
+    'saudi_arabia': {
+        'keywords': [
+            'saudi arabia', 'saudi', 'riyadh', 'jeddah', 'mecca', 'medina',
+            'aramco', 'saudi military', 'saudi air defense', 'saudi intercept',
+            'prince sultan air base', 'king abdulaziz air base', 'king fahd air base',
+            'saudi attack', 'saudi missile', 'saudi drone',
+            'saudi iran', 'saudi houthi', 'mbs', 'mohammed bin salman',
+            'eastern province', 'dhahran', 'ras tanura', 'jubail',
+            'saudi oil', 'saudi oil attack', 'saudi war',
+            'saudi shelter', 'riyadh attack', 'riyadh missile',
+            'السعودية', 'الرياض', 'أرامكو',
+            'الدفاع الجوي السعودي', 'قاعدة الأمير سلطان',
+        ],
+        'reddit_keywords': ['Saudi Arabia', 'Riyadh', 'Aramco', 'MBS', 'Saudi military', 'Iran Saudi', 'Houthi Saudi']
+    },
+    'uae': {
+        'keywords': [
+            'uae', 'emirates', 'dubai', 'abu dhabi', 'emirati',
+            'al dhafra', 'jebel ali', 'fujairah',
+            'uae military', 'uae attack', 'uae missile', 'uae drone',
+            'uae iran', 'uae houthi', 'uae defense',
+            'dubai attack', 'abu dhabi attack', 'dubai missile',
+            'uae air defense', 'uae intercept', 'uae shelter', 'uae war',
+            'uae port', 'fujairah port', 'fujairah attack',
+            'الإمارات', 'دبي', 'أبوظبي',
+            'قاعدة الظفرة', 'السفارة الأمريكية دبي',
+        ],
+        'reddit_keywords': ['UAE', 'Dubai', 'Abu Dhabi', 'Emirates', 'Al Dhafra', 'Iran UAE', 'Houthi UAE']
+    },
+    'oman': {
+        'keywords': [
+            'oman', 'omani', 'muscat', 'duqm', 'salalah',
+            'strait of hormuz', 'oman military', 'oman defense',
+            'oman iran', 'masirah', 'thumrait',
+            'oman mediation', 'oman diplomacy', 'oman port',
+            'oman airspace', 'oman intercept', 'oman shelter', 'oman war',
+            'gulf of oman', 'oman naval',
+            'عمان', 'مسقط', 'ميناء الدقم', 'مضيق هرمز',
+            'القوات المسلحة العمانية',
+        ],
+        'reddit_keywords': ['Oman', 'Muscat', 'Strait of Hormuz', 'Duqm', 'Iran Oman', 'Gulf of Oman']
+    },
+    'qatar': {
+        'keywords': [
+            'qatar', 'qatari', 'doha', 'al udeid', 'al jazeera',
+            'qatar military', 'qatar base', 'centcom qatar',
+            'qatar attack', 'qatar missile', 'qatar airspace',
+            'qatar flights', 'qatar airways', 'qatar iran',
+            'qatar defense', 'qatar shelter', 'qatar war',
+            'al udeid attack', 'al udeid hit', 'al udeid missile',
+            'doha attack', 'doha missile',
+            'قطر', 'الدوحة', 'قاعدة العديد',
+        ],
+        'reddit_keywords': ['Qatar', 'Doha', 'Al Udeid', 'CENTCOM', 'Qatar Airways', 'Iran Qatar']
+    },
+    'egypt': {
+        'keywords': [
+            'egypt attack', 'egypt attacked', 'egypt struck', 'egypt bombed',
+            'egypt military mobilization', 'egyptian army deployed',
+            'egypt air defense activated', 'egypt intercept missile',
+            'cairo attack', 'cairo bombing', 'cairo strike',
+            'suez canal closed', 'suez canal attack', 'suez canal blocked',
+            'suez disruption', 'suez canal military',
+            'sinai attack', 'sinai insurgency', 'sinai isis', 'sinai militant',
+            'rafah crossing closed', 'rafah crossing attack', 'rafah border clash',
+            'egypt gaza border', 'egypt border incident',
+            'egypt iran threat', 'iran threatens egypt',
+            'egypt red sea attack', 'egypt red sea mine',
+            'sisi emergency', 'egypt state of emergency',
+            'egypt evacuees', 'egypt evacuation',
+            'egypt protest', 'cairo protest', 'egypt unrest',
+            'هجوم على مصر', 'قناة السويس مغلقة', 'سيناء هجوم',
+        ],
+        'reddit_keywords': ['Egypt attack', 'Suez Canal closed', 'Sinai ISIS', 'Rafah crossing', 'Egypt military', 'Egypt Iran']
+    },
+}
+
+# ========================================
+# SYRIA CONFLICT KEYWORDS
+# ========================================
+SYRIA_CONFLICT_KEYWORDS = {
+    'deaths': [
+        'killed', 'dead', 'died', 'death toll', 'fatalities', 'deaths',
+        'killed in clashes', 'killed in fighting', 'civilians killed',
+        'fighters killed', 'combatants killed'
+    ],
+    'displaced': [
+        'displaced', 'fled', 'refugees', 'internally displaced',
+        'evacuated', 'forced to leave', 'abandoned homes'
+    ],
+    'clashes': [
+        'clashes', 'fighting', 'battles', 'combat', 'confrontation',
+        'armed conflict', 'skirmishes', 'firefight', 'engagement'
+    ]
+}
+
+SYRIA_FACTIONS = [
+    'SDF', 'Syrian Democratic Forces',
+    'HTS', "Hay'at Tahrir al-Sham", 'Tahrir al-Sham',
+    'SNA', 'Syrian National Army',
+    'FSA', 'Free Syrian Army',
+    'ISIS', 'Islamic State', 'ISIL',
+    'PKK', 'YPG', 'Kurdish forces',
+    'Turkish forces', 'Turkey',
+    'Russian forces', 'Russia',
+    'Iranian forces', 'Iran',
+    'Hezbollah'
+]
+
+# ========================================
+# HELPER FUNCTIONS
+# ========================================
+def calculate_time_decay(published_date, current_time, half_life_days=2.0):
+    """Calculate exponential time decay for article relevance"""
+    try:
+        if isinstance(published_date, str):
+            pub_dt = datetime.fromisoformat(published_date.replace('Z', '+00:00'))
+        else:
+            pub_dt = published_date
+        
+        if pub_dt.tzinfo is None:
+            pub_dt = pub_dt.replace(tzinfo=timezone.utc)
+        
+        age_hours = (current_time - pub_dt).total_seconds() / 3600
+        age_days = age_hours / 24
+        
+        decay_factor = math.exp(-math.log(2) * age_days / half_life_days)
+        return decay_factor
+    except Exception:
+        return 0.1
+
+def get_source_weight(source_name):
+    """Get credibility weight for a source"""
+    if not source_name:
+        return 0.3
+    
+    source_lower = source_name.lower()
+    
+    for tier_data in SOURCE_WEIGHTS.values():
+        for source in tier_data['sources']:
+            if source.lower() in source_lower or source_lower in source.lower():
+                return tier_data['weight']
+    
+    return 0.5
+
+def detect_keyword_severity(text):
+    """Detect highest severity keywords in text"""
+    if not text:
+        return 1.0
+    
+    text_lower = text.lower()
+    
+    for severity_level in ['active_war', 'diplomatic_crisis', 'critical', 'high', 'elevated', 'moderate']:
+        for keyword in KEYWORD_SEVERITY[severity_level]['keywords']:
+            if keyword in text_lower:
+                return KEYWORD_SEVERITY[severity_level]['multiplier']
+    
+    return 1.0
+
+def detect_deescalation(text):
+    """Check if article indicates de-escalation"""
+    if not text:
+        return False
+    
+    text_lower = text.lower()
+    
+    for keyword in DEESCALATION_KEYWORDS:
+        if keyword in text_lower:
+            return True
+    
+    return False
+
+
+SOCIAL_SOURCE_HINTS = (
+    'r/', 'reddit', 'bluesky', 'bsky', 'telegram', 'nitter',
+    'social', 'mirror'
+)
+
+EXPANDED_PRESSURE_SIGNALS = {
+    'kinetic': {
+        'weight': 1.8,
+        'phrases': [
+            'air strike', 'airstrike', 'missile strike', 'drone strike',
+            'rocket fire', 'cross-border fire', 'shelling', 'artillery',
+            'ballistic missile', 'suicide drone', 'uav attack',
+            'intercepts', 'explosion', 'explosions', 'clashes',
+            'Ù‚ØµÙ', 'ØµÙˆØ§Ø±ÙŠØ®', 'Ø§Ø´ØªØ¨Ø§ÙƒØ§Øª', 'Ø·Ø§Ø¦Ø±Ø© Ù…Ø³ÙŠØ±Ø©',
+            '×ª×§×™×¤×”', '×˜×™×œ×™×', '×›×˜×‘', 'Ø­Ù…Ù„Ù‡', 'Ù…ÙˆØ´Ú©',
+        ],
+    },
+    'mobilization': {
+        'weight': 1.2,
+        'phrases': [
+            'mobilization', 'reserve call-up', 'troop movement',
+            'carrier strike group', 'air defense', 'evacuation order',
+            'embassy drawdown', 'ordered departure', 'state of emergency',
+            'reinforcements', 'deployment', 'readiness drill',
+            'ØªØ¹Ø¨Ø¦Ø©', 'Ø¥Ø¬Ù„Ø§Ø¡', 'Ø­Ø§Ù„Ø© Ø§Ù„Ø·ÙˆØ§Ø±Ø¦',
+            '×’×™×•×¡ ×ž×™×œ×•××™×', '×¤×™× ×•×™', 'Ø¨Ø³ÛŒØ¬', 'ØªØ®Ù„ÛŒÙ‡',
+        ],
+    },
+    'structural': {
+        'weight': 0.8,
+        'phrases': [
+            'fuel shortage', 'food shortage', 'blackout', 'power outage',
+            'currency collapse', 'bank run', 'port closure', 'border closure',
+            'mass displacement', 'refugees', 'cholera', 'famine',
+            'Ø£Ø²Ù…Ø© Ø§Ù„ØºØ°Ø§Ø¡', 'Ù†Ø²ÙˆØ­', 'Ù„Ø§Ø¬Ø¦ÙŠÙ†', 'Ø§Ù†Ù‚Ø·Ø§Ø¹ Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡',
+            '×”×¤×¡×§×ª ×—×©×ž×œ', 'Ù‚Ø­Ø·ÛŒ', 'Ø¢ÙˆØ§Ø±Ú¯ÛŒ',
+        ],
+    },
+}
+
+
+def _article_source_name(article):
+    source = article.get('source', 'Unknown')
+    if isinstance(source, dict):
+        return source.get('name', 'Unknown')
+    return str(source or 'Unknown')
+
+
+def _is_social_source(source_name):
+    source_lower = (source_name or '').lower()
+    return any(hint in source_lower for hint in SOCIAL_SOURCE_HINTS)
+
+
+def _calibrated_source_weight(source_name, source_weight):
+    if not _is_social_source(source_name):
+        return source_weight
+    # Social APIs are useful tripwires, but should need corroboration to move a country.
+    if 'telegram' in source_name.lower():
+        return min(source_weight, 0.55)
+    return min(source_weight, 0.42)
+
+
+def detect_expanded_pressure_signals(text):
+    """Return additive pressure bonus and labels from multilingual pressure phrases."""
+    text_lower = (text or '').lower()
+    labels = []
+    bonus = 0.0
+    for label, config in EXPANDED_PRESSURE_SIGNALS.items():
+        if any(phrase.lower() in text_lower for phrase in config['phrases']):
+            labels.append(label)
+            bonus += config['weight']
+    return min(bonus, 3.0), labels
+
+
+def detect_diplomatic_signals(articles):
+    """
+    Scan articles for official diplomatic action signals (OD, embassy closure, etc.).
+    Returns the highest-severity signal found and when it was first detected.
+    """
+    best_signal = {
+        'signal_type': None,
+        'signal_detected_at': None,
+        'signal_phrase': None,
+        'signal_source': None,
+        'signal_url': None,
+    }
+
+    # Priority order (lower index = higher priority)
+    signal_priority = ['embassy_closure', 'ordered_departure', 'level_4_do_not_travel', 'level_3_reconsider']
+    best_priority_index = len(signal_priority)
+
+    for article in articles:
+        title = (article.get('title') or '').lower()
+        description = (article.get('description') or '').lower()
+        content = (article.get('content') or '').lower()
+        full_text = f"{title} {description} {content}"
+
+        source_name = article.get('source', {}).get('name', 'Unknown')
+        published_date = article.get('publishedAt', '')
+
+        for signal_type in signal_priority:
+            signal_config = DIPLOMATIC_SIGNAL_KEYWORDS[signal_type]
+            priority_index = signal_priority.index(signal_type)
+
+            for phrase in signal_config['phrases']:
+                if phrase in full_text:
+                    try:
+                        if isinstance(published_date, str):
+                            pub_dt = datetime.fromisoformat(published_date.replace('Z', '+00:00'))
+                        else:
+                            pub_dt = published_date
+                        if pub_dt.tzinfo is None:
+                            pub_dt = pub_dt.replace(tzinfo=timezone.utc)
+                    except Exception:
+                        pub_dt = datetime.now(timezone.utc)
+
+                    if (priority_index < best_priority_index or
+                        (priority_index == best_priority_index and
+                         best_signal['signal_detected_at'] is not None and
+                         pub_dt > best_signal['signal_detected_at'])):
+
+                        best_priority_index = priority_index
+                        best_signal = {
+                            'signal_type': signal_type,
+                            'signal_detected_at': pub_dt,
+                            'signal_phrase': phrase,
+                            'signal_source': source_name,
+                            'signal_url': article.get('url', ''),
+                        }
+                    break
+
+    if best_signal['signal_type']:
+        print(f"[v2.9.0] DIPLOMATIC SIGNAL: {best_signal['signal_type']}")
+        print(f"  Phrase: \"{best_signal['signal_phrase']}\"")
+        print(f"  Source: {best_signal['signal_source']}")
+        print(f"  Date: {best_signal['signal_detected_at']}")
+
+    return best_signal
+
+
+def calculate_advisory_floor(signal_type, signal_detected_at):
+    """
+    Calculate the current probability floor based on signal type and time decay.
+    Returns int floor percentage, or 0 if no floor applies.
+    """
+    if not signal_type or not signal_detected_at:
+        return 0
+
+    signal_config = DIPLOMATIC_SIGNAL_KEYWORDS.get(signal_type)
+    if not signal_config:
+        return 0
+
+    now = datetime.now(timezone.utc)
+
+    if signal_detected_at.tzinfo is None:
+        signal_detected_at = signal_detected_at.replace(tzinfo=timezone.utc)
+
+    days_since = (now - signal_detected_at).total_seconds() / 86400
+
+    for max_days, floor_pct in signal_config['floor_schedule']:
+        if days_since <= max_days:
+            print(f"[v2.9.0] Advisory floor: {floor_pct}% ({signal_type}, {days_since:.1f}d since detection)")
+            return floor_pct
+
+    print(f"[v2.9.0] Advisory floor: 0% (signal expired, {days_since:.1f}d old)")
+    return 0
+
+
+# ========================================
+# MAIN THREAT PROBABILITY CALCULATOR
+# ========================================
+def calculate_threat_probability(articles, days_analyzed=7, target='iran'):
+    """
+    Calculate sophisticated threat probability score
+    
+    Used by all 4 threat cards (Iran, Hezbollah, Houthis, Syria)
+    Supports dynamic time windows (24hr, 48hr, 7day, 30day)
+    Supports dynamic time windows (hourly, 48-hour, 7-day, 30-day)
+    Returns:
+    - probability: 0-100 score
+    - momentum: increasing/decreasing/stable
+    - breakdown: detailed scoring components
+    - top_contributors: articles ranked by impact
+    """
+    
+    # Handle empty articles case
+    if not articles:
+        baseline_adjustment = TARGET_BASELINES.get(target, {}).get('base_adjustment', 0)
+        return {
+            'probability': min(25 + baseline_adjustment, 99),
+            'momentum': 'stable',
+            'breakdown': {
+                'base_score': 25,
+                'baseline_adjustment': baseline_adjustment,
+                'article_count': 0,
+                'weighted_score': 0,
+                'recent_articles_48h': 0,
+                'older_articles': 0
+            },
+            'top_contributors': []
+        }
+    
+    current_time = datetime.now(timezone.utc)
+    
+    weighted_score = 0
+    deescalation_count = 0
+    recent_articles = 0
+    older_articles = 0
+    
+    article_details = []
+    
+    # ========================================
+    # ARTICLE SCORING LOOP
+    # ========================================
+    for article in articles:
+        title = article.get('title', '')
+        description = article.get('description', '')
+        content = article.get('content', '')
+        full_text = f"{title} {description} {content}"
+        
+        source_name = _article_source_name(article)
+        published_date = article.get('publishedAt', '')
+        
+        # Calculate article weight components
+        time_decay = calculate_time_decay(published_date, current_time)
+        source_weight = _calibrated_source_weight(source_name, get_source_weight(source_name))
+        severity_multiplier = detect_keyword_severity(full_text)
+        pressure_bonus, pressure_labels = detect_expanded_pressure_signals(full_text)
+        severity_multiplier = min(severity_multiplier + pressure_bonus, 8.0)
+        is_deescalation = detect_deescalation(full_text)
+        
+        # NEW: Apply leadership multiplier if present
+        leadership_data = article.get('leadership', {})
+        if leadership_data.get('has_leadership', False):
+            leadership_multiplier = leadership_data.get('weight_multiplier', 1.0)
+            severity_multiplier *= leadership_multiplier
+        
+        # Calculate article contribution
+        if is_deescalation:
+            article_contribution = -3 * time_decay * source_weight
+            deescalation_count += 1
+        else:
+            article_contribution = time_decay * source_weight * severity_multiplier
+        
+        weighted_score += article_contribution
+        
+        # Track recency
+        try:
+            pub_dt = datetime.fromisoformat(published_date.replace('Z', '+00:00'))
+            age_hours = (current_time - pub_dt).total_seconds() / 3600
+            
+            if age_hours <= 48:
+                recent_articles += 1
+            else:
+                older_articles += 1
+        except:
+            older_articles += 1
+        
+        # Store article details for top contributors
+        article_details.append({
+            'source': source_name,
+            'source_weight': source_weight,
+            'time_decay': round(time_decay, 3),
+            'severity': severity_multiplier,
+            'pressure_signals': pressure_labels,
+            'is_social_source': _is_social_source(source_name),
+            'deescalation': is_deescalation,
+            'contribution': round(article_contribution, 2),
+            'title': title[:100]  # Truncate for display
+        })
+    
+    # ========================================
+    # MOMENTUM CALCULATION
+    # ========================================
+    if recent_articles > 0 and older_articles > 0:
+        recent_density = recent_articles / 2.0  # Articles per day in last 48h
+        older_density = older_articles / max((days_analyzed - 2), 1)  # Articles per day before that
+        
+        momentum_ratio = recent_density / older_density if older_density > 0 else 2.0
+        
+        if momentum_ratio > 1.5:
+            momentum = 'increasing'
+            momentum_multiplier = 1.2
+        elif momentum_ratio < 0.7:
+            momentum = 'decreasing'
+            momentum_multiplier = 0.8
+        else:
+            momentum = 'stable'
+            momentum_multiplier = 1.0
+    else:
+        momentum = 'stable'
+        momentum_multiplier = 1.0
+    
+    weighted_score *= momentum_multiplier
+
+    unique_sources = len(set(d['source'] for d in article_details))
+    social_signal_count = sum(1 for d in article_details if d.get('is_social_source'))
+    non_social_signal_count = len(article_details) - social_signal_count
+    pressure_signal_count = sum(1 for d in article_details if d.get('pressure_signals'))
+    source_diversity_bonus = min(5.0, max(0, unique_sources - 3) * 0.4)
+    social_corroboration_bonus = 0.0
+    if social_signal_count and non_social_signal_count >= 2:
+        social_corroboration_bonus = min(4.0, social_signal_count * 0.35)
+    weighted_score += source_diversity_bonus + social_corroboration_bonus
+    
+    # ========================================
+    # FINAL PROBABILITY CALCULATION
+    # ========================================
+    base_score = 25
+    baseline_adjustment = TARGET_BASELINES.get(target, {}).get('base_adjustment', 0)
+    
+    # Apply weighted score with dampening factor
+    if weighted_score < 0:
+        # De-escalation scenario
+        probability = max(10, base_score + baseline_adjustment + weighted_score)
+    else:
+        # Escalation scenario (0.8 dampening factor)
+        probability = base_score + baseline_adjustment + (weighted_score * 0.8)
+    
+    # Clamp to valid range
+    probability = int(probability)
+    probability = max(10, min(probability, 95))
+    
+    # ========================================
+    # v2.9.0: TRAVEL ADVISORY FLOOR SYSTEM
+    # Highest number wins: OSINT score vs advisory floor
+    # ========================================
+    diplomatic_signal = detect_diplomatic_signals(articles)
+    advisory_floor = 0
+
+    if diplomatic_signal['signal_type']:
+        advisory_floor = calculate_advisory_floor(
+            diplomatic_signal['signal_type'],
+            diplomatic_signal['signal_detected_at']
+        )
+
+    if advisory_floor > 0 and advisory_floor > probability:
+        print(f"[v2.9.0] FLOOR OVERRIDE: OSINT={probability}% -> Advisory floor={advisory_floor}%")
+        probability = advisory_floor
+
+     # ── Rhetoric escalation boost (v3.1.0) ──
+    # Pull cached rhetoric score for Houthis and Hezbollah targets
+    # Same 0-5 scale used by stability pages; boosts conflict % upward
+    RHETORIC_BOOST = {0: 0, 1: 2, 2: 5, 3: 10, 4: 18, 5: 25}
+    rhetoric_boost = 0
+    try:
+        if target == 'houthis':
+            from rhetoric_tracker_yemen import RHETORIC_CACHE_KEY as YEMEN_RHETORIC_KEY, _redis_get as _yemen_redis_get
+            rhetoric_cache = _yemen_redis_get(YEMEN_RHETORIC_KEY)
+            if rhetoric_cache:
+                max_level = max(
+                    rhetoric_cache.get('maritime_level', 0),
+                    rhetoric_cache.get('direct_strike_level', 0),
+                    rhetoric_cache.get('somaliland_level', 0)
+                )
+                rhetoric_boost = RHETORIC_BOOST.get(max_level, 0)
+                print(f"[{target}] Rhetoric boost: +{rhetoric_boost}% (level {max_level})")
+        elif target == 'hezbollah':
+            from rhetoric_tracker import RHETORIC_CACHE_KEY as LB_RHETORIC_KEY, cache_get
+            rhetoric_cache = cache_get(LB_RHETORIC_KEY)
+            if rhetoric_cache:
+                level = rhetoric_cache.get('theatre_escalation_level', 0)
+                rhetoric_boost = RHETORIC_BOOST.get(level, 0)
+                print(f"[{target}] Rhetoric boost: +{rhetoric_boost}% (level {level})")
+        elif target == 'syria':
+            from rhetoric_tracker_syria import RHETORIC_CACHE_KEY as SYRIA_RHETORIC_KEY, _redis_get as _syria_redis_get
+            rhetoric_cache = _syria_redis_get(SYRIA_RHETORIC_KEY)
+            if rhetoric_cache:
+                level = max(
+                    rhetoric_cache.get('factional_level', 0),
+                    rhetoric_cache.get('israeli_strike_level', 0),
+                    rhetoric_cache.get('isis_level', 0),
+                )
+                rhetoric_boost = RHETORIC_BOOST.get(level, 0)
+                print(f"[{target}] Rhetoric boost: +{rhetoric_boost}% (level {level})")
+        elif target == 'iraq':
+            from rhetoric_tracker_iraq import RHETORIC_CACHE_KEY as IRAQ_RHETORIC_KEY, _redis_get as _iraq_redis_get
+            rhetoric_cache = _iraq_redis_get(IRAQ_RHETORIC_KEY)
+            if rhetoric_cache:
+                level = max(
+                    rhetoric_cache.get('pmf_level', 0),
+                    rhetoric_cache.get('iran_strike_level', 0),
+                    rhetoric_cache.get('us_base_level', 0),
+                    rhetoric_cache.get('kurdish_level', 0),
+                    rhetoric_cache.get('isis_level', 0),
+                )
+                rhetoric_boost = RHETORIC_BOOST.get(level, 0)
+                print(f"[{target}] Rhetoric boost: +{rhetoric_boost}% (level {level})")
+        elif target == 'israel':
+            # Israel is the strike actor — inbound threat level drives boost
+            # TCI (threat convergence index) adds secondary boost
+            ISRAEL_INBOUND_BOOST = {0:0, 1:2, 2:5, 3:10, 4:18, 5:28}
+            ISRAEL_TCI_BOOST     = {0:0, 1:2, 2:4, 3:8,  4:12, 5:16}
+            from rhetoric_tracker_israel import RHETORIC_CACHE_KEY as ISRAEL_RHETORIC_KEY, _redis_get as _israel_redis_get
+            rhetoric_cache = _israel_redis_get(ISRAEL_RHETORIC_KEY)
+            if rhetoric_cache:
+                inbound_lv = rhetoric_cache.get('inbound_max_level', 0)
+                tci        = rhetoric_cache.get('threat_convergence_index', 0)
+                alert_lv   = rhetoric_cache.get('alert_level', 0)
+                rhetoric_boost = (
+                    ISRAEL_INBOUND_BOOST.get(inbound_lv, 0) +
+                    ISRAEL_TCI_BOOST.get(tci, 0) +
+                    min(alert_lv * 3, 12)  # Alert boost — real incoming fire
+                )
+                print(f"[{target}] Rhetoric boost: +{rhetoric_boost}% (inbound L{inbound_lv}, TCI {tci}, alerts L{alert_lv})")
+        elif target == 'iran':
+            # Iran is the command node — stronger boost scale than proxies
+            # IRGC direct level drives primary boost; proxy activation adds
+            # secondary boost because 4 elevated proxies = active-war posture
+            IRAN_RHETORIC_BOOST = {0: 0, 1: 3, 2: 7, 3: 13, 4: 22, 5: 32}
+            IRAN_PROXY_BOOST    = {0: 0, 1: 0, 2: 3, 3: 7,  4: 12, 5: 18}
+            from rhetoric_tracker_iran import RHETORIC_CACHE_KEY as IRAN_RHETORIC_KEY, _redis_get as _iran_rhetoric_redis_get
+            rhetoric_cache = _iran_rhetoric_redis_get(IRAN_RHETORIC_KEY)
+            if rhetoric_cache:
+                irgc_level  = rhetoric_cache.get('irgc_direct_level', 0)
+                proxy_level = rhetoric_cache.get('proxy_activation_level', 0)
+                theatre_level = rhetoric_cache.get('theatre_escalation_level', 0)
+                # Use max of irgc_direct and theatre for primary boost
+                primary_level = max(irgc_level, theatre_level)
+                rhetoric_boost = (
+                    IRAN_RHETORIC_BOOST.get(primary_level, 0) +
+                    IRAN_PROXY_BOOST.get(proxy_level, 0)
+                )
+                print(f"[{target}] Rhetoric boost: +{rhetoric_boost}% (IRGC L{irgc_level}, proxy L{proxy_level}, theatre L{theatre_level})")
+    except Exception as e:
+        print(f"[{target}] Rhetoric boost skipped: {e}")
+
+    probability = min(probability + rhetoric_boost, 95)
+
+    # Final cap (advisory floor can push to 95% max, never 100%)
+    probability = min(probability, 95)
+
+    # ========================================
+    # BUILD RESPONSE
+    # ========================================
+    return {
+        'probability': probability,
+        'momentum': momentum,
+        'breakdown': {
+            'base_score': base_score,
+            'baseline_adjustment': baseline_adjustment,
+            'article_count': len(articles),
+            'recent_articles_48h': recent_articles,
+            'older_articles': older_articles,
+            'weighted_score': round(weighted_score, 2),
+            'source_diversity_bonus': round(source_diversity_bonus, 2),
+            'social_corroboration_bonus': round(social_corroboration_bonus, 2),
+            'unique_sources': unique_sources,
+            'social_signal_count': social_signal_count,
+            'non_social_signal_count': non_social_signal_count,
+            'pressure_signal_count': pressure_signal_count,
+            'momentum_multiplier': momentum_multiplier,
+            'deescalation_count': deescalation_count,
+            'adaptive_multiplier': 0.8,
+            'advisory_floor': advisory_floor,
+            'advisory_signal_type': diplomatic_signal.get('signal_type'),
+            'advisory_signal_phrase': diplomatic_signal.get('signal_phrase'),
+            'advisory_signal_source': diplomatic_signal.get('signal_source'),
+            'time_decay_applied': True,
+            'source_weighting_applied': True,
+            'rhetoric_boost': rhetoric_boost,
+            'formula': 'max(base(25) + adjustment + (weighted_score * 0.8), advisory_floor) + rhetoric_boost'
+        },
+        'top_contributors': sorted(
+            article_details, 
+            key=lambda x: abs(x['contribution']), 
+            reverse=True
+        )[:15]  # Top 15 contributing articles
+    }
+
+# ========================================
+# US STRIKE PROBABILITY (SPECIALIZED)
+# ========================================
+def calculate_us_strike_probability(articles, days_analyzed=7, target='iran'):
+    """
+    Calculate US strike probability with US-specific indicators
+    Includes Trump statements, DoD announcements, deployment signals
+    """
+    
+    # US-specific escalation keywords (in addition to base keywords)
+    US_ESCALATION_KEYWORDS = {
+        # Trump & Administration
+        'trump': {'weight': 1.2, 'phrases': [
+            'will not hesitate', 'all options', 'maximum pressure', 'fire and fury',
+            'locked and loaded', 'military response', 'devastating consequences'
+        ]},
+        'dod': {'weight': 1.5, 'phrases': [
+            'reviewing all options', 'prepared to defend', 'directed to deploy',
+            'forces on heightened alert', 'strike options', 'kinetic action',
+            'military posture', 'combat operations'
+        ]},
+        'deployments': {'weight': 2.0, 'phrases': [
+            'carrier strike group', 'bomber deployment', 'additional forces',
+            'troop surge', 'asset redeployment', 'forward deployment',
+            'expeditionary strike', 'amphibious ready group'
+        ]},
+        # Reverse signals (de-escalation)
+        'withdrawal': {'weight': -1.5, 'phrases': [
+            'withdrawing forces', 'troop drawdown', 'reducing presence',
+            'departing region', 'leaving mediterranean', 'pullback'
+        ]}
+    }
+    
+    # Calculate base probability using existing algorithm
+    base_result = calculate_threat_probability(articles, days_analyzed, target)
+    base_prob = base_result['probability'] / 100.0
+    
+    # Add US-specific adjustments
+    us_bonus = 0
+    us_indicators = []
+    
+    for article in articles:
+        title = article.get('title', '').lower()
+        content = f"{title} {article.get('description', '')} {article.get('content', '')}".lower()
+        
+        # Check US-specific keywords
+        for category, data in US_ESCALATION_KEYWORDS.items():
+            for phrase in data['phrases']:
+                if phrase in content:
+                    weight = data['weight']
+                    us_bonus += weight
+                    us_indicators.append({
+                        'category': category,
+                        'phrase': phrase,
+                        'weight': weight,
+                        'article': title[:80],
+                        'article_url': article.get('url', '')  # ← ADD THIS!
+                    })
+    
+    # Normalize US bonus (cap at ±20%)
+    us_adjustment = min(max(us_bonus / 10, -0.20), 0.20)
+    
+    # Calculate final US probability
+    us_prob = min(max(base_prob + us_adjustment, 0.05), 0.95)
+    
+    return {
+        'probability': us_prob,
+        'base_probability': base_prob,
+        'us_adjustment': us_adjustment,
+        'us_indicators': us_indicators[:5],  # Top 5
+        'source': 'us_specific_algorithm'
+    }
+
+# ========================================
+# COORDINATION DETECTION
+# ========================================
+def detect_coordination_signals(israel_prob, us_prob, all_articles):
+    """
+    Detect coordination signals between US and Israel
+    Returns coordination level and specific indicators
+    """
+    
+    coordination_keywords = {
+        'joint_statements': [
+            'joint statement', 'coordinated response', 'in coordination with',
+            'together with allies', 'unified approach', 'combined action'
+        ],
+        'military_coordination': [
+            'joint exercise', 'combined operations', 'coordinated strike',
+            'allied forces', 'joint training', 'integrated operations'
+        ],
+        'diplomatic_coordination': [
+            'trump netanyahu', 'us israel coordination', 'allied planning',
+            'strategic coordination', 'defense consultation'
+        ],
+        'simultaneous_deployments': [
+            'both israel and us', 'us and israeli forces', 'parallel deployment',
+            'concurrent mobilization'
+        ]
+    }
+    
+    signals = 0
+    detected_indicators = []
+    
+    # Signal 1: Both probabilities elevated
+    if israel_prob > 0.50 and us_prob > 0.30:
+        signals += 1
+        detected_indicators.append('Both actors showing elevated strike intent')
+    
+    # Signal 2-5: Check articles for coordination keywords
+    for article in all_articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        
+        for category, phrases in coordination_keywords.items():
+            for phrase in phrases:
+                if phrase in content:
+                    signals += 1
+                    detected_indicators.append(f"{category}: '{phrase}' detected")
+                    break  # One signal per category per article
+    
+    # Determine coordination level
+    if signals >= 4:
+        level = 'strong'
+        factor = 0.15
+    elif signals >= 2:
+        level = 'moderate'
+        factor = 0.10
+    elif signals >= 1:
+        level = 'weak'
+        factor = 0.05
+    else:
+        level = 'none'
+        factor = 0.00
+    
+    return {
+        'level': level,
+        'factor': factor,
+        'signals_detected': signals,
+        'indicators': detected_indicators[:3]  # Top 3
+    }
+
+# ========================================
+# COMBINED PROBABILITY
+# ========================================
+def calculate_combined_probability(israel_prob, us_prob, coordination):
+    """
+    Calculate combined probability using independent events + coordination
+    
+    Formula:
+    1. Base: P(at least one) = 1 - (1-P1)(1-P2)
+    2. Apply coordination bonus
+    3. Cap at 95%
+    """
+    
+    # Step 1: Independent events probability
+    base_combined = 1 - (1 - israel_prob) * (1 - us_prob)
+    
+    # Step 2: Apply coordination factor
+    coord_factor = coordination.get('factor', 0)
+    adjusted_combined = base_combined * (1 + coord_factor)
+    
+    # Step 3: Cap at 95%
+    final_combined = min(adjusted_combined, 0.95)
+    
+    # Calculate bonus percentage for display
+    coord_bonus = (final_combined - base_combined) * 100
+    
+    return {
+        'combined': final_combined,
+        'base_independent': base_combined,
+        'coordination_bonus': coord_bonus,
+        'coordination_level': coordination.get('level', 'none'),
+        'formula': 'independent_events_with_coordination'
+    }
+
+# ========================================
+# REVERSE THREAT CALCULATION
+# ========================================
+def build_recent_headlines(israel_contributors, us_indicators, reverse_israel_indicators, reverse_us_indicators, all_articles):
+    """
+    Build unified recent headlines list for threat matrix display
+    Combines top articles from all threat calculations with weights
+    
+    Returns list of articles with:
+    - title, url, source, date
+    - threat_type (Israel Strike / US Strike / Reverse Threat)
+    - weight (contribution score)
+    - why_included (reason for inclusion)
+    """
+    
+    headlines = []
+    seen_urls = set()
+    
+    # ========================================
+    # 1. ISRAEL STRIKE CONTRIBUTORS
+    # ========================================
+    for contributor in israel_contributors[:5]:  # Top 5
+        # Find matching article
+        matching_article = None
+        for article in all_articles:
+            if article.get('source', {}).get('name', '') == contributor.get('source', ''):
+                if article.get('url') not in seen_urls:
+                    matching_article = article
+                    break
+        
+        if matching_article:
+            seen_urls.add(matching_article.get('url', ''))
+            
+            headlines.append({
+                'title': matching_article.get('title', 'No title')[:120],
+                'url': matching_article.get('url', ''),
+                'source': contributor.get('source', 'Unknown'),
+                'published': matching_article.get('publishedAt', ''),
+                'threat_type': 'Israel Strike',
+                'weight': abs(contributor.get('contribution', 0)),
+                'severity': contributor.get('severity', 1.0),
+                'why_included': f"High severity ({contributor.get('severity', 1.0)}x multiplier)",
+                'color': 'red'
+            })
+    
+    # ========================================
+    # ========================================
+    # 2. US STRIKE INDICATORS
+    # ========================================
+    for indicator in us_indicators[:5]:  # Top 5
+        indicator_url = indicator.get('article_url', '')
+    
+        # Find matching article by URL (more reliable than title)
+        matching_article = None
+        for article in all_articles:
+            if article.get('url') == indicator_url:
+                if article.get('url') not in seen_urls:
+                    matching_article = article
+                    break
+        
+        if matching_article:
+            seen_urls.add(matching_article.get('url', ''))
+            
+            headlines.append({
+                'title': matching_article.get('title', 'No title')[:120],
+                'url': matching_article.get('url', ''),
+                'source': matching_article.get('source', {}).get('name', 'Unknown'),
+                'published': matching_article.get('publishedAt', ''),
+                'threat_type': 'US Strike',
+                'weight': abs(indicator.get('weight', 0)),
+                'phrase': indicator.get('phrase', ''),
+                'why_included': f"US-specific signal: '{indicator.get('phrase', '')}'",
+                'color': 'blue'
+            })
+    
+    # ========================================
+    # 3. REVERSE THREAT INDICATORS (Iran → Israel/US)
+    # ========================================
+    for indicator in (reverse_israel_indicators + reverse_us_indicators)[:5]:  # Top 5 combined
+        indicator_url = indicator.get('article_url', '')
+    
+        # Find matching article by URL (more reliable than title)
+        matching_article = None
+        for article in all_articles:
+            if article.get('url') == indicator_url:
+               if article.get('url') not in seen_urls:
+                    matching_article = article
+                    break
+        
+        if matching_article:
+            seen_urls.add(matching_article.get('url', ''))
+            
+            headlines.append({
+                'title': matching_article.get('title', 'No title')[:120],
+                'url': matching_article.get('url', ''),
+                'source': matching_article.get('source', {}).get('name', 'Unknown'),
+                'published': matching_article.get('publishedAt', ''),
+                'threat_type': 'Reverse Threat',
+                'weight': abs(indicator.get('weight', 0)),
+                'phrase': indicator.get('phrase', ''),
+                'why_included': f"Threat phrase: '{indicator.get('phrase', '')}'",
+                'color': 'orange'
+            })
+    
+    # ========================================
+    # SORT BY WEIGHT (highest first)
+    # ========================================
+    headlines.sort(key=lambda x: x['weight'], reverse=True)
+    
+    # Return top 15 headlines
+    return headlines[:15]
+    
+def calculate_reverse_threat(articles, source_actor='iran', target_actor='israel', israel_prob=0, us_prob=0):
+    """
+    Calculate probability of source actor attacking target
+    (e.g., Iran -> Israel, Hezbollah -> Israel)
+    
+    Enhanced with:
+    - 40+ keywords across 6 categories
+    - Weighted scoring by threat type
+    - Proxy warfare detection
+    - Asymmetric threat detection
+    - Retaliation trigger bonus (when Israel/US prob high)
+    """
+    
+    # ========================================
+    # EXPANDED REVERSE THREAT KEYWORDS (40+)
+    # ========================================
+    REVERSE_THREAT_KEYWORDS = {
+        # Direct threats from state actors
+        'iran_direct_threats': [
+            'iran threatens', 'iran warns', 'iran vows', 'tehran threatens',
+            'irgc warns', 'irgc threatens', 'khamenei threatens', 'khamenei warns',
+            'revolutionary guard threatens', 'quds force threatens', 'tehran vows',
+            'iran pledges retaliation', 'iran promises revenge', 'iran will strike',
+            'supreme leader warns', 'ayatollah threatens'
+        ],
+        
+        # Retaliation language (key for reverse threats)
+        'retaliation_threats': [
+            'retaliation', 'retaliate', 'revenge attack', 'avenge', 'payback',
+            'severe response', 'crushing response', 'devastating response',
+            'will respond', 'will strike back', 'will pay the price',
+            'consequences', 'severe consequences', 'pay dearly', 'answer for',
+            'punishment', 'punish', 'will not go unanswered'
+        ],
+        
+        # Military posturing & signals
+        'military_signals': [
+            'missile test', 'ballistic missile', 'cruise missile launch',
+            'military drill', 'military exercise', 'naval drill', 'war games',
+            'weapons test', 'combat readiness', 'forces on alert', 'high alert',
+            'irgc exercise', 'naval exercise', 'air defense drill',
+            'mobilization', 'troop deployment', 'forces deployed'
+        ],
+        
+        # Proxy mobilization (Hezbollah, Houthis, Iraqi militias)
+        'proxy_threats': [
+            'hezbollah warns', 'hezbollah threatens', 'qassem warns', 'qassem threatens',
+            'houthi attack', 'houthi strike', 'houthi threatens', 'ansarallah warns',
+            'militia deployment', 'proxy forces', 'armed groups mobilize',
+            'shiite militias', 'hashd forces', 'iraqi militia', 'pmu forces',
+            'resistance axis', 'axis of resistance', 'rocket fire', 'cross-border attack'
+        ],
+        
+        # Asymmetric warfare indicators
+        'asymmetric_threats': [
+            'strait of hormuz', 'close strait', 'block shipping', 'shipping lanes',
+            'cyber attack', 'cyberattack', 'hack', 'infrastructure attack',
+            'oil facilities', 'tanker attack', 'shipping disruption', 'pipeline',
+            'refinery attack', 'energy infrastructure', 'sabotage'
+        ],
+        
+        # Specific target mentions (highest weight when combined)
+        'target_specific': [
+            'target israel', 'strike israel', 'attack israel', 'hit israel',
+            'target us', 'strike us', 'attack us', 'american bases',
+            'us interests', 'israeli targets', 'tel aviv', 'haifa',
+            'us forces', 'american troops', 'zionist regime', 'occupation forces'
+        ]
+    }
+    
+    # ========================================
+    # SCORE CALCULATION WITH WEIGHTED CATEGORIES
+    # ========================================
+    threat_score = 0
+    indicators = []
+    proxy_detected = False
+    asymmetric_detected = False
+    target_mentioned_count = 0
+    
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        
+        # Track if target is mentioned in this article
+        target_in_content = target_actor.lower() in content
+        
+        # Check ALL keyword categories
+        for category, phrases in REVERSE_THREAT_KEYWORDS.items():
+            category_matched = False
+            
+            for phrase in phrases:
+                if phrase in content:
+                    # ========================================
+                    # CATEGORY-BASED WEIGHTING
+                    # ========================================
+                    if 'direct_threats' in category:
+                        weight = 3  # Highest weight for state threats
+                    elif 'target_specific' in category and target_in_content:
+                        weight = 4  # HIGHEST when target explicitly mentioned
+                        target_mentioned_count += 1
+                    elif 'retaliation' in category:
+                        weight = 2.5  # High weight for retaliation language
+                    elif 'military_signals' in category:
+                        weight = 2  # Medium-high for military posturing
+                    elif 'proxy' in category:
+                        weight = 2.5  # High weight for proxy threats
+                        proxy_detected = True
+                    elif 'asymmetric' in category:
+                        weight = 2  # Medium-high for asymmetric warfare
+                        asymmetric_detected = True
+                    else:
+                        weight = 1  # Base weight
+                    
+                    # BONUS: If target mentioned in article, increase weight
+                    if target_in_content and 'target_specific' not in category:
+                        weight *= 1.3
+                    
+                    threat_score += weight
+                    
+                    indicators.append({
+                        'type': category.replace('_', ' ').title(),
+                        'phrase': phrase,
+                        'weight': weight,
+                        'article': article.get('title', '')[:80],
+                        'article_url': article.get('url', ''),  # ← ADD THIS!
+                        'target_mentioned': target_in_content
+                    })
+                    
+                    category_matched = True
+                    break  # One match per category per article
+            
+            if category_matched:
+                continue  # Move to next category
+    
+    # ========================================
+    # CALCULATE BASE PROBABILITY
+    # ========================================
+    # Adjusted formula: More lenient scoring (divide by 40 instead of 50)
+    base_probability = min(threat_score / 40.0, 0.60)
+    
+    # ========================================
+    # RETALIATION TRIGGER CALCULATION (INLINE)
+    # ========================================
+    retaliation_bonus = 0
+    
+    if israel_prob > 0.60:
+        retaliation_bonus += 0.15
+    elif israel_prob > 0.40:
+        retaliation_bonus += 0.08
+    elif israel_prob > 0.20:
+        retaliation_bonus += 0.03
+    
+    if us_prob > 0.60:
+        retaliation_bonus += 0.15
+    elif us_prob > 0.40:
+        retaliation_bonus += 0.08
+    elif us_prob > 0.20:
+        retaliation_bonus += 0.03
+    
+    retaliation_bonus = min(retaliation_bonus, 0.25)  # Cap at +25%
+    
+    # ========================================
+    # FINAL PROBABILITY
+    # ========================================
+    final_probability = min(base_probability + retaliation_bonus, 0.65)  # Cap at 65%
+    
+    # ========================================
+    # BUILD RESPONSE
+    # ========================================
+    return {
+        'probability': final_probability,
+        'source': source_actor,
+        'target': target_actor,
+        'threat_score': round(threat_score, 1),
+        'base_probability': round(base_probability, 3),
+        'retaliation_bonus': round(retaliation_bonus, 3),
+        'indicators': sorted(indicators, key=lambda x: x['weight'], reverse=True)[:5],  # Top 5 weighted
+        'total_indicators': len(indicators),
+        'target_explicitly_mentioned': target_mentioned_count,
+        'proxy_warfare_detected': proxy_detected,
+        'asymmetric_warfare_detected': asymmetric_detected,
+        'risk_level': 'high' if final_probability > 0.40 else 'moderate' if final_probability > 0.20 else 'low',
+        'calculation_method': 'weighted_keywords_with_retaliation_trigger'
+    }
+# ========================================
+# ISRAEL-SPECIFIC THREAT CALCULATIONS
+# ========================================
+
+ISRAEL_INCOMING_THREAT_KEYWORDS = {
+    'iran_direct': {
+        'weight': 4.0,
+        'phrases': [
+            # Compound English
+            'iran strike israel', 'iran attack israel', 'iran threatens israel',
+            'iran missile israel', 'iranian attack israel', 'iran retaliates israel',
+            'iran ballistic missile israel', 'iran cruise missile israel',
+            # Loosened English
+            'iranian missile launch', 'iranian ballistic missile',
+            'iranian cruise missile', 'iranian drone swarm',
+            'iran retaliation', 'iranian retaliation',
+            'irgc threatens', 'irgc retaliation', 'irgc missile',
+            'irgc aerospace', 'irgc attack', 'irgc strike',
+            'quds force', 'iranian drone attack', 'shahed drone',
+            'iran warns', 'tehran threatens', 'tehran warns',
+            'supreme leader warns', 'khamenei threatens', 'khamenei warns',
+            'iran nuclear weapon', 'iran enrichment',
+            'iranian proxy attack', 'axis of resistance',
+            'iran revenge', 'severe consequences israel',
+            'iran unprecedented response',
+            # Hebrew
+            'איום איראני', 'טילים בליסטיים איראן', 'איראן מאיימת',
+            'משמרות המהפכה', 'כוח קודס',
+            # Arabic
+            'صواريخ إيرانية', 'الحرس الثوري', 'إيران تهدد',
+            'تهديد إيراني', 'الرد الإيراني'
+        ]
+    },
+    'hezbollah': {
+        'weight': 3.5,
+        'phrases': [
+            # Compound English
+            'hezbollah rocket israel', 'hezbollah missile israel',
+            'hezbollah strike israel', 'hezbollah attack israel',
+            'hezbollah northern israel', 'hezbollah retaliation israel',
+            # Loosened English
+            'hezbollah rockets', 'hezbollah missile', 'hezbollah barrage',
+            'hezbollah attack', 'hezbollah strike', 'hezbollah drone',
+            'hezbollah anti-tank', 'hezbollah atgm', 'kornet',
+            'hezbollah infiltration', 'hezbollah precision',
+            'hezbollah threatens', 'hezbollah retaliation',
+            'hezbollah fires', 'hezbollah launches',
+            'radwan force', 'hezbollah tunnel',
+            'qassem warns', 'qassem threatens',
+            'lebanon border attack', 'lebanese rocket',
+            'rockets northern israel', 'rockets galilee',
+            'rockets haifa', 'sirens northern israel',
+            'red alert north', 'iron dome intercept',
+            # Hebrew
+            'רקטות מלבנון', 'חיזבאללה יורה', 'חיזבאללה תקיפה',
+            'כוח רדואן', 'אזעקות בצפון',
+            # Arabic
+            'صواريخ حزب الله', 'حزب الله يطلق', 'حزب الله يهدد',
+            'قوة الرضوان'
+        ]
+    },
+    'hamas': {
+        'weight': 3.5,
+        'phrases': [
+            # Compound English — ACTIVE operational signals only
+            'hamas attack israel', 'hamas rocket israel',
+            'gaza rocket israel', 'hamas terror attack',
+            'hamas fires rockets', 'hamas launches rockets',
+            'hamas breaks ceasefire', 'hamas violates ceasefire',
+            'hamas resumes attacks', 'hamas renews attacks',
+            # Active rocket/mortar signals
+            'hamas mortar', 'hamas drone attack',
+            'hamas ambush idf', 'hamas infiltration attempt',
+            'rockets from gaza today', 'rockets fired from gaza',
+            'rockets southern israel', 'rockets sderot',
+            'rockets ashkelon', 'rockets beersheba',
+            'sirens southern israel', 'red alert south',
+            'hamas violations', 'ceasefire collapse',
+            # Hostage — only operational signals, not deal negotiations
+            'hostages executed', 'hostage killed', 'hostage rescued',
+            'hamas threatens hostages',
+            # Hebrew — active signals only
+            'רקטות מעזה', 'חמאס יורה', 'חמאס מתקפה',
+            'אזעקות בדרום',
+            # Arabic — active signals only
+            'صواريخ من غزة', 'حماس تطلق', 'المقاومة تقصف',
+        ]
+    },
+    'west_bank_gaza': {
+        'weight': 2.5,
+        'phrases': [
+            # English
+            'west bank attack', 'west bank shooting', 'west bank stabbing',
+            'jenin attack', 'nablus attack', 'tulkarm attack',
+            'ramallah clashes', 'hebron shooting', 'intifada',
+            'settler attack', 'west bank violence', 'west bank raid',
+            'palestinian gunfire', 'car ramming attack',
+            'lone wolf attack', 'knife attack',
+            'west bank ied', 'checkpoint attack',
+            'shooting attack israel', 'stabbing attack israel',
+            'terror attack israel', 'ramming attack israel',
+            'west bank militant', 'west bank gunman',
+            'jenin clashes', 'nablus clashes', 'tulkarm clashes',
+            # Hebrew
+            'פיגוע ירי', 'פיגוע דקירה', 'פיגוע דריסה',
+            'עימותים ג׳נין', 'עימותים שכם',
+            # Arabic
+            'عملية إطلاق نار', 'عملية طعن', 'اشتباكات جنين',
+            'مقاوم فلسطيني'
+        ]
+    },
+    'houthis': {
+        'weight': 3.0,
+        'phrases': [
+            # Compound English
+            'houthi missile israel', 'houthi drone israel',
+            'houthi attack israel', 'houthi ballistic israel',
+            'yemen missile israel', 'ansarallah israel',
+            # Loosened English
+            'houthi missile launch', 'houthi ballistic missile',
+            'houthi cruise missile', 'houthi drone strike',
+            'houthi long range', 'houthi intercept',
+            'houthi threatens', 'houthi attack',
+            'houthi eilat', 'houthi tel aviv',
+            'houthi ben gurion', 'houthi lod',
+            'yemen drone', 'yemen ballistic',
+            'ansarallah missile', 'ansarallah attack',
+            'red sea missile', 'red sea drone',
+            'bab el-mandeb attack',
+            # Hebrew
+            'טיל מתימן', 'טיל חות׳י', 'יירוט מעל אילת',
+            # Arabic
+            'صاروخ يمني', 'الحوثي يطلق', 'أنصار الله تقصف'
+        ]
+    },
+    'syria_based': {
+        'weight': 2.5,
+        'phrases': [
+            # English
+            'golan heights attack', 'golan rocket', 'golan drone',
+            'golan shelling', 'golan border incident',
+            'syria rocket israel', 'syria drone israel',
+            'quneitra attack', 'quneitra incident',
+            'iranian proxy golan', 'iranian forces golan',
+            'syrian militia attack', 'isis golan',
+            'druze golan attack', 'syria spillover',
+            'rockets golan', 'mortars golan',
+            'syria border incident', 'syrian border fire',
+            # Hebrew
+            'ירי מסוריה', 'רקטות רמת הגולן', 'אירוע גבול סוריה',
+            # Arabic
+            'قصف الجولان', 'صواريخ من سوريا'
+        ]
+    }
+}
+
+ISRAEL_OUTGOING_KEYWORDS = {
+    'israel_vs_lebanon': {
+        'weight': 3.0,
+        'phrases': [
+            # Compound English
+            'israel strike lebanon', 'idf strike lebanon',
+            'israel airstrike lebanon', 'israel bombs lebanon',
+            # Loosened English
+            'idf strikes beirut', 'idf strikes lebanon',
+            'idf targets lebanon', 'idf targets hezbollah',
+            'israeli airstrike beirut', 'israeli airstrike lebanon',
+            'strike southern lebanon', 'strike beirut',
+            'strike dahiyeh', 'bombing beirut',
+            'assassination lebanon', 'targeted killing lebanon',
+            'bunker buster lebanon', 'idf operation lebanon',
+            'idf southern lebanon', 'israeli strike hezbollah',
+            'eliminated hezbollah commander', 'hezbollah commander killed',
+            'senior hezbollah killed', 'idf eliminates',
+            # Hebrew
+            'תקיפה בלבנון', 'צה״ל תקף בלבנון', 'חיסול מפקד חיזבאללה',
+            # Arabic
+            'غارة على لبنان', 'قصف إسرائيلي لبنان', 'اغتيال قائد حزب الله'
+        ]
+    },
+    'israel_vs_gaza': {
+        'weight': 3.0,
+        'phrases': [
+            # English
+            'israel strike gaza', 'idf strike gaza', 'idf strikes gaza',
+            'idf gaza operation', 'israel bombs gaza',
+            'israeli airstrike gaza', 'idf raid gaza',
+            'idf ground operation gaza', 'idf offensive gaza',
+            'rafah operation', 'rafah offensive', 'rafah incursion',
+            'tunnel destruction gaza', 'idf gaza city',
+            'idf khan yunis', 'idf jabalia', 'idf nuseirat',
+            'idf deir al-balah', 'idf rafah',
+            'gaza ground operation', 'gaza offensive',
+            'gaza airstrike', 'gaza bombing',
+            'hamas commander killed', 'hamas operative eliminated',
+            # Hebrew
+            'תקיפה ברצועה', 'צה״ל פועל בעזה', 'מבצע קרקעי עזה',
+            # Arabic
+            'غارة على غزة', 'قصف إسرائيلي غزة', 'عملية برية غزة'
+        ]
+    },
+    'israel_vs_iran': {
+        'weight': 4.0,
+        'phrases': [
+            # English
+            'israel strike iran', 'israel attack iran',
+            'israel bombs iran', 'idf iran operation',
+            'israeli strike iran', 'israeli attack iran',
+            'strike iranian facility', 'strike isfahan',
+            'strike natanz', 'strike fordow', 'strike parchin',
+            'mossad operation iran', 'mossad iran',
+            'israel covert iran', 'israel cyber iran',
+            'sabotage iran nuclear', 'netanyahu iran strike',
+            'israel threatens iran', 'israel retaliates iran',
+            'israel iran nuclear facility',
+            'iaf long range strike', 'aerial refueling iran',
+            # Hebrew
+            'תקיפה באיראן', 'מתקפה על איראן', 'ישראל תוקפת איראן',
+            # Arabic
+            'ضربة إسرائيلية إيران', 'هجوم على إيران'
+        ]
+    },
+    'israel_vs_syria': {
+        'weight': 2.0,
+        'phrases': [
+            # English
+            'israel strike syria', 'idf airstrike syria',
+            'israeli airstrike syria', 'israeli strike syria',
+            'israel bombs damascus', 'strike damascus',
+            'strike aleppo', 'strike t4 airbase',
+            'strike syrian weapons', 'arms shipment syria',
+            'weapons transfer syria', 'israel targets syria',
+            'iranian assets syria destroyed', 'iaf syria',
+            'overnight strike syria', 'syria weapons depot',
+            # Hebrew
+            'תקיפה בסוריה', 'תקיפת נכסים איראניים בסוריה',
+            # Arabic
+            'غارة إسرائيلية سوريا', 'قصف دمشق'
+        ]
+    },
+    'israel_vs_west_bank': {
+        'weight': 2.0,
+        'phrases': [
+            # English
+            'idf raid west bank', 'idf raid jenin',
+            'idf raid nablus', 'idf raid tulkarm',
+            'idf jenin operation', 'idf nablus operation',
+            'idf tulkarm operation', 'idf west bank incursion',
+            'israel arrests west bank', 'shin bet arrest',
+            'shin bet operation', 'west bank demolition',
+            'counter terror west bank', 'wanted militant arrested',
+            'idf west bank clashes', 'idf helicopter west bank',
+            'jenin refugee camp operation', 'nablus old city raid',
+            # Hebrew
+            'מבצע בג׳נין', 'מבצע בשכם', 'מעצר מבוקשים',
+            # Arabic
+            'اقتحام جنين', 'اقتحام نابلس', 'اعتقالات الضفة'
+        ]
+    },
+    'israel_vs_houthis': {
+        'weight': 2.5,
+        'phrases': [
+            # English
+            'israel strike yemen', 'idf strike yemen',
+            'idf strike houthis', 'israeli strike yemen',
+            'israel bombs yemen', 'strike hodeidah',
+            'strike sanaa', 'strike houthi',
+            'iaf yemen', 'iaf houthi',
+            'israel retaliates houthis', 'israel retaliates yemen',
+            'hodeidah port strike', 'yemen infrastructure strike',
+            'houthi target destroyed',
+            # Hebrew
+            'תקיפה בתימן', 'צה״ל תקף בתימן',
+            # Arabic
+            'غارة على اليمن', 'ضربة على الحديدة'
+        ]
+    }
+}
+
+
+def calculate_israel_incoming_threats(articles, days_analyzed=7):
+    """
+    Calculate probability of kinetic action AGAINST Israel.
+    v2.0 — now reads rhetoric tracker Redis fingerprints as primary boost,
+    article keyword scan as secondary signal.
+    """
+    threat_scores = {
+        'iran_direct':    {'score': 0, 'indicators': [], 'articles': 0},
+        'hezbollah':      {'score': 0, 'indicators': [], 'articles': 0},
+        'hamas':          {'score': 0, 'indicators': [], 'articles': 0},
+        'west_bank_gaza': {'score': 0, 'indicators': [], 'articles': 0},
+        'houthis':        {'score': 0, 'indicators': [], 'articles': 0},
+        'syria_based':    {'score': 0, 'indicators': [], 'articles': 0},
+    }
+
+    # ── Article keyword scan (existing logic) ──
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        for category, data in ISRAEL_INCOMING_THREAT_KEYWORDS.items():
+            for phrase in data['phrases']:
+                if phrase in content:
+                    threat_scores[category]['score'] += data['weight']
+                    threat_scores[category]['articles'] += 1
+                    threat_scores[category]['indicators'].append({
+                        'phrase': phrase,
+                        'weight': data['weight'],
+                        'article': article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    break
+
+    # ── Rhetoric tracker Redis boost (primary signal) ──
+    # Maps rhetoric tracker level (0-5) to score boost
+    RHETORIC_SCORE_BOOST = {0: 0, 1: 5, 2: 12, 3: 20, 4: 35, 5: 50}
+    try:
+        from rhetoric_tracker_israel import _redis_get as _ir_redis_get
+        CROSSTHEATER_KEY = 'rhetoric:crosstheater:fingerprints'
+        fingerprints = _ir_redis_get(CROSSTHEATER_KEY) or {}
+
+        # Yemen / Houthis — read from Yemen fingerprint level
+        yemen_fp = fingerprints.get('yemen', {})
+        if yemen_fp:
+            yemen_level = yemen_fp.get('level', 0)
+            boost = RHETORIC_SCORE_BOOST.get(yemen_level, 0)
+            if boost > 0:
+                threat_scores['houthis']['score'] += boost
+                threat_scores['houthis']['indicators'].append({
+                    'phrase': f'Yemen rhetoric tracker: L{yemen_level}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Israel Incoming] Houthi boost: +{boost} (Yemen L{yemen_level})")
+
+        # Lebanon / Hezbollah — read from Lebanon fingerprint
+        lebanon_fp = fingerprints.get('lebanon', {})
+        if lebanon_fp:
+            lebanon_level = lebanon_fp.get('level', 0)
+            boost = RHETORIC_SCORE_BOOST.get(lebanon_level, 0)
+            if boost > 0:
+                threat_scores['hezbollah']['score'] += boost
+                threat_scores['hezbollah']['indicators'].append({
+                    'phrase': f'Lebanon rhetoric tracker: L{lebanon_level}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Israel Incoming] Hezbollah boost: +{boost} (Lebanon L{lebanon_level})")
+
+        # Iran direct — read from Iran command node fingerprint
+        iran_fp = fingerprints.get('iran', {})
+        if iran_fp:
+            iran_level = iran_fp.get('level', 0)
+            irgc_level = iran_fp.get('irgc_level', iran_level)
+            boost = RHETORIC_SCORE_BOOST.get(irgc_level, 0)
+            if boost > 0:
+                threat_scores['iran_direct']['score'] += boost
+                threat_scores['iran_direct']['indicators'].append({
+                    'phrase': f'Iran rhetoric tracker: L{irgc_level}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Israel Incoming] Iran boost: +{boost} (IRGC L{irgc_level})")
+
+    except Exception as e:
+        print(f"[Israel Incoming] Rhetoric boost error: {str(e)[:100]}")
+
+    # ── Hamas ceasefire discount ──
+    # If ceasefire keywords outnumber attack keywords, discount Hamas score
+    try:
+        ceasefire_phrases = ['ceasefire', 'hostage deal', 'hostage release',
+                             'hamas agrees', 'truce', 'pause in fighting',
+                             'ceasefire holding', 'ceasefire extended']
+        attack_phrases = ['hamas rockets', 'hamas attack', 'hamas fires',
+                          'hamas launches', 'rockets from gaza', 'qassam']
+        ceasefire_count = sum(
+            1 for a in articles
+            for p in ceasefire_phrases
+            if p in f"{a.get('title','')} {a.get('description','')}".lower()
+        )
+        attack_count = sum(
+            1 for a in articles
+            for p in attack_phrases
+            if p in f"{a.get('title','')} {a.get('description','')}".lower()
+        )
+        if ceasefire_count > attack_count * 1.5:
+            discount = 0.4  # 60% discount during active ceasefire
+            threat_scores['hamas']['score'] *= discount
+            print(f"[Israel Incoming] Hamas ceasefire discount applied ({ceasefire_count} ceasefire vs {attack_count} attack signals)")
+    except Exception as e:
+        print(f"[Israel Incoming] Hamas discount error: {str(e)[:80]}")
+
+    # ── Convert scores to probabilities ──
+    results = {}
+    for key, data in threat_scores.items():
+        prob = min(data['score'] / 30.0, 0.75)
+        results[key] = {
+            'probability': prob,
+            'risk_level': (
+                'very_high' if prob > 0.50 else
+                'high'      if prob > 0.35 else
+                'moderate'  if prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(
+                data['indicators'], key=lambda x: x['weight'], reverse=True
+            )[:5],
+            'total_indicators': len(data['indicators'])
+        }
+
+    # ── Combined incoming (independent events) ──
+    probs = [results[k]['probability'] for k in results]
+    combined = 1 - sum(1 for _ in probs)  # placeholder
+    combined = 1.0
+    for p in probs:
+        combined *= (1 - p)
+    combined = min(1 - combined, 0.95)
+
+    return {
+        'iran_direct':    results['iran_direct'],
+        'hezbollah':      results['hezbollah'],
+        'hamas':          results['hamas'],
+        'west_bank_gaza': results['west_bank_gaza'],
+        'houthis':        results['houthis'],
+        'syria_based':    results['syria_based'],
+        'combined': {
+            'probability': combined,
+            'risk_level': (
+                'very_high' if combined > 0.60 else
+                'high'      if combined > 0.40 else
+                'moderate'  if combined > 0.20 else
+                'low'
+            )
+        }
+    }
+    
+    threat_scores = {
+        'iran_direct': {'score': 0, 'indicators': [], 'articles': 0},
+        'hezbollah': {'score': 0, 'indicators': [], 'articles': 0},
+        'hamas': {'score': 0, 'indicators': [], 'articles': 0},
+        'west_bank_gaza': {'score': 0, 'indicators': [], 'articles': 0},
+        'houthis': {'score': 0, 'indicators': [], 'articles': 0},
+        'syria_based': {'score': 0, 'indicators': [], 'articles': 0}
+    }
+    
+    category_map = {
+        'iran_direct': 'iran_direct',
+        'hezbollah': 'hezbollah',
+        'hamas': 'hamas',
+        'west_bank_gaza': 'west_bank_gaza',
+        'houthis': 'houthis',
+        'syria_based': 'syria_based'
+    }
+    
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        
+        for category, data in ISRAEL_INCOMING_THREAT_KEYWORDS.items():
+            mapped = category_map.get(category)
+            if not mapped:
+                continue
+            
+            for phrase in data['phrases']:
+                if phrase in content:
+                    threat_scores[mapped]['score'] += data['weight']
+                    threat_scores[mapped]['articles'] += 1
+                    threat_scores[mapped]['indicators'].append({
+                        'phrase': phrase,
+                        'weight': data['weight'],
+                        'article': article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    break  # One match per category per article
+    
+    # Convert scores to probabilities
+    # Israel has higher caps than Jordan due to active conflict
+    results = {}
+    for key, data in threat_scores.items():
+        prob = min(data['score'] / 30.0, 0.75)  # Higher cap: 75%
+        
+        results[key] = {
+            'probability': prob,
+            'risk_level': (
+                'very_high' if prob > 0.50 else
+                'high' if prob > 0.35 else
+                'moderate' if prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(data['indicators'], key=lambda x: x['weight'], reverse=True)[:5],
+            'total_indicators': len(data['indicators'])
+        }
+    
+    # Combined incoming threat (independent events)
+    probs = [results[k]['probability'] for k in results]
+    combined = 1.0
+    for p in probs:
+        combined *= (1 - p)
+    combined = 1 - combined
+    combined = min(combined, 0.95)
+    
+    return {
+        'iran_direct': results['iran_direct'],
+        'hezbollah': results['hezbollah'],
+        'hamas': results['hamas'],
+        'west_bank_gaza': results['west_bank_gaza'],
+        'houthis': results['houthis'],
+        'syria_based': results['syria_based'],
+        'combined': {
+            'probability': combined,
+            'risk_level': (
+                'very_high' if combined > 0.60 else
+                'high' if combined > 0.40 else
+                'moderate' if combined > 0.20 else
+                'low'
+            )
+        }
+    }
+
+
+# v3.7.0 (Nov 1 2026) -- co-occurrence matching for Israeli OUTGOING operations.
+_ISR_ACTOR_RX = re.compile(r"\b(israel|israeli|israelis|idf|iaf|netanyahu|bibi|katz|zamir|mossad|"
+                           r"tel aviv|jerusalem)\b|ישראל|צה\"?ל|إسرائيل", re.I)
+_ISR_KINETIC_RX = re.compile(r"\b(strik\w*|attack\w*|bomb\w*|raid\w*|hit|hits|pound\w*|shell\w*|"
+                             r"target\w*|kill\w*|assassinat\w*|eliminat\w*|airstrike\w*|offensive|incursion\w*|"
+                             r"invad\w*|retaliat\w*)\b|תקיפ|תקף|غارة|قصف|هجوم", re.I)
+_ISR_INTENT_RX = re.compile(r"\b(threat\w*|warn\w*|plan\w*|prepar\w*|weigh\w*|consider\w*|vow\w*|"
+                            r"option\w*|readies|ready|mull\w*|signal\w*|approv\w*|green.?light\w*)\b", re.I)
+_ISR_DEESC_RX = re.compile(r"\b(ceasefire|cease-fire|truce|talks|negotiat\w*|deal|agreement|accord|aid|"
+                           r"humanitarian|hostage\w*|withdraw\w*|de-escalat\w*|deescalat\w*|mediat\w*)\b|הפסקת אש|هدنة", re.I)
+_ISR_OUT_TARGETS = {
+    'vs_iran':      re.compile(r"\b(iran|iranian|tehran|isfahan|natanz|fordow|parchin|irgc|khamenei)\b|איראן|إيران", re.I),
+    'vs_lebanon':   re.compile(r"\b(lebanon|lebanese|beirut|hezbollah|hizballah|hizbollah|dahiyeh|litani)\b|לבנון|חיזבאללה|لبنان", re.I),
+    'vs_gaza':      re.compile(r"\b(gaza|hamas|rafah|khan yunis|jabalia)\b|עזה|غزة", re.I),
+    'vs_syria':     re.compile(r"\b(syria|syrian|damascus|quneitra|daraa)\b|סוריה|سوريا", re.I),
+    'vs_west_bank': re.compile(r"\b(west bank|jenin|nablus|tulkarm|judea|samaria)\b|יהודה ושומרון|الضفة", re.I),
+    'vs_houthis':   re.compile(r"\b(houthi|houthis|yemen|yemeni|hodeidah|sanaa|ansarallah)\b|חות'?ים|الحوثي", re.I),
+}
+
+
+def calculate_israel_outgoing_operations(articles, days_analyzed=7):
+    """
+    Calculate probability of Israeli OUTGOING military operations
+    
+    Unlike Jordan (defensive only), Israel is an active striker:
+    1. Israel → Lebanon (daily strikes on Hezbollah)
+    2. Israel → Gaza (ongoing operations)
+    3. Israel → Iran (strategic strikes)
+    4. Israel → Syria (periodic strikes on Iranian assets)
+    5. Israel → West Bank (counter-terror raids)
+    6. Israel → Yemen/Houthis (retaliatory strikes)
+    """
+    
+    outgoing_scores = {
+        'vs_lebanon': {'score': 0, 'indicators': []},
+        'vs_gaza': {'score': 0, 'indicators': []},
+        'vs_iran': {'score': 0, 'indicators': []},
+        'vs_syria': {'score': 0, 'indicators': []},
+        'vs_west_bank': {'score': 0, 'indicators': []},
+        'vs_houthis': {'score': 0, 'indicators': []}
+    }
+    
+    key_map = {
+        'israel_vs_lebanon': 'vs_lebanon',
+        'israel_vs_gaza': 'vs_gaza',
+        'israel_vs_iran': 'vs_iran',
+        'israel_vs_syria': 'vs_syria',
+        'israel_vs_west_bank': 'vs_west_bank',
+        'israel_vs_houthis': 'vs_houthis'
+    }
+    
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        title = (article.get('title', '') or '').lower()
+        
+        for category, data in ISRAEL_OUTGOING_KEYWORDS.items():
+            mapped = key_map.get(category)
+            if not mapped:
+                continue
+            
+            matched = False
+            for phrase in data['phrases']:
+                if phrase in content:
+                    outgoing_scores[mapped]['score'] += data['weight']
+                    outgoing_scores[mapped]['indicators'].append({
+                        'phrase': phrase,
+                        'weight': data['weight'],
+                        'article': article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    matched = True
+                    break
+
+            # v3.7.0 (Nov 1 2026) -- co-occurrence fallback. The exact phrases above
+            # ('israel strike iran') miss how headlines are actually written ("Israel
+            # STRIKES Iran", "Netanyahu weighs strike on Iran", "IDF prepares Iran
+            # options"), so outgoing read 0% while incoming read 75%. Now: an Israeli
+            # actor + the target + an action word in the SAME HEADLINE also counts.
+            # Kinetic verbs score full weight; intent/planning verbs score half --
+            # planning is signal, but it is not a strike.
+            if not matched and mapped in _ISR_OUT_TARGETS:
+                _am = _ISR_ACTOR_RX.search(title)
+                _tm = _ISR_OUT_TARGETS[mapped].search(title)
+                # Direction: the Israeli actor must come BEFORE the target ("Iran warns
+                # Israel" is incoming, not outgoing). De-escalation headlines never count.
+                if _am and _tm and _am.start() < _tm.start() and not _ISR_DEESC_RX.search(title):
+                    if _ISR_INTENT_RX.search(title):          # "weighs strike" is intent, not a strike
+                        w, why = data['weight'] * 0.5, 'actor+target+intent in headline'
+                    elif _ISR_KINETIC_RX.search(title):
+                        w, why = data['weight'], 'actor+target+kinetic in headline'
+                    else:
+                        w = 0
+                    if w:
+                        outgoing_scores[mapped]['score'] += w
+                        outgoing_scores[mapped]['indicators'].append({
+                            'phrase': why,
+                            'weight': w,
+                            'article': article.get('title', '')[:80],
+                            'article_url': article.get('url', '')
+                        })
+    
+    results = {}
+    for key, data in outgoing_scores.items():
+        prob = min(data['score'] / 25.0, 0.80)  # Higher cap for outgoing
+        
+        results[key] = {
+            'probability': prob,
+            'risk_level': (
+                'very_high' if prob > 0.50 else
+                'high' if prob > 0.35 else
+                'moderate' if prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(data['indicators'], key=lambda x: x['weight'], reverse=True)[:5],
+            'tooltip': {
+                'vs_lebanon': 'Probability of Israeli strikes on Hezbollah targets in Lebanon',
+                'vs_gaza': 'Probability of Israeli military operations in Gaza',
+                'vs_iran': 'Probability of Israeli direct strikes on Iranian territory/assets',
+                'vs_syria': 'Probability of Israeli strikes on Iranian assets in Syria',
+                'vs_west_bank': 'Probability of IDF counter-terror operations in the West Bank',
+                'vs_houthis': 'Probability of Israeli retaliatory strikes on Houthi targets in Yemen'
+            }.get(key, '')
+        }
+    
+    return results
+
+
+def build_israel_headlines(incoming_threats, outgoing_ops, all_articles):
+    """Build unified headlines list for Israel threat display"""
+    
+    headlines = []
+    seen_urls = set()
+    
+    # Incoming threat indicators
+    incoming_labels = {
+        'iran_direct': 'Iran Direct Threat',
+        'hezbollah': 'Hezbollah Threat',
+        'hamas': 'Hamas Threat',
+        'west_bank_gaza': 'West Bank/Gaza',
+        'houthis': 'Houthi Threat',
+        'syria_based': 'Syria-Based Threat'
+    }
+    
+    for threat_key, label in incoming_labels.items():
+        threat = incoming_threats.get(threat_key, {})
+        for indicator in threat.get('indicators', [])[:3]:
+            url = indicator.get('article_url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                matching = next((a for a in all_articles if a.get('url') == url), None)
+                headlines.append({
+                    'title': matching.get('title', indicator.get('article', ''))[:120] if matching else indicator.get('article', '')[:120],
+                    'url': url,
+                    'source': matching.get('source', {}).get('name', 'Unknown') if matching else 'Unknown',
+                    'published': matching.get('publishedAt', '') if matching else '',
+                    'threat_type': label,
+                    'weight': indicator.get('weight', 0),
+                    'phrase': indicator.get('phrase', ''),
+                    'why_included': f"Matched: '{indicator.get('phrase', '')}'",
+                    'color': 'red' if 'iran' in threat_key.lower() else 'orange'
+                })
+    
+    # Outgoing operation indicators
+    outgoing_labels = {
+        'vs_lebanon': 'Israel → Lebanon',
+        'vs_gaza': 'Israel → Gaza',
+        'vs_iran': 'Israel → Iran',
+        'vs_syria': 'Israel → Syria',
+        'vs_west_bank': 'Israel → West Bank',
+        'vs_houthis': 'Israel → Yemen'
+    }
+    
+    for op_key, label in outgoing_labels.items():
+        ops = outgoing_ops.get(op_key, {})
+        for indicator in ops.get('indicators', [])[:2]:
+            url = indicator.get('article_url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                matching = next((a for a in all_articles if a.get('url') == url), None)
+                headlines.append({
+                    'title': matching.get('title', indicator.get('article', ''))[:120] if matching else indicator.get('article', '')[:120],
+                    'url': url,
+                    'source': matching.get('source', {}).get('name', 'Unknown') if matching else 'Unknown',
+                    'published': matching.get('publishedAt', '') if matching else '',
+                    'threat_type': label,
+                    'weight': indicator.get('weight', 0),
+                    'phrase': indicator.get('phrase', ''),
+                    'why_included': f"Outgoing: '{indicator.get('phrase', '')}'",
+                    'color': 'blue'
+                })
+    
+    headlines.sort(key=lambda x: x['weight'], reverse=True)
+    return headlines[:15]
+
+
+def fetch_ravid_articles(target='general'):
+    """
+    v3.3 — Centralized Ravid-focused Google News RSS fetcher.
+    
+    Barak Ravid (Axios/CNN/Channel 12) is a first-mover OSINT journalist
+    whose bylines consistently break US-Israel-Iran-Lebanon policy scoops
+    hours-to-days before wire services pick them up.
+    
+    Catches English + Hebrew articles mentioning his name via Google News RSS.
+    Called from multiple target paths (Israel + Iran/Hezbollah/Houthis/Syria).
+    
+    Args:
+        target: 'general', 'israel', 'iran', 'hezbollah', 'houthis', 'syria'
+                Determines which supplementary Ravid queries to run.
+    
+    Returns: List of articles in standard format.
+    """
+    articles = []
+    
+    # Base queries run for every target
+    queries = [
+        '%22Barak+Ravid%22+Axios',
+        '%22%D7%91%D7%A8%D7%A7+%D7%A8%D7%91%D7%99%D7%93%22',   # Hebrew: "ברק רביד"
+    ]
+    
+    # Target-specific supplementary queries
+    target_queries = {
+        'israel':    ['%22Barak+Ravid%22+Israel+Iran',
+                      '%22Barak+Ravid%22+Netanyahu',
+                      '%22Barak+Ravid%22+hostage'],
+        'iran':      ['%22Barak+Ravid%22+Iran',
+                      '%22%D7%91%D7%A8%D7%A7+%D7%A8%D7%91%D7%99%D7%93%22+%D7%90%D7%99%D7%A8%D7%90%D7%9F'],  # "ברק רביד" איראן
+        'hezbollah': ['%22Barak+Ravid%22+Hezbollah+Lebanon',
+                      '%22Barak+Ravid%22+ceasefire',
+                      '%22%D7%91%D7%A8%D7%A7+%D7%A8%D7%91%D7%99%D7%93%22+%D7%9C%D7%91%D7%A0%D7%95%D7%9F'],  # "ברק רביד" לבנון
+        'houthis':   ['%22Barak+Ravid%22+Houthi+OR+Yemen'],
+        'syria':     ['%22Barak+Ravid%22+Syria'],
+        'general':   [],
+    }
+    
+    queries += target_queries.get(target, [])
+    
+    headers = {'User-Agent': ASIFAH_USER_AGENT}
+    
+    for query in queries:
+        try:
+            feed_url = f"https://news.google.com/rss/search?q={query}&hl=en&gl=US&ceid=US:en"
+            # Hebrew queries use IL locale
+            if '%D7%' in query:
+                feed_url = f"https://news.google.com/rss/search?q={query}&hl=iw&gl=IL&ceid=IL:iw"
+            
+            resp = requests.get(feed_url, timeout=10, headers=headers)
+            if resp.status_code != 200:
+                continue
+            
+            try:
+                root = ET.fromstring(resp.content)
+            except ET.ParseError:
+                continue
+            
+            for item in root.findall('.//item')[:10]:
+                title_elem = item.find('title')
+                link_elem = item.find('link')
+                pubDate_elem = item.find('pubDate')
+                description_elem = item.find('description')
+                
+                if title_elem is None or link_elem is None:
+                    continue
+                
+                pub_date = pubDate_elem.text if pubDate_elem is not None else datetime.now(timezone.utc).isoformat()
+                description = ''
+                if description_elem is not None and description_elem.text:
+                    description = description_elem.text[:500]
+                
+                # Determine language by query encoding
+                lang = 'he' if '%D7%' in query else 'en'
+                
+                articles.append({
+                    'title': title_elem.text or '',
+                    'description': description,
+                    'url': link_elem.text or '',
+                    'publishedAt': pub_date,
+                    'source': {'name': 'Ravid (via Google News)'},
+                    'content': description,
+                    'language': lang,
+                    'ravid_sourced': True,  # Provenance flag for future weighting
+                })
+        except Exception as e:
+            print(f"[Ravid RSS {target}] Error: {str(e)[:80]}")
+    
+    print(f"[Ravid] {target}: {len(articles)} articles")
+    return articles
+
+
+def fetch_israel_news_rss():
+    """Israeli publisher feeds. Thin delegate -- rss_monitor owns the list.
+
+    v3.6.0 (Oct 4 2026). This used to carry its OWN dict of three Israeli
+    feeds while rss_monitor.ISRAELI_RSS_FEEDS carried five for the same
+    publishers at different URLs. Which set a scan actually used depended on
+    which target triggered it: _refresh_target('iran') reached rss_monitor's
+    via fetch_all_rss(), _refresh_target('israel') reached this copy. Two
+    definitions of "the Israeli press", silently disagreeing.
+
+    rss_monitor is imported BY this file, so that is where the list belongs.
+    The article dict it returns is key-for-key identical to what this function
+    built -- title, description, url, publishedAt, source.name, content,
+    language -- so every caller is unaffected.
+
+    DELIBERATE BEHAVIOUR CHANGE, stated rather than buried: callers of this
+    function now also receive Ynet and Haaretz, which rss_monitor always had
+    and this copy never did. More coverage on the Israel path, and feed_health
+    reports all six under their own names.
+    """
+    return fetch_israeli_rss()
+    
+# ========================================
+# JORDAN-SPECIFIC THREAT CALCULATIONS
+# ========================================
+
+JORDAN_INCOMING_THREAT_KEYWORDS = {
+    'iran_militia_strike': {
+        'weight': 3.5,
+        'phrases': [
+            'iran strike jordan', 'iranian drones jordan', 'jordan intercept iranian',
+            'militia attack jordan', 'pmu jordan', 'hashd jordan',
+            'iran threatens jordan', 'irgc jordan', 'proxy attack jordan',
+            'iraqi militia jordan', 'shiite militia jordan border',
+            'jordan air defense iranian', 'drone incursion jordan'
+        ]
+    },
+    'syrian_border_isis': {
+        'weight': 3.0,
+        'phrases': [
+            'isis jordan', 'daesh jordan', 'islamic state jordan',
+            'jordan syria border incursion', 'jordan border attack',
+            'jordan border security', 'smuggling jordan syria',
+            'captagon jordan', 'drug smuggling jordan', 'rukban camp',
+            'border infiltration jordan', 'jordan border clashes',
+            'isis sleeper cell jordan', 'isis threat jordan'
+        ]
+    },
+    'palestinian_unrest': {
+        'weight': 2.5,
+        'phrases': [
+            'jordan palestinian uprising', 'amman protests palestine',
+            'jordan riots', 'east bank west bank tensions',
+            'refugee camp unrest jordan', 'palestinian protests amman',
+            'jordan destabilization', 'hashemite stability',
+            'jordan internal unrest', 'tribal tensions jordan',
+            'jordan protests', 'bread riots jordan', 'amman riots'
+        ]
+    },
+    'us_base_targeting': {
+        'weight': 4.0,
+        'phrases': [
+            'tower 22', 'tower 22 jordan', 'jordan us base attack',
+            'tanf jordan', 'us base jordan drone', 'american troops jordan',
+            'us forces jordan attacked', 'jordan base drone strike',
+            'centcom jordan', 'muwaffaq salti', 'jordan military base attack'
+        ]
+    }
+}
+
+JORDAN_DEFENSIVE_KEYWORDS = {
+    'coalition_air_defense': {
+        'weight': 2.0,
+        'phrases': [
+            'jordan intercept', 'jordan shoots down', 'jordan air defense',
+            'jordan intercepts drone', 'jordan intercepts missile',
+            'jordan airspace defense', 'jordan coalition defense',
+            'jordan shoots down iranian', 'jordan air force intercept',
+            'us jordan air defense', 'jordan patriot', 'jordan radar',
+            'joint air defense jordan', 'jordan allied intercept'
+        ]
+    },
+    'border_operations': {
+        'weight': 1.5,
+        'phrases': [
+            'jordan border operation', 'jordan counter smuggling',
+            'jordan anti drug operation', 'jordan border patrol',
+            'jordan captagon seizure', 'jordan border interdiction',
+            'jordan military border', 'jordan border security operation',
+            'jordan customs seizure', 'jordan border crackdown'
+        ]
+    }
+}
+
+
+# ============================================
+# IRAN — INCOMING THREAT KEYWORDS
+# Threats AGAINST Iran from Israel + US
+# ============================================
+IRAN_INCOMING_THREAT_KEYWORDS = {
+    'israel_strike': {
+        'weight': 4.0,
+        'phrases': [
+            'israel strikes iran', 'israel attacks iran', 'israel bombing iran',
+            'israel hit iran', 'iaf strikes iran', 'israeli airstrike iran',
+            'israel nuclear strike', 'israel targets iran', 'israel iran war',
+            'israel bombs iran', 'f-35 iran strike', 'israeli jets iran',
+            'israel iran retaliation', 'israel preemptive iran',
+            'netanyahu orders iran strike', 'idf iran strike',
+            'israel attacks iranian', 'israel hits iranian',
+            'ישראל תוקפת איראן', 'מתקפה ישראלית על איראן',
+            'إسرائيل تضرب إيران', 'الضربة الإسرائيلية على إيران',
+        ]
+    },
+    'us_strike': {
+        'weight': 4.0,
+        'phrases': [
+            'us strikes iran', 'us attacks iran', 'us bombs iran',
+            'us airstrike iran', 'centcom strikes iran', 'pentagon iran strike',
+            'us military iran', 'american strike iran', 'b-52 iran',
+            'us carrier iran', 'us tomahawk iran', 'us war iran',
+            'trump orders iran strike',
+            'us hits iran', 'us targets iran', 'us bombs iranian',
+            'us navy iran', 'us destroys iran', 'operation iran us',
+            'american bombing iran', 'us combat iran',
+        ]
+    },
+    'cyber_sabotage': {
+        'weight': 2.5,
+        'phrases': [
+            'iran cyberattack', 'iran nuclear sabotage', 'stuxnet iran',
+            'iran centrifuge sabotage', 'natanz explosion', 'iran facility explosion',
+            'iran power grid attack', 'iran infrastructure attack',
+            'mossad iran operation', 'iran assassination',
+            'iran scientist killed', 'iran general killed',
+            'iran ship attacked', 'iran tanker attacked',
+        ]
+    },
+}
+
+# ============================================
+# IRAN — OUTGOING RHETORIC-BOOSTED THREATS
+# Iran directing proxies + direct retaliation
+# ============================================
+IRAN_OUTGOING_THREAT_KEYWORDS = {
+    'iran_vs_israel': {
+        'weight': 4.0,
+        'phrases': [
+            'iran strike israel', 'iran attack israel', 'iran targets israel',
+            'iran missiles israel', 'iran retaliation israel',
+            'true promise israel', 'operation true promise',
+            'irgc targets israel', 'iran ballistic israel',
+            'iran wipes israel', 'iran threatens tel aviv',
+            'iran threatens haifa', 'iran threatens dimona',
+            'tehran threatens israel', 'khamenei threatens israel',
+            'iran destroy israel', 'erase israel iran',
+        ]
+    },
+    'iran_via_hezbollah': {
+        'weight': 3.5,
+        'phrases': [
+            'hezbollah orders iran', 'iran directs hezbollah',
+            'irgc hezbollah coordinate', 'iran activates hezbollah',
+            'hezbollah iran missiles', 'hezbollah precision missiles',
+            'iran hezbollah northern front', 'qassem iran orders',
+            'hezbollah full war', 'hezbollah multi-front',
+            'iran proxy hezbollah', 'quds force hezbollah',
+        ]
+    },
+    'iran_via_houthis': {
+        'weight': 3.0,
+        'phrases': [
+            'houthi iran orders', 'iran directs houthis',
+            'irgc houthi coordinate', 'iran activates houthis',
+            'houthi iran missiles', 'houthi ballistic iran',
+            'iran houthi red sea', 'iran houthi israel attack',
+            'houthi proxy iran', 'quds force houthi',
+            'ansar allah iran', 'iran houthi drone',
+        ]
+    },
+    'iran_via_iraq_pmf': {
+        'weight': 2.5,
+        'phrases': [
+            'iraq pmf iran orders', 'iran directs pmf',
+            'irgc pmf coordinate', 'iran activates iraq militia',
+            'kata ib hezbollah iran', 'iraq militia iran',
+            'hashd iran coordinate', 'iran iraq proxy',
+            'quds force iraq', 'iran pmf drone attack',
+            'iran backed militia iraq', 'sabreen news iran',
+        ]
+    },
+}
+
+
+def _compute_iran_threat_convergence_index(fingerprints):
+    """
+    Iran TCI — mirrors Israel TCI pattern.
+    Counts how many adversaries are simultaneously elevated against Iran.
+    Primary: Israel (strike actor) + US (strike actor)
+    Secondary: Saudi, Gulf states (less direct)
+    Returns 0-5 TCI score + convergence signal string.
+    """
+    try:
+        now = __import__('datetime').datetime.now(__import__('datetime').timezone.utc)
+        israel_fp = fingerprints.get('israel', {})
+        iran_fp   = fingerprints.get('iran', {})
+
+        israel_lv = 0
+        if israel_fp:
+            try:
+                age_h = (now - __import__('datetime').datetime.fromisoformat(
+                    israel_fp.get('ts', now.isoformat()))).total_seconds() / 3600
+                if age_h <= 24:
+                    israel_lv = israel_fp.get('level', 0)
+            except Exception:
+                pass
+
+        # US strike level inferred from Iran rhetoric cache
+        # If Iran IRGC at L4+ and US ops confirmed, US at high strike posture
+        us_lv = 0
+        if iran_fp:
+            irgc_lv = iran_fp.get('irgc_level', 0)
+            otp     = iran_fp.get('operation_true_promise_count', 0)
+            if otp > 0 or irgc_lv >= 4:
+                us_lv = min(irgc_lv, 4)  # proxy for US engagement
+
+        # TCI computation
+        primary_elevated   = sum(1 for lv in [israel_lv, us_lv] if lv >= 3)
+        combined_lv        = max(israel_lv, us_lv)
+
+        if primary_elevated >= 2 and combined_lv >= 4:
+            tci = 5
+            signal = 'Full adversary convergence — Israel + US both at high strike posture'
+        elif primary_elevated >= 2:
+            tci = 4
+            signal = 'Dual adversary threat — Israel and US simultaneously elevated'
+        elif primary_elevated == 1 and combined_lv >= 4:
+            tci = 3
+            signal = 'Single primary adversary at high strike posture'
+        elif primary_elevated == 1:
+            tci = 2
+            signal = 'Primary adversary elevated'
+        elif combined_lv >= 2:
+            tci = 1
+            signal = 'Low-level adversary signals detected'
+        else:
+            tci = 0
+            signal = ''
+
+        return tci, signal, israel_lv, us_lv
+    except Exception as e:
+        print(f"[Iran TCI] Error: {str(e)[:80]}")
+        return 0, '', 0, 0
+
+
+def calculate_iran_incoming_threats(articles, days_analyzed=7):
+    """
+    Calculate probability of kinetic action AGAINST Iran.
+    Mirrors calculate_israel_incoming_threats() pattern.
+    Primary input: cross-theater fingerprints (rhetoric trackers)
+    Secondary: article keyword scan
+    """
+    threat_scores = {
+        'israel_strike': {'score': 0, 'indicators': [], 'articles': 0},
+        'us_strike':     {'score': 0, 'indicators': [], 'articles': 0},
+        'cyber_sabotage':{'score': 0, 'indicators': [], 'articles': 0},
+    }
+
+    # ── Article keyword scan ──
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        for category, data in IRAN_INCOMING_THREAT_KEYWORDS.items():
+            for phrase in data['phrases']:
+                if phrase in content:
+                    threat_scores[category]['score']   += data['weight']
+                    threat_scores[category]['articles'] += 1
+                    threat_scores[category]['indicators'].append({
+                        'phrase':      phrase,
+                        'weight':      data['weight'],
+                        'article':     article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    break
+
+    # ── Rhetoric tracker Redis boost ──
+    RHETORIC_SCORE_BOOST = {0: 0, 1: 5, 2: 12, 3: 22, 4: 38, 5: 55}
+    try:
+        from rhetoric_tracker_iran import _redis_get as _iran_redis_get
+        CROSSTHEATER_KEY = 'rhetoric:crosstheater:fingerprints'
+        fingerprints = _iran_redis_get(CROSSTHEATER_KEY) or {}
+
+        # Israel — reads Israel's is_strike_actor fingerprint
+        israel_fp = fingerprints.get('israel', {})
+        if israel_fp:
+            israel_level = israel_fp.get('level', 0)
+            # Israel has outbound score in fingerprint
+            outbound_score = israel_fp.get('outbound_score', 0)
+            # Use outbound_score if available (more precise), else level
+            if outbound_score > 60:
+                boost = RHETORIC_SCORE_BOOST.get(min(int(outbound_score / 20), 5), 0)
+            else:
+                boost = RHETORIC_SCORE_BOOST.get(israel_level, 0)
+            if boost > 0:
+                threat_scores['israel_strike']['score'] += boost
+                threat_scores['israel_strike']['indicators'].append({
+                    'phrase':      f'Israel rhetoric tracker: L{israel_level} (outbound {outbound_score})',
+                    'weight':      boost,
+                    'article':     'Cross-theater signal',
+                    'article_url': ''
+                })
+                print(f"[Iran Incoming] Israel boost: +{boost} (L{israel_level}, outbound {outbound_score})")
+
+        # US — inferred from Iran IRGC level + operation True Promise signals
+        iran_fp = fingerprints.get('iran', {})
+        if iran_fp:
+            irgc_level = iran_fp.get('irgc_level', 0)
+            otp_count  = iran_fp.get('operation_true_promise_count', 0)
+            # US strike posture correlates with Iranian escalation
+            us_inferred = min(irgc_level + (1 if otp_count > 0 else 0), 5)
+            boost = RHETORIC_SCORE_BOOST.get(us_inferred, 0)
+            if boost > 0:
+                threat_scores['us_strike']['score'] += boost
+                threat_scores['us_strike']['indicators'].append({
+                    'phrase':      f'US posture (inferred from IRGC L{irgc_level}, OTP count: {otp_count})',
+                    'weight':      boost,
+                    'article':     'Cross-theater signal',
+                    'article_url': ''
+                })
+                print(f"[Iran Incoming] US boost: +{boost} (IRGC L{irgc_level}, OTP {otp_count})")
+
+        # TCI
+        tci, tci_signal, israel_lv, us_lv = _compute_iran_threat_convergence_index(fingerprints)
+        print(f"[Iran Incoming] TCI: {tci} — {tci_signal}")
+
+    except Exception as e:
+        print(f"[Iran Incoming] Rhetoric boost error: {str(e)[:100]}")
+        tci, tci_signal, israel_lv, us_lv = 0, '', 0, 0
+        fingerprints = {}
+
+    # ── Convert scores to probabilities ──
+    results = {}
+    for key, data in threat_scores.items():
+        prob = min(data['score'] / 35.0, 0.95)
+        results[key] = {
+            'probability': prob,
+            'risk_level': (
+                'very_high' if prob > 0.60 else
+                'high'      if prob > 0.40 else
+                'moderate'  if prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(
+                data['indicators'], key=lambda x: x['weight'], reverse=True
+            )[:5],
+            'total_indicators': len(data['indicators'])
+        }
+
+    # ── Combined incoming (independent events) ──
+    probs = [results[k]['probability'] for k in results]
+    combined = 1.0
+    for p in probs:
+        combined *= (1 - p)
+    combined = min(1 - combined, 0.95)
+
+    return {
+        'israel_strike':  results['israel_strike'],
+        'us_strike':      results['us_strike'],
+        'cyber_sabotage': results['cyber_sabotage'],
+        'tci':            tci,
+        'tci_signal':     tci_signal,
+        'israel_level':   israel_lv,
+        'us_level':       us_lv,
+        'combined': {
+            'probability': combined,
+            'risk_level': (
+                'very_high' if combined > 0.70 else
+                'high'      if combined > 0.50 else
+                'moderate'  if combined > 0.30 else
+                'low'
+            )
+        }
+    }
+
+
+def calculate_iran_outgoing_threats(articles, days_analyzed=7):
+    """
+    Calculate probability of Iran proxy + direct outgoing operations.
+    Reads rhetoric fingerprints for Hezbollah, Houthis, Iraq PMF.
+    Mirrors the outgoing threats section of api_threat_matrix.
+    """
+    threat_scores = {
+        'iran_vs_israel':     {'score': 0, 'indicators': [], 'articles': 0},
+        'iran_via_hezbollah': {'score': 0, 'indicators': [], 'articles': 0},
+        'iran_via_houthis':   {'score': 0, 'indicators': [], 'articles': 0},
+        'iran_via_iraq_pmf':  {'score': 0, 'indicators': [], 'articles': 0},
+    }
+
+    # ── Article keyword scan ──
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')}".lower()
+        for category, data in IRAN_OUTGOING_THREAT_KEYWORDS.items():
+            for phrase in data['phrases']:
+                if phrase in content:
+                    threat_scores[category]['score']   += data['weight']
+                    threat_scores[category]['articles'] += 1
+                    threat_scores[category]['indicators'].append({
+                        'phrase':      phrase,
+                        'weight':      data['weight'],
+                        'article':     article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    break
+
+    # ── Rhetoric fingerprint boosts for proxies ──
+    PROXY_BOOST = {0: 0, 1: 5, 2: 12, 3: 20, 4: 32, 5: 45}
+    try:
+        from rhetoric_tracker_iran import _redis_get as _iran_redis_get
+        CROSSTHEATER_KEY = 'rhetoric:crosstheater:fingerprints'
+        fingerprints = _iran_redis_get(CROSSTHEATER_KEY) or {}
+
+        # Lebanon / Hezbollah
+        lebanon_fp = fingerprints.get('lebanon', {})
+        if lebanon_fp:
+            lv    = lebanon_fp.get('level', 0)
+            boost = PROXY_BOOST.get(lv, 0)
+            if boost > 0:
+                threat_scores['iran_via_hezbollah']['score'] += boost
+                threat_scores['iran_via_hezbollah']['indicators'].append({
+                    'phrase': f'Lebanon rhetoric tracker: L{lv}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Iran Outgoing] Hezbollah boost: +{boost} (Lebanon L{lv})")
+
+        # Yemen / Houthis
+        yemen_fp = fingerprints.get('yemen', {})
+        if yemen_fp:
+            lv    = yemen_fp.get('level', 0)
+            boost = PROXY_BOOST.get(lv, 0)
+            if boost > 0:
+                threat_scores['iran_via_houthis']['score'] += boost
+                threat_scores['iran_via_houthis']['indicators'].append({
+                    'phrase': f'Yemen rhetoric tracker: L{lv}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Iran Outgoing] Houthi boost: +{boost} (Yemen L{lv})")
+
+        # Iraq PMF
+        iraq_fp = fingerprints.get('iraq', {})
+        if iraq_fp:
+            lv    = iraq_fp.get('level', 0)
+            boost = PROXY_BOOST.get(lv, 0)
+            if boost > 0:
+                threat_scores['iran_via_iraq_pmf']['score'] += boost
+                threat_scores['iran_via_iraq_pmf']['indicators'].append({
+                    'phrase': f'Iraq rhetoric tracker: L{lv}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Iran Outgoing] Iraq PMF boost: +{boost} (Iraq L{lv})")
+
+        # Iran direct vs Israel — read from Iran command node
+        iran_fp = fingerprints.get('iran', {})
+        if iran_fp:
+            irgc_lv = iran_fp.get('irgc_level', 0)
+            boost   = PROXY_BOOST.get(irgc_lv, 0)
+            if boost > 0:
+                threat_scores['iran_vs_israel']['score'] += boost
+                threat_scores['iran_vs_israel']['indicators'].append({
+                    'phrase': f'Iran IRGC direct: L{irgc_lv}',
+                    'weight': boost, 'article': 'Cross-theater signal', 'article_url': ''
+                })
+                print(f"[Iran Outgoing] Iran direct boost: +{boost} (IRGC L{irgc_lv})")
+
+    except Exception as e:
+        print(f"[Iran Outgoing] Rhetoric boost error: {str(e)[:100]}")
+
+    # ── Convert scores to probabilities ──
+    results = {}
+    for key, data in threat_scores.items():
+        prob = min(data['score'] / 35.0, 0.95)
+        label_map = {
+            'iran_vs_israel':     ('🇮🇷 → 🇮🇱', 'Iran Direct → Israel', 'Incl. ballistic missiles, drones, cyber'),
+            'iran_via_hezbollah': ('🇮🇷 → 🇱🇧 → 🇮🇱', 'Iran via Hezbollah → Israel', 'Precision missiles, Radwan force, northern front'),
+            'iran_via_houthis':   ('🇮🇷 → 🇾🇪 → 🇮🇱', 'Iran via Houthis → Israel', 'Ballistic missiles, drones, Red Sea ops'),
+            'iran_via_iraq_pmf':  ('🇮🇷 → 🇮🇶 → 🇮🇱', 'Iran via Iraq PMF → Israel', 'Drone swarms, indirect fire, US base targeting'),
+        }
+        flags, label, detail = label_map.get(key, ('🇮🇷', key, ''))
+        results[key] = {
+            'probability': prob,
+            'risk_level': (
+                'very_high' if prob > 0.60 else
+                'high'      if prob > 0.40 else
+                'moderate'  if prob > 0.20 else
+                'low'
+            ),
+            'flags':      flags,
+            'label':      label,
+            'detail':     detail,
+            'indicators': sorted(
+                data['indicators'], key=lambda x: x['weight'], reverse=True
+            )[:5],
+            'total_indicators': len(data['indicators'])
+        }
+
+    return results
+
+
+
+def calculate_jordan_incoming_threats(articles, days_analyzed=7):
+    """
+    Calculate probability of kinetic action AGAINST Jordan
+    
+    Threat vectors:
+    1. Iranian/militia strike (demonstrated April 2024 precedent)
+    2. Syrian border incursion / ISIS spillover
+    3. Palestinian uprising / internal destabilization
+    4. US base targeting by Iran-aligned groups
+    
+    Returns individual threat probabilities + combined score
+    """
+    
+    threat_scores = {
+        'iran_militia': {'score': 0, 'indicators': [], 'articles': 0},
+        'syria_isis': {'score': 0, 'indicators': [], 'articles': 0},
+        'palestinian_unrest': {'score': 0, 'indicators': [], 'articles': 0},
+        'us_base': {'score': 0, 'indicators': [], 'articles': 0}
+    }
+    
+    category_map = {
+        'iran_militia_strike': 'iran_militia',
+        'syrian_border_isis': 'syria_isis',
+        'palestinian_unrest': 'palestinian_unrest',
+        'us_base_targeting': 'us_base'
+    }
+    
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        
+        for category, data in JORDAN_INCOMING_THREAT_KEYWORDS.items():
+            mapped = category_map.get(category)
+            if not mapped:
+                continue
+            
+            for phrase in data['phrases']:
+                if phrase in content:
+                    threat_scores[mapped]['score'] += data['weight']
+                    threat_scores[mapped]['articles'] += 1
+                    threat_scores[mapped]['indicators'].append({
+                        'phrase': phrase,
+                        'weight': data['weight'],
+                        'article': article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    break  # One match per category per article
+    
+    # Convert scores to probabilities (cap each at 60%)
+    results = {}
+    for key, data in threat_scores.items():
+        prob = min(data['score'] / 35.0, 0.60)
+        
+        results[key] = {
+            'probability': prob,
+            'risk_level': (
+                'very_high' if prob > 0.50 else
+                'high' if prob > 0.35 else
+                'moderate' if prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(data['indicators'], key=lambda x: x['weight'], reverse=True)[:5],
+            'total_indicators': len(data['indicators'])
+        }
+    
+    # Combined incoming threat (independent events formula)
+    probs = [results[k]['probability'] for k in results]
+    combined = 1.0
+    for p in probs:
+        combined *= (1 - p)
+    combined = 1 - combined
+    combined = min(combined, 0.85)
+    
+    return {
+        'iran_militia': results['iran_militia'],
+        'syria_isis': results['syria_isis'],
+        'palestinian_unrest': results['palestinian_unrest'],
+        'us_base': results['us_base'],
+        'combined': {
+            'probability': combined,
+            'risk_level': (
+                'very_high' if combined > 0.60 else
+                'high' if combined > 0.40 else
+                'moderate' if combined > 0.20 else
+                'low'
+            )
+        }
+    }
+
+
+def calculate_jordan_defensive_posture(articles, iran_israel_tension=0.0):
+    """
+    Calculate Jordan's defensive activation probability
+    
+    Two outgoing/defensive vectors:
+    1. Coalition Air Defense — probability of active intercept ops
+       (boosted when Iran-Israel tensions are elevated)
+    2. Border Security Operations — counter-smuggling, counter-ISIS
+    
+    Returns probabilities for each defensive posture
+    """
+    
+    defense_scores = {
+        'coalition_air_defense': {'score': 0, 'indicators': []},
+        'border_operations': {'score': 0, 'indicators': []}
+    }
+    
+    for article in articles:
+        content = f"{article.get('title', '')} {article.get('description', '')} {article.get('content', '')}".lower()
+        
+        for category, data in JORDAN_DEFENSIVE_KEYWORDS.items():
+            for phrase in data['phrases']:
+                if phrase in content:
+                    defense_scores[category]['score'] += data['weight']
+                    defense_scores[category]['indicators'].append({
+                        'phrase': phrase,
+                        'weight': data['weight'],
+                        'article': article.get('title', '')[:80],
+                        'article_url': article.get('url', '')
+                    })
+                    break
+    
+    # Coalition Air Defense gets a BOOST from Iran-Israel tension
+    # If Iran-Israel probability is high, Jordan is more likely to activate air defense
+    tension_boost = 0.0
+    if iran_israel_tension > 0.60:
+        tension_boost = 0.25
+    elif iran_israel_tension > 0.40:
+        tension_boost = 0.15
+    elif iran_israel_tension > 0.20:
+        tension_boost = 0.05
+    
+    air_defense_base = min(defense_scores['coalition_air_defense']['score'] / 20.0, 0.50)
+    air_defense_prob = min(air_defense_base + tension_boost, 0.75)
+    
+    border_ops_prob = min(defense_scores['border_operations']['score'] / 20.0, 0.50)
+    
+    return {
+        'coalition_air_defense': {
+            'probability': air_defense_prob,
+            'base_probability': air_defense_base,
+            'iran_israel_tension_boost': tension_boost,
+            'risk_level': (
+                'very_high' if air_defense_prob > 0.50 else
+                'high' if air_defense_prob > 0.35 else
+                'moderate' if air_defense_prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(defense_scores['coalition_air_defense']['indicators'],
+                               key=lambda x: x['weight'], reverse=True)[:5],
+            'tooltip': 'Probability of active intercept operations against hostile aerial threats transiting Jordanian airspace'
+        },
+        'border_operations': {
+            'probability': border_ops_prob,
+            'risk_level': (
+                'very_high' if border_ops_prob > 0.50 else
+                'high' if border_ops_prob > 0.35 else
+                'moderate' if border_ops_prob > 0.20 else
+                'low'
+            ),
+            'indicators': sorted(defense_scores['border_operations']['indicators'],
+                               key=lambda x: x['weight'], reverse=True)[:5],
+            'tooltip': 'Probability of active border security operations against smuggling and ISIS infiltration'
+        }
+    }
+
+
+def build_jordan_headlines(incoming_threats, defensive_posture, all_articles):
+    """Build unified headlines list for Jordan threat display"""
+    
+    headlines = []
+    seen_urls = set()
+    
+    # Collect all indicators from incoming threats
+    for threat_key in ['iran_militia', 'syria_isis', 'palestinian_unrest', 'us_base']:
+        threat = incoming_threats.get(threat_key, {})
+        threat_labels = {
+            'iran_militia': 'Iran/Militia Threat',
+            'syria_isis': 'Syria Border/ISIS',
+            'palestinian_unrest': 'Internal Unrest',
+            'us_base': 'US Base Targeting'
+        }
+        
+        for indicator in threat.get('indicators', [])[:3]:
+            url = indicator.get('article_url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                
+                # Find matching article for full data
+                matching = None
+                for article in all_articles:
+                    if article.get('url') == url:
+                        matching = article
+                        break
+                
+                headlines.append({
+                    'title': matching.get('title', indicator.get('article', ''))[:120] if matching else indicator.get('article', '')[:120],
+                    'url': url,
+                    'source': matching.get('source', {}).get('name', 'Unknown') if matching else 'Unknown',
+                    'published': matching.get('publishedAt', '') if matching else '',
+                    'threat_type': threat_labels.get(threat_key, 'Unknown'),
+                    'weight': indicator.get('weight', 0),
+                    'phrase': indicator.get('phrase', ''),
+                    'why_included': f"Matched: '{indicator.get('phrase', '')}'",
+                    'color': 'red' if threat_key == 'us_base' else 'orange' if threat_key == 'iran_militia' else 'blue'
+                })
+    
+    # Add defensive posture indicators
+    for def_key in ['coalition_air_defense', 'border_operations']:
+        defense = defensive_posture.get(def_key, {})
+        def_labels = {
+            'coalition_air_defense': 'Coalition Air Defense',
+            'border_operations': 'Border Operations'
+        }
+        
+        for indicator in defense.get('indicators', [])[:2]:
+            url = indicator.get('article_url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                
+                matching = None
+                for article in all_articles:
+                    if article.get('url') == url:
+                        matching = article
+                        break
+                
+                headlines.append({
+                    'title': matching.get('title', indicator.get('article', ''))[:120] if matching else indicator.get('article', '')[:120],
+                    'url': url,
+                    'source': matching.get('source', {}).get('name', 'Unknown') if matching else 'Unknown',
+                    'published': matching.get('publishedAt', '') if matching else '',
+                    'threat_type': def_labels.get(def_key, 'Defensive'),
+                    'weight': indicator.get('weight', 0),
+                    'phrase': indicator.get('phrase', ''),
+                    'why_included': f"Defensive signal: '{indicator.get('phrase', '')}'",
+                    'color': 'green'
+                })
+    
+    headlines.sort(key=lambda x: x['weight'], reverse=True)
+    return headlines[:15]
+
+# ========================================
+# CASUALTY DATA EXTRACTION (Iraq + general)
+# ========================================
+def extract_casualty_data(articles):
+    """Extract casualty counts (deaths, injuries, arrests) from article text"""
+    casualties = {
+        'deaths': 0,
+        'injuries': 0,
+        'arrests': 0,
+        'sources': [],
+        'details': [],
+        'articles_without_numbers': []
+    }
+
+    for article in articles:
+        title = (article.get('title') or '').lower()
+        description = (article.get('description') or '').lower()
+        content = (article.get('content') or '').lower()
+        text = f"{title} {description} {content}"
+        source = article.get('source', {}).get('name', 'Unknown')
+        url = article.get('url', '')
+
+        found_number = False
+
+        # Deaths
+        for pattern in [r'(\d+)\s+(?:killed|dead|died|fatalities|deaths)',
+                        r'(?:killed|dead)\s+(\d+)',
+                        r'(?:at least|more than|over)\s+(\d+)\s+(?:killed|dead)']:
+            match = re.search(pattern, text)
+            if match:
+                num = int(match.group(1))
+                if 0 < num < 10000:
+                    casualties['deaths'] += num
+                    casualties['sources'].append(source)
+                    casualties['details'].append({
+                        'type': 'deaths', 'count': num,
+                        'source': source, 'url': url
+                    })
+                    found_number = True
+                break
+
+        # Injuries
+        for pattern in [r'(\d+)\s+(?:wounded|injured|hurt)',
+                        r'(?:wounded|injured)\s+(\d+)',
+                        r'(?:at least|more than|over)\s+(\d+)\s+(?:wounded|injured)']:
+            match = re.search(pattern, text)
+            if match:
+                num = int(match.group(1))
+                if 0 < num < 50000:
+                    casualties['injuries'] += num
+                    casualties['details'].append({
+                        'type': 'injuries', 'count': num,
+                        'source': source, 'url': url
+                    })
+                    found_number = True
+                break
+
+        # Arrests
+        for pattern in [r'(\d+)\s+(?:arrested|detained|captured)',
+                        r'(?:arrested|detained)\s+(\d+)']:
+            match = re.search(pattern, text)
+            if match:
+                num = int(match.group(1))
+                if 0 < num < 10000:
+                    casualties['arrests'] += num
+                    casualties['details'].append({
+                        'type': 'arrests', 'count': num,
+                        'source': source, 'url': url
+                    })
+                    found_number = True
+                break
+
+        if not found_number and any(kw in text for kw in ['killed', 'dead', 'wounded', 'arrested']):
+            casualties['articles_without_numbers'].append({
+                'title': article.get('title', '')[:120],
+                'source': source, 'url': url
+            })
+
+    # Deduplicate sources
+    casualties['sources'] = list(set(casualties['sources']))
+    return casualties
+    
+# ========================================
+# RATE LIMITING
+# ========================================
+def check_rate_limit():
+    """Check if rate limit has been exceeded"""
+    global rate_limit_data
+    
+    current_time = time.time()
+    
+    if current_time >= rate_limit_data['reset_time']:
+        rate_limit_data['requests'] = 0
+        rate_limit_data['reset_time'] = current_time + RATE_LIMIT_WINDOW
+    
+    if rate_limit_data['requests'] >= RATE_LIMIT:
+        return False
+    
+    rate_limit_data['requests'] += 1
+    return True
+
+def get_rate_limit_info():
+    """Get current rate limit status"""
+    current_time = time.time()
+    remaining = RATE_LIMIT - rate_limit_data['requests']
+    resets_in = int(rate_limit_data['reset_time'] - current_time)
+    
+    return {
+        'requests_used': rate_limit_data['requests'],
+        'requests_remaining': max(0, remaining),
+        'requests_limit': RATE_LIMIT,
+        'resets_in_seconds': max(0, resets_in)
+    }
+
+# ========================================
+# NEWS API FUNCTIONS
+# ========================================
+# ── NewsAPI via the shared newsapi_gateway (Oct 18 2026) ──────────────
+# A FALLBACK, not a feed: real requests only when GDELT is blind (or have=
+# says this scan is thin); 24h cache; one 100/day key budgeted across all
+# five backends. [] is never "no news" -- the reason is in the log and at
+# GET /api/newsapi/health. Key: NEWSAPI_GATEWAY_KEY (NEWSAPI_KEY retired).
+try:
+    from newsapi_gateway import newsapi_fetch as _napi_fetch, register_newsapi_routes
+    register_newsapi_routes(app)
+except ImportError:
+    _napi_fetch = None
+    print("[ME Backend] newsapi_gateway missing -- NewsAPI off (no direct fallback, by design)")
+
+def fetch_newsapi_articles(query, days=7, label=None, have=None):
+    """NewsAPI through the gateway. NewsAPI-native dicts, language='en'."""
+    if _napi_fetch is None:
+        return []
+    return _napi_fetch(query, days=days, page_size=100, label=label, have=have, prefix='me')
+
+# ── Shared GDELT gateway (Jul 23 2026) ────────────────────────────────
+try:
+    from gdelt_gateway import gdelt_fetch as _gw_fetch
+    _GDELT_GATEWAY = True
+except ImportError:
+    print("[ME Backend] gdelt_gateway not available -- using direct GDELT calls")
+    _GDELT_GATEWAY = False
+
+
+def fetch_gdelt_articles(query, days=7, language='eng'):
+    """Fetch articles from GDELT -- routed through the shared gateway.
+
+    Note this function previously swallowed every failure silently
+    (`except Exception: return []` with no logging), which is why ME logs
+    showed GDELT errors from the trackers but never from here. The gateway
+    logs what actually happened.
+    """
+    if _GDELT_GATEWAY:
+        _lang_map_gw = {'eng': 'en', 'ara': 'ar', 'heb': 'he', 'fas': 'fa'}
+        _q = f"({query})" if ' OR ' in query else query
+        raw = _gw_fetch(_q, language=language, timespan=f'{days}d',
+                        maxrecords=75, label=f'me/{language}')
+        return [{
+            'title':       a.get('title', ''),
+            'description': a.get('title', ''),
+            'url':         a.get('url', ''),
+            'publishedAt': a.get('published', ''),
+            'source':      {'name': a.get('source') or 'GDELT'},
+            'content':     a.get('title', ''),
+            'language':    _lang_map_gw.get(language, 'en'),
+        } for a in raw]
+
+    try:
+        wrapped_query = f"({query})" if ' OR ' in query else query
+        
+        params = {
+            'query': wrapped_query,
+            'mode': 'artlist',
+            'maxrecords': 75,
+            'timespan': f'{days}d',
+            'format': 'json',
+            'sourcelang': language
+        }
+        
+        response = requests.get(GDELT_BASE_URL, params=params, timeout=15)
+        
+        if response.status_code == 200:
+            data = response.json()
+            articles = data.get('articles', [])
+            
+            standardized = []
+            lang_code = {'eng': 'en', 'ara': 'ar', 'heb': 'he', 'fas': 'fa'}.get(language, 'en')
+            
+            for article in articles:
+                standardized.append({
+                    'title': article.get('title', ''),
+                    'description': article.get('title', ''),
+                    'url': article.get('url', ''),
+                    'publishedAt': article.get('seendate', ''),
+                    'source': {'name': article.get('domain', 'GDELT')},
+                    'content': article.get('title', ''),
+                    'language': lang_code
+                })
+            
+            return standardized
+        
+        return []
+    except Exception:
+        return []
+
+# ── Feed health (v3.4.0, Sep 27 2026) ─────────────────────────────────
+# rss_monitor.py already reports its 35 feeds. THIS file has seven more,
+# first-party ones: Times of Israel, JPost, i24NEWS, Syria Direct, SOHR,
+# Jordan Times, Roya News. Both write under backend 'me', so /health shows
+# one combined picture instead of two partial ones.
+try:
+    from feed_health import record_fetch as _feed_record, feed_report as _feed_report
+    _FEED_HEALTH = True
+except ImportError:
+    _feed_record = None
+    _feed_report = None
+    _FEED_HEALTH = False
+    print("[ME Backend] feed_health not installed -- feed deaths will stay silent")
+
+
+def _rss_record(feed_url, label, items=0, http_status=None, error=None, t0=None):
+    """One line per fetch outcome. Never raises: instrumentation must not be
+    able to break the thing it is measuring."""
+    if not _feed_record:
+        return
+    try:
+        _feed_record('me', feed_url, items=items, label=label,
+                     http_status=http_status, error=error,
+                     duration_ms=((time.time() - t0) * 1000) if t0 else None)
+    except Exception as _e:
+        print(f"[ME Backend] feed_health record failed: {str(_e)[:80]}")
+
+
+def get_feed_health_report():
+    """Combined feed status for /health -- this file AND rss_monitor."""
+    if not _feed_report:
+        return {'state': 'could_not_assess',
+                'reason': 'feed_health module not installed'}
+    return _feed_report('me')
+
+
+# v3.2.0 (Sep 21 2026) — Reddit platform-wide cooldown + outcome counts.
+# A 429 pauses ALL Reddit calls for 30 minutes (Asia's v1.1.0 idea, proven
+# there) instead of letting 18 targets each knock on the same closed door.
+_REDDIT_COOLDOWN_UNTIL = 0  # unix timestamp
+_REDDIT_COOLDOWN_SECONDS = 30 * 60
+REDDIT_HEALTH = {'mechanism': 'search.rss', 'targets': {}, 'last_run': None,
+                 'cooldown_until': None}
+
+
+def fetch_reddit_posts(target, keywords, days=7):
+    """Fetch Reddit posts via search.rss (Atom). v3.2.0 — Sep 21, 2026.
+
+    Was search.json with a SPOOFED CHROME User-Agent -- the only backend on
+    the platform pretending to be a browser, and the only one Reddit refused
+    (source_health: auth_failed). search.rss needs no OAuth and no disguise;
+    verified live Sep 20 and now running on Europe and Asia.
+
+    Keywords are joined as (a) OR (b) OR (c): parentheses keep a multi-word
+    keyword like 'Red Sea' meaning both words, not 'Red' OR 'Sea'.
+    Every outcome is counted in REDDIT_HEALTH (on /health), never silent.
+    """
+    global _REDDIT_COOLDOWN_UNTIL
+    from html import unescape as _unescape
+
+    subreddits = REDDIT_SUBREDDITS.get(target, [])
+    if not subreddits:
+        REDDIT_HEALTH['targets'][target] = {
+            'status': 'no_subreddits_configured',
+            'at': datetime.now(timezone.utc).isoformat()}
+        return []
+
+    now_ts = time.time()
+    if _REDDIT_COOLDOWN_UNTIL > now_ts:
+        remaining = int(_REDDIT_COOLDOWN_UNTIL - now_ts)
+        print(f"[Reddit] In cooldown ({remaining}s remaining) — skipping {target}")
+        REDDIT_HEALTH['targets'][target] = {
+            'status': 'skipped_cooldown', 'cooldown_remaining_sec': remaining,
+            'at': datetime.now(timezone.utc).isoformat()}
+        return []
+
+    all_posts = []
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+
+    if days <= 1:
+        time_filter = "day"
+    elif days <= 7:
+        time_filter = "week"
+    elif days <= 30:
+        time_filter = "month"
+    else:
+        time_filter = "year"
+
+    query = ' OR '.join(f'({k})' for k in keywords[:3])
+    atom = '{http://www.w3.org/2005/Atom}'
+    counts = {'ok': 0, 'empty': 0, 'forbidden': 0, 'http_error': 0,
+              'rate_limited': 0, 'timeout': 0, 'parse_error': 0,
+              'exception': 0, 'skipped_after_429': 0}
+
+    for i, subreddit in enumerate(subreddits):
+        try:
+            time.sleep(2)
+            response = requests.get(
+                f"https://www.reddit.com/r/{subreddit}/search.rss",
+                params={"q": query, "restrict_sr": "on", "sort": "new",
+                        "t": time_filter, "limit": 25},
+                headers={"User-Agent": REDDIT_USER_AGENT},
+                timeout=10
+            )
+
+            if response.status_code == 429:
+                counts['rate_limited'] += 1
+                counts['skipped_after_429'] = len(subreddits) - i - 1
+                _REDDIT_COOLDOWN_UNTIL = time.time() + _REDDIT_COOLDOWN_SECONDS
+                REDDIT_HEALTH['cooldown_until'] = datetime.fromtimestamp(
+                    _REDDIT_COOLDOWN_UNTIL, tz=timezone.utc).isoformat()
+                print(f"[Reddit] r/{subreddit}: HTTP 429 — all Reddit paused "
+                      f"{_REDDIT_COOLDOWN_SECONDS // 60}min")
+                break
+            if response.status_code == 403:
+                counts['forbidden'] += 1
+                print(f"[Reddit] r/{subreddit}: HTTP 403 forbidden — skipping")
+                continue
+            if response.status_code != 200:
+                counts['http_error'] += 1
+                print(f"[Reddit] r/{subreddit}: HTTP {response.status_code} — skipping")
+                continue
+
+            try:
+                root = ET.fromstring(response.content)
+            except ET.ParseError:
+                counts['parse_error'] += 1
+                print(f"[Reddit] r/{subreddit}: unparseable feed "
+                      f"({len(response.content)} bytes)")
+                continue
+
+            sub_count = 0
+            for entry in root.findall(f'{atom}entry'):
+                published = (entry.findtext(f'{atom}published')
+                             or entry.findtext(f'{atom}updated') or '')
+                try:
+                    post_time = datetime.fromisoformat(published.replace('Z', '+00:00'))
+                    if post_time.tzinfo is None:
+                        post_time = post_time.replace(tzinfo=timezone.utc)
+                except ValueError:
+                    post_time = None
+                if post_time is not None and post_time < since:
+                    continue
+
+                link_el = entry.find(f'{atom}link')
+                link = link_el.get('href', '') if link_el is not None else ''
+                text = _unescape(re.sub(r'<[^>]+>', ' ', entry.findtext(f'{atom}content') or ''))
+                text = re.sub(r'\s+', ' ', text).strip()
+                text = re.sub(r'submitted by\s+/u/\S+.*$', '', text).strip()
+
+                all_posts.append({
+                    "title": (entry.findtext(f'{atom}title') or '').strip()[:200],
+                    "description": text[:300],
+                    "url": link,
+                    "publishedAt": post_time.isoformat() if post_time else published,
+                    "source": {"name": f"r/{subreddit}"},
+                    "content": text,
+                    "language": "en"
+                })
+                sub_count += 1
+
+            if sub_count:
+                counts['ok'] += 1
+            else:
+                counts['empty'] += 1
+
+        except requests.Timeout:
+            counts['timeout'] += 1
+            print(f"[Reddit] r/{subreddit}: timeout — skipping")
+        except Exception as e:
+            counts['exception'] += 1
+            print('[Reddit] r/%s: %s: %s'
+                  % (subreddit, type(e).__name__, str(e)[:130]))
+
+    REDDIT_HEALTH['targets'][target] = dict(
+        counts, posts=len(all_posts), subreddits=len(subreddits),
+        at=datetime.now(timezone.utc).isoformat())
+    REDDIT_HEALTH['last_run'] = datetime.now(timezone.utc).isoformat()
+    print(f"[Reddit] {target}: {len(all_posts)} posts from "
+          f"{counts['ok']}/{len(subreddits)} subs | {counts}")
+    return all_posts
+
+# ========================================
+# SYRIA-SPECIFIC RSS FEEDS
+# ========================================
+def fetch_syria_direct_rss():
+    """Fetch articles from Syria Direct RSS feed"""
+    import xml.etree.ElementTree as ET
+    
+    articles = []
+    feed_url = 'https://syriadirect.org/feed/'
+    
+    try:
+        print("[Syria Direct] Fetching RSS...")
+        
+        headers = {
+            'User-Agent': ASIFAH_USER_AGENT,
+            'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+        }
+        
+        _t0 = time.time()
+        response = requests.get(feed_url, headers=headers, timeout=20)
+        
+        if response.status_code != 200:
+            print(f"[Syria Direct] HTTP {response.status_code}")
+            _rss_record(feed_url, 'Syria Direct', http_status=response.status_code, t0=_t0)
+            return []
+        
+        try:
+            root = ET.fromstring(response.content)
+        except ET.ParseError as e:
+            print(f"[Syria Direct] XML parse error: {e}")
+            _rss_record(feed_url, 'Syria Direct', http_status=200,
+                        error=f'XML parse error: {e}', t0=_t0)
+            return []
+        
+        items = root.findall('.//item')
+        
+        for item in items[:20]:
+            title_elem = item.find('title')
+            link_elem = item.find('link')
+            pubDate_elem = item.find('pubDate')
+            description_elem = item.find('description')
+            content_elem = item.find('{http://purl.org/rss/1.0/modules/content/}encoded')
+            
+            if title_elem is not None and link_elem is not None:
+                pub_date = pubDate_elem.text if pubDate_elem is not None else datetime.now(timezone.utc).isoformat()
+                
+                description = ''
+                if description_elem is not None and description_elem.text:
+                    description = description_elem.text[:500]
+                elif content_elem is not None and content_elem.text:
+                    description = content_elem.text[:500]
+                
+                articles.append({
+                    'title': title_elem.text or '',
+                    'description': description,
+                    'url': link_elem.text or '',
+                    'publishedAt': pub_date,
+                    'source': {'name': 'Syria Direct'},
+                    'content': description,
+                    'language': 'en'
+                })
+        
+        print(f"[Syria Direct] ✓ Fetched {len(articles)} articles")
+        _rss_record(feed_url, 'Syria Direct', items=len(articles), http_status=200, t0=_t0)
+        return articles
+        
+    except Exception as e:
+        print(f"[Syria Direct] Error: {str(e)[:100]}")
+        _rss_record(feed_url, 'Syria Direct', error=e, t0=_t0)
+        return []
+
+def fetch_sohr_rss():
+    """Fetch articles from SOHR RSS feed"""
+    import xml.etree.ElementTree as ET
+    
+    articles = []
+    feed_url = 'https://www.syriahr.com/en/feed/'
+    
+    try:
+        print("[SOHR] Fetching RSS...")
+        
+        headers = {
+            'User-Agent': ASIFAH_USER_AGENT,
+            'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+        }
+        
+        _t0 = time.time()
+        response = requests.get(feed_url, headers=headers, timeout=20)
+        
+        if response.status_code != 200:
+            print(f"[SOHR] HTTP {response.status_code}")
+            _rss_record(feed_url, 'SOHR', http_status=response.status_code, t0=_t0)
+            return []
+        
+        try:
+            root = ET.fromstring(response.content)
+        except ET.ParseError as e:
+            print(f"[SOHR] XML parse error: {e}")
+            _rss_record(feed_url, 'SOHR', http_status=200,
+                        error=f'XML parse error: {e}', t0=_t0)
+            return []
+        
+        items = root.findall('.//item')
+        
+        for item in items[:20]:
+            title_elem = item.find('title')
+            link_elem = item.find('link')
+            pubDate_elem = item.find('pubDate')
+            description_elem = item.find('description')
+            content_elem = item.find('{http://purl.org/rss/1.0/modules/content/}encoded')
+            
+            if title_elem is not None and link_elem is not None:
+                pub_date = pubDate_elem.text if pubDate_elem is not None else datetime.now(timezone.utc).isoformat()
+                
+                description = ''
+                if description_elem is not None and description_elem.text:
+                    description = description_elem.text[:500]
+                elif content_elem is not None and content_elem.text:
+                    description = content_elem.text[:500]
+                
+                articles.append({
+                    'title': title_elem.text or '',
+                    'description': description,
+                    'url': link_elem.text or '',
+                    'publishedAt': pub_date,
+                    'source': {'name': 'SOHR'},
+                    'content': description,
+                    'language': 'en'
+                })
+        
+        print(f"[SOHR] ✓ Fetched {len(articles)} articles")
+        _rss_record(feed_url, 'SOHR', items=len(articles), http_status=200, t0=_t0)
+        return articles
+        
+    except Exception as e:
+        print(f"[SOHR] Error: {str(e)[:100]}")
+        _rss_record(feed_url, 'SOHR', error=e, t0=_t0)
+        return []
+
+# ========================================
+# SYRIA CONFLICT DATA EXTRACTION
+# ========================================
+def extract_syria_conflict_data(articles):
+    """Extract conflict statistics from Syria articles"""
+    
+    conflict_data = {
+        'deaths': 0,
+        'displaced': 0,
+        'factional_clashes': 0,
+        'clash_locations': {},
+        'active_factions': set(),
+        'sources': set(),
+        'details': []
+    }
+    
+    number_patterns = [
+        r'(\d+(?:,\d{3})*)\s+(?:people\s+)?',
+        r'(?:more than|over|at least)\s+(\d+(?:,\d{3})*)',
+        r'(\d+(?:,\d{3})*)\s+(?:have been|were|are)',
+        r'(?:roughly|approximately|around)\s+(\d+(?:,\d{3})*)',
+        r'(hundreds?|thousands?|tens of thousands)',
+    ]
+    
+    syrian_cities = [
+        'damascus', 'aleppo', 'homs', 'hama', 'latakia', 'deir ez-zor',
+        'raqqa', 'idlib', 'daraa', 'kobani', 'manbij', 'afrin', 'qamishli'
+    ]
+    
+    for article in articles:
+        title = (article.get('title') or '').lower()
+        description = (article.get('description') or '').lower()
+        content = (article.get('content') or '').lower()
+        text = f"{title} {description} {content}"
+        
+        source = article.get('source', {}).get('name', 'Unknown')
+        url = article.get('url', '')
+        
+        # Extract deaths
+        for keyword in SYRIA_CONFLICT_KEYWORDS['deaths']:
+            if keyword in text:
+                for pattern in number_patterns:
+                    match = re.search(pattern + r'\s*' + re.escape(keyword), text, re.IGNORECASE)
+                    if match:
+                        num_str = match.group(1).replace(',', '')
+                        try:
+                            if 'hundred' in num_str.lower():
+                                num = 100
+                            elif 'thousand' in num_str.lower():
+                                if 'tens of' in text:
+                                    num = 10000
+                                else:
+                                    num = 1000
+                            else:
+                                num = int(num_str)
+                            
+                            if num > 0:
+                                conflict_data['deaths'] += num
+                                conflict_data['sources'].add(source)
+                                conflict_data['details'].append({
+                                    'type': 'deaths',
+                                    'count': num,
+                                    'source': source,
+                                    'url': url
+                                })
+                        except:
+                            pass
+                        break
+                break
+        
+        # Extract displaced
+        for keyword in SYRIA_CONFLICT_KEYWORDS['displaced']:
+            if keyword in text:
+                for pattern in number_patterns:
+                    match = re.search(pattern + r'\s*' + re.escape(keyword), text, re.IGNORECASE)
+                    if match:
+                        num_str = match.group(1).replace(',', '')
+                        try:
+                            if 'hundred' in num_str.lower():
+                                num = 100
+                            elif 'thousand' in num_str.lower():
+                                if 'tens of' in text or 'hundreds of' in text:
+                                    num = 50000
+                                else:
+                                    num = 1000
+                            else:
+                                num = int(num_str)
+                            
+                            if num > 0:
+                                conflict_data['displaced'] += num
+                                conflict_data['sources'].add(source)
+                                conflict_data['details'].append({
+                                    'type': 'displaced',
+                                    'count': num,
+                                    'source': source,
+                                    'url': url
+                                })
+                        except:
+                            pass
+                        break
+                break
+        
+        # Count clashes
+        for keyword in SYRIA_CONFLICT_KEYWORDS['clashes']:
+            if keyword in text:
+                conflict_data['factional_clashes'] += 1
+                conflict_data['details'].append({
+                    'type': 'clashes',
+                    'count': 1,
+                    'source': source,
+                    'url': url
+                })
+                break
+        
+        # Identify factions
+        for faction in SYRIA_FACTIONS:
+            if faction.lower() in text:
+                conflict_data['active_factions'].add(faction)
+        
+        # Identify locations
+        for city in syrian_cities:
+            if city in text:
+                conflict_data['clash_locations'][city] = conflict_data['clash_locations'].get(city, 0) + 1
+    
+    conflict_data['active_factions'] = list(conflict_data['active_factions'])
+    conflict_data['sources'] = list(conflict_data['sources'])
+    conflict_data['num_factions'] = len(conflict_data['active_factions'])
+    
+    print(f"[Syria Conflict Data] Deaths: {conflict_data['deaths']}, Displaced: {conflict_data['displaced']}, Clashes: {conflict_data['factional_clashes']}")
+    
+    return conflict_data
+
+# ========================================
+# SYRIA DISPLACEMENT DATA SOURCES (NEW v2.8.1)
+# ========================================
+
+def fetch_unhcr_syria_data():
+    """
+    Fetch displacement data from UNHCR Syria data portal
+    
+    UNHCR provides:
+    - Total IDPs (Internally Displaced Persons)
+    - Refugee populations
+    - Camp populations (including Al-Hol)
+    - Recent displacement figures
+    
+    Returns structured displacement data
+    """
+    try:
+        print("[UNHCR] Fetching Syria displacement data...")
+        
+        # UNHCR Syria data portal API
+        # Note: This is a simplified example - actual UNHCR API may require different approach
+        url = "https://data.unhcr.org/api/population/get/sublocation"
+        
+        params = {
+            'widget_id': 'syria',
+            'sv_id': '54',  # Syria country code
+            'population_group': '5460',  # IDPs
+            'format': 'json'
+        }
+        
+        headers = {
+            'User-Agent': ASIFAH_USER_AGENT
+        }
+        
+        response = requests.get(url, params=params, headers=headers, timeout=15)
+        
+        if response.status_code != 200:
+            print(f"[UNHCR] HTTP error: {response.status_code}")
+            return fetch_unhcr_fallback()
+        
+        data = response.json()
+        
+        # Parse UNHCR response
+        # Structure varies, this is a template
+        total_idps = 0
+        camp_population = 0
+        recent_displacement = 0
+        
+        if isinstance(data, dict):
+            total_idps = data.get('total', 0)
+            camp_population = data.get('camp_total', 0)
+            recent_displacement = data.get('recent', 0)
+        elif isinstance(data, list):
+            for region in data:
+                total_idps += region.get('individuals', 0)
+        
+        print(f"[UNHCR] ✅ IDPs: {total_idps:,}, Camps: {camp_population:,}")
+        
+        return {
+            'total_idps': total_idps,
+            'camp_population': camp_population,
+            'recent_displacement': recent_displacement,
+            'source': 'UNHCR',
+            'last_updated': datetime.now(timezone.utc).isoformat()
+        }
+        
+    except Exception as e:
+        print(f"[UNHCR] Error: {str(e)[:200]}")
+        return fetch_unhcr_fallback()
+
+
+def fetch_unhcr_fallback():
+    """
+    Fallback: Use known estimates from recent UNHCR reports
+    
+    As of February 2025, UNHCR reported:
+    - ~7.2 million IDPs in Syria
+    - ~1.8 million in camps
+    - ~500k recent displacements (post-Assad)
+    
+    Source: UNHCR Syria Flash Update (Jan 2025)
+    """
+    print("[UNHCR] Using fallback estimates from recent reports")
+    
+    return {
+        'total_idps': 7200000,  # 7.2M
+        'camp_population': 1800000,  # 1.8M
+        'recent_displacement': 500000,  # 500k (post-Assad period)
+        'source': 'UNHCR Estimate',
+        'estimated': True,
+        'last_updated': datetime.now(timezone.utc).isoformat(),
+        'note': 'Based on UNHCR Flash Update January 2025'
+    }
+
+
+def scrape_acaps_syria():
+    """
+    Scrape ACAPS (Assessment Capacities Project) for Syria analysis
+    
+    ACAPS provides:
+    - Humanitarian access constraints
+    - Crisis severity ratings
+    - Displacement trends
+    - Camp conditions
+    """
+    try:
+        print("[ACAPS] Scraping Syria analysis...")
+        
+        url = "https://www.acaps.org/countries/syria"
+        
+        headers = {
+            'User-Agent': ASIFAH_USER_AGENT
+        }
+        
+        response = requests.get(url, headers=headers, timeout=15)
+        
+        if response.status_code != 200:
+            print(f"[ACAPS] HTTP error: {response.status_code}")
+            return None
+        
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Look for key statistics
+        # ACAPS structure may vary - this is a template
+        stats = {}
+        
+        # Try to find crisis severity rating
+        severity_elem = soup.find('div', class_=lambda x: x and 'severity' in x.lower())
+        if severity_elem:
+            stats['crisis_severity'] = severity_elem.get_text(strip=True)
+        
+        # Look for humanitarian access percentage
+        access_elem = soup.find(string=re.compile(r'\d+%.*access', re.IGNORECASE))
+        if access_elem:
+            match = re.search(r'(\d+)%', access_elem)
+            if match:
+                stats['humanitarian_access_pct'] = int(match.group(1))
+        
+        # Look for affected population figures
+        affected_elem = soup.find(string=re.compile(r'affected', re.IGNORECASE))
+        if affected_elem:
+            # Try to extract numbers
+            numbers = re.findall(r'(\d+(?:\.\d+)?)\s*(?:million|M)', affected_elem, re.IGNORECASE)
+            if numbers:
+                stats['affected_population'] = float(numbers[0]) * 1000000
+        
+        print(f"[ACAPS] ✅ Extracted {len(stats)} statistics")
+        
+        return {
+            'statistics': stats,
+            'source': 'ACAPS',
+            'url': url,
+            'last_updated': datetime.now(timezone.utc).isoformat()
+        }
+        
+    except Exception as e:
+        print(f"[ACAPS] Error: {str(e)[:200]}")
+        return None
+
+
+def fetch_alhol_camp_data():
+    """
+    Fetch specific data about Al-Hol camp
+    
+    Al-Hol is the largest camp in northeast Syria
+    Housing ~56,000 people (mostly ISIS families)
+    
+    Sources: AP News, UNHCR, local reports
+    """
+    try:
+        print("[Al-Hol] Searching for camp updates...")
+        
+        # Search Google News for Al-Hol camp
+        query = "Al-Hol camp Syria"
+        url = f"https://news.google.com/rss/search?q={query.replace(' ', '+')}&hl=en&gl=US&ceid=US:en"
+        
+        response = requests.get(url, timeout=10, headers={
+            'User-Agent': ASIFAH_USER_AGENT
+        })
+        
+        articles = []
+        
+        if response.status_code == 200:
+            import xml.etree.ElementTree as ET
+            
+            root = ET.fromstring(response.content)
+            items = root.findall('.//item')
+            
+            for item in items[:5]:  # Top 5 recent articles
+                title_elem = item.find('title')
+                link_elem = item.find('link')
+                pubDate_elem = item.find('pubDate')
+                
+                if title_elem is not None:
+                    articles.append({
+                        'title': title_elem.text or '',
+                        'url': link_elem.text if link_elem is not None else '',
+                        'published': pubDate_elem.text if pubDate_elem is not None else ''
+                    })
+        
+        # Known baseline from UNHCR reports
+        camp_population = 56000  # As of Jan 2025
+        
+        # Look for population changes in recent articles
+        for article in articles:
+            text = article['title'].lower()
+            # Try to extract numbers
+            numbers = re.findall(r'(\d+,?\d*)\s*(?:people|residents)', text)
+            if numbers:
+                try:
+                    num = int(numbers[0].replace(',', ''))
+                    if 30000 < num < 100000:  # Sanity check
+                        camp_population = num
+                        break
+                except:
+                    pass
+        
+        print(f"[Al-Hol] ✅ Population: ~{camp_population:,}")
+        
+        return {
+            'camp_name': 'Al-Hol',
+            'population': camp_population,
+            'location': 'Hasakah Governorate, Northeast Syria',
+            'managed_by': 'Kurdish-led SDF',
+            'conditions': 'Overcrowded, security concerns',
+            'recent_articles': articles,
+            'source': 'News aggregation + UNHCR baseline',
+            'last_updated': datetime.now(timezone.utc).isoformat()
+        }
+        
+    except Exception as e:
+        print(f"[Al-Hol] Error: {str(e)[:200]}")
+        return {
+            'camp_name': 'Al-Hol',
+            'population': 56000,  # Fallback estimate
+            'location': 'Hasakah Governorate, Northeast Syria',
+            'source': 'Estimate',
+            'estimated': True,
+            'last_updated': datetime.now(timezone.utc).isoformat()
+        }
+
+
+def extract_displacement_from_articles(articles):
+    """
+    Extract displacement statistics from Syria Direct and SOHR articles
+    
+    Looks for mentions of:
+    - IDP movements
+    - Camp evacuations
+    - Displacement waves
+    - Return movements
+    """
+    displacement_data = {
+        'recent_movements': [],
+        'total_extracted': 0,
+        'sources': set(),
+        'details': []
+    }
+    
+    # Displacement keywords
+    displacement_keywords = [
+        'displaced', 'fled', 'evacuated', 'forced to leave',
+        'abandoned homes', 'refugees', 'idp', 'internally displaced'
+    ]
+    
+    # Number extraction patterns
+    number_patterns = [
+        r'(\d+(?:,\d{3})*)\s+(?:people|civilians|residents|families)',
+        r'(?:more than|over|at least)\s+(\d+(?:,\d{3})*)',
+        r'(\d+(?:,\d{3})*)\s+(?:have been|were|are)\s+displaced'
+    ]
+    
+    for article in articles:
+        title = (article.get('title') or '').lower()
+        description = (article.get('description') or '').lower()
+        content = (article.get('content') or '').lower()
+        text = f"{title} {description} {content}"
+        
+        source = article.get('source', {}).get('name', 'Unknown')
+        url = article.get('url', '')
+        
+        # Check if article mentions displacement
+        if not any(keyword in text for keyword in displacement_keywords):
+            continue
+        
+        # Try to extract numbers
+        for pattern in number_patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE)
+            for match in matches:
+                num_str = match.group(1).replace(',', '')
+                try:
+                    num = int(num_str)
+                    
+                    if num > 100:  # Minimum threshold
+                        displacement_data['total_extracted'] += num
+                        displacement_data['sources'].add(source)
+                        displacement_data['details'].append({
+                            'count': num,
+                            'source': source,
+                            'url': url,
+                            'context': match.group(0)
+                        })
+                        
+                        print(f"[Displacement Extract] {num:,} from {source}")
+                except:
+                    pass
+    
+    displacement_data['sources'] = list(displacement_data['sources'])
+    
+    return displacement_data
+
+
+def enhance_syria_conflict_data_with_displacement(conflict_data, unhcr_data, alhol_data, article_extracts):
+    """
+    Combine all displacement sources into comprehensive report
+    
+    Priority:
+    1. UNHCR official data (most authoritative)
+    2. Article extractions (recent movements)
+    3. Al-Hol camp specifics
+    """
+    
+    enhanced = {
+        'total_idps': unhcr_data.get('total_idps', conflict_data.get('displaced', 0)),
+        'camp_population': unhcr_data.get('camp_population', 0),
+        'recent_displacement': unhcr_data.get('recent_displacement', article_extracts.get('total_extracted', 0)),
+        
+        # Breakdown
+        'idp_breakdown': {
+            'in_camps': unhcr_data.get('camp_population', 0),
+            'with_host_communities': unhcr_data.get('total_idps', 0) - unhcr_data.get('camp_population', 0),
+            'recent_movements': article_extracts.get('total_extracted', 0)
+        },
+        
+        # Specific camps
+        'major_camps': [
+            {
+                'name': alhol_data.get('camp_name', 'Al-Hol'),
+                'population': alhol_data.get('population', 56000),
+                'location': alhol_data.get('location', 'Northeast Syria')
+            }
+            # Add more camps as needed
+        ],
+        
+        # Sources
+        'sources': {
+            'unhcr': unhcr_data.get('source', 'Unknown'),
+            'alhol': alhol_data.get('source', 'Unknown'),
+            'article_sources': article_extracts.get('sources', [])
+        },
+        
+        # Links
+        'humanitarian_links': [
+            {
+                'name': 'UNHCR Syria Portal',
+                'url': 'https://data.unhcr.org/en/country/syr',
+                'description': 'Official displacement data'
+            },
+            {
+                'name': 'ACAPS Syria',
+                'url': 'https://www.acaps.org/countries/syria',
+                'description': 'Crisis analysis'
+            },
+            {
+                'name': 'AP News - Al-Hol',
+                'url': 'https://apnews.com/hub/syria',
+                'description': 'Camp reporting'
+            },
+            {
+                'name': 'ReliefWeb',
+                'url': 'https://reliefweb.int/country/syr',
+                'description': 'UN coordination'
+            }
+        ],
+        
+        'last_updated': datetime.now(timezone.utc).isoformat()
+    }
+    
+    return enhanced
+      
+# (Nov 1 2026) Dead airline-disruption copy removed (~215 lines). Flight data now
+# comes from the shared flight_watch.py; rss_monitor's flight scanner is retired.
+
+# ========================================
+# API ENDPOINTS
+# ========================================
+@app.route('/api/threat/<target>', methods=['GET'])
+def api_threat(target):
+    """API endpoint compatible with frontend — with Redis caching for new countries"""
+    try:
+        days = int(request.args.get('days', 7))
+        refresh = request.args.get('refresh', 'false').lower() == 'true'
+        if refresh and not _public_refresh_allowed(f'threat:{target}'):
+            refresh = False   # v3.6.0: inside the 15-min window -> cache
+        
+        if target not in TARGET_KEYWORDS:
+            return jsonify({
+                'success': False,
+                'error': "Invalid target"
+            }), 400
+        
+        # Check cache first (skip if user clicked Scan OSINT with refresh=true)
+        if not refresh:
+            cached = get_cached_result(target)
+            if cached:
+                print(f"[{target}] Returning cached data")
+                cached['cached'] = True
+                return jsonify(cached)
+        
+        if not check_rate_limit():
+            # Try to return stale cache on rate limit
+            cached = get_cached_result(target)
+            if cached:
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit reached',
+                'probability': 0,
+                'rate_limited': True
+            }), 200
+        
+        if target not in TARGET_KEYWORDS:
+            return jsonify({
+                'success': False,
+                'error': "Invalid target"
+            }), 400
+        
+        query = ' OR '.join(TARGET_KEYWORDS[target]['keywords'])
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        
+        articles_gdelt_fa = []
+        if target == 'iran':
+            articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+        
+        articles_reddit = fetch_reddit_posts(
+            target,
+            TARGET_KEYWORDS[target]['reddit_keywords'],
+            days
+        )
+        
+        telegram_articles = []
+        if TELEGRAM_AVAILABLE:
+            try:
+                telegram_msgs = fetch_telegram_signals(hours_back=days*24, include_extended=True)
+                if telegram_msgs:
+                    target_kws = [kw.lower() for kw in TARGET_KEYWORDS.get(target, {}).get('keywords', [])]
+                    target_name = target.replace('_', ' ').lower()
+                    skipped = 0
+                    for msg in telegram_msgs:
+                        msg_text = (msg.get('title', '') or '').lower()
+                        relevant = target_name in msg_text or any(kw in msg_text for kw in target_kws[:15])
+                        if relevant:
+                            telegram_articles.append({
+                                'title': msg.get('title', '')[:200],
+                                'description': msg.get('title', '')[:500],
+                                'url': msg.get('url', ''),
+                                'publishedAt': msg.get('published', ''),
+                                'source': {'name': msg.get('source', 'Telegram')},
+                                'content': msg.get('title', '')[:500],
+                                'language': 'multi'
+                            })
+                        else:
+                            skipped += 1
+                    print(f"[Threat Scan] Telegram: {len(telegram_articles)} relevant / {skipped} skipped for {target}")
+            except Exception as e:
+                print(f"[Threat Scan] Telegram error: {str(e)[:100]}")
+
+        bluesky_articles = []
+        if BLUESKY_AVAILABLE:
+            try:
+                # Map ME backend target names to Bluesky module's geographic target keys
+                # ME backend uses militia/group names (hezbollah, houthis); Bluesky module uses
+                # country names (lebanon, yemen) for cleaner WHA/Asia/ME consistency.
+                BLUESKY_TARGET_MAP = {
+                    'hezbollah': 'lebanon',
+                    'houthis':   'yemen',
+                    # Pass-through: 'iran', 'israel', 'iraq', 'syria', 'oman', 'jordan'
+                }
+                bluesky_target = BLUESKY_TARGET_MAP.get(target, target)
+                bluesky_articles = fetch_bluesky_for_target(bluesky_target, days=days, max_posts_per_account=20)
+                print(f"[Threat Scan] Bluesky: {len(bluesky_articles)} posts for {target} (queried as {bluesky_target})")
+            except Exception as e:
+                print(f"[Threat Scan] Bluesky error: {str(e)[:100]}")
+
+        # North Africa: French-language GDELT (francophone Maghreb press)
+        articles_gdelt_fr = []
+        if target in ('algeria', 'morocco', 'tunisia', 'libya'):
+            articles_gdelt_fr = fetch_gdelt_articles(query, days, 'fra')
+
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_gdelt_fr +
+                       articles_reddit + telegram_articles + bluesky_articles)
+        
+        # NEW: Fetch ALL RSS feeds (leadership rhetoric + Israeli news)
+        print("[RSS] Fetching RSS feeds...")
+        rss_articles = fetch_all_rss()  # Includes: MEMRI, Al-Manar, Iran Wire, Ynet, ToI, JPost, i24NEWS, Haaretz
+        
+        # Add leadership detection to all articles
+        print(f"[RSS] Analyzing {len(all_articles) + len(rss_articles)} articles for leadership quotes...")
+        for article in all_articles + rss_articles:
+            article['leadership'] = enhance_article_with_leadership(article)
+        
+        # Merge RSS articles into main pool
+        all_articles.extend(rss_articles)
+        print(f"[RSS] Total articles with RSS feeds: {len(all_articles)}")
+        
+        # Calculate Israel strike probability (main algorithm)
+        scoring_result = calculate_threat_probability(all_articles, days, target)
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        breakdown = scoring_result['breakdown']
+        
+        # Calculate US strike probability
+        us_result = calculate_us_strike_probability(all_articles, days, target)
+        us_prob = us_result['probability']
+        
+        # Calculate reverse threats for headlines
+        israel_prob = probability / 100.0
+        reverse_israel = calculate_reverse_threat(all_articles, target, 'israel', israel_prob, us_prob)
+        reverse_us = calculate_reverse_threat(all_articles, target, 'us', israel_prob, us_prob)
+        
+        # Build recent headlines
+        recent_headlines = build_recent_headlines(
+            scoring_result.get('top_contributors', []),
+            us_result.get('us_indicators', []),
+            reverse_israel.get('indicators', []),
+            reverse_us.get('indicators', []),
+            all_articles
+        )
+        
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+        
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        if len(all_articles) >= 20 and unique_sources >= 8:
+            confidence = "High"
+        elif len(all_articles) >= 10 and unique_sources >= 5:
+            confidence = "Medium"
+        else:
+            confidence = "Low"
+        
+        top_articles = []
+        top_contributors = scoring_result.get('top_contributors', [])
+        
+        for contributor in top_contributors:
+            matching_article = None
+            for article in all_articles:
+                if article.get('source', {}).get('name', '') == contributor['source']:
+                    matching_article = article
+                    break
+            
+            if matching_article:
+                article_data = {
+                    'title': matching_article.get('title', 'No title'),
+                    'source': contributor['source'],
+                    'url': matching_article.get('url', ''),
+                    'publishedAt': matching_article.get('publishedAt', ''),
+                    'contribution': contributor['contribution'],
+                    'contribution_percent': abs(contributor['contribution']) / max(abs(breakdown['weighted_score']), 1) * 100,
+                    'severity': contributor['severity'],
+                    'source_weight': contributor['source_weight'],
+                    'time_decay': contributor['time_decay'],
+                    'deescalation': contributor['deescalation']
+                }
+                
+                # NEW: Add leadership data if present
+                if 'leadership' in matching_article and matching_article['leadership']['has_leadership']:
+                    leadership = matching_article['leadership']
+                    article_data['leadership'] = {
+                        'leader': leadership['leader_name'],
+                        'context': leadership['context'],
+                        'threat_level': leadership['threat_level'],
+                        'weight_multiplier': leadership['weight_multiplier']
+                    }
+                
+                top_articles.append(article_data)
+        
+        result = {
+            'success': True,
+            'target': target,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'recent_articles_48h': breakdown['recent_articles_48h'],
+            'older_articles': breakdown.get('older_articles', 0),
+            'deescalation_count': breakdown['deescalation_count'],
+            'scoring_breakdown': breakdown,
+            'top_scoring_articles': top_articles,
+            'recent_headlines': recent_headlines,
+            'escalation_keywords': ESCALATION_KEYWORDS,
+            'target_keywords': TARGET_KEYWORDS[target]['keywords'],
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '2.8.0'
+        }
+        
+        # Save to cache
+        update_cache(target, result)
+        print(f"[{target}] Fresh scan complete: {probability}% — cached")
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        # Try to return cached data on error
+        cached = get_cached_result(target)
+        if cached:
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'probability': 0
+        }), 500
+
+@app.route('/api/threat-matrix/<target>', methods=['GET'])
+def api_threat_matrix(target):
+    """
+    Enhanced threat matrix with multi-directional probabilities
+    Returns: Israel strike, US strike, reverse threats, combined probability
+    """
+    try:
+        days = int(request.args.get('days', 7))
+
+        if target not in TARGET_KEYWORDS:
+            return jsonify({
+                'success': False,
+                'error': f"Invalid target: {target}"
+            }), 400
+
+        # v3.6.0: 2-hour cache. Opening the matrix used to run a live 6-source scan.
+        _tm_key = f'threat_matrix:{target}:{days}'
+        if redis_client:
+            try:
+                _hit = redis_client.get(_tm_key)
+                if _hit:
+                    _hit = json.loads(_hit)
+                    _hit['cached'] = True
+                    return jsonify(_hit)
+            except Exception as _e:
+                print(f"[Threat Matrix] cache read failed: {_e}")
+
+        if not check_rate_limit():
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit reached',
+                'rate_limited': True
+            }), 200
+        
+        # Fetch articles (same as existing endpoint)
+        query = ' OR '.join(TARGET_KEYWORDS[target]['keywords'])
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        
+        articles_gdelt_fa = []
+        if target == 'iran':
+            articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+        
+        articles_reddit = fetch_reddit_posts(
+            target,
+            TARGET_KEYWORDS[target]['reddit_keywords'],
+            days
+        )
+        
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar + 
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit)
+        
+        # ── IRAN: use fingerprint-boosted incoming + rich outgoing ──
+        if target == 'iran':
+            iran_incoming = calculate_iran_incoming_threats(all_articles, days)
+            iran_outgoing = calculate_iran_outgoing_threats(all_articles, days)
+            israel_prob   = iran_incoming['israel_strike']['probability']
+            us_prob       = iran_incoming['us_strike']['probability']
+            iran_tci      = iran_incoming.get('tci', 0)
+            iran_tci_signal = iran_incoming.get('tci_signal', '')
+        else:
+            # Non-Iran targets use existing algorithm
+            iran_incoming = None
+            iran_outgoing = None
+            iran_tci      = 0
+            iran_tci_signal = ''
+            # Calculate Israel strike probability (existing algorithm)
+            israel_result = calculate_threat_probability(all_articles, days, target)
+            israel_prob   = israel_result['probability'] / 100.0
+
+        if target != 'iran':
+            # Calculate US strike probability (new algorithm)
+            us_result = calculate_us_strike_probability(all_articles, days, target)
+            us_prob   = us_result['probability']
+
+        # Detect coordination between US and Israel
+        coordination = detect_coordination_signals(israel_prob, us_prob, all_articles)
+
+        # Calculate combined probability
+        combined_result = calculate_combined_probability(israel_prob, us_prob, coordination)
+
+        # TCI coordination bonus for Iran
+        if target == 'iran' and iran_tci >= 3:
+            combined_val = min(combined_result['combined'] + (iran_tci * 0.03), 0.95)
+            combined_result = {**combined_result, 'combined': combined_val}
+
+        # Calculate reverse / outgoing threats
+        if target == 'iran' and iran_outgoing:
+            reverse_israel = {
+                'probability': iran_outgoing['iran_vs_israel']['probability'],
+                'risk_level':  iran_outgoing['iran_vs_israel']['risk_level'],
+                'indicators':  iran_outgoing['iran_vs_israel']['indicators'],
+            }
+            reverse_us = {
+                'probability': iran_outgoing.get('iran_via_houthis', {}).get('probability', 0),
+                'risk_level':  iran_outgoing.get('iran_via_houthis', {}).get('risk_level', 'low'),
+                'indicators':  [],
+            }
+        else:
+            reverse_israel = calculate_reverse_threat(all_articles, target, 'israel', israel_prob, us_prob)
+            reverse_us     = calculate_reverse_threat(all_articles, target, 'us', israel_prob, us_prob)
+
+        # Build response
+        response = {
+            'success': True,
+            'target': target,
+            'target_flag': {
+                'iran': '🇮🇷',
+                'hezbollah': '🇱🇧',
+                'houthis': '🇾🇪',
+                'syria': '🇸🇾',
+                'jordan': '🇯🇴'
+            }.get(target, '🏴'),
+            'days_analyzed': days,
+            'total_articles': len(all_articles),
+            
+            # Combined probability (headline number)
+            'combined_probability': {
+                'value': round(combined_result['combined'] * 100, 1),
+                'base': round(combined_result['base_independent'] * 100, 1),
+                'coordination_bonus': round(combined_result['coordination_bonus'], 1),
+                'coordination_level': combined_result['coordination_level'],
+                'risk_level': (
+                    'very_high' if combined_result['combined'] > 0.70 else
+                    'high' if combined_result['combined'] > 0.50 else
+                    'moderate' if combined_result['combined'] > 0.30 else
+                    'low'
+                )
+            },
+            
+            # Incoming threats — Iran gets fingerprint-boosted version
+            'incoming_threats': {
+                'tci': iran_tci if target == 'iran' else 0,
+                'tci_signal': iran_tci_signal if target == 'iran' else '',
+                'israel': {
+                    'probability': round(
+                        (iran_incoming['israel_strike']['probability'] * 100) if (target == 'iran' and iran_incoming) else israel_prob * 100,
+                        1
+                    ),
+                    'risk_level': (
+                        iran_incoming['israel_strike']['risk_level'] if (target == 'iran' and iran_incoming)
+                        else ('very_high' if israel_prob > 0.70 else 'high' if israel_prob > 0.50 else 'moderate' if israel_prob > 0.30 else 'low')
+                    ),
+                    'flag': '🇮🇱',
+                    'indicators': (iran_incoming['israel_strike']['indicators'][:3] if (target == 'iran' and iran_incoming) else israel_result.get('breakdown', {}).get('top_articles', [])[:3])
+                },
+                'us': {
+                    'probability': round(us_prob * 100, 1),
+                    'risk_level': (
+                        'very_high' if us_prob > 0.70 else
+                        'high' if us_prob > 0.50 else
+                        'moderate' if us_prob > 0.30 else
+                        'low'
+                    ),
+                    'flag': '🇺🇸',
+                    'indicators': (iran_incoming['us_strike']['indicators'][:3] if (target == 'iran' and iran_incoming) else us_result.get('us_indicators', [])[:3]),
+                    'adjustment': round((0 if target == 'iran' else us_result.get('us_adjustment', 0)) * 100, 1)
+                }
+            },
+            
+            # Outgoing threats
+            'outgoing_threats': {
+                'vs_israel': {
+                    'probability': round(reverse_israel['probability'] * 100, 1),
+                    'risk_level': reverse_israel['risk_level'],
+                    'target_flag': '🇮🇱',
+                    'indicators': reverse_israel.get('indicators', [])[:3]
+                },
+                'vs_us': {
+                    'probability': round(reverse_us['probability'] * 100, 1),
+                    'risk_level': reverse_us['risk_level'],
+                    'target_flag': '🇺🇸',
+                    'indicators': reverse_us.get('indicators', [])[:3]
+                }
+            },
+            
+            # Coordination details
+            'coordination': {
+                'level': coordination['level'],
+                'factor': coordination['factor'],
+                'signals_detected': coordination['signals_detected'],
+                'indicators': coordination.get('indicators', [])
+            },
+            
+            # ========================================
+            # TOP ARTICLES FOR "RECENT HEADLINES" DISPLAY
+            # ========================================
+            'recent_headlines': build_recent_headlines(
+                (iran_incoming['israel_strike']['indicators'][:3] if (target == 'iran' and iran_incoming) else israel_result.get('top_contributors', [])),
+                (iran_incoming['us_strike']['indicators'][:3] if (target == 'iran' and iran_incoming) else us_result.get('us_indicators', [])),
+                reverse_israel.get('indicators', []),
+                reverse_us.get('indicators', []),
+                all_articles
+            ),
+            
+            # Iran proxy outgoing threats — Hezbollah, Houthis, Iraq PMF
+            'proxy_outgoing': (
+                {
+                    'iran_via_hezbollah': {
+                        'probability': round(iran_outgoing['iran_via_hezbollah']['probability'] * 100, 1),
+                        'risk_level':  iran_outgoing['iran_via_hezbollah']['risk_level'],
+                        'flags':       iran_outgoing['iran_via_hezbollah']['flags'],
+                        'label':       iran_outgoing['iran_via_hezbollah']['label'],
+                        'detail':      iran_outgoing['iran_via_hezbollah']['detail'],
+                        'indicators':  iran_outgoing['iran_via_hezbollah']['indicators'][:3],
+                    },
+                    'iran_via_houthis': {
+                        'probability': round(iran_outgoing['iran_via_houthis']['probability'] * 100, 1),
+                        'risk_level':  iran_outgoing['iran_via_houthis']['risk_level'],
+                        'flags':       iran_outgoing['iran_via_houthis']['flags'],
+                        'label':       iran_outgoing['iran_via_houthis']['label'],
+                        'detail':      iran_outgoing['iran_via_houthis']['detail'],
+                        'indicators':  iran_outgoing['iran_via_houthis']['indicators'][:3],
+                    },
+                    'iran_via_iraq_pmf': {
+                        'probability': round(iran_outgoing['iran_via_iraq_pmf']['probability'] * 100, 1),
+                        'risk_level':  iran_outgoing['iran_via_iraq_pmf']['risk_level'],
+                        'flags':       iran_outgoing['iran_via_iraq_pmf']['flags'],
+                        'label':       iran_outgoing['iran_via_iraq_pmf']['label'],
+                        'detail':      iran_outgoing['iran_via_iraq_pmf']['detail'],
+                        'indicators':  iran_outgoing['iran_via_iraq_pmf']['indicators'][:3],
+                    },
+                } if (target == 'iran' and iran_outgoing) else {}
+            ),
+
+            'version': '2.8.0-multi-actor',
+            'computed_at': datetime.now(timezone.utc).isoformat(),
+        }
+
+        if redis_client:
+            try:
+                redis_client.setex(_tm_key, 2 * 3600, json.dumps(response, default=str))
+            except Exception as _e:
+                print(f"[Threat Matrix] cache write failed: {_e}")
+
+        return jsonify(response)
+        
+    except Exception as e:
+        print(f"[Threat Matrix] Error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/iran-strike-probability', methods=['GET'])
+def api_iran_strike_probability():
+    """Iran Strike Probability Endpoint — with Redis caching"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Iran', 'iran')
+        if result:
+            return result
+
+        print("[Iran] Performing fresh scan...")
+
+        if not check_rate_limit():
+            cached = get_cached_result('iran')
+            if cached:
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            return jsonify({
+                'success': False, 'error': 'Rate limit exceeded',
+                'probability': 0, 'rate_limited': True
+            }), 429
+
+        query = ' OR '.join(TARGET_KEYWORDS['iran']['keywords'])
+
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+
+        articles_reddit = fetch_reddit_posts(
+            'iran', TARGET_KEYWORDS['iran']['reddit_keywords'], days
+        )
+
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit)
+
+        # RSS feeds
+        try:
+            rss_articles = fetch_all_rss()
+            for article in all_articles + rss_articles:
+                article['leadership'] = enhance_article_with_leadership(article)
+            all_articles.extend(rss_articles)
+        except Exception as e:
+            print(f"[Iran] RSS error: {e}")
+
+        scoring_result = calculate_threat_probability(all_articles, days, 'iran')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        
+        # ========================================
+        # MILITARY POSTURE INTEGRATION
+        # ========================================
+        try:
+            military_posture = get_military_posture('iran')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Iran] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Iran] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+        
+        # Timeline
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+        
+        # Confidence
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        if len(all_articles) >= 20 and unique_sources >= 8:
+            confidence = "High"
+        elif len(all_articles) >= 10 and unique_sources >= 5:
+            confidence = "Medium"
+        else:
+            confidence = "Low"
+        
+        # Calculate US strike + reverse threats for headlines
+        israel_prob = probability / 100.0
+        us_result = calculate_us_strike_probability(all_articles, days, 'iran')
+        us_prob = us_result['probability']
+        
+        reverse_israel = calculate_reverse_threat(all_articles, 'iran', 'israel', israel_prob, us_prob)
+        reverse_us = calculate_reverse_threat(all_articles, 'iran', 'us', israel_prob, us_prob)
+        
+        # Build recent headlines
+        recent_headlines = build_recent_headlines(
+            scoring_result.get('top_contributors', []),
+            us_result.get('us_indicators', []),
+            reverse_israel.get('indicators', []),
+            reverse_us.get('indicators', []),
+            all_articles
+        )
+        
+        # Build response
+        result = {
+            'success': True,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_articles_48h': scoring_result['breakdown']['recent_articles_48h'],
+            'top_scoring_articles': scoring_result.get('top_scoring_articles', []),
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.0.0'
+        }
+        
+        # Update cache
+        update_cache('iran', result)
+        
+        print(f"[Iran] Fresh scan complete: {probability}%")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in /api/iran-strike-probability: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Try to return cached data on error
+        cached = get_cached_result('iran')
+        if cached:
+            print("[Iran] Error occurred, returning cached data")
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'probability': 0,
+            'timeline': 'Unknown',
+            'confidence': 'Low'
+        }), 500
+
+
+@app.route('/api/hezbollah-activity', methods=['GET'])
+def api_hezbollah_activity():
+    """Hezbollah Strike Probability Endpoint — with Redis caching"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Hezbollah', 'hezbollah')
+        if result:
+            return result
+
+        print("[Hezbollah] Performing fresh scan...")
+        
+        if not check_rate_limit():
+            cached = get_cached_result('hezbollah')
+            if cached:
+                print("[Hezbollah] Rate limited, returning stale cache")
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit exceeded',
+                'probability': 0,
+                'rate_limited': True
+            }), 429
+        
+        # Fetch fresh data
+        query = ' OR '.join(TARGET_KEYWORDS['hezbollah']['keywords'])
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        
+        articles_reddit = fetch_reddit_posts(
+            'hezbollah',
+            TARGET_KEYWORDS['hezbollah']['reddit_keywords'],
+            days
+        )
+        
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar + 
+                       articles_gdelt_he + articles_reddit)
+        
+        # Calculate strike probability
+        scoring_result = calculate_threat_probability(all_articles, days, 'hezbollah')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        
+        # Activity level as secondary metric
+        activity_level = min(100, (len(all_articles) * 2) + scoring_result['breakdown']['recent_articles_48h'] * 3)
+        
+        if activity_level >= 75:
+            activity_desc = "Very High"
+        elif activity_level >= 50:
+            activity_desc = "High"
+        elif activity_level >= 25:
+            activity_desc = "Moderate"
+        else:
+            activity_desc = "Low"
+        
+        # ========================================
+        # MILITARY POSTURE INTEGRATION
+        # ========================================
+        try:
+            military_posture = get_military_posture('hezbollah')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Hezbollah] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Hezbollah] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+        
+        # Calculate US strike + reverse threats for headlines
+        israel_prob = probability / 100.0
+        us_result = calculate_us_strike_probability(all_articles, days, 'hezbollah')
+        us_prob = us_result['probability']
+        
+        reverse_israel = calculate_reverse_threat(all_articles, 'hezbollah', 'israel', israel_prob, us_prob)
+        reverse_us = calculate_reverse_threat(all_articles, 'hezbollah', 'us', israel_prob, us_prob)
+        
+        # Build recent headlines
+        recent_headlines = build_recent_headlines(
+            scoring_result.get('top_contributors', []),
+            us_result.get('us_indicators', []),
+            reverse_israel.get('indicators', []),
+            reverse_us.get('indicators', []),
+            all_articles
+        )
+        
+        result = {
+            'success': True,
+            'probability': probability,
+            'activity_level': int(activity_level),
+            'activity_description': activity_desc,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'recent_articles_48h': scoring_result['breakdown']['recent_articles_48h'],
+            'top_scoring_articles': scoring_result.get('top_scoring_articles', []),
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.0.0'
+        }
+        
+        update_cache('hezbollah', result)
+        
+        print(f"[Hezbollah] Fresh scan complete: {probability}%")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in /api/hezbollah-activity: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        cached = get_cached_result('hezbollah')
+        if cached:
+            print("[Hezbollah] Error occurred, returning cached data")
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'probability': 0,
+            'activity_description': 'Unknown'
+        }), 500
+
+
+@app.route('/api/houthis-threat', methods=['GET'])
+def api_houthis_threat():
+    """Houthis Strike Probability Endpoint — with Redis caching"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Houthis', 'houthis')
+        if result:
+            return result
+
+        print("[Houthis] Performing fresh scan...")
+        
+        if not check_rate_limit():
+            cached = get_cached_result('houthis')
+            if cached:
+                print("[Houthis] Rate limited, returning stale cache")
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit exceeded',
+                'probability': 0,
+                'rate_limited': True
+            }), 429
+        
+        # Fetch fresh data
+        query = ' OR '.join(TARGET_KEYWORDS['houthis']['keywords'])
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        
+        articles_reddit = fetch_reddit_posts(
+            'houthis',
+            TARGET_KEYWORDS['houthis']['reddit_keywords'],
+            days
+        )
+        
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar + articles_reddit)
+        
+        # Calculate strike probability
+        scoring_result = calculate_threat_probability(all_articles, days, 'houthis')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        
+        # Shipping incidents as secondary metric
+        shipping_incidents = 0
+        for article in all_articles:
+            text = f"{article.get('title', '')} {article.get('description', '')}".lower()
+            if any(word in text for word in ['shipping', 'red sea', 'attacked', 'strike', 'missile', 'drone']):
+                shipping_incidents += 1
+        
+        # Threat description based on probability
+        if probability >= 75:
+            threat_desc = "Critical"
+        elif probability >= 50:
+            threat_desc = "High"
+        elif probability >= 25:
+            threat_desc = "Moderate"
+        else:
+            threat_desc = "Low"
+        
+        # ========================================
+        # MILITARY POSTURE INTEGRATION
+        # ========================================
+        try:
+            military_posture = get_military_posture('houthis')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Houthis] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Houthis] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+        
+        # Calculate US strike + reverse threats for headlines
+        israel_prob = probability / 100.0
+        us_result = calculate_us_strike_probability(all_articles, days, 'houthis')
+        us_prob = us_result['probability']
+        
+        reverse_israel = calculate_reverse_threat(all_articles, 'houthis', 'israel', israel_prob, us_prob)
+        reverse_us = calculate_reverse_threat(all_articles, 'houthis', 'us', israel_prob, us_prob)
+        
+        # Build recent headlines
+        recent_headlines = build_recent_headlines(
+            scoring_result.get('top_contributors', []),
+            us_result.get('us_indicators', []),
+            reverse_israel.get('indicators', []),
+            reverse_us.get('indicators', []),
+            all_articles
+        )
+        
+        result = {
+            'success': True,
+            'probability': probability,
+            'threat_description': threat_desc,
+            'momentum': momentum,
+            'shipping_incidents': shipping_incidents,
+            'total_articles': len(all_articles),
+            'recent_articles_48h': scoring_result['breakdown']['recent_articles_48h'],
+            'top_scoring_articles': scoring_result.get('top_scoring_articles', []),
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.0.0'
+        }
+        
+        update_cache('houthis', result)
+        
+        print(f"[Houthis] Fresh scan complete: {probability}%")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in /api/houthis-threat: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        cached = get_cached_result('houthis')
+        if cached:
+            print("[Houthis] Error occurred, returning cached data")
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'probability': 0,
+            'threat_description': 'Unknown'
+        }), 500
+
+
+@app.route('/api/syria-conflict', methods=['GET'])
+def api_syria_conflict():
+    """Syria Strike Probability Endpoint — with Redis caching"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Syria', 'syria')
+        if result:
+            return result
+
+        print("[Syria] Performing fresh scan...")
+        
+        if not check_rate_limit():
+            cached = get_cached_result('syria')
+            if cached:
+                print("[Syria] Rate limited, returning stale cache")
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit exceeded',
+                'probability': 0,
+                'rate_limited': True
+            }), 429
+        
+        # Fetch fresh data
+        syria_keywords = ['syria', 'syrian', 'damascus', 'sharaa', 'aleppo', 'idlib']
+        query = ' OR '.join(syria_keywords)
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        
+        articles_reddit = fetch_reddit_posts(
+            'syria',
+            ['Syria', 'Sharaa', 'Damascus', 'conflict', 'strike'],
+            days
+        )
+        
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar + articles_reddit)
+        
+        # Calculate strike probability
+        scoring_result = calculate_threat_probability(all_articles, days, 'syria')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        
+        # Calculate conflict intensity as secondary metric
+        intensity_score = 0
+        escalation_articles = 0
+        
+        for article in all_articles:
+            text = f"{article.get('title', '')} {article.get('description', '')}".lower()
+            
+            if any(word in text for word in ['strike', 'attack', 'bombing', 'airstrike', 'killed', 'casualties']):
+                escalation_articles += 1
+                intensity_score += 3
+            
+            try:
+                pub_date = article.get('publishedAt', '')
+                if pub_date:
+                    pub_dt = datetime.fromisoformat(pub_date.replace('Z', '+00:00'))
+                    age_hours = (datetime.now(timezone.utc) - pub_dt).total_seconds() / 3600
+                    if age_hours <= 48:
+                        intensity_score += 2
+            except:
+                pass
+        
+        intensity = min(100, int(intensity_score / max(len(all_articles), 1) * 10))
+        
+        if intensity >= 75:
+            intensity_desc = "Very High"
+        elif intensity >= 50:
+            intensity_desc = "High"
+        elif intensity >= 25:
+            intensity_desc = "Moderate"
+        else:
+            intensity_desc = "Low"
+        
+        # ========================================
+        # MILITARY POSTURE INTEGRATION
+        # ========================================
+        try:
+            military_posture = get_military_posture('syria')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Syria] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Syria] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+        
+        # Calculate US strike + reverse threats for headlines
+        israel_prob = probability / 100.0
+        us_result = calculate_us_strike_probability(all_articles, days, 'syria')
+        us_prob = us_result['probability']
+        
+        reverse_israel = calculate_reverse_threat(all_articles, 'syria', 'israel', israel_prob, us_prob)
+        reverse_us = calculate_reverse_threat(all_articles, 'syria', 'us', israel_prob, us_prob)
+        
+        # Build recent headlines
+        recent_headlines = build_recent_headlines(
+            scoring_result.get('top_contributors', []),
+            us_result.get('us_indicators', []),
+            reverse_israel.get('indicators', []),
+            reverse_us.get('indicators', []),
+            all_articles
+        )
+        
+        result = {
+            'success': True,
+            'probability': probability,
+            'intensity': intensity,
+            'intensity_description': intensity_desc,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'escalation_articles': escalation_articles,
+            'top_scoring_articles': scoring_result.get('top_scoring_articles', []),
+            'recent_headlines': recent_headlines,
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.0.0'
+        }
+        
+        update_cache('syria', result)
+        
+        print(f"[Syria] Fresh scan complete: {probability}%")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in /api/syria-conflict: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        cached = get_cached_result('syria')
+        if cached:
+            print("[Syria] Error occurred, returning cached data")
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'probability': 0,
+            'intensity_description': 'Unknown'
+        }), 500
+
+        # ========================================
+# ISRAEL THREAT ENDPOINT
+# ========================================
+
+@app.route('/api/israel-threat', methods=['GET'])
+def api_israel_threat():
+    """Israel Threat Exposure Index Endpoint — with Redis caching"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Israel', 'israel')
+        if result:
+            return result
+
+        print("[Israel] Performing fresh scan...")
+        
+        if not check_rate_limit():
+            cached = get_cached_result('israel')
+            if cached:
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            return jsonify({
+                'success': False, 'error': 'Rate limit exceeded',
+                'probability': 0, 'rate_limited': True
+            }), 429
+        
+        # Fetch articles from all sources
+        query = ' OR '.join(TARGET_KEYWORDS['israel']['keywords'][:10])  # Top 10 to stay within query limits
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+        
+        articles_reddit = fetch_reddit_posts(
+            'israel',
+            TARGET_KEYWORDS['israel']['reddit_keywords'],
+            days
+        )
+        
+        # Israeli news RSS feeds
+        israel_rss = fetch_israel_news_rss()
+
+        # Google News RSS fallback for active war coverage
+        google_war_articles = []
+        war_queries = [
+            'Israel+Iran+war+missile+attack',
+            'Israel+ballistic+missile+intercept+iron+dome',
+            'Israel+home+front+command+siren+alert',
+        ]
+        for wq in war_queries:
+            try:
+                feed_url = f"https://news.google.com/rss/search?q={wq}&hl=en&gl=US&ceid=US:en"
+                headers = {'User-Agent': ASIFAH_USER_AGENT}
+                resp = requests.get(feed_url, timeout=10, headers=headers)
+                if resp.status_code == 200:
+                    root = ET.fromstring(resp.content)
+                    for item in root.findall('.//item')[:10]:
+                        title_elem = item.find('title')
+                        link_elem = item.find('link')
+                        pubDate_elem = item.find('pubDate')
+                        if title_elem is not None and link_elem is not None:
+                            google_war_articles.append({
+                                'title': title_elem.text or '',
+                                'description': title_elem.text or '',
+                                'url': link_elem.text or '',
+                                'publishedAt': pubDate_elem.text if pubDate_elem is not None else datetime.now(timezone.utc).isoformat(),
+                                'source': {'name': 'Google News'},
+                                'content': title_elem.text or '',
+                                'language': 'en'
+                            })
+            except Exception as e:
+                print(f"[Israel] Google News RSS error: {e}")
+
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit +
+                       israel_rss + google_war_articles)
+        
+        print(f"[Israel] Total articles: {len(all_articles)}")
+        
+        # Calculate base threat exposure using standard algorithm
+        scoring_result = calculate_threat_probability(all_articles, days, 'israel')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        breakdown = scoring_result['breakdown']
+        
+        # Calculate Israel-specific incoming threats
+        incoming = calculate_israel_incoming_threats(all_articles, days)
+        
+        # Calculate Israel outgoing operations
+        outgoing = calculate_israel_outgoing_operations(all_articles, days)
+        
+        # Cross-reference: boost Iran incoming if Iran card shows high probability
+        iran_cache = get_cached_result('iran')
+        iran_tension = 0.0
+        if iran_cache:
+            iran_tension = iran_cache.get('probability', 0) / 100.0
+        
+        # Cross-reference: boost Hezbollah incoming if Lebanon card shows high probability
+        hez_cache = get_cached_result('hezbollah')
+        hez_tension = 0.0
+        if hez_cache:
+            hez_tension = hez_cache.get('probability', 0) / 100.0
+        
+        # Apply cross-reference boosts to incoming
+        if iran_tension > 0.50:
+            iran_boost = min(incoming['iran_direct']['probability'] + 0.15, 0.75)
+            incoming['iran_direct']['probability'] = iran_boost
+            incoming['iran_direct']['cross_reference_boost'] = 0.15
+        
+        if hez_tension > 0.50:
+            hez_boost = min(incoming['hezbollah']['probability'] + 0.15, 0.75)
+            incoming['hezbollah']['probability'] = hez_boost
+            incoming['hezbollah']['cross_reference_boost'] = 0.15
+        
+        # Military posture
+        try:
+            military_posture = get_military_posture('israel')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Israel] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Israel] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+        
+        # Build headlines
+        recent_headlines = build_israel_headlines(incoming, outgoing, all_articles)
+        
+        # Fallback headlines if specific matching found nothing
+        if not recent_headlines and scoring_result.get('top_contributors'):
+            seen_urls = set()
+            for contributor in scoring_result['top_contributors'][:10]:
+                for article in all_articles:
+                    if (article.get('source', {}).get('name', '') == contributor.get('source', '')
+                        and article.get('url') not in seen_urls):
+                        seen_urls.add(article['url'])
+                        recent_headlines.append({
+                            'title': article.get('title', '')[:120],
+                            'url': article.get('url', ''),
+                            'source': contributor.get('source', 'Unknown'),
+                            'published': article.get('publishedAt', ''),
+                            'threat_type': 'General Intelligence',
+                            'weight': abs(contributor.get('contribution', 0)),
+                            'phrase': '',
+                            'why_included': f"Top scoring (severity: {contributor.get('severity', 1.0)}x)",
+                            'color': 'blue'
+                        })
+                        break
+            recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+            recent_headlines = recent_headlines[:15]
+        
+        # Timeline
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+        
+        # Confidence
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        if len(all_articles) >= 20 and unique_sources >= 8:
+            confidence = "High"
+        elif len(all_articles) >= 10 and unique_sources >= 5:
+            confidence = "Medium"
+        else:
+            confidence = "Low"
+        
+        result = {
+            'success': True,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_articles_48h': breakdown['recent_articles_48h'],
+            'scoring_breakdown': breakdown,
+            'incoming_threats': {
+                'iran_direct': {
+                    'probability': round(incoming['iran_direct']['probability'] * 100, 1),
+                    'risk_level': incoming['iran_direct']['risk_level'],
+                    'indicators': incoming['iran_direct']['indicators'][:3],
+                    'cross_reference_boost': round(incoming['iran_direct'].get('cross_reference_boost', 0) * 100, 1)
+                },
+                'hezbollah': {
+                    'probability': round(incoming['hezbollah']['probability'] * 100, 1),
+                    'risk_level': incoming['hezbollah']['risk_level'],
+                    'indicators': incoming['hezbollah']['indicators'][:3],
+                    'cross_reference_boost': round(incoming['hezbollah'].get('cross_reference_boost', 0) * 100, 1)
+                },
+                'hamas': {
+                    'probability': round(incoming['hamas']['probability'] * 100, 1),
+                    'risk_level': incoming['hamas']['risk_level'],
+                    'indicators': incoming['hamas']['indicators'][:3]
+                },
+                'west_bank_gaza': {
+                    'probability': round(incoming['west_bank_gaza']['probability'] * 100, 1),
+                    'risk_level': incoming['west_bank_gaza']['risk_level'],
+                    'indicators': incoming['west_bank_gaza']['indicators'][:3]
+                },
+                'houthis': {
+                    'probability': round(incoming['houthis']['probability'] * 100, 1),
+                    'risk_level': incoming['houthis']['risk_level'],
+                    'indicators': incoming['houthis']['indicators'][:3]
+                },
+                'syria_based': {
+                    'probability': round(incoming['syria_based']['probability'] * 100, 1),
+                    'risk_level': incoming['syria_based']['risk_level'],
+                    'indicators': incoming['syria_based']['indicators'][:3]
+                },
+                'combined': {
+                    'probability': round(incoming['combined']['probability'] * 100, 1),
+                    'risk_level': incoming['combined']['risk_level']
+                }
+            },
+            'outgoing_operations': {
+                'vs_lebanon': {
+                    'probability': round(outgoing['vs_lebanon']['probability'] * 100, 1),
+                    'risk_level': outgoing['vs_lebanon']['risk_level'],
+                    'tooltip': outgoing['vs_lebanon']['tooltip'],
+                    'indicators': outgoing['vs_lebanon']['indicators'][:3]
+                },
+                'vs_gaza': {
+                    'probability': round(outgoing['vs_gaza']['probability'] * 100, 1),
+                    'risk_level': outgoing['vs_gaza']['risk_level'],
+                    'tooltip': outgoing['vs_gaza']['tooltip'],
+                    'indicators': outgoing['vs_gaza']['indicators'][:3]
+                },
+                'vs_iran': {
+                    'probability': round(outgoing['vs_iran']['probability'] * 100, 1),
+                    'risk_level': outgoing['vs_iran']['risk_level'],
+                    'tooltip': outgoing['vs_iran']['tooltip'],
+                    'indicators': outgoing['vs_iran']['indicators'][:3]
+                },
+                'vs_syria': {
+                    'probability': round(outgoing['vs_syria']['probability'] * 100, 1),
+                    'risk_level': outgoing['vs_syria']['risk_level'],
+                    'tooltip': outgoing['vs_syria']['tooltip'],
+                    'indicators': outgoing['vs_syria']['indicators'][:3]
+                },
+                'vs_west_bank': {
+                    'probability': round(outgoing['vs_west_bank']['probability'] * 100, 1),
+                    'risk_level': outgoing['vs_west_bank']['risk_level'],
+                    'tooltip': outgoing['vs_west_bank']['tooltip'],
+                    'indicators': outgoing['vs_west_bank']['indicators'][:3]
+                },
+                'vs_houthis': {
+                    'probability': round(outgoing['vs_houthis']['probability'] * 100, 1),
+                    'risk_level': outgoing['vs_houthis']['risk_level'],
+                    'tooltip': outgoing['vs_houthis']['tooltip'],
+                    'indicators': outgoing['vs_houthis']['indicators'][:3]
+                }
+            },
+            'cross_references': {
+                'iran_card_probability': round(iran_tension * 100, 1),
+                'hezbollah_card_probability': round(hez_tension * 100, 1),
+                'note': 'When Iran or Hezbollah cards exceed 50%, incoming threat probabilities are boosted'
+            },
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'recent_headlines': recent_headlines,
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.0.0-israel'
+        }
+        
+        update_cache('israel', result)
+        
+        print(f"[Israel] Fresh scan complete: {probability}%")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in /api/israel-threat: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        cached = get_cached_result('israel')
+        if cached:
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        
+        return jsonify({
+            'success': False, 'error': str(e),
+            'probability': 0, 'timeline': 'Unknown'
+        }), 500
+        
+# ========================================
+# JORDAN THREAT ENDPOINT
+# ========================================
+
+@app.route('/api/jordan-threat', methods=['GET'])
+def api_jordan_threat():
+    """Jordan Kinetic Activity Probability Endpoint — with Redis caching"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Jordan', 'jordan')
+        if result:
+            return result
+
+        print("[Jordan] Performing fresh scan...")
+        
+        if not check_rate_limit():
+            cached = get_cached_result('jordan')
+            if cached:
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            return jsonify({
+                'success': False, 'error': 'Rate limit exceeded',
+                'probability': 0, 'rate_limited': True
+            }), 429
+        
+        # Fetch articles from all sources
+        query = ' OR '.join(TARGET_KEYWORDS['jordan']['keywords'])
+        
+        articles_en = fetch_newsapi_articles(query, days)
+        articles_gdelt_en = fetch_gdelt_articles(query, days, 'eng')
+        articles_gdelt_ar = fetch_gdelt_articles(query, days, 'ara')
+        articles_gdelt_he = fetch_gdelt_articles(query, days, 'heb')
+        articles_gdelt_fa = fetch_gdelt_articles(query, days, 'fas')
+        
+        articles_reddit = fetch_reddit_posts(
+            'jordan',
+            TARGET_KEYWORDS['jordan']['reddit_keywords'],
+            days
+        )
+        
+        # Also fetch Jordanian news RSS feeds
+        jordan_rss = fetch_jordan_news_rss()
+        
+        all_articles = (articles_en + articles_gdelt_en + articles_gdelt_ar +
+                       articles_gdelt_he + articles_gdelt_fa + articles_reddit +
+                       jordan_rss)
+        
+        print(f"[Jordan] Total articles: {len(all_articles)}")
+        
+        # Calculate base strike probability using standard algorithm
+        scoring_result = calculate_threat_probability(all_articles, days, 'jordan')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        breakdown = scoring_result['breakdown']
+        
+        # Calculate Jordan-specific incoming threats
+        incoming = calculate_jordan_incoming_threats(all_articles, days)
+        
+        # Get Iran-Israel tension level for air defense boost
+        iran_cache = get_cached_result('iran')
+        iran_israel_tension = 0.0
+        if iran_cache:
+            iran_israel_tension = iran_cache.get('probability', 0) / 100.0
+        
+        # Calculate defensive posture
+        defensive = calculate_jordan_defensive_posture(all_articles, iran_israel_tension)
+        
+        # ========================================
+        # MILITARY POSTURE INTEGRATION
+        # ========================================
+        try:
+            military_posture = get_military_posture('jordan')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Jordan] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Jordan] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+        
+        # Build headlines - fall back to generic top contributors if Jordan-specific matching finds nothing
+        recent_headlines = build_jordan_headlines(incoming, defensive, all_articles)
+
+        if not recent_headlines and scoring_result.get('top_contributors'):
+            # Fallback: use generic headline builder with top scoring articles
+            recent_headlines = []
+            seen_urls = set()
+            for contributor in scoring_result['top_contributors'][:10]:
+                for article in all_articles:
+                    if (article.get('source', {}).get('name', '') == contributor.get('source', '') 
+                        and article.get('url') not in seen_urls):
+                        seen_urls.add(article['url'])
+                        recent_headlines.append({
+                            'title': article.get('title', '')[:120],
+                            'url': article.get('url', ''),
+                            'source': contributor.get('source', 'Unknown'),
+                            'published': article.get('publishedAt', ''),
+                            'threat_type': 'General Intelligence',
+                            'weight': abs(contributor.get('contribution', 0)),
+                            'phrase': '',
+                            'why_included': f"Top scoring article (severity: {contributor.get('severity', 1.0)}x)",
+                            'color': 'blue'
+                        })
+                        break
+            recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+            recent_headlines = recent_headlines[:15]
+        
+        # Timeline
+        if probability < 30:
+            timeline = "180+ Days"
+        elif probability < 50:
+            timeline = "91-180 Days"
+        elif probability < 70:
+            timeline = "31-90 Days"
+        else:
+            timeline = "0-30 Days"
+        
+        # Confidence
+        unique_sources = len(set(a.get('source', {}).get('name', 'Unknown') for a in all_articles))
+        if len(all_articles) >= 20 and unique_sources >= 8:
+            confidence = "High"
+        elif len(all_articles) >= 10 and unique_sources >= 5:
+            confidence = "Medium"
+        else:
+            confidence = "Low"
+        
+        result = {
+            'success': True,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'recent_articles_48h': breakdown['recent_articles_48h'],
+            'scoring_breakdown': breakdown,
+            'incoming_threats': {
+                'iran_militia': {
+                    'probability': round(incoming['iran_militia']['probability'] * 100, 1),
+                    'risk_level': incoming['iran_militia']['risk_level'],
+                    'indicators': incoming['iran_militia']['indicators'][:3]
+                },
+                'syria_isis': {
+                    'probability': round(incoming['syria_isis']['probability'] * 100, 1),
+                    'risk_level': incoming['syria_isis']['risk_level'],
+                    'indicators': incoming['syria_isis']['indicators'][:3]
+                },
+                'palestinian_unrest': {
+                    'probability': round(incoming['palestinian_unrest']['probability'] * 100, 1),
+                    'risk_level': incoming['palestinian_unrest']['risk_level'],
+                    'indicators': incoming['palestinian_unrest']['indicators'][:3]
+                },
+                'us_base': {
+                    'probability': round(incoming['us_base']['probability'] * 100, 1),
+                    'risk_level': incoming['us_base']['risk_level'],
+                    'indicators': incoming['us_base']['indicators'][:3]
+                },
+                'combined': {
+                    'probability': round(incoming['combined']['probability'] * 100, 1),
+                    'risk_level': incoming['combined']['risk_level']
+                }
+            },
+            'defensive_posture': {
+                'coalition_air_defense': {
+                    'probability': round(defensive['coalition_air_defense']['probability'] * 100, 1),
+                    'base_probability': round(defensive['coalition_air_defense']['base_probability'] * 100, 1),
+                    'iran_israel_tension_boost': round(defensive['coalition_air_defense']['iran_israel_tension_boost'] * 100, 1),
+                    'risk_level': defensive['coalition_air_defense']['risk_level'],
+                    'tooltip': defensive['coalition_air_defense']['tooltip'],
+                    'indicators': defensive['coalition_air_defense']['indicators'][:3]
+                },
+                'border_operations': {
+                    'probability': round(defensive['border_operations']['probability'] * 100, 1),
+                    'risk_level': defensive['border_operations']['risk_level'],
+                    'tooltip': defensive['border_operations']['tooltip'],
+                    'indicators': defensive['border_operations']['indicators'][:3]
+                }
+            },
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+            'recent_headlines': recent_headlines,
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '3.0.0-jordan'
+        }
+        
+        update_cache('jordan', result)
+        
+        print(f"[Jordan] Fresh scan complete: {probability}%")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"Error in /api/jordan-threat: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        cached = get_cached_result('jordan')
+        if cached:
+            cached['error_fallback'] = True
+            return jsonify(cached)
+        
+        return jsonify({
+            'success': False, 'error': str(e),
+            'probability': 0, 'timeline': 'Unknown'
+        }), 500
+
+
+def fetch_jordan_news_rss():
+    """Fetch articles from Jordanian news RSS feeds"""
+    articles = []
+    
+    feeds = {
+        # Nov 5 2026 census: jordantimes.com 403 x454, en.royanews.tv/feed 404 x454
+        # -> Google News site: queries (same outlets, a working subset).
+        'Jordan Times': 'https://news.google.com/rss/search?q=site:jordantimes.com&hl=en&gl=US&ceid=US:en',
+        'Roya News': 'https://news.google.com/rss/search?q=site:royanews.tv&hl=en&gl=US&ceid=US:en',
+    }
+    
+    for source_name, feed_url in feeds.items():
+        _t0 = time.time()
+        _before = len(articles)
+        try:
+            response = requests.get(feed_url, timeout=15, headers={
+                'User-Agent': ASIFAH_USER_AGENT
+            })
+            
+            if response.status_code != 200:
+                # v3.4.0 -- this used to be a bare continue: a feed could 403
+                # on every scan forever and never appear anywhere.
+                _rss_record(feed_url, source_name,
+                            http_status=response.status_code, t0=_t0)
+                continue
+            
+            try:
+                root = ET.fromstring(response.content)
+            except ET.ParseError:
+                _rss_record(feed_url, source_name, http_status=200,
+                            error='XML parse error (HTTP 200 but not RSS)', t0=_t0)
+                continue
+            
+            items = root.findall('.//item')
+            
+            for item in items[:15]:
+                title_elem = item.find('title')
+                link_elem = item.find('link')
+                pubDate_elem = item.find('pubDate')
+                description_elem = item.find('description')
+                
+                if title_elem is not None and link_elem is not None:
+                    pub_date = pubDate_elem.text if pubDate_elem is not None else datetime.now(timezone.utc).isoformat()
+                    description = description_elem.text[:500] if description_elem is not None and description_elem.text else ''
+                    
+                    articles.append({
+                        'title': title_elem.text or '',
+                        'description': description,
+                        'url': link_elem.text or '',
+                        'publishedAt': pub_date,
+                        'source': {'name': source_name},
+                        'content': description,
+                        'language': 'en'
+                    })
+            
+            print(f"[{source_name}] ✓ Fetched {len([a for a in articles if a['source']['name'] == source_name])} articles")
+            _rss_record(feed_url, source_name, items=len(articles) - _before,
+                        http_status=200, t0=_t0)
+            
+        except Exception as e:
+            print(f"[{source_name}] Error: {str(e)[:100]}")
+            _rss_record(feed_url, source_name, error=e, t0=_t0)
+            continue
+    
+    return articles
+    
+@app.route('/api/syria-conflicts', methods=['GET'])
+def api_syria_conflicts():
+    """
+    Syria conflicts tracker endpoint WITH displacement tracking
+    
+    Now includes:
+    - Deaths, clashes, factions (existing)
+    - UNHCR IDP data (NEW)
+    - Camp populations including Al-Hol (NEW)
+    - Recent displacement movements (NEW)
+    - Humanitarian source links (NEW)
+    """
+    try:
+        if not check_rate_limit():
+            return jsonify({'error': 'Rate limit exceeded'}), 429
+        
+        days = int(request.args.get('days', 7))
+        
+        print(f"[Syria Conflicts] Fetching data for {days} days...")
+        
+        # ========================================
+        # EXISTING: Fetch all article sources
+        # ========================================
+        syria_direct_articles = fetch_syria_direct_rss()
+        sohr_articles = fetch_sohr_rss()
+        newsapi_articles = fetch_newsapi_articles('Syria conflict', days)
+        
+        gdelt_query = 'syria OR damascus OR conflict'
+        gdelt_en = fetch_gdelt_articles(gdelt_query, days, 'eng')
+        gdelt_ar = fetch_gdelt_articles(gdelt_query, days, 'ara')
+        gdelt_he = fetch_gdelt_articles(gdelt_query, days, 'heb')
+        gdelt_fa = fetch_gdelt_articles(gdelt_query, days, 'fas')
+        
+        reddit_posts = fetch_reddit_posts('syria', ['Syria', 'Damascus', 'conflict'], days)
+        
+        all_articles = (syria_direct_articles + sohr_articles + newsapi_articles + 
+                       gdelt_en + gdelt_ar + gdelt_he + gdelt_fa + reddit_posts)
+        
+        print(f"[Syria Conflicts] Total articles: {len(all_articles)}")
+        
+        # ========================================
+        # EXISTING: Extract basic conflict data
+        # ========================================
+        conflict_data = extract_syria_conflict_data(all_articles)
+        
+        # ========================================
+        # NEW: Fetch displacement data
+        # ========================================
+        print("[Syria Conflicts] Fetching displacement data...")
+        
+        unhcr_data = fetch_unhcr_syria_data()
+        alhol_data = fetch_alhol_camp_data()
+        article_displacement = extract_displacement_from_articles(all_articles)
+        acaps_data = scrape_acaps_syria()
+        
+        # ========================================
+        # NEW: Combine all displacement sources
+        # ========================================
+        enhanced_displacement = enhance_syria_conflict_data_with_displacement(
+            conflict_data,
+            unhcr_data,
+            alhol_data,
+            article_displacement
+        )
+        
+        print(f"[Syria Conflicts] ✅ Total IDPs: {enhanced_displacement['total_idps']:,}")
+        print(f"[Syria Conflicts] ✅ In camps: {enhanced_displacement['camp_population']:,}")
+        print(f"[Syria Conflicts] ✅ Recent movements: {enhanced_displacement['recent_displacement']:,}")
+        
+        # ========================================
+        # RETURN ENHANCED DATA
+        # ========================================
+        return jsonify({
+            'success': True,
+            'days_analyzed': days,
+            'total_articles': len(all_articles),
+            
+            # EXISTING: Basic conflict data
+            'conflict_data': {
+                'deaths': conflict_data['deaths'],
+                'displaced': conflict_data['displaced'],
+                'factional_clashes': conflict_data['factional_clashes'],
+                'active_factions': conflict_data['active_factions'],
+                'num_factions': len(conflict_data['active_factions']),
+                'clash_locations': conflict_data['clash_locations'],
+                'verified_sources': conflict_data['sources'],
+                'details': conflict_data['details'][:20]
+            },
+            
+            # NEW: Enhanced displacement data
+            'displacement_enhanced': enhanced_displacement,
+            
+            # NEW: Source-specific data
+            'unhcr_data': unhcr_data,
+            'alhol_camp': alhol_data,
+            'acaps_analysis': acaps_data if acaps_data else {'note': 'ACAPS data unavailable'},
+            
+            # EXISTING: Article feeds by language
+            'articles_syria_direct': syria_direct_articles[:20],
+            'articles_sohr': sohr_articles[:20],
+            'articles_en': [a for a in all_articles if a.get('language') == 'en'][:20],
+            'articles_he': [a for a in all_articles if a.get('language') == 'he'][:20],
+            'articles_ar': [a for a in all_articles if a.get('language') == 'ar'][:20],
+            'articles_fa': [a for a in all_articles if a.get('language') == 'fa'][:20],
+            'articles_reddit': reddit_posts[:20],
+            
+            'version': '3.0.0'
+        })
+        
+    except Exception as e:
+        print(f"[Syria Conflicts] ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ========================================
+# UTILITY ENDPOINTS
+# ========================================
+# ========================================
+# TRAVEL ADVISORY SCAN + ENDPOINT
+# ========================================
+def _run_travel_advisory_scan():
+    """Fetch U.S. State Dept travel advisories for ME targets."""
+    try:
+        response = requests.get(TRAVEL_ADVISORY_API, timeout=15)
+        if response.status_code != 200:
+            print(f"[Travel Advisory] API returned HTTP {response.status_code}")
+            return {'success': False, 'advisories': {}}
+
+        all_advisories = response.json()
+        results = {}
+
+        for target, codes in TRAVEL_ADVISORY_CODES.items():
+          for advisory in all_advisories:
+                category_list = advisory.get('Category', [])
+                if any(cat in codes for cat in category_list):
+                    category = category_list[0] if category_list else ''
+                    title = advisory.get('Title', '')
+                    level_match = re.search(r'Level\s+(\d)', title)
+                    level = int(level_match.group(1)) if level_match else 0
+                    level_info = TRAVEL_ADVISORY_LEVELS.get(level, {})
+
+                    summary_html = advisory.get('Summary', '')
+                    import re as re2
+                    first_p = re2.search(r'<p[^>]*>(.*?)</p>', summary_html, re2.DOTALL | re2.IGNORECASE)
+                    short_summary = ''
+                    if first_p:
+                        short_summary = re2.sub(r'<[^>]+>', '', first_p.group(1)).strip()[:300]
+                    if not short_summary:
+                        short_summary = re2.sub(r'<[^>]+>', '', summary_html).strip()[:300]
+
+                    published = advisory.get('Published', '')
+                    updated = advisory.get('Updated', '')
+                    link = advisory.get('Link', '')
+
+                    recently_changed = False
+                    change_description = ''
+                    try:
+                        updated_dt = datetime.fromisoformat(updated)
+                        if updated_dt.tzinfo is None:
+                            updated_dt = updated_dt.replace(tzinfo=timezone.utc)
+                        days_since = (datetime.now(timezone.utc) - updated_dt).days
+                        if days_since <= 30:
+                            recently_changed = True
+                            summary_lower = summary_html.lower()
+                            if 'advisory level was increased' in summary_lower or 'upgraded' in summary_lower:
+                                change_description = f'Advisory level INCREASED (updated {days_since} days ago)'
+                            elif 'advisory level was decreased' in summary_lower or 'downgraded' in summary_lower:
+                                change_description = f'Advisory level DECREASED (updated {days_since} days ago)'
+                            else:
+                                change_description = f'Updated {days_since} days ago'
+                    except Exception:
+                        pass
+
+                    results[target] = {
+                        'country_code': category,
+                        'title': title,
+                        'level': level,
+                        'level_label': level_info.get('label', 'Unknown'),
+                        'level_short': level_info.get('short', 'Unknown'),
+                        'level_color': level_info.get('color', '#6b7280'),
+                        'short_summary': short_summary,
+                        'link': link,
+                        'published': published,
+                        'updated': updated,
+                        'recently_changed': recently_changed,
+                        'change_description': change_description
+                    }
+                    break  # Found advisory for this target, move to next target
+
+        # Israel fallback — State Dept uses combined "Israel, the West Bank and Gaza" advisory
+        # which may not match standard FIPS codes. Updated July 13, 2025.
+        if 'israel' not in results:
+            results['israel'] = {
+                'country_code': 'IS',
+                'title': 'Israel, the West Bank and Gaza Travel Advisory',
+                'level': 3,
+                'level_label': 'Reconsider Travel',
+                'level_short': 'See Individual Summaries',
+                'level_color': '#f97316',
+                'short_summary': 'Reconsider travel to Israel and the West Bank due to terrorism and civil unrest. Do Not Travel to Gaza due to terrorism and armed conflict. Updated to reflect termination of authorized departure status for family members of U.S. government personnel.',
+                'link': 'https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/israel-west-bank-and-gaza-travel-advisory.html',
+                'published': '2025-07-13T00:00:00',
+                'updated': '2025-07-13T00:00:00',
+                'recently_changed': False,
+                'change_description': 'Termination of authorized departure; reconsider travel to Israel/West Bank; do not travel to Gaza'
+            }
+            print("[Travel Advisory] Israel not found in API — using updated fallback (July 2025)")
+
+        return {'success': True, 'advisories': results}
+
+    except Exception as e:
+        print(f"[Travel Advisory] Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {'success': False, 'advisories': {}}
+
+
+@app.route('/api/travel-advisories', methods=['GET'])
+def api_travel_advisories():
+    """Return U.S. State Dept travel advisories for ME targets. Cached 24h."""
+    try:
+        force = request.args.get('force', 'false').lower() == 'true'
+        now = time.time()
+
+        # Return cached data if fresh (< 24h old)
+        if (not force
+                and _travel_advisory_cache['data'] is not None
+                and _travel_advisory_cache['fetched_at'] is not None
+                and (now - _travel_advisory_cache['fetched_at']) < _travel_advisory_cache['ttl']):
+            cached = _travel_advisory_cache['data'].copy()
+            cached['cached'] = True
+            return jsonify(cached)
+
+        # Fetch fresh data
+        data = _run_travel_advisory_scan()
+        data['timestamp'] = datetime.now(timezone.utc).isoformat()
+        data['version'] = '3.2.0-HRANA'
+        data['cached'] = False
+
+        # Store in cache
+        _travel_advisory_cache['data'] = data
+        _travel_advisory_cache['fetched_at'] = now
+
+        return jsonify(data)
+    except Exception as e:
+        print(f"[Travel Advisory] Endpoint error: {e}")
+        # If cache exists, return stale data rather than an error
+        if _travel_advisory_cache['data'] is not None:
+            stale = _travel_advisory_cache['data'].copy()
+            stale['cached'] = True
+            stale['stale'] = True
+            return jsonify(stale)
+        return jsonify({'success': False, 'error': str(e), 'advisories': {}}), 500
+
+# ========================================
+# IRAQ SCAN ENDPOINT
+# ========================================
+@app.route('/scan-iraq', methods=['GET'])
+def scan_iraq():
+    """Iraq stability scan — militia activity, ISIS, Kurdish tensions, US interests"""
+    try:
+        days = int(request.args.get('days', 7))
+
+        result = _check_cache_or_placeholder('Iraq', 'iraq', target='iraq', extended=True)
+        if result:
+            return result
+
+        # Fresh scan — check rate limit
+        if not check_rate_limit():
+            cached = get_cached_result('iraq')
+            if cached:
+                cached['stale_cache'] = True
+                return jsonify(cached)
+            return jsonify({
+                'success': False, 'error': 'Rate limit exceeded',
+                'probability': 0, 'rate_limited': True
+            }), 429
+
+        # ---- Fetch from all sources ----
+        # NewsAPI — broad Iraq query
+        try:
+            newsapi_articles = fetch_newsapi_articles(
+                'Iraq AND (militia OR ISIS OR attack OR strike OR protest OR Erbil OR Baghdad OR PMF OR PKK)', days
+            )
+        except Exception as e:
+            print(f"[Iraq] NewsAPI error: {e}")
+            newsapi_articles = []
+
+        # GDELT — multilingual
+        gdelt_query = 'iraq OR baghdad OR erbil OR militia OR ISIS OR PMF'
+        try:
+            gdelt_en = fetch_gdelt_articles(gdelt_query, days, 'eng')
+        except Exception as e:
+            print(f"[Iraq] GDELT EN error: {e}")
+            gdelt_en = []
+
+        try:
+            gdelt_ar = fetch_gdelt_articles(gdelt_query, days, 'ara')
+        except Exception as e:
+            print(f"[Iraq] GDELT AR error: {e}")
+            gdelt_ar = []
+
+        try:
+            gdelt_he = fetch_gdelt_articles(gdelt_query, days, 'heb')
+        except Exception as e:
+            print(f"[Iraq] GDELT HE error: {e}")
+            gdelt_he = []
+
+        try:
+            gdelt_fa = fetch_gdelt_articles(gdelt_query, days, 'fas')
+        except Exception as e:
+            print(f"[Iraq] GDELT FA error: {e}")
+            gdelt_fa = []
+
+        # Reddit
+        try:
+            reddit_posts = fetch_reddit_posts(
+                'iraq',
+                ['Iraq', 'Baghdad', 'Erbil', 'ISIS', 'militia', 'PMF', 'Kurdistan'],
+                days
+            )
+        except Exception as e:
+            print(f"[Iraq] Reddit error: {e}")
+            reddit_posts = []
+
+        all_articles = (newsapi_articles + gdelt_en + gdelt_ar +
+                       gdelt_he + gdelt_fa + reddit_posts)
+
+        print(f"[Iraq] Total articles fetched: {len(all_articles)}")
+
+        # ---- Calculate threat probability ----
+        scoring_result = calculate_threat_probability(all_articles, days, 'iraq')
+        probability = scoring_result['probability']
+        momentum = scoring_result['momentum']
+        breakdown = scoring_result['breakdown']
+
+        # ---- Extract casualty data ----
+        try:
+            casualties = extract_casualty_data(all_articles)
+        except Exception as e:
+            print(f"[Iraq] Casualty extraction error: {e}")
+            casualties = {
+                'deaths': 0, 'injuries': 0, 'arrests': 0,
+                'sources': [], 'details': [], 'articles_without_numbers': []
+            }
+
+        # ---- Military posture integration ----
+        try:
+            military_posture = get_military_posture('iraq')
+            military_bonus = military_posture.get('military_bonus', 0)
+            if military_bonus > 0:
+                probability = min(99, probability + military_bonus)
+                print(f"[Iraq] Military posture: {military_posture.get('alert_level', 'normal')} → +{military_bonus}% (new total: {probability}%)")
+        except Exception as mil_err:
+            print(f"[Iraq] Military posture lookup failed: {mil_err}")
+            military_posture = {'alert_level': 'normal', 'military_bonus': 0, 'show_banner': False, 'banner_text': '', 'top_signals': []}
+
+        # ---- Calculate intensity & stability ----
+        articles_per_day = len(all_articles) / days if days > 0 else 0
+        intensity_score = min(
+            articles_per_day * 2 +
+            casualties['deaths'] * 0.5 +
+            casualties['injuries'] * 0.2 +
+            casualties['arrests'] * 0.1 +
+            probability * 0.3,
+            100
+        )
+        stability_score = 100 - intensity_score
+
+        # ---- Multi-actor threat matrix ----
+        threat_matrix = {
+            'incoming_threats': [
+                {
+                    'actor': 'US',
+                    'actor_flag': 'US',
+                    'label': 'US Strike',
+                    'description': 'US military action against Iraqi militia targets',
+                    'probability': None,
+                    'level': None
+                },
+                {
+                    'actor': 'Israel',
+                    'actor_flag': 'IL',
+                    'label': 'Israel Strike',
+                    'description': 'Israeli strikes on Iran-linked targets in Iraq',
+                    'probability': None,
+                    'level': None
+                },
+                {
+                    'actor': 'ISIS',
+                    'actor_flag': '\u2620\ufe0f',
+                    'label': 'ISIS Attack',
+                    'description': 'ISIS/Daesh remnant attacks in Anbar, Kirkuk, Diyala',
+                    'probability': None,
+                    'level': None
+                }
+            ],
+            'outgoing_threats': [
+                {
+                    'actor_from': 'IR',
+                    'actor_to': 'US',
+                    'label': 'Iraq Militia \u2192 US Interests',
+                    'description': 'Incl. military installations, embassies, consulates, and forward-deployed assets',
+                    'probability': None,
+                    'level': None
+                },
+                {
+                    'actor_from': 'IQ',
+                    'actor_to': 'KRG',
+                    'label': 'Iraq \u2192 Kurdistan',
+                    'description': 'Federal-KRG tensions, PKK operations, Kirkuk disputes',
+                    'probability': None,
+                    'level': None
+                },
+                {
+                    'actor_from': 'IR',
+                    'actor_to': 'Gulf',
+                    'label': 'Iran Proxy \u2192 Gulf States',
+                    'description': 'PMF/militia threats to Gulf shipping and Saudi border',
+                    'probability': None,
+                    'level': None
+                }
+            ]
+        }
+
+        # ---- Populate threat matrix from scoring ----
+        for threat in threat_matrix['incoming_threats']:
+            if threat['actor'] == 'US':
+                t_prob = min(probability * 0.7, 95)
+            elif threat['actor'] == 'Israel':
+                t_prob = min(probability * 0.5, 95)
+            elif threat['actor'] == 'ISIS':
+                t_prob = min(probability * 0.6, 95)
+            else:
+                t_prob = probability * 0.5
+
+            threat['probability'] = round(t_prob, 1)
+            if t_prob >= 70:
+                threat['level'] = 'VERY HIGH'
+            elif t_prob >= 50:
+                threat['level'] = 'HIGH'
+            elif t_prob >= 30:
+                threat['level'] = 'MODERATE'
+            else:
+                threat['level'] = 'LOW'
+
+        for threat in threat_matrix['outgoing_threats']:
+            if 'US' in threat.get('actor_to', ''):
+                t_prob = min(probability * 0.75, 95)
+            elif 'KRG' in threat.get('actor_to', ''):
+                t_prob = min(probability * 0.4, 95)
+            elif 'Gulf' in threat.get('actor_to', ''):
+                t_prob = min(probability * 0.45, 95)
+            else:
+                t_prob = probability * 0.5
+
+            threat['probability'] = round(t_prob, 1)
+            if t_prob >= 70:
+                threat['level'] = 'VERY HIGH'
+            elif t_prob >= 50:
+                threat['level'] = 'HIGH'
+            elif t_prob >= 30:
+                threat['level'] = 'MODERATE'
+            else:
+                threat['level'] = 'LOW'
+
+        # ---- Confidence level ----
+        unique_sources = len(set(
+            a.get('source', {}).get('name', 'Unknown') for a in all_articles
+        ))
+        if len(all_articles) >= 20 and unique_sources >= 8:
+            confidence = "High"
+        elif len(all_articles) >= 10 and unique_sources >= 5:
+            confidence = "Medium"
+        else:
+            confidence = "Low"
+
+        # ---- Timeline mapping ----
+        if probability >= 70:
+            timeline = "0-30 Days (Elevated threat)"
+        elif probability >= 50:
+            timeline = "31-90 Days"
+        elif probability >= 30:
+            timeline = "91-180 Days"
+        else:
+            timeline = "180+ Days (Low priority)"
+
+        if momentum == 'increasing' and probability > 50:
+            timeline = "0-30 Days (Elevated threat)"
+
+        # ---- Build recent_headlines for frontend ----
+        recent_headlines = []
+        seen_urls = set()
+        for contributor in scoring_result.get('top_contributors', [])[:10]:
+            for article in all_articles:
+                if (article.get('source', {}).get('name', '') == contributor.get('source', '')
+                        and article.get('url') not in seen_urls):
+                    seen_urls.add(article['url'])
+                    recent_headlines.append({
+                        'title': article.get('title', '')[:120],
+                        'url': article.get('url', ''),
+                        'source': contributor.get('source', 'Unknown'),
+                        'published': article.get('publishedAt', ''),
+                        'threat_type': 'General Intelligence',
+                        'weight': abs(contributor.get('contribution', 0)),
+                        'phrase': '',
+                        'why_included': f"Top scoring (severity: {contributor.get('severity', 1.0)}x)",
+                        'color': 'blue'
+                    })
+                    break
+        recent_headlines.sort(key=lambda x: x['weight'], reverse=True)
+        recent_headlines = recent_headlines[:15]
+
+        # ---- Build response ----
+        return jsonify({
+            'success': True,
+            'target': 'iraq',
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'days_analyzed': days,
+            'probability': probability,
+            'timeline': timeline,
+            'confidence': confidence,
+            'momentum': momentum,
+            'total_articles': len(all_articles),
+            'unique_sources': unique_sources,
+            'intensity': int(intensity_score),
+            'stability': int(stability_score),
+
+            'scoring_breakdown': breakdown,
+
+            'casualties': {
+                'deaths': casualties['deaths'],
+                'injuries': casualties['injuries'],
+                'arrests': casualties['arrests'],
+                'verified_sources': casualties.get('sources', []),
+                'details': casualties.get('details', []),
+                'articles_without_numbers': casualties.get('articles_without_numbers', [])
+            },
+
+            'threat_matrix': threat_matrix,
+            'recent_headlines': recent_headlines,
+
+            'military_posture': {
+                'alert_level': military_posture.get('alert_level', 'normal'),
+                'alert_label': military_posture.get('alert_label', 'Normal'),
+                'alert_color': military_posture.get('alert_color', 'green'),
+                'military_bonus': military_posture.get('military_bonus', 0),
+                'show_banner': military_posture.get('show_banner', False),
+                'banner_text': military_posture.get('banner_text', ''),
+                'top_signals': military_posture.get('top_signals', []),
+                'detail_url': '/military.html'
+            },
+
+            'articles_en': [a for a in all_articles if a.get('language') == 'en'][:20],
+            'articles_ar': [a for a in all_articles if a.get('language') == 'ar'][:20],
+            'articles_he': [a for a in all_articles if a.get('language') == 'he'][:20],
+            'articles_fa': [a for a in all_articles if a.get('language') == 'fa'][:20],
+            'articles_reddit': [a for a in all_articles
+                               if a.get('source', {}).get('name', '').startswith('r/')][:20],
+
+            'last_updated': datetime.now(timezone.utc).isoformat(),
+            'cached': False,
+            'version': '2.3.0-IRAQ'
+        })
+
+    except Exception as e:
+        print(f"Error in /scan-iraq: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'target': 'iraq',
+            'probability': 0,
+            'timeline': 'Unknown',
+            'confidence': 'Low',
+            'momentum': 'stable',
+            'total_articles': 0,
+            'intensity': 0,
+            'stability': 100,
+            'casualties': {
+                'deaths': 0, 'injuries': 0, 'arrests': 0,
+                'verified_sources': [], 'details': [],
+                'articles_without_numbers': []
+            },
+            'threat_matrix': {
+                'incoming_threats': [],
+                'outgoing_threats': []
+            },
+            'recent_headlines': [],
+            'military_posture': {
+                'alert_level': 'normal', 'alert_label': 'Normal',
+                'alert_color': 'green', 'military_bonus': 0,
+                'show_banner': False, 'banner_text': '',
+                'top_signals': [], 'detail_url': '/military.html'
+            },
+            'articles_en': [],
+            'articles_ar': [],
+            'articles_he': [],
+            'articles_fa': [],
+            'articles_reddit': []
+        }), 500
+
+@app.route('/api/cache-status', methods=['GET'])
+def cache_status():
+    """Debug endpoint — shows what's in cache and how old it is"""
+    status = get_all_cache_status()
+    redis_connected = redis_client is not None
+    try:
+        if redis_client:
+            redis_client.ping()
+            redis_ok = True
+        else:
+            redis_ok = False
+    except:
+        redis_ok = False
+
+    return jsonify({
+        'redis_connected': redis_connected,
+        'redis_responsive': redis_ok,
+        'redis_url_set': bool(REDIS_URL),
+        'cache_backend': (type(redis_client).__name__ if redis_client is not None else 'file /tmp (this instance only)'),
+        'targets': status,
+        'timestamp': datetime.now(timezone.utc).isoformat()
+    })
+
+@app.route('/api/dashboard', methods=['GET'])
+def api_dashboard():
+    """
+    Returns ALL country card data in a single response from cache.
+    Frontend calls this ONCE on page load instead of N individual endpoints.
+    Never triggers a live scan — cache-only. Background thread keeps it warm.
+    """
+    targets = [
+        'iran', 'hezbollah', 'houthis', 'israel',
+        'jordan', 'syria', 'iraq', 'saudi_arabia',
+        'uae', 'kuwait', 'bahrain', 'qatar', 'egypt', 'oman', 'yemen',
+        'algeria', 'libya', 'morocco', 'tunisia'
+    ]
+
+    bundle = {}
+    # v3.9.0: one MGET (1 Upstash command) instead of 19 GETs per page load.
+    many = None
+    if redis_client is not None and hasattr(redis_client, 'mget'):
+        try:
+            many = redis_client.mget([f'threat:{t}' for t in targets])
+        except Exception as e:
+            print(f"[Dashboard] MGET failed, reading one by one: {e}")
+            many = None
+    for i, target in enumerate(targets):
+        cached = None
+        if many is not None:
+            try:
+                cached = json.loads(many[i]) if many[i] else None
+            except Exception:
+                cached = None
+        else:
+            cached = get_cached_result(target)
+        if cached:
+            bundle[target] = cached
+        else:
+            bundle[target] = _empty_placeholder(target=target)
+
+    return jsonify({
+        'success': True,
+        'cached': True,
+        'last_built': datetime.now(timezone.utc).isoformat(),
+        'countries': bundle
+    })
+    
+@app.route('/', methods=['GET'])
+def home():
+    """Root endpoint"""
+    return jsonify({
+        'status': 'Backend is running',
+        'version': '3.0.0',
+        'endpoints': {
+            '/api/threat/<target>': 'Get threat assessment for iran, hezbollah, houthis, or iraq',
+            '/scan-iraq': 'Get Iraq stability scan with threat matrix',
+            '/scan-iran-protests': 'Get Iran protests data with casualties',
+            '/api/jordan-threat': 'Jordan kinetic activity probability (incoming threats + defensive posture) 🇯🇴 NEW!',
+            '/api/syria-conflicts': 'Syria conflicts tracker ✅',
+            '/flight-cancellations': 'Flight Watch: airline suspensions, end dates, resumptions (16 ME destinations)',
+            '/api/flights/health': 'Flight Watch health',
+            '/rate-limit': 'Rate limit status',
+            '/health': 'Health check'
+        }
+    })
+
+@app.route('/rate-limit', methods=['GET'])
+def rate_limit_endpoint():
+    """Rate limit status"""
+    return jsonify(get_rate_limit_info())
+
+@app.route('/api/config/map', methods=['GET', 'OPTIONS'])
+def api_config_map():
+    """Front-end map configuration.
+
+    CARTO now requires a key for basemap tiles. Serving it from here means
+    the key lives in ONE place (the CARTO_API_KEY env var) and rotates
+    without editing or redeploying any HTML page.
+
+    This is NOT a secret endpoint and the key is NOT a secret. A browser
+    puts the key in every tile request, so anyone with devtools can read it
+    either way. What actually protects the key is the domain restriction
+    set on it in the CARTO dashboard. The value here is that the key never
+    enters the git repo and rotates in one place.
+    """
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    carto_key = os.environ.get('CARTO_API_KEY', '')
+    return jsonify({
+        'carto_key': carto_key,
+        'carto_configured': bool(carto_key),
+        'basemap_styles': {
+            'dark': 'dark_all',
+            'light': 'light_all',
+        },
+        'note': ('Publishable basemap key. Restrict it by domain in the CARTO '
+                 'dashboard; it is visible to every visitor by design.'),
+    })
+
+
+@app.route('/health', methods=['GET'])
+def health():
+    """Health check"""
+    return jsonify({
+        'status': 'healthy',
+        'version': f'{ME_BACKEND_VERSION}-me',   # was a stale '2.3.0-IRAQ'
+        'timestamp': datetime.now(timezone.utc).isoformat(),
+        'reddit': REDDIT_HEALTH,
+        # v3.4.0 -- one combined report: this file's 7 first-party feeds
+        # plus rss_monitor's 35, all recorded under backend 'me'.
+        'feeds': get_feed_health_report(),
+        # v3.3.0 -- which background jobs THIS instance owns.
+        'instance_jobs': (_lock_status() if _lock_status else
+                          {'note': 'instance_lock not installed'}),
+    })
+
+@app.route('/api/telegram-status', methods=['GET'])
+def telegram_status():
+    """Telegram health + v2.1.0 entity-cache counters.
+
+    Added Sep 27 2026: get_telegram_status() has existed since v2.0.0 and
+    nothing ever called it -- the same bug as gateway_stats() (handover 5.3).
+    """
+    if not TELEGRAM_AVAILABLE:
+        return jsonify({'available': False,
+                        'error': 'telegram_signals not importable on this backend'}), 200
+    try:
+        from telegram_signals import get_telegram_status
+        return jsonify(get_telegram_status()), 200
+    except Exception as e:
+        return jsonify({'available': False, 'error': str(e)[:200]}), 200
+
+
+# (Nov 1 2026) /flight-cancellations is served by flight_watch.py (registered above).
+
+# (Nov 1 2026) Dead /api/notams route + parse_notam removed: notam_monitor.py
+# registers /api/notams first and Flask serves the first registration.
+
+# ========================================
+# START BACKGROUND REFRESH ON BOOT
+# ========================================
+start_background_refresh()
+
+# Start Oman rhetoric background refresh (separate scan loop)
+if start_oman_rhetoric_refresh:
+    start_oman_rhetoric_refresh()
+
+# ========================================
+# GDELT TRICKLE FETCHER  (Sep 20 2026)
+# ========================================
+# Walks the registered GDELT query set slowly and forever, keeping the
+# shared Upstash cache warm so scans READ instead of fetching. Last thing
+# at boot on purpose: modules register from inside their scan functions,
+# so the set may still be empty here -- the walker idles until it is not.
+#
+# REQUIRES: GDELT_CACHE_TTL_SEC >= one lap (~12h). Set it to 50400.
+# /api/gdelt-trickle/health says so out loud if it is wrong.
+try:
+    from gdelt_trickle import start_trickle, register_trickle_endpoints
+    register_trickle_endpoints(app)
+    start_trickle()
+except ImportError as e:
+    print(f"[ME Backend] ⚠️ gdelt_trickle not available: {e}")
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
