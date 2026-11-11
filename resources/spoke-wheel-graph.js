@@ -1,4 +1,9 @@
-/* Asifah Analytics -- Spoke & Wheel network graph  v1.1.0  (Nov 8 2026)
+/* Asifah Analytics -- Spoke & Wheel network graph  v1.2.0  (Nov 11 2026)
+ *
+ * v1.2.0: DIPLOMATIC track. A spoke the backend marks track:'diplomatic' (Oman on
+ * the Iran wheel when the Muscat channel is lit) is a back channel in USE, not
+ * pressure: drawn in the GPI's Diplomatic blue, labelled 'Diplomatic · back
+ * channel', and kept out of threat colour, contested halos and lit counts.
  *
  * v1.1.0: one region at a time. AsifahWheelGraph.render(gpi, {host, region:'africa'})
  * keeps only that region's spokes and the hubs pulling on them (Africa has no
@@ -36,6 +41,7 @@
     3: ['Confrontation', '#f97316'], 4: ['Coercion', '#ef4444'], 5: ['Active Conflict', '#991b1b'],
     6: ['Red Line Breached', '#3b0764']
   };
+  var DIP = '#0ea5e9';   // the GPI's Diplomatic card colour
   var HUB_NAME = { us: 'USA', uk: 'UK', uae: 'UAE', dprk: 'DPRK', turkey: 'Türkiye', car: 'CAR', drc: 'DR Congo' };
   // pages that exist today; anything else gets no link rather than a dead one
   var RHETORIC = ' afghanistan argentina armenia azerbaijan belarus burkina_faso canada chile china cuba cyprus dprk egypt greece greenland hungary india iran iraq israel japan kazakhstan lebanon libya mali mexico moldova oman pakistan paraguay peru philippines poland qatar russia saudi_arabia somalia sudan syria taiwan turkey uae uk ukraine us venezuela vietnam yemen ';
@@ -106,7 +112,8 @@
           id: w.hub + '>' + sp.country, source: w.hub, target: sp.country, state: sp.state,
           raw: raw, level: sp.state === 'lit' ? shownLevel(raw, sp.country) : 0,
           cls: sp.node_class, signal: sp.top_signal || '', age: sp.age_hours, region: sp.region,
-          reason: sp.reason || '', peer: n.kind === 'hub'
+          reason: sp.reason || '', peer: n.kind === 'hub',
+          dip: sp.state === 'lit' && sp.track === 'diplomatic'
         };
         edges.push(e);
       });
@@ -115,13 +122,15 @@
     nodes.forEach(function (n) { n.level = -1; n.litHubs = 0; n.r = n.kind === 'hub' ? 24 : 13; });
     edges.forEach(function (e) {
       map[e.source].edges.push(e); map[e.target].edges.push(e);
+      if (e.dip) { map[e.target].channel = true; return; }
       if (e.state === 'lit') {
         var t = map[e.target];
         t.level = Math.max(t.level, e.level); t.litHubs += 1;
       }
     });
     nodes.forEach(function (n) {
-      n.litN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'lit'; }).length;
+      n.litN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'lit' && !e.dip; }).length;
+      n.chanN = n.edges.filter(function (e) { return e.source === n.id && e.dip; }).length;
       n.darkN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'dark'; }).length;
       n.unrepN = n.edges.filter(function (e) { return e.source === n.id && e.state === 'not_reporting'; }).length;
       if (n.kind === 'hub') n.r = 22 + Math.min(10, n.litN);
@@ -261,11 +270,11 @@
     visibleEdges().forEach(function (e) {
       var p = S.nodeMap[e.source], q = S.nodeMap[e.target];
       var rel = !ctxIds || p.id === focusId || q.id === focusId;
-      var col = e.state === 'lit' ? LEVEL[Math.min(6, e.level)][1] : (L ? '#94a3b8' : '#475569');
+      var col = e.dip ? DIP : (e.state === 'lit' ? LEVEL[Math.min(6, e.level)][1] : (L ? '#94a3b8' : '#475569'));
       x.save();
       x.globalAlpha = rel ? (ctxIds ? 0.95 : (e.state === 'lit' ? 0.75 : 0.35)) : 0.05;
       x.strokeStyle = col;
-      x.lineWidth = (e.state === 'lit' ? 1.2 + e.level * 0.35 : 0.8) / z;
+      x.lineWidth = (e.dip ? 2 : (e.state === 'lit' ? 1.2 + e.level * 0.35 : 0.8)) / z;
       if (e.state === 'dark') x.setLineDash([6 / z, 5 / z]);
       if (e.state === 'not_reporting') { x.setLineDash([2 / z, 5 / z]); x.globalAlpha *= 0.6; }
       x.shadowBlur = (ctxIds && rel && e.state === 'lit' ? 8 : 0) / z; x.shadowColor = col;
@@ -274,7 +283,7 @@
       if (rel && ctxIds && e.state === 'lit') {
         var mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2, ang = Math.atan2(q.y - p.y, q.x - p.x);
         if (ang > Math.PI / 2 || ang < -Math.PI / 2) ang += Math.PI;
-        var lab = cls(e.cls).toUpperCase();
+        var lab = e.dip ? 'DIPLOMATIC · BACK CHANNEL' : cls(e.cls).toUpperCase();
         x.save(); x.translate(mx, my); x.rotate(ang);
         x.font = '600 ' + (8.5 / z) + 'px "Times New Roman"'; x.textAlign = 'center'; x.textBaseline = 'bottom';
         var tw = x.measureText(lab).width;
@@ -290,7 +299,7 @@
       var rel = !ctxIds || ctxIds[n.id], sel = S.selected && S.selected.id === n.id, hov = S.hovered && S.hovered.id === n.id;
       var r = n.r + (sel || hov ? 2 : 0);
       x.save(); x.globalAlpha = rel ? 1 : 0.12;
-      var fill = n.kind === 'hub' ? (L ? '#e2e8f0' : '#101c2c') : (n.level >= 0 ? LEVEL[Math.min(6, n.level)][1] : (L ? '#cbd5e1' : '#1e293b'));
+      var fill = n.kind === 'hub' ? (L ? '#e2e8f0' : '#101c2c') : (n.level >= 0 ? LEVEL[Math.min(6, n.level)][1] : (n.channel ? DIP : (L ? '#cbd5e1' : '#1e293b')));
       // halos
       if (n.contested) { x.strokeStyle = L ? '#0f172a' : '#e2e8f0'; x.setLineDash([3 / z, 3 / z]); x.lineWidth = 1 / z; x.beginPath(); x.arc(n.x, n.y, r + 6, 0, Math.PI * 2); x.stroke(); x.setLineDash([]); }
       var isNew = n.edges.some(function (e) { return S.newly[e.id] && (e.target === n.id); });
@@ -380,7 +389,8 @@
     S.tip.style.top = Math.min(r.height - 60, ev.clientY - r.top + 14) + 'px';
     S.tip.innerHTML = '<b>' + esc(n.name) + '</b>' + (n.kind === 'hub'
       ? (n.litN + ' spokes lit' + (n.converged ? ' · converged' : ''))
-      : (n.level >= 0 ? 'L' + n.level + ' · ' + LEVEL[Math.min(6, n.level)][0] + ' · ' + n.litHubs + ' hub' + (n.litHubs === 1 ? '' : 's') : 'quiet / unread')) +
+      : (n.level >= 0 ? 'L' + n.level + ' · ' + LEVEL[Math.min(6, n.level)][0] + ' · ' + n.litHubs + ' hub' + (n.litHubs === 1 ? '' : 's')
+          : (n.channel ? 'Diplomatic · back channel in use' : 'quiet / unread'))) +
       '<small>click for the record</small>';
   }
   function zoomAt(f, cx, cy) {
@@ -443,12 +453,13 @@
     if (n.kind === 'hub') {
       var w = n.wheel || {}, b = w.breadth || {};
       var rows = n.edges.filter(function (e) { return e.source === n.id && e.state === 'lit'; })
-        .sort(function (a, c) { return c.level - a.level; });
+        .sort(function (a, c) { return (a.dip - c.dip) || (c.level - a.level); });
       html = '<div class="swg-p-kicker">Hub · ' + (n.converged ? 'converged' : 'not converged') + '</div>' +
         '<h3>' + esc(n.icon || '') + ' ' + link(n.id, n.name + ' wheel') + '</h3>' +
         '<p>' + esc(w.headline || '') + '</p>' +
         '<div class="swg-p-flags"><span>' + n.litN + ' lit</span><span>' + n.darkN + ' quiet</span>' +
-        '<span>' + n.unrepN + ' not reporting</span>' + (b.span ? '<span>' + b.span + ' regions</span>' : '') + '</div>' +
+        '<span>' + n.unrepN + ' not reporting</span>' +
+        (n.chanN ? '<span style="border-color:' + DIP + ';color:' + DIP + '">' + n.chanN + ' back channel' + (n.chanN === 1 ? '' : 's') + '</span>' : '') + (b.span ? '<span>' + b.span + ' regions</span>' : '') + '</div>' +
         rows.map(row).join('') +
         (b.coverage_note ? '<p class="swg-p-note">' + esc(b.coverage_note) + '</p>' : '') +
         (b.peer_note ? '<p class="swg-p-note">' + esc(b.peer_note) + '</p>' : '');
@@ -469,6 +480,14 @@
   }
   function row(e) {
     var other = S.selected && S.selected.id === e.source ? e.target : e.source;
+    if (e.dip) {
+      return '<div class="swg-row" style="border-left-color:' + DIP + '">' +
+        '<div><b>' + esc(nice(other)) + '</b> <span class="swg-chip" style="background:' + DIP + '">Diplomatic</span>' +
+        ' <i>back channel</i>' + (S.newly[e.id] ? ' <span class="swg-new">NEW</span>' : '') + '</div>' +
+        (e.signal ? '<div class="swg-sig">' + esc(e.signal) + '</div>' : '') +
+        '<div class="swg-meta">A channel being used, not pressure -- not counted toward convergence' +
+        (e.age != null ? ' · read ' + Math.round(e.age) + 'h ago' : '') + '</div></div>';
+    }
     var col = LEVEL[Math.min(6, e.level)][1];
     var sus = e.raw === 5 && e.level === 4 ? ' (L5 reading, sustained)' : '';
     return '<div class="swg-row" style="border-left-color:' + col + '">' +
@@ -550,6 +569,7 @@
       '<aside class="swg-panel" aria-live="polite"></aside></div>' +
       '<div class="swg-legend">' +
       [1, 2, 3, 4, 5].map(function (l) { return '<span><i style="border-color:' + LEVEL[l][1] + '"></i>L' + l + ' ' + LEVEL[l][0] + '</span>'; }).join('') +
+      '<span><i style="border-color:' + DIP + '"></i>Diplomatic · back channel in use</span>' +
       '<span><i style="border-top-style:dashed;border-color:#64748b"></i>Quiet (full rim)</span>' +
       '<span><i style="border-top-style:dotted;border-color:#64748b"></i>Not reporting — unread, not calm</span>' +
       '<span><i class="dot" style="border:2px solid #e8c675"></i>Hub converged</span>' +
