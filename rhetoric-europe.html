@@ -606,6 +606,15 @@
     </div>
 </div>
 
+<!-- ── Nov 11 2026: ONE visual slot under the BLUF, two views (same as the GPI and Africa) ── -->
+<div class="asf-vis-tabs" id="regionVisTabs" role="tablist">
+    <button type="button" role="tab" class="on" data-vis="map" aria-selected="true">🗺️ Pressure map</button>
+    <button type="button" role="tab" data-vis="wheel" aria-selected="false">☸️ Spoke &amp; Wheel</button>
+</div>
+<div data-asifah-region-map="europe" id="regionMapPane"></div>
+<div id="regionWheelPane" hidden>
+<div id="regionWheelGraph"></div>
+
 <!-- ── CONVERGENCE PANEL (spoke & wheel) — rendered entirely from
      data.convergence_panel. No country, hub, or spoke is named in this
      markup; adding a tracker requires no edit here. ── -->
@@ -622,6 +631,7 @@
     <div class="cvg-note" id="cvgNote"></div>
     <div class="cvg-disclaimer" id="cvgDisclaimer"></div>
 </div>
+</div><!-- /regionWheelPane -->
 
 <!-- ACTIVE TRACKERS -->
 <div class="section-title">📡 Active Rhetoric Trackers — Europe</div>
@@ -1149,7 +1159,7 @@ const _EU_AXIS_LABEL = { kinetic:'Kinetic', economic:'Economic', diplomatic:'Dip
 function _euEsc(s){ if(s==null)return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _euLvlChip(sig){
     let lv = sig.level, txt, bg;
-    if (typeof lv === 'number'){ txt='L'+lv; bg=['#22c55e','#3b82f6','#eab308','#f97316','#ef4444','#dc2626'][Math.max(0,Math.min(5,lv))]; }
+    if (typeof lv === 'number'){ txt='L'+lv; bg=['#6b7280','#3b82f6','#f59e0b','#f97316','#ef4444','#991b1b','#3b0764'][Math.max(0,Math.min(6,lv))]; }
     else { const t=String(lv||'').toLowerCase(); txt=(t||'L0').toUpperCase(); bg=t==='surge'?'#dc2626':t==='high'?'#ef4444':t==='elevated'?'#f97316':'#6b7280'; }
     return `<span class="sigrow-chip" style="background:${bg};">${txt}</span>`;
 }
@@ -1169,7 +1179,7 @@ function _euSplitBody(sig, locName){
 function _euRenderSignalRow(sig){
     const div=document.createElement('div');
     div.className='sigrow';
-    const color=sig.color||'#6b7280';
+    const color=(typeof sig.level === 'number' ? ['#6b7280','#3b82f6','#f59e0b','#f97316','#ef4444','#991b1b','#3b0764'][Math.max(0,Math.min(6,sig.level))] : (sig.color || '#6b7280'));   // Nov 11 2026: rail = level colour
     div.style.borderLeftColor=color;
     const theatre=(sig.theatre||'').toLowerCase();
     const locName=_euLocName(theatre);
@@ -1480,6 +1490,53 @@ async function updateBluf(_resolvedUnused) {
     loadAll();
 
     setInterval(loadAll, 30 * 60 * 1000);
+</script>
+<!-- Nov 11 2026: map + Spoke & Wheel tabs under the BLUF -->
+<style>
+.asf-vis-tabs { display: flex; gap: 6px; margin: 22px 0 0; }
+.asf-vis-tabs button { font: 700 0.76rem 'Times New Roman', serif; letter-spacing: 1px; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 8px 8px 0 0; cursor: pointer; background: transparent; color: inherit;
+    border: 1px solid rgba(148,163,184,.3); border-bottom: none; opacity: .7; }
+.asf-vis-tabs button.on { opacity: 1; background: rgba(56,189,248,.14); border-color: #38bdf8; }
+#regionMapPane.asf-map { margin-top: 0; border-top-left-radius: 0; }
+#regionWheelPane { margin-bottom: 22px; }
+#regionWheelPane .cvg-card { margin-top: 14px; }
+</style>
+<script src="resources/asifah-geo.js" defer></script>
+<script src="resources/region-glance.js" defer></script>
+<script src="resources/spoke-wheel-graph.js" defer></script>
+<script>
+(function () {
+    var seen = false, REGION = 'europe';
+    function open(which) {
+        document.querySelectorAll('#regionVisTabs button').forEach(function (b) {
+            var on = b.getAttribute('data-vis') === which;
+            b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        document.getElementById('regionMapPane').hidden = which !== 'map';
+        document.getElementById('regionWheelPane').hidden = which !== 'wheel';
+        if (which !== 'wheel' || !window.AsifahWheelGraph) return;
+        if (seen) { window.AsifahWheelGraph.show(); return; }
+        seen = true;
+        var host = document.getElementById('regionWheelGraph');
+        host.innerHTML = '<div style="padding:14px;font-size:.8rem;opacity:.7">Loading the hubs\u2019 wheels\u2026</div>';
+        var p = (window.AsifahRegionGlance && window.AsifahRegionGlance.gpi) ||
+            fetch('https://asifah-backend.onrender.com/api/gpi').then(function (r) { return r.ok ? r.json() : null; });
+        p.then(function (gpi) {
+            if (!gpi || !gpi.convergence_panel) {
+                host.innerHTML = '<div style="padding:14px;font-size:.8rem;opacity:.7">The global read did not load this time; the written read below carries the same spokes.</div>';
+                return;
+            }
+            host.innerHTML = '';
+            window.AsifahWheelGraph.render(gpi, { host: host, region: REGION });
+        }).catch(function () { seen = false; });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#regionVisTabs button').forEach(function (b) {
+            b.addEventListener('click', function () { open(b.getAttribute('data-vis')); });
+        });
+    });
+})();
 </script>
 </body>
 </html>
