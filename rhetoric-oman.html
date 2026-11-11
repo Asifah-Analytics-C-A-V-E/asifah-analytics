@@ -736,7 +736,9 @@ const BANNER_MODES = {
 };
 
 // Actor grouping by dual-axis vector
-const THREAT_ACTORS    = ['omani_regime', 'omani_security', 'external_threats_inbound', 'succession_watch'];
+// Nov 11 2026: + ports_energy (Salalah/Duqm/Sohar, Mina al Fahal, Oman LNG) and hormuz_omani_waters.
+// Any actor the backend sends that is not listed here is appended, so a new one never goes missing.
+const THREAT_ACTORS    = ['omani_regime', 'omani_security', 'external_threats_inbound', 'ports_energy', 'hormuz_omani_waters', 'succession_watch'];
 const INFLUENCE_ACTORS = ['mediation_activity', 'regional_diplomatic_hub'];
 
 function lvl(n) {
@@ -1312,8 +1314,9 @@ function renderActors(data) {
             </div>`;
     }
 
+    const _extraThreat = Object.keys(actors).filter(k => (actors[k] || {}).feeds_into === 'threat' && !THREAT_ACTORS.includes(k));
     document.getElementById('groupThreatActors').innerHTML =
-        THREAT_ACTORS.map(k => buildActorHTML(k, 'threat-actor')).join('');
+        THREAT_ACTORS.concat(_extraThreat).filter(k => actors[k]).map(k => buildActorHTML(k, 'threat-actor')).join('');
     document.getElementById('groupInfluenceActors').innerHTML =
         INFLUENCE_ACTORS.map(k => buildActorHTML(k, 'influence-actor')).join('');
 }
