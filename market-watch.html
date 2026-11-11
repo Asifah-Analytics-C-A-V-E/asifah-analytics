@@ -1277,6 +1277,13 @@ function renderFragility(d){
                  + ';font-size:12.5px;line-height:1.55;color:var(--text-primary);">'
                  + esc(ms.text) + '</div>';
         }
+        // Nov 11 2026: how the match moved this week. A number with no history
+        // reads as an alarm at 67% and an all-clear at 50%; neither is right.
+        const mt = d.match_trend;
+        if(mt && mt.sentence){
+            head += '<div style="font-size:12px;line-height:1.55;margin:-4px 0 12px;padding:0 13px;color:var(--text-secondary);">'
+                  + '<b style="color:var(--text-primary);">This week:</b> ' + esc(mt.sentence) + '</div>';
+        }
 
         sm.innerHTML = head + d.similarity_matches.map((m,i)=>{
             const c = m.type==='bubble_burst'||m.type==='crash' ? '#ef4444'
@@ -1363,6 +1370,14 @@ function lensHTML(z){
     const ef = z.effects||{};
     const rows = [['Local',ef.local],['Regional',ef.regional],['Global',ef.global],['Economy',ef.economy]].filter(r=>r[1]);
     if(rows.length) h += '<div style="'+H+'">Effects then</div>' + rows.map(r=>'<div style="'+S+'"><b>'+r[0]+':</b> '+esc(r[1])+'</div>').join('');
+    // Nov 11 2026 (pilot): WHO CARRIED IT -- exposure then, never instruction now.
+    const wc = z.who_carried_it;
+    if(wc){
+        const wr = [['Hit hardest',wc.hit,'#ef4444'],['Held up',wc.held,'#10b981'],['Recovery shape',wc.shape,'#38bdf8'],['Where this analogy breaks today',wc.breaks,'#f59e0b']].filter(r=>r[1]);
+        h += '<div style="'+H+'">Who carried it, then</div><div style="margin-top:4px;padding:8px 10px;border-radius:6px;background:rgba(0,0,0,0.12);">'
+           + wr.map(r=>'<div style="'+S+'margin:3px 0;padding-left:8px;border-left:3px solid '+r[2]+';"><b>'+r[0]+':</b> '+esc(r[1])+'</div>').join('')
+           + '<div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;font-style:italic;">Who was exposed and how it played out then. Not a recommendation, and not a forecast of who carries it next time.</div></div>';
+    }
     if((z.live_checks||[]).length){
         h += '<div style="'+H+'">Each step of that chain, today</div>' + z.live_checks.map(c=>{
             const tag = !c.visible ? '<span style="color:var(--text-muted);">NOT VISIBLE</span>'
