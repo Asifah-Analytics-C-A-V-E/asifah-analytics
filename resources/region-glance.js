@@ -1,5 +1,14 @@
 /*
- * Asifah Analytics -- REGION GLANCE  v1.2.0  (Nov 8 2026)
+ * Asifah Analytics -- REGION GLANCE  v1.2.1  (Nov 11 2026)
+ *
+ * v1.2.1 -- the one-line reads say something:
+ *   * A line that only repeats the level ("Paraguay reads level 4 this
+ *     cycle") is dropped -- the chip already says that.
+ *   * Analyst labels ("SUDAN red line breached -- Peace Track Collapse
+ *     (Escalation-by-Absence): INVERTED POLARITY...") lose out to a plain
+ *     sentence from the same country's other signals when there is one.
+ *   * Tall regions (the Americas): the "Where to look first" column takes
+ *     the width the map does not need, instead of leaving empty gutters.
  *
  * v1.2.0 -- smaller, and it says where to look first:
  *   * Monitored-and-quiet (L0) countries carry a cyan Asifah outline, so
@@ -222,7 +231,7 @@
       '.asf-top-line{font-size:0.74rem;line-height:1.4;opacity:0.85}' +
       '.asf-top-none,.asf-top-more{font-size:0.72rem;opacity:0.7;font-style:italic}' +
       '.asf-map .asf-mon{stroke:#38bdf8;stroke-width:1.4}' +
-      '@media(max-width:900px){.asf-map-body{grid-template-columns:1fr}}' +
+      '@media(max-width:900px){.asf-map-body{grid-template-columns:1fr !important}}' +
       // v1.2.0 phones: folded to one line until tapped
       '@media(max-width:700px){.asf-map-toggle{cursor:pointer}.asf-map-desk{display:none}.asf-map-phone{display:inline}' +
       '.asf-map:not(.asf-open) .asf-map-body,.asf-map:not(.asf-open) .asf-map-legend,.asf-map:not(.asf-open) .asf-map-lost{display:none}' +
@@ -280,13 +289,31 @@
 
   // Card-face line: the backend's short_text is cut mid-word, so use the first
   // sentence of the long read, trimmed at a word boundary (~150 chars).
-  function faceLine(theatre, bluf, rec) {
-    var t = longRead(theatre, bluf) || oneLiner(theatre, bluf, rec) || '';
-    t = t.replace(/^[A-Z][A-Z \-']+:\s*/, '').replace(/\s+/g, ' ').trim();
+  // v1.2.1: candidates from EVERY signal on this theatre; the plainest wins.
+  var FILLER_RX = /\breads (level|L)\s*\d\b.*\bthis cycle\b/i;
+  function firstSentence(t) {
+    t = String(t || '').replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '').replace(/^[A-Z][A-Z \-']+:\s*/, '')
+      .replace(/\s+/g, ' ').trim();
     var m = t.match(/^.{20,}?[.!?](\s|$)/);
     if (m) t = m[0].trim();
     if (t.length > 150) t = t.slice(0, 150).replace(/\s+\S*$/, '') + '\u2026';
     return t;
+  }
+  function labelScore(t) {               // higher = reads like an analyst label, not a sentence
+    var words = t.split(/\s+/), caps = words.filter(function (w) { return w.length > 3 && w === w.toUpperCase() && /[A-Z]/.test(w); }).length;
+    return (/red line breached|\(escalation-by|polarity|\bL\d\b/i.test(t) ? 3 : 0) + (caps / Math.max(1, words.length) > 0.15 ? 2 : 0) +
+      (/--|\u2014.*:/.test(t) ? 1 : 0);
+  }
+  function faceLine(theatre, bluf, rec) {
+    var sigs = (bluf && (bluf.top_signals || bluf.signals)) || [], cands = [];
+    sigs.forEach(function (sg) {
+      if ((sg.theatre || '') === theatre) cands.push(firstSentence(sg.long_text || sg.short_text));
+    });
+    cands.push(firstSentence(oneLiner(theatre, bluf, rec)));
+    cands = cands.filter(function (t) { return t && t.length > 12 && !FILLER_RX.test(t); });
+    if (!cands.length) return '';
+    cands.sort(function (a, b) { return labelScore(a) - labelScore(b); });   // stable: ties keep the backend's order
+    return cands[0];
   }
 
   // ── Card faces ────────────────────────────────────────────────────────────
@@ -509,7 +536,9 @@
     el.innerHTML = '<button type="button" class="asf-map-head asf-map-toggle" aria-expanded="false"><span class="asf-map-title">🗺️ Where the pressure is</span>' +
       '<span class="asf-map-sub asf-map-desk">Each country\'s pressure level · click a country to open it' + (when ? ' · as of ' + esc(when) : '') + '</span>' +
       '<span class="asf-map-sub asf-map-phone">' + esc(phone) + ' <b class="asf-caret">\u25BE</b></span></button>' +
-      '<div class="asf-map-body"><div class="asf-map-fig">' +
+      '<div class="asf-map-body"' + (vb[3] && 440 * vb[2] / vb[3] < 640
+        ? ' style="grid-template-columns:minmax(0,' + Math.round(440 * vb[2] / vb[3]) + 'px) minmax(270px,1fr)"' : '') +
+      '><div class="asf-map-fig">' +
       '<svg viewBox="' + vb.map(function (v) { return Math.round(v); }).join(' ') + '" style="max-width:' + Math.round(440 * vb[2] / vb[3]) + 'px;margin-left:auto;margin-right:auto" role="img" aria-label="Map of pressure levels, ' + esc(cfg.label) + '">' + defs + ctx + shapes + dots + labels +
       (G ? G.pinsSvg(proj, W, H, plv, mapKey, vb[0], vb[1]) : '') + '</svg></div>' +
       '<aside class="asf-top"><div class="asf-top-k">Where to look first</div>' +
