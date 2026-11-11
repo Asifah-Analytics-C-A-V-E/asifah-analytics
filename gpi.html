@@ -2381,6 +2381,7 @@ function _renderHeroCard(axisName) {
         </div>
         ${d.axisDescription ? `<div class="pressure-axis-description">${d.axisDescription}</div>` : ''}
         ${_proseBlock(axisName, d)}
+        ${axisName === 'diplomatic' ? _backChannelBlock() : ''}
         <details class="axis-signals-drawer" onclick="event.stopPropagation()">
             <summary>Live signals behind this read (${(d.signals || []).length}) &mdash; with the countries each one names</summary>
             ${_signalsLabel(d)}
@@ -2410,7 +2411,7 @@ function _renderCompactCard(axisName) {
             </div>
             <span class="pressure-axis-level-pill" style="background:${d.axisColor};">L${d.level}</span>
         </div>
-        ${_motionTag(d)}
+        ${_motionTag(d)}${axisName === 'diplomatic' ? _backChannelTag() : ''}
     `;
     return card;
 }
@@ -2759,6 +2760,48 @@ function _freshnessLine(voice) {
     const col = f.state === 'stale' ? '#f97316' : (f.state === 'unchanged_long' ? '#f59e0b' : '#64748b');
     const icon = f.state === 'stale' ? '\u26a0\ufe0f ' : (f.state === 'unchanged_long' ? '\u23f8\ufe0f ' : '\u2713 ');
     return `<div class="axis-plain-label" style="color:${col};font-style:normal;margin-top:4px;">${icon}${escapeHtmlGpi(f.plain)}</div>`;
+}
+
+// ── Nov 11 2026: BACK CHANNELS on the Diplomatic card ──────────────────
+// A spoke the backend marks track:'diplomatic' (Oman, Qatar, Pakistan on the
+// Iran wheel; the US-Iran line) is a channel being USED. Listed here with its
+// countries as pills. Display only: it never moves the Diplomatic level.
+function _gpiBackChannels() {
+    const cp = ((_gpiState && _gpiState.apiData) || {}).convergence_panel || {};
+    if (Array.isArray(cp.back_channels)) return cp.back_channels;
+    const out = [];
+    (cp.resident_wheels || []).forEach(w => (w.spokes || []).forEach(sp => {
+        if (sp.state === 'lit' && sp.track === 'diplomatic')
+            out.push({ hub: w.hub, country: sp.country, level: sp.level, top_signal: sp.top_signal, age_hours: sp.age_hours });
+    }));
+    return out.sort((a, b) => (b.level || 0) - (a.level || 0));
+}
+function _gpiChanPill(c) {
+    const href = (typeof _THEATRE_PAGE === 'object' && _THEATRE_PAGE) ? _THEATRE_PAGE[c] : null;
+    const inner = '<span class="sig-country-pill" style="border-color:#0ea5e955;background:#0ea5e914;color:#38bdf8;white-space:nowrap;">'
+        + escapeHtmlGpi(_gpiCountryLabel(c)) + '</span>';
+    return href ? `<a href="${href}" style="text-decoration:none;" onclick="event.stopPropagation()">${inner}</a>` : inner;
+}
+function _backChannelBlock() {
+    const ch = _gpiBackChannels();
+    if (!ch.length) return '';
+    const rows = ch.map(c => {
+        const sig = String(c.top_signal || '').replace(/^[A-Za-z ]+-[A-Za-z ]+:\s*/, '');
+        const age = c.age_hours != null ? ` · read ${Math.round(c.age_hours)}h ago` : '';
+        return `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid rgba(14,165,233,0.18);">
+            <span class="sig-country-pills" style="margin-left:0;flex-shrink:0;">${_gpiChanPill(c.hub)}${_gpiChanPill(c.country)}</span>
+            <span style="font-size:13px;line-height:1.45;">${escapeHtmlGpi(sig)}<span style="color:var(--text-muted);font-size:11px;">${age}</span></span>
+        </div>`;
+    }).join('');
+    return `<div class="axis-back-channels" style="margin:10px 0 4px;padding:8px 12px;border-left:3px solid #0ea5e9;background:rgba(14,165,233,0.06);border-radius:6px;">
+        <div style="font-family:'Courier New',monospace;font-size:10px;letter-spacing:1.5px;color:#38bdf8;">🕊️ BACK CHANNELS IN USE (${ch.length})</div>
+        ${rows}
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">A channel being used is not pressure. Listed for the read, not scored into this level.</div>
+    </div>`;
+}
+function _backChannelTag() {
+    const n = _gpiBackChannels().length;
+    return n ? `<span class="axis-motion-tag" style="border-color:#0ea5e9;color:#38bdf8;margin-left:6px;">🕊️ ${n} back channel${n === 1 ? '' : 's'}</span>` : '';
 }
 
 function _proseBlock(axisName, d) {
