@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Global Cross-Cutting Commodities Tracker v1.5.2 - Nov 15, 2026: talked-about-vs-moving chart + section chips (resources/commodity-glance.js) | v1.5.1 Nov 4, 2026: London Desk (Lloyd's, LME, shadow fleet), UK in the exposure matrix, footer rebuilt to the shell look -->
+<!-- Asifah Analytics - Global Cross-Cutting Commodities Tracker v1.6.0 - Nov 15, 2026: palm oil; Honduras, Romania, Yemen, Singapore, Zambia; 5 hidden WHA rows shown; pricing-hub + processor colours; multi-role initials from the real roles | v1.5.2 Nov 15, 2026: talked-about-vs-moving chart + section chips (resources/commodity-glance.js) | v1.5.1 Nov 4, 2026: London Desk (Lloyd's, LME, shadow fleet), UK in the exposure matrix, footer rebuilt to the shell look -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- v1.5.0 (May 23, 2026): PHASE 1A AFRICA + CRITICAL MINERALS LAUNCH. Added 6 new commodities (PGM, chromium, manganese, phosphate, diamonds, bauxite) for 22 total. Added 8 new countries (Angola, Belgium, Botswana, Guinea, Jordan, Morocco, Nigeria, South Africa) for 44 total. Africa region populated (was 2, now 8 countries). Canonical Gold Standard v1.2 sidebar retrofit (Dashboards → Cross-Cutting Tools → Regional Rhetoric, hamburger drawer for mobile, ESC handler). Header subtitle + status strip counts updated. -->
 <!-- v1.4.0 (May 17, 2026): Sugar Full Retrofit — added Sugar as 16th commodity (NY11 futures); added Cuba (historic_reversal sugar role + 8-commodity profile, Phase 6 butterfly consumer) + Thailand (sugar producer #3) for 34 total countries; introduced regime_flags taxonomy (sub_consumer_floor flag on India + Cuba sugar) — CAVE phase 2 foundation. -->
@@ -82,6 +82,8 @@
             --role-mediator: #a78bfa;
             --role-historic: #eab308;
             --role-component: #2dd4bf;
+            --role-pricing: #f472b6;
+            --role-processor: #fbbf24;
             --role-none: #1e3a5f;
 
             /* Shadows */
@@ -1060,6 +1062,8 @@
         .exposure-cell.role-mediator { background: rgba(167,139,250,0.18); color: var(--role-mediator); border: 1px solid var(--role-mediator); }
         .exposure-cell.role-historic { background: rgba(234,179,8,0.18); color: var(--role-historic); border: 1px solid var(--role-historic); }
         .exposure-cell.role-component { background: rgba(45,212,191,0.18); color: var(--role-component); border: 1px solid var(--role-component); }
+        .exposure-cell.role-pricing { background: rgba(244,114,182,0.16); color: var(--role-pricing); border: 1px solid var(--role-pricing); }
+        .exposure-cell.role-processor { background: rgba(251,191,36,0.16); color: var(--role-processor); border: 1px solid var(--role-processor); }
         .exposure-cell.role-none { background: var(--bg-signal); color: var(--text-muted); }
         /* Multi-role cell — country has multiple roles for the same commodity (e.g. China wheat producer + consumer) */
         .exposure-cell.multi-role { background: linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(249,115,22,0.18) 100%); color: var(--text-primary); border: 1px solid var(--accent-cyan); position: relative; }
@@ -2189,7 +2193,19 @@ const COUNTRY_META = {
     ukraine:      { flag: '🇺🇦', name: 'Ukraine' },
     usa:          { flag: '🇺🇸', name: 'United States' },
     venezuela:    { flag: '🇻🇪', name: 'Venezuela' },
-    vietnam:      { flag: '🇻🇳', name: 'Vietnam' }
+    vietnam:      { flag: '🇻🇳', name: 'Vietnam' },
+    // Nov 15 2026 -- five WHA rows the backend already had but the page never
+    // showed, plus the matrix-refresh additions.
+    bolivia:      { flag: '🇧🇴', name: 'Bolivia' },
+    colombia:     { flag: '🇨🇴', name: 'Colombia' },
+    ecuador:      { flag: '🇪🇨', name: 'Ecuador' },
+    guyana:       { flag: '🇬🇾', name: 'Guyana' },
+    paraguay:     { flag: '🇵🇾', name: 'Paraguay' },
+    honduras:     { flag: '🇭🇳', name: 'Honduras' },
+    romania:      { flag: '🇷🇴', name: 'Romania' },
+    yemen:        { flag: '🇾🇪', name: 'Yemen' },
+    singapore:    { flag: '🇸🇬', name: 'Singapore' },
+    zambia:       { flag: '🇿🇲', name: 'Zambia' }
 };
 
 // Frontend regional grouping (frontend-authoritative; no backend
@@ -2201,11 +2217,11 @@ const COUNTRY_META = {
 // separately for its uniquely national nuclear/uranium exposure.
 // Order = Africa → Asia-Pacific → Europe → Middle East → Western Hemisphere
 const REGION_DEFAULTS = {
-    africa:       { name: 'Africa',              icon: '🌍', order: 1, countries: ['algeria', 'angola', 'botswana', 'burkina_faso', 'car', 'drc', 'egypt', 'guinea', 'libya', 'madagascar', 'mali', 'morocco', 'mozambique', 'niger', 'nigeria', 'south_africa', 'sudan'] },
-    asia_pacific: { name: 'Asia-Pacific',        icon: '🌏', order: 2, countries: ['afghanistan', 'australia', 'china', 'india', 'indonesia', 'japan', 'malaysia', 'philippines', 'south_korea', 'taiwan', 'thailand', 'vietnam'] },
-    europe:       { name: 'Europe',              icon: '🌍', order: 3, countries: ['azerbaijan', 'belarus', 'belgium', 'eu', 'france', 'germany', 'greece', 'greenland', 'hungary', 'kazakhstan', 'netherlands', 'norway', 'poland', 'russia', 'turkey', 'turkmenistan', 'uk', 'ukraine'] },
-    middle_east:  { name: 'Middle East',         icon: '🕌', order: 4, countries: ['iran', 'israel', 'jordan', 'lebanon', 'qatar', 'saudi_arabia', 'syria', 'uae'] },
-    wha:          { name: 'Western Hemisphere',  icon: '🌎', order: 5, countries: ['argentina', 'brazil', 'canada', 'chile', 'cuba', 'mexico', 'panama', 'peru', 'usa', 'venezuela'] },
+    africa:       { name: 'Africa',              icon: '🌍', order: 1, countries: ['algeria', 'angola', 'botswana', 'burkina_faso', 'car', 'drc', 'egypt', 'guinea', 'libya', 'madagascar', 'mali', 'morocco', 'mozambique', 'niger', 'nigeria', 'south_africa', 'sudan', 'zambia'] },
+    asia_pacific: { name: 'Asia-Pacific',        icon: '🌏', order: 2, countries: ['afghanistan', 'australia', 'china', 'india', 'indonesia', 'japan', 'malaysia', 'philippines', 'singapore', 'south_korea', 'taiwan', 'thailand', 'vietnam'] },
+    europe:       { name: 'Europe',              icon: '🌍', order: 3, countries: ['azerbaijan', 'belarus', 'belgium', 'eu', 'france', 'germany', 'greece', 'greenland', 'hungary', 'kazakhstan', 'netherlands', 'norway', 'poland', 'romania', 'russia', 'turkey', 'turkmenistan', 'uk', 'ukraine'] },
+    middle_east:  { name: 'Middle East',         icon: '🕌', order: 4, countries: ['iran', 'israel', 'jordan', 'lebanon', 'qatar', 'saudi_arabia', 'syria', 'uae', 'yemen'] },
+    wha:          { name: 'Western Hemisphere',  icon: '🌎', order: 5, countries: ['argentina', 'bolivia', 'brazil', 'canada', 'chile', 'colombia', 'cuba', 'ecuador', 'guyana', 'honduras', 'mexico', 'panama', 'paraguay', 'peru', 'usa', 'venezuela'] },
 };
 
 // EU bloc tooltip text (shown on hover over the EU country name)
@@ -2216,7 +2232,7 @@ const EU_BLOC_TOOLTIP = "The European Union is tracked as a single bloc-level ac
 const COMMODITY_ORDER = [
     'bauxite', 'chromium', 'coal', 'cobalt', 'coffee', 'copper', 'corn',
     'diamonds', 'fishmeal', 'gold', 'graphite', 'gum_arabic', 'iron_ore', 'lithium', 'manganese', 'natural_gas',
-    'nickel', 'nitrogen', 'oil', 'pgm', 'phosphate', 'potash', 'rare_earths',
+    'nickel', 'nitrogen', 'oil', 'palm_oil', 'pgm', 'phosphate', 'potash', 'rare_earths',
     'rice', 'semiconductors', 'silicon', 'silver', 'soybeans', 'sugar',
     'sulfur', 'sunflower_oil', 'tantalum', 'uranium', 'wheat', 'zinc'
 ];
@@ -2466,6 +2482,8 @@ const CONV_FLAGS = { afghanistan:'🇦🇫', greenland:'🇬🇱', egypt:'🇪�
     canada:'🇨🇦', eu:'🇪🇺', france:'🇫🇷', germany:'🇩🇪', greece:'🇬🇷',
     israel:'🇮🇱', japan:'🇯🇵', malaysia:'🇲🇾', netherlands:'🇳🇱', norway:'🇳🇴',
     panama:'🇵🇦', poland:'🇵🇱', qatar:'🇶🇦', south_korea:'🇰🇷', taiwan:'🇹🇼',
+    bolivia:'🇧🇴', colombia:'🇨🇴', ecuador:'🇪🇨', guyana:'🇬🇾', paraguay:'🇵🇾', honduras:'🇭🇳',
+    romania:'🇷🇴', yemen:'🇾🇪', singapore:'🇸🇬', zambia:'🇿🇲',
     turkmenistan:'🇹🇲', uae:'🇦🇪', usa:'🇺🇸', uk:'🇬🇧' };
 
 function _convEsc(s){ return (s==null?'':String(s)).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
@@ -3051,14 +3069,19 @@ function renderExposureMatrix() {
                         const rankSuffix = exp.rank ? ` (#${exp.rank} globally)` : '';
                         // Multi-role detection: backend (Edit 1a schema) emits is_multi_role + roles[] when applicable
                         const isMultiRole = exp.is_multi_role === true && Array.isArray(exp.roles) && exp.roles.length > 1;
+                        // Nov 15 2026: one letter code per role, so a multi-role cell says WHICH
+                        // roles (C/T for Egypt wheat, T/Ph for Singapore oil) instead of always "P/C".
+                        const ROLE_CODE = { producer: 'P', consumer: 'C', transit: 'T', sanctions_target: 'S', mediator: 'M',
+                                            historic_reversal: 'H', component_producer: 'Cp', pricing_hub: 'Ph', processor: 'Pr', importer: 'C' };
+                        const ROLE_NAME = r => (r || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
                         let noteAttr;
                         if (isMultiRole) {
+                            // every role's own note, not only the first one
                             const roleParts = exp.roles.map(r => {
-                                const rn = (r.role || '').charAt(0).toUpperCase() + (r.role || '').slice(1);
                                 const rk = r.rank ? ` #${r.rank}` : '';
-                                return `${rn}${rk}`;
+                                return `${ROLE_NAME(r.role)}${rk}${r.note ? ': ' + r.note : ''}`;
                             });
-                            noteAttr = `Multi-role: ${roleParts.join(' + ')}${exp.note ? ' — ' + exp.note : ''}`;
+                            noteAttr = `Multi-role — ${roleParts.join(' | ')}`;
                         } else {
                             noteAttr = `${roleLabel}${rankSuffix}${exp.note ? ' — ' + exp.note : ''}`;
                         }
@@ -3068,15 +3091,14 @@ function renderExposureMatrix() {
                         // rather than the nested roles[] array.
                         const cellClass = isMultiRole || role === 'producer_consumer'
                             ? 'exposure-cell multi-role'
-                            : (['producer','component_producer','consumer','transit','sanctions_target','mediator','historic_reversal'].includes(role)
-                                ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions').replace('historic_reversal', 'historic').replace('component_producer', 'component')}`
+                            : (['producer','component_producer','consumer','transit','sanctions_target','mediator','historic_reversal','pricing_hub','processor','importer'].includes(role)
+                                ? `exposure-cell role-${role.replace('sanctions_target', 'sanctions').replace('historic_reversal', 'historic').replace('component_producer', 'component').replace('pricing_hub', 'pricing').replace('importer', 'consumer')}`
                                 : 'exposure-cell role-none');
                         // v1.4.1: Historic Reversal renders as 'H' (yellow).
                         // v1.4.2: producer_consumer string form renders as 'P/C' matching nested multi-role.
-                        const initial = (isMultiRole || role === 'producer_consumer')
-                            ? 'P/C'
-                            : (role === 'historic_reversal' ? 'H'
-                                : (role === 'component_producer' ? 'Cp' : roleLabel.charAt(0)));
+                        const initial = isMultiRole
+                            ? exp.roles.map(r => ROLE_CODE[r.role] || (r.role || '?').charAt(0).toUpperCase()).join('/')
+                            : (role === 'producer_consumer' ? 'P/C' : (ROLE_CODE[role] || roleLabel.charAt(0)));
                         const rankBadge = exp.rank ? `<span class="exposure-rank">#${exp.rank}</span>` : '';
                         inner += `<td><span class="${cellClass}" title="${escapeHtml(noteAttr)}">${initial}</span>${rankBadge ? '<br>' + rankBadge : ''}</td>`;
                     }
@@ -3132,7 +3154,9 @@ function renderExposureMatrix() {
         <div class="legend-item"><span class="legend-dot" style="background:rgba(167,139,250,0.6)"></span> M · Mediator</div>
         <div class="legend-item"><span class="legend-dot" style="background:rgba(234,179,8,0.6)"></span> H · Historic Reversal</div>
         <div class="legend-item"><span class="legend-dot" style="background:rgba(45,212,191,0.6)"></span> Cp · Component / Assembly Producer</div>
-        <div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg, rgba(16,185,129,0.6) 0%, rgba(249,115,22,0.6) 100%)"></span> P/C · Multi-role (producer + consumer)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(244,114,182,0.6)"></span> Ph · Pricing Hub</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(251,191,36,0.6)"></span> Pr · Processor / Refiner</div>
+        <div class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg, rgba(16,185,129,0.6) 0%, rgba(249,115,22,0.6) 100%)"></span> P/C, C/T… · Multi-role (each letter is one role)</div>
         <div class="legend-item"><span class="legend-dot" style="background:#1e3a5f"></span> · No Mapped Exposure</div>
     </div>`;
 
