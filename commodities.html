@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Global Cross-Cutting Commodities Tracker v1.5.1 - Nov 4, 2026: London Desk (Lloyd's, LME, shadow fleet), UK in the exposure matrix, footer rebuilt to the shell look -->
+<!-- Asifah Analytics - Global Cross-Cutting Commodities Tracker v1.5.2 - Nov 15, 2026: talked-about-vs-moving chart + section chips (resources/commodity-glance.js) | v1.5.1 Nov 4, 2026: London Desk (Lloyd's, LME, shadow fleet), UK in the exposure matrix, footer rebuilt to the shell look -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- v1.5.0 (May 23, 2026): PHASE 1A AFRICA + CRITICAL MINERALS LAUNCH. Added 6 new commodities (PGM, chromium, manganese, phosphate, diamonds, bauxite) for 22 total. Added 8 new countries (Angola, Belgium, Botswana, Guinea, Jordan, Morocco, Nigeria, South Africa) for 44 total. Africa region populated (was 2, now 8 countries). Canonical Gold Standard v1.2 sidebar retrofit (Dashboards → Cross-Cutting Tools → Regional Rhetoric, hamburger drawer for mobile, ESC handler). Header subtitle + status strip counts updated. -->
 <!-- v1.4.0 (May 17, 2026): Sugar Full Retrofit — added Sugar as 16th commodity (NY11 futures); added Cuba (historic_reversal sugar role + 8-commodity profile, Phase 6 butterfly consumer) + Thailand (sugar producer #3) for 34 total countries; introduced regime_flags taxonomy (sub_consumer_floor flag on India + Cuba sugar) — CAVE phase 2 foundation. -->
@@ -1757,6 +1757,8 @@
 <!-- Nov 3 2026: plain-language read + "what this means" (ME /api/tracker-voice) -->
 <script src="resources/asifah-tracker-voice.js" data-desk="commodities" data-anchor="caExecBlock" defer></script>
 <script src="resources/prediction-markets.js" defer></script>
+<!-- Nov 15 2026: "talked about vs actually moving" chart + section chips -->
+<script src="resources/commodity-glance.js" defer></script>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
@@ -2349,6 +2351,8 @@ function renderEverything() {
     renderNewsFilters();
     renderNewsList();
     maybeShowPendingBanner();
+    // Nov 15 2026: At-a-glance chart + section chips (resources/commodity-glance.js)
+    if (window.AsifahCommodityGlance) window.AsifahCommodityGlance.render(pricesData, pressureData);
 }
 
 // ════════════════════════════════════════════════════════════════
