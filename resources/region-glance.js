@@ -1,5 +1,10 @@
 /*
- * Asifah Analytics -- REGION GLANCE  v1.2.1  (Nov 11 2026)
+ * Asifah Analytics -- REGION GLANCE  v1.2.2  (Nov 15 2026)
+ *
+ * v1.2.2 -- a card with no tracker of its own now SAYS when it is borrowing the
+ *   global read: striped chip "From the global read · L3 · Confrontation" and
+ *   the global line that put it there. Before, the map was striped but the
+ *   card said only "No pressure tracker yet" -- two answers to one question.
  *
  * v1.2.1 -- the one-line reads say something:
  *   * A line that only repeats the level ("Paraguay reads level 4 this
@@ -344,6 +349,37 @@
     });
   }
 
+  // v1.2.2 -- second pass once the GPI arrives: a tracker-less card that the
+  // global read covers says so, in the same striped look as the map.
+  function globWord(g) {
+    var meta = LEVEL[Math.min(6, g.level)] || LEVEL[0];
+    var top = Object.keys(g.axes || {}).filter(function (a) { return g.axes[a] === g.level; })[0] || '';
+    return (!top || top === 'kinetic') ? meta[0] : top.charAt(0).toUpperCase() + top.slice(1);
+  }
+  function cardFacesGlobal(cfg, bluf, gpi) {
+    var G = window.AsifahGeo;
+    if (!gpi || !G) return;
+    var ts = (bluf && bluf.theatre_summary) || {};
+    var glob = G.countryLevels(gpi, 'all') || {};
+    cfg.countries.forEach(function (c) {
+      if (lvlOf(ts[c[1]]) != null) return;              // has its own regional level
+      var g = glob[c[0]];
+      if (!g || !(g.level >= 0)) return;
+      var card = document.getElementById(c[2]);
+      var face = card && card.querySelector('.asf-face');
+      if (!face) return;
+      var lv = Math.min(6, g.level), meta = LEVEL[lv] || LEVEL[0];
+      // name the axis that set the level: an Ebola L5 is "L5 · Humanitarian",
+      // not "Active Conflict" -- the ladder word is only honest for kinetic.
+      var word = globWord(g);
+      var txt = (g.texts && g.texts[0]) ? String(g.texts[0]) : '';
+      face.innerHTML = '<span class="asf-face-chip" style="background:repeating-linear-gradient(-45deg,' + meta[1] +
+        ' 0 6px,rgba(0,0,0,0.25) 6px 12px)">From the global read · L' + g.level + ' · ' + esc(word) + '</span>' +
+        (txt ? '<span class="asf-face-line">' + esc(txt.length > 200 ? txt.slice(0, 197) + '...' : txt) + '</span>' : '') +
+        '<span class="asf-face-line" style="font-style:normal;opacity:0.7">No regional tracker yet: this is the worldwide read, not a regional one.</span>';
+    });
+  }
+
   // ── Inside an opened card: So What first, then the threat picture, then
   //    advisory and headlines, then sources, weather and the scan button. ──
   // Nov 6 2026: ONE card order on all five regional pages (the ME order Rachel
@@ -564,7 +600,7 @@
       var id = +p.getAttribute('data-g'), g = glob[id], subj = g.level >= 0, l = subj ? g.level : g.named;
       function show(ev) {
         var r = el.getBoundingClientRect(), m = LEVEL[Math.min(6, l)] || LEVEL[0];
-        tip.innerHTML = '<b>' + esc(G.nameOf(id)) + '</b>No card here yet \u00B7 from the global read: L' + l + ' \u00B7 ' + esc(m[0]) +
+        tip.innerHTML = '<b>' + esc(G.nameOf(id)) + '</b>No card here yet \u00B7 from the global read: L' + l + ' \u00B7 ' + esc(subj ? globWord(g) : m[0]) +
           (subj ? '' : ' (named in a signal, not its subject)') +
           (g.texts.length ? '<br>' + g.texts.map(esc).join('<br>') : '') + '<br><i>Full picture: Global Pressure Index</i>';
         tip.style.display = 'block';
@@ -582,7 +618,7 @@
       p.addEventListener('mousemove', function (ev) {
         var r = el.getBoundingClientRect();
         var gc = l == null && glob[c[0]] && glob[c[0]].level >= 0 ? glob[c[0]] : null;
-        var line = gc ? ('No regional tracker yet \u00B7 from the global read: L' + gc.level + ' \u00B7 ' + esc((LEVEL[Math.min(6, gc.level)] || LEVEL[0])[0]) +
+        var line = gc ? ('No regional tracker yet \u00B7 from the global read: L' + gc.level + ' \u00B7 ' + esc(globWord(gc)) +
             (gc.texts.length ? '<br>' + gc.texts.map(esc).join('<br>') : ''))
           : l == null ? 'No pressure tracker yet: unread, not calm. The card still carries its strike-window score.'
           : ('L' + l + ' · ' + (rec.label || '') + (oneLiner(k, bluf, rec) ? '<br>' + esc(oneLiner(k, bluf, rec)) : ''));
@@ -674,6 +710,7 @@
           return;
         }
         var lost = placeCards(cfg);
+        try { cardFacesGlobal(cfg, res[0], res[2] && res[2].success !== false ? res[2] : null); } catch (e) {}
         drawMap(mapEl, cfg, res[0], res[1], res[2] && res[2].success !== false ? res[2] : null, lost, key);
       })
       .catch(function () {
