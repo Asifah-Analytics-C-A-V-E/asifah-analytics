@@ -1,4 +1,10 @@
-/* Asifah Analytics -- COMMODITY GLANCE  v1.1.0  (Nov 15 2026)
+/* Asifah Analytics -- COMMODITY GLANCE  v1.2.0  (Nov 15 2026)
+ *
+ * v1.2.0 -- PROXY HONESTY. Six commodities have no public price, so their line
+ *   is a company's shares or a fund (silicon = Ferroglobe's shares). Those dots
+ *   are drawn HOLLOW, kept out of the corner lists and the broad-move count,
+ *   tagged "proxy" in the movers list, and named in their own line -- a 22.7%
+ *   'silicon' fall was one company's bad quarter while silicon metal rose.
  *
  * v1.1.0 -- no empty half-screen: the chart sits LEFT, and the At a glance tiles
  *   plus a "Biggest 30-day moves" list stack in a column to its RIGHT. Labels
@@ -39,6 +45,10 @@
   var BAND_COL = ['#64748b', '#f59e0b', '#f97316', '#ef4444'];
   var LOUD_AT = 2;                          // high or surge = "loud"
   var last = null;
+  // used only until the backend sends commodity_meta.price_proxy (B56)
+  var PROXY_FALLBACK = { silicon: "Ferroglobe's shares", rare_earths: "MP Materials' shares",
+                         semiconductors: "TSMC's shares", lithium: 'a lithium-miner fund',
+                         cobalt: 'a battery-metals fund', uranium: 'a uranium-miner fund' };
   var SHORTN = { pgm: 'PGMs', rare_earths: 'Rare earths', natural_gas: 'Gas', sunflower_oil: 'Sunflower oil',
                  semiconductors: 'Chips', iron_ore: 'Iron ore', gum_arabic: 'Gum arabic' };
 
@@ -65,6 +75,7 @@
       '.cg-mv-v{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}' +
       '.cg-mv-b{font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;text-align:right}' +
       '.cg-mv-foot{font-size:0.7rem;opacity:0.65;margin-top:4px}' +
+      '.cg-px{font-style:normal;font-size:0.6rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;border:1px dashed currentColor;border-radius:4px;padding:0 4px;opacity:0.75;margin-left:4px}' +
       '.cg-h{font-weight:800;font-size:0.92rem;margin-bottom:2px}' +
       '.cg-sub{font-size:0.74rem;opacity:0.75;margin-bottom:6px}' +
       '.cg-box svg{width:100%;height:auto;display:block;overflow:visible}' +
@@ -105,7 +116,7 @@
       if (SHORTN[cid]) name = SHORTN[cid];
       var hasPrice = m.has_spot_price !== false && sp && typeof sp.change_pct_30d === 'number';
       var rec = { cid: cid, name: name, icon: m.icon || '', band: band, score: +s.total_score || 0,
-                  chg: hasPrice ? sp.change_pct_30d : null };
+                  chg: hasPrice ? sp.change_pct_30d : null, proxy: m.price_proxy || PROXY_FALLBACK[cid] || '' };
       if (hasPrice) pts.push(rec); else if (band >= 1) noPrice.push(rec);
     });
     return { pts: pts, noPrice: noPrice };
@@ -179,8 +190,10 @@
     });
     dots.slice().sort(function (a, b) { return a.p.band - b.p.band; }).forEach(function (o) {
       s += '<circle class="cg-dot" data-cid="' + esc(o.p.cid) + '" cx="' + o.cx.toFixed(1) + '" cy="' + o.cy.toFixed(1) + '" r="' + o.r +
-           '" fill="' + BAND_COL[o.p.band] + '" fill-opacity="0.85" stroke="' + (o.c === 'quiet' ? '#a855f7' : '#0d1b2e') +
-           '" stroke-width="' + (o.c === 'quiet' ? 2 : 1) + '"/>';
+           (o.p.proxy
+             ? '" fill="' + BAND_COL[o.p.band] + '" fill-opacity="0.08" stroke="' + BAND_COL[o.p.band] + '" stroke-width="2" stroke-dasharray="2 2"/>'
+             : '" fill="' + BAND_COL[o.p.band] + '" fill-opacity="0.85" stroke="' + (o.c === 'quiet' ? '#a855f7' : '#0d1b2e') +
+               '" stroke-width="' + (o.c === 'quiet' ? 2 : 1) + '"/>');
     });
     // labels: the most telling first (loud, then biggest move); each tries
     // right, left, above, below -- and is left to the tooltip if all are taken
@@ -203,8 +216,9 @@
   }
 
   function breadth(d) {
-    var n = d.pts.length, dn = d.pts.filter(function (p) { return p.chg <= -1; }).length,
-        up = d.pts.filter(function (p) { return p.chg >= 1; }).length;
+    var real = d.pts.filter(function (p) { return !p.proxy; });
+    var n = real.length, dn = real.filter(function (p) { return p.chg <= -1; }).length,
+        up = real.filter(function (p) { return p.chg >= 1; }).length;
     if (n >= 8 && dn / n >= 0.7) return '<b>Broadly down:</b> ' + dn + ' of ' + n + ' priced commodities fell over 30 days. When nearly everything falls together, the driver is usually demand, the dollar or a risk-off market \u2014 not one supply story.';
     if (n >= 8 && up / n >= 0.7) return '<b>Broadly up:</b> ' + up + ' of ' + n + ' priced commodities rose over 30 days. A move this wide points to a common driver (demand, the dollar, energy costs) rather than one supply story.';
     return '';
@@ -219,11 +233,12 @@
     el.id = 'cgMovers';
     el.innerHTML = '<div class="cg-mv-h">Biggest 30-day moves</div>' + top.map(function (p) {
       var w = Math.max(4, Math.round(Math.abs(p.chg) / max * 100)), up = p.chg >= 0;
-      return '<button type="button" class="cg-mv" data-cid="' + esc(p.cid) + '"><span class="cg-mv-n">' + esc(p.icon + ' ' + p.name) + '</span>' +
+      return '<button type="button" class="cg-mv" data-cid="' + esc(p.cid) + '"' + (p.proxy ? ' title="Measured through ' + esc(p.proxy) + ', not the commodity price"' : '') +
+        '><span class="cg-mv-n">' + esc(p.icon + ' ' + p.name) + (p.proxy ? ' <i class="cg-px">proxy</i>' : '') + '</span>' +
         '<span class="cg-mv-bar"><i style="width:' + w + '%;background:' + (up ? '#10b981' : '#ef4444') + '"></i></span>' +
         '<span class="cg-mv-v" style="color:' + (up ? '#10b981' : '#ef4444') + '">' + (up ? '+' : '') + p.chg.toFixed(1) + '%</span>' +
         '<span class="cg-mv-b" style="color:' + BAND_COL[p.band] + '">' + BAND_WORD[p.band] + '</span></button>';
-    }).join('') + '<div class="cg-mv-foot">Bar = size of the move. Last word = how loudly it is being reported. Tap for the card.</div>';
+    }).join('') + '<div class="cg-mv-foot">Bar = size of the move. Last word = how loudly it is being reported. "proxy" = a company\'s shares or a fund, not the commodity price. Tap for the card.</div>';
     Array.prototype.forEach.call(el.querySelectorAll('.cg-mv'), function (b) {
       b.addEventListener('click', function () { openCard(b.getAttribute('data-cid')); });
     });
@@ -232,10 +247,16 @@
 
   function read(d) {
     var g = { agree: [], flat: [], quiet: [], calm: [] };
-    d.pts.forEach(function (p) { g[corner(p)].push(p); });
+    var px = [];
+    d.pts.forEach(function (p) { if (p.proxy) px.push(p); else g[corner(p)].push(p); });
     var bits = [];
     var br = breadth(d);
     if (br) bits.push(br);
+    var pxBig = px.filter(function (p) { return Math.abs(p.chg) >= MOVING_PCT; })
+      .sort(function (a, b) { return Math.abs(b.chg) - Math.abs(a.chg); });
+    if (pxBig.length) bits.push('<b>Measured through a stock or fund</b> (hollow dots): ' + esc(pxBig.map(function (p) {
+      return p.name + ' ' + (p.chg >= 0 ? '+' : '') + p.chg.toFixed(1) + '% (' + p.proxy + ')'; }).join(', ')) +
+      ' \u2014 these lines can move on one company\'s results, not the commodity.');
     if (g.quiet.length) bits.push('<b>Moving quietly:</b> ' + esc(list(g.quiet)) + ' \u2014 the price moved further than the reporting explains.');
     if (g.agree.length) bits.push('<b>News and price agree:</b> ' + esc(list(g.agree)) + '.');
     if (g.flat.length) bits.push('<b>Talked about, not priced:</b> ' + esc(list(g.flat)) + ' \u2014 heavy reporting, price within ' + MOVING_PCT + '%.');
@@ -262,7 +283,8 @@
       var p = byCid[dot.getAttribute('data-cid')];
       dot.addEventListener('mousemove', function (ev) {
         tip.innerHTML = '<b>' + esc(p.icon + ' ' + p.name) + '</b><br>Reporting: ' + BAND_WORD[p.band] +
-          '<br>30-day price: ' + (p.chg >= 0 ? '+' : '') + p.chg.toFixed(1) + '%';
+          '<br>30-day ' + (p.proxy ? 'line' : 'price') + ': ' + (p.chg >= 0 ? '+' : '') + p.chg.toFixed(1) + '%' +
+          (p.proxy ? '<br><i>Measured through ' + esc(p.proxy) + ', not the commodity price</i>' : '');
         tip.style.display = 'block';
         tip.style.left = Math.min(ev.clientX + 12, window.innerWidth - 270) + 'px';
         tip.style.top = (ev.clientY + 12) + 'px';
@@ -329,6 +351,11 @@
       var inGrid = place(box(d));
       if (!inGrid) waitForGrid();
       chips();
+      // The shell places the "How to read levels" rail ONCE, before this page's
+      // data arrives; the chip bar and chart change the column after that. A
+      // resize event makes the shell measure again, so the rail sits beside the
+      // content instead of on top of it.
+      setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 50);
     } catch (e) { console.warn('[Commodity glance]', e); }
   }
 
