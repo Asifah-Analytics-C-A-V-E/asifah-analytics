@@ -192,6 +192,25 @@
     .section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #38bdf8; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
 
     /* ── THREE-QUESTION FRAME CARD ── */
+    /* ── BLUF (Nov 15 2026) ── */
+    .om-bluf { border-radius: 12px; padding: 18px 22px; margin-bottom: 16px; border: 2px solid rgba(56,189,248,0.35);
+        background: linear-gradient(135deg, rgba(56,189,248,0.07), rgba(14,165,233,0.02)); }
+    .om-bluf-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .om-bluf-tag { font-family: 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 2px; font-weight: 800; color: #38bdf8; }
+    .om-bluf-pill { font-size: 0.68rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: #6b7280; color: #fff; }
+    .om-bluf-lead { font-size: 1.12rem; line-height: 1.5; font-weight: 700; margin-bottom: 12px; }
+    .om-bluf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    @media (max-width: 760px) { .om-bluf-grid { grid-template-columns: 1fr; } }
+    .om-bluf-row { border: 1px solid var(--border-color, rgba(56,189,248,0.2)); border-left-width: 4px; border-radius: 8px; padding: 9px 12px; cursor: pointer; background: rgba(0,0,0,0.08); }
+    .om-bluf-row:hover { border-color: #38bdf8; }
+    .om-bluf-row-h { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-weight: 800; font-size: 0.9rem; }
+    .om-bluf-chip { font-size: 0.66rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; color: #fff; white-space: nowrap; }
+    .om-bluf-row-t { font-size: 0.84rem; line-height: 1.45; margin-top: 4px; opacity: 0.9; }
+    .om-bluf-row-t a { color: inherit; }
+    .om-bluf-foot { font-size: 0.74rem; opacity: 0.65; margin-top: 10px; }
+    .frame-fold { margin-bottom: 18px; }
+    .frame-fold > summary { cursor: pointer; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted, #94a3b8); padding: 6px 2px; }
+    .frame-fold[open] > summary { margin-bottom: 8px; }
     .frame-card {
         background: linear-gradient(135deg, rgba(14,165,233,0.06), rgba(56,189,248,0.03));
         border: 1px solid rgba(56,189,248,0.25);
@@ -520,23 +539,57 @@
 <!-- MAIN CONTENT -->
 <div style="flex:1;min-width:0;">
 
-<!-- DUAL-AXIS ANALYTICAL FRAME -->
-<div class="frame-card">
-    <div class="frame-title">⚖️ <span data-i18n="frameTitle">Dual-Axis Stability Anchor Frame</span></div>
-    <div class="frame-questions">
-        <div class="frame-question">
-            <div class="frame-q-num" data-i18n="frameQ1Num">⚠️ THREAT VECTOR</div>
-            <div class="frame-q-text" data-i18n="frameQ1">Is Oman facing destabilization? Sultan health, succession architecture, Iran/Houthi targeting of Salalah/Duqm, Yemen border, Baloch spillover.</div>
-        </div>
-        <div class="frame-question">
-            <div class="frame-q-num" data-i18n="frameQ2Num">🕊️ INFLUENCE VECTOR</div>
-            <div class="frame-q-text" data-i18n="frameQ2">Is Oman exercising soft power? Iran-US back-channel, Yemen mediation, Hamas indirect contacts, GCC convening, hosted summits.</div>
-        </div>
-        <div class="frame-question">
-            <div class="frame-q-num" data-i18n="frameQ3Num">🔗 CROSS-THEATER</div>
-            <div class="frame-q-text" data-i18n="frameQ3">How do Iran, Yemen, and Pakistan signals affect Oman? Salalah targeting fingerprints, Dhofar refugee pressure, Baloch Liberation Army spillover.</div>
+<!-- BLUF (Nov 15 2026): the answer first -- what is happening to Oman now,
+     then the four things to watch, each with its sharpest headline. -->
+<div class="om-bluf" id="omBluf">
+    <div class="om-bluf-head">
+        <span class="om-bluf-tag">BLUF</span>
+        <span class="om-bluf-pill" id="omBlufPill">Loading</span>
+    </div>
+    <div class="om-bluf-lead" id="omBlufLead">Loading the Oman read…</div>
+    <div class="om-bluf-grid" id="omBlufGrid"></div>
+    <div class="om-bluf-foot" id="omBlufFoot"></div>
+</div>
+
+<!-- SO WHAT CARD (STRATEGIC ASSESSMENT) -->
+<div class="interp-so-what" id="soWhatCard" style="display:none;">
+    <div class="interp-scenario-header">
+        <span class="interp-scenario-icon" id="soWhatIcon">⚪</span>
+        <div>
+            <div class="interp-scenario-label" data-i18n="soWhatLabel">OMAN STRATEGIC ASSESSMENT</div>
+            <div class="interp-scenario-value" id="soWhatScenario">--</div>
         </div>
     </div>
+    <div class="interp-section-title" data-i18n="situationLabel">SITUATION</div>
+    <div class="interp-text" id="soWhatSituation"></div>
+    <div id="soWhatIndicators"></div>
+    <div class="interp-section-title" style="margin-top:14px;" data-i18n="assessmentLabel">ASSESSMENT</div>
+    <div class="interp-text" id="soWhatAssessment"></div>
+    <div class="interp-section-title" style="margin-top:14px;" data-i18n="watchLabel">WATCH FOR</div>
+    <div id="soWhatWatchList"></div>
+    <div class="interp-confidence-note" id="soWhatNote"></div>
+</div>
+
+<!-- RED LINES CARD (paired with Strategic Assessment) -->
+<div class="red-lines-card" id="redLinesCard" style="display:none;">
+    <div class="interp-card-header">
+        <span style="font-size:1rem;">🚨</span>
+        <div style="flex:1;">
+            <div class="interp-card-title" data-i18n="redLinesTitle">RED LINE PROXIMITY</div>
+            <div class="interp-card-subtitle" data-i18n="redLinesSubtitle">Oman Stability Triggers — Succession · External Threat · Security · Mediation</div>
+        </div>
+        <div style="display:flex;gap:16px;">
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#dc2626;" id="redLineBreachedCount">0</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="breachedLabel">BREACHED</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:1.4rem;font-weight:900;color:#f97316;" id="redLineApproachingCount">0</div>
+                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="approachingLabel">APPROACHING</div>
+            </div>
+        </div>
+    </div>
+    <div id="redLineItems"></div>
 </div>
 
 <!-- THEATRE BANNER (DUAL-AXIS — scoring) -->
@@ -589,46 +642,27 @@
     </div>
 </div>
 
-<!-- SO WHAT CARD (STRATEGIC ASSESSMENT) -->
-<div class="interp-so-what" id="soWhatCard" style="display:none;">
-    <div class="interp-scenario-header">
-        <span class="interp-scenario-icon" id="soWhatIcon">⚪</span>
-        <div>
-            <div class="interp-scenario-label" data-i18n="soWhatLabel">OMAN STRATEGIC ASSESSMENT</div>
-            <div class="interp-scenario-value" id="soWhatScenario">--</div>
+<!-- DUAL-AXIS ANALYTICAL FRAME -->
+<details class="frame-fold">
+<summary>How this page reads Oman: the dual-axis frame</summary>
+<div class="frame-card">
+    <div class="frame-title">⚖️ <span data-i18n="frameTitle">Dual-Axis Stability Anchor Frame</span></div>
+    <div class="frame-questions">
+        <div class="frame-question">
+            <div class="frame-q-num" data-i18n="frameQ1Num">⚠️ THREAT VECTOR</div>
+            <div class="frame-q-text" data-i18n="frameQ1">Is Oman facing destabilization? Sultan health, succession architecture, Iran/Houthi targeting of Salalah/Duqm, Yemen border, Baloch spillover.</div>
+        </div>
+        <div class="frame-question">
+            <div class="frame-q-num" data-i18n="frameQ2Num">🕊️ INFLUENCE VECTOR</div>
+            <div class="frame-q-text" data-i18n="frameQ2">Is Oman exercising soft power? Iran-US back-channel, Yemen mediation, Hamas indirect contacts, GCC convening, hosted summits.</div>
+        </div>
+        <div class="frame-question">
+            <div class="frame-q-num" data-i18n="frameQ3Num">🔗 CROSS-THEATER</div>
+            <div class="frame-q-text" data-i18n="frameQ3">How do Iran, Yemen, and Pakistan signals affect Oman? Salalah targeting fingerprints, Dhofar refugee pressure, Baloch Liberation Army spillover.</div>
         </div>
     </div>
-    <div class="interp-section-title" data-i18n="situationLabel">SITUATION</div>
-    <div class="interp-text" id="soWhatSituation"></div>
-    <div id="soWhatIndicators"></div>
-    <div class="interp-section-title" style="margin-top:14px;" data-i18n="assessmentLabel">ASSESSMENT</div>
-    <div class="interp-text" id="soWhatAssessment"></div>
-    <div class="interp-section-title" style="margin-top:14px;" data-i18n="watchLabel">WATCH FOR</div>
-    <div id="soWhatWatchList"></div>
-    <div class="interp-confidence-note" id="soWhatNote"></div>
 </div>
-
-<!-- RED LINES CARD (paired with Strategic Assessment) -->
-<div class="red-lines-card" id="redLinesCard" style="display:none;">
-    <div class="interp-card-header">
-        <span style="font-size:1rem;">🚨</span>
-        <div style="flex:1;">
-            <div class="interp-card-title" data-i18n="redLinesTitle">RED LINE PROXIMITY</div>
-            <div class="interp-card-subtitle" data-i18n="redLinesSubtitle">Oman Stability Triggers — Succession · External Threat · Security · Mediation</div>
-        </div>
-        <div style="display:flex;gap:16px;">
-            <div style="text-align:right;">
-                <div style="font-size:1.4rem;font-weight:900;color:#dc2626;" id="redLineBreachedCount">0</div>
-                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="breachedLabel">BREACHED</div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:1.4rem;font-weight:900;color:#f97316;" id="redLineApproachingCount">0</div>
-                <div style="font-size:0.6rem;color:var(--text-muted);font-family:'Courier New',monospace;" data-i18n="approachingLabel">APPROACHING</div>
-            </div>
-        </div>
-    </div>
-    <div id="redLineItems"></div>
-</div>
+</details>
 
 <!-- SCAN CONTROL BAR (moved down — operational) -->
 <div class="scan-bar">
@@ -1277,7 +1311,8 @@ function renderActors(data) {
         const lv = lvl(level);
 
         // Articles
-        const articles = (a.top_articles || []).slice(0, 5);
+        // Nov 15 2026: sharpest first -- a level-1 mention must not sit above a tripwire
+        const articles = (a.top_articles || []).slice().sort((x, y) => (y.escalation_level || 0) - (x.escalation_level || 0)).slice(0, 5);
         const articlesHTML = articles.map(art => {
             const title = (art.title || '').slice(0, 110);
             const titleTrimmed = art.title && art.title.length > 110 ? title + '…' : title;
@@ -1295,7 +1330,7 @@ function renderActors(data) {
             : '';
 
         return `
-            <div class="actor-card ${panelClass}">
+            <div class="actor-card ${panelClass}" id="actor-${key}">
                 <div class="actor-header">
                     <span class="actor-flag">${a.flag || ''}</span>
                     <div style="flex:1;min-width:0;">
@@ -1322,10 +1357,60 @@ function renderActors(data) {
 }
 
 // ════════════════════════════════════════════════════════
+// RENDER: BLUF (Nov 15 2026) -- answer first, then the four things to watch
+// ════════════════════════════════════════════════════════
+const BLUF_ROWS = [
+    ['hormuz_omani_waters', 'Hormuz & Omani waters'],
+    ['ports_energy', 'Ports, oil & LNG'],
+    ['mediation_activity', 'Muscat channel'],
+    ['external_threats_inbound', 'Threats aimed at Oman'],
+];
+function renderBluf(data) {
+    const actors = data.actors || {};
+    const sw = data.so_what || {};
+    const pill = document.getElementById('omBlufPill');
+    if (pill) {
+        pill.textContent = sw.scenario || data.banner_label || '--';
+        pill.style.background = sw.scenario_color || data.banner_color || '#6b7280';
+    }
+    const lead = document.getElementById('omBlufLead');
+    if (lead) {
+        const sit = String(sw.situation || '').trim();
+        const first = (sit.match(/^.*?[.!?](\s|$)/) || [sit])[0].trim();
+        lead.textContent = first || 'No Oman read is cached yet: unread, not calm.';
+    }
+    const grid = document.getElementById('omBlufGrid');
+    if (!grid) return;
+    grid.innerHTML = BLUF_ROWS.map(([key, label]) => {
+        const a = actors[key] || {};
+        const level = a.escalation_level || 0;
+        const lv = lvl(level);
+        const best = (a.top_articles || []).slice().sort((x, y) => (y.escalation_level || 0) - (x.escalation_level || 0))[0];
+        // a real headline first; the cross-theater reason underneath it
+        const boost = a.crosstheater_boost ? String(a.crosstheater_boost).replace(/\s*\([a-z_]+ held at L\d\)/, '') : '';
+        let line;
+        if (best && best.title && (best.escalation_level || 0) >= 1) {
+            const t = best.title.length > 120 ? best.title.slice(0, 117) + '…' : best.title;
+            line = best.url ? '<a href="' + best.url + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + t + '</a>' : t;
+            if (boost) line += '<div style="font-size:0.76rem;opacity:0.75;margin-top:3px;">🌐 ' + boost + '</div>';
+        } else if (boost) line = '🌐 ' + boost;
+        else line = (a.statement_count ? 'Background mentions only.' : 'Nothing reached the scanners this cycle: unread, not calm.');
+        const ev = a.evidence === 'single_source' ? ' <span style="opacity:0.7;font-size:0.75rem;">(one outlet so far)</span>' : '';
+        return '<div class="om-bluf-row" style="border-left-color:' + lv.color + '" onclick="var el=document.getElementById(\'actor-' + key + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});">' +
+            '<div class="om-bluf-row-h"><span>' + (a.icon ? a.icon + ' ' : '') + label + '</span>' +
+            '<span class="om-bluf-chip" style="background:' + lv.color + '">L' + level + ' ' + lv.label + '</span></div>' +
+            '<div class="om-bluf-row-t">' + line + ev + '</div></div>';
+    }).join('');
+    const foot = document.getElementById('omBlufFoot');
+    if (foot) foot.textContent = 'Tap a box for its evidence. The Muscat channel reads the other way: busy means diplomacy is working.';
+}
+
+// ════════════════════════════════════════════════════════
 // MAIN: RENDER ALL
 // ════════════════════════════════════════════════════════
 function renderAll(data) {
     window._lastOmanData = data;
+    renderBluf(data);
     renderBanner(data);
     renderSoWhat(data);
     renderRedLines(data);

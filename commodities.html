@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Global Cross-Cutting Commodities Tracker v1.6.0 - Nov 15, 2026: palm oil; Honduras, Romania, Yemen, Singapore, Zambia; 5 hidden WHA rows shown; pricing-hub + processor colours; multi-role initials from the real roles | v1.5.2 Nov 15, 2026: talked-about-vs-moving chart + section chips (resources/commodity-glance.js) | v1.5.1 Nov 4, 2026: London Desk (Lloyd's, LME, shadow fleet), UK in the exposure matrix, footer rebuilt to the shell look -->
+<!-- Asifah Analytics - Global Cross-Cutting Commodities Tracker v1.6.1 - Nov 15, 2026: levels rail no longer sits on the content (--asifah-content-max 1800) | v1.6.0 Nov 15, 2026: palm oil; Honduras, Romania, Yemen, Singapore, Zambia; 5 hidden WHA rows shown; pricing-hub + processor colours; multi-role initials from the real roles | v1.5.2 Nov 15, 2026: talked-about-vs-moving chart + section chips (resources/commodity-glance.js) | v1.5.1 Nov 4, 2026: London Desk (Lloyd's, LME, shadow fleet), UK in the exposure matrix, footer rebuilt to the shell look -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- v1.5.0 (May 23, 2026): PHASE 1A AFRICA + CRITICAL MINERALS LAUNCH. Added 6 new commodities (PGM, chromium, manganese, phosphate, diamonds, bauxite) for 22 total. Added 8 new countries (Angola, Belgium, Botswana, Guinea, Jordan, Morocco, Nigeria, South Africa) for 44 total. Africa region populated (was 2, now 8 countries). Canonical Gold Standard v1.2 sidebar retrofit (Dashboards → Cross-Cutting Tools → Regional Rhetoric, hamburger drawer for mobile, ESC handler). Header subtitle + status strip counts updated. -->
 <!-- v1.4.0 (May 17, 2026): Sugar Full Retrofit — added Sugar as 16th commodity (NY11 futures); added Cuba (historic_reversal sugar role + 8-commodity profile, Phase 6 butterfly consumer) + Thailand (sugar producer #3) for 34 total countries; introduced regime_flags taxonomy (sub_consumer_floor flag on India + Cuba sugar) — CAVE phase 2 foundation. -->
@@ -261,6 +261,12 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Nov 15 2026: this page's content column is 1800px wide, not the shell's
+           default 1280. The right-hand "How to read levels" rail positions itself
+           from --asifah-content-max, so it was sitting ON TOP of the chart and the
+           movers list. Telling the shell the real width puts it back in the margin. */
+        html:root { --asifah-content-max: 1800px; }   /* html:root outranks the shell file's :root, which loads later */
 
         /* ========== MAIN LAYOUT ========== */
         .main-layout {
