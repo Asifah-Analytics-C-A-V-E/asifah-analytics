@@ -1,4 +1,8 @@
-/* Asifah Analytics -- MILITARY GLANCE  v1.0.1  (Nov 15 2026)
+/* Asifah Analytics -- MILITARY GLANCE  v1.1.0  (Nov 15 2026)
+ *
+ * v1.1.0: chokepoint tiles carry SHIP COUNTS (ships a day against the pre-war
+ *   normal, a share-of-normal bar, standing-since or NEW step change), from
+ *   military tracker v3.19.0. The map pin tooltip leads with the ship count.
  *
  * v1.0.1 (Rachel): Theatres prose folds closed like the chokepoint detail, so the
  *   chokepoint tiles and the naval tracker follow the read directly; Traders' odds
@@ -120,6 +124,13 @@
       '.mg-cp-l a{font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid rgba(56,189,248,0.4);color:#38bdf8;text-decoration:none}' +
       '.mg-cp-l a:hover{background:rgba(56,189,248,0.1)}' +
       '.mg-cp.mg-flash{outline:3px solid #38bdf8;outline-offset:2px}' +
+      '.mg-sm{margin:6px 0 4px;padding:7px 9px;border-radius:7px;background:rgba(127,127,127,0.07);font-size:0.76rem;line-height:1.4;cursor:help}' +
+      '.mg-sm-h{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}' +
+      '.mg-sm-tag{font-size:0.62rem;font-weight:800;letter-spacing:0.6px;text-transform:uppercase;padding:1px 7px;border-radius:999px;border:1px solid rgba(148,163,184,0.5);opacity:0.9}' +
+      '.mg-sm-tag.new{border-color:#ef4444;color:#ef4444}.mg-sm-tag.up{border-color:#10b981;color:#10b981}' +
+      '.mg-sm-bar{height:7px;border-radius:4px;background:rgba(127,127,127,0.2);margin:5px 0 4px;overflow:hidden}' +
+      '.mg-sm-bar span{display:block;height:100%;border-radius:4px}' +
+      '.mg-sm-f{font-size:0.68rem;opacity:0.7}.mg-sm-b{font-size:0.68rem;opacity:0.85;margin-top:3px;font-style:italic}' +
       '.mg-cp-more{font-size:0.75rem;opacity:0.7;margin-top:6px;cursor:pointer;text-decoration:underline}' +
       '.mg-naval-note{font-size:0.78rem;line-height:1.45;opacity:0.85;margin:0 0 10px;padding:8px 12px;border-left:3px solid #38bdf8;background:rgba(56,189,248,0.05);border-radius:6px}' +
       '.theatre-section.mg-flash{outline:3px solid #38bdf8;outline-offset:3px;border-radius:10px}' +
@@ -141,13 +152,20 @@
       var p = post[id] || {}, band = String(p.alert_level || 'open').toLowerCase();
       var pr = prose[id] || {};
       var line = pr.prose || pr.text || pr.summary || '';
+      // v1.1.0: when ship counts set the level, the prose repeats the meter;
+      // show the newest headline instead (the meter carries the ships).
+      if (p.transits && p.level_basis === 'ship_counts') {
+        var t0 = (p.top_signals || [])[0];
+        line = t0 ? ('Newest reporting: ' + (t0.article_title || t0.title || '')) : '';
+      }
       if (!line) {
         var ts = (p.top_signals || [])[0];
         line = ts ? (ts.article_title || ts.title || '') : '';
       }
       if (!line) line = band === 'open' ? 'No reporting matched this scan: unread, not calm.'
                                         : (p.signal_count || 0) + ' signal' + (p.signal_count === 1 ? '' : 's') + ' mention this lane this scan; none is an attack or seizure.';
-      return { id: id, band: band, lvl: BAND_LVL[band] || 0, n: p.signal_count || 0, line: line,
+      return { id: id, band: band, lvl: BAND_LVL[band] || 0, n: p.signal_count || 0, line: line, tr: p.transits || null,
+               basis: p.level_basis || 'reporting', reportingLevel: p.reporting_level || band,
                meta: CP[id] || { label: cap(id.replace(/_/g, ' ')), why: '', links: [] } };
     }).sort(function (a, b) { return (b.lvl - a.lvl) || (b.n - a.n); });
   }
@@ -204,7 +222,11 @@
     var lv = {};
     chokepoints(data).forEach(function (c) {
       if (c.band === 'open' || !c.meta.at) return;
-      lv[c.id] = { level: c.lvl, texts: c.line ? [c.line.slice(0, 140)] : [], n: c.n,
+      var tx = [];
+      if (c.tr && c.tr.ratio_pct != null) tx.push('Ships: ~' + Math.round(c.tr.avg_7d) + '/day, ' + c.tr.ratio_pct + '% of pre-war normal' +
+        (c.tr.step_change ? ' (NEW this week)' : (c.tr.band !== 'normal' ? ' (standing)' : '')));
+      if (c.line) tx.push(c.line.slice(0, 140));
+      lv[c.id] = { level: c.lvl, texts: tx, n: c.n,
                    place: { key: c.id, label: c.meta.label, at: c.meta.at } };
     });
     G.pinCss();
@@ -274,6 +296,34 @@
   }
 
   // ── chokepoint strip ──────────────────────────────────────────────────
+  // v1.1.0 (Nov 15 2026): SHIP COUNTS. Measured traffic against the pre-war
+  // normal (IMF PortWatch via chokepoint_transits on the ME backend). The bar
+  // is the share of normal; the tag says standing (long-running) or NEW.
+  function shipMeter(c) {
+    var t = c.tr;
+    if (!t || t.ratio_pct == null) return '';
+    var pct = Math.max(0, Math.min(100, t.ratio_pct));
+    // colour by the WORSE comparison: Bab el-Mandeb at 85% of 2025 is still a
+    // third of its pre-2023 traffic, and green would hide that.
+    var worst = Math.min(pct, t.long_baseline_pct != null ? t.long_baseline_pct : 100);
+    var col = worst >= 75 ? '#10b981' : worst >= 50 ? '#f59e0b' : worst >= 25 ? '#f97316' : '#ef4444';
+    var wk = t.latest_date ? new Date(t.latest_date + 'T00:00:00Z').toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }) : '';
+    var d = t.standing_since ? new Date(t.standing_since + 'T00:00:00Z') : null;
+    var sinceTxt = d ? d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }) : '';
+    var tag = t.step_change === 'drop' ? '<span class="mg-sm-tag new">NEW: sharp drop this week</span>'
+            : t.step_change === 'rise' ? '<span class="mg-sm-tag up">NEW: traffic recovering</span>'
+            : (t.band !== 'normal' ? '<span class="mg-sm-tag">Standing' + (sinceTxt ? ' since ' + esc(sinceTxt) : '') + '</span>' : '');
+    var fmt = function (x) { return x >= 10 ? Math.round(x) : (Math.round(x * 10) / 10); };
+    var basis = c.basis === 'ship_counts' && c.reportingLevel !== c.band
+      ? '<div class="mg-sm-b">Level set by ship counts. Reporting alone read ' + esc(BAND_WORD[c.reportingLevel] || c.reportingLevel) + '.</div>' : '';
+    return '<div class="mg-sm" title="' + esc(t.plain || '') + '">' +
+      '<div class="mg-sm-h"><b>Ships: ~' + fmt(t.avg_7d) + '/day</b> vs ~' + fmt(t.baseline_avg) + ' before the war ' + tag + '</div>' +
+      '<div class="mg-sm-bar"><span style="width:' + Math.max(pct, 1.5) + '%;background:' + col + '"></span></div>' +
+      '<div class="mg-sm-f">' + t.ratio_pct + '% of normal · week to ' + esc(wk) +
+      (t.long_baseline_pct != null ? ' · ' + t.long_baseline_pct + '% of pre-2023 Red Sea traffic' : '') +
+      ' · IMF PortWatch, ~' + (t.lag_days || 7) + ' days behind, misses ships running dark</div>' + basis + '</div>';
+  }
+
   function cpStrip(data) {
     var cps = chokepoints(data);
     if (!cps.length) return null;
@@ -285,6 +335,7 @@
       var col = COL[c.lvl];
       return '<div class="mg-cp ' + c.band + '" id="mgcp-' + esc(c.id) + '" style="border-left-color:' + col + '">' +
         '<div class="mg-cp-h"><span>' + esc(c.meta.label) + '</span><span class="mg-cp-chip" style="background:' + col + '">' + BAND_WORD[c.band] + '</span></div>' +
+        shipMeter(c) +
         (c.line ? '<div class="mg-cp-t">' + esc(c.line.length > 220 ? c.line.slice(0, 217) + '…' : c.line) + '</div>' : '') +
         (c.meta.why ? '<div class="mg-cp-w">Why it matters: ' + esc(c.meta.why) + '</div>' : '') +
         ((c.meta.links || []).length && c.band !== 'open' ? '<div class="mg-cp-l">' + c.meta.links.map(function (l) {
