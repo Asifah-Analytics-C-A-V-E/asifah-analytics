@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Asifah Analytics - Military Asset & Deployment Tracker v3.0.0 - March 2026 · Nov 3 2026: drone_strike class + Belarus/Moldova/Kazakhstan in the Europe theatre · Nov 4 2026: UK + five WHA actors shown (theatre list merges the backend's), polar-gateway coupling block -->
+<!-- Asifah Analytics - Military Asset & Deployment Tracker v3.0.0 - March 2026 · Nov 15 2026: page pass (resources/military-glance.js): Where-it's-hot map, chokepoint strip, naval tracker moved up with report ages, new section order, section chips · Nov 3 2026: drone_strike class + Belarus/Moldova/Kazakhstan in the Europe theatre · Nov 4 2026: UK + five WHA actors shown (theatre list merges the backend's), polar-gateway coupling block -->
 <!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <!-- v3.0.0: Western Hemisphere theatre + Global/NORTHCOM US anchor -->
 <html lang="en" dir="ltr" data-theme="dark">
@@ -418,6 +418,9 @@
     </style>
 <!-- Nov 3 2026: plain-language read + "what this means" (ME /api/tracker-voice) -->
 <script src="resources/asifah-tracker-voice.js" data-desk="military" data-anchor="taExecBlock" defer></script>
+<!-- Nov 15 2026: page pass -- "Where it's hot" map, chokepoint strip, naval tracker moved up, section chips -->
+<script src="resources/asifah-geo.js" defer></script>
+<script src="resources/military-glance.js" defer></script>
 <script src="resources/prediction-markets.js" defer></script>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
@@ -933,6 +936,9 @@ function renderAll(data) {
     initNavalMap(data.top_signals || [], data.actor_summaries || {});
     renderSignals(data.top_signals || [], t);
     renderSources(data.source_breakdown || {}, t);
+
+    // Nov 15 2026: map + chokepoint strip + new section order (resources/military-glance.js)
+    if (window.AsifahMilitaryGlance) window.AsifahMilitaryGlance.render(data);
 
     var dt = data.last_updated ? new Date(data.last_updated) : new Date();
     document.getElementById('updatedBar').textContent = (t.lastUpdated || 'Last Updated') + ': ' + dt.toLocaleString() + ' | ' + (t.scanTime || 'Scan Time') + ': ' + (data.scan_time_seconds || '?') + 's | v' + (data.version || '3.0.0');
@@ -1924,6 +1930,9 @@ function initNavalMap(signals, actorSummaries) {
         var b = locationBuckets[key];
         b.totalWeight += sig.weight || 0;
         b.count++;
+        // Nov 15 2026: remember the NEWEST report here, so the popup can say how old the position is
+        var _pt = sig.published ? Date.parse(sig.published) : NaN;
+        if (!isNaN(_pt) && (!b.newest || _pt > b.newest)) b.newest = _pt;
 
         var asset = sig.asset || 'unspecified';
         b.assets[asset] = (b.assets[asset] || 0) + 1;
@@ -1984,6 +1993,9 @@ function initNavalMap(signals, actorSummaries) {
             '<div class="naval-popup-signal">' +
                 '<strong>' + bucket.count + ' signal' + (bucket.count !== 1 ? 's' : '') + '</strong>' +
                 ' · Weight: ' + bucket.totalWeight.toFixed(1) +
+                (bucket.newest ? '<br><span style="color:#fbbf24;">Newest report: ' + (function (h) {
+                    return h < 1 ? 'under an hour ago' : h < 48 ? Math.round(h) + 'h ago' : Math.round(h / 24) + ' days ago';
+                })((Date.now() - bucket.newest) / 3600000) + ' (news reporting, not live tracking)</span>' : '') +
                 (topSig && topSig.article_title
                     ? '<br><span style="color:#8899aa;">' + topSig.article_title.substring(0, 80) + '…</span>'
                     : '') +

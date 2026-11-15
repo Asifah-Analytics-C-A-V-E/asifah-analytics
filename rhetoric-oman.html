@@ -1377,7 +1377,18 @@ function renderBluf(data) {
     if (lead) {
         const sit = String(sw.situation || '').trim();
         const first = (sit.match(/^.*?[.!?](\s|$)/) || [sit])[0].trim();
-        lead.textContent = first || 'No Oman read is cached yet: unread, not calm.';
+        // the interpreter sometimes opens with a label ("Threat L1, Influence L1.") --
+        // that is a reading, not a sentence. Then the BLUF writes its own lead.
+        if (!first || /^threat\s*l\d/i.test(first)) {
+            const rows = BLUF_ROWS.map(([k, label]) => [label, (actors[k] || {}).escalation_level || 0])
+                .sort((a, b) => b[1] - a[1]);
+            const top = rows[0];
+            lead.textContent = !top || top[1] === 0
+                ? 'Nothing on Oman is above routine this cycle: the waters, the ports and the Muscat channel are all quiet.'
+                : (top[1] <= 1
+                    ? 'Oman is quiet: background mentions only, the most on ' + top[0].toLowerCase() + '.'
+                    : top[0] + ' is the reading to watch on Oman, at L' + top[1] + ' (' + lvl(top[1]).label.toLowerCase() + ').');
+        } else lead.textContent = first;
     }
     const grid = document.getElementById('omBlufGrid');
     if (!grid) return;
