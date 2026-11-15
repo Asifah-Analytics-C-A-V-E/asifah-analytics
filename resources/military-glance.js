@@ -1,4 +1,8 @@
-/* Asifah Analytics -- MILITARY GLANCE  v1.0.0  (Nov 15 2026)
+/* Asifah Analytics -- MILITARY GLANCE  v1.0.1  (Nov 15 2026)
+ *
+ * v1.0.1 (Rachel): Theatres prose folds closed like the chokepoint detail, so the
+ *   chokepoint tiles and the naval tracker follow the read directly; Traders' odds
+ *   move up to sit right under the naval map, then Active Military Actors.
  *
  * The military.html top-to-bottom pass (Rachel, Nov 15: "readable,
  * interactable, not click-baity, but something that draws people to look
@@ -331,11 +335,12 @@
       if (mv) navWrap.appendChild(mv);
       put([navHead && navHead.classList.contains('section-header') ? navHead : null, navWrap]);
     }
-    // 4. theatres & actors, target posture
+    // 4. traders' odds right under the naval map (Rachel, v1.0.1)
+    put([document.querySelector('[data-asifah-markets="military"]')]);
+    // 5. active military actors, target posture
     put(sectionOf('theatreContainer'));
     put(sectionOf('targetGrid'));
-    // 5. traders' odds, then the counts and the asset mix
-    put([document.querySelector('[data-asifah-markets="military"]')]);
+    // 6. the counts and the asset mix
     put([document.querySelector('.status-strip')]);
     put(sectionOf('assetBar'));
     if (window._navalMap && window._navalMap.invalidateSize) setTimeout(function () { window._navalMap.invalidateSize(); }, 80);
@@ -347,9 +352,9 @@
     if (!ta) return;
     var T = [['Read', ta], ['Chokepoints', document.getElementById('mgChokepoints')],
              ['Naval tracker', document.querySelector('.naval-map-section')],
-             ['Theatres & actors', document.getElementById('theatreContainer')],
-             ['Target posture', document.getElementById('targetGrid')],
              ["Traders' odds", document.querySelector('[data-asifah-markets="military"]')],
+             ['Military actors', document.getElementById('theatreContainer')],
+             ['Target posture', document.getElementById('targetGrid')],
              ['Signal feed', document.getElementById('signalFeed')]].filter(function (t) { return t[1]; });
     var bar = document.createElement('nav');
     bar.className = 'mg-chips';
@@ -418,6 +423,10 @@
       if (cps && !cps.classList.contains('user-toggled')) cps.classList.remove('expanded');
       var cpt = cps && cps.querySelector('[data-i18n="taChokepoints"]');
       if (cpt) cpt.textContent = 'Chokepoint detail & polar gateways';
+      // v1.0.1: the theatre prose folds too -- the map, the tiles and the actor
+      // list below carry it; open it when you want the long form.
+      var ths = document.getElementById('taTheatreSection');
+      if (ths && !ths.classList.contains('user-toggled')) ths.classList.remove('expanded');
       chips();
       setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);   // let the levels rail re-measure
     } catch (e) { console.warn('[Military glance]', e); }
