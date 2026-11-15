@@ -1,4 +1,10 @@
-/* Asifah Analytics -- COMMODITY GLANCE  v1.0.0  (Nov 15 2026)
+/* Asifah Analytics -- COMMODITY GLANCE  v1.1.0  (Nov 15 2026)
+ *
+ * v1.1.0 -- no empty half-screen: the chart sits LEFT, and the At a glance tiles
+ *   plus a "Biggest 30-day moves" list stack in a column to its RIGHT. Labels
+ *   no longer pile on top of each other (each tries four spots, and is left to
+ *   the tooltip if none is free). A breadth line says when the whole complex is
+ *   moving one way -- itself a finding.
  *
  * Two things for commodities.html:
  *
@@ -33,6 +39,8 @@
   var BAND_COL = ['#64748b', '#f59e0b', '#f97316', '#ef4444'];
   var LOUD_AT = 2;                          // high or surge = "loud"
   var last = null;
+  var SHORTN = { pgm: 'PGMs', rare_earths: 'Rare earths', natural_gas: 'Gas', sunflower_oil: 'Sunflower oil',
+                 semiconductors: 'Chips', iron_ore: 'Iron ore', gum_arabic: 'Gum arabic' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
@@ -41,8 +49,22 @@
     var st = document.createElement('style');
     st.id = 'cgCss';
     st.textContent =
-      '.cg-box{grid-column:span 2;border:1px solid var(--card-border,#1e3a5f);border-radius:10px;padding:10px 12px;background:rgba(56,189,248,0.04)}' +
-      '@media (max-width:640px){.cg-box{grid-column:auto}}' +
+      '.cg-box{border:1px solid var(--card-border,#1e3a5f);border-radius:10px;padding:10px 12px;background:rgba(56,189,248,0.04);min-width:0}' +
+      '.cg-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:10px;align-items:start}' +
+      '.cg-side{display:flex;flex-direction:column;gap:8px;min-width:0}' +
+      '.cg-side .tv-grid.cg-side-grid{grid-template-columns:1fr}' +
+      '@media (max-width:900px){.cg-row{grid-template-columns:1fr}}' +
+      '.cg-movers{border:1px solid var(--card-border,#1e3a5f);border-radius:10px;padding:10px 12px}' +
+      '.cg-mv-h{font-weight:800;font-size:0.88rem;margin-bottom:6px}' +
+      '.cg-mv{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 52px 66px;gap:6px;align-items:center;width:100%;' +
+      'background:none;border:0;border-top:1px solid rgba(127,127,127,0.15);padding:5px 0;color:inherit;font:inherit;font-size:0.8rem;cursor:pointer;text-align:left}' +
+      '.cg-mv:hover .cg-mv-n{color:#38bdf8}' +
+      '.cg-mv-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.cg-mv-bar{height:7px;border-radius:4px;background:rgba(127,127,127,0.15);overflow:hidden}' +
+      '.cg-mv-bar i{display:block;height:100%;border-radius:4px}' +
+      '.cg-mv-v{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}' +
+      '.cg-mv-b{font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;text-align:right}' +
+      '.cg-mv-foot{font-size:0.7rem;opacity:0.65;margin-top:4px}' +
       '.cg-h{font-weight:800;font-size:0.92rem;margin-bottom:2px}' +
       '.cg-sub{font-size:0.74rem;opacity:0.75;margin-bottom:6px}' +
       '.cg-box svg{width:100%;height:auto;display:block;overflow:visible}' +
@@ -79,7 +101,8 @@
       var m = meta[cid] || sums[cid] || {}, s = sums[cid] || {}, sp = sparks[cid];
       var band = BAND[String(s.alert_level || 'normal').toLowerCase()];
       if (band == null) band = 0;
-      var name = String(m.name || cid.replace(/_/g, ' ')).split(' (')[0];
+      var name = String(m.name || cid.replace(/_/g, ' ')).split(' (')[0].split(' / ')[0];
+      if (SHORTN[cid]) name = SHORTN[cid];
       var hasPrice = m.has_spot_price !== false && sp && typeof sp.change_pct_30d === 'number';
       var rec = { cid: cid, name: name, icon: m.icon || '', band: band, score: +s.total_score || 0,
                   chg: hasPrice ? sp.change_pct_30d : null };
@@ -94,6 +117,7 @@
   }
 
   function list(arr) {
+    arr = arr.slice().sort(function (a, b) { return Math.abs(b.chg) - Math.abs(a.chg); });
     var n = arr.map(function (p) { return p.name + ' (' + (p.chg >= 0 ? '+' : '') + p.chg.toFixed(1) + '%)'; });
     if (n.length > 4) n = n.slice(0, 4).concat(['+' + (arr.length - 4) + ' more']);
     return n.join(', ');
@@ -141,23 +165,77 @@
     s += '<text class="cg-q" x="' + (W - R - 4) + '" y="' + (T + 10) + '" text-anchor="end">News and price agree</text>';
     s += '<text class="cg-q" x="' + (W - R - 4) + '" y="' + (yDn - 4) + '" text-anchor="end">Talked about, not priced</text>';
     s += '<text class="cg-q" x="' + (L + 4) + '" y="' + (yDn - 4) + '">Calm</text>';
-    // dots, loud last so they sit on top; label the ones worth naming
-    d.pts.slice().sort(function (a, b) { return a.band - b.band; }).forEach(function (p) {
-      var cx = x(p), cy = y(p.chg), c = corner(p);
-      var col = BAND_COL[p.band], r = 4 + p.band;
-      s += '<circle class="cg-dot" data-cid="' + esc(p.cid) + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r +
-           '" fill="' + col + '" fill-opacity="0.85" stroke="' + (c === 'quiet' ? '#a855f7' : '#0d1b2e') + '" stroke-width="' + (c === 'quiet' ? 2 : 1) + '"/>';
-      if (c !== 'calm') {
-        s += '<text class="cg-lbl" x="' + (cx + r + 3).toFixed(1) + '" y="' + (cy + 3).toFixed(1) + '">' + esc(p.name) + '</text>';
-      }
+    // dots, loud last so they sit on top
+    var placed = [];       // boxes already taken: corner names, dots, labels
+    function hit(b) {
+      return placed.some(function (q) { return b.x < q.x + q.w && b.x + b.w > q.x && b.y < q.y + q.h && b.y + b.h > q.y; });
+    }
+    [[L + 2, T + 2, 90, 11], [W - R - 120, T + 2, 120, 11], [W - R - 140, yDn - 13, 140, 11], [L + 2, yDn - 13, 40, 11]]
+      .forEach(function (b) { placed.push({ x: b[0], y: b[1], w: b[2], h: b[3] }); });
+    var dots = d.pts.map(function (p) {
+      var o = { p: p, cx: x(p), cy: y(p.chg), c: corner(p), r: 4 + p.band };
+      placed.push({ x: o.cx - o.r, y: o.cy - o.r, w: o.r * 2, h: o.r * 2 });
+      return o;
     });
+    dots.slice().sort(function (a, b) { return a.p.band - b.p.band; }).forEach(function (o) {
+      s += '<circle class="cg-dot" data-cid="' + esc(o.p.cid) + '" cx="' + o.cx.toFixed(1) + '" cy="' + o.cy.toFixed(1) + '" r="' + o.r +
+           '" fill="' + BAND_COL[o.p.band] + '" fill-opacity="0.85" stroke="' + (o.c === 'quiet' ? '#a855f7' : '#0d1b2e') +
+           '" stroke-width="' + (o.c === 'quiet' ? 2 : 1) + '"/>';
+    });
+    // labels: the most telling first (loud, then biggest move); each tries
+    // right, left, above, below -- and is left to the tooltip if all are taken
+    dots.filter(function (o) { return o.c !== 'calm'; })
+      .sort(function (a, b) { return (b.p.band - a.p.band) || (Math.abs(b.p.chg) - Math.abs(a.p.chg)); })
+      .forEach(function (o) {
+        var w = o.p.name.length * 5.4 + 2, h = 10;
+        var opts = [[o.cx + o.r + 3, o.cy - h / 2], [o.cx - o.r - 3 - w, o.cy - h / 2],
+                    [o.cx - w / 2, o.cy - o.r - h - 1], [o.cx - w / 2, o.cy + o.r + 1]];
+        for (var i = 0; i < opts.length; i++) {
+          var b = { x: opts[i][0], y: opts[i][1], w: w, h: h };
+          if (b.x < L || b.x + b.w > W - R || b.y < T || b.y + b.h > T + ph) continue;
+          if (hit(b)) continue;
+          placed.push(b);
+          s += '<text class="cg-lbl" x="' + b.x.toFixed(1) + '" y="' + (b.y + 8).toFixed(1) + '">' + esc(o.p.name) + '</text>';
+          break;
+        }
+      });
     return s + '</svg>';
+  }
+
+  function breadth(d) {
+    var n = d.pts.length, dn = d.pts.filter(function (p) { return p.chg <= -1; }).length,
+        up = d.pts.filter(function (p) { return p.chg >= 1; }).length;
+    if (n >= 8 && dn / n >= 0.7) return '<b>Broadly down:</b> ' + dn + ' of ' + n + ' priced commodities fell over 30 days. When nearly everything falls together, the driver is usually demand, the dollar or a risk-off market \u2014 not one supply story.';
+    if (n >= 8 && up / n >= 0.7) return '<b>Broadly up:</b> ' + up + ' of ' + n + ' priced commodities rose over 30 days. A move this wide points to a common driver (demand, the dollar, energy costs) rather than one supply story.';
+    return '';
+  }
+
+  function movers(d) {
+    var top = d.pts.slice().sort(function (a, b) { return Math.abs(b.chg) - Math.abs(a.chg); }).slice(0, 6);
+    if (!top.length) return null;
+    var max = Math.max.apply(null, top.map(function (p) { return Math.abs(p.chg); })) || 1;
+    var el = document.createElement('div');
+    el.className = 'cg-movers';
+    el.id = 'cgMovers';
+    el.innerHTML = '<div class="cg-mv-h">Biggest 30-day moves</div>' + top.map(function (p) {
+      var w = Math.max(4, Math.round(Math.abs(p.chg) / max * 100)), up = p.chg >= 0;
+      return '<button type="button" class="cg-mv" data-cid="' + esc(p.cid) + '"><span class="cg-mv-n">' + esc(p.icon + ' ' + p.name) + '</span>' +
+        '<span class="cg-mv-bar"><i style="width:' + w + '%;background:' + (up ? '#10b981' : '#ef4444') + '"></i></span>' +
+        '<span class="cg-mv-v" style="color:' + (up ? '#10b981' : '#ef4444') + '">' + (up ? '+' : '') + p.chg.toFixed(1) + '%</span>' +
+        '<span class="cg-mv-b" style="color:' + BAND_COL[p.band] + '">' + BAND_WORD[p.band] + '</span></button>';
+    }).join('') + '<div class="cg-mv-foot">Bar = size of the move. Last word = how loudly it is being reported. Tap for the card.</div>';
+    Array.prototype.forEach.call(el.querySelectorAll('.cg-mv'), function (b) {
+      b.addEventListener('click', function () { openCard(b.getAttribute('data-cid')); });
+    });
+    return el;
   }
 
   function read(d) {
     var g = { agree: [], flat: [], quiet: [], calm: [] };
     d.pts.forEach(function (p) { g[corner(p)].push(p); });
     var bits = [];
+    var br = breadth(d);
+    if (br) bits.push(br);
     if (g.quiet.length) bits.push('<b>Moving quietly:</b> ' + esc(list(g.quiet)) + ' \u2014 the price moved further than the reporting explains.');
     if (g.agree.length) bits.push('<b>News and price agree:</b> ' + esc(list(g.agree)) + '.');
     if (g.flat.length) bits.push('<b>Talked about, not priced:</b> ' + esc(list(g.flat)) + ' \u2014 heavy reporting, price within ' + MOVING_PCT + '%.');
@@ -207,12 +285,34 @@
   // clock. Put the chart there when it exists; otherwise at the top of the
   // Commodity Analysis card, so the chart never waits on the voice.
   function place(el) {
-    var old = document.getElementById('cgBox');
-    if (old) old.parentNode.removeChild(old);
+    ['cgBox', 'cgMovers'].forEach(function (id) {
+      var old = document.getElementById(id);
+      if (old) old.parentNode.removeChild(old);
+    });
     var ca = document.getElementById('caCard');
     var caShown = ca && getComputedStyle(ca).display !== 'none';
     var grid = caShown && document.querySelector('#tvCard .tv-grid');
-    if (grid) { grid.insertBefore(el, grid.firstChild); return true; }
+    if (grid) {
+      // chart LEFT; the voice's tiles + the movers list stacked RIGHT
+      var row = document.getElementById('cgRow'), side;
+      if (!row) {
+        row = document.createElement('div');
+        row.className = 'cg-row';
+        row.id = 'cgRow';
+        side = document.createElement('div');
+        side.className = 'cg-side';
+        grid.parentNode.insertBefore(row, grid);
+        row.appendChild(side);
+        side.appendChild(grid);
+        grid.classList.add('cg-side-grid');
+      } else {
+        side = row.querySelector('.cg-side');
+      }
+      row.insertBefore(el, side);
+      var mv = last && movers(last);
+      if (mv) side.appendChild(mv);
+      return true;
+    }
     var exec = document.getElementById('caExecBlock');
     if (caShown && exec) exec.parentNode.insertBefore(el, exec);
     else if (ca) ca.parentNode.insertBefore(el, ca);      // analysis card hidden: never hide the chart with it
