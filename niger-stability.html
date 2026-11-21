@@ -1,4 +1,4 @@
-<!-- Asifah Analytics — Niger Stability v3.0.0 — 21 November 2026 -->
+<!-- Asifah Analytics — Niger Stability v3.0.1 — 21 November 2026 (rhetoric card reads the live tracker; Algeria troops; CNPC ultimatum) -->
 <!-- SENSOR PAGE: dials and dated facts, not analysis. The analyst layer will live on rhetoric-niger.html (next build). -->
 <!-- CARD ORDER (canonical, matches Burkina/Mali, plus Niger's "What Niger depends on"):
      banners · rhetoric · what Niger depends on · humanitarian · commodities · financial · map · knowledge library · footer -->
@@ -435,8 +435,8 @@ ul.tl li b { color: var(--text-primary); margin-right: 6px; }
             <div class="banner-body">
                 This page is a set of <strong>dials</strong>: counted figures and dated facts, with
                 sources. The reading — the Russia (Africa Corps) and Algeria guarantees, the US and
-                Chinese stakes, the Benin and France quarrels, and the three insurgent fronts — will
-                live on the rhetoric page.
+                Chinese stakes, the Benin and France quarrels, and the three insurgent fronts — lives
+                on the rhetoric page.
             </div>
         </div>
         <a class="banner-action" href="rhetoric-niger.html">OPEN TRACKER →</a>
@@ -569,6 +569,7 @@ ul.tl li b { color: var(--text-primary); margin-right: 6px; }
                 <li><b>Jun 2026</b> Benin's new president visited Niamey; Niger set preconditions for reopening the border, shut since 2023 (a defence and non-aggression accord, and transparency on foreign forces near the border). <span class="sub">(Africanews · Seneweb)</span></li>
                 <li><b>Aug 2026</b> Algeria sent helicopters, its first military deployment abroad since 1973. On 29–30 August soldiers mutinied in Niamey, attacking an airbase and the presidential palace; Russian forces helped end it within 24 hours and Algeria flew in Su-30 fighters. Niamey blamed France, which denied it. <span class="sub">(AP · ADF)</span></li>
                 <li><b>Sep 2026</b> The US Development Finance Corporation approved up to $414 million for Dasa, Global Atomic's uranium project, two years after US troops left. Five more exiled critics were stripped of nationality. <span class="sub">(Al Jazeera · HRW)</span></li>
+                <li><b>Oct 2026</b> Niger gave China's CNPC and its partners a 45-day ultimatum (16 Oct) to repatriate about $5bn of oil export revenue; Algeria's president ordered troops to Niger (26 Oct). <span class="sub">(Koaci · Al Jazeera)</span></li>
                 <li><b>Nov 2026</b> The UN raised the conditions of former president Bazoum's detention. <span class="sub">(Gazette)</span></li>
             </ul>
         </div>
@@ -893,13 +894,22 @@ function renderRhetoric() {
         var lvl = num(d.overall_level);
         if (lvl === null) lvl = num(d.theatre_level_platform);
         if (lvl === null) lvl = num(d.theatre_level);
-        var label = d.level_label || d.posture_label || '';
+        var label = d.theatre_label || d.level_label || d.posture_label || '';
+        /* so_what is a LIST of {bullet} on the Niger tracker (v1.0.0); lead
+           with the first bullet, never print an object. */
+        var sw = Array.isArray(d.so_what) ? ((d.so_what[0] || {}).bullet || '') : (d.so_what || '');
+        var fr = d.fronts || {}, frTxt = ['tillaberi', 'diffa', 'north'].filter(function (k) { return fr[k]; })
+            .map(function (k) { return fr[k].name + ' L' + fr[k].level; }).join(' · ');
         var html = '<div class="stat-grid"><div class="stat">'
             + '<div class="stat-value">' + (lvl === null ? '—' : 'L' + lvl) + '</div>'
             + '<div class="stat-label">' + esc(label || 'Platform level') + '</div>'
             + '<div class="stat-src">rhetoric_tracker_niger' + (d.version ? ' v' + esc(d.version) : '') + '</div>'
-            + '</div></div>'
-            + '<div class="prose">' + esc(d.so_what || d.summary || '') + '</div>'
+            + '</div>'
+            + (frTxt ? '<div class="stat"><div class="stat-value" style="font-size:1rem;">' + esc(frTxt) + '</div>'
+                     + '<div class="stat-label">Fronts, by kinetic ladder</div></div>' : '')
+            + '</div>'
+            + '<div class="prose" style="margin-bottom:8px;">' + esc(d.executive_summary || d.summary || '') + '</div>'
+            + (sw ? '<div class="sensor-voice">' + esc(sw) + '</div>' : '')
             + '<div class="sub"><a href="rhetoric-niger.html" style="color:var(--accent);">'
             + 'Open the rhetoric tracker →</a></div>';
         el('rhetBody').innerHTML = html;
@@ -1235,7 +1245,7 @@ var LIFELINES = [
      'The trade and fuel artery to the south. Nigeria reopened its Kebbi crossings in February after a months-long security closure.',
      'Feb 2026'],
     ['Algeria (north)', 'opening',
-     'Ties rebuilt in March; Algerian military aid since August. Studied as an export route for Dasa uranium, and the line of the planned Trans-Saharan Gas Pipeline.',
+     'Ties rebuilt in February–March; Algerian aircraft since August and a troop deployment ordered on 26 October. Studied as an export route for Dasa uranium, and the line of the planned Trans-Saharan Gas Pipeline.',
      'Oct 2026'],
     ['Libya (north)', 'contested',
      'The main migration and smuggling route north, through Agadez. No functioning state partner on the far side.',
@@ -1247,8 +1257,8 @@ var GUARANTORS = [
      'Africa Corps at Air Base 101 in Niamey. Helped repel the Islamic State attack on the airport (early 2026) and helped end the 29–30 August mutiny. Niamey calls Russia its main partner.',
      'Aug 2026'],
     ['Algeria', 'active',
-     'Helicopters in early August, then Su-30 fighters and a tanker to Base 101 after the mutiny: Algeria\'s first military deployment abroad since 1973.',
-     'Aug 2026'],
+     'Helicopters in early August, Su-30 fighters and a tanker to Base 101 after the mutiny, then a troop deployment ordered by President Tebboune on 26 October: Algeria\'s first deployment abroad since 1973.',
+     'Oct 2026'],
     ['AES partners', 'active',
      'Mutual-defence pact with Mali and Burkina Faso, and a joint force announced. Both partners face their own insurgencies.',
      '2025–26'],
