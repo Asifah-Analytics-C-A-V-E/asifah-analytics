@@ -1,4 +1,10 @@
-/* Asifah Analytics -- Traders' Odds strip -- v1.0.0 (Nov 5 2026)
+/* Asifah Analytics -- Traders' Odds strip -- v1.1.0 (Nov 21 2026)
+ *
+ * v1.1.0: every market row now carries a "vs Asifah" line from the backend
+ * (prediction_markets.py v1.1.0, deterministic, no Claude call): where our own
+ * signals and the traders agree, contradict, or where traders put a "ceiling"
+ * on a hot theatre. The So What box leads with those. New page keys: cyber,
+ * and the rhetoric pages (iran, israel, lebanon, turkey, russia, china).
  *
  * One component for every page. A page declares
  *     <div data-asifah-markets="gpi"></div>
@@ -25,6 +31,18 @@
     divergence: ['DISAGREES WITH ASIFAH', '#38bdf8', 'Traders moved one way while Asifah\'s own reading points the other. Worth a second look -- not a verdict on who is right.']
   };
 
+  // v1.1.0: how our signals compare with the traders (backend `vs_osint`)
+  var VS = {
+    aligned:     ['SIGNALS AGREE', '#16a34a'],
+    contradicts: ['SIGNALS DISAGREE', '#0284c7'],
+    ceiling:     ['TRADERS\' CEILING', '#d97706'],
+    tension:     ['TRADERS EXPECT A TURN', '#ea580c'],
+    mixed:       ['NO CLEAN READ', '#64748b'],
+    other_axis:  ['DIFFERENT QUESTION', '#64748b'],
+    unread:      ['UNREAD, NOT CALM', ''],
+    no_tracker:  ['NO ASIFAH TRACKER', '']
+  };
+
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
   function css() {
@@ -49,6 +67,9 @@
       '.asf-mkt-thin{font-size:0.62rem;font-weight:700;letter-spacing:0.8px;padding:2px 7px;border-radius:999px;border:1px dashed rgba(127,127,127,0.6);cursor:help}' +
       '.asf-mkt a,.asf-mkt-gauge a{color:#38bdf8;font-weight:700;text-decoration:none}.asf-mkt a:hover,.asf-mkt-gauge a:hover{text-decoration:underline}' +
       'html.light-mode .asf-mkt a,html.light-mode .asf-mkt-gauge a,body.light-mode .asf-mkt a,body.light-mode .asf-mkt-gauge a,[data-theme=light] .asf-mkt a,[data-theme=light] .asf-mkt-gauge a{color:#0369a1}' +
+      '.asf-mkt-vs{font-size:0.76rem;line-height:1.45;padding:6px 8px;border-radius:6px;border-left:3px solid var(--vs,#64748b);background:rgba(127,127,127,0.07)}' +
+      '.asf-mkt-vs .lab{display:block;font-size:0.6rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--vs,#64748b);margin-bottom:2px}' +
+      '.asf-mkt-vs.dash{border-left-style:dashed;--vs:#94a3b8}.asf-mkt-vs.weak{opacity:0.75}' +
       '.asf-mkt-note{font-size:0.7rem;opacity:0.7;font-style:italic}' +
       '.asf-mkt details{margin-top:10px}.asf-mkt details summary{cursor:pointer;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;opacity:0.75}' +
       '.asf-mkt-how{font-size:0.78rem;line-height:1.55;opacity:0.85;margin-top:6px}.asf-mkt-how li{margin-bottom:3px}' +
@@ -84,6 +105,22 @@
     return h.odds || '—';
   }
 
+  function vsLine(it) {
+    var v = it.vs_osint;
+    if (!v || !v.line) return '';
+    var d = VS[v.verdict] || [String(v.verdict || '').toUpperCase(), '#64748b'];
+    var cls = 'asf-mkt-vs' + (d[1] ? '' : ' dash') + (v.weak ? ' weak' : '');
+    return '<div class="' + cls + '"' + (d[1] ? ' style="--vs:' + d[1] + '"' : '') +
+      ' title="Asifah\'s own signals beside the traders\' odds. Display only: neither changes the other.">' +
+      '<span class="lab">🧭 vs Asifah · ' + esc(d[0]) + '</span>' + esc(v.line) + '</div>';
+  }
+
+  function vsRank(it) {
+    var v = (it.vs_osint || {});
+    if (v.weak) return 0;
+    return { contradicts: 3, tension: 3, ceiling: 2 }[v.verdict] || 0;
+  }
+
   function row(it) {
     var src = it.source === 'kalshi' ? 'Kalshi' : 'Polymarket';
     var link = it.url ? '<a href="' + esc(it.url) + '" target="_blank" rel="noopener">' + src + ' ↗</a>' : src;
@@ -93,6 +130,7 @@
     return '<div class="asf-mkt-row' + flagged + '">' +
       '<div class="asf-mkt-q"><span>' + esc(it.label) + '</span><span class="asf-mkt-odds">' + esc(oddsOf(it)) + '</span></div>' +
       '<div class="asf-mkt-read">' + esc(read) + '</div>' +
+      vsLine(it) +
       (it.note ? '<div class="asf-mkt-note">Contract rule: ' + esc(it.note) + '</div>' : '') +
       '<div class="asf-mkt-meta">' + chips(it) + ' <span>' + link + '</span></div>' +
       '</div>';
@@ -118,6 +156,27 @@
       return '"' + it.label.replace(/\?$/, '') + '"' + (f.text ? ' (' + f.text + dir + ')' : '');
     }).join(', '));
     if (n.consensus.length) parts.push('traders now treat ' + n.consensus.map(function (it) { return '"' + it.label.replace(/\?$/, '') + '"'; }).join(', ') + ' as the expected outcome');
+    // v1.1.0: where our signals and the traders agree or part ways
+    var vs = { contradicts: [], tension: [], ceiling: [], aligned: 0, compared: 0, none: 0 };
+    items.forEach(function (it) {
+      var v = it.vs_osint;
+      if (!v) return;
+      if (v.verdict === 'no_tracker') { vs.none++; return; }
+      if (v.verdict === 'unread' || v.verdict === 'other_axis') return;
+      vs.compared++;
+      if (v.verdict === 'aligned') vs.aligned++;
+      if (!v.weak && vs[v.verdict] && vs[v.verdict].push) vs[v.verdict].push(it);
+    });
+    var q = function (it) { return '"' + it.label.replace(/\?$/, '') + '"'; };
+    var lead = [];
+    if (vs.contradicts.length) lead.push('Asifah\'s signals and the traders point opposite ways on ' + vs.contradicts.map(q).join(', ') + ': the gap is the question to watch');
+    if (vs.tension.length) lead.push('traders are betting on a de-escalation our signals have not shown yet on ' + vs.tension.map(q).join(', '));
+    if (vs.ceiling.length) lead.push('traders put a ceiling on ' + vs.ceiling.map(q).join(', ') + ' (a hot theatre, but this particular step still priced as unlikely)');
+    if (vs.compared && !vs.contradicts.length && !vs.tension.length) lead.push('Asifah\'s signals line up with the traders on ' + vs.aligned + ' of ' + vs.compared + ' comparable markets here, with no outright contradiction');
+    if (vs.none && vs.none === items.filter(function (it) { return it.vs_osint; }).length) {
+      lead.push('Asifah has no tracker for these questions yet, so the odds stand alone. Read them as what traders expect officials to SAY by each deadline, not as what happened');
+    }
+    parts = lead.concat(parts);
     if (!parts.length) return 'No market on this page settled, jumped, or disagrees with Asifah\'s reading. Traders see the same picture, with no sharp re-pricing.';
     return parts.map(function (t) { return t.charAt(0).toUpperCase() + t.slice(1); }).join('. ') + '.';
   }
@@ -127,6 +186,7 @@
       '<li>These are bets on public prediction markets (Polymarket, Kalshi). They are not evidence and not Asifah\'s assessment, and they never change an Asifah level.</li>' +
       '<li>Each contract settles on its own written rule, which can be narrower or broader than the news. When a rule matters it is shown under the question.</li>' +
       '<li><b>Settled</b>: a contract settled early or settled YES. <b>Sharp move</b>: 10+ points in a day or 15+ in a week. <b>Expected</b>: 85%+ on the pressure outcome. <b>Disagrees with Asifah</b>: traders moved one way while our reading points the other.</li>' +
+      '<li><b>vs Asifah</b>: our own signal level for that country set beside the odds. <b>Signals agree</b> / <b>disagree</b> say whether both point the same way. <b>Traders\' ceiling</b>: we read a hot theatre, yet traders still price this particular step as unlikely (not a contradiction: it shows where they think escalation stops). <b>Traders expect a turn</b>: traders price a de-escalation our sources have not shown yet. Neither side changes the other.</li>' +
       '<li><b>Thin market</b>: little money behind the odds, so one trader can move them. Shown, never flagged.</li>' +
       '<li>A ladder ("by Dec 31?") shows the nearest deadline at least two weeks out; close deadlines move with the calendar, not the news.</li>' +
       '</ul></details>';
@@ -146,7 +206,9 @@
       el.innerHTML = head + '<div class="asf-mkt-sowhat">No prediction market on the watchlist covers this page yet.</div>' + how();
       return;
     }
-    items = items.slice().sort(function (a, b) { return (b.flags || []).length - (a.flags || []).length; });
+    items = items.slice().sort(function (a, b) {
+      return ((b.flags || []).length - (a.flags || []).length) || (vsRank(b) - vsRank(a));
+    });
     var max = parseInt(el.getAttribute('data-max') || '6', 10);
     var first = items.slice(0, max), rest = items.slice(max);
     el.innerHTML = head +
