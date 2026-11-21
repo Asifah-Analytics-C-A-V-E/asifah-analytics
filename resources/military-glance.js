@@ -1,4 +1,8 @@
-/* Asifah Analytics -- MILITARY GLANCE  v1.1.0  (Nov 15 2026)
+/* Asifah Analytics -- MILITARY GLANCE  v1.1.1  (Nov 21 2026)
+ *
+ * v1.1.1: MOBILE FIX. The sticky jump-chip strip pushed the whole page to ~713px
+ *   wide on phones (its chips set the page min-width). contain:inline-size lets
+ *   the strip scroll sideways inside itself instead.
  *
  * v1.1.0: chokepoint tiles carry SHIP COUNTS (ships a day against the pre-war
  *   normal, a share-of-normal bar, standing-since or NEW step change), from
@@ -135,7 +139,7 @@
       '.mg-naval-note{font-size:0.78rem;line-height:1.45;opacity:0.85;margin:0 0 10px;padding:8px 12px;border-left:3px solid #38bdf8;background:rgba(56,189,248,0.05);border-radius:6px}' +
       '.theatre-section.mg-flash{outline:3px solid #38bdf8;outline-offset:3px;border-radius:10px}' +
       /* chips */
-      '.mg-chips{position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 14px;' +
+      '.mg-chips{contain:inline-size;max-width:100%;box-sizing:border-box;position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 14px;' +
       'background:var(--bg-color,#060d1a);border-bottom:1px solid var(--border-color,#1e3a5f);scrollbar-width:thin}' +
       '[data-theme="light"] .mg-chips{background:var(--bg-color,#e8f0f8)}' +
       '.mg-chip{flex:0 0 auto;font-size:0.72rem;font-weight:700;letter-spacing:0.5px;padding:5px 11px;border-radius:999px;cursor:pointer;' +

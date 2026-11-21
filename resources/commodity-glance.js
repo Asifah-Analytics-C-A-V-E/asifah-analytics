@@ -1,4 +1,8 @@
-/* Asifah Analytics -- COMMODITY GLANCE  v1.2.0  (Nov 15 2026)
+/* Asifah Analytics -- COMMODITY GLANCE  v1.2.1  (Nov 21 2026)
+ *
+ * v1.2.1: MOBILE FIX. The sticky jump-chip strip pushed the whole page to ~713px
+ *   wide on phones (its chips set the page min-width). contain:inline-size lets
+ *   the strip scroll sideways inside itself instead.
  *
  * v1.2.0 -- PROXY HONESTY. Six commodities have no public price, so their line
  *   is a company's shares or a fund (silicon = Ferroglobe's shares). Those dots
@@ -90,7 +94,7 @@
       '.cg-tip{position:fixed;z-index:50;pointer-events:none;background:#0d1b2e;color:#e2f0fb;border:1px solid #1e3a5f;border-radius:6px;padding:6px 9px;font-size:0.76rem;line-height:1.4;max-width:260px;display:none}' +
       '.commodity-card.cg-flash{outline:3px solid #38bdf8;outline-offset:3px;transition:outline-color 1.2s}' +
       /* section chips */
-      '.cg-chips{position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 14px;' +
+      '.cg-chips{contain:inline-size;max-width:100%;box-sizing:border-box;position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 14px;' +
       'background:var(--bg-color,#060d1a);border-bottom:1px solid var(--card-border,#1e3a5f);scrollbar-width:thin}' +
       'body[data-theme="light"] .cg-chips{background:#e8f0f8}' +
       '.cg-chip{flex:0 0 auto;font-size:0.72rem;font-weight:700;letter-spacing:0.5px;padding:5px 11px;border-radius:999px;cursor:pointer;' +

@@ -1,4 +1,8 @@
-/* Asifah Analytics -- MARKET GLANCE  v1.1.0  (Nov 15 2026)
+/* Asifah Analytics -- MARKET GLANCE  v1.1.1  (Nov 21 2026)
+ *
+ * v1.1.1: MOBILE FIX. The sticky jump-chip strip pushed the whole page to ~713px
+ *   wide on phones (its chips set the page min-width). contain:inline-size lets
+ *   the strip scroll sideways inside itself instead.
  *
  * v1.1.0 (Rachel: "another situation of white space ... full top to bottom
  * scan ... the order of information, what defaults as open vs. closed"):
@@ -100,7 +104,7 @@
       'details.mkg-fold[open]>summary{border-bottom:1px solid var(--card-border,#1e3a5f);margin-bottom:8px}' +
       '.mkg-flash{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px}' +
       /* chips */
-      '.mkg-chips{position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 14px;' +
+      '.mkg-chips{contain:inline-size;max-width:100%;box-sizing:border-box;position:sticky;top:0;z-index:40;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 14px;' +
       'background:var(--bg-color,#060d1a);border-bottom:1px solid var(--card-border,#1e3a5f);scrollbar-width:thin}' +
       'body[data-theme="light"] .mkg-chips,[data-theme="light"] .mkg-chips{background:var(--bg-color,#e8f0f8)}' +
       '[data-theme="light"] .mkg-tip{background:#fff;color:#0f172a}' +
