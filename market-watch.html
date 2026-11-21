@@ -170,6 +170,17 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 .headline-title { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; }
 .headline-prose { font-size: 15px; line-height: 1.65; color: var(--text-secondary); }
 .headline-prose strong { color: var(--text-primary); }
+/* Nov 21 2026: the fragility headline, folded into its own card */
+.fragility-lead { margin: 10px 0 4px; padding: 12px 14px; border-radius: 10px; border-left: 4px solid var(--card-border); background: rgba(127,127,127,0.06); }
+.fragility-lead:empty { display: none; }
+.fragility-lead.band-normal { border-left-color: rgba(34,197,94,0.7); }
+.fragility-lead.band-elevated { border-left-color: rgba(234,179,8,0.8); }
+.fragility-lead.band-high { border-left-color: rgba(249,115,22,0.85); }
+.fragility-lead.band-critical { border-left-color: rgba(239,68,68,0.9); }
+.fragility-lead .fl-title { font-weight: 800; font-size: 14px; letter-spacing: .5px; margin-bottom: 4px; }
+.fragility-lead .fl-note { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+.fragility-lead .fl-prose { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+.fragility-lead .fl-prose strong { color: var(--text-primary); }
 
 /* ── FRAGILITY HERO ── */
 .fragility-card { border: 2px solid var(--card-border); border-radius: 16px; padding: 26px 30px; margin-bottom: 22px; background: var(--card-bg); }
@@ -424,6 +435,7 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 <script src="resources/prediction-markets.js" defer></script>
 <!-- Nov 15 2026: page pass -- "Ten conditions" lights, Chains to watch (chip supply chain), repricing moved up, section chips -->
 <script src="resources/market-glance.js" defer></script>
+<script src="resources/market-week.js" defer></script>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
 <script src="resources/asifah-standard-shell.js" defer></script>
 </head>
@@ -498,11 +510,14 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
 
             <!-- ══ GLOBAL HEADLINE BANNER ══ -->
             <div class="headline-banner" id="headlineBanner">
-                <div class="headline-eyebrow">Global Market Read · Synthesized</div>
-                <div class="headline-title" id="headlineTitle">Reading global markets…</div>
+                <!-- Nov 21 2026: THE WEEK IN MARKETS (resources/market-week.js reads ME /api/market-week).
+                     The old "Global market fragility" banner text now lives inside the fragility card
+                     (#fragilityLead): the monthly detector is the dry forest, this banner is the lightning. -->
+                <div class="headline-eyebrow">The week in markets · what the tape is afraid of</div>
+                <div class="headline-title" id="headlineTitle">Reading the week…</div>
                 <div class="headline-prose" id="headlineProse">
-                    Connecting to the fragility detector and regional market pulses. This banner
-                    synthesizes one cross-market read; the regional boards below show the components.
+                    Reading five trading sessions of prices across stocks, bonds, the dollar, gold, oil,
+                    crypto and world markets.
                 </div>
             </div>
 
@@ -518,6 +533,8 @@ header h1 { font-family: 'Times New Roman', Times, serif; font-size: 28px; margi
                         <span class="fragility-band-pill band-normal-pill" id="fragilityBandPill">Loading</span>
                     </div>
                 </div>
+
+                <div class="fragility-lead" id="fragilityLead"></div>
 
                 <div class="fragility-frame" id="fragilityFrame">
                     Fragility, not prophecy: this module measures how dry the forest is. The GPI kinetic
@@ -1447,8 +1464,8 @@ async function loadDetector(){
             return d;
         }
     } catch(e){ console.warn('[Market Watch] detector failed:', e); }
-    el('headlineTitle').textContent = 'Detector warming up';
-    el('headlineProse').textContent = 'The fragility detector is starting (cold cache can take 60-90s). Refresh shortly.';
+    const fl = el('fragilityLead');
+    if(fl) fl.innerHTML = '<div class="fl-title">Detector warming up</div><div class="fl-prose">The fragility detector is starting (cold cache can take 60-90s). Refresh shortly.</div>';
     return null;
 }
 
@@ -1546,24 +1563,21 @@ function _repricingHeadline(d){
     return { band: bandByState[d.state] || 'elevated', sev: st.sev || 0, title: title, prose: esc(d.market_read||'') };
 }
 
+// Nov 21 2026: the fragility headline is FOLDED into the fragility card (#fragilityLead).
+// The banner at the top belongs to the week read (resources/market-week.js).
 function renderHeadline(){
-    const banner = el('headlineBanner');
+    const box = el('fragilityLead');
     const fr = _marketState.fragility;
-    const reps = _marketState.repricing || [];
-    const frH = fr ? _fragilityHeadline(fr) : null;
+    if(!box || !fr) return;
+    const frH = _fragilityHeadline(fr);
     let repH = null;
-    reps.forEach(d=>{ const h = _repricingHeadline(d); if(!repH || h.sev > repH.sev) repH = h; });
-    if(!frH && !repH){ return; }
-    let lead, second;
-    if(frH && (!repH || frH.sev >= repH.sev)){ lead = frH; second = (repH && repH.sev>=3) ? repH : null; }
-    else { lead = repH; second = frH; }
-    banner.className = 'headline-banner band-'+lead.band;
-    el('headlineTitle').textContent = lead.title;
-    let prose = lead.prose;
-    if(second){ prose += ' <strong>Also:</strong> ' + (second===frH ? second.prose : second.title + '.'); }
-    const rf = (fr && fr.regional_flags) || [];
+    (_marketState.repricing || []).forEach(d=>{ const h = _repricingHeadline(d); if(!repH || h.sev > repH.sev) repH = h; });
+    let prose = frH.prose;
+    if(repH && repH.sev >= 3){ prose += ' <strong>Also:</strong> ' + esc(repH.title) + '.'; }
+    const rf = fr.regional_flags || [];
     if(rf.length){ prose += ' <strong>Outside the US:</strong> ' + esc(rf.slice(0,2).map(f=>f.name+' \u2014 '+f.label+' pattern ('+f.similarity_pct+'%)').join('; ')) + '.'; }
-    el('headlineProse').innerHTML = prose;
+    box.className = 'fragility-lead band-'+frH.band;
+    box.innerHTML = '<div class="fl-title">'+esc(frH.title)+' <span class="fl-note">monthly read</span></div><div class="fl-prose">'+prose+'</div>';
 }
 
 // Theme + drawer (gpi canon)
