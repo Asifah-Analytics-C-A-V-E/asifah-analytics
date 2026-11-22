@@ -1,4 +1,4 @@
-/* Asifah Analytics -- THE WEEK IN MARKETS banner -- v1.1.0 (Nov 22 2026: 'not yet' items explain themselves -- what it means, and the signs that would mean it is changing, with today's reading)
+/* Asifah Analytics -- THE WEEK IN MARKETS banner -- v1.2.0 (Nov 22 2026 (b): closest past weeks from Asifah's own record) v1.1.0 (Nov 22 2026: 'not yet' items explain themselves -- what it means, and the signs that would mean it is changing, with today's reading)
  * v1.0.0 (Nov 21 2026)
  *
  * Rachel (Nov 21): "we need to catch what happened and be able to talk about
@@ -134,8 +134,17 @@
         d.context.map(function (c) { return '<div>' + esc(c.text) + '</div>'; }).join('') + '</div>';
     }
     html += world(d.world);
+    // v1.2.0: closest past weeks in Asifah's own record (empty until the record has history)
+    if ((d.echoes || []).length) {
+      html += '<div class="mwk-lab">Closest past weeks in Asifah\'s record</div><div class="mwk-not">' +
+        d.echoes.map(function (e) {
+          return '<div><b>' + esc(e.label) + '</b>' + (e.window ? ' (' + esc(e.window) + ')' : '') + ': ' + e.similarity_pct +
+            '% of the same fears (' + esc((e.shared || []).join(', ').replace(/_/g, ' ')) + ')' +
+            (e.equities_r5 != null ? '; the S&P moved ' + pc(e.equities_r5) + ' that week' : '') + '.</div>';
+        }).join('') + '</div>';
+    }
     html += '<div class="mwk-foot">' + esc(d.disclaimer || '') + ' Daily closes, last five sessions' +
-      (d.generated_at ? ' · read ' + ago(d.generated_at) : '') + '. The monthly fragility read (how dry the forest is) sits in its own card below.</div>';
+      (d.generated_at ? ' · read ' + ago(d.generated_at) : '') + '. The monthly fragility read (how dry the forest is) sits in its own card below. Asifah banks each day\'s fear pattern (record started Nov 22 2026) so future weeks can be compared with this one.</div>';
     if (p) p.innerHTML = html;
   }
 
