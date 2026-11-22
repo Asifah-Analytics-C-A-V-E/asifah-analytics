@@ -1,4 +1,5 @@
-/* Asifah Analytics -- Traders' Odds strip -- v1.1.0 (Nov 21 2026)
+/* Asifah Analytics -- Traders' Odds strip -- v1.1.1 (Nov 22 2026: past-deadline questions fade as OLD NEWS and sort last; a strip of only old news collapses to one line)
+ * v1.1.0 (Nov 21 2026)
  *
  * v1.1.0: every market row now carries a "vs Asifah" line from the backend
  * (prediction_markets.py v1.1.0, deterministic, no Claude call): where our own
@@ -67,6 +68,9 @@
       '.asf-mkt-thin{font-size:0.62rem;font-weight:700;letter-spacing:0.8px;padding:2px 7px;border-radius:999px;border:1px dashed rgba(127,127,127,0.6);cursor:help}' +
       '.asf-mkt a,.asf-mkt-gauge a{color:#38bdf8;font-weight:700;text-decoration:none}.asf-mkt a:hover,.asf-mkt-gauge a:hover{text-decoration:underline}' +
       'html.light-mode .asf-mkt a,html.light-mode .asf-mkt-gauge a,body.light-mode .asf-mkt a,body.light-mode .asf-mkt-gauge a,[data-theme=light] .asf-mkt a,[data-theme=light] .asf-mkt-gauge a{color:#0369a1}' +
+      '.asf-mkt-row.stale{opacity:0.55}.asf-mkt-row.stale:hover{opacity:0.9}' +
+      '.asf-mkt-old{font-size:0.62rem;font-weight:800;letter-spacing:1px;color:#94a3b8;text-transform:uppercase}' +
+      '.asf-mkt-oldfold summary{cursor:pointer;font-size:0.8rem;color:var(--text-muted,#94a3b8);line-height:1.5}' +
       '.asf-mkt-vs{font-size:0.76rem;line-height:1.45;padding:6px 8px;border-radius:6px;border-left:3px solid var(--vs,#64748b);background:rgba(127,127,127,0.07)}' +
       '.asf-mkt-vs .lab{display:block;font-size:0.6rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--vs,#64748b);margin-bottom:2px}' +
       '.asf-mkt-vs.dash{border-left-style:dashed;--vs:#94a3b8}.asf-mkt-vs.weak{opacity:0.75}' +
@@ -127,7 +131,9 @@
     var flagged = (it.flags || []).length ? ' flagged' : '';
     var read = it.read || '';
     if (it.status === 'unavailable') read = 'Odds unread this load — unread, not calm.';
-    return '<div class="asf-mkt-row' + flagged + '">' +
+    var stale = it.stale ? ' stale' : '';
+    return '<div class="asf-mkt-row' + flagged + stale + '">' +
+      (it.stale ? '<div class="asf-mkt-old">🕰️ OLD NEWS · ' + esc(it.stale_note || 'deadline passed') + '</div>' : '') +
       '<div class="asf-mkt-q"><span>' + esc(it.label) + '</span><span class="asf-mkt-odds">' + esc(oddsOf(it)) + '</span></div>' +
       '<div class="asf-mkt-read">' + esc(read) + '</div>' +
       vsLine(it) +
@@ -207,8 +213,15 @@
       return;
     }
     items = items.slice().sort(function (a, b) {
-      return ((b.flags || []).length - (a.flags || []).length) || (vsRank(b) - vsRank(a));
+      return ((a.stale ? 1 : 0) - (b.stale ? 1 : 0)) ||
+        ((b.flags || []).length - (a.flags || []).length) || (vsRank(b) - vsRank(a));
     });
+    // v1.1.1: when every question on the strip is past its deadline, fold it away
+    if (items.every(function (it) { return it.stale; })) {
+      el.innerHTML = '<details class="asf-mkt-oldfold"><summary>🕰️ ' + esc(title) + ': old news. These questions passed their deadline and are waiting to settle; they drop off the page soon. Tap for the final odds.</summary>' +
+        '<div class="asf-mkt-list">' + items.map(row).join('') + '</div></details>';
+      return;
+    }
     var max = parseInt(el.getAttribute('data-max') || '6', 10);
     var first = items.slice(0, max), rest = items.slice(max);
     el.innerHTML = head +

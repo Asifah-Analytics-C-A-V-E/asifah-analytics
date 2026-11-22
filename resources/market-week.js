@@ -1,4 +1,5 @@
-/* Asifah Analytics -- THE WEEK IN MARKETS banner -- v1.0.0 (Nov 21 2026)
+/* Asifah Analytics -- THE WEEK IN MARKETS banner -- v1.1.0 (Nov 22 2026: 'not yet' items explain themselves -- what it means, and the signs that would mean it is changing, with today's reading)
+ * v1.0.0 (Nov 21 2026)
  *
  * Rachel (Nov 21): "we need to catch what happened and be able to talk about
  * what it reflects (what kinds of fears it reflects) and what that could mean
@@ -40,6 +41,9 @@
       '.mwk-not{display:flex;flex-direction:column;gap:6px}' +
       '.mwk-not div{font-size:12.5px;line-height:1.5;padding:8px 12px;border-radius:8px;border:1px dashed rgba(34,197,94,.55);color:var(--text-secondary)}' +
       '.mwk-not b{color:var(--text-primary)}' +
+      '.mwk-why{margin-top:6px}.mwk-why summary{text-transform:none!important;letter-spacing:0!important;font-size:12px!important;color:var(--accent)!important}' +
+      '.mwk-why p{margin:6px 0;line-height:1.55}.mwk-why .mwk-wl{font-weight:700;color:var(--text-primary)}' +
+      '.mwk-why ul{list-style:none;padding:0;margin:4px 0 0}.mwk-why li{display:flex;gap:8px;margin:5px 0;line-height:1.5}.mwk-why .ic{flex:0 0 18px}' +
       '.mwk-ctx div{font-size:12.5px;line-height:1.55;padding:8px 12px;border-left:3px solid #a855f7;background:rgba(168,85,247,.06);border-radius:6px;margin-bottom:6px;color:var(--text-secondary)}' +
       '.mwk-afraid{font-size:14.5px;line-height:1.5;margin:2px 0 8px;color:var(--text-secondary)}.mwk-afraid b{color:var(--text-primary)}' +
       '.mwk-sowhat{font-size:14px;line-height:1.6;padding:10px 14px;border-radius:8px;background:rgba(56,189,248,.07);border-left:3px solid var(--accent);color:var(--text-primary)}' +
@@ -108,7 +112,22 @@
     }
     if ((d.not_yet || []).length) {
       html += '<div class="mwk-lab">What is NOT happening (yet)</div><div class="mwk-not">' +
-        d.not_yet.map(function (n) { return '<div><b>' + esc(n.name) + '.</b> ' + esc(n.text) + '</div>'; }).join('') + '</div>';
+        d.not_yet.map(function (n) {
+          var x = '<div><b>' + esc(n.name) + '.</b> ' + esc(n.text);
+          if (n.explain || (n.watch || []).length) {
+            x += '<details class="mwk-why"><summary>What does that mean, and what would change it?</summary>';
+            if (n.explain) x += '<p>' + esc(n.explain) + '</p>';
+            if ((n.watch || []).length) {
+              x += '<p class="mwk-wl">Signs it would be changing, with this week\'s reading:</p><ul>' + n.watch.map(function (w) {
+                var ic = w.tripped === true ? '⚠️' : w.tripped === false ? '✓' : '👁';
+                var st = w.tripped === true ? 'TRIPPED' : w.tripped === false ? 'not yet' : 'watch the news';
+                return '<li><span class="ic">' + ic + '</span><span><b>' + esc(w.sign) + '.</b> Now: ' + esc(w.now) + ' <em>(' + st + ')</em></span></li>';
+              }).join('') + '</ul>';
+            }
+            x += '</details>';
+          }
+          return x + '</div>';
+        }).join('') + '</div>';
     }
     if ((d.context || []).length) {
       html += '<div class="mwk-lab">Asifah context · not scored</div><div class="mwk-ctx">' +
