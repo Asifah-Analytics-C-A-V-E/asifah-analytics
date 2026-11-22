@@ -1,4 +1,8 @@
-/* Asifah Analytics -- Spoke & Wheel network graph  v1.2.1  (Nov 21 2026)
+/* Asifah Analytics -- Spoke & Wheel network graph  v1.2.2  (Nov 22 2026)
+ *
+ * v1.2.2: CAR has a rhetoric page now (rhetoric-car.html): its nodes link there.
+ * Rwanda is the first hub that LIVES in Africa (a mini wheel: CAR, Mozambique,
+ * DRC), so the Africa graph stops saying "no hub lives in this region".
  *
  * v1.2.1: Niger has a rhetoric page now (rhetoric-niger.html): its nodes link there.
  *
@@ -46,8 +50,8 @@
   var DIP = '#0ea5e9';   // the GPI's Diplomatic card colour
   var HUB_NAME = { us: 'USA', uk: 'UK', uae: 'UAE', dprk: 'DPRK', turkey: 'Türkiye', car: 'CAR', drc: 'DR Congo' };
   // pages that exist today; anything else gets no link rather than a dead one
-  var RHETORIC = ' afghanistan argentina armenia azerbaijan belarus burkina_faso canada chile china cuba cyprus dprk egypt greece greenland hungary india iran iraq israel japan kazakhstan lebanon libya mali mexico moldova niger oman pakistan paraguay peru philippines poland qatar russia saudi_arabia somalia sudan syria taiwan turkey uae uk ukraine us venezuela vietnam yemen ';
-  var STABILITY = ' albania algeria bahrain belgium brazil car chad colombia drc equatorial_guinea ethiopia guinea haiti jordan kenya kuwait madagascar morocco mozambique nigeria panama rwanda south_africa south_sudan tanzania tunisia turkmenistan uganda ';
+  var RHETORIC = ' afghanistan argentina armenia azerbaijan belarus burkina_faso canada car chile china cuba cyprus dprk egypt greece greenland hungary india iran iraq israel japan kazakhstan lebanon libya mali mexico moldova niger oman pakistan paraguay peru philippines poland qatar russia saudi_arabia somalia sudan syria taiwan turkey uae uk ukraine us venezuela vietnam yemen ';
+  var STABILITY = ' albania algeria bahrain belgium brazil chad colombia drc equatorial_guinea ethiopia guinea haiti jordan kenya kuwait madagascar morocco mozambique nigeria panama rwanda south_africa south_sudan tanzania tunisia turkmenistan uganda ';
   var STAB_ALIAS = { south_korea: 'south-korea' };
 
   var S = {
@@ -434,7 +438,8 @@
         var top = S.hubs.slice().sort(function (a, b) { return b.litN - a.litN; })[0];
         // where each hub lives (a hub's wheel is read from its home region's backend)
         var HOME = { china: 'asia_pacific', us: 'wha', russia: 'europe', iran: 'middle_east', turkey: 'europe',
-                     israel: 'middle_east', uae: 'middle_east', saudi_arabia: 'middle_east', india: 'asia_pacific' };
+                     israel: 'middle_east', uae: 'middle_east', saudi_arabia: 'middle_east', india: 'asia_pacific',
+                     rwanda: 'africa' };
         var resident = S.hubs.some(function (h) { return HOME[h.id] === S.region; });
         lead = sp.length + ' countries here sit on ' + S.hubs.length + ' hubs\' wheels; ' + litSp.length + ' are lit this cycle' +
           (top && top.litN ? ', most of them by ' + top.name + ' (' + top.litN + ')' : '') + '.' +
