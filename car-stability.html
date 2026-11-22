@@ -1,5 +1,5 @@
-<!-- Asifah Analytics — Central African Republic Stability v2.0.0 — 22 November 2026 (rebuilt on the Niger/Burkina canon) -->
-<!-- SENSOR PAGE: dials and dated facts, not analysis. The analyst layer lives on rhetoric-car.html (next build). -->
+<!-- Asifah Analytics — Central African Republic Stability v2.0.1 — 22 November 2026 (rebuilt on the Niger/Burkina canon; v2.0.1 the rhetoric tracker is live) -->
+<!-- SENSOR PAGE: dials and dated facts, not analysis. The analyst layer lives on rhetoric-car.html (live Nov 22 2026). -->
 <!-- CARD ORDER (canonical): banners · rhetoric · what CAR depends on · humanitarian · commodities · financial · map · knowledge library · footer -->
 <!-- v2.0.0 replaces the Jul 2026 v1.0.0 shell (OSM iframe, placeholder rhetoric card, no humanitarian or financial sensors). -->
 <!DOCTYPE html>
@@ -422,14 +422,14 @@ ul.tl li b { color: var(--text-primary); margin-right: 6px; }
         <a class="banner-action" id="advLink" href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/central-african-republic-travel-advisory.html" target="_blank" rel="noopener">VIEW ADVISORY →</a>
     </div>
 
-    <!-- The green door to the analyst layer. rhetoric-car.html is the NEXT build
-         (Nov 2026); until it ships the link 404s and the chip says so. -->
+    <!-- The green door to the analyst layer: rhetoric-car.html (live Nov 22 2026).
+         The chip reads LIVE once the tracker answers; if it does not, UNREAD. -->
     <div class="banner banner-green">
         <div class="banner-icon">📡</div>
         <div class="banner-main">
             <div class="banner-head">
                 <span>Central African Republic Rhetoric Tracker</span>
-                <span class="level-chip" id="rhetChip">COMING NEXT</span>
+                <span class="level-chip" id="rhetChip">LOADING</span>
             </div>
             <div class="banner-body">
                 This page is a set of <strong>dials</strong>: counted figures and dated facts, with
@@ -923,22 +923,21 @@ function renderRhetoric() {
         if (chip) { chip.textContent = 'LIVE'; }
         registerStamp('rhetoric', d.last_updated);
     }).catch(function () {
-        /* NOT a zero, NOT a quiet country. The tracker is not built yet, and the
-           page says exactly that. An unbuilt sensor reading "level 0" would be a
-           diagnostic that lies. */
-        el('rhetStamp').textContent = 'not instrumented';
+        /* NOT a zero, NOT a quiet country. The tracker did not answer (asleep,
+           first boot, or a failed scan), and the page says exactly that. A silent
+           sensor reading "level 0" would be a diagnostic that lies. */
+        el('rhetStamp').textContent = 'no answer';
         el('rhetBody').innerHTML =
-            '<div class="errbox"><strong>NOT YET INSTRUMENTED.</strong> No rhetoric tracker is deployed '
-          + 'for the Central African Republic, so this card has nothing to report — which is different '
-          + 'from reporting calm. Treat it as <em>unread</em>, not as level 0.</div>'
-          + '<div class="sensor-voice">Coming next: the CAR rhetoric tracker. It will read who guards the '
-          + 'president (Wagner or Africa Corps), Rwanda\'s role, the UAE gold channel, MINUSCA, the US '
-          + 'return, and three fronts — the north-west, the south-east (Haut-Mbomou) and the north-east '
-          + 'on the Sudan border — on kinetic ladders.</div>'
+            '<div class="errbox"><strong>TRACKER NOT ANSWERING.</strong> The CAR rhetoric tracker did not '
+          + 'respond just now (the backend may be waking up). That is different from reporting calm: '
+          + 'treat it as <em>unread</em>, not as level 0.</div>'
+          + '<div class="sensor-voice">What it reads: who guards the president (Wagner or Africa Corps), '
+          + 'Rwanda\'s role, the UAE gold channel, MINUSCA, the US return, and three fronts — the north-west, '
+          + 'the south-east (Haut-Mbomou) and the north-east on the Sudan border — on kinetic ladders.</div>'
           + '<div class="sub"><a href="rhetoric-car.html" style="color:var(--accent);">'
-          + 'rhetoric-car.html — live as soon as the page ships →</a></div>';
+          + 'Open the rhetoric tracker →</a></div>';
         var chip = el('rhetChip');
-        if (chip) { chip.textContent = 'COMING NEXT'; }
+        if (chip) { chip.textContent = 'UNREAD'; }
         registerStamp('rhetoric', null);
     });
 }
