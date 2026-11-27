@@ -1,4 +1,6 @@
-/* Asifah Analytics -- Spoke & Wheel network graph  v1.2.3  (Nov 27 2026)
+/* Asifah Analytics -- Spoke & Wheel network graph  v1.2.4  (Nov 27 2026)
+ *
+ * v1.2.4: Rwanda has a rhetoric page (rhetoric-rwanda.html) -- the hub's own tracker.
  *
  * v1.2.3: DRC has a rhetoric page (rhetoric-drc.html); Uganda joins Rwanda as a hub living in Africa.
  *
@@ -52,7 +54,7 @@
   var DIP = '#0ea5e9';   // the GPI's Diplomatic card colour
   var HUB_NAME = { us: 'USA', uk: 'UK', uae: 'UAE', dprk: 'DPRK', turkey: 'Türkiye', car: 'CAR', drc: 'DR Congo' };
   // pages that exist today; anything else gets no link rather than a dead one
-  var RHETORIC = ' afghanistan argentina armenia azerbaijan belarus burkina_faso canada car chile china cuba cyprus dprk drc egypt greece greenland hungary india iran iraq israel japan kazakhstan lebanon libya mali mexico moldova niger oman pakistan paraguay peru philippines poland qatar russia saudi_arabia somalia sudan syria taiwan turkey uae uk ukraine us venezuela vietnam yemen ';
+  var RHETORIC = ' afghanistan argentina armenia azerbaijan belarus burkina_faso canada car chile china cuba cyprus dprk drc egypt greece greenland hungary india iran iraq israel japan kazakhstan lebanon libya mali mexico moldova niger oman pakistan paraguay peru philippines poland qatar russia rwanda saudi_arabia somalia sudan syria taiwan turkey uae uk ukraine us venezuela vietnam yemen ';
   var STABILITY = ' albania algeria bahrain belgium brazil chad colombia equatorial_guinea ethiopia guinea haiti jordan kenya kuwait madagascar morocco mozambique nigeria panama rwanda south_africa south_sudan tanzania tunisia turkmenistan uganda ';
   var STAB_ALIAS = { south_korea: 'south-korea' };
 
