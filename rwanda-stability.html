@@ -1,37 +1,35 @@
+<!-- Asifah Analytics — Rwanda Stability v2.0.0 — 27 November 2026 (rebuilt on the DRC/CAR canon; a HUB page) -->
+<!-- SENSOR PAGE: dials and dated facts, not analysis. The analyst layer (the Rwanda wheel) lives on rhetoric-rwanda.html. -->
+<!-- CARD ORDER (canonical): banners · rhetoric · what Rwanda depends on · humanitarian · commodities · financial · map · knowledge library · footer -->
+<!-- v2.0.0 replaces the May 2026 v1.0.0 shell (placeholder rhetoric card, no humanitarian or financial sensors, a May context). -->
 <!DOCTYPE html>
-<!-- Asifah Analytics — Rwanda Stability Index v1.0.0 — May 2026 -->
-<!-- Gold Standard Africa shell: Arctic scheme + sidebar + rhetoric placeholder + commodity card + EN only -->
-<!-- COPYRIGHT (c) 2025-2026 Asifah Analytics. All rights reserved. -->
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Rwanda Stability Index | Asifah Analytics v1.0.0</title>
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png">
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Rwanda Stability — Asifah Analytics</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-/* ════════════════════════════════════════════════════════════
-   ARCTIC SCHEME (canonical across all Asifah pages)
-   ════════════════════════════════════════════════════════════ */
+/* ── ARCTIC THEME VARIABLES (canonical platform-wide) ── */
 :root {
-    --bg-color:       #f8fafc;
+    --bg-color:       #e8f0f8;
     --container-bg:   #ffffff;
     --card-bg:        #ffffff;
-    --card-border:    #e2e8f0;
-    --text-primary:   #0f172a;
-    --text-secondary: #475569;
-    --text-muted:     #64748b;
-    --article-bg:     #f1f5f9;
-    --article-hover:  #e2e8f0;
-    --header-gradient-start: #f1f5f9;
-    --header-gradient-end:   #cbd5e1;
-    --header-text:    #0f172a;
+    --card-border:    #b0c8e0;
+    --text-primary:   #0a1628;
+    --text-secondary: #1e3a5f;
+    --text-muted:     #4a6080;
+    --article-bg:     #f0f6fc;
     --accent:         #0ea5e9;
-    --accent-glow:    rgba(14,165,233,0.15);
-    --card-glow:      0 1px 3px rgba(0,0,0,0.06);
-    --watermark-opacity: 0.05;
-    --watermark-filter: none;
+    --accent-glow:    rgba(14,165,233,0.2);
+    --card-glow:      none;
+    --card-hover-glow: 0 8px 20px rgba(0,0,0,0.12);
+    /* GOLD STANDARD: light watermark is 0.07, not 0.05 */
+    --watermark-opacity: 0.07;
+    --watermark-filter:  none;
 }
 [data-theme="dark"] {
     --bg-color:       #060d1a;
@@ -42,15 +40,12 @@
     --text-secondary: #93c5fd;
     --text-muted:     #4a7090;
     --article-bg:     #0a1525;
-    --article-hover:  #112038;
-    --header-gradient-start: #060d1a;
-    --header-gradient-end:   #1e3a5f;
-    --header-text:    #e2f0fb;
     --accent:         #38bdf8;
-    --accent-glow:    rgba(56,189,248,0.2);
-    --card-glow:      0 0 6px rgba(56,189,248,0.12), 0 0 1px rgba(56,189,248,0.25);
+    --accent-glow:    rgba(56,189,248,0.18);
+    --card-glow:      0 0 6px rgba(30,58,95,0.5), 0 0 1px rgba(56,189,248,0.15);
+    --card-hover-glow: 0 0 22px rgba(56,189,248,0.2), 0 8px 25px rgba(0,0,0,0.5);
     --watermark-opacity: 0.18;
-    --watermark-filter: saturate(3) brightness(0.8) hue-rotate(185deg);
+    --watermark-filter:  saturate(3) brightness(0.8) hue-rotate(185deg);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,1023 +54,1319 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     min-height: 100vh;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 body::before {
     content: '';
     position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 110vmin; height: 110vmin;
-    min-width: 500px; min-height: 500px;
-    max-width: 800px; max-height: 800px;
+    min-width: 800px; min-height: 800px;
+    max-width: 1400px; max-height: 1400px;
     background-image: url('https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png');
     background-size: contain; background-repeat: no-repeat; background-position: center;
-    opacity: var(--watermark-opacity);
-    filter: var(--watermark-filter);
-    pointer-events: none;
-    z-index: 0;
+    opacity: var(--watermark-opacity); filter: var(--watermark-filter);
+    z-index: 0; pointer-events: none; user-select: none;
 }
-body::after {
-    content: '';
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(56,189,248,0.015) 2px, rgba(56,189,248,0.015) 3px);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.container { max-width: 1800px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
-.page-with-sidebar { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
-.main-content { flex: 1; min-width: 0; }
-@media (max-width: 1024px) { .page-with-sidebar { flex-direction: column; } }
+/* GOLD STANDARD: content column is 1280px, matching --asifah-content-max
+   in resources/asifah-standard-shell.css. Was 1800px. If the standard
+   container width changes, it changes in BOTH places. */
+.container { max-width: 1280px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
 /* ── HEADER ── */
 header {
-    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
-    color: var(--header-text);
-    padding: 22px 30px;
-    border-radius: 14px;
-    margin: 20px 0;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 20px; flex-wrap: wrap;
-    box-shadow: var(--card-glow);
-    border: 1px solid var(--card-border);
+    background: linear-gradient(135deg, #060d1a, #0a1628);
+    border: 1px solid #1e3a5f;
+    border-radius: 12px; padding: 20px 25px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(56,189,248,0.08);
+    border-bottom: 1px solid rgba(56,189,248,0.2);
 }
-.header-logo-wrap { display: flex; align-items: center; gap: 14px; }
-.header-logo { width: 60px; height: 60px; }
-.back-link { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 700; letter-spacing: 0.5px; padding: 6px 12px; border: 1px solid var(--accent); border-radius: 6px; transition: all 0.2s; }
-.back-link:hover { background: var(--accent); color: white; }
-.header-content { flex: 1; min-width: 280px; }
-.header-content h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: 1px; }
-.subtitle { font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
-.last-updated { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
-.header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.theme-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.theme-toggle-label { font-size: 0.75rem; color: var(--text-muted); }
-.theme-toggle-switch { width: 44px; height: 22px; background: var(--card-border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; }
-.theme-toggle-slider { width: 18px; height: 18px; background: var(--accent); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
-[data-theme="dark"] .theme-toggle-slider { left: 24px; }
+[data-theme="light"] header { background: linear-gradient(135deg, #dbeafe, #eff6ff); border-color: #93c5fd; }
+.header-logo { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(56,189,248,0.4); flex-shrink: 0; }
+.header-left { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3);
+    color: #38bdf8; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: all 0.2s;
+}
+.back-link:hover { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+.header-center { flex: 1; text-align: center; }
+.header-flag { font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; color: #38bdf8; text-transform: uppercase; }
+.header-title { font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e2f0fb; margin: 4px 0; }
+[data-theme="light"] .header-title { color: #0a1628; }
+.header-subtitle { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; }
+.header-timestamp { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; font-family: 'Courier New', monospace; }
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.sensor-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 6px;
+    background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.4);
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; color: #38bdf8;
+    text-transform: uppercase; font-family: 'Courier New', monospace;
+}
 
-/* ── NAV SIDEBAR (canonical Gold Standard) ── */
-.nav-sidebar {
-    flex: 0 0 200px; min-width: 200px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: var(--card-glow);
-}
-.nav-sidebar-label {
-    font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--text-muted);
-    padding: 8px 4px 6px 4px;
-    border-bottom: 1px solid var(--card-border);
-    margin-bottom: 6px;
-}
+/* ── PAGE WITH SIDEBAR ── */
+.page-with-sidebar { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; }
+.nav-sidebar { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; position: sticky; top: 20px; height: fit-content; }
+.nav-sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(56,189,248,0.5); font-family: 'Courier New', monospace; margin-bottom: 4px; padding-left: 2px; }
 .nav-btn {
-    display: block;
-    padding: 9px 12px;
-    margin: 4px 0;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.15s;
-    color: var(--text-primary);
+    display: flex; justify-content: space-between; align-items: center; gap: 6px;
+    padding: 9px 11px; border-radius: 8px; border: 1px solid var(--card-border);
+    background: var(--card-bg); color: var(--text-secondary);
+    font-size: 0.72rem; font-weight: 600; text-decoration: none; transition: all 0.2s;
 }
-.nav-btn-label { display: block; }
-.nav-btn-status { display: block; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.95; margin-top: 2px; }
-.nav-btn.active-nav { background: linear-gradient(135deg,rgba(30,58,95,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: var(--text-primary); }
-.nav-btn.active-nav.you-are-here { background: linear-gradient(135deg,rgba(56,189,248,0.35),rgba(56,189,248,0.15)); border-color: var(--accent); }
-.nav-btn.active-nav:hover { transform: translateX(2px); }
-.nav-btn.commodities-btn { background: linear-gradient(135deg,rgba(12,74,110,0.55),rgba(56,189,248,0.18)); border: 1px solid rgba(56,189,248,0.5); color: #fde68a; }
-.nav-btn.military-btn { background: linear-gradient(135deg,rgba(22,101,52,0.55),rgba(134,239,172,0.18)); border: 1px solid rgba(134,239,172,0.55); color: #bbf7d0; }
-.nav-btn.gpi-btn { background: linear-gradient(135deg,rgba(107,33,168,0.55),rgba(196,181,253,0.18)); border: 1px solid rgba(196,181,253,0.55); color: #ddd6fe; }
-.nav-btn.rhetoric-btn { background: linear-gradient(135deg,rgba(21,94,117,0.55),rgba(103,232,249,0.18)); border: 1px solid rgba(103,232,249,0.55); color: #a5f3fc; }
-.nav-btn.inactive-nav { opacity: 0.5; cursor: not-allowed; background: var(--article-bg); }
+.nav-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+.nav-btn-status { font-size: 0.55rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+.main-content { flex: 1; min-width: 0; }
 
-/* ── METRIC CARDS ── */
-.metric-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
+/* ── CARD BASE ── */
+.card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 22px 24px; margin-bottom: 20px;
     box-shadow: var(--card-glow);
 }
-.section-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 12px; }
-.subsection-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
-
-/* ── RHETORIC TRACKER PLACEHOLDER ── */
-.rhetoric-placeholder {
-    background: var(--card-bg);
-    border: 1px dashed var(--card-border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 22px;
-    text-align: center;
-    opacity: 0.7;
+.card-title {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--accent); font-family: 'Courier New', monospace;
+    border-bottom: 1px solid var(--card-border); padding-bottom: 10px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap;
 }
-.rhetoric-placeholder .rh-icon { font-size: 2rem; margin-bottom: 8px; }
-.rhetoric-placeholder .rh-title { font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px; }
-.rhetoric-placeholder .rh-subtitle { font-size: 0.8rem; color: var(--text-muted); }
-.rhetoric-placeholder .rh-status {
-    display: inline-block;
+.card-title .stamp { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; font-weight: 400; text-transform: none; }
+.prose { font-size: 0.92rem; line-height: 1.65; color: var(--text-secondary); margin-bottom: 12px; }
+.prose strong { color: var(--text-primary); }
+.sub { font-size: 0.72rem; color: var(--text-muted); font-family: 'Courier New', monospace; line-height: 1.5; }
+.sensor-voice {
+    font-size: 0.78rem; line-height: 1.6; color: var(--text-muted);
+    border-left: 3px solid rgba(56,189,248,0.4); padding: 8px 0 8px 12px; margin: 12px 0;
+    background: var(--article-bg); border-radius: 0 6px 6px 0;
+}
+
+/* ── BANNERS ──
+   Canonical stability-page banner: icon · text block · action pill on the
+   right, gradient fill, 2px border. Same shape as israel.html so the Africa
+   pages and the ME pages read identically. */
+.banner {
+    border-radius: 10px; padding: 14px 20px; margin-bottom: 10px;
+    border: 2px solid; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.banner-icon { font-size: 24px; flex-shrink: 0; }
+.banner-main { flex: 1; min-width: 220px; }
+.banner-head {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px;
+}
+.banner-date {
+    font-weight: 400; letter-spacing: 1px; text-transform: none; opacity: 0.85;
+    font-family: 'Courier New', monospace; font-size: 0.62rem;
+}
+.banner-body { font-size: 0.8rem; line-height: 1.5; color: #e2e8f0; }
+.banner-action {
+    flex-shrink: 0; padding: 6px 14px; background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: #ffffff;
+    text-decoration: none; font-size: 0.65rem; font-weight: 700; white-space: nowrap;
+    letter-spacing: 1px;
+}
+.banner-action:hover { background: rgba(255,255,255,0.26); border-color: rgba(255,255,255,0.6); }
+.level-chip {
+    font-size: 0.6rem; font-weight: 800; padding: 2px 8px; border-radius: 3px;
+    letter-spacing: 1px; color: #ffffff;
+}
+/* Pills sit on a dark gradient inside a banner, so the page-level muted
+   colours would be unreadable there. Scope them up. */
+.banner .pill { color: #f1f5f9; border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.12); }
+.banner .pill-warn { color: #fde68a; border-color: rgba(253,230,138,0.6); background: rgba(253,230,138,0.14); }
+
+.banner-amber  { background: linear-gradient(135deg,#78350f 0%,#92400e 50%,#78350f 100%); border-color: #f59e0b; }
+.banner-amber  .banner-head { color: #fcd34d; }
+.banner-amber  .level-chip  { background: #f59e0b; }
+.banner-red    { background: linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%); border-color: #ef4444; }
+.banner-red    .banner-head { color: #fca5a5; }
+.banner-red    .level-chip  { background: #ef4444; }
+.banner-orange { background: linear-gradient(135deg,#7c2d12 0%,#9a3412 50%,#7c2d12 100%); border-color: #f97316; }
+.banner-orange .banner-head { color: #fdba74; }
+.banner-orange .level-chip  { background: #f97316; }
+.banner-green  { background: linear-gradient(135deg,#052e16 0%,#14532d 100%); border-color: #22c55e; }
+.banner-green  .banner-head { color: #86efac; }
+.banner-green  .banner-body { color: #d1fae5; }
+.banner-green  .level-chip  { background: #22c55e; }
+.banner-grey   { background: linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%); border-color: #6b7280; }
+.banner-grey   .banner-head { color: #cbd5e1; }
+.banner-grey   .level-chip  { background: #6b7280; }
+
+/* ── STAT GRID ── */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.stat {
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 14px 16px;
+}
+.stat.is-dial { border-color: #ef4444; background: rgba(239,68,68,0.07); }
+.stat-dial-tag {
+    display: inline-block; font-size: 0.52rem; font-weight: 700; letter-spacing: 1.5px;
+    font-family: 'Courier New', monospace; color: #ef4444; text-transform: uppercase;
+    border: 1px solid rgba(239,68,68,0.5); border-radius: 4px; padding: 1px 5px; margin-bottom: 6px;
+}
+.stat-value { font-size: 1.85rem; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+.stat.is-dial .stat-value { color: #ef4444; }
+.stat-label { font-size: 0.72rem; color: var(--text-secondary); margin-top: 3px; line-height: 1.35; }
+.stat-src { font-size: 0.58rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-top: 6px; line-height: 1.4; }
+
+/* ── NOTE BLOCKS ── */
+.note-block { border-top: 1px dashed var(--card-border); padding-top: 12px; margin-top: 12px; }
+.note-head {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); font-family: 'Courier New', monospace; margin-bottom: 5px;
+}
+.note-body { font-size: 0.84rem; line-height: 1.6; color: var(--text-secondary); }
+
+/* ── SEASONAL CALENDAR ── */
+.cal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+.cal-win {
+    border: 1px solid var(--card-border); border-radius: 8px; padding: 11px 13px;
     background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    color: var(--text-muted);
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin-top: 10px;
 }
+.cal-win.open { border-color: #f59e0b; background: rgba(245,158,11,0.08); }
+.cal-state {
+    font-size: 0.54rem; font-weight: 700; letter-spacing: 1.5px; font-family: 'Courier New', monospace;
+    text-transform: uppercase; padding: 1px 6px; border-radius: 4px; border: 1px solid; display: inline-block;
+}
+.cal-win.open .cal-state { color: #f59e0b; border-color: rgba(245,158,11,0.6); }
+.cal-win.closed .cal-state { color: var(--text-muted); border-color: var(--card-border); }
+.cal-label { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin: 6px 0 2px; }
+.cal-window { font-size: 0.64rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-bottom: 6px; }
+.cal-note { font-size: 0.74rem; line-height: 1.5; color: var(--text-secondary); }
+.cal-src { font-size: 0.56rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-top: 6px; }
 
-/* ── COMMODITY CARD ── */
-.commodity-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-left: 4px solid #f59e0b;
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
+/* ── TILES (commodities + financial) ── */
+.tile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.tile {
+    background: var(--article-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
 }
-.commodity-card-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 14px; }
-.commodity-prose {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-    padding: 12px 16px;
-    background: rgba(56,189,248,0.06);
-    border-left: 3px solid var(--accent);
-    border-radius: 6px;
-    margin-bottom: 14px;
+.tile.unavailable { border-style: dashed; opacity: 0.85; }
+.tile-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.tile-name { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
+.tile-ticker { font-size: 0.58rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+.tile-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+.tile-value.none { font-size: 0.86rem; color: var(--text-muted); font-family: 'Courier New', monospace; }
+.tile-chg { font-size: 0.75rem; font-weight: 700; font-family: 'Courier New', monospace; }
+.chg-up { color: #22c55e; } .chg-down { color: #ef4444; } .chg-flat { color: var(--text-muted); }
+.tile-note { font-size: 0.72rem; line-height: 1.5; color: var(--text-secondary); }
+.tile-meta { font-size: 0.56rem; color: var(--text-muted); font-family: 'Courier New', monospace; line-height: 1.45; }
+.pill {
+    display: inline-block; font-size: 0.52rem; font-weight: 700; letter-spacing: 1.2px;
+    font-family: 'Courier New', monospace; text-transform: uppercase;
+    padding: 1px 6px; border-radius: 4px; border: 1px solid;
 }
-[data-theme="light"] .commodity-prose { background: #f8fbfe; }
+.pill-warn { color: #f59e0b; border-color: rgba(245,158,11,0.55); background: rgba(245,158,11,0.08); }
+.pill-info { color: #38bdf8; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.08); }
+.pill-mute { color: var(--text-muted); border-color: var(--card-border); }
+.pill-live  { color: #22c55e; border-color: rgba(34,197,94,0.5); background: rgba(34,197,94,0.08); }
+.spark { display: block; width: 100%; height: 28px; }
 
-/* Alert banner */
-.commodity-alert-banner {
-    display: none;
-    padding: 10px 14px;
-    border-radius: 6px;
-    border-left: 4px solid transparent;
-    margin-bottom: 14px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-.commodity-alert-banner.show { display: block; }
-.commodity-alert-banner.alert-normal   { background: rgba(34,197,94,0.08);  border-left-color: #22c55e; color: #22c55e; }
-.commodity-alert-banner.alert-elevated { background: rgba(234,179,8,0.10);  border-left-color: #eab308; color: #eab308; }
-.commodity-alert-banner.alert-high     { background: rgba(249,115,22,0.10); border-left-color: #f97316; color: #f97316; }
-.commodity-alert-banner.alert-surge    { background: rgba(239,68,68,0.12);  border-left-color: #ef4444; color: #ef4444; animation: surge-pulse 2.5s ease-in-out infinite; }
-.commodity-alert-banner .ab-meta { color: var(--text-muted); font-weight: 400; margin-left: 10px; }
-@keyframes surge-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+/* ── REPORT LIST ── */
+.rpt { border-top: 1px solid var(--card-border); padding: 9px 0; }
+.rpt:first-of-type { border-top: none; }
+.rpt a { color: var(--text-primary); text-decoration: none; font-size: 0.82rem; line-height: 1.45; }
+.rpt a:hover { color: var(--accent); text-decoration: underline; }
+.rpt-meta { font-size: 0.58rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-top: 3px; }
 
-/* Tile grid */
-.commodity-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px;
-    margin-bottom: 14px;
-}
-.commodity-tile {
-    background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    padding: 14px;
-    transition: all 0.2s;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-.commodity-tile:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--card-glow); }
-.commodity-tile-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-.commodity-tile-icon { font-size: 1.6rem; flex-shrink: 0; }
-.commodity-tile-titlewrap { flex: 1; min-width: 0; }
-.commodity-tile-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-.commodity-tile-rank { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-.commodity-tile-badges { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-.commodity-tile-badge { font-size: 9px; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-.commodity-alert-normal   { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-.commodity-alert-elevated { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
-.commodity-alert-high     { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.4); }
-.commodity-alert-surge    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
-.commodity-role-producer { background: rgba(56,189,248,0.12); color: var(--accent); border: 1px solid rgba(56,189,248,0.3); }
-.commodity-role-consumer { background: rgba(139,92,246,0.12); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
-.commodity-tile-signals { font-size: 0.7rem; color: var(--text-muted); }
-.commodity-tile-price { font-size: 0.88rem; color: var(--text-primary); margin-bottom: 6px; font-weight: 600; }
-.commodity-tile-price .delta-up   { color: #22c55e; }
-.commodity-tile-price .delta-down { color: #ef4444; }
-.commodity-tile-sparkline { width: 100%; height: 36px; margin-bottom: 8px; }
-.commodity-tile-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; }
-
-.commodity-link { display: inline-block; margin-top: 10px; padding: 8px 14px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; color: #f59e0b; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
-.commodity-link:hover { background: rgba(245,158,11,0.2); }
-
-/* ── MAP SECTION ── */
-.map-section {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-    box-shadow: var(--card-glow);
-}
-.map-section h2 { font-size: 0.95rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; }
-.map-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px; }
-.map-iframe-wrap { width: 100%; height: 450px; border: 2px solid var(--card-border); border-radius: 8px; overflow: hidden; }
+/* ── MAP ── */
+.map-wrap { border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; background: var(--article-bg); }
+.map-wrap iframe { display: block; width: 100%; height: 420px; border: 0; }
 
 /* ── KNOWLEDGE LIBRARY ── */
-.knowledge-library {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
+details.kl { border: 1px solid var(--card-border); border-radius: 9px; background: var(--article-bg); margin-bottom: 9px; }
+details.kl > summary {
+    cursor: pointer; padding: 11px 15px; font-size: 0.74rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent);
+    font-family: 'Courier New', monospace; list-style: none;
 }
-.knowledge-library h2 { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 700; letter-spacing: 1px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 4px; }
-.library-icon { font-size: 1.5rem; }
-.open-source-disclaimer { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px; }
-.knowledge-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px; }
-.knowledge-card {
-    background: var(--article-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.2s;
-}
-.knowledge-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 18px;
-    cursor: pointer;
-    background: linear-gradient(135deg, rgba(56,189,248,0.05), transparent);
-    border-bottom: 1px solid transparent;
-    transition: all 0.2s;
-}
-.knowledge-header:hover { background: rgba(56,189,248,0.1); }
-.knowledge-header-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
-.category-icon { font-size: 1.3rem; }
-.collapse-icon { font-size: 0.85rem; color: var(--accent); transition: transform 0.2s; }
-.knowledge-card:not(.collapsed) .knowledge-header { border-bottom-color: var(--card-border); }
-.knowledge-card:not(.collapsed) .collapse-icon { transform: rotate(180deg); }
-.knowledge-content {
-    padding: 16px 18px 18px 18px;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-    max-height: 1600px;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-}
-.knowledge-card.collapsed .knowledge-content { max-height: 0; padding-top: 0; padding-bottom: 0; }
-.knowledge-content p { margin-bottom: 10px; }
-.knowledge-content ul { margin: 6px 0 12px 22px; }
-.knowledge-content li { margin-bottom: 4px; }
-.report-links-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 8px; margin-top: 14px;
-}
-.report-link {
-    display: block; padding: 8px 12px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 6px;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.78rem;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-.report-link:hover { background: var(--accent); color: white; }
+details.kl > summary::-webkit-details-marker { display: none; }
+details.kl > summary::before { content: '▸ '; }
+details.kl[open] > summary::before { content: '▾ '; }
+details.kl > div { padding: 0 15px 14px; font-size: 0.84rem; line-height: 1.6; color: var(--text-secondary); }
+.gloss { margin-bottom: 9px; }
+.gloss dt { font-weight: 700; color: var(--text-primary); font-size: 0.8rem; }
+.gloss dd { margin: 2px 0 9px 0; font-size: 0.8rem; line-height: 1.55; }
+.src-list { list-style: none; }
+.src-list li { padding: 4px 0; font-size: 0.78rem; }
+.src-list a { color: var(--accent); text-decoration: none; }
+.src-list a:hover { text-decoration: underline; }
 
-/* ── ARTICLES SECTION ── */
-.articles-section {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
+/* ── STATES ── */
+.loading { font-size: 0.78rem; color: var(--text-muted); font-family: 'Courier New', monospace; padding: 10px 0; }
+.errbox {
+    font-size: 0.78rem; color: #f59e0b; font-family: 'Courier New', monospace;
+    border: 1px dashed rgba(245,158,11,0.5); border-radius: 8px; padding: 11px 14px;
+    background: rgba(245,158,11,0.07); line-height: 1.5;
 }
-.article-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
-.article-tab { padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); border: 1px solid transparent; }
-.article-tab:hover { background: var(--article-hover); color: var(--text-primary); }
-.article-tab.active { background: var(--article-bg); color: var(--accent); border-color: var(--card-border); border-bottom-color: var(--article-bg); }
-.articles-list { list-style: none; padding: 0; }
-.article-item { padding: 12px 0; border-bottom: 1px solid var(--card-border); font-size: 0.88rem; line-height: 1.5; }
-.article-item:last-child { border-bottom: none; }
-.article-item a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
-.article-item a:hover { color: var(--accent); }
-.article-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
-.article-description { font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
 
-/* ── FOOTER ── */
-.footer-info {
-    text-align: center;
-    padding: 30px 20px;
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.7;
-    border-top: 1px solid var(--card-border);
-    margin-top: 30px;
+@media (max-width: 900px) {
+    .page-with-sidebar { display: block; }
+    .nav-sidebar { display: none; }
+    .container { padding: 12px; }
+    header { padding: 16px; }
 }
-.footer-info a { color: #38bdf8; text-decoration: none; }
-.footer-info a:hover { text-decoration: underline; }
-
-/* ── MOBILE ── */
-.mobile-hamburger { display: none; }
-.mobile-drawer-backdrop { display: none; }
-@media (max-width: 768px) {
-    .mobile-hamburger {
-        display: block;
-        background: var(--accent); color: white;
-        border: none; border-radius: 6px;
-        padding: 8px 14px;
-        font-size: 1.2rem;
-        cursor: pointer;
-        position: fixed; top: 14px; left: 14px;
-        z-index: 999;
-    }
-    .mobile-drawer-backdrop.open {
-        display: block;
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 998;
-    }
-    .nav-sidebar {
-        position: fixed; top: 0; left: -260px;
-        width: 240px; height: 100vh;
-        z-index: 999;
-        transition: left 0.3s;
-        overflow-y: auto;
-        border-radius: 0;
-    }
-    .nav-sidebar.mobile-open { left: 0; }
+/* ── NIGER-SPECIFIC (v3.0.0, Nov 2026) ── */
+.dep-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 12px; }
+.dep { border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 14px; background: var(--article-bg); min-width: 0; }
+.dep-h { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 8px; }
+.dep-sub { display: block; font-weight: 400; font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.row { display: grid; grid-template-columns: 92px minmax(0,1fr); gap: 8px; padding: 7px 0; border-top: 1px solid rgba(127,127,127,0.15); font-size: 0.8rem; line-height: 1.45; }
+.row:first-of-type { border-top: none; }
+.row-name { font-weight: 700; color: var(--text-primary); }
+.row-detail { color: var(--text-secondary); }
+.row-asof { display: block; font-size: 0.62rem; color: var(--text-muted); font-family: 'Courier New', monospace; margin-top: 2px; }
+.st { display: inline-block; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; border: 1px solid; margin-top: 3px; white-space: nowrap; }
+.st-shut      { color: #ef4444; border-color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.08); }
+.st-contested { color: #f97316; border-color: rgba(249,115,22,0.6); background: rgba(249,115,22,0.08); }
+.st-thaw, .st-opening, .st-reengaging, .st-rumour { color: #f59e0b; border-color: rgba(245,158,11,0.55); background: rgba(245,158,11,0.08); }
+.st-open, .st-flowing, .st-active { color: #22c55e; border-color: rgba(34,197,94,0.5); background: rgba(34,197,94,0.08); }
+.st-gone { color: var(--text-muted); border-color: var(--card-border); }
+.legit { margin-top: 14px; border: 1px dashed var(--card-border); border-radius: 10px; padding: 12px 14px; }
+.legit-h { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 8px; }
+.clock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.clock { font-size: 0.8rem; line-height: 1.45; color: var(--text-secondary); }
+.clock b.n { display: block; font-size: 1.5rem; color: var(--text-primary); font-weight: 700; line-height: 1.15; }
+.clock .bar { height: 6px; border-radius: 3px; background: rgba(127,127,127,0.2); margin: 6px 0 2px; overflow: hidden; }
+.clock .bar span { display: block; height: 100%; background: var(--accent); }
+.country-map { height: 400px; border-radius: 10px; border: 1px solid var(--card-border); margin-top: 10px; overflow: hidden; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.72rem; color: var(--text-secondary); margin-top: 8px; }
+.map-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.leaflet-popup-content { font-size: 12.5px; line-height: 1.45; }
+ul.tl { list-style: none; padding: 0; margin: 0; }
+ul.tl li { padding: 6px 0; border-top: 1px solid rgba(127,127,127,0.15); font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); }
+ul.tl li:first-child { border-top: none; }
+ul.tl li b { color: var(--text-primary); margin-right: 6px; }
+@media (max-width: 520px) {
+    .row { grid-template-columns: 1fr; gap: 2px; }
+    .country-map { height: 320px; }
 }
 </style>
 <link rel="stylesheet" href="resources/asifah-standard-shell.css">
-<script src="resources/asifah-standard-shell.js" defer></script>
+<script defer src="resources/asifah-standard-shell.js"></script>
 </head>
 <body>
-
 <div class="container">
 
-<!-- ════════════════════════════════════════════════════════════
-     HEADER
-     ════════════════════════════════════════════════════════════ -->
+<!-- ════════════════════ HEADER ════════════════════ -->
 <header>
-    <div class="header-logo-wrap">
-        <a href="africa.html" class="back-link">← Africa</a>
-        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png"
-             alt="Asifah Analytics Logo" class="header-logo"/>
+    <div class="header-left">
+        <img src="https://raw.githubusercontent.com/Asifah-Analytics-C-A-V-E/asifah-analytics/refs/heads/main/Asifah_Analytics_1_25_26_V1_LOGO.png" class="header-logo" alt="Asifah Analytics"/>
+        <a href="africa.html" class="back-link">← Back to Africa</a>
     </div>
-    <div class="header-content">
-        <h1>🇷🇼 RWANDA STABILITY INDEX</h1>
-        <div class="subtitle">Kagame Government · RDF Regional Footprint · M23 Backing Dispute · Mozambique SAMIM · DRC Sanctions · 2024 Election</div>
-        <div class="last-updated" id="lastUpdated">Connecting to backend...</div>
+    <div class="header-center">
+        <div class="header-flag">🇷🇼 RWANDA</div>
+        <div class="header-title">RWANDA STABILITY</div>
+        <div class="header-subtitle">A hub, not a crisis · the RDF abroad · the DRC question · 3T minerals &amp; gold · sanctions &amp; AGOA · the EU return hub</div>
+        <div class="header-timestamp">Page data as of: <span id="pageStamp">loading…</span></div>
     </div>
-    <div class="header-controls">
-        <div class="theme-toggle" onclick="toggleTheme()">
-            <span class="theme-toggle-label">Theme</span>
-            <div class="theme-toggle-switch">
-                <div class="theme-toggle-slider"></div>
-            </div>
-        </div>
+    <div class="header-right">
+        <div class="sensor-badge">◎ SENSOR PAGE</div>
     </div>
 </header>
 
-<!-- ════════════════════════════════════════════════════════════
-     PAGE WITH SIDEBAR
-     ════════════════════════════════════════════════════════════ -->
-<button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileDrawer()" aria-label="Open menu">☰</button>
-<div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
-
 <div class="page-with-sidebar">
 
-<!-- ── NAV SIDEBAR (canonical Gold Standard) ── -->
+<!-- NAV SIDEBAR — static fallback; asifah-standard-shell.js replaces it at runtime. -->
 <nav class="nav-sidebar" id="navSidebar">
     <div class="nav-sidebar-label">Dashboards</div>
-    <a href="africa.html" class="nav-btn active-nav you-are-here"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● You are here</span></a>
-    <a href="asia.html" class="nav-btn active-nav"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
-    <a href="europe.html" class="nav-btn active-nav"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
-    <a href="middle-east.html" class="nav-btn active-nav"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
-    <a href="wha.html" class="nav-btn active-nav"><span class="nav-btn-label">🌎 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
-
-    <div class="nav-sidebar-label" style="margin-top: 14px;">Cross-Cutting Tools</div>
-    <a href="commodities.html" class="nav-btn commodities-btn"><span class="nav-btn-label">📊 Commodity Tracker</span><span class="nav-btn-status">● Live</span></a>
-    <a href="military.html" class="nav-btn military-btn"><span class="nav-btn-label">🪖 Military Tracker</span><span class="nav-btn-status">● Live</span></a>
-    <a href="gpi.html" class="nav-btn gpi-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
-
-    <div class="nav-sidebar-label" style="margin-top: 14px;">Regional Rhetoric</div>
-    <a href="rhetoric-middle-east.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-asia.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-europe.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
-    <a href="rhetoric-wha.html" class="nav-btn rhetoric-btn"><span class="nav-btn-label">📡 W. Hemisphere</span><span class="nav-btn-status">● Live</span></a>
-    <div class="nav-btn inactive-nav"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">🔒 In Dev</span></div>
+    <a href="africa.html" class="nav-btn"><span class="nav-btn-label">🌍 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="asia.html" class="nav-btn"><span class="nav-btn-label">🌏 Asia &amp; Pacific</span><span class="nav-btn-status">● Live</span></a>
+    <a href="europe.html" class="nav-btn"><span class="nav-btn-label">🌍 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="middle-east.html" class="nav-btn"><span class="nav-btn-label">🕌 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="wha.html" class="nav-btn"><span class="nav-btn-label">🌎 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-sidebar-label">Global Trackers</div>
+    <a href="commodities.html" class="nav-btn"><span class="nav-btn-label">🛢️ Commodities</span><span class="nav-btn-status">● Live</span></a>
+    <a href="gpi.html" class="nav-btn"><span class="nav-btn-label">🌐 Global Pressure Index</span><span class="nav-btn-status">● Live</span></a>
+    <a href="market-watch.html" class="nav-btn"><span class="nav-btn-label">📈 Market Watch</span><span class="nav-btn-status">● Live</span></a>
+    <a href="military.html" class="nav-btn"><span class="nav-btn-label">🎖️ Military Tracker</span><span class="nav-btn-status">● Live</span></a>
+    <div class="nav-sidebar-label">Regional Rhetoric</div>
+    <a href="rhetoric-africa.html" class="nav-btn"><span class="nav-btn-label">📡 Africa</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-asia.html" class="nav-btn"><span class="nav-btn-label">📡 Asia</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-europe.html" class="nav-btn"><span class="nav-btn-label">📡 Europe</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-index.html" class="nav-btn"><span class="nav-btn-label">📡 Middle East</span><span class="nav-btn-status">● Live</span></a>
+    <a href="rhetoric-wha.html" class="nav-btn"><span class="nav-btn-label">📡 Western Hemisphere</span><span class="nav-btn-status">● Live</span></a>
 </nav>
 
-<div class="main-content">
+<main class="main-content">
 
-<!-- ── U.S. STATE DEPARTMENT WORLDWIDE CAUTION ── -->
-<div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#7f1d1d 100%);border:2px solid #ef4444;border-radius:10px;padding:16px 24px;margin:0 auto 25px auto;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px rgba(239,68,68,0.3);animation:caution-pulse 3s ease-in-out infinite;position:relative;z-index:10;">
-    <div style="font-size:28px;flex-shrink:0;">🚨</div>
-    <div style="flex:1;">
-        <div style="font-size:13px;font-weight:bold;color:#fca5a5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">⚠️ U.S. State Department — Worldwide Caution</div>
-        <div style="font-size:13px;color:#fde8e8;line-height:1.5;">Following the launch of U.S. combat operations in Iran, Americans worldwide and especially in the Middle East should follow the guidance in the latest security alerts issued by the nearest U.S. embassy or consulate. They may experience travel disruptions due to periodic airspace closures. The Department of State advises Americans worldwide to exercise increased caution.</div>
-        <div style="font-size:10px;color:#fca5a5;margin-top:6px;opacity:0.85;letter-spacing:0.5px;">Source: travel.state.gov · Last updated: February 28, 2026</div>
-    </div>
-    <a href="https://travel.state.gov/en/international-travel/travel-advisories/global-events/worldwide-caution.html" target="_blank" rel="noopener" style="flex-shrink:0;padding:8px 16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:white;text-decoration:none;font-size:12px;font-weight:bold;white-space:nowrap;">VIEW ADVISORY →</a>
-</div>
-<style>@keyframes caution-pulse{0%,100%{box-shadow:0 4px 15px rgba(239,68,68,0.3)}50%{box-shadow:0 4px 25px rgba(239,68,68,0.5)}}</style>
-
-<!-- ── COUNTRY-SPECIFIC TRAVEL ADVISORY (canonical blue style — matches China) ── -->
-<div id="travelAdvisoryCard" style="background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-    <div style="font-size: 24px; flex-shrink: 0;">🇷🇼</div>
-    <div style="flex: 1;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-            <span id="advisoryLabel" style="font-size: 11px; font-weight: bold; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.5px;">U.S. State Department — Rwanda Travel Advisory</span>
-            <span id="advisoryLevelBadge" style="background: #f59e0b; color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px;">LEVEL —</span>
+<!-- ════════════════════ 1. THE THREE BANNERS ════════════════════ -->
+<section id="banners">
+    <div class="banner banner-amber" id="bannerWW">
+        <div class="banner-icon">🚨</div>
+        <div class="banner-main">
+            <div class="banner-head">
+                <span>⚠️ U.S. State Department — Worldwide Caution</span>
+                <span class="banner-date" id="wwDate">—</span>
+            </div>
+            <div class="banner-body" id="wwBody">loading…</div>
         </div>
-        <div id="advisoryText" style="font-size: 12px; color: #e2e8f0; line-height: 1.4;">Loading current State Department travel advisory…</div>
+        <a class="banner-action" id="wwLink" href="https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html" target="_blank" rel="noopener">VIEW CAUTION →</a>
     </div>
-    <a id="advisoryLink" href="https://travel.state.gov/" target="_blank" rel="noopener" style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:white; text-decoration:none; font-size:11px; font-weight:bold; white-space:nowrap;">VIEW ADVISORY →</a>
-</div>
 
-<!-- ── RHETORIC TRACKER PLACEHOLDER (live tracker coming in future round) ── -->
-<div class="rhetoric-placeholder">
-    <div class="rh-icon">📡</div>
-    <div class="rh-title">Rwanda Rhetoric &amp; Pressure Tracker</div>
-    <div class="rh-subtitle">Actor-level escalation signals, vector composite scoring, top-signals feed — coming with rhetoric_tracker_rwanda.py</div>
-    <div class="rh-status">🔒 IN DEVELOPMENT</div>
-</div>
-
-
-
-<!-- ── STRATEGIC MAP ── -->
-<div class="map-section">
-    <h2>🗺️ Rwanda — Strategic Overview</h2>
-    <div class="map-subtitle">Interactive map centered on Kigali. Pan and zoom to explore strategic geography.</div>
-    <div class="map-iframe-wrap">
-        <iframe
-            src="https://www.openstreetmap.org/export/embed.html?bbox=28,-3,31,-1&layer=mapnik&marker=-1.9441,30.0619"
-            width="100%" height="100%" frameborder="0" scrolling="no" style="border: none;">
-        </iframe>
+    <!-- Country advisory: LIVE from /api/africa/travel-advisories (key 'rwanda'). -->
+    <div class="banner banner-grey" id="bannerAdvisory">
+        <div class="banner-icon">🇷🇼</div>
+        <div class="banner-main">
+            <div class="banner-head">
+                <span id="advTitle">U.S. State Department — Rwanda Travel Advisory</span>
+                <span class="level-chip" id="advChip">LEVEL ?</span>
+                <span class="banner-date" id="advDate">loading…</span>
+            </div>
+            <div class="banner-body" id="advBody">loading…</div>
+        </div>
+        <a class="banner-action" id="advLink" href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/rwanda-travel-advisory.html" target="_blank" rel="noopener">VIEW ADVISORY →</a>
     </div>
-</div>
 
-<!-- ════════════════════════════════════════════════════════════
-     KNOWLEDGE LIBRARY
-     ════════════════════════════════════════════════════════════ -->
-<div class="knowledge-library">
-    <h2>
-        <span class="library-icon">📚</span>
+    <!-- The green door to the analyst layer: rhetoric-rwanda.html (the Rwanda WHEEL).
+         The chip reads LIVE once the tracker answers; if it does not, UNREAD. -->
+    <div class="banner banner-green">
+        <div class="banner-icon">📡</div>
+        <div class="banner-main">
+            <div class="banner-head">
+                <span>Rwanda Hub Tracker</span>
+                <span class="level-chip" id="rhetChip">LOADING</span>
+            </div>
+            <div class="banner-body">
+                This page is a set of <strong>dials</strong>: counted figures and dated facts, with
+                sources. The reading — the Rwanda wheel (CAR, the DRC, Mozambique), what sanctions and AGOA
+                do to it, and the ripple of each spoke across the region — lives on the hub page.
+            </div>
+        </div>
+        <a class="banner-action" href="rhetoric-rwanda.html">OPEN TRACKER →</a>
+    </div>
+</section>
+
+<!-- ════════════════════ 2. RHETORIC CARD ════════════════════ -->
+<section class="card" id="cardRhetoric">
+    <div class="card-title">
+        <span>Rhetoric &amp; Pressure</span>
+        <span class="stamp" id="rhetStamp">—</span>
+    </div>
+    <div id="rhetBody"><div class="loading">Querying rhetoric tracker…</div></div>
+</section>
+
+<!-- ════════════════════ 3. WHAT RWANDA DEPENDS ON (Rwanda-specific) ════════════════════ -->
+<!-- Four dated fact panels. Each item carries its own "as of". Reference facts,
+     not scores. Contested claims (Rwanda and M23; mineral origin) are
+     ATTRIBUTED to whoever makes them, never asserted. -->
+<section class="card" id="cardDepends">
+    <div class="card-title">
+        <span>What Rwanda Depends On</span>
+        <span class="stamp">Dated facts · reviewed 27 Nov 2026</span>
+    </div>
+    <div class="sensor-voice">
+        Rwanda is small, landlocked and stable at home, and projects power well beyond its size: its army
+        guards governments abroad by invitation, and its mineral exports have tripled since 2017. Read the
+        four panels together: the routes in and out, where the army is, who buys and who pays, and the
+        pressure points. Each is a dependency someone else can pull — and, for a hub, each is also a lever
+        Rwanda pulls on others.
+    </div>
+
+    <div class="dep-grid">
+        <div class="dep" id="depLanes">
+            <div class="dep-h">🛣️ The routes in and out <span class="dep-sub">two sea corridors and one contested border</span></div>
+            <div id="lanesBody"></div>
+        </div>
+        <div class="dep" id="depGuard">
+            <div class="dep-h">🛡️ Where the army is <span class="dep-sub">the RDF abroad — the spokes of the Rwanda wheel</span></div>
+            <div id="guardBody"></div>
+        </div>
+        <div class="dep" id="depUranium">
+            <div class="dep-h">💰 Who buys, who pays <span class="dep-sub">minerals, gold, donors, sanctions</span></div>
+            <div id="uraniumBody"></div>
+        </div>
+        <div class="dep" id="depFronts">
+            <div class="dep-h">⚠️ Pressure points <span class="dep-sub">where Rwanda is pushed, and pushes back</span></div>
+            <div id="frontsBody"></div>
+        </div>
+    </div>
+
+    <div class="legit" id="legitStrip">
+        <div class="legit-h">🗳️ Political calendar</div>
+        <div id="legitBody"></div>
+    </div>
+</section>
+
+<!-- ════════════════════ 4. HUMANITARIAN PULSE ════════════════════ -->
+<section class="card" id="cardHumanitarian">
+    <div class="card-title">
+        <span>Humanitarian Pulse</span>
+        <span class="stamp" id="humStamp">—</span>
+    </div>
+    <div id="humBody"><div class="loading">Loading humanitarian sensor…</div></div>
+</section>
+
+<!-- ════════════════════ 5. COMMODITIES ════════════════════ -->
+<section class="card" id="cardCommodities">
+    <div class="card-title">
+        <span>Commodity Exposure</span>
+        <span class="stamp" id="commStamp">—</span>
+    </div>
+    <div class="sub" style="margin-bottom:12px;">
+        STRUCTURAL exposure and signal pressure — coltan (tantalum), gold, coffee and fuel, and what is
+        moving in the reporting. Prices live in the Financial Pulse below. This card asks <em>what is Rwanda
+        exposed to</em>; that one asks <em>what did the market do today</em>.
+    </div>
+    <div id="commBody"><div class="loading">Loading commodity exposure…</div></div>
+</section>
+
+<!-- ════════════════════ 6. FINANCIAL PULSE ════════════════════ -->
+<section class="card" id="cardFinancial">
+    <div class="card-title">
+        <span>Financial Pulse</span>
+        <span class="stamp" id="finStamp">—</span>
+    </div>
+    <div id="finBody"><div class="loading">Loading market tiles…</div></div>
+</section>
+
+<!-- ════════════════════ 7. MAP ════════════════════ -->
+<section class="card" id="cardMap">
+    <div class="card-title">
+        <span>Geography</span>
+        <span class="stamp">Landlocked · 26,000 km² · four neighbours</span>
+    </div>
+    <div class="prose">
+        Rwanda borders <strong>Uganda</strong> to the north (the road to Mombasa), <strong>Tanzania</strong>
+        to the east (the road to Dar es Salaam), <strong>Burundi</strong> to the south (no diplomatic
+        relations since January 2024) and the <strong>DRC</strong> to the west, where Gisenyi faces Goma
+        across the border. The pins mark the places this page talks about. Tap a pin for why it matters.
+    </div>
+    <div id="carMap" class="country-map" role="img" aria-label="Map of Rwanda with key sites"></div>
+    <div class="map-legend">
+        <span><i style="background:#eab308"></i>Minerals &amp; routes</span>
+        <span><i style="background:#ef4444"></i>Contested borders</span>
+        <span><i style="background:#a855f7"></i>Refugees</span>
+        <span><i style="background:#38bdf8"></i>Capital</span>
+    </div>
+    <div class="sub" style="margin-top:8px;">
+        Base map © OpenStreetMap contributors © CARTO. Pins are places, not incidents.
+    </div>
+</section>
+
+<!-- ════════════════════ 8. KNOWLEDGE LIBRARY ════════════════════ -->
+<section class="card" id="cardKnowledge">
+    <div class="card-title">
         <span>Knowledge Library</span>
-    </h2>
-    <p class="open-source-disclaimer">
-        Background information compiled from open-source research, policy briefs, and humanitarian reports. Click any card to expand. Source links provided for primary references.
-    </p>
-
-    <div class="knowledge-categories">
-        <!-- Kagame Government — RPF Dominance -->
-        <div class="knowledge-card" id="card-kagame-government">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('kagame-government')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🏛️</span>
-                    <span>Kagame Government — RPF Dominance</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Paul Kagame has effectively ruled Rwanda since the end of the 1994 genocide</strong> — first as vice president and defense minister (1994-2000), then as president (2000-present). His Rwandan Patriotic Front (RPF) maintains near-total political dominance.</p>
-<p><strong>2024 Election:</strong></p>
-<ul>
-    <li><strong>July 2024 election:</strong> Kagame won re-election with 99.18% of the vote — fourth term under 2015 constitutional amendments that extended term limits.</li>
-    <li><strong>Term implications:</strong> Constitution allows Kagame to potentially remain in power until 2034; further constitutional moves possible.</li>
-    <li><strong>Opposition:</strong> Diane Rwigara (independent), Frank Habineza (Democratic Green Party) ran but received minimal vote share; Victoire Ingabire and others remained barred.</li>
-</ul>
-<p><strong>Government Profile:</strong></p>
-<ul>
-    <li><strong>Paul Kagame:</strong> President; Tutsi; former RPF military commander during 1994 genocide ending campaign.</li>
-    <li><strong>Édouard Ngirente:</strong> Prime Minister (2017-present); technocratic profile.</li>
-    <li><strong>RPF dominance:</strong> Ruling party Rwandan Patriotic Front holds majority parliamentary seats; opposition severely constrained.</li>
-</ul>
-<p><strong>Political Constraints:</strong></p>
-<ul>
-    <li><strong>Opposition figures:</strong> Multiple opposition figures imprisoned, exiled, or barred from politics — Diane Rwigara, Victoire Ingabire, Paul Rusesabagina (Hotel Rwanda; released Mar 2023 after international pressure).</li>
-    <li><strong>Press environment:</strong> Independent media severely restricted; multiple journalists imprisoned or fled.</li>
-    <li><strong>Civil society:</strong> NGO and civil society activities tightly regulated through Rwanda Governance Board.</li>
-    <li><strong>"Vision 2050":</strong> Long-term development vision; modernization narrative.</li>
-</ul>
-<p><strong>Development Model:</strong></p>
-<ul>
-    <li><strong>Economic growth:</strong> Sustained ~7-8% annual GDP growth; "Singapore of Africa" branding.</li>
-    <li><strong>Kigali transformation:</strong> Major urban modernization, services sector growth.</li>
-    <li><strong>Vision Fund:</strong> Sovereign wealth-style investment vehicle for strategic sectors.</li>
-    <li><strong>"Made in Rwanda":</strong> Industrial policy promoting domestic manufacturing.</li>
-</ul>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/great-lakes/rwanda" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Rwanda</a>
-                    <a href="https://www.hrw.org/africa/rwanda" target="_blank" rel="noopener" class="report-link">📑 HRW Rwanda</a>
-                    <a href="https://issafrica.org/east-africa" target="_blank" rel="noopener" class="report-link">📑 ISS East Africa</a>
-                    <a href="https://freedomhouse.org/country/rwanda" target="_blank" rel="noopener" class="report-link">📑 Freedom House Rwanda</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- M23/AFC & the DRC Dispute -->
-        <div class="knowledge-card collapsed" id="card-m23-drc-dispute">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('m23-drc-dispute')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">⚔️</span>
-                    <span>M23/AFC & the DRC Dispute</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Rwanda's relationship with the M23/AFC rebellion in eastern DRC is the most consequential and analytically contested dynamic in central African geopolitics today.</strong></p>
-<p><strong>Allegations of Rwandan Backing:</strong></p>
-<ul>
-    <li><strong>UN Group of Experts:</strong> Multiple UN Group of Experts reports (2022-2025) have documented Rwandan military involvement supporting M23 — including RDF troops fighting alongside M23, equipment transfers, and command coordination.</li>
-    <li><strong>US assessment:</strong> US has publicly acknowledged Rwandan support to M23; sanctioned individual Rwandan officials including James Kabarebe (Minister of State for Regional Integration) in 2024.</li>
-    <li><strong>Estimated RDF presence:</strong> UN estimates 3,000-4,000 RDF personnel operating in eastern DRC alongside M23/AFC during major operations.</li>
-    <li><strong>Rwandan denials:</strong> Rwanda consistently denies direct support; characterizes its security concerns as defensive (FDLR threat).</li>
-</ul>
-<p><strong>Rwanda's Stated Concerns:</strong></p>
-<ul>
-    <li><strong>FDLR threat:</strong> Forces démocratiques de libération du Rwanda — Rwandan Hutu militia descended from 1994 genocidaires; Rwanda asserts FDLR continues operating in eastern DRC with FARDC tolerance.</li>
-    <li><strong>Genocide ideology concerns:</strong> Rwanda points to alleged genocide ideology among certain DRC political/military figures.</li>
-    <li><strong>Banyamulenge protection:</strong> Tutsi-related Banyamulenge community in eastern DRC face periodic persecution.</li>
-</ul>
-<p><strong>Goma Fall (January 2025):</strong></p>
-<ul>
-    <li><strong>M23/AFC offensive:</strong> Major offensive captured North Kivu capital Goma; widely seen as benefiting from significant RDF support.</li>
-    <li><strong>SAMIDRC casualties:</strong> South African SAMIDRC contingent suffered 14 KIA in defense of Goma.</li>
-    <li><strong>Tshisekedi response:</strong> DRC President accused Rwanda of declaring war; broke diplomatic relations.</li>
-    <li><strong>International response:</strong> Multiple Western sanctions; UN Security Council condemnation; mediation efforts intensified.</li>
-</ul>
-<p><strong>Mediation Efforts:</strong></p>
-<ul>
-    <li><strong>Luanda Process:</strong> Angolan-led mediation 2023-2024; multiple summits.</li>
-    <li><strong>Nairobi Process:</strong> Kenyan-led parallel process; integrated with Luanda Process in 2024.</li>
-    <li><strong>Washington engagement:</strong> US has used sanctions and diplomatic engagement to pressure Rwanda.</li>
-</ul>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/great-lakes/dr-congo" target="_blank" rel="noopener" class="report-link">📑 Crisis Group DRC</a>
-                    <a href="https://www.crisisgroup.org/africa/great-lakes/rwanda" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Rwanda</a>
-                    <a href="https://www.un.org/securitycouncil/sanctions/1533/work-and-mandate/expert-reports" target="_blank" rel="noopener" class="report-link">📑 UN Group of Experts</a>
-                    <a href="https://www.hrw.org/africa/democratic-republic-congo" target="_blank" rel="noopener" class="report-link">📑 HRW DRC</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- RDF Regional Footprint -->
-        <div class="knowledge-card collapsed" id="card-rdf-regional">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('rdf-regional')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🪖</span>
-                    <span>RDF Regional Footprint</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>The Rwanda Defence Force (RDF) maintains a substantial regional military presence</strong> — disproportionate to Rwanda's small size. RDF deployments include Mozambique, CAR, and (controversially) eastern DRC.</p>
-<p><strong>Mozambique — SAMIM:</strong></p>
-<ul>
-    <li><strong>Rwandan deployment (July 2021):</strong> Bilateral deployment of ~1,000 RDF troops to Cabo Delgado at request of President Filipe Nyusi; preceded SADC mission.</li>
-    <li><strong>Mocímboa da Praia:</strong> RDF helped recapture key port town from Ahlu Sunna jihadists.</li>
-    <li><strong>Continuing operations:</strong> Force size has fluctuated; operations against ISIS-Mozambique (ASWJ) ongoing through 2024-2026.</li>
-    <li><strong>TotalEnergies LNG:</strong> Rwandan presence partly tied to French TotalEnergies LNG project; commercial dimension.</li>
-</ul>
-<p><strong>Central African Republic (CAR):</strong></p>
-<ul>
-    <li><strong>MINUSCA contribution:</strong> Rwanda is a major troop contributor to UN MINUSCA mission in CAR.</li>
-    <li><strong>Bilateral presence:</strong> Additional Rwandan personnel deployed bilaterally beyond MINUSCA mandate.</li>
-    <li><strong>Wagner navigation:</strong> Rwandan forces have operated alongside Wagner Group / Africa Corps in CAR — uneasy coexistence.</li>
-</ul>
-<p><strong>Other Deployments:</strong></p>
-<ul>
-    <li><strong>South Sudan UNMISS:</strong> Significant Rwandan contribution.</li>
-    <li><strong>Sudan / Darfur UNAMID (historical):</strong> Major Rwandan participation before mission ended.</li>
-    <li><strong>Benin border police support:</strong> Rwandan training for Beninese forces against northern Benin jihadist expansion.</li>
-</ul>
-<p><strong>Strategic Implications:</strong></p>
-<ul>
-    <li><strong>"Africa's Israel" model:</strong> Rwanda positions itself as small but militarily competent regional partner.</li>
-    <li><strong>Commercial intersection:</strong> RDF deployments often correlate with mining or strategic project access.</li>
-    <li><strong>Revenue generation:</strong> Peacekeeping contributions generate UN reimbursement revenue.</li>
-    <li><strong>DRC contradiction:</strong> Rwanda's positive regional security partner reputation contrasts with M23 backing allegations.</li>
-</ul>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/great-lakes/rwanda" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Rwanda</a>
-                    <a href="https://www.crisisgroup.org/africa/southern-africa/mozambique" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Mozambique</a>
-                    <a href="https://issafrica.org/east-africa" target="_blank" rel="noopener" class="report-link">📑 ISS East Africa</a>
-                    <a href="https://issafrica.org/southern-africa" target="_blank" rel="noopener" class="report-link">📑 ISS Southern Africa</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Kagame Succession & Long-Term Stability -->
-        <div class="knowledge-card collapsed" id="card-kagame-succession">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('kagame-succession')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">⏳</span>
-                    <span>Kagame Succession & Long-Term Stability</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>Paul Kagame's eventual succession is among the most consequential unresolved questions in African politics</strong> — given Kagame's dominance, the RPF's institutional weight, and Rwanda's regional security role.</p>
-<p><strong>Succession Mechanics:</strong></p>
-<ul>
-    <li><strong>2015 constitutional amendments:</strong> Reset term limits; allowed Kagame to run for a 7-year term plus two additional 5-year terms.</li>
-    <li><strong>Theoretical end-date:</strong> Under current rules, Kagame could remain president until 2034 (when he would be 76).</li>
-    <li><strong>Further amendments possible:</strong> RPF dominance allows for further constitutional engineering.</li>
-</ul>
-<p><strong>Succession Candidates:</strong></p>
-<ul>
-    <li><strong>James Kabarebe:</strong> Minister of State for Regional Integration; long-time Kagame ally; sanctioned by US for DRC role.</li>
-    <li><strong>Vincent Biruta:</strong> Foreign Affairs Minister (until 2023 reshuffle); diplomatic profile.</li>
-    <li><strong>Olivier Nduhungirehe:</strong> Foreign Affairs Minister (current); younger generation.</li>
-    <li><strong>Family question:</strong> No clear dynastic pathway; Kagame's children (Ivan, Ange Kagame, etc.) have not been positioned for succession.</li>
-</ul>
-<p><strong>RPF Institutional Strength:</strong></p>
-<ul>
-    <li><strong>Party as institution:</strong> RPF has strong institutional structures; not a personality-cult party.</li>
-    <li><strong>Crystal Ventures:</strong> RPF-affiliated holding company controls significant economic interests; institutional power base.</li>
-    <li><strong>Military integration:</strong> RDF and RPF closely linked; potential transition stabilizer or risk factor.</li>
-</ul>
-<p><strong>Risk Scenarios:</strong></p>
-<ul>
-    <li><strong>Orderly succession:</strong> RPF chooses successor; institutional continuity; foreign policy continuity likely.</li>
-    <li><strong>Tutsi-Hutu tension:</strong> Any succession crisis could revive ethnic tensions in unpredictable ways.</li>
-    <li><strong>Regional implications:</strong> DRC, Uganda, Burundi all closely watch Rwandan succession; potential for destabilization if poorly managed.</li>
-    <li><strong>Diaspora factor:</strong> Rwandan diaspora (especially in DRC, Uganda, Belgium, US) could play role in any transition.</li>
-</ul>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.crisisgroup.org/africa/great-lakes/rwanda" target="_blank" rel="noopener" class="report-link">📑 Crisis Group Rwanda</a>
-                    <a href="https://www.cfr.org/region/sub-saharan-africa/rwanda" target="_blank" rel="noopener" class="report-link">📑 CFR Rwanda</a>
-                    <a href="https://www.atlanticcouncil.org/programs/africa-center/" target="_blank" rel="noopener" class="report-link">📑 Atlantic Council Africa</a>
-                    <a href="https://freedomhouse.org/country/rwanda" target="_blank" rel="noopener" class="report-link">📑 Freedom House Rwanda</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- US–Rwanda Relations & Sanctions -->
-        <div class="knowledge-card collapsed" id="card-us-relations">
-            <div class="knowledge-header" onclick="toggleKnowledgeCard('us-relations')">
-                <div class="knowledge-header-title">
-                    <span class="category-icon">🇺🇸</span>
-                    <span>US–Rwanda Relations & Sanctions</span>
-                </div>
-                <span class="collapse-icon">▼</span>
-            </div>
-            <div class="knowledge-content">
-                <p><strong>US-Rwanda relations have come under significant strain since 2023</strong> — driven primarily by Rwandan backing of M23/AFC in eastern DRC, but also broader human rights and political-space concerns.</p>
-<p><strong>Bilateral Framework:</strong></p>
-<ul>
-    <li><strong>US Embassy Kigali:</strong> Active diplomatic mission; commercial section significant.</li>
-    <li><strong>USAID:</strong> Historic donor relationship; significant programs; under 2025 cuts pressure.</li>
-    <li><strong>AGOA:</strong> Rwanda's used apparel ban dispute (2018) was major friction; partial resolution but tensions remain.</li>
-</ul>
-<p><strong>Sanctions Track (2024-2025):</strong></p>
-<ul>
-    <li><strong>James Kabarebe sanctions (2024):</strong> OFAC sanctioned Minister of State for Regional Integration Kabarebe over M23 role; major bilateral escalation.</li>
-    <li><strong>Visa restrictions:</strong> Multiple Rwandan officials subject to US visa restrictions.</li>
-    <li><strong>Section 314 (DRC Conflict):</strong> Various financial sanctions on individuals linked to eastern DRC conflict, including some Rwandan personnel.</li>
-    <li><strong>UK and EU sanctions:</strong> UK suspended portion of aid to Rwanda; EU sanctioned individuals; Western coordination on Rwanda pressure.</li>
-</ul>
-<p><strong>UK Migration Partnership:</strong></p>
-<ul>
-    <li><strong>UK migration deal:</strong> Original UK-Rwanda asylum deal under Conservatives (2022-2024); collapsed under Labour July 2024.</li>
-    <li><strong>Trump migration possibilities:</strong> Trump administration has signaled interest in third-country migration arrangements; Rwanda has expressed willingness.</li>
-</ul>
-<p><strong>Strategic Engagement:</strong></p>
-<ul>
-    <li><strong>Pope Francis:</strong> Significant Vatican-Rwanda engagement; symbolically important.</li>
-    <li><strong>Trump-era engagement:</strong> Trump administration approach to Rwanda evolving — pressure on DRC issue vs. commercial/migration cooperation interests.</li>
-    <li><strong>Critical minerals:</strong> Rwanda's "smelting" role in tantalum/coltan supply chain (much sourced from DRC) creates US strategic interest.</li>
-</ul>
-<p><strong>Watch Items:</strong> Trump-Kagame diplomatic temperature; potential broader sanctions if DRC situation deteriorates; UK Labour position on migration agreements; Rwandan response to international pressure.</p>
-                
-                <div class="open-source-disclaimer">* Background based on open-source intelligence, academic research, and publicly available government / NGO reports</div>
-                <div class="report-links-grid">
-                    <a href="https://www.state.gov/countries-areas/rwanda/" target="_blank" rel="noopener" class="report-link">📑 US State Department Rwanda</a>
-                    <a href="https://home.treasury.gov/policy-issues/financial-sanctions" target="_blank" rel="noopener" class="report-link">📑 OFAC Sanctions</a>
-                    <a href="https://www.usaid.gov/rwanda" target="_blank" rel="noopener" class="report-link">📑 USAID Rwanda</a>
-                    <a href="https://www.ustr.gov/countries-regions/africa/rwanda" target="_blank" rel="noopener" class="report-link">📑 USTR Rwanda</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ── RECENT ARTICLES (tabbed: News / Socials / NGOs) ── -->
-<div class="articles-section">
-    <div class="section-title">📰 Recent Rwanda Articles &amp; Reports</div>
-    <div class="article-tabs" id="articleTabs">
-        <div class="article-tab active" data-tab="news" onclick="filterArticles('news', this)">News</div>
-        <div class="article-tab" data-tab="socials" onclick="filterArticles('socials', this)">Socials</div>
-        <div class="article-tab" data-tab="ngos" onclick="filterArticles('ngos', this)">NGOs &amp; Reports</div>
-    </div>
-    <ul class="articles-list" id="articlesList">
-        <li class="article-item" style="text-align: center; color: var(--text-muted); padding: 30px;">
-            ● ● ● Loading articles...
-        </li>
-    </ul>
-</div>
-
-</div> <!-- /.main-content -->
-</div> <!-- /.page-with-sidebar -->
-
-<!-- ════════════════════════════════════════════════════════════
-     FOOTER (canonical, May 2026)
-     ════════════════════════════════════════════════════════════ -->
-<div class="footer-info">
-    <p><strong>ASIFAH ANALYTICS · RWANDA STABILITY INDEX</strong></p>
-    <p>asifah-africa-backend.onrender.com · Updates every 12 hours · Force refresh via Scan</p>
-    <p>OSINT aggregation from GDELT (en/fr where applicable), NewsAPI, Brave Search, RSS · ReliefWeb &amp; The New Humanitarian · ISS Africa · WHO Disease Outbreak News · U.S. State Department travel advisories · FAA NOTAMs</p>
-
-    <!-- Support + Contact CTAs (canonical pattern, May 2026) -->
-    <div style="margin:22px auto 10px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://buymeacoffee.com/asifahanalytics" target="_blank" rel="noopener" style="padding:10px 18px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f1f1f;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(245,158,11,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(245,158,11,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(245,158,11,0.3)'">☕ Buy Me a Coffee</a>
-        <a href="mailto:asifahanalytics@gmail.com" style="padding:10px 18px;background:linear-gradient(135deg,#1e3a5f,#38bdf8);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px;box-shadow:0 3px 10px rgba(56,189,248,0.3);transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(56,189,248,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 3px 10px rgba(56,189,248,0.3)'">✉️ Contact Asifah</a>
+        <span class="stamp">Updated 27 Nov 2026</span>
     </div>
 
-    <p style="margin-top:14px;font-size:10px;color:var(--text-muted);">FOR RESEARCH PURPOSES ONLY · NOT OFFICIAL U.S. GOVERNMENT POSITION · © 2025-2026 Asifah Analytics</p>
-    <p style="margin-top:10px;">
-        <a href="mission.html">Mission Statement</a> ·
-        <a href="privacy.html">Privacy Policy</a> ·
-        <a href="https://asifahanalytics.com">Home</a>
-    </p>
-</div>
+    <details class="kl" open>
+        <summary>How we got here, and 2026 so far</summary>
+        <div>
+            <ul class="tl">
+                <li><b>2021 – 2024</b> Rwandan troops deploy to Cabo Delgado at Mozambique's request (2021) and to CAR under a bilateral deal alongside MINUSCA. Burundi closes its border and cuts ties (Jan 2024). The EU and Rwanda sign a raw-materials memorandum (Feb 2024). Paul Kagame is re-elected with 99% (Jul 2024). <span class="sub">(various)</span></li>
+                <li><b>Jan – Feb 2025</b> M23 takes Goma and Bukavu. UN experts report Rwandan troops fighting alongside M23; Kigali denies backing the group and cites "defensive measures" against the FDLR. <span class="sub">(Wikipedia: M23 campaign)</span></li>
+                <li><b>Jun – Dec 2025</b> A US-brokered DRC–Rwanda peace agreement (27 Jun) and the Washington Accords (4 Dec). <span class="sub">(Al Jazeera)</span></li>
+                <li><b>Mar 2026</b> The US sanctions the Rwandan army and senior officials over support for M23; Kigali calls the sanctions "one-sided". Rwanda warns it may withdraw from Mozambique without funding as EU support wavers. <span class="sub">(Al Jazeera · ISS)</span></li>
+                <li><b>May 2026</b> Ebola restrictions at the Rubavu–Goma border. Mozambique secures funding for the Rwandan mission. Rwandan ores, coffee and essential oils gain tariff-free access to China (1 May). <span class="sub">(Africanews · Engineering News · KT Press)</span></li>
+                <li><b>Aug 2026</b> Inflation at 15.7%; the central bank raises its policy rate to 8.75%. Q2 merchandise exports up 51%, led by minerals. <span class="sub">(IMF · KT Press)</span></li>
+                <li><b>Oct 2026</b> New Goma–Gisenyi restrictions after Ebola cases in southern Lubero (10 Oct). The US sanctions Rwanda's Ministry of Defence and Zigama Credit (28 Oct); Kigali rejects the allegations. <span class="sub">(allAfrica · Africanews)</span></li>
+                <li><b>Nov 2026</b> The US announces Rwanda's exclusion from AGOA from January 2027 (2 Nov). Austria, Denmark, Germany, Greece and the Netherlands announce a planned "return hub" in Rwanda (16 Nov). <span class="sub">(Critical Threats · Al Jazeera)</span></li>
+            </ul>
+            <p class="sub" style="margin-top:8px;"><strong>Contested claims, shown as such:</strong> UN experts and the US government say Rwanda supports M23 and that Congolese minerals pass through Rwandan exporters; Rwanda denies both and says the FDLR, which it calls a genocidal militia, threatens it from Congolese soil. This page reports both and adjudicates neither.</p>
+        </div>
+    </details>
 
-</div> <!-- /.container -->
+    <details class="kl">
+        <summary>Seasonal calendar — where in the year we are</summary>
+        <div>
+            <p class="prose" style="margin-bottom:10px;">
+                <strong>Facts with dates, not forecasts.</strong> Kwibuka — the 100 days of genocide
+                commemoration from 7 April — frames how Kigali speaks about the FDLR and the eastern DRC every year.
+            </p>
+            <div id="calLive"><div class="loading">Reading calendar state from the humanitarian sensor…</div></div>
+        </div>
+    </details>
 
-<!-- ════════════════════════════════════════════════════════════
-     JAVASCRIPT
-     ════════════════════════════════════════════════════════════ -->
+    <details class="kl">
+        <summary>How to read this page</summary>
+        <div>
+            <p style="margin-bottom:9px;"><strong>This is a sensor page for a hub.</strong> Rwanda is not in a
+            crisis at home; what it does matters because of where it reaches. The humanitarian dial is
+            <strong>refugees hosted</strong>; the financial tiles watch its contested exports and its import costs.</p>
+            <p><strong>The analyst layer</strong> — the Rwanda wheel, with CAR, the DRC and Mozambique as spokes,
+            and the ripple of each across the region — lives on the hub page.</p>
+        </div>
+    </details>
+
+    <details class="kl">
+        <summary>Why Rwanda matters beyond Rwanda</summary>
+        <div>
+            <p style="margin-bottom:9px;"><strong>The region.</strong> Rwanda's posture is the variable the
+            eastern DRC war tracks most closely, and its rivalries with Burundi and Uganda play out on Congolese
+            soil.</p>
+            <p style="margin-bottom:9px;"><strong>The continent.</strong> Rwanda sells security: its troops guard
+            governments in CAR and Mozambique, where they made TotalEnergies' $20B gas project restartable. A
+            sanctioned army is a test of whether that model survives Western censure.</p>
+            <p><strong>The world.</strong> Coltan becomes tantalum for capacitors in phones, cars and AI hardware;
+            Rwandan tungsten has been reported at up to a fifth of US primary tungsten concentrate use. Europe now
+            wants Rwanda to take people it is removing. Few countries of 14 million sit on so many global supply
+            lines at once.</p>
+        </div>
+    </details>
+
+    <details class="kl">
+        <summary>Glossary</summary>
+        <div>
+            <dl class="gloss">
+                <dt>RDF · RPF</dt>
+                <dd>The Rwanda Defence Force · the Rwandan Patriotic Front, the ruling party, in power since 1994.</dd>
+                <dt>FDLR</dt>
+                <dd>Democratic Forces for the Liberation of Rwanda: a Hutu armed group in eastern Congo founded by people linked to the 1994 genocide. Kigali's stated reason for its "defensive measures".</dd>
+                <dt>M23 · AFC · FRN</dt>
+                <dd>The armed group that took Goma and Bukavu in 2025 · its political umbrella · Joseph Kabila's coalition (Oct 2026) that absorbed both.</dd>
+                <dt>3T</dt>
+                <dd>Tin, tantalum (from coltan) and tungsten — the "conflict minerals" of the Great Lakes, with gold the fourth.</dd>
+                <dt>AGOA</dt>
+                <dd>The US African Growth and Opportunity Act, which gives duty-free access to the US market; Rwanda is excluded from January 2027.</dd>
+                <dt>Northern · Central Corridor</dt>
+                <dd>The road routes to the sea through Uganda and Kenya (Mombasa) and through Tanzania (Dar es Salaam).</dd>
+                <dt>Kwibuka</dt>
+                <dd>"Remember": the annual commemoration of the genocide against the Tutsi, from 7 April.</dd>
+                <dt>MINEMA</dt>
+                <dd>Rwanda's Ministry in charge of Emergency Management, which runs the refugee camps with UNHCR.</dd>
+            </dl>
+        </div>
+    </details>
+
+    <details class="kl">
+        <summary>Sources</summary>
+        <div>
+            <ul class="src-list" id="srcList">
+                <li><a href="https://data.unhcr.org/en/country/rwa" target="_blank" rel="noopener">UNHCR — Rwanda data portal (31 Oct 2026)</a></li>
+                <li><a href="https://www.imf.org/en/news/articles/2026/10/05/pr26321-rwanda-ecf-review" target="_blank" rel="noopener">IMF — Rwanda ECF first review (Oct 2026)</a></li>
+                <li><a href="https://www.ktpress.rw/2026/08/mineral-exports-drive-51-surge-in-goods-exports/" target="_blank" rel="noopener">KT Press — Mineral exports drive a 51% surge (Aug 2026)</a></li>
+                <li><a href="https://www.zawya.com/en/economy/africa/as-rwandas-mineral-exports-surge-trade-deficit-narrows-ht16w13f" target="_blank" rel="noopener">Zawya — Rwanda's mineral exports surge</a></li>
+                <li><a href="https://www.aljazeera.com/news/2026/3/3/us-sanctions-rwandan-army-and-top-officials-for-supporting-m23-in-drc" target="_blank" rel="noopener">Al Jazeera — US sanctions Rwandan army (Mar 2026)</a></li>
+                <li><a href="https://www.africanews.com/2026/10/29/us-imposes-sanctions-on-rwandan-defence-ministry-over-links-to-congo-rebels/" target="_blank" rel="noopener">Africanews — US sanctions Rwanda's defence ministry (Oct 2026)</a></li>
+                <li><a href="https://www.engineeringnews.co.za/article/rwanda-says-mozambique-has-secured-funds-for-it-to-continue-cabo-delgado-mission-2026-05-20" target="_blank" rel="noopener">Engineering News — Mozambique funds the Rwandan mission (May 2026)</a></li>
+                <li><a href="https://aljazeera.com/news/2026/11/17/why-are-five-eu-countries-reviving-plans-to-deport-migrants-to-rwanda" target="_blank" rel="noopener">Al Jazeera — EU countries and a Rwanda return hub (Nov 2026)</a></li>
+                <li><a href="https://www.africanews.com/2026/05/20/rwanda-tightens-border-controls-over-deadly-ebola-outbreak-in-dr-congo/" target="_blank" rel="noopener">Africanews — Ebola border controls (May 2026)</a></li>
+                <li><a href="https://www.amnestyusa.org/press-releases/drc-m23-fighters-abused-miners-and-trafficked-gold-and-coltan-to-rwanda/" target="_blank" rel="noopener">Amnesty — M23, gold and coltan (Sep 2026)</a></li>
+                <li><a href="https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories/rwanda-travel-advisory.html" target="_blank" rel="noopener">U.S. State Department travel advisory</a></li>
+            </ul>
+        </div>
+    </details>
+</section>
+
+</main>
+</div><!-- end page-with-sidebar -->
+
+<!-- Canonical footer: filled by ensureFooter() in asifah-standard-shell.js. -->
+<footer class="asifah-footer"></footer>
+
+</div><!-- end container -->
+
 <script>
-const COUNTRY_ID      = 'rwanda';
-const COUNTRY_DISPLAY = 'Rwanda';
-const AFRICA_API      = 'https://asifah-africa-backend.onrender.com';
+'use strict';
 
-// ── THEME TOGGLE ──
-function toggleTheme() {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('asifah-theme', next); } catch(e) {}
-}
-(function loadTheme() {
-    try {
-        const saved = localStorage.getItem('asifah-theme');
-        if (saved) document.documentElement.setAttribute('data-theme', saved);
-    } catch(e) {}
-})();
+// ════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════
+var API_BASE = 'https://asifah-africa-backend.onrender.com';
 
-// ── MOBILE DRAWER ──
-function toggleMobileDrawer() {
-    document.getElementById('navSidebar').classList.add('mobile-open');
-    document.getElementById('mobileDrawerBackdrop').classList.add('open');
-}
-function closeMobileDrawer() {
-    document.getElementById('navSidebar').classList.remove('mobile-open');
-    document.getElementById('mobileDrawerBackdrop').classList.remove('open');
-}
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMobileDrawer(); });
+var EP = {
+    humanitarian: API_BASE + '/api/africa/humanitarian/rwanda',
+    financial:    API_BASE + '/api/africa/financial/rwanda',
+    // Africa namespace, NOT /api/commodity-pressure/ -- commodity_proxy_africa.py
+    // renames the ME backend's canonical route on the way through.
+    commodities:  API_BASE + '/api/africa/commodity/rwanda',
+    advisories:   API_BASE + '/api/africa/travel-advisories',
+    rhetoric:     API_BASE + '/api/rhetoric/rwanda'
+};
 
-// ── KNOWLEDGE LIBRARY ACCORDION ──
-function toggleKnowledgeCard(id) {
-    const card = document.getElementById('card-' + id);
-    if (card) card.classList.toggle('collapsed');
+// The ONE hardcoded fact on this page, because the Worldwide Caution is global
+// and no per-country endpoint carries it. Date-stamped so a stale banner is
+// visibly stale. When State updates it, edit these three lines and nothing else.
+var WORLDWIDE_CAUTION = {
+    date: 'Updated 20 July 2026',
+    text: 'The Department of State urges U.S. citizens worldwide to exercise increased caution '
+        + 'because of heightened tensions in the Middle East, which may bring flight '
+        + 'cancellations, airspace closures and other travel disruptions. U.S. diplomatic '
+        + 'facilities have been targeted, and Iran and groups it supports may threaten U.S. '
+        + 'interests abroad. Citizens outside the region are advised to avoid travel to or '
+        + 'through the Middle East.',
+    url: 'https://travel.state.gov/content/travel/en/traveladvisories/ea/worldwide-caution.html'
+};
+
+var ADVISORY_BANNER_CLASS = { 1: 'banner-green', 2: 'banner-amber', 3: 'banner-orange', 4: 'banner-red' };
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function el(id) { return document.getElementById(id); }
+
+function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// ── TRAVEL ADVISORY FETCH ──
-async function loadTravelAdvisory() {
-    try {
-        const resp = await fetch(AFRICA_API + '/api/africa/travel-advisories');
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        const adv = (data.advisories || {})[COUNTRY_ID];
-        if (!adv) {
-            document.getElementById('advisoryText').textContent = 'Travel advisory data not available for this country.';
+/* ABSENCE HONESTY. A missing value renders as the word, never as 0. */
+var NR = '<span class="pill pill-mute">not reporting</span>';
+
+function num(v) {
+    if (v === null || v === undefined || v === '' || isNaN(Number(v))) return null;
+    return Number(v);
+}
+
+function fmtDate(iso) {
+    if (!iso) return null;
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso).slice(0, 10);
+    return d.toISOString().slice(0, 10);
+}
+
+function fmtPct(v) {
+    var n = num(v);
+    if (n === null) return null;
+    return (n > 0 ? '+' : '') + n.toFixed(2) + '%';
+}
+
+function chgClass(v) {
+    var n = num(v);
+    if (n === null) return 'chg-flat';
+    if (n > 0.05) return 'chg-up';
+    if (n < -0.05) return 'chg-down';
+    return 'chg-flat';
+}
+
+function fmtVal(v) {
+    var n = num(v);
+    if (n === null) return null;
+    if (Math.abs(n) >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    if (Math.abs(n) >= 1)    return n.toFixed(2);
+    return n.toFixed(6);
+}
+
+/* Inline SVG sparkline. No chart library, no CDN, no layout shift. */
+function sparkline(series) {
+    if (!series || !series.length || series.length < 2) return '';
+    /* Two shapes in the wild: commodity_tracker emits a flat list of floats,
+       the Yahoo fetchers emit [{time, value}]. Accept both. */
+    var pts = series.map(function (p) {
+        return num(p && typeof p === 'object' ? p.value : p);
+    }).filter(function (x) { return x !== null; });
+    if (pts.length < 2) return '';
+    var lo = Math.min.apply(null, pts), hi = Math.max.apply(null, pts);
+    var span = (hi - lo) || 1;
+    var w = 100, h = 28, pad = 2;
+    var coords = pts.map(function (p, i) {
+        var x = pad + (i / (pts.length - 1)) * (w - 2 * pad);
+        var y = (h - pad) - ((p - lo) / span) * (h - 2 * pad);
+        return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    var rising = pts[pts.length - 1] >= pts[0];
+    var stroke = rising ? '#22c55e' : '#ef4444';
+    return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">'
+        + '<polyline fill="none" stroke="' + stroke + '" stroke-width="1.4" points="' + coords + '"/></svg>';
+}
+
+function fetchJson(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    });
+}
+
+/* Page stamp. Every fetch calls this exactly once, on BOTH paths — a stamp
+   stuck on "loading…" after everything has failed is a diagnostic that lies. */
+var _stamps = [];
+var _settled = 0;
+var _FETCH_COUNT = 5;   // advisory · rhetoric · humanitarian · commodities · financial
+function registerStamp(label, iso) {
+    _settled++;
+    if (iso) _stamps.push(label + ' ' + fmtDate(iso));
+    var s = el('pageStamp');
+    if (!s) return;
+    if (_stamps.length) {
+        s.textContent = _stamps.join(' · ')
+            + (_settled < _FETCH_COUNT ? ' · …' : '');
+    } else {
+        s.textContent = (_settled < _FETCH_COUNT) ? 'loading…' : 'no source reporting';
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// BANNER 1 — WORLDWIDE CAUTION (static, date-stamped)
+// ════════════════════════════════════════════════════════════
+(function renderWorldwideCaution() {
+    el('wwDate').textContent = WORLDWIDE_CAUTION.date;
+    el('wwBody').textContent = WORLDWIDE_CAUTION.text;
+    el('wwLink').href = WORLDWIDE_CAUTION.url;
+}());
+
+// ════════════════════════════════════════════════════════════
+// BANNER 2 — COUNTRY TRAVEL ADVISORY (live from State's API)
+// ════════════════════════════════════════════════════════════
+function renderAdvisory() {
+    fetchJson(EP.advisories).then(function (data) {
+        var a = (data.advisories || {}).rwanda;
+        if (!a) {
+            el('advChip').textContent = 'NOT REPORTING';
+            el('advDate').textContent = 'no entry this cycle';
+            el('advBody').innerHTML = 'The advisory feed returned no entry for Rwanda this cycle. '
+                + 'This is an unread value, not a clean bill of health — open the State Department page directly.';
+            registerStamp('advisory', null);
             return;
         }
-        // Level badge — keep amber/orange canonical regardless of level (visual continuity with China page)
-        document.getElementById('advisoryLevelBadge').textContent = 'LEVEL ' + (adv.level || '?');
-        // Headline text: bold colored level_label + remainder of summary
-        const txt = document.getElementById('advisoryText');
-        if (txt) {
-            const headline = adv.level_label || ('Level ' + (adv.level || '?'));
-            const summary  = (adv.short_summary || '').replace(/^<p[^>]*>|<\/p>$/g, '').replace(/<[^>]+>/g, '').trim();
-            txt.innerHTML = '<strong style="color:#f59e0b;">' + headline + '</strong>' + (summary ? ' — ' + summary : '');
+        el('bannerAdvisory').className = 'banner ' + (ADVISORY_BANNER_CLASS[a.level] || 'banner-grey');
+        if (a.link) el('advLink').href = a.link;
+
+        el('advChip').textContent = a.level ? ('LEVEL ' + a.level) : 'LEVEL UNKNOWN';
+        el('advTitle').innerHTML = 'U.S. State Department — Rwanda Travel Advisory: <strong>'
+            + esc(a.level_label || 'Unknown') + '</strong>';
+
+        var stampBits = [];
+        if (a.updated) stampBits.push('updated ' + fmtDate(a.updated));
+        else if (a.published) stampBits.push('published ' + fmtDate(a.published));
+        if (data.stale) stampBits.push('STALE-SERVED');
+        else if (data.cached) stampBits.push('cached');
+        el('advDate').textContent = stampBits.join(' · ') || 'date not reported';
+
+        var body = esc(a.short_summary || a.title || '');
+        if (a.recently_changed && a.change_description) {
+            body += ' <span class="pill pill-warn">' + esc(a.change_description) + '</span>';
         }
-        if (adv.link) document.getElementById('advisoryLink').href = adv.link;
-        document.getElementById('lastUpdated').textContent = 'Travel advisory updated: ' + (adv.updated || data.timestamp || 'Unknown').slice(0, 10);
-    } catch (err) {
-        console.warn('Travel advisory error:', err);
-        document.getElementById('advisoryText').textContent = 'Could not fetch advisory data. Check back later.';
-    }
+        /* A Level-4 country that has been Level 4 for years is a STANDING
+           condition, not an escalation. Say so, so nobody reads the red as news. */
+        if (a.level === 4 && !a.recently_changed) {
+            body += ' <span class="pill pill-mute">standing level — not a change this cycle</span>';
+        }
+        el('advBody').innerHTML = body;
+        registerStamp('advisory', a.updated || a.published);
+    }).catch(function (e) {
+        el('advChip').textContent = 'NOT REPORTING';
+        el('advDate').textContent = 'fetch failed';
+        el('advBody').innerHTML = 'Advisory feed unreachable (' + esc(e.message) + '). '
+            + 'Rwanda’s advisory level is not being asserted from a stale copy here.';
+        registerStamp('advisory', null);
+    });
 }
 
-// ── ARTICLES FETCH ──
-let _articleBuckets = { news: [], socials: [], ngos: [] };
-let _activeTab = 'news';
-
-async function loadArticles() {
-    try {
-        const resp = await fetch(AFRICA_API + '/api/africa/articles/' + COUNTRY_ID);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        if (data && data.buckets) {
-            _articleBuckets.news    = (data.buckets.news    || {}).articles || [];
-            _articleBuckets.socials = (data.buckets.socials || {}).articles || [];
-            _articleBuckets.ngos    = (data.buckets.ngos    || {}).articles || [];
-        }
-        renderArticles();
-    } catch (err) {
-        console.warn('Articles error:', err);
-        document.getElementById('articlesList').innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">Articles loading — first scan in progress, check back shortly.</li>';
-    }
+// ════════════════════════════════════════════════════════════
+// RHETORIC CARD
+// ════════════════════════════════════════════════════════════
+function renderRhetoric() {
+    fetchJson(EP.rhetoric).then(function (d) {
+        var lvl = num(d.overall_level);
+        if (lvl === null) lvl = num(d.theatre_level_platform);
+        if (lvl === null) lvl = num(d.theatre_level);
+        var label = d.theatre_label || d.level_label || d.posture_label || '';
+        /* so_what may be a LIST of {bullet} (Niger/CAR tracker pattern); lead
+           with the first bullet, never print an object. */
+        var sw = Array.isArray(d.so_what) ? ((d.so_what[0] || {}).bullet || '') : (d.so_what || '');
+        var wh = d.wheel || {}, frTxt = (wh.lit_count != null) ? (wh.lit_count + ' of ' + (wh.spoke_count || 3) + ' spokes lit' + (wh.converged ? ' · CONVERGED' : '')) : '';
+        var html = '<div class="stat-grid"><div class="stat">'
+            + '<div class="stat-value">' + (lvl === null ? '—' : 'L' + lvl) + '</div>'
+            + '<div class="stat-label">' + esc(label || 'Platform level') + '</div>'
+            + '<div class="stat-src">rhetoric_tracker_rwanda' + (d.version ? ' v' + esc(d.version) : '') + '</div>'
+            + '</div>'
+            + (frTxt ? '<div class="stat"><div class="stat-value" style="font-size:1rem;">' + esc(frTxt) + '</div>'
+                     + '<div class="stat-label">The Rwanda wheel</div></div>' : '')
+            + '</div>'
+            + '<div class="prose" style="margin-bottom:8px;">' + esc(d.executive_summary || d.summary || '') + '</div>'
+            + (sw ? '<div class="sensor-voice">' + esc(sw) + '</div>' : '')
+            + '<div class="sub"><a href="rhetoric-rwanda.html" style="color:var(--accent);">'
+            + 'Open the rhetoric tracker →</a></div>';
+        el('rhetBody').innerHTML = html;
+        el('rhetStamp').textContent = d.last_updated ? fmtDate(d.last_updated) : '';
+        var chip = el('rhetChip');
+        if (chip) { chip.textContent = 'LIVE'; }
+        registerStamp('rhetoric', d.last_updated);
+    }).catch(function () {
+        /* NOT a zero, NOT a quiet country. The tracker did not answer (asleep,
+           first boot, or a failed scan), and the page says exactly that. A silent
+           sensor reading "level 0" would be a diagnostic that lies. */
+        el('rhetStamp').textContent = 'no answer';
+        el('rhetBody').innerHTML =
+            '<div class="errbox"><strong>TRACKER NOT ANSWERING.</strong> The Rwanda hub tracker did not '
+          + 'respond just now (the backend may be waking up). That is different from reporting calm: '
+          + 'treat it as <em>unread</em>, not as level 0.</div>'
+          + '<div class="sensor-voice">What it reads: the Rwanda wheel (CAR, the DRC and Mozambique as spokes), '
+          + 'Kigali\'s own posture, US sanctions and AGOA, the 3T minerals and gold trade, the Burundi rivalry and '
+          + 'the EU return-hub plan — with the ripple of each across the region.</div>'
+          + '<div class="sub"><a href="rhetoric-rwanda.html" style="color:var(--accent);">'
+          + 'Open the rhetoric tracker →</a></div>';
+        var chip = el('rhetChip');
+        if (chip) { chip.textContent = 'UNREAD'; }
+        registerStamp('rhetoric', null);
+    });
 }
 
-function renderArticles() {
-    const articles = _articleBuckets[_activeTab] || [];
-    const ul = document.getElementById('articlesList');
-    if (articles.length === 0) {
-        const empties = {
-            news:    'No recent news articles found.',
-            socials: 'Social feed integration coming in v1.1 (Bluesky + Telegram).',
-            ngos:    'No recent NGO / policy reports found.',
-        };
-        ul.innerHTML = '<li class="article-item" style="text-align:center;color:var(--text-muted);padding:30px;">' + (empties[_activeTab] || 'No articles found.') + '</li>';
+// ════════════════════════════════════════════════════════════
+// HUMANITARIAN PULSE
+// ════════════════════════════════════════════════════════════
+var HUM_NOTES = [
+    ['host_note',      'A host — who Rwanda shelters'],
+    ['border_note',    'The western border — Goma, Ebola and the war'],
+    ['migration_note', 'The European return-hub plan'],
+    ['economy_note',   'Prices — growth with inflation']
+];
+
+function renderHumanitarian() {
+    fetchJson(EP.humanitarian).then(function (d) {
+        var html = '';
+
+        // ── Headline stats. Refugees hosted is THE dial. ──
+        var stats = d.headline_stats || [];
+        if (stats.length) {
+            html += '<div class="stat-grid">';
+            stats.forEach(function (s) {
+                var isDial = /^refugees and others/i.test(s.label || '');
+                html += '<div class="stat' + (isDial ? ' is-dial' : '') + '">'
+                     + (isDial ? '<div class="stat-dial-tag">★ the dial</div>' : '')
+                     + '<div class="stat-value">' + (s.display ? esc(s.display) : NR) + '</div>'
+                     + '<div class="stat-label">' + esc(s.label) + '</div>'
+                     + '<div class="stat-src">' + esc(s.source || 'source not reported')
+                     + (s.as_of ? ' · as of ' + esc(s.as_of) : '') + '</div>'
+                     + '</div>';
+            });
+            html += '</div>';
+        } else {
+            html += '<div class="errbox">' + NR + ' The humanitarian sensor returned no headline figures.</div>';
+        }
+
+        // ── DTM provenance: live round vs attributed baseline ──
+        html += '<div class="sub" style="margin:4px 0 10px;">'
+             + (d.live_dtm
+                ? '<span class="pill pill-live">live DTM round</span> Displacement figure is from the latest IOM DTM round'
+                  + (d.dtm_detail && d.dtm_detail.round_number ? ' (Round ' + esc(d.dtm_detail.round_number) + ')' : '') + '.'
+                : '<span class="pill pill-mute">baseline</span> No live DTM round this cycle — attributed '
+                  + 'baseline figures shown with their own source dates. Absence is reported, not papered over.')
+             + '</div>';
+
+        // ── Sensor-voice so_what ──
+        if (d.so_what) html += '<div class="sensor-voice">' + esc(d.so_what) + '</div>';
+
+        // ── The notes, in reading order ──
+        HUM_NOTES.forEach(function (pair) {
+            var v = d[pair[0]];
+            if (!v) return;
+            html += '<div class="note-block"><div class="note-head">' + esc(pair[1]) + '</div>'
+                 + '<div class="note-body">' + esc(v) + '</div></div>';
+        });
+
+        // ── ReliefWeb reports ──
+        html += '<div class="note-block"><div class="note-head">Latest OCHA / UN / NGO reporting</div>';
+        var rpts = d.reliefweb_reports || [];
+        if (rpts.length) {
+            rpts.forEach(function (r) {
+                html += '<div class="rpt"><a href="' + esc(r.url) + '" target="_blank" rel="noopener">'
+                     + esc(r.title) + '</a><div class="rpt-meta">' + esc(r.source || 'OCHA')
+                     + (r.date ? ' · ' + fmtDate(r.date) : '') + '</div></div>';
+            });
+        } else {
+            html += '<div class="sub">' + NR + ' ReliefWeb returned no reports this cycle'
+                 + (d.reliefweb_error ? ' (' + esc(d.reliefweb_error) + ')' : '') + '.</div>';
+        }
+        html += '</div>';
+
+        el('humBody').innerHTML = html;
+
+        var stampBits = [];
+        if (d.data_as_of) stampBits.push('baseline ' + esc(d.data_as_of));
+        if (d.cached) stampBits.push('cached');
+        if (d.version) stampBits.push('v' + esc(d.version));
+        el('humStamp').textContent = stampBits.join(' · ');
+        registerStamp('humanitarian', d.generated_at);
+
+        renderCalendar(d.seasonal_calendar);
+    }).catch(function (e) {
+        el('humStamp').textContent = 'fetch failed';
+        el('humBody').innerHTML = '<div class="errbox">' + NR
+            + ' Humanitarian sensor unreachable (' + esc(e.message) + '). No figures are being '
+            + 'asserted from a stale copy. Check <code>/debug/rwanda-humanitarian</code>.</div>';
+        renderCalendar(null);
+        registerStamp('humanitarian', null);
+    });
+}
+
+// ════════════════════════════════════════════════════════════
+// SEASONAL CALENDAR (Knowledge Library)
+// ════════════════════════════════════════════════════════════
+function renderCalendar(cal) {
+    var target = el('calLive');
+    if (!cal || !cal.windows || !cal.windows.length) {
+        target.innerHTML = '<div class="errbox">' + NR
+            + ' The calendar is published by the humanitarian sensor, which did not answer this '
+            + 'cycle. The windows themselves are fixed facts — reload, or read the glossary entries '
+            + 'for <em>IPC</em> and the seasonal notes.</div>';
         return;
     }
-    ul.innerHTML = articles.slice(0, 25).map(function(a) {
-        const title = (a.title || '').replace(/</g, '&lt;');
-        const desc  = (a.description || '').replace(/</g, '&lt;');
-        const src   = (a.source || '').replace(/</g, '&lt;');
-        const pub   = (a.published || '').slice(0, 10);
-        return '<li class="article-item">' +
-               '<a href="' + (a.url || '#') + '" target="_blank" rel="noopener">' + title + '</a>' +
-               (desc ? '<div class="article-description">' + desc + '</div>' : '') +
-               '<div class="article-meta">' + src + (pub ? ' · ' + pub : '') + '</div>' +
-               '</li>';
+    var html = '';
+    if (cal.summary) html += '<div class="sensor-voice">' + esc(cal.summary) + '</div>';
+    html += '<div class="cal-grid">';
+    cal.windows.forEach(function (w) {
+        html += '<div class="cal-win ' + (w.open ? 'open' : 'closed') + '">'
+             + '<span class="cal-state">' + (w.open ? '● open now' : '○ closed') + '</span>'
+             + '<div class="cal-label">' + esc(w.label) + '</div>'
+             + '<div class="cal-window">' + esc(w.window) + '</div>'
+             + '<div class="cal-note">' + esc(w.note) + '</div>'
+             + '<div class="cal-src">' + esc(w.source) + '</div>'
+             + '</div>';
+    });
+    html += '</div>';
+    target.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+// COMMODITY EXPOSURE
+// ════════════════════════════════════════════════════════════
+function renderCommodities() {
+    fetchJson(EP.commodities).then(function (d) {
+        var tiles = d.commodity_summaries || [];
+        var html = '';
+
+        if (d.prose) html += '<div class="prose">' + esc(d.prose) + '</div>';
+
+        if (tiles.length) {
+            html += '<div class="tile-grid">';
+            tiles.forEach(function (t) {
+                var alert = t.global_alert_level || 'normal';
+                var pill = (alert === 'surge' || alert === 'high') ? 'pill-warn'
+                         : (alert === 'elevated' ? 'pill-info' : 'pill-mute');
+                html += '<div class="tile">'
+                     + '<div class="tile-top"><span class="tile-name">' + esc(t.icon || '📊') + ' '
+                     + esc(t.name) + '</span><span class="tile-ticker">' + esc(t.role || '')
+                     + (t.rank ? ' #' + esc(t.rank) : '') + '</span></div>'
+                     + '<div><span class="pill ' + pill + '">' + esc(alert) + '</span> '
+                     + '<span class="tile-meta">' + (num(t.signal_count) || 0) + ' country signal(s) · '
+                     + (num(t.global_signal_count) || 0) + ' global</span></div>'
+                     + sparkline(t.sparkline)
+                     + (t.note ? '<div class="tile-note">' + esc(t.note) + '</div>' : '')
+                     + '</div>';
+            });
+            html += '</div>';
+        } else {
+            html += '<div class="errbox">' + NR
+                 + ' No commodity exposure tiles returned for Rwanda'
+                 + (d.message ? ' — ' + esc(d.message) : '') + '.</div>';
+        }
+
+        if (!d.has_live_data) {
+            html += '<div class="sub" style="margin-top:10px;"><span class="pill pill-mute">structural only</span> '
+                 + 'No live signal scan this cycle — the tiles show registered exposure and nothing '
+                 + 'about current pressure. A quiet tile here is an unread tile, not a quiet market.</div>';
+        }
+
+        /* The Africa proxy stale-serves when the ME backend fails. A stale copy
+           shown as fresh is the same lie as an unread zero -- say which it is. */
+        if (d.proxy_stale) {
+            html += '<div class="sub" style="margin-top:8px;"><span class="pill pill-warn">proxy stale-served</span> '
+                 + 'The ME backend did not answer, so this is the last good copy'
+                 + (d.proxy_fetched_at ? ', fetched ' + fmtDate(d.proxy_fetched_at) : '')
+                 + ' — not a reading taken this cycle.</div>';
+        } else if (d.proxy_cached) {
+            html += '<div class="sub" style="margin-top:8px;"><span class="pill pill-mute">proxy cached</span> '
+                 + 'Served from the 12h Africa proxy cache'
+                 + (d.proxy_fetched_at ? ', fetched ' + fmtDate(d.proxy_fetched_at) : '') + '.</div>';
+        }
+
+        var li = d.leader_interventions || [];
+        if (li.length) {
+            html += '<div class="note-block"><div class="note-head">Leader interventions (jawboning)</div>';
+            li.slice(0, 6).forEach(function (x) {
+                html += '<div class="rpt"><div class="tile-note">' + esc(x.headline || x.text || x.title || '') + '</div>'
+                     + '<div class="rpt-meta">' + esc(x.leader || x.actor || '') + (x.date ? ' · ' + fmtDate(x.date) : '') + '</div></div>';
+            });
+            html += '</div>';
+        }
+
+        html += '<div class="sub" style="margin-top:10px;"><a href="commodities.html" style="color:var(--accent);">'
+             + 'Full commodity tracker →</a></div>';
+
+        el('commBody').innerHTML = html;
+        el('commStamp').textContent = d.last_updated ? fmtDate(d.last_updated) : 'no scan timestamp';
+        registerStamp('commodities', d.last_updated);
+    }).catch(function (e) {
+        el('commStamp').textContent = 'fetch failed';
+        el('commBody').innerHTML = '<div class="errbox">' + NR
+            + ' Commodity exposure unreachable (' + esc(e.message) + '). A 503 here means the ME '
+            + 'backend did not answer and the proxy had no cache to fall back on — check '
+            + '<code>/api/africa/commodity-debug</code>.</div>';
+        registerStamp('commodities', null);
+    });
+}
+
+// ════════════════════════════════════════════════════════════
+// FINANCIAL PULSE
+// ════════════════════════════════════════════════════════════
+var FIN_ORDER = ['GOLD', 'COFFEE', 'BRENT', 'USDRWF'];
+
+function renderFinancial() {
+    fetchJson(EP.financial).then(function (d) {
+        var tiles = d.tiles || {};
+        var html = '';
+        var keys = FIN_ORDER.filter(function (k) { return tiles[k]; })
+            .concat(Object.keys(tiles).filter(function (k) { return FIN_ORDER.indexOf(k) === -1; }));
+
+        if (!keys.length) {
+            el('finBody').innerHTML = '<div class="errbox">' + NR + ' No market tiles returned.</div>';
+            registerStamp('financial', null);
+            return;
+        }
+
+        html += '<div class="tile-grid">';
+        keys.forEach(function (k) {
+            var t = tiles[k];
+            var v = fmtVal(t.value);
+            var pct = fmtPct(t.change_pct_24h);
+            html += '<div class="tile' + (t.unavailable ? ' unavailable' : '') + '">'
+                 + '<div class="tile-top"><span class="tile-name">' + esc(t.name) + '</span>'
+                 + '<span class="tile-ticker">' + esc(t.ticker || '') + '</span></div>';
+
+            if (t.reference && t.display) {
+                /* A dated reading with no live feed: show it as what it is. */
+                html += '<div class="tile-value" style="font-size:1.05rem;">' + esc(t.display) + '</div>'
+                     + '<div class="tile-meta">as of ' + esc(t.timestamp || '')
+                     + (t.parallel_gap_pct !== undefined && t.parallel_gap_pct !== null
+                        ? ' · street rate ' + esc(t.parallel_gap_pct) + '% above interbank' : '')
+                     + (t.change_since_prior_pct !== undefined && t.change_since_prior_pct !== null
+                        ? ' · ' + esc(t.change_since_prior_pct) + '% since the prior reading' : '')
+                     + '</div>';
+            } else if (v === null) {
+                html += '<div class="tile-value none">UNAVAILABLE</div>'
+                     + '<div class="tile-meta">' + esc(t.unavailable_reason || 'no_data')
+                     + (t.throttled ? ' · rate limited' : '')
+                     + (t.last_error ? ' · ' + esc(String(t.last_error).slice(0, 80)) : '')
+                     + '</div>';
+            } else {
+                html += '<div class="tile-value">' + esc(v) + '</div>'
+                     + '<div class="tile-chg ' + chgClass(t.change_pct_24h) + '">'
+                     + (pct === null ? '—' : esc(pct))
+                     + (t.change_abs_24h !== undefined && t.change_abs_24h !== null
+                        ? ' <span class="tile-meta">(' + esc(fmtVal(t.change_abs_24h)) + ')</span>' : '')
+                     + '</div>'
+                     + sparkline(t.sparkline);
+            }
+
+            // Polarity / peg / estimate warnings — on the tile, where they are read.
+            var pills = [];
+            if (t.proxy)         pills.push('<span class="pill pill-warn">proxy — a fund, not the price</span>');
+            if (t.peg_warning)   pills.push('<span class="pill pill-warn">pegged — read the peg, not the tick</span>');
+            if (t.landlocked)    pills.push('<span class="pill pill-info">corridor dependent</span>');
+            if (t.estimated)     pills.push('<span class="pill pill-warn">estimated</span>');
+            if (t.reference)     pills.push('<span class="pill pill-warn">dated reading — no live feed</span>');
+            if (t.market_status) pills.push('<span class="pill pill-mute">' + esc(t.market_status) + '</span>');
+            if (pills.length) html += '<div>' + pills.join(' ') + '</div>';
+
+            if (t.note) html += '<div class="tile-note">' + esc(t.note) + '</div>';
+            if (t.route_note) html += '<div class="tile-meta">🛣 ' + esc(t.route_name || '') + ' — ' + esc(t.route_note) + '</div>';
+            if (t.source) html += '<div class="tile-meta">' + esc(t.source)
+                               + (t.timestamp ? ' · ' + fmtDate(t.timestamp) : '') + '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        var unavailable = keys.filter(function (k) { return fmtVal(tiles[k].value) === null && !tiles[k].reference; });
+        html += '<div class="sub" style="margin-top:10px;">'
+             + (keys.length - unavailable.length) + '/' + keys.length + ' tiles resolved'
+             + (unavailable.length ? ' · unavailable: ' + unavailable.map(esc).join(', ') : '')
+             + ' · an unavailable tile shows the word, never a filled-in number.'
+             + '</div>';
+        /* Rwanda's signature mineral has no live price: a dated reference block. */
+        var mr = d.minerals_reference;
+        if (mr && mr.note) {
+            html += '<div class="note-block"><div class="note-head">3T minerals (tin, tantalum, tungsten) — dated reference, no live price</div>'
+                 + '<div class="note-body">' + esc(mr.note) + ' <span class="sub">(' + esc(mr.source || '') + ', as of ' + esc(mr.as_of || '') + ')</span></div></div>';
+        }
+
+        el('finBody').innerHTML = html;
+
+        var stampBits = [];
+        if (d.market_status) stampBits.push(esc(d.market_status));
+        if (d.cache_status)  stampBits.push(esc(d.cache_status));
+        if (d.version)       stampBits.push('v' + esc(d.version));
+        el('finStamp').textContent = stampBits.join(' · ');
+        registerStamp('financial', d.last_refreshed);
+    }).catch(function (e) {
+        el('finStamp').textContent = 'fetch failed';
+        el('finBody').innerHTML = '<div class="errbox">' + NR
+            + ' Financial pulse unreachable (' + esc(e.message) + '). First-deploy check: '
+            + '<code>/debug/rwanda-financial</code> reports which tickers actually resolved.</div>';
+        registerStamp('financial', null);
+    });
+}
+
+// ════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════
+// WHAT RWANDA DEPENDS ON — dated reference facts (Rwanda-specific)
+// ════════════════════════════════════════════════════════════
+/* Each row: [name, state, detail, as_of]. state drives the pill colour.
+   Facts with dates, reviewed by hand (last review 27 Nov 2026). Contested
+   claims are attributed to whoever makes them. */
+var REVIEWED = '27 Nov 2026';
+
+var LIFELINES = [
+    ['Northern Corridor (Mombasa – Kampala – Kigali)', 'flowing',
+     'The main fuel and import route, through Kenya and Uganda. Uganda closed the Gatuna/Katuna border from 2019 to 2022 during a feud with Kigali: the precedent for how a neighbour can squeeze this route.',
+     '2026'],
+    ['Central Corridor (Dar es Salaam – Rusumo – Kigali)', 'flowing',
+     'The southern alternative through Tanzania; the route that kept goods moving when the Uganda border was shut.',
+     '2026'],
+    ['Western border (Rubavu–Goma, Rusizi–Bukavu)', 'contested',
+     'Faces FRN-held Goma and Bukavu. Restricted over Ebola in May 2026, eased, then tightened again from 10 Oct 2026 (Congolese without residence may not stay overnight).',
+     'Oct 2026'],
+    ['Southern border (Burundi)', 'shut',
+     'Burundi closed it and cut diplomatic ties in January 2024.',
+     '2024–26'],
+    ['Kigali International Airport', 'open',
+     'RwandAir and the conference-and-tourism economy that Kigali has built its brand on.',
+     '2026']
+];
+
+var GUARANTORS = [
+    ['Mozambique (Cabo Delgado)', 'active',
+     'Rwandan troops and police since 2021 at Maputo\'s request; credited with weakening the insurgency enough for TotalEnergies to relaunch its $20B gas project. Rwanda threatened to withdraw over funding in March 2026; Mozambique secured funds in May.',
+     'May 2026'],
+    ['Central African Republic', 'active',
+     'Troops under MINUSCA and a bilateral deal guarding the presidency alongside the Russians; RDF instructors graduated 670 CAR soldiers in August 2026.',
+     'Aug 2026'],
+    ['South Sudan (UNMISS)', 'active',
+     'A long-standing Rwandan contingent in the UN mission.',
+     '2026'],
+    ['Eastern DRC', 'contested',
+     'UN experts and the US government say Rwandan troops operate alongside M23 (now inside the FRN); Kigali denies it and describes "defensive measures" against the FDLR on its border.',
+     'Nov 2026']
+];
+
+var URANIUM = [   // (array name kept from the template: here it is who buys and who pays)
+    ['China (minerals)', 'active',
+     'One of the biggest buyers of Rwandan minerals; Rwandan ores, coffee and essential oils gained tariff-free access from 1 May 2026.',
+     'May 2026'],
+    ['The United States', 'contested',
+     'Buyer of Rwandan tin and tungsten (Nyakabingo tungsten reported at up to 20% of US primary concentrate use) — and the sanctioner of Rwanda\'s army (Mar 2026) and Ministry of Defence (Oct 2026), excluding it from AGOA from January 2027.',
+     'Nov 2026'],
+    ['The UAE (gold)', 'active',
+     'Main destination for Rwandan gold; UN experts allege part of it is eastern Congolese (Kigali denies it).',
+     '2026'],
+    ['The EU', 'contested',
+     'A 2024 raw-materials memorandum, EU funding for the Mozambique mission that wavered in 2026, and now five member states seeking a "return hub" in Rwanda.',
+     'Nov 2026'],
+    ['The IMF and donors', 'active',
+     'An Extended Credit Facility approved June 2026; first review agreed October (about $35.7M on Board approval).',
+     'Oct 2026']
+];
+
+var FRONTS = [
+    ['The FDLR and the DRC border', 'contested',
+     'Kigali\'s stated core threat; neutralising the FDLR is a Washington Accords commitment the two capitals measure differently.',
+     'Nov 2026'],
+    ['US sanctions and AGOA', 'active',
+     'Army and senior officials (Mar 2026), Ministry of Defence and Zigama Credit (Oct 2026), AGOA exclusion from January 2027. Kigali rejects the allegations.',
+     'Nov 2026'],
+    ['Burundi', 'contested',
+     'No diplomatic relations since January 2024; Burundian troops fight on Kinshasa\'s side in South Kivu. President Ndayishimiye has said Rwanda harbours "malicious intentions".',
+     'May 2026'],
+    ['Prices at home', 'contested',
+     'Inflation 15.7% in August 2026 against a 5% target; policy rate raised to 8.75%. Growth remains strong (9.7% in H1 2026).',
+     'Aug 2026']
+];
+
+var ST_WORD = { shut: 'cut off', flowing: 'flowing', open: 'open', opening: 'opening', contested: 'contested',
+                thaw: 'in talks', active: 'active', reengaging: 're-engaging', gone: 'gone', rumour: 'rumour tier' };
+
+function renderRows(target, rows) {
+    el(target).innerHTML = rows.map(function (r) {
+        return '<div class="row"><div><div class="row-name">' + esc(r[0]) + '</div>'
+            + '<span class="st st-' + esc(r[1]) + '">' + esc(ST_WORD[r[1]] || r[1]) + '</span></div>'
+            + '<div class="row-detail">' + esc(r[2]) + '<span class="row-asof">as of ' + esc(r[3]) + '</span></div></div>';
     }).join('');
 }
 
-function filterArticles(tab, btn) {
-    _activeTab = tab;
-    document.querySelectorAll('.article-tab').forEach(function(el) { el.classList.remove('active'); });
-    if (btn) btn.classList.add('active');
-    renderArticles();
+// ════════════════════════════════════════════════════════════
+// POLITICAL CALENDAR — counted at page load, never stale
+// ════════════════════════════════════════════════════════════
+/* Facts with no commentary. Kagame's fourth term: inaugurated 11 Aug 2024 after
+   the July 2024 election (99% of the vote), five years. President since April
+   2000. AGOA exclusion takes effect 1 Jan 2027. */
+var TERM_START = Date.UTC(2024, 7, 11);   // 11 Aug 2024
+var TERM_YEARS = 5;
+var PRESIDENT_SINCE = Date.UTC(2000, 3, 22);  // 22 Apr 2000
+var AGOA_OUT = Date.UTC(2027, 0, 1);      // 1 Jan 2027
+
+function renderCalendarClocks() {
+    var now = Date.now();
+    var tEnd = Date.UTC(2024 + TERM_YEARS, 7, 11);
+    var frac = Math.max(0, Math.min(1, (now - TERM_START) / (tEnd - TERM_START)));
+    var yrs = Math.floor((now - PRESIDENT_SINCE) / (365.25 * 86400000));
+    var dAgoa = Math.ceil((AGOA_OUT - now) / 86400000);
+    var html = '<div class="clock-grid">'
+        + '<div class="clock"><b class="n">' + Math.round(frac * 100) + '%</b>'
+        + 'of <strong>President Kagame\'s current term</strong>, won in July 2024 with 99% of the vote under the '
+        + '2015 constitutional amendment that allows him to serve to 2034.'
+        + '<div class="bar"><span style="width:' + (frac * 100).toFixed(1) + '%"></span></div>'
+        + '<span class="row-asof">11 Aug 2024 → Aug 2029 (five-year term)</span></div>'
+        + '<div class="clock"><b class="n">' + yrs + ' years</b>'
+        + 'of Paul Kagame as president (since April 2000; the dominant figure in Rwandan politics since 1994).'
+        + '<span class="row-asof">counted at page load</span></div>'
+        + '<div class="clock"><b class="n">' + (dAgoa > 0 ? dAgoa.toLocaleString() + ' days' : 'in effect') + '</b>'
+        + 'until Rwanda\'s <strong>exclusion from AGOA</strong> (duty-free access to the US market) takes effect on '
+        + '1 January 2027.'
+        + '<span class="row-asof">counted at page load</span></div>'
+        + '</div>';
+    el('legitBody').innerHTML = html;
 }
 
-// ── COMMODITY EXPOSURE — Gold Standard v2.0 (live tiles) ──
-// Mirrors china-stability.html. Fetches /api/africa/commodity/<country>
-// (which proxies through to ME backend /api/commodity-pressure/<country>).
-// Renders: prose paragraph + alert banner + tiles with sparklines + role/alert badges
-async function loadCommodity() {
-    const card = document.getElementById('commodityCard');
-    if (!card) return;   // page has no commodity card (e.g. Ethiopia, Kenya, etc.)
+function renderDepends() {
+    renderRows('lanesBody', LIFELINES);
+    renderRows('guardBody', GUARANTORS);
+    renderRows('uraniumBody', URANIUM);
+    renderRows('frontsBody', FRONTS);
+    renderCalendarClocks();
+}
 
-    let data = null;
-    try {
-        const r = await fetch(AFRICA_API + '/api/africa/commodity/' + COUNTRY_ID);
-        if (!r.ok) throw new Error('Africa proxy HTTP ' + r.status);
-        data = await r.json();
-        if (!data || data.success === false) throw new Error('Africa proxy returned failure');
-    } catch (e) {
-        console.warn('[Commodity] Africa proxy failed, trying ME backend direct...', e.message);
-        try {
-            const r2 = await fetch('https://asifah-backend.onrender.com/api/commodity-pressure/' + COUNTRY_ID);
-            if (!r2.ok) throw new Error('ME backend HTTP ' + r2.status);
-            data = await r2.json();
-        } catch (e2) {
-            console.warn('[Commodity] ME backend fallback also failed:', e2.message);
-            const proseEl = document.getElementById('commodityProse');
-            if (proseEl) proseEl.textContent = 'Commodity exposure data temporarily unavailable. Please refresh.';
-            return;
-        }
+// ════════════════════════════════════════════════════════════
+// MAP — Leaflet, pins are places not incidents
+// ════════════════════════════════════════════════════════════
+var PINS = [
+    ['Kigali', -1.944, 30.059, '#38bdf8', 'The capital: government, the RDF headquarters, the airport and the conference economy.'],
+    ['Rubavu (Gisenyi) – Goma', -1.68, 29.26, '#ef4444', 'The DRC\'s busiest border, facing FRN-held Goma; Ebola restrictions May and October 2026.'],
+    ['Rusizi – Bukavu', -2.48, 28.90, '#ef4444', 'The southern crossing into FRN-held Bukavu, South Kivu.'],
+    ['Gatuna / Katuna (Uganda border)', -1.43, 30.02, '#eab308', 'The Northern Corridor crossing to Mombasa; closed by Uganda 2019–2022.'],
+    ['Rusumo (Tanzania border)', -2.38, 30.78, '#eab308', 'The Central Corridor crossing to Dar es Salaam.'],
+    ['Nemba (Burundi border)', -2.53, 30.07, '#ef4444', 'Burundi closed this border and cut ties in January 2024.'],
+    ['Nyakabingo tungsten mine', -1.78, 29.98, '#eab308', 'Reported at up to 20% of US primary tungsten concentrate use.'],
+    ['Mahama refugee camp', -2.32, 30.83, '#a855f7', 'The largest camp; Burundian and Congolese refugees.']
+];
+
+function renderMap() {
+    var box = el('carMap');
+    if (!box) return;
+    if (typeof L === 'undefined') {
+        box.innerHTML = '<div class="errbox" style="margin:12px;">' + NR + ' The map library did not load. '
+            + 'Places: ' + PINS.map(function (p) { return esc(p[0]); }).join(' · ') + '.</div>';
+        return;
     }
-
-    // Prose
-    const proseEl = document.getElementById('commodityProse');
-    const summariesCount = (data.commodity_summaries || []).length;
-    if (proseEl) {
-        proseEl.textContent = data.prose ||
-            (summariesCount > 0
-                ? COUNTRY_DISPLAY + ' tracks ' + summariesCount + ' strategic commodity exposures. See tiles below for live status.'
-                : COUNTRY_DISPLAY + '\u2019s commodity profile is being wired in. Live tiles will populate once the backend has data for this country.');
-    }
-
-    // Alert banner
-    const banner = document.getElementById('commodityAlertBanner');
-    const alertLevel = (data.alert_level || 'normal').toLowerCase();
-    const alertLabels = {
-        normal:   '\u2713 NO ACTIVE COMMODITY PRESSURE',
-        elevated: '\u25D0 ELEVATED COMMODITY PRESSURE',
-        high:     '\u25B2 HIGH COMMODITY PRESSURE',
-        surge:    '\uD83D\uDEA8 COMMODITY PRESSURE SURGE'
-    };
-    const pressure = (data.commodity_pressure || 0);
-    if (banner) {
-        banner.className = 'commodity-alert-banner alert-' + alertLevel + ' show';
-        banner.innerHTML =
-            '<strong>' + (alertLabels[alertLevel] || alertLabels.normal) + '</strong>' +
-            '<span class="ab-meta">Pressure score: ' + Number(pressure).toFixed(1) + ' \u00b7 ' +
-            summariesCount + ' exposures tracked' +
-            (data.has_live_data === false ? ' \u00b7 awaiting live signals' : '') + '</span>';
-    }
-
-    // Tiles
-    const grid = document.getElementById('commodityGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    (data.commodity_summaries || []).forEach(function(c) {
-        const globalAlert = (c.global_alert_level || 'normal').toLowerCase();
-        const role = (c.role || 'consumer').toLowerCase();
-        const rankText = c.rank ? '#' + c.rank + ' globally' : '';
-        const sigCount = c.signal_count || 0;
-        const sigText = sigCount > 0 ? sigCount + ' signal' + (sigCount !== 1 ? 's' : '') : '';
-
-        // Sparkline (SVG polyline) — canonical China pattern
-        let sparklineHtml = '';
-        let priceHtml = '';
-        if (c.sparkline && c.sparkline.spark && c.sparkline.spark.length > 1) {
-            const spark = c.sparkline.spark;
-            const min = Math.min.apply(null, spark);
-            const max = Math.max.apply(null, spark);
-            const range = max - min || 1;
-            const points = spark.map(function(v, i) {
-                const x = (i / (spark.length - 1)) * 100;
-                const y = 100 - ((v - min) / range) * 100;
-                return x.toFixed(1) + ',' + y.toFixed(1);
-            }).join(' ');
-            const pctChange = c.sparkline.change_pct_30d || 0;
-            const sparkColor = pctChange >= 0 ? '#22c55e' : '#ef4444';
-            sparklineHtml = '<svg class="commodity-tile-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">' +
-                '<polyline fill="none" stroke="' + sparkColor + '" stroke-width="1.5" vector-effect="non-scaling-stroke" points="' + points + '"/>' +
-                '</svg>';
-            const price = (c.sparkline.price !== undefined && c.sparkline.price !== null) ? c.sparkline.price : null;
-            if (price !== null) {
-                const arrow = pctChange >= 0 ? '\u25B2' : '\u25BC';
-                const deltaClass = pctChange >= 0 ? 'delta-up' : 'delta-down';
-                const priceFmt = '$' + Number(price).toFixed(2);
-                priceHtml = '<div class="commodity-tile-price">' + priceFmt +
-                    ' <span class="' + deltaClass + '">' + arrow + ' ' + Number(pctChange).toFixed(2) + '%</span>' +
-                    ' <span style="color:var(--text-muted);font-size:0.72rem;">(30d)</span>' +
-                    '</div>';
-            }
-        }
-
-        const note = c.note || '';
-        const icon = c.icon || '\uD83D\uDCCA';
-        const commodityName = c.name || c.commodity || 'Commodity';
-        const commodityId = c.commodity || (c.name || '').toLowerCase();
-
-        grid.insertAdjacentHTML('beforeend',
-            '<a href="commodities.html#' + commodityId + '" class="commodity-tile">' +
-                '<div class="commodity-tile-header">' +
-                    '<div class="commodity-tile-icon">' + icon + '</div>' +
-                    '<div class="commodity-tile-titlewrap">' +
-                        '<div class="commodity-tile-name">' + commodityName + '</div>' +
-                        (rankText ? '<div class="commodity-tile-rank">' + rankText + '</div>' : '') +
-                    '</div>' +
-                '</div>' +
-                '<div class="commodity-tile-badges">' +
-                    '<span class="commodity-tile-badge commodity-alert-' + globalAlert + '">' + globalAlert + '</span>' +
-                    '<span class="commodity-tile-badge commodity-role-' + role + '">' + role + '</span>' +
-                    (sigText ? '<span class="commodity-tile-signals">' + sigText + '</span>' : '') +
-                '</div>' +
-                priceHtml +
-                sparklineHtml +
-                (note ? '<div class="commodity-tile-desc">' + note.slice(0, 200) + (note.length > 200 ? '\u2026' : '') + '</div>' : '') +
-            '</a>'
-        );
+    var map = L.map('carMap', { scrollWheelZoom: false }).setView([-1.95, 29.9], 8);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors © CARTO', maxZoom: 10
+    }).addTo(map);
+    PINS.forEach(function (p) {
+        L.circleMarker([p[1], p[2]], { radius: 7, color: p[3], fillColor: p[3], fillOpacity: 0.85, weight: 2 })
+            .addTo(map).bindPopup('<strong>' + esc(p[0]) + '</strong><br>' + esc(p[4]));
     });
-
-    // If no tiles came back, show graceful empty-state
-    if ((data.commodity_summaries || []).length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;font-size:12px;">No commodity exposure tiles available yet for ' + COUNTRY_DISPLAY + '. Backend may still be warming up.</div>';
-    }
 }
 
-// ── BOOT ──
-document.addEventListener('DOMContentLoaded', function() {
-    loadTravelAdvisory();
-    loadArticles();
-    loadCommodity();
-});
+
+// ════════════════════════════════════════════════════════════
+// BOOT — all fetches in parallel; each card fails alone.
+// ════════════════════════════════════════════════════════════
+renderDepends();
+renderMap();
+renderAdvisory();
+renderRhetoric();
+renderHumanitarian();
+renderCommodities();
+renderFinancial();
 </script>
 </body>
 </html>
